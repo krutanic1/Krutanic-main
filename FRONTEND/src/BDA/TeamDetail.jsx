@@ -14,6 +14,16 @@ const TeamDetail = () => {
   const [getteamName, setGetTeamName] = useState([]);
   const [dailyRevenue, setDailyRevenue] = useState([]);
   const [monthlyRevenue, setMonthlyRevenue] = useState([]);
+  const [showAddBdaForm, setShowAddBdaForm] = useState(false);
+  const [selectedTeamForNewBda, setSelectedTeamForNewBda] = useState(""); // Team selection for new BDA
+  const [selectedDesignation, setSelectedDesignation] = useState("BDA"); // Designation selection (BDA or LEADER for managers)
+  const [isSubmittingBda, setIsSubmittingBda] = useState(false); // Loading state for form submission
+  const [newBdaForm, setNewBdaForm] = useState({
+    fullname: "",
+    email: "",
+    phone: "",
+    password: "",
+  });
 
   useEffect(() => {
     const fetchBdaData = async () => {
@@ -28,8 +38,8 @@ const TeamDetail = () => {
         setBdaData(response.data);
         // For managers, use teams array if available, otherwise parse from team string
         if (response.data.designation === "MANAGER") {
-          const teamsArray = response.data.teams && response.data.teams.length > 0 
-            ? response.data.teams 
+          const teamsArray = response.data.teams && response.data.teams.length > 0
+            ? response.data.teams
             : response.data.team ? response.data.team.split(", ").map(t => t.trim()) : [];
           setManagerTeams(teamsArray);
           setSelectedTeam(teamsArray[0] || ""); // Default to first team
@@ -163,6 +173,101 @@ const TeamDetail = () => {
     setDetailVisible(false);
   };
 
+  // Handler functions for Add BDA Member form
+  const handleOpenAddBdaForm = () => {
+    // Pre-select the currently viewed team or first team for managers
+    const defaultTeam = selectedTeam || managerTeams[0] || bdaData?.team || "";
+    setSelectedTeamForNewBda(defaultTeam);
+    // Default designation to BDA
+    setSelectedDesignation("BDA");
+    setShowAddBdaForm(true);
+  };
+
+  const handleCloseAddBdaForm = () => {
+    setShowAddBdaForm(false);
+    setSelectedTeamForNewBda("");
+    setSelectedDesignation("BDA");
+    setIsSubmittingBda(false);
+    setNewBdaForm({
+      fullname: "",
+      email: "",
+      phone: "",
+      password: "",
+    });
+  };
+
+  const handleNewBdaInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewBdaForm((prev) => ({
+      ...prev,
+      [name]: name === "fullname" || name === "email" ? value.toLowerCase() : value,
+    }));
+  };
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleSubmitNewBda = async (e) => {
+    e.preventDefault();
+
+    // Validation
+    if (!newBdaForm.fullname.trim()) {
+      toast.error("Please enter a name");
+      return;
+    }
+
+    if (!newBdaForm.email.trim()) {
+      toast.error("Please enter an email");
+      return;
+    }
+
+    if (!validateEmail(newBdaForm.email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    if (!newBdaForm.password || newBdaForm.password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    // Validate team selection
+    if (!selectedTeamForNewBda || !selectedTeamForNewBda.trim()) {
+      toast.error("Please select a team");
+      return;
+    }
+
+    // Use selected designation and team
+    const newBdaData = {
+      fullname: newBdaForm.fullname.trim(),
+      email: newBdaForm.email.trim(),
+      phone: newBdaForm.phone.trim(),
+      password: newBdaForm.password.trim(),
+      designation: selectedDesignation,
+      team: selectedTeamForNewBda,
+      teams: selectedDesignation === "LEADER" ? [selectedTeamForNewBda] : [], // Leaders get team in teams array
+    };
+
+    setIsSubmittingBda(true);
+    try {
+      const response = await axios.post(`${API}/createbda`, newBdaData);
+      if (response.status === 201) {
+        toast.success(`${selectedDesignation} ${newBdaForm.fullname} added to ${selectedTeamForNewBda} successfully!`);
+        handleCloseAddBdaForm();
+        fetchAllData(); // Refresh the team data
+      }
+    } catch (error) {
+      console.error("Error creating BDA:", error);
+      toast.error(
+        error.response?.data?.message || "Failed to create BDA member. Please try again."
+      );
+    } finally {
+      setIsSubmittingBda(false);
+    }
+  };
+
   // Filter team members: for managers, show all members from any of their managed teams
   // For BDA/Leader, show only their own team
   const filteredData = allData.filter((bda) => {
@@ -192,72 +297,72 @@ const TeamDetail = () => {
   //     }
   //   };
 
-    
+
   const today = new Date();
   const currentMonth = today.toISOString().slice(0, 7);
 
-   const getMonth = (date, offset) => {
-      const newDate = new Date(date);
-      newDate.setMonth(newDate.getMonth() - offset);
-      return newDate.toISOString().slice(0, 7);
-    };
+  const getMonth = (date, offset) => {
+    const newDate = new Date(date);
+    newDate.setMonth(newDate.getMonth() - offset);
+    return newDate.toISOString().slice(0, 7);
+  };
 
-   const prevMonth1 = getMonth(today, 1);
-    const prevMonth2 = getMonth(today, 2);
-    const prevMonth3 = getMonth(today, 3);
-    const getTeamRevenueForMonth = (month) => {
-      let totalProgram = 0;
-      let totalPaid = 0;
-      let totalPending = 0;
-      let totalDefault = 0;
-      let noOfPayments = 0;
-    
-      filteredData.forEach((bda) => {
-        const monthEnrollments = bda.enrollments.filter(
-          (item) =>
-            new Date(item.createdAt).toISOString().slice(0, 7) === month
-        );
-    
-        totalProgram += monthEnrollments.reduce(
-          (sum, item) => sum + (item.programPrice || 0),
-          0
-        );
-    
-        totalPaid += monthEnrollments.reduce((sum, item) => {
-          const isHalfCleared =
-            Array.isArray(item.remark) &&
-            item.remark[item.remark.length - 1] === "Half_Cleared";
-          if (item.status === "fullPaid" || isHalfCleared) {
-            return sum + (item.paidAmount || 0);
-          }
-          return sum;
-        }, 0);
-    
-        totalPending += monthEnrollments.reduce(
-          (sum, item) =>
-            sum + ((item.programPrice || 0) - (item.paidAmount || 0)),
-          0
-        );
-    
-        totalDefault += monthEnrollments
-          .filter((item) => item.status === "default")
-          .reduce((sum, item) => sum + (item.paidAmount || 0), 0);
+  const prevMonth1 = getMonth(today, 1);
+  const prevMonth2 = getMonth(today, 2);
+  const prevMonth3 = getMonth(today, 3);
+  const getTeamRevenueForMonth = (month) => {
+    let totalProgram = 0;
+    let totalPaid = 0;
+    let totalPending = 0;
+    let totalDefault = 0;
+    let noOfPayments = 0;
 
-          noOfPayments += monthEnrollments.filter((item) => (item.paidAmount || 0) > 0).length;
-      });
-    
-      return {
-        totalProgram,
-        totalPaid,
-        totalPending,
-        totalDefault,
-        noOfPayments
-      };
+    filteredData.forEach((bda) => {
+      const monthEnrollments = bda.enrollments.filter(
+        (item) =>
+          new Date(item.createdAt).toISOString().slice(0, 7) === month
+      );
+
+      totalProgram += monthEnrollments.reduce(
+        (sum, item) => sum + (item.programPrice || 0),
+        0
+      );
+
+      totalPaid += monthEnrollments.reduce((sum, item) => {
+        const isHalfCleared =
+          Array.isArray(item.remark) &&
+          item.remark[item.remark.length - 1] === "Half_Cleared";
+        if (item.status === "fullPaid" || isHalfCleared) {
+          return sum + (item.paidAmount || 0);
+        }
+        return sum;
+      }, 0);
+
+      totalPending += monthEnrollments.reduce(
+        (sum, item) =>
+          sum + ((item.programPrice || 0) - (item.paidAmount || 0)),
+        0
+      );
+
+      totalDefault += monthEnrollments
+        .filter((item) => item.status === "default")
+        .reduce((sum, item) => sum + (item.paidAmount || 0), 0);
+
+      noOfPayments += monthEnrollments.filter((item) => (item.paidAmount || 0) > 0).length;
+    });
+
+    return {
+      totalProgram,
+      totalPaid,
+      totalPending,
+      totalDefault,
+      noOfPayments
     };
+  };
 
   return (
     <div id="AdminAddCourse">
-        <Toaster position="top-center" reverseOrder={false} />
+      <Toaster position="top-center" reverseOrder={false} />
       {/* selected bda detail */}
       {detailVisible && selectedBda && (
         <div className="form">
@@ -355,34 +460,34 @@ const TeamDetail = () => {
                       )}
                     </td>
                     <td>
-          ₹{" "}
-          {selectedBda.enrollments.reduce((sum, item) => {
-            const isFullPaid = item.status === "fullPaid";
-            const hasHalfClearedRemark =
-              Array.isArray(item.remarks) &&
-              item.remarks.length > 0 &&
-              item.remarks[item.remarks.length - 1]?.toLowerCase() === "half_cleared";
-            if (isFullPaid || hasHalfClearedRemark) {
-              return sum + (item.paidAmount || 0);
-            }
-            return sum;
-          }, 0)}
-        </td>
-        <td>
-          ₹{" "}
-          {selectedBda.enrollments.reduce((sum, item) => sum + (item.programPrice || 0), 0) -
-            selectedBda.enrollments.reduce((sum, item) => {
-              const isFullPaid = item.status === "fullPaid";
-              const hasHalfClearedRemark =
-                Array.isArray(item.remarks) &&
-                item.remarks.length > 0 &&
-                item.remarks[item.remarks.length - 1]?.toLowerCase() === "half_cleared";
-              if (isFullPaid || hasHalfClearedRemark) {
-                return sum + (item.paidAmount || 0);
-              }
-              return sum;
-            }, 0)}
-        </td>
+                      ₹{" "}
+                      {selectedBda.enrollments.reduce((sum, item) => {
+                        const isFullPaid = item.status === "fullPaid";
+                        const hasHalfClearedRemark =
+                          Array.isArray(item.remarks) &&
+                          item.remarks.length > 0 &&
+                          item.remarks[item.remarks.length - 1]?.toLowerCase() === "half_cleared";
+                        if (isFullPaid || hasHalfClearedRemark) {
+                          return sum + (item.paidAmount || 0);
+                        }
+                        return sum;
+                      }, 0)}
+                    </td>
+                    <td>
+                      ₹{" "}
+                      {selectedBda.enrollments.reduce((sum, item) => sum + (item.programPrice || 0), 0) -
+                        selectedBda.enrollments.reduce((sum, item) => {
+                          const isFullPaid = item.status === "fullPaid";
+                          const hasHalfClearedRemark =
+                            Array.isArray(item.remarks) &&
+                            item.remarks.length > 0 &&
+                            item.remarks[item.remarks.length - 1]?.toLowerCase() === "half_cleared";
+                          if (isFullPaid || hasHalfClearedRemark) {
+                            return sum + (item.paidAmount || 0);
+                          }
+                          return sum;
+                        }, 0)}
+                    </td>
                   </tr>
                 ) : (
                   <tr>
@@ -395,11 +500,180 @@ const TeamDetail = () => {
         </div>
       )}
 
+      {/* Add BDA Member Form Modal */}
+      {showAddBdaForm && bdaData && (
+        <div className="form">
+          <form onSubmit={handleSubmitNewBda}>
+            <span onClick={handleCloseAddBdaForm} style={{ cursor: "pointer" }}>
+              ✖
+            </span>
+            <h2>Add BDA Member</h2>
+
+            <input
+              type="text"
+              name="fullname"
+              value={newBdaForm.fullname}
+              onChange={handleNewBdaInputChange}
+              placeholder="Enter Full Name"
+              required
+              disabled={isSubmittingBda}
+            />
+
+            <input
+              type="email"
+              name="email"
+              value={newBdaForm.email}
+              onChange={handleNewBdaInputChange}
+              placeholder="Enter Email Address"
+              required
+              disabled={isSubmittingBda}
+            />
+
+            <input
+              type="tel"
+              name="phone"
+              value={newBdaForm.phone}
+              onChange={handleNewBdaInputChange}
+              placeholder="Enter Phone Number (Optional)"
+              disabled={isSubmittingBda}
+            />
+
+            <input
+              type="password"
+              name="password"
+              value={newBdaForm.password}
+              onChange={handleNewBdaInputChange}
+              placeholder="Create Password (min 6 characters)"
+              required
+              minLength={6}
+              disabled={isSubmittingBda}
+            />
+
+            {/* Team Selection Dropdown */}
+            <div style={{ marginBottom: "15px" }}>
+              <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>
+                Select Team: <span style={{ color: "red" }}>*</span>
+              </label>
+              <select
+                value={selectedTeamForNewBda}
+                onChange={(e) => setSelectedTeamForNewBda(e.target.value)}
+                required
+                disabled={isSubmittingBda}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  fontSize: "14px",
+                  backgroundColor: isSubmittingBda ? "#f0f0f0" : "white",
+                  cursor: isSubmittingBda ? "not-allowed" : "pointer",
+                }}
+              >
+                <option value="">-- Select a Team --</option>
+                {(managerTeams.length > 0 ? managerTeams : [bdaData.team]).map((team, index) => (
+                  <option key={index} value={team}>
+                    {team}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Designation Selection - Dropdown for Managers, Read-only for Leaders */}
+            <div style={{ marginBottom: "15px" }}>
+              <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>
+                Designation: {bdaData.designation === "MANAGER" && <span style={{ color: "red" }}>*</span>}
+              </label>
+              {bdaData.designation === "MANAGER" ? (
+                <select
+                  value={selectedDesignation}
+                  onChange={(e) => setSelectedDesignation(e.target.value)}
+                  required
+                  disabled={isSubmittingBda}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    fontSize: "14px",
+                    backgroundColor: isSubmittingBda ? "#f0f0f0" : "white",
+                    cursor: isSubmittingBda ? "not-allowed" : "pointer",
+                  }}
+                >
+                  <option value="BDA">BDA</option>
+                  <option value="LEADER">LEADER</option>
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  value="BDA"
+                  readOnly
+                  disabled
+                  style={{ backgroundColor: "#f0f0f0", cursor: "not-allowed" }}
+                />
+              )}
+            </div>
+
+            <div style={{ display: "flex", gap: "10px" }}>
+              <input
+                className="cursor-pointer"
+                type="submit"
+                value={isSubmittingBda ? "Creating..." : "Create BDA Member"}
+                disabled={isSubmittingBda || !selectedTeamForNewBda}
+                style={{
+                  flex: 1,
+                  opacity: (isSubmittingBda || !selectedTeamForNewBda) ? 0.6 : 1,
+                  cursor: (isSubmittingBda || !selectedTeamForNewBda) ? "not-allowed" : "pointer",
+                }}
+              />
+              <button
+                type="button"
+                onClick={handleCloseAddBdaForm}
+                className="cursor-pointer"
+                disabled={isSubmittingBda}
+                style={{
+                  flex: 1,
+                  backgroundColor: "#6c757d",
+                  color: "white",
+                  border: "none",
+                  padding: "10px",
+                  borderRadius: "4px",
+                  opacity: isSubmittingBda ? 0.6 : 1,
+                  cursor: isSubmittingBda ? "not-allowed" : "pointer",
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
       <div className="coursetable">
         <div className="mb-2">
-          <h2>{selectedTeam} </h2>
-           
-             <div className="flex justify-between items-center gap-5 flex-wrap">
+          {/* Team header with Add BDA Member button on the right */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
+            <h2 style={{ margin: 0 }}>{selectedTeam}</h2>
+
+            {bdaData && ["LEADER", "MANAGER"].includes(bdaData.designation) && (
+              <button
+                onClick={handleOpenAddBdaForm}
+                className="cursor-pointer"
+                style={{
+                  backgroundColor: "#28a745",
+                  color: "white",
+                  border: "none",
+                  padding: "6px 12px",
+                  borderRadius: "4px",
+                  fontWeight: "500",
+                  fontSize: "12px",
+                }}
+              >
+                + Add Member
+              </button>
+            )}
+          </div>
+
+          <div className="flex justify-between items-center gap-5 flex-wrap">
             <div>
               <strong>Total BDA: </strong>
               {filteredData.length}
@@ -429,7 +703,7 @@ const TeamDetail = () => {
                 const monthEnrollments = bda.enrollments.filter(
                   (item) =>
                     new Date(item.createdAt).toISOString().slice(0, 7) ===
-                      currentMonth &&
+                    currentMonth &&
                     (item.status === "fullPaid" ||
                       item.remark[item.remark.length - 1] === "Half_Cleared")
                 );
@@ -468,7 +742,7 @@ const TeamDetail = () => {
                 const monthEnrollments = bda.enrollments.filter(
                   (item) =>
                     new Date(item.createdAt).toISOString().slice(0, 7) ===
-                      currentMonth && item.status === "default"
+                    currentMonth && item.status === "default"
                 );
                 return (
                   acc +
@@ -515,7 +789,7 @@ const TeamDetail = () => {
           </thead>
           <tbody>
             {filteredData.map((bda, index) => (
-              <tr key={index} onClick={()=> console.log(bda)} className="hover:bg-slate-100">
+              <tr key={index} onClick={() => console.log(bda)} className="hover:bg-slate-100">
                 <td>{index + 1}</td>
                 <td
                   style={{ color: "blue", cursor: "pointer" }}
@@ -549,7 +823,7 @@ const TeamDetail = () => {
             (() => {
               const team = getteamName.find((t) => t.teamname === selectedTeam);
               const latestTargetObj = team?.target?.[team.target.length - 1];
-              
+
               if (!latestTargetObj) {
                 return (
                   <div
@@ -588,14 +862,14 @@ const TeamDetail = () => {
               );
               const pendingTarget = lastTarget - achievedTarget;
               const allPaymentsThisMonth = filteredData
-        .flatMap((bda) => bda.enrollments)
-        .filter((enroll) => {
-          const enrollMonth = new Date(enroll.createdAt).toISOString().slice(0, 7);
-          return enrollMonth === currentMonth;
-        });
+                .flatMap((bda) => bda.enrollments)
+                .filter((enroll) => {
+                  const enrollMonth = new Date(enroll.createdAt).toISOString().slice(0, 7);
+                  return enrollMonth === currentMonth;
+                });
 
-      const assignedPaymentNumber = latestTargetObj.payments;
-      const actualPayments = allPaymentsThisMonth.length;
+              const assignedPaymentNumber = latestTargetObj.payments;
+              const actualPayments = allPaymentsThisMonth.length;
               return (
                 <div
                   style={{
@@ -615,41 +889,41 @@ const TeamDetail = () => {
                   <p>
                     <strong>⏳Pending:</strong> ₹ {pendingTarget.toLocaleString()}
                   </p>
-                   <p>📅 No Of Payments : {assignedPaymentNumber}</p>
-                   <p>💰 Payments Received: {actualPayments}</p>
+                  <p>📅 No Of Payments : {assignedPaymentNumber}</p>
+                  <p>💰 Payments Received: {actualPayments}</p>
                 </div>
               );
             })()}
         </div>
-         <div className="flex flex-col">
-  <h3>📊 Previous Month Revenue Summary</h3>
-  <table className="bdarevenuetable">
-    <thead>
-      <tr>
-        <th>Month</th>
-        <th>No. of Payments</th>
-        <th>Total Program Price</th>
-        <th>Total Paid Amount</th>
-        <th>Total Pending Amount</th>
-        <th>Total Default Amount</th>
-      </tr>
-    </thead>
-    <tbody>
-      {[prevMonth1, prevMonth2, prevMonth3].map((month) => {
-        const revenue = getTeamRevenueForMonth(month);
-        return (
-          <tr key={month}>
-            <td>{month}</td>
-            <td>{revenue.noOfPayments}</td>
-            <td>₹ {revenue.totalProgram.toLocaleString()}</td>
-            <td>₹ {revenue.totalPaid.toLocaleString()}</td>
-            <td>₹ {revenue.totalPending.toLocaleString()}</td>
-            <td>₹ {revenue.totalDefault.toLocaleString()}</td>
-          </tr>
-        );
-      })}
-    </tbody>
-  </table>
+        <div className="flex flex-col">
+          <h3>📊 Previous Month Revenue Summary</h3>
+          <table className="bdarevenuetable">
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>No. of Payments</th>
+                <th>Total Program Price</th>
+                <th>Total Paid Amount</th>
+                <th>Total Pending Amount</th>
+                <th>Total Default Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[prevMonth1, prevMonth2, prevMonth3].map((month) => {
+                const revenue = getTeamRevenueForMonth(month);
+                return (
+                  <tr key={month}>
+                    <td>{month}</td>
+                    <td>{revenue.noOfPayments}</td>
+                    <td>₹ {revenue.totalProgram.toLocaleString()}</td>
+                    <td>₹ {revenue.totalPaid.toLocaleString()}</td>
+                    <td>₹ {revenue.totalPending.toLocaleString()}</td>
+                    <td>₹ {revenue.totalDefault.toLocaleString()}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
