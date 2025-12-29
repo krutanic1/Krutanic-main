@@ -1,0 +1,137 @@
+#advance-course {
+  #advancecourse {
+
+    background-color: #000;
+    color: white;
+    overflow: hidden;
+  }
+}
+
+#advancesection {
+  overflow: hidden;
+
+  .testimonial {
+
+    .testimonialcontainer {
+      max-width: 1500px;
+      min-width: 1500px;
+    }
+
+    .box {
+      padding: 5px;
+      cursor: grab;
+
+      .revtxt {
+        /* background-color: #f15b29; */
+        height: 200px;
+        overflow: auto;
+        scrollbar-width: none;
+        padding: 0 2px;
+
+      }
+    }
+
+    .box>div {
+      padding: 10px;
+      border-radius: 10px;
+      background-color: rgb(0, 0, 0, 0.7);
+      border: solid 1px rgb(255, 255, 255, 0.1);
+      transition: transform 0.5s ease-in;
+
+      .upr {
+        margin-top: 20px;
+        display: flex;
+
+        >div {
+          margin-left: auto;
+          text-align: right;
+        }
+      }
+
+      img {
+        border-radius: 50%;
+        width: 80px;
+        height: 80px;
+      }
+
+      h2 {
+        font-size: 16px;
+        color: #f15b29;
+      }
+
+      h3 {
+        font-size: 12px;
+        font-style: italic;
+      }
+
+      p {
+        font-style: italic;
+      }
+    }
+
+    .slick-prev:before,
+    .slick-next:before {
+      display: none;
+    }
+
+  }
+}
+
+
+
+
+#advanceinvestmentbg {
+  background-image: url('../assets/Advanced Course Images/Investment banking/3.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+#advancedigitalbg {
+  background-image: url('../assets/Advanced Course Images/Digital Markting/2.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+#advanceperformancebg {
+  background-image: url('../assets/Advanced Course Images/Performance marketing/3.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+#advancemernbg {
+  background-image: url('../assets/Advanced Course Images/Mern Stack Development/4.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+#advanceproductbg {
+  background-image: url('../assets/Advanced Course Images/Product management/5.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+#advancedatabg {
+  background-image: url('../assets/Advanced Course Images/Data science/6.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+#advanceautomationbg {
+  background-image: url('../assets/Advanced Course Images/AutomationvTesting/automationtestingbg.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+#advancepromptaibg {
+  background-image: url('../assets/Advanced Course Images/Prompt AI/promptbg.avif');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+

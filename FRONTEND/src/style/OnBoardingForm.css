@@ -1,0 +1,124 @@
+#onboardingform{
+        form {
+            padding: 20px;
+            border-radius: 10px;
+            /* margin: auto; */
+            background-color: rgb(255, 255, 255);
+            /* max-width: 500px; */
+            font-size: 14px;
+            margin-bottom: 50px;
+           
+            /* .formgrid{
+                display:grid;
+                gap: 10px;
+                grid-template-columns: repeat(3 , 1fr);
+            } */
+          
+  
+            span {
+                float: right;
+                padding: 5px;
+                margin-bottom: 20;
+                cursor: pointer;
+            }
+  
+  
+        }
+        
+  
+        h2 {
+            text-align: center;
+            color: #F15B29;
+            font-weight: 600;
+        }
+  
+        input
+         {
+            padding: 8px 10px;
+            border: 1px solid #CCCCCC;
+            width: 100%;
+            margin: 3px 0;
+            border-radius: 10px;
+        }
+        input:focus{
+          outline: none;
+        }
+
+        .input-field {
+            position: relative;
+          }
+          
+          .input-field label {
+            position: absolute;
+            color: #8d8d8d;
+            pointer-events: none;
+            background-color: transparent;
+            left: 15px;
+            transform: translateY(0.6rem);
+            transition: all 0.3s ease;
+          }
+          .input-field input:focus,
+          .input-field input:valid {
+            outline: none;
+         border: solid 1px #00000073;
+          }
+          
+          .input-field input:focus ~ label,
+          .input-field input:valid ~ label {
+            transform: translateY(-51%) translateX(-10px) scale(0.8);
+            background-color: #fff;
+            padding: 0px 5px;
+            color: #F15B29;
+            font-weight: bold;
+            letter-spacing: 1px;
+            border: none;
+            border-radius: 100px;
+          }
+
+        select , textarea{
+            padding: 5px 10px;
+            border: 1px solid #CCCCCC;
+            margin: 2px 0;
+            margin-right: 10px;
+            border-radius: 10px;
+            width: 100%;
+        }
+        
+        .cursor-pointer {
+            background-color: black;
+            color: white;
+        }
+
+        .marquee-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.marquee-text {
+  display: inline-block;
+  white-space: nowrap;
+  animation: scroll-left 40s linear infinite;  /* Adjust speed here */
+}
+
+.marquee-text:hover {
+  animation-play-state: paused;  /* Pause on hover */
+}
+
+
+
+    }
+    @keyframes scroll-left {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+    /* @media screen and  (max-width: 769px) {
+       .formgrid {
+            background-color: #0034de;
+        }
+    }  */

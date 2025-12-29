@@ -1,0 +1,235 @@
+#Event{
+  display: grid;
+  grid-template-columns: 5fr 2fr;
+  gap: 5px;
+  overflow: hidden;
+
+  h2 {
+    text-align: center;
+    color: #f15b29;
+    font-weight: 600;
+    font-size: large;
+  }
+
+  .jobdetails {
+    position: fixed;
+    background-color: rgb(0, 0, 0, 0.5);
+    height: 100%;
+    width: 100%;
+    padding: 20px;
+
+    .jobdetailsdiv {
+      overflow-y: scroll; 
+      scrollbar-width: none; 
+      background-color: white;
+      height: calc(100vh - 120px);
+      width: 80%;
+      padding: 10px;
+      .title {
+        display: flex;
+        font-weight: 600;
+        font-size: 18px;
+        color: #f15b29;
+        justify-content: space-between;
+
+        span {
+          cursor: pointer;
+        }
+      }
+
+      table {
+        width: 100%;
+        text-align: center;
+        font-size: 14px;
+    
+      }
+      td {
+        padding: 5px;
+      }
+      tr {
+        border: 1px solid rgb(0, 0, 0, 0.3);
+      }
+    }
+  }
+
+  .form {
+    position: fixed;
+    background-color: rgb(0, 0, 0, 0.5);
+    height: 100%;
+    width: 100%;
+    padding: 10px;
+    z-index: 999;
+
+
+
+    form {
+      padding: 10px;
+      border-radius: 10px;
+      margin: auto;
+      background-color: rgb(255, 255, 255);
+      max-width: 500px;
+      font-size: 14px;
+      margin-bottom: 40px;
+      
+      span {
+        float: right;
+        padding: 5px;
+        margin-bottom: 20;
+        cursor: pointer;
+      }
+    }
+
+    h2 {
+      text-align: center;
+      color: #f15b29;
+      font-size: 20px;
+      font-weight: 600;
+    }
+    textarea {
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #cccccc;
+      width: 100%;
+      height: 200px;
+      margin: 3px 0;
+      resize: none;
+    }
+
+    input , select {
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #cccccc;
+      width: 100%;
+      margin: 2px 0;
+    }
+    input:focus {
+      outline: none;
+    }
+    textarea:focus {
+      outline: none;
+    }
+
+    .cursor-pointer {
+      background-color: black;
+      color: white;
+    }
+  }
+
+  .coursetable {
+    padding: 5px;
+    height: calc(100vh - 71px);
+    border-right: 1px solid rgb(0, 0, 0, 0.3);
+    overflow: auto;
+    scrollbar-width:none;
+    .qanda{
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      overflow-y: auto;
+      scrollbar-width:none;
+
+    }
+
+    h1 {
+      text-align: center;
+      color: #f15b29;
+      font-size: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #f15b29;
+      font-weight: 600;
+      font-size: 12px;
+    }
+    > div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 5px 0;
+
+      h1,
+      h2 {
+        color: #f15b29;
+        font-weight: 600;
+      }
+    }
+    span {
+      cursor: pointer;
+      font-weight: 600;
+      border: 1px solid grey;
+      padding: 5px;
+      border-radius: 5px;
+    }
+    span:hover {
+      color: #f15b29;
+    }
+    table {
+      width: 100%;
+      text-align: center;
+      border-collapse: collapse;
+      button {
+        color: rgb(0, 0, 0);
+        padding: 5px 10px;
+        border-radius: 5px;
+        margin: 3px;
+        cursor: pointer;
+        font-size: 20px;
+      }
+      button:hover {
+        background-color: #eee;
+      }
+    }
+
+    table,
+    td,
+    th {
+      border: 1px solid rgb(0, 0, 0, 0.3);
+      padding: 3px;
+
+    }
+    th {
+      background-color: grey;
+      color: white;
+    }
+
+  }
+}
+
+
+
+.eventheight{
+height: calc(100vh - 120px);
+background-image: url("../assets/quiz.jpg");
+background-size: cover;
+background-repeat: no-repeat;
+background-position: center;
+
+.scrollbar-hidden{
+  overflow-y: auto;
+  scrollbar-width:none;
+}
+
+.profile{
+  display: grid;
+  grid-template-columns: 1fr 2.5fr;
+}
+}
+
+.startquiz{
+background-image: url("../assets/startquiz.jpg");
+background-size: cover;
+background-repeat: no-repeat;
+background-position: center;
+}
+
+
+@media screen and (max-width: 600px) {
+  .profile{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+

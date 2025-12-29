@@ -1,0 +1,388 @@
+#MasterClass {
+  background-color: black;
+  color: white;
+
+  .masterclassherosection{
+    background-color: #d44414;
+    margin: auto;
+
+    img{
+      width: 100%;
+    }
+  }
+
+  /* .masterclasshero {
+    max-width: 1500px;
+    display: flex;
+    gap: 0.3rem;
+    aspect-ratio: 5/2;
+    margin: 0 auto;
+    padding: 20px 10px;
+
+    .radio {
+      display: none;
+    }
+
+    .content {
+      background: transparent;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      border-radius: 20px;
+      cursor: pointer;
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+      transition: all 0.5s cubic-bezier(0.05, 0.6, 0.39, 0.94);
+    }
+
+    .card-title,
+    .title-card {
+      opacity: 0;
+    }
+
+    .radio:checked + .content {
+      border-radius: 1rem;
+      flex: 15;
+    }
+
+    .radio:checked + .content > .card-title,
+    .radio:checked + .content > .title-card {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  } */
+
+  .aboutwhy {
+    padding: 30px 10px 50px 10px;
+    max-width: 1500px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 50px;
+    text-align: center;
+
+    .about {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      p {
+        line-height: 1.1;
+      }
+    }
+
+    .why {
+      > div {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+
+        .item {
+          background-color: rgb(255, 255, 255, 0.1);
+          border-radius: 10px;
+          padding: 10px 20px;
+          i {
+            font-size: 30px;
+          }
+        }
+      }
+    }
+  }
+
+  .classess {
+    border-top: 1px solid rgb(255, 255, 255, 0.2);
+    padding: 50px 10px;
+    >h1{
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    > div {
+      max-width: 1500px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin: auto;
+    }
+
+    .item {
+      border: 1px solid rgb(255, 255, 255, 0.2);
+      border-radius: 10px;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        aspect-ratio: 5 / 2;
+      }
+
+      .text {
+        padding: 10px;
+
+        .content {
+          padding-bottom: 10px;
+          border-bottom: 1px solid rgb(255, 255, 255, 0.2);
+
+          h2 {
+            font-size: 20px;
+            font-weight: 600;
+          }
+        }
+
+        .register {
+          padding-top: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          button {
+            background-color: rgb(242, 91, 41);
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 10px;
+          }
+        }
+      }
+    }
+  }
+
+  #registrationform {
+    padding: 10px;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .form {
+      padding: 20px;
+      color: rgb(0, 0, 0);
+      background-color: rgba(255, 255, 255, 0.95);
+      margin: auto auto;
+      border: 1px solid #000000;
+      border-radius: 10px;
+      max-width: 500px;
+      -webkit-animation: animatezoom 0.6s;
+      animation: animatezoom 0.6s;
+
+      .title {
+        text-align: center;
+        font-style: italic;
+        color: rgb(242, 91, 41);
+        font-weight: 600;
+      }
+    }
+
+    .close {
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+
+      span:hover {
+        color: rgb(242, 91, 41);
+        cursor: pointer;
+      }
+    }
+
+    form {
+      padding: 10px 0;
+
+      input {
+        padding: 5px 10px;
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 5px;
+      }
+
+      .submitbtn {
+        background-color: black;
+        color: white;
+        cursor: pointer;
+      }
+
+      p {
+        margin-top: 10px;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1;
+
+        span {
+          color: red;
+        }
+      }
+    }
+  }
+
+  .benifits {
+    padding: 50px 10px;
+    border-top: 1px solid rgb(255, 255, 255, 0.2);
+    border-bottom: 1px solid rgb(255, 255, 255, 0.2);
+    text-align: center;
+    > div {
+      max-width: 1500px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+
+      .item {
+        background-color: rgb(255, 255, 255, 0.1);
+        padding: 10px 20px;
+        border-radius: 10px;
+
+        i {
+          font-size: 50px;
+        }
+        h2 {
+          font-weight: 600;
+          color: blue;
+        }
+      }
+    }
+  }
+
+
+  .industrialtalk {
+    border-bottom: 1px solid rgb(255, 255, 255, 0.2);
+    padding: 50px 10px;
+
+    >h1{
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    > div {
+      max-width: 1500px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin: auto;
+    }
+
+    .item {
+      border: 1px solid rgb(255, 255, 255, 0.2);
+      border-radius: 10px;
+      overflow: hidden;
+
+      iframe {
+        width: 100%;
+        aspect-ratio: 5 / 2;
+      }
+
+      .text {
+        padding: 10px;
+
+        .content {
+          padding-bottom: 10px;
+          border-bottom: 1px solid rgb(255, 255, 255, 0.2);
+
+          h2 {
+            font-size: 20px;
+            font-weight: 600;
+          }
+
+          span{
+            color: red;
+            font-weight: 600;
+          }
+        }
+      }
+    }
+  }
+
+
+
+  .certificateparticipate {
+    padding: 50px 10px;
+    max-width: 1500px;
+    margin: auto;
+    text-align: center;
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(2, 1fr);
+    align-items: center;
+
+    img {
+      width: 100%;
+      height: auto;
+      border-radius: 0 60px 0 0;
+    }
+  }
+  @media (max-width: 800px) {
+    .classess > div,
+    .industrialtalk > div,
+    .aboutwhy,
+    .certificateparticipate,
+    .benifits > div {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .popularcourse {
+    padding: 50px 10px;
+    border-top: 1px solid rgb(255, 255, 255, 0.2);
+
+    h1 {
+      text-align: center;
+    }
+
+    .clients {
+      max-width: 1500px;
+      margin: auto;
+      margin-top: 30px;
+      overflow: hidden;
+    }
+
+    .container1 {
+      max-width: 1500px;
+      min-width: 1500px;
+
+      .course {
+        cursor: grab;
+        padding: 10px;
+
+        > div {
+          background-color: rgb(0, 0, 0);
+          border-radius: 10px;
+          border: 1px solid rgb(255, 255, 255, 0.5);
+
+          img {
+            width: 100%;
+            height: 200px;
+            border-radius: 10px 10px 0 0;
+          }
+
+          > div {
+            padding: 5px;
+
+            h2 {
+              font-size: 18px;
+            }
+
+            span {
+              color: #f15b29;
+            }
+          }
+
+          .btn {
+            font-weight: 600;
+            color: #f15b29;
+            margin-top: 10px;
+          }
+        }
+      }
+    }
+  }
+
+  .faqsection {
+    padding: 30px 10px;
+    background-color: white;
+    color: #000000;
+  }
+}

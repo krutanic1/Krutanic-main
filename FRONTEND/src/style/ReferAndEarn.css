@@ -1,0 +1,348 @@
+#refer-and-earn{
+     
+
+    .container-refer-and-earn{
+        background-image: url('../assets/referandearn.jpg');
+        background-size: cover;
+        background-position: center;
+        min-height: 600px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0% 10px;
+
+        .refer-and-earn-content{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            color: #fff;
+
+            h2{
+                font-size: clamp(30px , 5vw, 60px);
+                font-weight: bold;
+                text-align: center;
+            }
+            p{
+                text-align: center;
+                max-width: 700px;
+            }
+
+            .btn{
+                display: flex;
+                gap: 20px;
+
+                .refer-button, .eligible-button {
+                    padding: 10px 20px;
+                    font-size: 16px;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    transition: background-color 0.3s ease;
+
+                    &.refer-button {
+                        background-color: #ff5722;
+                        color: #fff;
+                    }
+
+                    &.eligible-button {
+                        background-color: #050505;
+                        color: #fff;
+                    }
+
+                    &:hover {
+                        opacity: 0.8;
+                    }
+                }
+            }
+        }
+    }
+    
+    .container_How_It_Works{
+        padding: 50px 10px;
+        background-color: black;
+        color: white;
+        .how_it_works_content{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+
+            h2{
+                font-size: clamp(30px , 5vw, 60px);
+                font-weight: bold;
+                /* text-align: center; */
+            }
+            p{
+                text-align: center;
+                max-width: 700px;
+            }
+
+            .steps{
+                display: flex;
+                gap: 30px;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: center;
+               
+                /* background-color: red; */
+
+                .step{
+                    display: flex;
+                    flex-direction: column;
+                    border: 1px solid #ff5722;
+                    border-radius: 10px;
+                    padding: 20px;
+                    min-width: 350px;
+                    align-items: start;
+                    gap: 10px;
+                    /* background-color: aqua; */
+
+                    i{
+                        color: #ff5722;
+                        font-size: 20px;
+                    }
+                }
+            }
+        }
+
+    }
+
+    .container_referral_Reward_Breakdown{
+        padding: 50px 10px;
+        background-color: black;
+        color: white;
+
+        .referral_reward_breakdown_content{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            
+            h2{
+                font-size: clamp(30px , 5vw, 50px);
+                font-weight: bold;
+                text-align: center;
+            }
+
+            table{
+                border-collapse: collapse;
+                width: 100%;
+                max-width: 800px;
+                margin: 20px 0;
+                th, td{
+                    border: 1px solid #dddddd31;
+                    padding: 8px;
+                    text-align: center;
+                }
+                th{
+                    background-color: #080808;
+                    color: white;
+                }
+            }
+        }
+    }
+    
+    .why_refer{
+        padding: 50px 10px;
+        background-color: black;
+        color: white;
+
+        .why_refer_content{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+
+            h2{
+                font-size: clamp(30px , 5vw, 50px);
+                font-weight: bold;
+                text-align: center;
+            }
+            p{
+                text-align: center;
+                max-width: 700px;
+            }
+
+            .benefits{
+                display: flex;
+                gap: 30px;
+                flex-wrap: wrap;
+                justify-content: center;
+
+                .benift_box{
+                    display: flex;
+                    flex-direction: column;
+                    background-color: #080808;
+                    border: 1px solid #a8a8a85e;
+                    border-radius: 10px;
+                    padding: 20px 10px;
+                    min-width: 350px;
+                    align-items: center;
+                    gap: 10px;
+
+                    i{
+                        color: #ff5722;
+                        font-size: 20px;
+                    }
+                    p{
+                        color: #e7dede;
+                    }
+                }
+            }
+        }
+
+
+    }
+
+    .container_form{
+        background-color: black;
+        color: white;
+        padding: 50px 10px;
+
+        .form_content{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+
+            h2{
+                font-size: clamp(30px , 5vw, 50px);
+                font-weight: bold;
+                text-align: center;
+            }
+            p{
+                text-align: center;
+                max-width: 700px;
+            }
+
+            span{
+                i{
+                    color: #ff5722;
+                    font-size: 20px;
+                }
+                color: gray;
+            }
+
+            .form{
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+                width: 100%;
+                max-width: 600px;
+
+                input, select{
+                    padding: 10px;
+                    margin-bottom: 8px;
+                    border-radius: 5px;
+                    background: transparent;
+                    border: 1px solid #dddddd50;
+                    color: white;
+                    background-color: #080808;
+                    width: 100%;
+                    font-size: 16px;
+                }
+
+                button{
+                    padding: 10px;
+                    background-color: #ff5722;
+                    color: white;
+                    border: none;
+                    width: 100%;
+                    font-weight: 600;
+                    border-radius: 5px;
+                    cursor: pointer;
+
+                    &:hover{
+                        opacity: 0.8;
+                    }
+                }
+
+                span{
+                    color: gray;
+                    font-size: 14px;
+                    text-align: center;
+                }
+            }
+        }
+    }
+
+    .frequentlyaskedquestions{
+        background-color: black;
+        color: white;
+        padding: 50px 10px;
+
+        .faq_content{
+            h2{
+                font-size: clamp(30px , 5vw, 50px);
+                font-weight: bold;
+                text-align: center;
+                margin-bottom: 10px;
+
+            }
+        }
+    }
+
+    .trustandtestimonials{
+        padding: 50px 10px;
+
+        .trust_content{
+             h2{
+                font-size: clamp(30px , 5vw, 50px);
+                font-weight: bold;
+                text-align: center;
+                margin-bottom: 20px;
+             }
+
+             .testimonials__box{
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 20px;
+
+                .testimonial{
+                    background-color: #080808;
+                    color: white;
+                    border: 1px solid #a8a8a85e;
+                    border-radius: 10px;
+                    padding: 20px;
+                    max-width: 600px;
+                    text-align: center;
+
+                    p{
+                        color: #e7dede;
+                        font-size: 16px;
+                        margin-bottom: 10px;
+                        text-align: start;
+                    }
+
+                    .profile{
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                       
+                        h4{
+                            font-size: 18px;
+                            font-weight: bold;
+                        }
+                        span{
+                            i{
+                                color: #f1d417c4;
+                                font-size: 16px;
+                                text-align: start;
+                            }
+                        }
+                    }
+
+                }
+             }
+        }
+    }
+
+    
+}

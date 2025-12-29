@@ -1,0 +1,148 @@
+#advance{
+  position: relative;
+  color: white;
+  background-color: black;
+
+    .width{
+      max-width: 1500px;
+      margin: auto;
+    }
+
+
+    .advance {
+        overflow: hidden;
+        white-space: nowrap;
+        position: relative;
+        border-radius: 20px;
+      }
+      
+      .advance:before, .advance:after {
+        position: absolute;
+        top: 0;
+        content: '';
+        width: 250px;
+        height: 100%;
+        z-index: 2;
+      }
+      
+      .advance:before {
+        left: 0;
+        background: linear-gradient(to left, rgba(255, 255, 255, 0), rgba(0, 0, 0, 0.874));
+      }
+      
+      .advance:after {
+        right: 0;
+        background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(0, 0, 0, 0.874));
+      }
+      
+      .advanceimg {
+        display: flex;
+        animation: slide 7s infinite linear;
+        will-change: transform;
+      }
+      
+      .advanceimg > div {
+        flex: 0 0 auto;
+        transition: transform 0.3s ease-out;
+      }
+      
+      .advance:hover .advanceimg {
+        animation-play-state: paused;
+      }
+      
+ 
+      .swiper {
+        position: relative;
+        width: 400px;
+        height: 490px;
+      }
+      
+      .swiper-slide {
+        position: relative;
+        user-select: none;
+        border-radius: 20px;
+        
+      }
+    
+      .swiper-slide img {
+        width: 100%;
+        height: 100%;
+        border-radius: 20px;
+        object-fit: cover;
+        object-position: center;
+      }
+      
+    
+      @media (max-width: 1050px) {
+        .swiper {
+          width: 350px;
+          height: 450px;
+        }
+      }
+      
+      @media (max-width: 930px) {
+  
+        .swiper {
+          grid-area: slider;
+        }
+    
+      }
+      
+      @media (max-width: 470px) {
+
+        .swiper {
+          width: 300px;
+          height: 400px;
+        }
+      }
+      
+      
+}
+
+.provide1 {
+  border-radius: 10px;
+  padding: 10px 10px;
+
+  span {
+    font-size: 50px;
+  }
+}
+
+.provide1:hover {
+  box-shadow: 0px 0px 10px 0px rgb(255, 255, 255, 0.2);
+}
+
+  /*-----------------------roadmap section---------------------------  */
+  .roadmap{
+    background-color: white;
+    padding:0 10px;
+     
+    h1{
+      color: #f15b29;
+      font-weight: 600;
+      text-align: center;
+      padding: 20px 0 0 0;
+    }
+    >div{
+      color: #000000;
+      max-width: 1200px;
+      margin: auto;
+
+    }
+  }
+  
+
+@keyframes slide {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  @media (max-width: 764px) {
+    #hidden{
+      display: none;
+    }
+  }

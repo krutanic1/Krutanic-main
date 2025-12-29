@@ -1,0 +1,127 @@
+#loginpage{
+  /* height: 50vh; */
+  padding:100px 0;
+  background: linear-gradient(0deg, rgba(255,255,255,1) 5%, rgba(0,0,0,1) 100%);
+
+  .loginform{
+    position: relative;
+    width:fit-content;
+    /* width: 400px; */
+    background-color: rgb(255, 255, 255);
+    /* border: 1px solid rgb(0, 0, 0,0.2); */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    padding:20px 20px;
+    margin: auto;
+    
+
+    h2{
+      text-align: center;
+      font-size: 30px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    p{
+      text-align: center;
+    }
+   
+    form{
+      font-weight: bold;
+      div{
+        margin-bottom: 5px;
+      }
+    }
+
+    input {
+      width: 100%;
+      margin-bottom: 5px;
+      font-weight: 100;
+      border: 1px solid rgb(0, 0, 0,0.2);
+      border-radius: 5px;
+      padding: 10px 10px;
+      color: rgb(0, 0, 0,0.6);
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3),
+
+    }
+    input:focus {
+      outline: none; 
+  }
+     
+    button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px 10px;
+      background-color: #000000;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .loginwith{
+      text-align: right;
+      font-weight: 600;
+
+    }
+
+
+  }
+  
+ 
+  
+  
+  
+  .error {
+
+   position: fixed;
+   width: 100%;
+    top: 75px; 
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    transform: translateY(-100px);
+      animation: fadeInUp 1s forwards;
+
+    p{
+      background-color: rgb(255, 0, 0,0.9);
+      border-radius: 10px;
+      margin: auto;
+      width: fit-content;
+      color: rgb(0, 0, 0);
+      padding: 10px 20px;
+      font-size: 14px;
+
+    }
+
+
+  }
+}
+
+.input-field {
+  position: relative;
+}
+
+.input-field label {
+  position: absolute;
+  color: #8d8d8d;
+  pointer-events: none;
+  background-color: transparent;
+  left: 15px;
+  transform: translateY(0.6rem);
+  transition: all 0.3s ease;
+}
+.input-field input:focus,
+.input-field input:valid {
+  outline: none;
+border: solid 1px #00000073;
+}
+
+.input-field input:focus ~ label,
+.input-field input:valid ~ label {
+  transform: translateY(-51%) translateX(-10px) scale(0.8);
+  background-color: #fff;
+  padding: 0px 5px;
+  color: #F15B29;
+  font-weight: bold;
+  letter-spacing: 1px;
+  border: none;
+  border-radius: 100px;
+}

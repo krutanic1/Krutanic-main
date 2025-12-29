@@ -1,0 +1,73 @@
+#verified {
+  .hero {
+    text-align: center;
+    background-color: rgba(0, 0, 0);
+    color: #fff;
+    padding: 60px 20px;
+
+    h1 {
+      font-size: 50px;
+      font-weight: 600;
+
+      span {
+        color: #f15b29;
+      }
+    }
+  }
+
+  .form {
+    padding: 60px 20px;
+
+    form {
+      border: 1px solid grey;
+      max-width: 600px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      border-radius: 20px;
+      padding: 30px;
+
+      input {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        &:focus {
+          outline: none;
+        }
+      }
+    }
+  }
+  .result{
+    padding: 20px;
+
+    .result-card{
+        /* background-color: green; */
+        padding: 20px;
+        max-width:600px;
+        margin: auto;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        h2 {
+          font-size: 24px;
+          color: #333;
+        }
+        p {
+          font-size: 18px;
+          color: #666;
+        }
+        a {
+          text-decoration: none;
+          color: #f15b29;
+          font-weight: bold;
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+    }
+  }
+
+}
