@@ -28,18 +28,18 @@ router.post("/createbda", async (req, res) => {
 
 // GET request to retrieve all bda accounts
 router.get("/getbda", async (req, res) => {
-  const {bdaId} = req.query;
+  const { bdaId } = req.query;
   try {
     let bda;
-    if(bdaId){
-       bda = await CreateBDA.findById(bdaId);
-       if (!bda) {
+    if (bdaId) {
+      bda = await CreateBDA.findById(bdaId);
+      if (!bda) {
         return res.status(404).json({ message: "Bda not found for the given bdaId" });
       }
-    }else{
-       bda = await CreateBDA.find().sort({ _id: -1 });
+    } else {
+      bda = await CreateBDA.find().sort({ _id: -1 });
     }
-   
+
     res.status(200).json(bda);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -50,10 +50,10 @@ router.get("/getbda", async (req, res) => {
 router.put("/updatebda/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { fullname, email, password , team, teams, designation } = req.body;
+    const { fullname, email, password, team, teams, designation } = req.body;
     const updatedbda = await CreateBDA.findByIdAndUpdate(
       id,
-      { fullname, email, password , team, teams: teams || [], designation },
+      { fullname, email, password, team, teams: teams || [], designation },
       { new: true }
     );
     if (!updatedbda) {
@@ -126,15 +126,15 @@ router.put("/deletetarget/:id", async (req, res) => {
       id,
       { $pull: { target: target } },
       { new: true }
-      );
+    );
     if (!updatedBDA) {
       return res.status(404).json({ error: "BDA not found" });
-      }
-      res.status(200).json(updatedBDA);
-    } catch (error) {
-      res.status(400).json({ error: "Error deleting target" });
-      }
-  });
+    }
+    res.status(200).json(updatedBDA);
+  } catch (error) {
+    res.status(400).json({ error: "Error deleting target" });
+  }
+});
 
 
 //Send OTP to BDA Email
@@ -145,15 +145,15 @@ router.post("/bdasendotp", async (req, res) => {
     if (!bda) {
       return res.status(404).json({ message: "BDA not found" });
     }
-     
-     if (bda.status === "Inactive") {
+
+    if (bda.status === "Inactive") {
       return res.status(403).json({ message: "Access denied. Your account is inactive." });
     }
 
     const otp = crypto.randomInt(100000, 1000000);
 
-      // Send OTP via Email
-         const emailMessage = `
+    // Send OTP via Email
+    const emailMessage = `
            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
           <div style="background-color: #F15B29; color: #fff; text-align: center; padding: 20px;">
               <h1>Krutanic</h1>
@@ -170,12 +170,12 @@ router.post("/bdasendotp", async (req, res) => {
           </div>
       </div>
       `;
-     
 
-    bda.otp = otp; 
+
+    bda.otp = otp;
     await Promise.all([
-        bda.save(),
-        sendEmail({ email , subject : "Bda Login Credentials" ,  message: emailMessage }),
+      bda.save(),
+      sendEmail({ email, subject: "Bda Login Credentials", message: emailMessage }),
     ]);
     res.status(200).json({ message: "OTP sent to your email!" });
   } catch (error) {
@@ -197,7 +197,7 @@ router.post("/bdaverifyotp", async (req, res) => {
       return res.status(400).json({ message: "Invalid OTP" });
     }
 
-     if (bda.status === "Inactive") {
+    if (bda.status === "Inactive") {
       return res.status(403).json({ message: "Access denied. Your account is inactive." });
     }
 
@@ -250,13 +250,15 @@ router.post("/checkbdaauth", async (req, res) => {
 
 //post request to add transaction id
 router.post("/addtransactionid", async (req, res) => {
-  const {transactionId , fullname , counselor , option} = req.body;
+  const { transactionId, fullname, counselor, option, executiveId, executiveName } = req.body;
   try {
     const AddTransactionId = new TransactionId({
       transactionId,
       fullname,
       counselor,
-      lead: option,
+      // lead field is NOT set - BDA directly assigns to executive, bypassing leader
+      executiveId: executiveId,
+      executive: executiveName,
     });
     await AddTransactionId.save();
     res.status(201).json(AddTransactionId);
@@ -281,19 +283,19 @@ router.get("/gettransactionid", async (req, res) => {
 // GET request to retrieve all transaction ids with name 
 router.get("/gettransactionwithname", async (req, res) => {
   try {
-   const transactions = await TransactionId.find();
-   const transactionList = transactions.map(item => item.transactionId);
-   const counselorList = transactions.map(item => item.counselor);
-   const lead = transactions.map(item => item.lead);
-   
-   res.status(200).json({
-     transaction: transactionList,
-     counselor: counselorList,
-     lead: lead
-   });
- }
- catch (error) {
-   res.status(400).json({ message: error.message });
+    const transactions = await TransactionId.find();
+    const transactionList = transactions.map(item => item.transactionId);
+    const counselorList = transactions.map(item => item.counselor);
+    const lead = transactions.map(item => item.lead);
+
+    res.status(200).json({
+      transaction: transactionList,
+      counselor: counselorList,
+      lead: lead
+    });
+  }
+  catch (error) {
+    res.status(400).json({ message: error.message });
   }
 }
 );
@@ -384,7 +386,7 @@ router.delete("/delete-target", async (req, res) => {
 router.put("/updateaccess/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const {Access } = req.body;
+    const { Access } = req.body;
     // console.log(id , Access);
     const updatedstatus = await CreateBDA.findByIdAndUpdate(
       id,

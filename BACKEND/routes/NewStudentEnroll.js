@@ -3,6 +3,7 @@ const router = express.Router();
 const CreateBDA = require("../models/CreateBDA");
 const NewEnrollStudent = require("../models/NewStudentEnroll");
 const CreateCourse = require("../models/CreateCourse");
+const TransactionId = require("../models/AddTransactionId");
 const mongoose = require("mongoose");
 
 router.post("/newstudentenroll", async (req, res) => {
@@ -45,6 +46,24 @@ router.post("/newstudentenroll", async (req, res) => {
         .json({ message: "You have already submitted your details." });
     }
 
+    // Lookup executive assignment from AddTransactionId table
+    const transactionRecord = await TransactionId.findOne({ transactionId: email });
+    let executiveId = null;
+    let executive = null;
+
+    console.log('=== EXECUTIVE ASSIGNMENT DEBUG ===');
+    console.log('Looking up transaction for email:', email);
+    console.log('Transaction record found:', transactionRecord);
+
+    if (transactionRecord) {
+      executiveId = transactionRecord.executiveId;
+      executive = transactionRecord.executive;
+      console.log('Executive ID:', executiveId);
+      console.log('Executive Name:', executive);
+    } else {
+      console.log('NO TRANSACTION RECORD FOUND FOR EMAIL:', email);
+    }
+
     const newStudent = new NewEnrollStudent({
       fullname,
       email,
@@ -72,10 +91,16 @@ router.post("/newstudentenroll", async (req, res) => {
       referFriend,
       internshipstartsmonth,
       internshipendsmonth,
-      yearOfStudy
+      yearOfStudy,
+      executiveId: executiveId,  // Add executive assignment from BDA
+      executive: executive       // Add executive assignment from BDA
     });
 
+    console.log('Creating new student with executiveId:', newStudent.executiveId);
+    console.log('Creating new student with executive:', newStudent.executive);
+
     await newStudent.save();
+    console.log('Student saved successfully');
     res.status(201).json({ message: "Registration successful!" });
     await convertExcel(newStudent);
   } catch (error) {

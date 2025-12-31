@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const AddTransactionIdSchema = new mongoose.Schema({
     transactionId: {
         type: String,
-        unique: true,  
+        unique: true,
     },
     fullname: {
         type: String,
@@ -11,14 +11,20 @@ const AddTransactionIdSchema = new mongoose.Schema({
     counselor: {
         type: String,
     },
-    lead:{
+    lead: {
+        type: String,
+    },
+    executiveId: {
+        type: String,
+    },
+    executive: {
         type: String,
     },
     createdAt: {
         type: Date,
         default: Date.now,
-      },
-      
+    },
+
 });
 
 module.exports = mongoose.model('AddTransactionId', AddTransactionIdSchema);

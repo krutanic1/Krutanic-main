@@ -1,4 +1,4 @@
-import { Routes, Route, BrowserRouter, useLocation , Navigate } from "react-router-dom";
+import { Routes, Route, BrowserRouter, useLocation, Navigate } from "react-router-dom";
 import Header from "./Components/Header";
 import HomePage from "./page/landing";
 import ContactUs from "./page/ContactUs";
@@ -53,6 +53,7 @@ import AlumniData from "./Admin/AlumniData";
 import InactiveBda from "./Admin/InactiveBda";
 import ReferAndEarnResponse from "./Admin/ReferAndEarnResponse";
 import CreateMarketingTeam from "./Admin/CreateMarketingTeam";
+import AdminMarketingLeads from "./Admin/AdminMarketingLeads";
 
 // Operation Team
 import OperationLogin from "./Operation/OperationLogin";
@@ -120,7 +121,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <AppContent />
-      </BrowserRouter>
+    </BrowserRouter>
   );
 };
 
@@ -187,7 +188,8 @@ const AppContent = () => {
     "/alumnidata",
     "/inactivebda",
     "/referandearnresponse",
-    "/createmarketingteam"
+    "/createmarketingteam",
+    "/adminmarketingleads"
 
   ];
 
@@ -232,19 +234,19 @@ const AppContent = () => {
   const placementcoodinatorHeaderPaths = [
     "/pcdashboard",
     "/jobpost",
-   
+
   ];
 
-  const lmsFooterPaths = ['/dashboard','/enrolledcourses','/learning','/setting','/jobboard','/myjob'];
+  const lmsFooterPaths = ['/dashboard', '/enrolledcourses', '/learning', '/setting', '/jobboard', '/myjob'];
 
-  const isAuthenticated = () =>!!localStorage.getItem("token");
+  const isAuthenticated = () => !!localStorage.getItem("token");
   const isAuthenticatedBda = () => !!localStorage.getItem("bdaToken");
   const isAuthenticatedOperation = () => !!localStorage.getItem("operationToken");
   const isAuthenticatedAdmin = () => !!localStorage.getItem("adminToken");
 
   const isAuthenticatedPC = () => !!localStorage.getItem("pctoken");
-  const isAuthenticatedEventUser = () =>!!localStorage.getItem("eventToken");
-  const isAuthenticatedMarketing = () =>!!localStorage.getItem("marketingToken");
+  const isAuthenticatedEventUser = () => !!localStorage.getItem("eventToken");
+  const isAuthenticatedMarketing = () => !!localStorage.getItem("marketingToken");
 
   return (
     <div>
@@ -254,7 +256,7 @@ const AppContent = () => {
       {adminheaderPaths.includes(location.pathname.toLowerCase()) && (<AdminHeader />)}
       {operationheaderPaths.includes(location.pathname.toLowerCase()) && (<OperationHeader />)}
       {marketingheaderPaths.includes(location.pathname.toLowerCase()) && (<MarketingHeader />)}
-      {bdaheaderPaths.includes(location.pathname.toLowerCase()) && ( <BDAHeader />)}
+      {bdaheaderPaths.includes(location.pathname.toLowerCase()) && (<BDAHeader />)}
       {userheaderPaths.includes(location.pathname.toLowerCase()) && (<UserHeader />)}
       {placementcoodinatorHeaderPaths.includes(location.pathname.toLowerCase()) && <PCHeader />}
 
@@ -282,39 +284,40 @@ const AppContent = () => {
         <Route path="/PromptEngineering" element={<PromptEngineering />} />
         <Route path="/DashboardAccessForm" element={<DashboardAccessForm />} />
         <Route path="/MasterClass" element={<MasterClass />} />
-        <Route path="/Alumni" element={<Alumni/>} />
-        <Route path="/Verify" element={<Verified/>} />
-        <Route path="/ReferAndEarn" element={<ReferAndEarn/>} />
+        <Route path="/Alumni" element={<Alumni />} />
+        <Route path="/Verify" element={<Verified />} />
+        <Route path="/ReferAndEarn" element={<ReferAndEarn />} />
 
         {/* Admin Panel Start */}
         <Route path="/AdminLogin" element={<AdminLogIn />} />
         <Route path="/LoginAdmin" element={<LoginAdmin />} />
-        <Route path="/AdminDashboard" element={isAuthenticatedAdmin()? <AdminDashboard/> : <Navigate to="/AdminLogin"/>} />
-        <Route path="/AddCourse" element={isAuthenticatedAdmin()? <AddCourse /> : <Navigate to="/AdminLogin"/>} />
-        <Route path="/AddModule" element={isAuthenticatedAdmin()? <AddModule /> : <Navigate to="/AdminLogin"/>} />
-        <Route path="/CreateOperation" element={isAuthenticatedAdmin()? <CreateOperation /> : <Navigate to="/AdminLogin"/>} />
-        <Route path="/CreateBDA" element={isAuthenticatedAdmin()? <CreateBDA /> : <Navigate to="/AdminLogin"/>} />
-        <Route path="/PendingApplication" element={isAuthenticatedAdmin()? <PendingApplication /> : <Navigate to="/AdminLogin"/>} />
-        <Route path="/AcceptedApplication" element={isAuthenticatedAdmin()? <AcceptedApplication /> : <Navigate to="/AdminLogin"/>} />
-        <Route path="/BookedList" element={isAuthenticatedAdmin()? <BookedList /> : <Navigate to="/AdminLogin"/>} />
-        <Route path="/HalfPayment" element={isAuthenticatedAdmin()? <HalfPayment /> : <Navigate to="/AdminLogin"/>} />
-        <Route path="/DefaultList" element={isAuthenticatedAdmin()? <DefaultList /> : <Navigate to="/AdminLogin"/>} />
-        <Route path="/FullPaidList" element={isAuthenticatedAdmin()? <FullPaidList /> : <Navigate to="/AdminLogin"/>} />
-        <Route path="/AdvanceQueries" element={isAuthenticatedAdmin()? <AdvanceQueries /> : <Navigate to="/AdminLogin"/>} />
-        <Route path="/MentorQueries" element={isAuthenticatedAdmin()? <MentorQueries /> : <Navigate to="/AdminLogin"/>} />
-        <Route path="/CreateManager" element={isAuthenticatedAdmin()? <Createmanager /> : <Navigate to="/AdminLogin"/>} />
-        <Route path="/RevenueSheet" element={isAuthenticatedAdmin()? <RevenueSheet /> : <Navigate to="/AdminLogin"/>} />
-        <Route path="/OnBoardingDetails" element={isAuthenticatedAdmin()? <OnBoardingDetails /> : <Navigate to="/AdminLogin"/>} />
-        <Route path="/AllTeamDetail" element={isAuthenticatedAdmin()? <AllTeamDetail /> : <Navigate to="/AdminLogin"/>} />
-        <Route path="/CreatePlacementCoordinator" element={isAuthenticatedAdmin() ? (<CreatePlacementCoordinator />) : (<Navigate to="/AdminLogin" />)}/>
-        <Route path="/MasterClasses" element={isAuthenticatedAdmin() ? (<MasterClasses />) : (<Navigate to="/AdminLogin" />)}/>
-        <Route path="/AddEvent" element={isAuthenticatedAdmin() ? (<AddEvent />) : (<Navigate to="/AdminLogin" />)}/>
-        <Route path="/EventRegistration" element={isAuthenticatedAdmin() ? (<EventRegistration />) : (<Navigate to="/AdminLogin" />)}/>
-        <Route path="/Target" element={isAuthenticatedAdmin() ? (<Target/>) : (<Navigate to="/AdminLogin" />)}/>
-        <Route path="/AlumniData" element={isAuthenticatedAdmin() ? (<AlumniData/>) : (<Navigate to="/AdminLogin" />)}/>
-        <Route path="/InactiveBda" element={isAuthenticatedAdmin() ? (<InactiveBda/>) : (<Navigate to="/AdminLogin" />)}/>
-        <Route path="/ReferAndEarnResponse" element={isAuthenticatedAdmin() ? (<ReferAndEarnResponse/>) : (<Navigate to="/AdminLogin" />)}/>
-        <Route path="/CreateMarketingTeam" element={isAuthenticatedAdmin() ? (<CreateMarketingTeam/>) : (<Navigate to="/AdminLogin" />)}/>
+        <Route path="/AdminDashboard" element={isAuthenticatedAdmin() ? <AdminDashboard /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/AddCourse" element={isAuthenticatedAdmin() ? <AddCourse /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/AddModule" element={isAuthenticatedAdmin() ? <AddModule /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/CreateOperation" element={isAuthenticatedAdmin() ? <CreateOperation /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/CreateBDA" element={isAuthenticatedAdmin() ? <CreateBDA /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/PendingApplication" element={isAuthenticatedAdmin() ? <PendingApplication /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/AcceptedApplication" element={isAuthenticatedAdmin() ? <AcceptedApplication /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/BookedList" element={isAuthenticatedAdmin() ? <BookedList /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/HalfPayment" element={isAuthenticatedAdmin() ? <HalfPayment /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/DefaultList" element={isAuthenticatedAdmin() ? <DefaultList /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/FullPaidList" element={isAuthenticatedAdmin() ? <FullPaidList /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/AdvanceQueries" element={isAuthenticatedAdmin() ? <AdvanceQueries /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/MentorQueries" element={isAuthenticatedAdmin() ? <MentorQueries /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/CreateManager" element={isAuthenticatedAdmin() ? <Createmanager /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/RevenueSheet" element={isAuthenticatedAdmin() ? <RevenueSheet /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/OnBoardingDetails" element={isAuthenticatedAdmin() ? <OnBoardingDetails /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/AllTeamDetail" element={isAuthenticatedAdmin() ? <AllTeamDetail /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/CreatePlacementCoordinator" element={isAuthenticatedAdmin() ? (<CreatePlacementCoordinator />) : (<Navigate to="/AdminLogin" />)} />
+        <Route path="/MasterClasses" element={isAuthenticatedAdmin() ? (<MasterClasses />) : (<Navigate to="/AdminLogin" />)} />
+        <Route path="/AddEvent" element={isAuthenticatedAdmin() ? (<AddEvent />) : (<Navigate to="/AdminLogin" />)} />
+        <Route path="/EventRegistration" element={isAuthenticatedAdmin() ? (<EventRegistration />) : (<Navigate to="/AdminLogin" />)} />
+        <Route path="/Target" element={isAuthenticatedAdmin() ? (<Target />) : (<Navigate to="/AdminLogin" />)} />
+        <Route path="/AlumniData" element={isAuthenticatedAdmin() ? (<AlumniData />) : (<Navigate to="/AdminLogin" />)} />
+        <Route path="/InactiveBda" element={isAuthenticatedAdmin() ? (<InactiveBda />) : (<Navigate to="/AdminLogin" />)} />
+        <Route path="/ReferAndEarnResponse" element={isAuthenticatedAdmin() ? (<ReferAndEarnResponse />) : (<Navigate to="/AdminLogin" />)} />
+        <Route path="/CreateMarketingTeam" element={isAuthenticatedAdmin() ? (<CreateMarketingTeam />) : (<Navigate to="/AdminLogin" />)} />
+        <Route path="/AdminMarketingLeads" element={isAuthenticatedAdmin() ? (<AdminMarketingLeads />) : (<Navigate to="/AdminLogin" />)} />
 
 
 
@@ -322,60 +325,60 @@ const AppContent = () => {
 
         {/* Operation Panel Start */}
         <Route path="/OperationDashboard" element={<OperationDashboard />} />
-        <Route path="/BookedPayment" element={isAuthenticatedOperation()?<BookedPayment />: <Navigate to="/OperationLogin" />} />
-        <Route path="/FullPayment" element={isAuthenticatedOperation()?<FullPayment />: <Navigate to="/OperationLogin" />} />
-        <Route path="/DefaultPayment" element={isAuthenticatedOperation()?<DefaultPayment />: <Navigate to="/OperationLogin" />} />
-        <Route path="/OperationRevenueSheet" element={isAuthenticatedOperation()?<OperationRevenueSheets />: <Navigate to="/OperationLogin" />} />
+        <Route path="/BookedPayment" element={isAuthenticatedOperation() ? <BookedPayment /> : <Navigate to="/OperationLogin" />} />
+        <Route path="/FullPayment" element={isAuthenticatedOperation() ? <FullPayment /> : <Navigate to="/OperationLogin" />} />
+        <Route path="/DefaultPayment" element={isAuthenticatedOperation() ? <DefaultPayment /> : <Navigate to="/OperationLogin" />} />
+        <Route path="/OperationRevenueSheet" element={isAuthenticatedOperation() ? <OperationRevenueSheets /> : <Navigate to="/OperationLogin" />} />
         <Route path="/OperationLogin" element={<OperationLogin />} />
         {/* Operation Panel End */}
 
 
         {/* Marketing Panel */}
         <Route path="/marketing/login" element={<MarketingLogin />} />
-        <Route path="/marketing/home" element={isAuthenticatedMarketing()?<MarketingDashboard />: <Navigate to="/marketing/login" />} />
-        <Route path="/marketing/previous" element={isAuthenticatedMarketing()?<MarketingPrePayment />: <Navigate to="/marketing/login" />} />
-        <Route path="/marketing/leads" element={isAuthenticatedMarketing()?<MarketingLeads />: <Navigate to="/marketing/login" />} />
-        <Route path="/marketing/addexecutive" element={isAuthenticatedMarketing()?<MarketingAddExecutive />: <Navigate to="/marketing/login" />} />
+        <Route path="/marketing/home" element={isAuthenticatedMarketing() ? <MarketingDashboard /> : <Navigate to="/marketing/login" />} />
+        <Route path="/marketing/previous" element={isAuthenticatedMarketing() ? <MarketingPrePayment /> : <Navigate to="/marketing/login" />} />
+        <Route path="/marketing/leads" element={isAuthenticatedMarketing() ? <MarketingLeads /> : <Navigate to="/marketing/login" />} />
+        <Route path="/marketing/addexecutive" element={isAuthenticatedMarketing() ? <MarketingAddExecutive /> : <Navigate to="/marketing/login" />} />
         {/* Marketing Panel */}
 
         {/* bda panel start */}
-          <Route path="/TeamLogin" element={<TeamLogin />} />
-          <Route path="/BDAAgainLogin" element={<BDAAgainLogin/>} />
-          <Route path="/Home" element={ isAuthenticatedBda() ? <Home /> : <Navigate to="/TeamLogin"/>} />
-          <Route path="/FullPaid" element={isAuthenticatedBda() ?<FullPaid /> : <Navigate to="/TeamLogin"/>} />
-          <Route path="/Default" element={isAuthenticatedBda() ?<Default /> : <Navigate to="/TeamLogin"/>} />
-          <Route path="/Booked"element={isAuthenticatedBda() ?<Booked /> : <Navigate to="/TeamLogin"/> }/>
-          <Route path="/OnBoarding" element={isAuthenticatedBda() ?<OnBoarding/> : <Navigate to="/TeamLogin"/> }/>
-          <Route path="/AddUser" element={isAuthenticatedBda() ?<AddUser/> : <Navigate to="/TeamLogin"/> }/>
-          <Route path="/TeamDetail" element={isAuthenticatedBda() ?<TeamDetail/> : <Navigate to="/TeamLogin"/> }/>
-          <Route path="/BDARevenueSheet" element={isAuthenticatedBda() ?<BDARevenueSheet/> : <Navigate to="/TeamLogin"/> }/>
-          <Route path="/Reference" element={isAuthenticatedBda() ?<Reference/> : <Navigate to="/TeamLogin"/> }/>
-          <Route path="/CompanyLeads" element={isAuthenticatedBda() ?<CompanyLeads/> : <Navigate to="/TeamLogin"/> }/>
-          <Route path="/AddTeam" element={isAuthenticatedBda() ?<AddTeam/> : <Navigate to="/TeamLogin"/> }/>
-          <Route path="/AssignTarget" element={isAuthenticatedBda() ?<AssignTarget/> : <Navigate to="/TeamLogin"/> }/>
-          <Route path="/LeaderBoard" element={isAuthenticatedBda() ?<LeaderBoard/> : <Navigate to="/TeamLogin"/> }/>
-         
+        <Route path="/TeamLogin" element={<TeamLogin />} />
+        <Route path="/BDAAgainLogin" element={<BDAAgainLogin />} />
+        <Route path="/Home" element={isAuthenticatedBda() ? <Home /> : <Navigate to="/TeamLogin" />} />
+        <Route path="/FullPaid" element={isAuthenticatedBda() ? <FullPaid /> : <Navigate to="/TeamLogin" />} />
+        <Route path="/Default" element={isAuthenticatedBda() ? <Default /> : <Navigate to="/TeamLogin" />} />
+        <Route path="/Booked" element={isAuthenticatedBda() ? <Booked /> : <Navigate to="/TeamLogin" />} />
+        <Route path="/OnBoarding" element={isAuthenticatedBda() ? <OnBoarding /> : <Navigate to="/TeamLogin" />} />
+        <Route path="/AddUser" element={isAuthenticatedBda() ? <AddUser /> : <Navigate to="/TeamLogin" />} />
+        <Route path="/TeamDetail" element={isAuthenticatedBda() ? <TeamDetail /> : <Navigate to="/TeamLogin" />} />
+        <Route path="/BDARevenueSheet" element={isAuthenticatedBda() ? <BDARevenueSheet /> : <Navigate to="/TeamLogin" />} />
+        <Route path="/Reference" element={isAuthenticatedBda() ? <Reference /> : <Navigate to="/TeamLogin" />} />
+        <Route path="/CompanyLeads" element={isAuthenticatedBda() ? <CompanyLeads /> : <Navigate to="/TeamLogin" />} />
+        <Route path="/AddTeam" element={isAuthenticatedBda() ? <AddTeam /> : <Navigate to="/TeamLogin" />} />
+        <Route path="/AssignTarget" element={isAuthenticatedBda() ? <AssignTarget /> : <Navigate to="/TeamLogin" />} />
+        <Route path="/LeaderBoard" element={isAuthenticatedBda() ? <LeaderBoard /> : <Navigate to="/TeamLogin" />} />
+
 
         {/* bda panel ends */}
 
         {/* User Panel */}
-        <Route path="/Dashboard" element={  isAuthenticated() ? <Dashboard /> : <Navigate to="/login" />} />
-        <Route path="/EnrolledCourses" element={isAuthenticated() ?<EnrolledCourses /> : <Navigate to="/login" />} />
-        <Route path="/Setting" element={isAuthenticated() ?<Setting /> : <Navigate to="/login" />} />
-        <Route path="/Learning" element={isAuthenticated() ?<Learning />: <Navigate to="/login" />} />
+        <Route path="/Dashboard" element={isAuthenticated() ? <Dashboard /> : <Navigate to="/login" />} />
+        <Route path="/EnrolledCourses" element={isAuthenticated() ? <EnrolledCourses /> : <Navigate to="/login" />} />
+        <Route path="/Setting" element={isAuthenticated() ? <Setting /> : <Navigate to="/login" />} />
+        <Route path="/Learning" element={isAuthenticated() ? <Learning /> : <Navigate to="/login" />} />
         {/* User Panel End */}
 
         {/* placement coodinator panel starts */}
         <Route path="/PClogin" element={<PClogin />} />
-        <Route path="/PCDashboard" element={ isAuthenticatedPC()? <PCDashboard /> : <Navigate to="/PClogin" />}/>
-        <Route path="/JobPost"  element={isAuthenticatedPC()? <JobPost /> : <Navigate to="/PClogin" /> }/>
+        <Route path="/PCDashboard" element={isAuthenticatedPC() ? <PCDashboard /> : <Navigate to="/PClogin" />} />
+        <Route path="/JobPost" element={isAuthenticatedPC() ? <JobPost /> : <Navigate to="/PClogin" />} />
         {/* placement coodinator panel ends */}
 
         {/* event */}
-        <Route path="/EventDashboard" element={ isAuthenticatedEventUser() ? <EventDashBoard /> : <Navigate to="/TalentHunt" />} />
+        <Route path="/EventDashboard" element={isAuthenticatedEventUser() ? <EventDashBoard /> : <Navigate to="/TalentHunt" />} />
 
       </Routes>
-     
+
       {headerPaths.includes(location.pathname.toLowerCase()) && <Footer />}
       {lmsFooterPaths.includes(location.pathname.toLowerCase()) && <LmsFooter />}
     </div>
