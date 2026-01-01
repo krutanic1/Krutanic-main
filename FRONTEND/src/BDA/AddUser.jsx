@@ -153,7 +153,7 @@ const AddUser = () => {
                 <td>{transactionId.fullname}</td>
                 <td>{transactionId.transactionId}</td>
                 <td>{transactionId.counselor}</td>
-                <td>{transactionId.executive || 'Not Assigned'}</td>
+                <td>{transactionId.executive || transactionId.lead || 'Not Assigned'}</td>
               </tr>
             ))}
           </tbody>

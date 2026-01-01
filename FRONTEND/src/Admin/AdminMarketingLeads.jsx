@@ -136,10 +136,10 @@ const AdminMarketingLeads = () => {
                         padding: '4px 8px',
                         borderRadius: '4px',
                         fontSize: '12px',
-                        background: lead.executive ? '#4caf50' : '#f44336',
+                        background: lead.executive || lead.lead ? '#4caf50' : '#f44336',
                         color: 'white'
                       }}>
-                        {lead.executive || "Not Assigned"}
+                        {lead.executive || lead.lead || "Not Assigned"}
                       </span>
                     </td>
                     <td>
