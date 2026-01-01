@@ -7,7 +7,7 @@ const RevenueSheet = () => {
   const [selectedMonth, setSelectedMonth] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-const [selectedLead, setSelectedLead] = useState("All");
+  const [selectedLead, setSelectedLead] = useState("All");
 
   const fetchNewStudent = async () => {
     try {
@@ -33,18 +33,26 @@ const [selectedLead, setSelectedLead] = useState("All");
     return <div>{error}</div>;
   }
 
+  // Extract unique lead names dynamically from all students
+  const uniqueLeads = [...new Set(newStudent.map(student => student.lead).filter(Boolean))].sort();
+
+  // Create a helper to initialize paymentsByLead object
+  const createPaymentsByLeadObject = () => {
+    const obj = {};
+    uniqueLeads.forEach(lead => {
+      obj[lead] = 0;
+    });
+    return obj;
+  };
+
   const revenueByDay = {};
   const revenueByMonth = {};
   let totalRevenue = 0;
 
   // Filter students based on selected lead
-  const filteredStudents = selectedLead === "All" 
-    ? newStudent 
-    : newStudent.filter(student => {
-        if (selectedLead === "RamCharan") return student.lead === "Ram Charan";
-        if (selectedLead === "Abhilash") return student.lead === "Abhilash";
-        return student.lead === selectedLead;
-      });
+  const filteredStudents = selectedLead === "All"
+    ? newStudent
+    : newStudent.filter(student => student.lead === selectedLead);
 
   filteredStudents.forEach((student) => {
     const date = new Date(student.createdAt).toLocaleDateString("en-GB");
@@ -59,10 +67,10 @@ const [selectedLead, setSelectedLead] = useState("All");
 
 
     if (!revenueByDay[date]) {
-      revenueByDay[date] = { total: 0, booked: 0, credited: 0, pending: 0, payments:0,  paymentsByLead: { CGFL: 0, SGFL: 0 , RamCharan: 0, Abhilash: 0 }, month };
+      revenueByDay[date] = { total: 0, booked: 0, credited: 0, pending: 0, payments: 0, paymentsByLead: createPaymentsByLeadObject(), month };
     }
     if (!revenueByMonth[month]) {
-      revenueByMonth[month] = { total: 0, booked: 0, credited: 0, pending: 0 , payments:0 ,paymentsByLead: { CGFL: 0, SGFL: 0 , RamCharan: 0, Abhilash: 0 } };
+      revenueByMonth[month] = { total: 0, booked: 0, credited: 0, pending: 0, payments: 0, paymentsByLead: createPaymentsByLeadObject() };
     }
 
     revenueByDay[date].total += revenue;
@@ -78,32 +86,44 @@ const [selectedLead, setSelectedLead] = useState("All");
 
     revenueByMonth[month].payments += 1;
 
-    // Count payment based on student.lead
-if (student.lead === "CGFL") {
-  revenueByDay[date].paymentsByLead.CGFL += 1;
-  revenueByMonth[month].paymentsByLead.CGFL += 1;
-} else if (student.lead === "SGFL") {
-  revenueByDay[date].paymentsByLead.SGFL += 1;
-  revenueByMonth[month].paymentsByLead.SGFL += 1;
-} else if (student.lead === "Ram Charan") {
-  revenueByDay[date].paymentsByLead.RamCharan += 1;
-  revenueByMonth[month].paymentsByLead.RamCharan += 1;
-} else if (student.lead === "Abhilash") {
-  revenueByDay[date].paymentsByLead.Abhilash += 1;
-  revenueByMonth[month].paymentsByLead.Abhilash += 1;
-}
+    // Count payment based on student.lead dynamically
+    if (student.lead && revenueByDay[date].paymentsByLead.hasOwnProperty(student.lead)) {
+      revenueByDay[date].paymentsByLead[student.lead] += 1;
+      revenueByMonth[month].paymentsByLead[student.lead] += 1;
+    }
 
     totalRevenue += revenue;
   });
 
-  // Generate all 12 months of the current year
-  const currentYear = new Date().getFullYear();
+  // Generate all months from the earliest enrollment date to the current month (lifetime revenue)
   const months = [];
-  for (let i = 11; i >= 0; i--) {
-    const date = new Date(currentYear, i, 1);
-    months.push(date.toLocaleString("default", { month: "long", year: "numeric" }));
+
+  // Find the earliest enrollment date
+  let earliestDate = new Date();
+  if (filteredStudents.length > 0) {
+    earliestDate = new Date(
+      Math.min(...filteredStudents.map(student => new Date(student.createdAt)))
+    );
   }
-  
+
+  // Generate months from earliest date to current date
+  const currentDate = new Date();
+  const startYear = earliestDate.getFullYear();
+  const startMonth = earliestDate.getMonth();
+  const currentYear = currentDate.getFullYear();
+  const currentMonthIndex = currentDate.getMonth();
+
+  // Loop through all months from earliest to current
+  for (let year = currentYear; year >= startYear; year--) {
+    const endMonth = (year === currentYear) ? currentMonthIndex : 11;
+    const beginMonth = (year === startYear) ? startMonth : 0;
+
+    for (let month = endMonth; month >= beginMonth; month--) {
+      const date = new Date(year, month, 1);
+      months.push(date.toLocaleString("default", { month: "long", year: "numeric" }));
+    }
+  }
+
   const currentMonth = new Date().toLocaleString("default", { month: "long", year: "numeric" });
   const filteredDailyRevenue = Object.entries(revenueByDay).filter(
     ([, data]) => data.month === (selectedMonth || currentMonth)
@@ -134,19 +154,18 @@ if (student.lead === "CGFL") {
           </select>
         </div>
         <div className="mb-4">
-  <label className="font-semibold">Select Payment Type: </label>
-  <select
-    className="border p-2 rounded"
-    value={selectedLead}
-    onChange={(e) => setSelectedLead(e.target.value)}
-  >
-    <option value="All">All</option>
-    <option value="CGFL">CGFL</option>
-    <option value="SGFL">SGFL</option>
-    <option value="RamCharan">Ram Charan</option>
-    <option value="Abhilash">Abhilash</option>
-  </select>
-</div>
+          <label className="font-semibold">Select Payment Type: </label>
+          <select
+            className="border p-2 rounded"
+            value={selectedLead}
+            onChange={(e) => setSelectedLead(e.target.value)}
+          >
+            <option value="All">All</option>
+            {uniqueLeads.map(lead => (
+              <option key={lead} value={lead}>{lead}</option>
+            ))}
+          </select>
+        </div>
 
         <div className="overflow-x-auto">
           <table className="min-w-full border-collapse border border-gray-200">
@@ -159,10 +178,9 @@ if (student.lead === "CGFL") {
                 <th className="border p-3 text-left">Total No Of Payments</th>
                 {selectedLead === "All" ? (
                   <>
-                    <th className="border p-3 text-left">CGFL Payments</th>
-                    <th className="border p-3 text-left">SGFL Payments</th>
-                    <th className="border p-3 text-left">Ram Charan Payments</th>
-                    <th className="border p-3 text-left">Abhilash Payments</th>
+                    {uniqueLeads.map(lead => (
+                      <th key={lead} className="border p-3 text-left">{lead} Payments</th>
+                    ))}
                   </>
                 ) : (
                   <th className="border p-3 text-left">{selectedLead} Payments</th>
@@ -179,10 +197,9 @@ if (student.lead === "CGFL") {
                   <td className="border p-3">{revenueByDay[date].payments}</td>
                   {selectedLead === "All" ? (
                     <>
-                      <td className="border p-3">{data.paymentsByLead?.CGFL || 0}</td>
-                      <td className="border p-3">{data.paymentsByLead?.SGFL || 0}</td>
-                      <td className="border p-3">{data.paymentsByLead?.RamCharan || 0}</td>
-                      <td className="border p-3">{data.paymentsByLead?.Abhilash || 0}</td>
+                      {uniqueLeads.map(lead => (
+                        <td key={lead} className="border p-3">{data.paymentsByLead?.[lead] || 0}</td>
+                      ))}
                     </>
                   ) : (
                     <td className="border p-3">
@@ -207,15 +224,14 @@ if (student.lead === "CGFL") {
                 <th className="border p-3 text-left">Credited Revenue</th>
                 <th className="border p-3 text-left">Pending Revenue</th>
                 <th className="border p-3 text-left">Total No Of Payments</th>
-                <th className="border p-3 text-left">CGFL Payments</th>
-                <th className="border p-3 text-left">SGFL Payments</th>
-                <th className="border p-3 text-left">Ram Charan Payments</th>
-                <th className="border p-3 text-left">Abhilash Payments</th>
+                {uniqueLeads.map(lead => (
+                  <th key={lead} className="border p-3 text-left">{lead} Payments</th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {months.map((month, index) => {
-                const monthData = revenueByMonth[month] || { total: 0, credited: 0, pending: 0, payments: 0, paymentsByLead: { CGFL: 0, SGFL: 0, RamCharan: 0, Abhilash: 0 } };
+                const monthData = revenueByMonth[month] || { total: 0, credited: 0, pending: 0, payments: 0, paymentsByLead: createPaymentsByLeadObject() };
                 return (
                   <tr key={month} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
                     <td className="border p-3">{month}</td>
@@ -223,10 +239,9 @@ if (student.lead === "CGFL") {
                     <td className="border p-3">₹{monthData.credited.toFixed(2)}</td>
                     <td className="border p-3">₹{monthData.pending.toFixed(2)}</td>
                     <td className="border p-3">{monthData.payments}</td>
-                    <td className="border p-3">{monthData.paymentsByLead?.CGFL || 0}</td>
-                    <td className="border p-3">{monthData.paymentsByLead?.SGFL || 0}</td>
-                    <td className="border p-3">{monthData.paymentsByLead?.RamCharan || 0}</td>
-                    <td className="border p-3">{monthData.paymentsByLead?.Abhilash || 0}</td>
+                    {uniqueLeads.map(lead => (
+                      <td key={lead} className="border p-3">{monthData.paymentsByLead?.[lead] || 0}</td>
+                    ))}
                   </tr>
                 );
               })}
