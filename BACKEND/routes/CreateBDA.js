@@ -250,12 +250,13 @@ router.post("/checkbdaauth", async (req, res) => {
 
 //post request to add transaction id
 router.post("/addtransactionid", async (req, res) => {
-  const { transactionId, fullname, counselor, option, executiveId, executiveName } = req.body;
+  const { transactionId, fullname, counselor, option, executiveId, executiveName, lead } = req.body;
   try {
     const AddTransactionId = new TransactionId({
       transactionId,
       fullname,
       counselor,
+      lead: lead,  // Store SGFL/CGFL if selected
       // lead field is NOT set - BDA directly assigns to executive, bypassing leader
       executiveId: executiveId,
       executive: executiveName,

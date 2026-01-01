@@ -52,14 +52,18 @@ const AddUser = () => {
     if (isSubmitting) return;
     setIsSubmitting(true);
 
-    // Find the selected executive to get their ID
-    const selectedExecutive = executives.find(exec => exec.fullname === option);
+    // Check if SGFL or CGFL lead is selected
+    const isLeadOption = option === 'SGFL' || option === 'CGFL';
+
+    // Find the selected executive to get their ID (if not a lead option)
+    const selectedExecutive = !isLeadOption ? executives.find(exec => exec.fullname === option) : null;
 
     const data = {
       fullname,
       transactionId,
       counselor: bdaName,
-      // NOT sending option/lead - BDA directly assigns to executive
+      // If SGFL/CGFL selected, store in lead field instead of executive
+      lead: isLeadOption ? option : undefined,
       executiveId: selectedExecutive?._id,
       executiveName: selectedExecutive?.fullname
     };
@@ -113,7 +117,10 @@ const AddUser = () => {
               onChange={(e) => setOption(e.target.value)}
               required
             >
-              <option value="" disabled>Select Executive</option>
+              <option value="" disabled>Select Executive or Lead</option>
+              <option value="SGFL">SGFL (Lead)</option>
+              <option value="CGFL">CGFL (Lead)</option>
+              <option disabled>──────────</option>
               {executives.map((executive) => (
                 <option key={executive._id} value={executive.fullname}>
                   {executive.fullname}
