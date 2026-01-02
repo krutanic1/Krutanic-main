@@ -110,7 +110,7 @@ const sendOfferLetter = async ({ email, fullname, date, start, end, domain, dura
     <p>Kindly find attached an offer letter with the particulars of your employment. We are extremely happy to offer you this role and look forward to having you on board with us.<strong> The date of commencement of your employment is ${start}.</strong></p>
     <p>For any further information please do not hesitate to contact us via mail to this mail ID.</p>
     <p>Wishing you all the best on your new journey.</p>
-    <p>Best Regards,<br/>Operation Team <br/> +918971569165</p>
+    <p>Best Regards,</p>
     `;
 
     const pdfword1 = `

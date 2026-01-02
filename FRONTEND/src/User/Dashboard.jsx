@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import API from "../API";
 import debounce from "lodash/debounce";
 import toast, { Toaster } from "react-hot-toast";
+import "./Dashboard.css"; // Import the separate CSS file
 
 const Dashboard = () => {
   const userEmail = localStorage.getItem("userEmail");
@@ -148,198 +149,200 @@ const Dashboard = () => {
   };
 
   return (
-    <div id="UserDashboard">
+    <div id="UserDashboard" className="futuristic-ui">
       <Toaster position="top-center" reverseOrder={false} />
+      
+      {/* Certificate Modal */}
       {selectedCertificate && ( 
-        <div className="viewcertificate">
-          <div className="view">
-            <img src={selectedCertificate.url} alt="" />
-            <div>
-              <h2>Issued By : KRUTANIC</h2>
+        <div className="viewcertificate-modal">
+          <div className="modal-content neomorphic-card">
+            <div className="cert-preview">
+               <img src={selectedCertificate.url} alt="Certificate" />
+            </div>
+            <div className="cert-details">
+              <h2 className="issuer">Issued By : KRUTANIC</h2>
               <a
-                className="text-purple-600"
+                className="open-link"
                 href={selectedCertificate.url}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                open in new tab....
+                Open in new tab <i className="fa fa-external-link"></i>
               </a>
-              <hr />
-              <h2>Actions</h2>
-              <hr />
-              {/* <button className="border-2 border-blue-600 text-blue-600"><i className="fa fa-download"></i>  As Image </button>
-              <button className="border-2 border-red-600 text-red-600"><i className="fa fa-download"></i>  Certificate</button> */}
-              <button
-                className="border-2 border-blue-800 bg-blue-700 text-white"
-                onClick={() => addLinkedin(selectedCertificate)}
-              >
-                Add to linkedin{" "}
-              </button>
-              <button
-                className="border-2 border-black bg-green-950 text-white"
-                onClick={trainingCertificateDownload}
-              >
-                {" "}
-                Download Training Certificate{" "}
-              </button>
-
-              <button
-                className="border-2 border-black bg-black text-white"
-                onClick={() => setSelectedCertificate(null)}
-              >
-                CLOSE
-              </button>
+              
+              <div className="divider"></div>
+              
+              <h3 className="actions-title">Actions</h3>
+              <div className="action-buttons">
+                <button
+                  className="neomorphic-btn linkedin-btn"
+                  onClick={() => addLinkedin(selectedCertificate)}
+                >
+                  <i className="fa fa-linkedin"></i> Add to LinkedIn
+                </button>
+                <button
+                  className="neomorphic-btn download-btn"
+                  onClick={trainingCertificateDownload}
+                >
+                  <i className="fa fa-download"></i> Download Training Certificate
+                </button>
+                <button
+                  className="neomorphic-btn close-btn"
+                  onClick={() => setSelectedCertificate(null)}
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
-      <div className="password">
-        <span>
-          <i className="fa fa-lock"></i> Change Password
-        </span>
-        <Link to="/Setting" className="ease-linear duration-300">
-          {" "}
-          Click Here
-        </Link>
-      </div>
-      <br />
-      <h2>Dashboard</h2>
-      <div className="number">
-        <div>
-          <span>
-            <i className="fa fa-book"></i> Enrolled Courses
-          </span>
-          <h2>{enrollData.length}</h2>
+
+      {/* Header */}
+      <header className="dashboard-header">
+        <div className="header-content">
+          <h1 className="glow-text">User Dashboard</h1>
+          <p className="subtitle">Welcome back, continue your learning journey</p>
         </div>
-        <div>
-          <span>
-            {" "}
-            <i className="fa fa-graduation-cap"></i> Active Courses
-          </span>
-          <h2>
-            {enrollData.filter((item) => item.status === "fullPaid").length}
-          </h2>
+        <div className="header-actions">
+           <Link to="/Setting" className="neomorphic-btn sm-btn change-pass-btn">
+             <i className="fa fa-lock"></i> Change Password
+           </Link>
         </div>
-      </div>
-      <br />
-      <h2>Courses</h2>
-      {loading ? (
-        <div id="loader">
-          <div className="three-body">
-            <div className="three-body__dot"></div>
-            <div className="three-body__dot"></div>
-            <div className="three-body__dot"></div>
+      </header>
+
+      {/* Stats Cards */}
+      <section className="stats-container">
+        <div className="stat-card neomorphic-card float-animation">
+          <div className="icon-box book-icon">
+             <i className="fa fa-book"></i>
+          </div>
+          <div className="text-box">
+             <h3>Enrolled Courses</h3>
+             <h2 className="counter glow-text">{enrollData.length}</h2>
           </div>
         </div>
-      ) : (
-        <div className="courselist">
-          {enrollData.map((item, index) => (
-            <div key={index} className="list">
-              <h2>{item.domain.title}</h2>
-              <span>★★★★★</span>
-              <p> Session {Object.keys(item.domain.session).length}</p>
-              <h2>Opted Month: {item.monthOpted}</h2>
-              {item.status === "fullPaid" ? (
-                <div className="btndiv">
-                  <button
-                    className="ease-linear duration-300"
-                    onClick={() => handleSubmit(item)}
-                  >
-                    Certificate
-                  </button>
-                  <button
-                    className="ease-linear duration-300"
-                    onClick={() =>
-                      handleStartLearning(
-                        item.domain.title,
-                        item.domain.session
-                      )
-                    }
-                  >
-                    Start Learning
-                  </button>
+        <div className="stat-card neomorphic-card float-animation delay-1">
+          <div className="icon-box grad-icon">
+             <i className="fa fa-graduation-cap"></i>
+          </div>
+          <div className="text-box">
+             <h3>Active Courses</h3>
+             <h2 className="counter glow-text">
+               {enrollData.filter((item) => item.status === "fullPaid").length}
+             </h2>
+          </div>
+        </div>
+      </section>
+
+      {/* Courses List */}
+      <section className="courses-section">
+        <h2 className="section-title">Your Courses</h2>
+        
+        {loading ? (
+          <div id="loader">
+            <div className="three-body">
+              <div className="three-body__dot"></div>
+              <div className="three-body__dot"></div>
+              <div className="three-body__dot"></div>
+            </div>
+          </div>
+        ) : (
+          <div className="courses-grid">
+            {enrollData.map((item, index) => (
+              <div key={index} className="course-card neomorphic-card">
+                <div className="card-header">
+                   <h3>{item.domain.title}</h3>
+                   <div className="rating">★★★★★</div>
                 </div>
-              ) : (
-                <div className=" space-y-2">
-                  <h3>
-                    <strong>Your Due Date:</strong> {item.clearPaymentMonth}
-                  </h3>
-                  <p>
-                    <strong>Your Due Payment Amount Is :</strong> ₹{" "}
-                    {item.programPrice - item.paidAmount}/-
-                  </p>
-                  <div>
-                    <strong>
-                      You can pay your remaining amount through this{" "}
+                
+                <div className="card-body">
+                  <p className="info-row"><i className="fa fa-clock-o"></i> {Object.keys(item.domain.session).length} Sessions</p>
+                  <p className="info-row"><i className="fa fa-calendar"></i> Opted: {item.monthOpted}</p>
+                  
+                  {item.status === "fullPaid" ? (
+                    <div className="card-actions">
+                      <button
+                        className="neomorphic-btn primary-btn"
+                        onClick={() => handleStartLearning(
+                          item.domain.title,
+                          item.domain.session
+                        )}
+                      >
+                        Start Learning
+                      </button>
+                      <button
+                        className="neomorphic-btn secondary-btn"
+                        onClick={() => handleSubmit(item)}
+                      >
+                        Get Certificate
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="payment-alert">
+                      <div className="alert-content">
+                        <h4>Payment Due</h4>
+                        <p>Due Date: {item.clearPaymentMonth}</p>
+                        <p className="amount">Amount: ₹ {item.programPrice - item.paidAmount}/-</p>
+                      </div>
                       <a
-                        className="text-blue-700 font-bold"
+                        className="neomorphic-btn pay-btn"
                         href="https://smartpay.easebuzz.in/219610/Krutanic"
                         target="_blank"
                       >
-                        PayNow
+                        Pay Now
                       </a>
-                      .{" "}
-                      <i
-                        title=" share the screenshot to your counselor"
-                        className="fa fa-info-circle"
-                        aria-hidden="true"
-                      ></i>
-                    </strong>
-                  </div>
-
-                  <p className="text-center">
-                    <strong>Note:</strong>{" "}
-                    <span className="font-bold">
-                      To begin your learning journey, please ensure your
-                      outstanding payment is cleared. Kindly settle the due
-                      amount before the specified due date.
-                    </span>{" "}
-                  </p>
+                      <p className="note-text">
+                        <i className="fa fa-info-circle"></i> Settle due amount to access course.
+                      </p>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-      <br />
-      <h2>Certificate</h2>
-      <div className="certificatediv">
-        {certificate ? (
-          <div className="item">
-            <h3>
-              <strong>Name:</strong> {certificate.name}
-            </h3>
-            <h3>
-              <strong>Email:</strong> {certificate.email}
-            </h3>
-            <h3>
-              <strong>Domain:</strong> {certificate.domain}
-            </h3>
-            <h3>
-              <strong>Applied on:</strong>{" "}
-              {new Date(certificate.createdAt).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </h3>
-            {certificate.delivered ? (
-              <strong
-                className="text-blue-600 cursor-pointer"
-                onClick={() => setSelectedCertificate(certificate)}
-              >
-                view certificate
-              </strong>
-            ) : (
-              <h3>
-                <strong>Status:</strong> Pending
-              </h3>
-            )}
+              </div>
+            ))}
           </div>
-        ) : (
-          <h3>No certificate</h3>
         )}
-      </div>
+      </section>
+
+      {/* Certificate Status Section */}
+      <section className="certificate-status-section">
+        <h2 className="section-title">Certificate Status</h2>
+        <div className="certificate-status-card neomorphic-card">
+          {certificate ? (
+            <div className="status-details">
+              <div className="info-group">
+                <p><strong>Name:</strong> {certificate.name}</p>
+                <p><strong>Email:</strong> {certificate.email}</p>
+                <p><strong>Domain:</strong> {certificate.domain}</p>
+                <p><strong>Applied:</strong> {new Date(certificate.createdAt).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}</p>
+              </div>
+              
+              <div className="status-action">
+                 <p className="status-label">Status:</p>
+                 {certificate.delivered ? (
+                   <button 
+                     className="neomorphic-btn view-btn"
+                     onClick={() => setSelectedCertificate(certificate)}
+                   >
+                     View Certificate
+                   </button>
+                 ) : (
+                   <span className="pending-badge">Processing</span>
+                 )}
+              </div>
+            </div>
+          ) : (
+             <div className="no-certificate">
+               <i className="fa fa-certificate"></i>
+               <p>No certificate applications found.</p>
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 };

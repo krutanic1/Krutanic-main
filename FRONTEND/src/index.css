@@ -5,6 +5,18 @@
 body {
   font-family: "Montserrat";
 }
+
+/* Lexend font for new dashboard */
+.font-display {
+  font-family: 'Lexend', sans-serif;
+}
+
+/* Material Symbols styling */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-size: 24px; 
+}
+
 h1 {
   font-size: clamp(24px, 5vw, 40px);
   font-family: Arvo;

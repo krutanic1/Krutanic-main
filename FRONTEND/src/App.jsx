@@ -82,7 +82,7 @@ import AssignTarget from "./BDA/AssignTarget";
 
 // User Student
 import UserHeader from "./User/UserHeader";
-import Dashboard from "./User/Dashboard";
+import Dashboard from "./User/NewDashboard";
 import EnrolledCourses from "./User/EnrolledCourses";
 import Learning from "./User/Learning";
 import Setting from "./User/Setting";
