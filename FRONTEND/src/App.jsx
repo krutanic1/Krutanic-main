@@ -83,9 +83,14 @@ import AssignTarget from "./BDA/AssignTarget";
 // User Student
 import UserHeader from "./User/UserHeader";
 import Dashboard from "./User/NewDashboard";
-import EnrolledCourses from "./User/EnrolledCourses";
-import Learning from "./User/Learning";
+import EnrolledCourses from "./User/NewEnrolledCourses";
+import Learning from "./User/NewLearning";
 import Setting from "./User/Setting";
+import JobBoardPage from "./User/JobBoardPage";
+import MyJobPage from "./User/MyJobPage";
+import MockInterviewPage from "./User/MockInterviewPage";
+import ExercisePage from "./User/ExercisePage";
+import ResumeATSPage from "./User/ResumeATSPage";
 import LmsFooter from './User/LmsFooter';
 import AdminDashboard from "./Admin/AdminDashboard";
 import PageNotFound from "./PageNotFound";
@@ -225,9 +230,6 @@ const AppContent = () => {
   ];
 
   const userheaderPaths = [
-    "/dashboard",
-    "/enrolledcourses",
-    "/learning",
     "/setting",
   ];
 
@@ -237,7 +239,7 @@ const AppContent = () => {
 
   ];
 
-  const lmsFooterPaths = ['/dashboard', '/enrolledcourses', '/learning', '/setting', '/jobboard', '/myjob'];
+  const lmsFooterPaths = ['/setting', '/jobboard', '/myjob'];
 
   const isAuthenticated = () => !!localStorage.getItem("token");
   const isAuthenticatedBda = () => !!localStorage.getItem("bdaToken");
@@ -366,6 +368,11 @@ const AppContent = () => {
         <Route path="/EnrolledCourses" element={isAuthenticated() ? <EnrolledCourses /> : <Navigate to="/login" />} />
         <Route path="/Setting" element={isAuthenticated() ? <Setting /> : <Navigate to="/login" />} />
         <Route path="/Learning" element={isAuthenticated() ? <Learning /> : <Navigate to="/login" />} />
+        <Route path="/JobBoard" element={isAuthenticated() ? <JobBoardPage /> : <Navigate to="/login" />} />
+        <Route path="/MyJob" element={isAuthenticated() ? <MyJobPage /> : <Navigate to="/login" />} />
+        <Route path="/MockInterview" element={isAuthenticated() ? <MockInterviewPage /> : <Navigate to="/login" />} />
+        <Route path="/Exercise" element={isAuthenticated() ? <ExercisePage /> : <Navigate to="/login" />} />
+        <Route path="/ResumeATS" element={isAuthenticated() ? <ResumeATSPage /> : <Navigate to="/login" />} />
         {/* User Panel End */}
 
         {/* placement coodinator panel starts */}

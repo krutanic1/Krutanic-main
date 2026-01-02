@@ -5,6 +5,7 @@ import API from "../API";
 import debounce from "lodash/debounce";
 import toast, { Toaster } from "react-hot-toast";
 import logo from "../assets/LOGO3.png";
+import UserSidebar from "./UserSidebar";
 
 const NewDashboard = () => {
   const userEmail = localStorage.getItem("userEmail");
@@ -235,7 +236,6 @@ const NewDashboard = () => {
           </button>
           <div className="flex items-center gap-2">
             <img src={logo} alt="Krutanic" className="h-8" />
-            <h2 className="text-gray-900 text-xl font-bold leading-tight tracking-tight hidden sm:block">KRUTANIC</h2>
           </div>
         </div>
         <div className="flex items-center gap-4 sm:gap-8">
@@ -256,86 +256,7 @@ const NewDashboard = () => {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <aside className={`w-64 bg-white border-r border-gray-100 ${isSidebarOpen ? 'flex' : 'hidden'} lg:flex flex-col shrink-0 overflow-y-auto fixed lg:relative inset-y-0 left-0 z-30 lg:z-auto pt-16 lg:pt-0`}>
-          <div className="p-6 pb-2">
-            <div className="flex items-center gap-3 mb-6 p-3 bg-background-light rounded-xl">
-              <div className="bg-primary/20 rounded-full size-12 flex items-center justify-center text-primary font-bold text-xl shrink-0">
-                {userData?.fullname?.charAt(0)?.toUpperCase() || "U"}
-              </div>
-              <div className="flex flex-col overflow-hidden">
-                <h1 className="text-gray-900 text-sm font-bold leading-normal truncate capitalize">{userData?.fullname || "Student"}</h1>
-                <p className="text-gray-500 text-xs font-normal leading-normal">{userData?.email || ""}</p>
-              </div>
-            </div>
-            <div className="flex flex-col gap-1">
-              <Link to="/Dashboard" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-600 transition-colors group">
-                <span className="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">account_circle</span>
-                <p className="text-sm font-medium leading-normal">User Profile</p>
-              </Link>
-              <Link to="/Dashboard" className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary border-r-4 border-primary/50 transition-colors">
-                <span className="material-symbols-outlined">home</span>
-                <p className="text-sm font-bold leading-normal">Home</p>
-              </Link>
-              <Link to="/EnrolledCourses" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-600 transition-colors group">
-                <span className="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">menu_book</span>
-                <p className="text-sm font-medium leading-normal">Enrolled Courses</p>
-              </Link>
-              <button 
-                onClick={() => handleRestrictedClick("/JobBoard", componentsAccess.jobboard)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-600 transition-colors group w-full text-left ${!componentsAccess.jobboard ? 'opacity-50' : ''}`}
-              >
-                <span className="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">work</span>
-                <p className="text-sm font-medium leading-normal">Job Board</p>
-              </button>
-              <button 
-                onClick={() => handleRestrictedClick("/MyJob", componentsAccess.myjob)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-600 transition-colors group w-full text-left ${!componentsAccess.myjob ? 'opacity-50' : ''}`}
-              >
-                <span className="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">person</span>
-                <p className="text-sm font-medium leading-normal">My Job</p>
-              </button>
-              <button 
-                onClick={() => handleRestrictedClick("/MockInterview", componentsAccess.mockinterview)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-600 transition-colors group w-full text-left ${!componentsAccess.mockinterview ? 'opacity-50' : ''}`}
-              >
-                <span className="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">assignment</span>
-                <p className="text-sm font-medium leading-normal">Mock Prep</p>
-              </button>
-              <button 
-                onClick={() => handleRestrictedClick("/Exercise", componentsAccess.exercise)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-600 transition-colors group w-full text-left ${!componentsAccess.exercise ? 'opacity-50' : ''}`}
-              >
-                <span className="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">edit_note</span>
-                <p className="text-sm font-medium leading-normal">Exercise Prep</p>
-              </button>
-              <button 
-                onClick={() => handleRestrictedClick("/ResumeATS", componentsAccess.atschecker)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-600 transition-colors group w-full text-left ${!componentsAccess.atschecker ? 'opacity-50' : ''}`}
-              >
-                <span className="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">fact_check</span>
-                <p className="text-sm font-medium leading-normal">ATS Checker</p>
-              </button>
-            </div>
-          </div>
-          <div className="mt-auto p-6 pt-2 border-t border-gray-100">
-            <Link to="/Setting" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-600 transition-colors group mb-1">
-              <span className="material-symbols-outlined text-gray-400 group-hover:text-gray-600 transition-colors">settings</span>
-              <p className="text-sm font-medium leading-normal">Setting</p>
-            </Link>
-            <button onClick={handleLogout} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-red-50 text-red-500 transition-colors group w-full">
-              <span className="material-symbols-outlined text-red-400 group-hover:text-red-600 transition-colors">logout</span>
-              <p className="text-sm font-medium leading-normal">LogOut</p>
-            </button>
-          </div>
-        </aside>
-
-        {/* Sidebar Overlay for Mobile */}
-        {isSidebarOpen && (
-          <div 
-            className="fixed inset-0 bg-black/50 z-20 lg:hidden"
-            onClick={() => setIsSidebarOpen(false)}
-          ></div>
-        )}
+        <UserSidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
 
         {/* Main Content Area */}
         <main className="flex-1 overflow-y-auto bg-background-light p-4 md:p-8">

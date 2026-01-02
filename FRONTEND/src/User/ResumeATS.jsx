@@ -127,9 +127,9 @@ const ResumeATS = () => {
     </div>
   );
   return (
-    <div className="fixed top-[70px] flex items-center justify-center -z-10 over w-[100%] h-[calc(100vh-120px)] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden overflow-auto bg-white">
+    <div className="flex items-center justify-center w-full min-h-[calc(100vh-200px)] overflow-auto bg-white">
       <Toaster position="top-center" />
-      <div className="bg-white  pt-20 rounded-2xl shadow-2xl p-10">
+      <div className="bg-white w-full max-w-[700px] rounded-2xl shadow-2xl p-10">
         <div className="flex justify-between items-center  mb-6">
           <h2 className="text-3xl font-bold text-black text-center flex items-center gap-2">
             <FaChartBar /> Ultimate ATS Analyzer

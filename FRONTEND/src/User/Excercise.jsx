@@ -137,8 +137,8 @@ const Exercise = () => {
   );
 
   return (
-    <div className="fixed top-[70px] flex items-center justify-center -z-10 over w-[100%] h-[calc(100vh-120px)] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden overflow-auto bg-white">
-      <div className="bg-white h-[80dvh] w-[700px] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden overflow-auto  rounded-2xl shadow-2xl p-10">
+    <div className="flex items-center justify-center w-full min-h-[calc(100vh-200px)] overflow-auto bg-white">
+      <div className="bg-white w-full max-w-[700px] overflow-auto rounded-2xl shadow-2xl p-10">
         {error && (
         <div className="bg-red-50 p-6 rounded-xl border border-red-200 mb-8 text-center text-red-600">
          {error}
