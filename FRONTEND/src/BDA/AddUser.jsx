@@ -117,9 +117,9 @@ const AddUser = () => {
               onChange={(e) => setOption(e.target.value)}
               required
             >
-              <option value="" disabled>Select Executive or Lead</option>
-              <option value="SGFL">SGFL (Lead)</option>
-              <option value="CGFL">CGFL (Lead)</option>
+              <option value="" disabled>Select Lead Source or Executive</option>
+              <option value="SGFL">SGFL (Self Generated)</option>
+              <option value="CGFL">CGFL (Company Generated)</option>
               <option disabled>──────────</option>
               {executives.map((executive) => (
                 <option key={executive._id} value={executive.fullname}>
@@ -144,6 +144,7 @@ const AddUser = () => {
               <th>Email Id</th>
               <th>Counselor Name</th>
               <th>Assigned Executive</th>
+              <th>Add Date</th>
             </tr>
           </thead>
           <tbody>
@@ -154,6 +155,7 @@ const AddUser = () => {
                 <td>{transactionId.transactionId}</td>
                 <td>{transactionId.counselor}</td>
                 <td>{transactionId.executive || transactionId.lead || 'Not Assigned'}</td>
+                <td>{transactionId.createdAt ? new Date(transactionId.createdAt).toLocaleDateString('en-GB') : 'N/A'}</td>
               </tr>
             ))}
           </tbody>

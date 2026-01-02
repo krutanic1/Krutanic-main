@@ -204,7 +204,7 @@ const AppContent = () => {
   const marketingheaderPaths = [
     "/marketing/home",
     "/marketing/previous",
-    "/marketing/leads",
+    // "/marketing/leads",  // DISABLED
     "/marketing/addexecutive"
   ];
 
@@ -337,7 +337,7 @@ const AppContent = () => {
         <Route path="/marketing/login" element={<MarketingLogin />} />
         <Route path="/marketing/home" element={isAuthenticatedMarketing() ? <MarketingDashboard /> : <Navigate to="/marketing/login" />} />
         <Route path="/marketing/previous" element={isAuthenticatedMarketing() ? <MarketingPrePayment /> : <Navigate to="/marketing/login" />} />
-        <Route path="/marketing/leads" element={isAuthenticatedMarketing() ? <MarketingLeads /> : <Navigate to="/marketing/login" />} />
+        {/* <Route path="/marketing/leads" element={isAuthenticatedMarketing() ? <MarketingLeads /> : <Navigate to="/marketing/login" />} /> */}  {/* DISABLED */}
         <Route path="/marketing/addexecutive" element={isAuthenticatedMarketing() ? <MarketingAddExecutive /> : <Navigate to="/marketing/login" />} />
         {/* Marketing Panel */}
 

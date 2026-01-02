@@ -104,7 +104,7 @@ const AdminMarketingLeads = () => {
                 <th>Domain</th>
                 <th>Price</th>
                 <th>Month</th>
-                <th>Lead</th>
+                {/* <th>Lead</th> */}
                 <th>BDA</th>
                 <th>Executive</th>
                 <th>Assign Executive</th>
@@ -129,7 +129,7 @@ const AdminMarketingLeads = () => {
                     <td>{lead.domain || "-"}</td>
                     <td>{lead.programPrice || "-"}</td>
                     <td>{lead.monthOpted || "-"}</td>
-                    <td>{lead.lead || "-"}</td>
+                    {/* <td>{lead.lead || "-"}</td> */}
                     <td>{lead.counselor || "-"}</td>
                     <td>
                       <span style={{
