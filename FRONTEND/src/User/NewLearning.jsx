@@ -164,20 +164,20 @@ const NewLearning = () => {
             <button
               onClick={handlePrevious}
               disabled={currentSessionIndex === 0}
-              className={`flex-1 flex items-center gap-3 p-4 rounded-xl border transition-all ${
+              className={`flex-1 min-w-0 flex items-center gap-3 p-4 rounded-xl border transition-all ${
                 currentSessionIndex === 0
                   ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
                   : "bg-white border-gray-200 hover:border-primary hover:shadow-md cursor-pointer"
               }`}
             >
-              <div className={`size-12 rounded-full flex items-center justify-center ${
+              <div className={`size-10 shrink-0 rounded-full flex items-center justify-center ${
                 currentSessionIndex === 0 ? "bg-gray-200" : "bg-primary/10"
               }`}>
-                <span className={`material-symbols-outlined text-2xl ${
+                <span className={`material-symbols-outlined text-xl ${
                   currentSessionIndex === 0 ? "text-gray-400" : "text-primary"
                 }`}>skip_previous</span>
               </div>
-              <div className="flex-1 text-left">
+              <div className="flex-1 min-w-0 text-left overflow-hidden">
                 <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Previous</p>
                 <p className={`font-medium truncate ${currentSessionIndex === 0 ? "text-gray-400" : "text-gray-900"}`}>
                   {currentSessionIndex > 0 
@@ -191,13 +191,13 @@ const NewLearning = () => {
             <button
               onClick={handleNext}
               disabled={currentSessionIndex >= totalSessions - 1}
-              className={`flex-1 flex items-center gap-3 p-4 rounded-xl border transition-all ${
+              className={`flex-1 min-w-0 flex items-center gap-3 p-4 rounded-xl border transition-all ${
                 currentSessionIndex >= totalSessions - 1
                   ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
                   : "bg-white border-gray-200 hover:border-primary hover:shadow-md cursor-pointer"
               }`}
             >
-              <div className="flex-1 text-right">
+              <div className="flex-1 min-w-0 text-right overflow-hidden">
                 <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Next</p>
                 <p className={`font-medium truncate ${currentSessionIndex >= totalSessions - 1 ? "text-gray-400" : "text-gray-900"}`}>
                   {currentSessionIndex < totalSessions - 1 
@@ -205,10 +205,10 @@ const NewLearning = () => {
                     : "No next video"}
                 </p>
               </div>
-              <div className={`size-12 rounded-full flex items-center justify-center ${
+              <div className={`size-10 shrink-0 rounded-full flex items-center justify-center ${
                 currentSessionIndex >= totalSessions - 1 ? "bg-gray-200" : "bg-primary/10"
               }`}>
-                <span className={`material-symbols-outlined text-2xl ${
+                <span className={`material-symbols-outlined text-xl ${
                   currentSessionIndex >= totalSessions - 1 ? "text-gray-400" : "text-primary"
                 }`}>skip_next</span>
               </div>
