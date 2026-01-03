@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../API";
 
@@ -11,6 +11,7 @@ const EnrolledCourse = () => {
   const [enrollData, setenrollData] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const navigate = useNavigate();
+  const hasFetched = useRef(false);
 
   const handleStartLearning = (title, sessionlist) => {
     const firstSessionKey = Object.keys(sessionlist)[0];  // Get the first session's key
@@ -41,6 +42,8 @@ const EnrolledCourse = () => {
   };
 
   useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
     fetchenrollData();
   }, []);
 

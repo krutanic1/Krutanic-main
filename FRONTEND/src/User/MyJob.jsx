@@ -1,10 +1,11 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import API from "../API";
 const MyJob = () => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const userId = localStorage.getItem("userId");
+  const hasFetched = useRef(false);
   const fetchApplications = async () => {
     try {
       setLoading(true);
@@ -26,6 +27,8 @@ const MyJob = () => {
     });
   };
   useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
     fetchApplications();
   }, []);
   const stages = ["Application Submitted", "Pending Review", "Under Review"];

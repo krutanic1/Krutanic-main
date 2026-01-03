@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import API from "../API";
@@ -9,6 +9,7 @@ const UserSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
   const [userData, setUserData] = useState(null);
+  const hasFetched = useRef(false);
   const [componentsAccess, setComponentsAccess] = useState({
     atschecker: false,
     jobboard: false,
@@ -60,6 +61,8 @@ const UserSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const isActive = (path) => location.pathname.toLowerCase() === path.toLowerCase();
 
   useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
     fetchUserData();
     fetchComponentsAccess();
   }, []);

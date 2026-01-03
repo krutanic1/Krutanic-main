@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../API";
 import debounce from "lodash/debounce";
@@ -17,6 +17,7 @@ const NewDashboard = () => {
   const [selectedCertificate, setSelectedCertificate] = useState(null);
   const [userData, setUserData] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const hasFetched = useRef(false);
   const [componentsAccess, setComponentsAccess] = useState({
     atschecker: false,
     jobboard: false,
@@ -172,6 +173,8 @@ const NewDashboard = () => {
   };
 
   useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
     fetchenrollData();
     fethCertificate();
     fetchUserData();
