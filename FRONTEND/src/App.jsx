@@ -230,7 +230,6 @@ const AppContent = () => {
   ];
 
   const userheaderPaths = [
-    "/setting",
   ];
 
   const placementcoodinatorHeaderPaths = [
@@ -239,7 +238,7 @@ const AppContent = () => {
 
   ];
 
-  const lmsFooterPaths = ['/setting', '/jobboard', '/myjob'];
+  const lmsFooterPaths = ['/jobboard', '/myjob'];
 
   const isAuthenticated = () => !!localStorage.getItem("token");
   const isAuthenticatedBda = () => !!localStorage.getItem("bdaToken");

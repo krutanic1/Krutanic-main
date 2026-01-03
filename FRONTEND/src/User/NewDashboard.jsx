@@ -184,41 +184,83 @@ const NewDashboard = () => {
       
       {/* Certificate Modal */}
       {selectedCertificate && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-2xl w-full p-6 shadow-xl">
-            <div className="mb-4">
-              <img src={selectedCertificate.url} alt="Certificate" className="w-full rounded-lg" />
-            </div>
-            <div className="space-y-4">
-              <p className="text-gray-600">Issued By: <strong>KRUTANIC</strong></p>
-              <a
-                className="text-primary hover:underline flex items-center gap-1"
-                href={selectedCertificate.url}
-                target="_blank"
-                rel="noopener noreferrer"
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => setSelectedCertificate(null)}
+        >
+          <div 
+            className="bg-white rounded-2xl max-w-3xl w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="bg-gradient-to-r from-primary to-orange-500 px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="bg-white/20 backdrop-blur-sm rounded-full p-2">
+                  <span className="material-symbols-outlined text-white text-2xl">verified</span>
+                </div>
+                <div>
+                  <h3 className="text-white font-bold text-lg">Certificate of Completion</h3>
+                  <p className="text-white/80 text-sm">{selectedCertificate.domain}</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setSelectedCertificate(null)}
+                className="text-white/80 hover:text-white hover:bg-white/20 rounded-full p-2 transition-colors"
               >
-                Open in new tab
-                <span className="material-symbols-outlined text-sm">open_in_new</span>
-              </a>
-              <div className="border-t pt-4 flex flex-wrap gap-3">
-                <button
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-                  onClick={() => addLinkedin(selectedCertificate)}
-                >
-                  <i className="fa fa-linkedin"></i> Add to LinkedIn
-                </button>
-                <button
-                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-                  onClick={trainingCertificateDownload}
-                >
-                  <i className="fa fa-download"></i> Download Training Certificate
-                </button>
-                <button
-                  className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg"
-                  onClick={() => setSelectedCertificate(null)}
-                >
-                  Close
-                </button>
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            {/* Certificate Image */}
+            <div className="p-6 bg-gray-50">
+              <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+                <img 
+                  src={selectedCertificate.url} 
+                  alt="Certificate" 
+                  className="w-full object-contain"
+                />
+              </div>
+            </div>
+
+            {/* Footer Actions */}
+            <div className="px-6 py-5 bg-white border-t border-gray-100">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                {/* Left side - Info */}
+                <div className="flex items-center gap-4 text-sm text-gray-600">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary text-lg">business</span>
+                    <span>Issued by <strong className="text-gray-900">KRUTANIC</strong></span>
+                  </div>
+                  <a
+                    className="text-primary hover:text-orange-600 flex items-center gap-1 font-medium transition-colors"
+                    href={selectedCertificate.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className="material-symbols-outlined text-lg">open_in_new</span>
+                    View Full Size
+                  </a>
+                </div>
+
+                {/* Right side - Action Buttons */}
+                <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    className="bg-[#0077B5] hover:bg-[#006097] text-white px-5 py-2.5 rounded-lg flex items-center gap-2 font-medium transition-colors shadow-sm"
+                    onClick={() => addLinkedin(selectedCertificate)}
+                  >
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                    Add to LinkedIn
+                  </button>
+                  <button
+                    className="bg-primary hover:bg-orange-600 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 font-medium transition-colors shadow-sm"
+                    onClick={trainingCertificateDownload}
+                  >
+                    <span className="material-symbols-outlined text-lg">download</span>
+                    Download
+                  </button>
+                </div>
               </div>
             </div>
           </div>

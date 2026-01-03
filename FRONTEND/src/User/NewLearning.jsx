@@ -140,7 +140,7 @@ const NewLearning = () => {
                   onClick={() => setIsPlaying(true)}
                   className="size-20 md:size-24 bg-primary/90 rounded-full flex items-center justify-center text-white shadow-2xl backdrop-blur-sm group-hover:scale-110 transition-transform duration-300 cursor-pointer"
                 >
-                  <span className="material-symbols-outlined text-[48px] md:text-[56px] ml-2">play_arrow</span>
+                  <span className="material-symbols-outlined text-[48px] md:text-[56px]">play_arrow</span>
                 </button>
               </div>
               {/* Bottom info */}
