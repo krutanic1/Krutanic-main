@@ -10,7 +10,7 @@ const NewLearning = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { courseTitle, sessions } = location.state || {};
+  const { courseTitle, sessions, startIndex = 0 } = location.state || {};
 
   const sessionKeys = sessions ? Object.keys(sessions) : [];
   const totalSessions = sessionKeys.length;
@@ -48,10 +48,12 @@ const NewLearning = () => {
 
   useEffect(() => {
     if (sessions && sessionKeys.length > 0) {
-      const firstKey = sessionKeys[0];
-      setSelectedSession({ key: firstKey, ...sessions[firstKey] });
+      const initialIndex = startIndex < sessionKeys.length ? startIndex : 0;
+      const initialKey = sessionKeys[initialIndex];
+      setSelectedSession({ key: initialKey, ...sessions[initialKey] });
+      setCurrentSessionIndex(initialIndex);
     }
-  }, [sessions]);
+  }, [sessions, startIndex]);
 
   if (!sessions || !selectedSession) {
     return (
@@ -63,8 +65,6 @@ const NewLearning = () => {
       </div>
     );
   }
-
-  const progress = Math.round(((currentSessionIndex + 1) / totalSessions) * 100);
 
   return (
     <div className="bg-background-light min-h-screen flex flex-col font-display">
@@ -113,14 +113,6 @@ const NewLearning = () => {
             <span className="material-symbols-outlined text-gray-400 text-[16px]">chevron_right</span>
             <span className="text-gray-900 font-medium capitalize">{selectedSession.key}: {selectedSession.title}</span>
           </div>
-          {/* Progress Pill */}
-          <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100">
-            <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider">Progress</span>
-            <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-              <div className="h-full bg-primary rounded-full transition-all duration-300" style={{ width: `${progress}%` }}></div>
-            </div>
-            <span className="text-gray-900 text-sm font-bold">{progress}%</span>
-          </div>
         </div>
 
         {/* Video Player Section */}
@@ -164,6 +156,65 @@ const NewLearning = () => {
             </>
           )}
         </div>
+
+        {/* Previous & Next Video Navigation */}
+        {totalSessions > 1 && (
+          <div className="flex justify-between items-center gap-4 mb-8">
+            {/* Previous Video */}
+            <button
+              onClick={handlePrevious}
+              disabled={currentSessionIndex === 0}
+              className={`flex-1 flex items-center gap-3 p-4 rounded-xl border transition-all ${
+                currentSessionIndex === 0
+                  ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-white border-gray-200 hover:border-primary hover:shadow-md cursor-pointer"
+              }`}
+            >
+              <div className={`size-12 rounded-full flex items-center justify-center ${
+                currentSessionIndex === 0 ? "bg-gray-200" : "bg-primary/10"
+              }`}>
+                <span className={`material-symbols-outlined text-2xl ${
+                  currentSessionIndex === 0 ? "text-gray-400" : "text-primary"
+                }`}>skip_previous</span>
+              </div>
+              <div className="flex-1 text-left">
+                <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Previous</p>
+                <p className={`font-medium truncate ${currentSessionIndex === 0 ? "text-gray-400" : "text-gray-900"}`}>
+                  {currentSessionIndex > 0 
+                    ? sessions[sessionKeys[currentSessionIndex - 1]]?.title 
+                    : "No previous video"}
+                </p>
+              </div>
+            </button>
+
+            {/* Next Video */}
+            <button
+              onClick={handleNext}
+              disabled={currentSessionIndex >= totalSessions - 1}
+              className={`flex-1 flex items-center gap-3 p-4 rounded-xl border transition-all ${
+                currentSessionIndex >= totalSessions - 1
+                  ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-white border-gray-200 hover:border-primary hover:shadow-md cursor-pointer"
+              }`}
+            >
+              <div className="flex-1 text-right">
+                <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Next</p>
+                <p className={`font-medium truncate ${currentSessionIndex >= totalSessions - 1 ? "text-gray-400" : "text-gray-900"}`}>
+                  {currentSessionIndex < totalSessions - 1 
+                    ? sessions[sessionKeys[currentSessionIndex + 1]]?.title 
+                    : "No next video"}
+                </p>
+              </div>
+              <div className={`size-12 rounded-full flex items-center justify-center ${
+                currentSessionIndex >= totalSessions - 1 ? "bg-gray-200" : "bg-primary/10"
+              }`}>
+                <span className={`material-symbols-outlined text-2xl ${
+                  currentSessionIndex >= totalSessions - 1 ? "text-gray-400" : "text-primary"
+                }`}>skip_next</span>
+              </div>
+            </button>
+          </div>
+        )}
 
         {/* Controls & Session Info */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">

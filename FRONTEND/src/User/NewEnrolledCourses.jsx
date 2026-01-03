@@ -41,9 +41,9 @@ const NewEnrolledCourses = () => {
     }
   };
 
-  const handleStartLearning = (title, sessionlist) => {
+  const handleStartLearning = (title, sessionlist, startIndex = 0) => {
     navigate("/Learning", {
-      state: { courseTitle: title, sessions: sessionlist },
+      state: { courseTitle: title, sessions: sessionlist, startIndex },
     });
   };
 
@@ -222,9 +222,7 @@ const NewEnrolledCourses = () => {
                             <div className="col-span-4 md:col-span-3 flex justify-end">
                               <button
                                 onClick={() =>
-                                  handleStartLearning(selectedCourse.title, {
-                                    [key]: selectedCourse.session[key],
-                                  })
+                                  handleStartLearning(selectedCourse.title, selectedCourse.session, index)
                                 }
                                 className={`transition-transform hover:scale-110 ${
                                   isFirst ? "text-primary" : "text-primary/70 hover:text-primary"
