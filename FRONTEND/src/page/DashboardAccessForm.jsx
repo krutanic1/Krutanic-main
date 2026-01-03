@@ -47,6 +47,20 @@ const Dialog = ({ isOpen, onClose, fullname, errorMessage }) => {
 const DashboardAccessForm = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Helper function to format name to Title Case
+  const toTitleCase = (value) => {
+    if (!value) return "";
+    // Check if the value ends with a space (user is typing a new word)
+    const endsWithSpace = value.endsWith(" ");
+    const formatted = value
+      .split(/\s+/)
+      .filter((word) => word.length > 0)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+    // Preserve trailing space so user can continue typing
+    return endsWithSpace ? formatted + " " : formatted;
+  };
+
   const [fullname, setFullname] = useState("");
   const [email, setEmail] = useState("");
   const [alternativeEmail, setAlternativeEmail] = useState("");
@@ -372,7 +386,7 @@ const DashboardAccessForm = () => {
             <div className="input-field">
               <input
                 value={fullname}
-                onChange={(e) => setFullname(e.target.value)}
+                onChange={(e) => setFullname(toTitleCase(e.target.value))}
                 type="text"
                 required
               />
