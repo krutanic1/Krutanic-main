@@ -7,8 +7,8 @@ const HalfPayment = () => {
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
- const [selectedMonth, setSelectedMonth] = useState(""); // Store selected month
-  const [months, setMonths] = useState([]); // Store list of months
+  const [selectedMonth, setSelectedMonth] = useState(""); // Store selected month (format: "Month-Year")
+  const [months, setMonths] = useState([]); // Store list of months with years
 
   const fetchNewStudent = async () => {
     setLoading(true);
@@ -18,13 +18,19 @@ const HalfPayment = () => {
         (item) => item.remark[item.remark.length - 1] === "Half_Cleared"
       );
       setNewStudent(studentsData);
-       // Set the current month for default selection
-       const currentMonth = getCurrentMonth();
-       setSelectedMonth(currentMonth);
-       
-       // Filter the students based on the current month by default
-       const filtered = studentsData.filter((student) => getMonthFromDate(student.createdAt) === currentMonth);
-       setFilteredStudents(filtered);
+      
+      // Generate available months from the database data
+      const availableMonths = getAvailableMonths(studentsData);
+      setMonths(availableMonths);
+      
+      // Set the current month for default selection, or first available month if current doesn't exist
+      const currentMonth = getCurrentMonthYear();
+      const defaultMonth = availableMonths.includes(currentMonth) ? currentMonth : availableMonths[0] || "";
+      setSelectedMonth(defaultMonth);
+      
+      // Filter the students based on the selected month by default
+      const filtered = studentsData.filter((student) => getMonthYearFromDate(student.createdAt) === defaultMonth);
+      setFilteredStudents(filtered);
     } catch (error) {
       console.error("There was an error fetching new student:", error);
     } finally {
@@ -34,7 +40,6 @@ const HalfPayment = () => {
 
   useEffect(() => {
     fetchNewStudent();
-    setMonths(getPastMonths());
   }, []);
 
 //   const handleChangeStatus = async (studentId, action) => {
@@ -69,29 +74,38 @@ const HalfPayment = () => {
 
   const formatDate = (date) => new Date(date).toLocaleDateString("en-GB");
 
-   // Get current month (in string format like "Jan", "Feb", etc.)
-   const getCurrentMonth = () => {
-    const months = [
+  // Get current month with year (format: "January 2026")
+  const getCurrentMonthYear = () => {
+    const monthNames = [
       "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
     ];
-    
-    const currentMonthIndex = new Date().getMonth();
-    return months[currentMonthIndex];
+    const now = new Date();
+    return `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
   };
 
-  // Get the previous months including the current month
-  const getPastMonths = () => {
-    const months = [
+  // Get all available months from the database data
+  const getAvailableMonths = (students) => {
+    const monthNames = [
       "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
     ];
     
-    const currentMonthIndex = new Date().getMonth();
-    let pastMonths = [];
-
-    for (let i = currentMonthIndex; i >= 0; i--) {
-      pastMonths.push(months[i]);
-    }
-    return pastMonths;
+    const monthSet = new Set();
+    students.forEach(student => {
+      if (student.createdAt) {
+        const date = new Date(student.createdAt);
+        const monthYear = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+        monthSet.add(monthYear);
+      }
+    });
+    
+    // Convert to array and sort by date (most recent first)
+    return Array.from(monthSet).sort((a, b) => {
+      const [monthA, yearA] = a.split(' ');
+      const [monthB, yearB] = b.split(' ');
+      const dateA = new Date(`${monthA} 1, ${yearA}`);
+      const dateB = new Date(`${monthB} 1, ${yearB}`);
+      return dateB - dateA;
+    });
   };
 
   // Filter the students based on the selected month
@@ -99,19 +113,18 @@ const HalfPayment = () => {
     const selectedMonth = event.target.value;
     setSelectedMonth(selectedMonth); // Update selected month
     const filtered = newStudent.filter((student) =>
-      getMonthFromDate(student.createdAt) === selectedMonth
+      getMonthYearFromDate(student.createdAt) === selectedMonth
     );
     setFilteredStudents(filtered); // Update filtered students
   };
 
-  // Get the month from the student's created date
-  const getMonthFromDate = (date) => {
-    const months = [
+  // Get the month with year from the student's created date (format: "January 2026")
+  const getMonthYearFromDate = (date) => {
+    const monthNames = [
       "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
     ];
-    
-    const monthIndex = new Date(date).getMonth();
-    return months[monthIndex];
+    const d = new Date(date);
+    return `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
   };
 
 
