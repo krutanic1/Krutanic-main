@@ -44,9 +44,6 @@ const AdminHeader = () => {
         <Link to="/CreateMarketingTeam">
           <i className="fa fa-users mr-2"></i>Create Marketing
         </Link>
-        <Link to="/AdminMarketingLeads">
-          <i className="fa fa-line-chart mr-2"></i>Marketing Leads
-        </Link>
         <Link to="/InactiveBda">
           <i className="fa fa-users mr-2"></i>Inactive Bda A/C
         </Link>

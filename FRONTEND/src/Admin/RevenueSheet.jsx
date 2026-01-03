@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import API from "../API";
 
@@ -8,6 +8,7 @@ const RevenueSheet = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedLead, setSelectedLead] = useState("All");
+  const hasFetched = useRef(false);
 
   const fetchNewStudent = async () => {
     try {
@@ -22,6 +23,8 @@ const RevenueSheet = () => {
   };
 
   useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
     fetchNewStudent();
   }, []);
 

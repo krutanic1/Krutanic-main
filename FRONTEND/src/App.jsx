@@ -53,7 +53,6 @@ import AlumniData from "./Admin/AlumniData";
 import InactiveBda from "./Admin/InactiveBda";
 import ReferAndEarnResponse from "./Admin/ReferAndEarnResponse";
 import CreateMarketingTeam from "./Admin/CreateMarketingTeam";
-import AdminMarketingLeads from "./Admin/AdminMarketingLeads";
 
 // Operation Team
 import OperationLogin from "./Operation/OperationLogin";
@@ -193,8 +192,7 @@ const AppContent = () => {
     "/alumnidata",
     "/inactivebda",
     "/referandearnresponse",
-    "/createmarketingteam",
-    "/adminmarketingleads"
+    "/createmarketingteam"
 
   ];
 
@@ -318,7 +316,6 @@ const AppContent = () => {
         <Route path="/InactiveBda" element={isAuthenticatedAdmin() ? (<InactiveBda />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/ReferAndEarnResponse" element={isAuthenticatedAdmin() ? (<ReferAndEarnResponse />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/CreateMarketingTeam" element={isAuthenticatedAdmin() ? (<CreateMarketingTeam />) : (<Navigate to="/AdminLogin" />)} />
-        <Route path="/AdminMarketingLeads" element={isAuthenticatedAdmin() ? (<AdminMarketingLeads />) : (<Navigate to="/AdminLogin" />)} />
 
 
 
