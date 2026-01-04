@@ -2,6 +2,14 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
+dotenv.config(); // Load env vars early
+
+// ✅ Import Global MongoDB Connection Helper (for Vercel serverless)
+const connectDB = require("./config/db");
+
+// ✅ FIX #4: Import Error Handling Middleware
+const { requestTimeout, dbErrorHandler, globalErrorHandler } = require("./middleware/errorHandler");
+
 const createcourse = require("./routes/CreateCourse");
 const createoperation = require("./routes/CreateOperation");
 const createbda = require("./routes/CreateBDA");
@@ -27,34 +35,11 @@ const Certificate = require("./routes/Certificate")
 const ReferAndEarn = require("./routes/ReferAndEarn");
 const cookieParser = require("cookie-parser");
 const os = require("os");
-// const https = require("https")
 
-dotenv.config();
 const app = express();
 
-// ✅ GLOBAL MONGO CACHE (VERY IMPORTANT FOR VERCEL)
-// let cached = global.mongoose;
-
-// if (!cached) {
-//   cached = global.mongoose = { conn: null, promise: null };
-// }
-
-// async function connectDB() {
-//   if (cached.conn) return cached.conn;
-
-//   if (!cached.promise) {
-//     cached.promise = mongoose.connect(process.env.DB_NAME, {
-//       bufferCommands: false,
-//       maxPoolSize: 10,
-//       useNewUrlParser: true,
-//       useUnifiedTopology: true
-//     });
-//   }
-
-//   cached.conn = await cached.promise;
-//   console.log("✅ MongoDB connected");
-//   return cached.conn;
-// }
+// ✅ FIX #4: Apply Request Timeout Middleware (8 seconds - before MongoDB's 10s timeout)
+app.use(requestTimeout(8000));
 
 // ✅ MIDDLEWARES
 const allowedOrigins = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',').map(o => o.trim()) : [];
@@ -87,8 +72,6 @@ app.use(cors({
 
 app.use(bodyParser.json());
 app.use(cookieParser());
-const PORT = process.env.PORT || 5000;
-// const DB_URI = process.env.DB_URI;
 
 // Middleware to parse JSON
 app.use(express.json());
@@ -137,34 +120,41 @@ app.use("/", ResumeATS);
 
 // app.use("/", PlacementCoordinator);
 
-app.get("/", (req, res) => {
-  res.send("Welcome to the Backend Server!");
+// ✅ FIX #4: Error handling middleware (must be after routes)
+app.use(dbErrorHandler);
+app.use(globalErrorHandler);
+
+// ✅ Health check endpoint
+app.get("/", async (req, res) => {
+  try {
+    await connectDB();
+    res.send("✅ Backend is live and connected to MongoDB");
+  } catch (error) {
+    res.status(500).send("❌ Backend error: " + error.message);
+  }
 });
 
-// Export the app for Vercel
-module.exports = app;
+// ✅ Connect to MongoDB on startup (for local development)
+const PORT = process.env.PORT || 5000;
 
+// Only start server locally (Vercel handles this automatically)
+if (process.env.NODE_ENV !== "production") {
+  connectDB().then(() => {
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+  }).catch((err) => {
+    console.error("❌ Failed to start server:", err.message);
+  });
+} else {
+  // For production/Vercel: Connect DB on cold start
+  connectDB().catch((err) => {
+    console.error("❌ MongoDB connection error on cold start:", err.message);
+  });
+}
 
-// Connect to MongoDB
-mongoose
-  .connect(
-   process.env.DB_NAME,
-    { useNewUrlParser: true, useUnifiedTopology: true }
-  )
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("Failed to connect to MongoDB", err));
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-// // ✅ HEALTH CHECK
-// app.get("/", async (req, res) => {
-//   await connectDB();
-//   res.send("✅ Backend is live and connected");
-// });
-
-// // ✅ VERCEL HANDLER
-// module.exports = async (req, res) => {
-//   await connectDB();
-//   return app(req, res);
-// };
+// ✅ Vercel Serverless Handler - wraps app with DB connection
+module.exports = async (req, res) => {
+  await connectDB();
+  return app(req, res);
+};

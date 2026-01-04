@@ -32,18 +32,24 @@ router.post("/users", async (req, res) => {
 
 // fetch user
 router.get("/users", async (req, res) => {
-  const { userId } = req.query;
+  const { userId, limit } = req.query;
   try {
     let users;
     if (userId) {
-      users = await User.findById(userId);
+      // ✅ FIX #3: Use .lean() for read-only operations (faster)
+      users = await User.findById(userId).lean();
       if (!users) {
         return res
           .status(404)
           .json({ message: "user not found for the given userId" });
       }
     } else {
-      users = await User.find().sort({ _id: -1 });
+      // ✅ FIX #3: Use .lean() and .limit() for pagination
+      const queryLimit = parseInt(limit) || 100; // Default limit of 100
+      users = await User.find()
+        .sort({ _id: -1 })
+        .limit(queryLimit)
+        .lean();
     }
     res.status(200).json(users);
   } catch (error) {

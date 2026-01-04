@@ -31,11 +31,12 @@ router.get("/getcertificate", async (req, res) => {
         if (!email) {
             return res.status(400).json({ error: "Email parameter is required" });
         }
-        const certificate = await Certificate.findOne({ email: email });  // Find certificate by email
+        // ✅ FIX #3: Use .lean() for read-only operations (faster parsing)
+        const certificate = await Certificate.findOne({ email: email }).lean();
         if (!certificate) {
             return res.status(404).json({ error: "Certificate not found" });
         }
-        res.json(certificate);  // Return the certificate if found
+        res.json(certificate);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Server error" });

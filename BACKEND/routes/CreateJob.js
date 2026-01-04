@@ -19,7 +19,13 @@ router.post("/jobs", async (req, res) => {
 // 2. READ all jobs
 router.get("/jobs", async (req, res) => {
     try {
-        const jobs = await CreateJob.find().sort({ createdAt: -1 }); 
+        const { limit } = req.query;
+        // ✅ FIX #3: Use .lean() and .limit() for better performance
+        const queryLimit = parseInt(limit) || 50;
+        const jobs = await CreateJob.find()
+          .sort({ createdAt: -1 })
+          .limit(queryLimit)
+          .lean();
         res.status(200).json(jobs);
     } catch (error) {
         res.status(500).json({ error: "Failed to fetch jobs", details: error.message });

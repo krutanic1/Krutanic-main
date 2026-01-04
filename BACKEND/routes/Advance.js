@@ -4,8 +4,14 @@ const Advance = require("../models/Advance");
 
 
 router.get("/advancequeries", async (req, res) => {
+  const { limit } = req.query;
   try {
-      queries = await Advance.find().sort({ _id: -1 });
+    // ✅ FIX #3: Use .lean() and .limit() for better performance
+    const queryLimit = parseInt(limit) || 100;
+    const queries = await Advance.find()
+      .sort({ _id: -1 })
+      .limit(queryLimit)
+      .lean();
     res.status(200).json(queries);
   } catch (error) {
     res.status(500).json({ message: "An error occurred while fetching data", error: error.message });
