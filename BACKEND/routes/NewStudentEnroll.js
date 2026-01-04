@@ -165,7 +165,7 @@ const convertExcel = async (studentData) => {
 
 // GET request to retrieve all new student enroll
 router.get("/getnewstudentenroll", async (req, res) => {
-  const { studentenrollid, limit } = req.query;
+  const { studentenrollid, limit, all } = req.query;
   try {
     let StudentEnroll;
     if (studentenrollid) {
@@ -177,12 +177,20 @@ router.get("/getnewstudentenroll", async (req, res) => {
           .json({ message: "Student Eroll not found for the given userId" });
       }
     } else {
-      // ✅ FIX #3: Use .limit() for pagination (default 100 records)
-      const queryLimit = parseInt(limit) || 100;
-      StudentEnroll = await NewEnrollStudent.find()
-        .sort({ createdAt: -1 })
-        .limit(queryLimit)
-        .lean();
+      // If all=true or limit=0, fetch all records (for revenue/dashboard)
+      const queryLimit = all === 'true' || limit === '0' ? 0 : (parseInt(limit) || 0);
+      
+      if (queryLimit > 0) {
+        StudentEnroll = await NewEnrollStudent.find()
+          .sort({ createdAt: -1 })
+          .limit(queryLimit)
+          .lean();
+      } else {
+        // No limit - fetch all for dashboard/revenue
+        StudentEnroll = await NewEnrollStudent.find()
+          .sort({ createdAt: -1 })
+          .lean();
+      }
     }
     res.status(200).json(StudentEnroll);
   } catch (error) {

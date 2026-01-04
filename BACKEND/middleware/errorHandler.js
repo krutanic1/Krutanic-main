@@ -9,8 +9,12 @@
 
 const requestTimeout = (timeout = 8000) => {
   return (req, res, next) => {
+    // Flag to track if timeout occurred
+    req.timedOut = false;
+    
     // Set a timeout that fires before MongoDB's 10s timeout
     const timeoutId = setTimeout(() => {
+      req.timedOut = true;
       if (!res.headersSent) {
         console.error(`⏰ Request timeout: ${req.method} ${req.originalUrl}`);
         res.status(504).json({
@@ -24,6 +28,26 @@ const requestTimeout = (timeout = 8000) => {
     // Clear timeout when response finishes
     res.on('finish', () => clearTimeout(timeoutId));
     res.on('close', () => clearTimeout(timeoutId));
+    
+    // Wrap res.json and res.send to prevent sending after timeout
+    const originalJson = res.json.bind(res);
+    const originalSend = res.send.bind(res);
+    
+    res.json = function(data) {
+      if (res.headersSent) {
+        console.warn(`⚠️ Attempted to send JSON after headers sent: ${req.method} ${req.originalUrl}`);
+        return res;
+      }
+      return originalJson(data);
+    };
+    
+    res.send = function(data) {
+      if (res.headersSent) {
+        console.warn(`⚠️ Attempted to send after headers sent: ${req.method} ${req.originalUrl}`);
+        return res;
+      }
+      return originalSend(data);
+    };
 
     next();
   };
