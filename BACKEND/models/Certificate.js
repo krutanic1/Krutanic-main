@@ -34,7 +34,7 @@ const CertificateSchema = new mongoose.Schema({
     default: "",
     trim: true,
   },
-  delivered:{
+  delivered: {
     type: Boolean,
     default: false,
   },

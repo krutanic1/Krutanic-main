@@ -9,7 +9,7 @@ const Dialog = ({ isOpen, onClose, fullname, errorMessage, email, counselor, dom
   if (!isOpen) return null;
 
   // Create WhatsApp message with user details
-  const whatsappMessage = `Hello,\n I am ${fullname}.\n Email: ${email}.\n Counselor: ${counselor}.\n Domain: ${domain}.`;
+  const whatsappMessage = `Hello, I am ${fullname}. Email: ${email}. Counselor: ${counselor}. Domain: ${domain}.`;
   const whatsappLink = `https://wa.me/917022936875?text=${encodeURIComponent(whatsappMessage)}`;
 
   return (
