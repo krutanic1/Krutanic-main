@@ -43,7 +43,7 @@ const NewEnrolledCourses = () => {
 
   const handleStartLearning = (title, sessionlist, startIndex = 0) => {
     navigate("/Learning", {
-      state: { courseTitle: title, sessions: sessionlist, startIndex },
+      state: { courseTitle: title, sessions: sessionlist, startIndex, thumbnail: getThumbnail(title) || selectedCourse?.thumbnail },
     });
   };
 
@@ -80,6 +80,48 @@ const NewEnrolledCourses = () => {
       </div>
     );
   }
+
+  // Thumbnail Mapping
+  const courseThumbnails = {
+    "Full Stack Web Development": "Full Stack Web.jpg",
+    "Data Science": "Data Science.jpg",
+    "Digital Marketing": "Digital Marketing.jpg",
+    "Business Analytics": "Business Analytics.jpg",
+    "Data Analytics": "Data Analytics.jpg",
+    "Human Resource": "Human Resource.jpg",
+    "Finance": "FinTech.jpg",
+    "Investment Banking": "FinTech.jpg",
+    "Operations": "Supply Chain.jpg",
+    "Supply Chain Management": "Supply Chain.jpg",
+    "Product Management": "Business Analytics.jpg",
+    "Artificial Intelligence": "Artificial Intelligence.jpg",
+    "Machine Learning": "Machine Learning.jpg",
+    "Cyber Security": "Cyber Security.jpg",
+    "Cloud Computing": "Cloud Computing.jpg",
+    "DevOps": "DevOps.jpg",
+    "Android Development": "Android App.jpg",
+    "App Development": "Android App.jpg",
+    "UI/UX Design": "UI & UX Design.jpg",
+    "Graphic Design": "Graphic Designing.jpg",
+    "Stock Market": "Stock Marketing.jpg",
+    "Psychology": "Psychology.jpg",
+    "Robotics": "IOT & Robotics.jpg",
+    "IoT": "IOT & Robotics.jpg",
+    "Embedded Systems": "Embedded System.jpg",
+    "Genetics": "Nano Technology &  Genetic.jpg",
+    "AutoCAD": "Auto Cad.jpg",
+  };
+
+  const getThumbnail = (title) => {
+    if (!title) return "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400";
+
+    const key = Object.keys(courseThumbnails).find(k => title.toLowerCase().includes(k.toLowerCase()));
+    if (key) {
+      return new URL(`./thumnails/${courseThumbnails[key]}`, import.meta.url).href;
+    }
+
+    return "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400";
+  };
 
   return (
     <div className="bg-background-light min-h-screen h-screen flex flex-col font-display overflow-hidden">
@@ -126,6 +168,15 @@ const NewEnrolledCourses = () => {
             <div className="max-w-5xl mx-auto p-6 md:p-8 pb-20">
               {/* Course Detail Header */}
               <div className="flex flex-col gap-6 mb-10">
+                {(selectedCourse.thumbnail || getThumbnail(selectedCourse.title)) && (
+                  <div className="w-full h-64 md:h-96 rounded-2xl overflow-hidden shadow-sm">
+                    <img
+                      src={getThumbnail(selectedCourse.title) || selectedCourse.thumbnail}
+                      alt={selectedCourse.title}
+                      className="w-full h-full object-fill"
+                    />
+                  </div>
+                )}
                 <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -203,19 +254,17 @@ const NewEnrolledCourses = () => {
                         return (
                           <div
                             key={key}
-                            className={`grid grid-cols-12 gap-4 px-4 md:px-6 py-4 items-center transition-colors group cursor-pointer ${
-                              isFirst ? "bg-primary/5" : "hover:bg-gray-50"
-                            }`}
+                            className={`grid grid-cols-12 gap-4 px-4 md:px-6 py-4 items-center transition-colors group cursor-pointer ${isFirst ? "bg-primary/5" : "hover:bg-gray-50"
+                              }`}
                           >
                             <div className={`col-span-1 font-bold ${isFirst ? "text-primary" : "text-gray-500"}`}>
                               {String(index + 1).padStart(2, "0")}
                             </div>
                             <div
-                              className={`col-span-7 md:col-span-8 font-medium capitalize ${
-                                isFirst
-                                  ? "text-primary"
-                                  : "text-gray-900 group-hover:text-primary transition-colors"
-                              }`}
+                              className={`col-span-7 md:col-span-8 font-medium capitalize ${isFirst
+                                ? "text-primary"
+                                : "text-gray-900 group-hover:text-primary transition-colors"
+                                }`}
                             >
                               {selectedCourse.session[key].title || key}
                             </div>
@@ -224,9 +273,8 @@ const NewEnrolledCourses = () => {
                                 onClick={() =>
                                   handleStartLearning(selectedCourse.title, selectedCourse.session, index)
                                 }
-                                className={`transition-transform hover:scale-110 ${
-                                  isFirst ? "text-primary" : "text-primary/70 hover:text-primary"
-                                }`}
+                                className={`transition-transform hover:scale-110 ${isFirst ? "text-primary" : "text-primary/70 hover:text-primary"
+                                  }`}
                               >
                                 <span className="material-symbols-outlined">play_circle</span>
                               </button>

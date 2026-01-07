@@ -29,22 +29,17 @@ async function connectDB() {
 
   // If no connection promise exists, create one
   if (!cached.promise) {
-    // ✅ FIX #1: Updated connection config (removed deprecated flags, increased pool)
+    // ✅ FIX #1: Updated connection config
     const opts = {
-      bufferCommands: false,          // Disable buffering for serverless
-      maxPoolSize: 20,                // Increased from 10 to handle more concurrent requests
-      minPoolSize: 5,                 // Maintain minimum connections
-      maxIdleTimeMS: 45000,           // Close idle connections after 45 seconds
-      serverSelectionTimeoutMS: 8000, // Fail faster (before 10s app timeout)
-      socketTimeoutMS: 45000,         // Socket timeout
-      heartbeatFrequencyMS: 10000,    // Check connection health every 10s
-      retryWrites: true,              // Retry failed writes
-      retryReads: true,               // Retry failed reads
-      // NOTE: useNewUrlParser and useUnifiedTopology are deprecated in Mongoose 6+
+      bufferCommands: false,
+      maxPoolSize: 50,  // Optimized for Atlas M10 Tier (allows ~1500 connections, safe limit 50 per instance)
+      minPoolSize: 10,  // Maintain warm connections for traffic spikes
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000
     };
 
     const uri = process.env.DB_NAME;
-    
+
     if (!uri) {
       throw new Error("MONGODB_URI (DB_NAME) is not defined in environment variables");
     }
@@ -52,10 +47,10 @@ async function connectDB() {
     console.log("🔄 Connecting to MongoDB...");
     cached.promise = mongoose.connect(uri, opts).then((mongoose) => {
       console.log("✅ MongoDB connected successfully");
-      
+
       // ✅ FIX #5: Connection error monitoring
       setupConnectionMonitoring();
-      
+
       return mongoose;
     });
   }
@@ -75,7 +70,7 @@ async function connectDB() {
 // ✅ FIX #5: Connection Event Monitoring
 function setupConnectionMonitoring() {
   const db = mongoose.connection;
-  
+
   db.on('error', (err) => {
     console.error('❌ MongoDB connection error:', err.message);
   });

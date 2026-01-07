@@ -7,7 +7,7 @@ const Learning = () => {
   const [isSessionVisible, setisSessionVisible] = useState(false);
   const [selectedSession, setselectedSession] = useState({});
   const location = useLocation();
-  const { courseTitle, sessions } = location.state || {};
+  const { courseTitle, sessions, thumbnail } = location.state || {};
 
   const sessionVisibility = () => {
     setisSessionVisible((prevState) => !prevState);
@@ -23,15 +23,15 @@ const Learning = () => {
     }
   }, [sessions]);
 
-  if(!selectedSession){
+  if (!selectedSession) {
     return <div id="loader">
-    <div className="three-body">
-  <div className="three-body__dot"></div>
-  <div className="three-body__dot"></div>
-  <div className="three-body__dot"></div>
-  </div>
-  </div>;
- }
+      <div className="three-body">
+        <div className="three-body__dot"></div>
+        <div className="three-body__dot"></div>
+        <div className="three-body__dot"></div>
+      </div>
+    </div>;
+  }
 
   return (
     <div id='UserLearning'>
@@ -45,7 +45,7 @@ const Learning = () => {
           <h2>COURSE CONTENT</h2>
           <ul onClick={sessionVisibility}>
             {sessions && Object.keys(sessions).map((key) => (
-              <li key={key}  onClick={() => handleSessionClick(sessions[key])}  ><span>{key}: {sessions[key].title}</span> <i className="fa fa-play-circle"></i></li>
+              <li key={key} onClick={() => handleSessionClick(sessions[key])}  ><span>{key}: {sessions[key].title}</span> <i className="fa fa-play-circle"></i></li>
             ))
             }
 
@@ -53,20 +53,20 @@ const Learning = () => {
         </div>
       )}
       {selectedSession && (
-      <div className='player'>
-      
-        <div className='logo'>
-          <img src={logo} alt="" />
+        <div className='player'>
+
+          <div className='logo'>
+            <img src={thumbnail || logo} alt="" />
+          </div>
+          <iframe
+            src={`https://drive.google.com/file/d/${selectedSession.description}/preview`}
+            allow="autoplay"
+            allowFullScreen
+          >
+          </iframe>
+
         </div>
-        <iframe
-        src={`https://drive.google.com/file/d/${selectedSession.description}/preview`}
-          allow="autoplay"
-          allowFullScreen
-        >
-        </iframe>
-     
-      </div>
- )}
+      )}
     </div>
   )
 }

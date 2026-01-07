@@ -158,9 +158,9 @@ const NewDashboard = () => {
     }, 1500);
   };
 
-  const handleStartLearning = (title, sessionlist) => {
+  const handleStartLearning = (title, sessionlist, thumbnail) => {
     navigate("/Learning", {
-      state: { courseTitle: title, sessions: sessionlist },
+      state: { courseTitle: title, sessions: sessionlist, thumbnail },
     });
   };
 
@@ -181,17 +181,60 @@ const NewDashboard = () => {
     fetchComponentsAccess();
   }, []);
 
+  // Thumbnail Mapping
+  const courseThumbnails = {
+    "Full Stack Web Development": "Full Stack Web.jpg",
+    "Data Science": "Data Science.jpg",
+    "Digital Marketing": "Digital Marketing.jpg",
+    "Business Analytics": "Business Analytics.jpg",
+    "Data Analytics": "Data Analytics.jpg",
+    "Human Resource": "Human Resource.jpg",
+    "Finance": "FinTech.jpg",
+    "Investment Banking": "FinTech.jpg",
+    "Operations": "Supply Chain.jpg",
+    "Supply Chain Management": "Supply Chain.jpg",
+    "Product Management": "Business Analytics.jpg",
+    "Artificial Intelligence": "Artificial Intelligence.jpg",
+    "Machine Learning": "Machine Learning.jpg",
+    "Cyber Security": "Cyber Security.jpg",
+    "Cloud Computing": "Cloud Computing.jpg",
+    "DevOps": "DevOps.jpg",
+    "Android Development": "Android App.jpg",
+    "App Development": "Android App.jpg",
+    "UI/UX Design": "UI & UX Design.jpg",
+    "Graphic Design": "Graphic Designing.jpg",
+    "Stock Market": "Stock Marketing.jpg",
+    "Psychology": "Psychology.jpg",
+    "Robotics": "IOT & Robotics.jpg",
+    "IoT": "IOT & Robotics.jpg",
+    "Embedded Systems": "Embedded System.jpg",
+    "Genetics": "Nano Technology &  Genetic.jpg",
+    "AutoCAD": "Auto Cad.jpg",
+  };
+
+  const getThumbnail = (title) => {
+    if (!title) return "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400";
+
+    const key = Object.keys(courseThumbnails).find(k => title.toLowerCase().includes(k.toLowerCase()));
+    if (key) {
+      return new URL(`./thumnails/${courseThumbnails[key]}`, import.meta.url).href;
+    }
+
+    return "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400";
+  };
+
+
   return (
     <div className="bg-background-light min-h-screen flex flex-col font-display">
       <Toaster position="top-center" reverseOrder={false} />
-      
+
       {/* Certificate Modal */}
       {selectedCertificate && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           onClick={() => setSelectedCertificate(null)}
         >
-          <div 
+          <div
             className="bg-white rounded-2xl max-w-3xl w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300"
             onClick={(e) => e.stopPropagation()}
           >
@@ -206,7 +249,7 @@ const NewDashboard = () => {
                   <p className="text-white/80 text-sm">{selectedCertificate.domain}</p>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={() => setSelectedCertificate(null)}
                 className="text-white/80 hover:text-white hover:bg-white/20 rounded-full p-2 transition-colors"
               >
@@ -217,9 +260,9 @@ const NewDashboard = () => {
             {/* Certificate Image */}
             <div className="p-6 bg-gray-50">
               <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
-                <img 
-                  src={selectedCertificate.url} 
-                  alt="Certificate" 
+                <img
+                  src={selectedCertificate.url}
+                  alt="Certificate"
                   className="w-full object-contain"
                 />
               </div>
@@ -252,7 +295,7 @@ const NewDashboard = () => {
                     onClick={() => addLinkedin(selectedCertificate)}
                   >
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                     </svg>
                     Add to LinkedIn
                   </button>
@@ -273,7 +316,7 @@ const NewDashboard = () => {
       {/* Top Navigation Bar */}
       <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 shrink-0 z-20 relative">
         <div className="flex items-center gap-4 text-gray-900">
-          <button 
+          <button
             className="p-1 rounded-md hover:bg-gray-100 text-gray-600 lg:hidden"
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           >
@@ -284,7 +327,7 @@ const NewDashboard = () => {
           </div>
         </div>
         <div className="flex items-center gap-4 sm:gap-8">
-          <Link 
+          <Link
             to="/Setting"
             className="hidden sm:flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-9 px-4 bg-primary/10 hover:bg-primary/20 text-primary transition-colors text-sm font-bold leading-normal tracking-wide"
           >
@@ -319,7 +362,7 @@ const NewDashboard = () => {
                   </Link>
                 </div>
               </div>
-              
+
               {/* Stats Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col relative overflow-hidden group">
@@ -348,23 +391,26 @@ const NewDashboard = () => {
                 </h2>
                 <Link to="/EnrolledCourses" className="text-primary text-sm font-medium hover:underline">View All</Link>
               </div>
-              
+
               {loading ? (
                 <div className="flex justify-center items-center py-20">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6">
                   {enrollData.map((item, index) => (
                     <div key={index} className={`bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow relative ${item.status !== "fullPaid" ? '' : ''}`}>
                       {item.status !== "fullPaid" && (
                         <div className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-10">Payment Pending</div>
                       )}
                       <div className="p-5 flex flex-col md:flex-row gap-6">
-                        <div 
-                          className={`w-full md:w-48 aspect-video md:aspect-square bg-cover bg-center rounded-lg shrink-0 ${item.status !== "fullPaid" ? 'grayscale' : ''}`}
-                          style={{ backgroundImage: `url(${item.domain?.image || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400'})` }}
-                        ></div>
+                        <div className={`w-full md:w-80 aspect-video shrink-0 rounded-lg overflow-hidden ${item.status !== "fullPaid" ? 'grayscale' : ''}`}>
+                          <img
+                            src={getThumbnail(item.domain?.title) || item.domain?.thumbnail || item.domain?.image}
+                            alt={item.domain?.title}
+                            className="w-full h-full object-fill"
+                          />
+                        </div>
                         <div className="flex flex-col flex-1">
                           <div className="flex justify-between items-start">
                             <div className="flex gap-2 mb-2">
@@ -387,17 +433,17 @@ const NewDashboard = () => {
                               <span>{Object.keys(item.domain?.session || {}).length} Sessions</span>
                             </div>
                           </div>
-                          
+
                           {item.status === "fullPaid" ? (
                             <div className="mt-auto flex flex-wrap gap-3">
-                              <button 
-                                onClick={() => handleStartLearning(item.domain.title, item.domain.session)}
+                              <button
+                                onClick={() => handleStartLearning(item.domain.title, item.domain.session, getThumbnail(item.domain?.title) || item.domain.thumbnail)}
                                 className="flex-1 min-w-[140px] bg-primary hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
                               >
                                 <span className="material-symbols-outlined text-[20px]">play_circle</span>
                                 Start Learning
                               </button>
-                              <button 
+                              <button
                                 onClick={() => handleSubmit(item)}
                                 className="flex-1 min-w-[140px] bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
                               >
@@ -413,7 +459,7 @@ const NewDashboard = () => {
                               </div>
                               <div className="flex flex-wrap items-center justify-between gap-3">
                                 <div className="text-xl font-bold text-gray-900">₹{item.programPrice - item.paidAmount}</div>
-                                <a 
+                                <a
                                   href="https://smartpay.easebuzz.in/219610/Krutanic"
                                   target="_blank"
                                   className="bg-black hover:bg-gray-800 text-white font-medium py-2 px-6 rounded-lg transition-colors flex items-center gap-2"
@@ -482,7 +528,7 @@ const NewDashboard = () => {
                           </td>
                           <td className="p-4 text-right">
                             {certificate.delivered ? (
-                              <button 
+                              <button
                                 onClick={() => setSelectedCertificate(certificate)}
                                 className="text-primary hover:text-orange-700 font-medium inline-flex items-center gap-1"
                               >
