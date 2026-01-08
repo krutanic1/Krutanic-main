@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middleware/UserAuth");
 const CreateOperation = require("../models/CreateOperation");
+const { cachedQuery, invalidateCache } = require("../utils/cache");
 const NewEnrollStudent = require("../models/NewStudentEnroll");
 const { sendEmail } = require("../controllers/emailController");
-const {sendOfferLetter} = require("../controllers/offerLetter")
+const { sendOfferLetter } = require("../controllers/offerLetter")
 const jwt = require("jsonwebtoken");
 const { default: mongoose } = require("mongoose");
 require("dotenv").config();
@@ -24,6 +25,9 @@ router.post("/createoperation", async (req, res) => {
     await newoperation
       .save()
       .then(() => {
+        // ✅ Invalidate operations cache when new operation is created
+        invalidateCache('operations:all', 'static');
+
         res.status(201).json(newoperation);
       })
       .catch((saveError) => {
@@ -35,12 +39,13 @@ router.post("/createoperation", async (req, res) => {
   }
 });
 
-// GET request to retrieve all operation accounts
+// GET request to retrieve all operation accounts (WITH CACHING)
 router.get("/getoperation", async (req, res) => {
   const { operationId } = req.query;
   try {
     let operation;
     if (operationId) {
+      // Don't cache individual lookups
       operation = await CreateOperation.findById(operationId);
       if (!operation) {
         return res
@@ -48,7 +53,16 @@ router.get("/getoperation", async (req, res) => {
           .json({ message: "Operation not found for the given userId" });
       }
     } else {
-      operation = await CreateOperation.find().sort({ _id: -1 });
+      // ✅ CACHE: Operations list (rarely changes, 3 min TTL)
+      operation = await cachedQuery(
+        'operations:all',
+        () => CreateOperation.find().sort({ _id: -1 }).lean(),
+        180,  // 3 minutes TTL
+        'static'
+      );
+
+      // Add HTTP cache header for browser caching
+      res.set('Cache-Control', 'public, max-age=180');
     }
     res.status(200).json(operation);
   } catch (error) {
@@ -242,7 +256,7 @@ router.post("/send-email", async (req, res) => {
 //store a value after send a login details
 router.put("/mailsendedchange/:id", async (req, res) => {
   const { id } = req.params;
-  const { mailSended , onboardingSended , userCreated } = req.body;
+  const { mailSended, onboardingSended, userCreated } = req.body;
   // console.log("true",userCreated);
   const objectId = new mongoose.Types.ObjectId(id);
   try {
@@ -308,9 +322,9 @@ router.post("/sendedOnboardingMail", async (req, res) => {
     paidAmount
   } = req.body;
   const price = Number(programPrice);
-const paid = Number(paidAmount);
-const pendingAmount = price - paid;
-// console.log("pending", pendingAmount);
+  const paid = Number(paidAmount);
+  const pendingAmount = price - paid;
+  // console.log("pending", pendingAmount);
 
   const emailMessage = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
@@ -352,13 +366,18 @@ const pendingAmount = price - paid;
 
 router.post("/sendofferletter", async (req, res) => {
   try {
-    const {id, fullname, domain, email, date, duration, start, end } = req.body;
-    
-    await sendOfferLetter({ email, fullname, date, start, end, domain, duration });
+    const { id, fullname, domain, email, date, duration, start, end } = req.body;
 
-    const updatedStudent = await NewEnrollStudent.findByIdAndUpdate(id,{ offerlettersended: true },{ new: true });
+    const formattedName = fullname
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
 
-    if (!updatedStudent) {return res.status(404).json({ error: "Student not found" });}
+    await sendOfferLetter({ email, fullname: formattedName, date, start, end, domain, duration });
+
+    const updatedStudent = await NewEnrollStudent.findByIdAndUpdate(id, { offerlettersended: true }, { new: true });
+
+    if (!updatedStudent) { return res.status(404).json({ error: "Student not found" }); }
 
     res.status(200).json({ message: "Offer letter sent and status updated.!" });
 

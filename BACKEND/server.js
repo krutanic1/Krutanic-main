@@ -27,9 +27,9 @@ const User = require("./routes/User");
 const admin = require("./routes/AdminLogin")
 const bodyParser = require("body-parser");
 
-const CreateJob = require("./routes/CreateJob"); 
+const CreateJob = require("./routes/CreateJob");
 const JobApplication = require("./routes/JobApplication")
-const MasterClass = require("./routes/MasterClass") 
+const MasterClass = require("./routes/MasterClass")
 const AddEvent = require("./routes/AddEvent")
 const Certificate = require("./routes/Certificate")
 const ReferAndEarn = require("./routes/ReferAndEarn");
@@ -59,15 +59,15 @@ app.options('*', (req, res) => {
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true); 
+      callback(null, true);
     } else {
       console.log('CORS blocked origin:', origin, 'Allowed:', allowedOrigins);
-      callback(new Error('Not allowed by CORS')); 
+      callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true, 
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], 
-  allowedHeaders: ['Content-Type', 'Authorization'], 
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
 app.use(bodyParser.json());
@@ -103,12 +103,12 @@ app.use("/", MasterClass);
 // JobApplication
 app.use("/", JobApplication);
 
-app.use("/",Mockai);
+app.use("/", Mockai);
 
-app.use("/",Excercise);
+app.use("/", Excercise);
 
-app.use("/",Certificate);
-app.use("/",ReferAndEarn);
+app.use("/", Certificate);
+app.use("/", ReferAndEarn);
 
 //AddEvent
 app.use("/", AddEvent);
@@ -123,6 +123,32 @@ app.use("/", ResumeATS);
 // ✅ FIX #4: Error handling middleware (must be after routes)
 app.use(dbErrorHandler);
 app.use(globalErrorHandler);
+
+// ✅ Cache statistics endpoint (for monitoring cache performance)
+app.get("/admin/cache-stats", (req, res) => {
+  try {
+    const { getCacheStats } = require('./utils/cache');
+    const stats = getCacheStats();
+
+    res.json({
+      timestamp: new Date().toISOString(),
+      static: {
+        keys: stats.static.keys,
+        hits: stats.static.hits,
+        misses: stats.static.misses,
+        hitRate: stats.static.hitRate
+      },
+      dynamic: {
+        keys: stats.dynamic.keys,
+        hits: stats.dynamic.hits,
+        misses: stats.dynamic.misses,
+        hitRate: stats.dynamic.hitRate
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Cache stats unavailable", message: error.message });
+  }
+});
 
 // ✅ Health check endpoint
 app.get("/", async (req, res) => {

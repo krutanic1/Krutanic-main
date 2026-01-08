@@ -6,6 +6,11 @@ const mongoose = require("mongoose");
 // Create a new certificate entry
 router.post("/applycertificate", async (req, res) => {
     const { name, email, domain } = req.body;
+    // Format name to Title Case
+    const formattedName = name
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
     // console.log(name,email,domain);
     try {
         const existingCertificate = await Certificate.findOne({ email });
@@ -18,10 +23,10 @@ router.post("/applycertificate", async (req, res) => {
         const finalOutput = `${domain} on ${date.toLocaleString('en-US', { month: 'long', year: 'numeric' })}`;
 
         // Cloudinary URL generation matching frontend logic
-        const url = `https://res.cloudinary.com/do5gatqvs/image/upload/co_rgb:000000,l_text:times%20new%20roman_65_bold_normal_left:${encodeURIComponent(name)}/fl_layer_apply,y_20/co_rgb:000000,l_text:times%20new%20roman_25_bold_normal_left:${encodeURIComponent(finalOutput)}/fl_layer_apply,y_225/training_certificate_demo_vknkst`;
+        const url = `https://res.cloudinary.com/do5gatqvs/image/upload/co_rgb:000000,l_text:times%20new%20roman_65_bold_normal_left:${encodeURIComponent(formattedName)}/fl_layer_apply,y_20/co_rgb:000000,l_text:times%20new%20roman_25_bold_normal_left:${encodeURIComponent(finalOutput)}/fl_layer_apply,y_225/training_certificate_demo_vknkst`;
 
         const newCertificate = new Certificate({
-            name,
+            name: formattedName,
             email,
             domain,
             delivered: true,

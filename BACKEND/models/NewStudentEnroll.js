@@ -5,11 +5,11 @@ const newStudentEnrollSchema = new Schema(
   {
     operationName: {
       type: String,
-      default:null
+      default: null
     },
     operationId: {
       type: String,
-      default:null
+      default: null
     },
     fullname: {
       type: String,
@@ -17,7 +17,7 @@ const newStudentEnrollSchema = new Schema(
     email: {
       type: String,
       unique: true,
-      lowercase: true, 
+      lowercase: true,
       trim: true,
     },
     alternativeEmail: {
@@ -39,7 +39,7 @@ const newStudentEnrollSchema = new Schema(
     counselor: {
       type: String,
     },
-    lead:{
+    lead: {
       type: String,
     },
     domain: {
@@ -68,18 +68,18 @@ const newStudentEnrollSchema = new Schema(
     userCreated: { type: Boolean, default: false },
     offerlettersended: { type: Boolean, default: false },
 
-    whatsAppNumber:{type:String},
-    remainingAmount:{type:String},
-    collegeName:{type:String},
-    branch:{type:String},
-    aadharNumber:{type:String},
-    referFriend:{type:String},
-    referRemark:[{type:String}],
-    internshipstartsmonth:{type:String},
-    internshipendsmonth:{type:String},
-    yearOfStudy:{type:String},
-    executiveId:{type:String},
-    executive:{type:String},
+    whatsAppNumber: { type: String },
+    remainingAmount: { type: String },
+    collegeName: { type: String },
+    branch: { type: String },
+    aadharNumber: { type: String },
+    referFriend: { type: String },
+    referRemark: [{ type: String }],
+    internshipstartsmonth: { type: String },
+    internshipendsmonth: { type: String },
+    yearOfStudy: { type: String },
+    executiveId: { type: String },
+    executive: { type: String },
   },
   {
     timestamps: true,
@@ -89,11 +89,16 @@ const newStudentEnrollSchema = new Schema(
 // ✅ FIX #2: Add Database Indexes for faster queries
 // Note: email index already created by unique: true in schema
 newStudentEnrollSchema.index({ status: 1 });
-newStudentEnrollSchema.index({ createdAt: -1 });
+newStudentEnrollSchema.index({ createdAt: -1 });  // Revenue page date filtering
 newStudentEnrollSchema.index({ operationId: 1 });
 newStudentEnrollSchema.index({ executiveId: 1 });
 newStudentEnrollSchema.index({ domain: 1 });
+newStudentEnrollSchema.index({ counselor: 1 });  // ✅ NEW: For BDA queries (/databybdaname)
+newStudentEnrollSchema.index({ domainId: 1 });   // ✅ NEW: For course lookups/aggregations
 newStudentEnrollSchema.index({ status: 1, createdAt: -1 }); // Composite index for filtered queries
+
+// ✅ NEW: Compound index for revenue aggregation queries (improves /getmonthlyrevenue performance)
+newStudentEnrollSchema.index({ createdAt: -1, lead: 1, status: 1 });
 
 const NewEnroll = mongoose.model("NewEnroll", newStudentEnrollSchema);
 module.exports = NewEnroll;

@@ -46,9 +46,10 @@ const BookedAmount = () => {
 
     const offerLetterDetails = {
       id: offerData._id,
-      fullname:
-        offerData.fullname.charAt(0).toUpperCase() +
-        offerData.fullname.slice(1).toLowerCase(),
+      fullname: offerData.fullname
+        .split(" ")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(" "),
       domain: offerData.domain,
       email: offerData.email,
       date: new Date(offerDate).toLocaleDateString("en-GB", {
@@ -969,10 +970,9 @@ const BookedAmount = () => {
                       <td>
                         {" "}
                         <a
-                          href={`https://web.whatsapp.com/send?phone=${
-                            item.whatsAppNumber
-                          }&text=${encodeURIComponent(
-                            `Registration Confirmation - ${item.domain} Program at Krutanic
+                          href={`https://web.whatsapp.com/send?phone=${item.whatsAppNumber
+                            }&text=${encodeURIComponent(
+                              `Registration Confirmation - ${item.domain} Program at Krutanic
 
 Dear ${item.fullname},
 
@@ -1000,7 +1000,7 @@ Warm regards,
 ${item.operationName.charAt(0).toUpperCase() + item.operationName.slice(1)}
 Operations Department
 Team Krutanic`
-                          )}`}
+                            )}`}
                           target="_blank"
                           rel="noopener noreferrer"
                         >

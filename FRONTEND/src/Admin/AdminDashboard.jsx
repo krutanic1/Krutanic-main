@@ -3,7 +3,7 @@ import axios from "axios";
 import API from "../API";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
-import toast ,{Toaster} from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 
 const AdminDashboard = () => {
   const [courses, setCourses] = useState([]);
@@ -21,7 +21,7 @@ const AdminDashboard = () => {
       setCourses(response.data);
     } catch (error) {
       console.error("There was an error fetching courses:", error);
-    }finally{
+    } finally {
       setLoading(false);
     }
   };
@@ -45,7 +45,9 @@ const AdminDashboard = () => {
 
   const fetchNewStudent = async () => {
     try {
-      const response = await axios.get(`${API}/getnewstudentenroll`);
+      // ✅ OPTIMIZATION: Limit to 1000 records for dashboard statistics
+      // (Full data available via pagination on dedicated pages)
+      const response = await axios.get(`${API}/getnewstudentenroll?limit=1000`);
       setPayment(response.data);
     } catch (error) {
       console.error("There was an error fetching new student:", error);
@@ -53,15 +55,34 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
-    fetchCourses();
-    fetchOperation();
-    fetchBda();
-    fetchNewStudent();
+    // ✅ OPTIMIZATION: Sequential + batched loading to reduce Vercel instance spawn
+    // Old: 4 parallel requests → 4 Vercel instances → 40 connections (with old minPoolSize: 10)
+    // New: Sequential + 2 parallel max → 2 instances → reduced connection pressure
+    (async () => {
+      setLoading(true);
+      try {
+        // Priority 1: Courses (needed for table)
+        await fetchCourses();
+
+        // Priority 2: Batch non-critical metadata (max 2 parallel)
+        await Promise.all([
+          fetchOperation(),
+          fetchBda()
+        ]);
+
+        // Priority 3: Heavy query last (full enrollments with limit)
+        await fetchNewStudent();
+      } catch (error) {
+        console.error("Error loading dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
 
 
-const [startDate, setStartDate] = useState("");
+  const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [filteredPayments, setFilteredPayments] = useState(payment);
   const [showFilters, setShowFilters] = useState(false);
@@ -80,7 +101,7 @@ const [startDate, setStartDate] = useState("");
         (item) => new Date(item.createdAt) <= new Date(endDate)
       );
     }
-     
+
     setFilteredPayments(filteredData);
     toast.success("Data filtered successfully.");
     setStartDate("");
@@ -105,7 +126,7 @@ const [startDate, setStartDate] = useState("");
 
   return (
     <div id="AdminDashboard" >
-      <Toaster position="top-center" reverseOrder={false}/>
+      <Toaster position="top-center" reverseOrder={false} />
       <div className="numberdiv">
         <div>
           <i className="text-blue-700	fa fa-book"></i>
@@ -145,48 +166,48 @@ const [startDate, setStartDate] = useState("");
         </div>
       </div>
       <div className="p-4 relative">
-      <button onClick={() => setShowFilters(!showFilters)} className="bg-blue-500 text-white py-2 px-4 rounded">
-      <i className="fa fa-filter" aria-hidden="true"></i> Filter
-      </button>
-      {showFilters && (
-        <div className="mt-4 absolute bg-white top-10 border w-[300px] p-4 rounded shadow-lg">
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Start Date:</label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
-            />
+        <button onClick={() => setShowFilters(!showFilters)} className="bg-blue-500 text-white py-2 px-4 rounded">
+          <i className="fa fa-filter" aria-hidden="true"></i> Filter
+        </button>
+        {showFilters && (
+          <div className="mt-4 absolute bg-white top-10 border w-[300px] p-4 rounded shadow-lg">
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">Start Date:</label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">End Date:</label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
+              />
+            </div>
+
+            <button
+              onClick={filterPaymentsByDate}
+              className="bg-green-500 text-white py-2 px-4 rounded mb-4"
+            >
+              Filter Data
+            </button>
+
+            <h4 className="text-dm mb-2 font-semibold">Filtered Data: {filteredPayments.length}</h4>
+
+            <button
+              onClick={exportToExcel}
+              className="bg-yellow-500 text-white py-2 px-4 rounded"
+            >
+              Download Excel
+            </button>
           </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">End Date:</label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
-            />
-          </div>
-
-          <button
-            onClick={filterPaymentsByDate}
-            className="bg-green-500 text-white py-2 px-4 rounded mb-4"
-          >
-            Filter Data
-          </button>
-
-          <h4 className="text-dm mb-2 font-semibold">Filtered Data: {filteredPayments.length}</h4>
-
-          <button
-            onClick={exportToExcel}
-            className="bg-yellow-500 text-white py-2 px-4 rounded"
-          >
-            Download Excel
-          </button>
-        </div>
-      )}
+        )}
       </div>
       <h3>Added Courses</h3>
       <div className="courselist">

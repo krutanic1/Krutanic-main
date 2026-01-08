@@ -1,41 +1,127 @@
 const mongoose = require("mongoose");
 
 /**
- * Global MongoDB Connection Helper for Serverless (Vercel)
+ * Hardened MongoDB Connection Helper for Serverless (Vercel)
  * 
- * This module implements connection caching to prevent
- * Mongoose timeout issues in serverless environments.
- * Each Lambda/serverless invocation will reuse existing connections.
+ * This module implements multiple layers of defense against duplicate connections:
+ * 1. Global connection caching
+ * 2. Mongoose connection state checking
+ * 3. Connection promise locking
+ * 4. Automatic cleanup on disconnection
  * 
- * FIXES APPLIED:
- * - Removed deprecated useUnifiedTopology/useNewUrlParser flags
- * - Increased maxPoolSize from 10 to 20
- * - Added maxIdleTimeMS to close idle connections
- * - Added connection event monitoring
+ * DEFENSIVE GUARDS:
+ * - Checks mongoose.connection.readyState before creating new connections
+ * - Reuses existing connections even if global.mongoose is cleared
+ * - Prevents race conditions during parallel imports
+ * - Handles hot reloads in development
+ * - Compatible with Vercel serverless functions
+ * 
+ * OPTIMIZATIONS APPLIED:
+ * - minPoolSize: 0 (CRITICAL for serverless - allows idle connection release)
+ * - maxPoolSize: 10 (appropriate for single-request serverless functions)
+ * - maxIdleTimeMS: 60000 (auto-close idle connections after 60 seconds)
+ * - Connection state monitoring with automatic recovery
  */
 
-// Global cache for the MongoDB connection
+// ========================================
+// DEFENSIVE GUARD #1: Global Connection Cache
+// ========================================
+// Store connection in global scope to survive hot reloads and module re-imports
 let cached = global.mongoose;
 
 if (!cached) {
   cached = global.mongoose = { conn: null, promise: null };
 }
 
+/**
+ * Get MongoDB connection with multiple defensive guards
+ * 
+ * Connection State Map (mongoose.connection.readyState):
+ * 0 = disconnected
+ * 1 = connected
+ * 2 = connecting
+ * 3 = disconnecting
+ */
 async function connectDB() {
-  // If we already have a connection, return it
-  if (cached.conn) {
+  // ========================================
+  // DEFENSIVE GUARD #2: Mongoose Connection State Check
+  // ========================================
+  // CRITICAL: Check if Mongoose already has an active connection
+  // This prevents duplicate connections even if global cache is cleared
+  if (mongoose.connection.readyState === 1) {
+    console.log('♻️  Reusing existing MongoDB connection (readyState: 1 - connected)');
+    cached.conn = mongoose;
     return cached.conn;
   }
 
-  // If no connection promise exists, create one
+  // ========================================
+  // DEFENSIVE GUARD #3: Connection In Progress Check
+  // ========================================
+  // If another request is already connecting, wait for it instead of creating duplicate
+  if (mongoose.connection.readyState === 2) {
+    console.log('⏳ MongoDB connection in progress (readyState: 2 - connecting), waiting...');
+
+    // If we have a cached promise, wait for it
+    if (cached.promise) {
+      try {
+        cached.conn = await cached.promise;
+        return cached.conn;
+      } catch (err) {
+        console.error('❌ Cached connection promise failed:', err.message);
+        // Fall through to create new connection
+      }
+    }
+
+    // Otherwise wait for Mongoose's internal connection process
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error('Connection timeout: waiting for in-progress connection'));
+      }, 10000); // 10 second timeout
+
+      mongoose.connection.once('connected', () => {
+        clearTimeout(timeout);
+        cached.conn = mongoose;
+        resolve(cached.conn);
+      });
+
+      mongoose.connection.once('error', (err) => {
+        clearTimeout(timeout);
+        reject(err);
+      });
+    });
+  }
+
+  // ========================================
+  // DEFENSIVE GUARD #4: Cached Connection Check
+  // ========================================
+  // If we already have a cached connection, return it
+  if (cached.conn) {
+    console.log('✅ Returning cached MongoDB connection');
+    return cached.conn;
+  }
+
+  // ========================================
+  // DEFENSIVE GUARD #5: Promise Locking
+  // ========================================
+  // If a connection promise exists, wait for it instead of creating a new one
+  // This prevents race conditions during parallel imports/requires
   if (!cached.promise) {
-    // ✅ FIX #1: Updated connection config
+    // ✅ Serverless-optimized connection pool configuration
     const opts = {
       bufferCommands: false,
-      maxPoolSize: 50,  // Optimized for Atlas M10 Tier (allows ~1500 connections, safe limit 50 per instance)
-      minPoolSize: 10,  // Maintain warm connections for traffic spikes
+
+      // ✅ SERVERLESS FIX: Reduced pool sizes for isolated Lambda-like instances
+      maxPoolSize: 10,        // Reduced from 50 (Vercel functions process 1 request at a time)
+      minPoolSize: 0,         // CRITICAL: Changed from 10 (allow idle instances to release connections)
+      maxIdleTimeMS: 60000,   // NEW: Auto-close idle connections after 60 seconds
+
+      // Connection timeouts
       serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000
+      socketTimeoutMS: 45000,
+
+      // Retry behavior for transient serverless network issues
+      retryWrites: true,
+      retryReads: true
     };
 
     const uri = process.env.DB_NAME;
@@ -44,22 +130,36 @@ async function connectDB() {
       throw new Error("MONGODB_URI (DB_NAME) is not defined in environment variables");
     }
 
-    console.log("🔄 Connecting to MongoDB...");
+    console.log("🔄 Creating new MongoDB connection...");
+
+    // ========================================
+    // PROMISE LOCK: Store promise immediately to prevent duplicate connections
+    // ========================================
     cached.promise = mongoose.connect(uri, opts).then((mongoose) => {
       console.log("✅ MongoDB connected successfully");
+      console.log(`📊 Connection State: ${mongoose.connection.readyState} (1 = connected)`);
+      console.log(`🔌 Active Connections: ${mongoose.connection.client?.topology?.s?.pool?.size || 'N/A'}`);
 
-      // ✅ FIX #5: Connection error monitoring
+      // ✅ Setup connection monitoring for automatic recovery
       setupConnectionMonitoring();
 
       return mongoose;
+    }).catch((err) => {
+      // ========================================
+      // ERROR HANDLING: Clear promise on failure for retry capability
+      // ========================================
+      console.error("❌ MongoDB connection failed:", err.message);
+      cached.promise = null; // Allow retry on next request
+      throw err;
     });
   }
 
   try {
     cached.conn = await cached.promise;
   } catch (e) {
-    // Reset promise on error so we can retry
+    // Reset both promise and connection on error
     cached.promise = null;
+    cached.conn = null;
     console.error("❌ MongoDB connection error:", e.message);
     throw e;
   }
@@ -67,36 +167,76 @@ async function connectDB() {
   return cached.conn;
 }
 
-// ✅ FIX #5: Connection Event Monitoring
+// ========================================
+// CONNECTION EVENT MONITORING
+// ========================================
+// Automatically handles disconnections, reconnections, and cleanup
 function setupConnectionMonitoring() {
   const db = mongoose.connection;
 
-  db.on('error', (err) => {
-    console.error('❌ MongoDB connection error:', err.message);
-  });
-
+  // ========================================
+  // DEFENSIVE GUARD #6: Automatic Cache Cleanup on Disconnect
+  // ========================================
   db.on('disconnected', () => {
-    console.warn('⚠️ MongoDB disconnected. Will attempt to reconnect...');
+    console.warn('⚠️  MongoDB disconnected. Clearing cache for fresh reconnect...');
     cached.conn = null;
     cached.promise = null;
   });
 
   db.on('reconnected', () => {
-    console.log('✅ MongoDB reconnected');
+    console.log('🔄 MongoDB reconnected successfully');
+    cached.conn = mongoose; // Update cache with reconnected instance
   });
 
   db.on('close', () => {
-    console.log('📴 MongoDB connection closed');
+    console.log('📴 MongoDB connection closed by server');
     cached.conn = null;
     cached.promise = null;
   });
 
-  // Monitor connection pool usage (useful for debugging)
+  db.on('error', (err) => {
+    console.error('❌ MongoDB runtime error:', err.message);
+
+    // On critical errors, clear cache to force reconnection
+    if (err.message.includes('connection') || err.message.includes('pool')) {
+      cached.conn = null;
+      cached.promise = null;
+    }
+  });
+
+  // Development-only detailed logging
   if (process.env.NODE_ENV !== 'production') {
     db.on('open', () => {
       console.log('📊 MongoDB connection pool established');
+      console.log(`   - maxPoolSize: 10`);
+      console.log(`   - minPoolSize: 0`);
+      console.log(`   - maxIdleTimeMS: 60000ms`);
     });
   }
 }
 
+// ========================================
+// HELPER: Get Current Connection State (for debugging)
+// ========================================
+function getConnectionInfo() {
+  const state = mongoose.connection.readyState;
+  const stateMap = {
+    0: 'disconnected',
+    1: 'connected',
+    2: 'connecting',
+    3: 'disconnecting'
+  };
+
+  return {
+    readyState: state,
+    stateName: stateMap[state] || 'unknown',
+    hasCache: !!cached.conn,
+    hasPromise: !!cached.promise,
+    host: mongoose.connection.host || 'N/A',
+    name: mongoose.connection.name || 'N/A'
+  };
+}
+
 module.exports = connectDB;
+module.exports.getConnectionInfo = getConnectionInfo; // Export for debugging
+

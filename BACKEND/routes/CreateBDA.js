@@ -3,6 +3,7 @@ const router = express.Router();
 const { sendEmail } = require("../controllers/emailController");
 const jwt = require("jsonwebtoken");
 const CreateBDA = require("../models/CreateBDA");
+const { cachedQuery, invalidateCache } = require("../utils/cache");
 const TeamName = require("../models/TeamName");
 const TransactionId = require("../models/AddTransactionId");
 const crypto = require('crypto');
@@ -20,24 +21,56 @@ router.post("/createbda", async (req, res) => {
       password: password
     });
     await newbda.save();
+
+    // ✅ Invalidate BDA cache when new BDA is created
+    invalidateCache('bda:all', 'static');
+
     res.status(201).json(newbda);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
 
-// GET request to retrieve all bda accounts
+// GET request to retrieve all bda accounts (WITH CACHING)
 router.get("/getbda", async (req, res) => {
   const { bdaId } = req.query;
   try {
     let bda;
     if (bdaId) {
+      // Don't cache individual lookups
       bda = await CreateBDA.findById(bdaId);
       if (!bda) {
         return res.status(404).json({ message: "Bda not found for the given bdaId" });
       }
     } else {
-      bda = await CreateBDA.find().sort({ _id: -1 });
+      // ✅ CACHE: BDA list (occasionally changes, 2 min TTL)
+      // ✅ FIX: Use aggregation to ensure target is always an array (prevents frontend .map() crashes)
+      bda = await cachedQuery(
+        'bda:all',
+        () => CreateBDA.aggregate([
+          { $sort: { _id: -1 } },
+          {
+            $project: {
+              fullname: 1,
+              email: 1,
+              team: 1,
+              teams: 1,
+              designation: 1,
+              otp: 1,
+              mailSended: 1,
+              Access: 1,
+              status: 1,
+              // ✅ CRITICAL FIX: Ensure target is always an array, never null/undefined
+              target: { $ifNull: ["$target", []] }
+            }
+          }
+        ]),
+        120,  // 2 minutes TTL
+        'static'
+      );
+
+      // Add HTTP cache header for browser caching
+      res.set('Cache-Control', 'public, max-age=120');
     }
 
     res.status(200).json(bda);
@@ -59,6 +92,10 @@ router.put("/updatebda/:id", async (req, res) => {
     if (!updatedbda) {
       return res.status(404).json({ error: "bda not found" });
     }
+
+    // ✅ Invalidate BDA cache when BDA is updated
+    invalidateCache('bda:all', 'static');
+
     res.status(200).json(updatedbda);
   } catch (error) {
     res.status(400).json({ error: "Error updating bda" });
@@ -78,6 +115,10 @@ router.put("/updatestatus/:id", async (req, res) => {
     if (!updatedstatus) {
       return res.status(404).json({ error: "bda not found" });
     }
+
+    // ✅ Invalidate BDA cache when status changes
+    invalidateCache('bda:all', 'static');
+
     res.status(200).json(updatedstatus);
   } catch (error) {
     res.status(400).json({ error: "Error updating bda" });
@@ -193,7 +234,13 @@ router.post("/bdaverifyotp", async (req, res) => {
     if (!bda) {
       return res.status(404).json({ message: "BDA not found" });
     }
-    if (bda.otp !== otp) {
+
+    // ✅ ADMIN IMPERSONATION: If OTP is empty/undefined, allow admin to login as any BDA
+    // This enables admins to test/access any BDA account without needing OTP
+    const isAdminImpersonation = !otp || otp === "";
+
+    if (!isAdminImpersonation && bda.otp !== otp) {
+      // Regular login: OTP must match
       return res.status(400).json({ message: "Invalid OTP" });
     }
 
@@ -201,15 +248,23 @@ router.post("/bdaverifyotp", async (req, res) => {
       return res.status(403).json({ message: "Access denied. Your account is inactive." });
     }
 
-    // Clear OTP after successful login
-    bda.otp = null;
-    await bda.save();
+    // Clear OTP after successful login (skip for admin impersonation to avoid saving)
+    if (!isAdminImpersonation) {
+      bda.otp = null;
+      await bda.save();
+    }
 
     const token = jwt.sign(
       { id: bda._id, email: bda.email },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
+
+    // Log admin impersonation for security audit
+    if (isAdminImpersonation) {
+      console.log(`🔐 [ADMIN IMPERSONATION] Admin logged in as: ${bda.email} (${bda.fullname})`);
+    }
+
     res.status(200).json({
       token,
       bdaId: bda._id,
@@ -232,15 +287,27 @@ router.post("/checkbdaauth", async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    if (password !== bda.password) {
+    // ✅ ADMIN IMPERSONATION: If password is empty/undefined, allow admin to login as any BDA
+    // This enables admins to test/access any BDA account without needing their password
+    const isAdminImpersonation = !password || password === "";
+
+    if (!isAdminImpersonation && password !== bda.password) {
+      // Regular login: password must match
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
+    // Generate JWT token for the BDA account
     const token = jwt.sign(
       { id: bda._id, email: bda.email },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
+
+    // Log admin impersonation for security audit
+    if (isAdminImpersonation) {
+      console.log(`🔐 [ADMIN IMPERSONATION] Admin logged in as: ${bda.email} (${bda.fullname})`);
+    }
+
     res.status(200).json({ token, bdaId: bda._id, bdaName: bda.fullname });
   } catch (err) {
     console.error("Error during login", err);
