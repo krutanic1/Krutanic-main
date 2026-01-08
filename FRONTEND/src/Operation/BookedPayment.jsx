@@ -7,6 +7,8 @@ import { PiLockKeyOpenFill, PiLockKeyFill } from "react-icons/pi";
 import { FaUserTimes } from "react-icons/fa";
 import { FaUserCheck } from "react-icons/fa";
 
+// VERSION: 2026-01-08-v2 - Year-aware month filtering fix
+
 const BookedAmount = () => {
   const [iscourseFormVisible, setiscourseFormVisible] = useState(false);
   const resetForm = () => {
@@ -164,11 +166,13 @@ const BookedAmount = () => {
   const fetchNewStudent = async () => {
     const operationName = localStorage.getItem("operationName");
     try {
-      const response = await axios.get(`${API}/getnewstudentenroll`);
+      // Operations need all records to filter by month across 4 months
+      const response = await axios.get(`${API}/getnewstudentenroll?all=true`);
       const bookedStudents = response.data.filter(
         (item) =>
           item.status === "booked" && item.operationName === operationName
       );
+      console.log(`📊 Total booked students for ${operationName}:`, bookedStudents.length);
       setNewStudent(bookedStudents);
       setFilteredStudents(bookedStudents);
 
@@ -179,6 +183,7 @@ const BookedAmount = () => {
       const filtered = bookedStudents.filter(
         (student) => getMonthFromDate(student.createdAt) === currentMonth
       );
+      console.log(`📅 Students in ${currentMonth}:`, filtered.length);
       setFilteredStudents(filtered);
     } catch (error) {
       console.error("There was an error fetching new student:", error);
@@ -243,11 +248,15 @@ const BookedAmount = () => {
   };
 
   useEffect(() => {
+    console.log("🚀 BookedPayment component mounted - Starting data fetch...");
     fetchCourses();
     fetchBda();
     fetchNewStudent();
     fetchOperationData();
-    setMonths(getPastMonths());
+    const monthsArray = getPastMonths();
+    console.log("🔍 DEBUG: Months array =", monthsArray);
+    console.log("🔍 DEBUG: Current month =", getCurrentMonth());
+    setMonths(monthsArray);
   }, []);
 
   const handleSendEmail = async (value) => {
@@ -349,26 +358,7 @@ const BookedAmount = () => {
 
   const formatDate = (date) => new Date(date).toLocaleDateString("en-GB");
 
-  const groupedData = filteredStudents.reduce((acc, item) => {
-    const date = formatDate(item.createdAt);
-    if (!acc[date]) {
-      acc[date] = [];
-    }
-    acc[date].push(item);
-    return acc;
-  }, {});
 
-  if (!groupedData) {
-    return (
-      <div id="loader">
-        <div className="three-body">
-          <div className="three-body__dot"></div>
-          <div className="three-body__dot"></div>
-          <div className="three-body__dot"></div>
-        </div>
-      </div>
-    );
-  }
 
   const handleAddNewCandidate = () => {
     resetForm();
@@ -569,11 +559,13 @@ const BookedAmount = () => {
       "December",
     ];
 
-    const currentMonthIndex = new Date().getMonth();
-    return months[currentMonthIndex];
+    const currentDate = new Date();
+    const currentMonthIndex = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+    return `${months[currentMonthIndex]} ${currentYear}`;
   };
 
-  // Get the previous months including the current month
+  // Get the previous months including the current month (with year awareness)
   const getPastMonths = () => {
     const months = [
       "January",
@@ -590,18 +582,23 @@ const BookedAmount = () => {
       "December",
     ];
 
-    const currentMonthIndex = new Date().getMonth();
+    const currentDate = new Date();
+    const currentMonthIndex = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
     let pastMonths = [];
 
     for (let i = 0; i < 4; i++) {
-      const index = (currentMonthIndex - i + 12) % 12; // handles wrap-around
-      pastMonths.push(months[index]);
+      const targetDate = new Date(currentYear, currentMonthIndex - i, 1);
+      const monthName = months[targetDate.getMonth()];
+      const year = targetDate.getFullYear();
+      // Store as "Month Year" format for proper year-aware filtering
+      pastMonths.push(`${monthName} ${year}`);
     }
 
     return pastMonths;
   };
 
-  // Get the month from the student's created date
+  // Get the month from the student's created date (with year)
   const getMonthFromDate = (date) => {
     const months = [
       "January",
@@ -618,9 +615,53 @@ const BookedAmount = () => {
       "December",
     ];
 
-    const monthIndex = new Date(date).getMonth();
-    return months[monthIndex];
+    const dateObj = new Date(date);
+    const monthIndex = dateObj.getMonth();
+    const year = dateObj.getFullYear();
+    return `${months[monthIndex]} ${year}`;
   };
+
+  // Pagination Logic (Moved to avoid TDZ)
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 30;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedMonth, newStudent]);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredStudents.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
+
+  const nextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const groupedData = currentItems.reduce((acc, item) => {
+    const date = formatDate(item.createdAt);
+    if (!acc[date]) {
+      acc[date] = [];
+    }
+    acc[date].push(item);
+    return acc;
+  }, {});
+
+  if (!groupedData) {
+    return (
+      <div id="loader">
+        <div className="three-body">
+          <div className="three-body__dot"></div>
+          <div className="three-body__dot"></div>
+          <div className="three-body__dot"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div id="OperationEnroll" className="ml-[265px]">
@@ -1072,6 +1113,28 @@ Team Krutanic`
             )}
           </tbody>
         </table>
+
+        {filteredStudents.length > itemsPerPage && (
+          <div className="flex justify-center items-center gap-4 mt-4 mb-4">
+            <button
+              onClick={prevPage}
+              disabled={currentPage === 1}
+              className={`px-4 py-2 rounded ${currentPage === 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+            >
+              Previous
+            </button>
+            <span className="font-semibold">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={nextPage}
+              disabled={currentPage === totalPages}
+              className={`px-4 py-2 rounded ${currentPage === totalPages ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+            >
+              Next
+            </button>
+          </div>
+        )}
         {dialogVisible && dialogData && (
           <div className="fixed flex flex-col rounded-md top-[30%] left-[50%] shadow-black shadow-sm transform translate-x-[-50%] transalate-y-[-50%] bg-white p-[20px] z-[1000]">
             <h2>Details</h2>

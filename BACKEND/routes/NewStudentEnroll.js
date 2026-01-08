@@ -505,10 +505,13 @@ router.get("/enrollments", async (req, res) => {
           pipeline: [
             {
               $project: {
-                _id: 1,
-                title: 1,
-                description: 1,
-                // Return counts instead of full arrays to reduce payload
+                // Restore fields needed by frontend
+                session: 1,
+                sessions: 1, // Include both just in case
+                thumbnail: 1,
+                modules: 1, // Frontend might need modules too
+
+                // Keep counts if needed for other views, but we need data here
                 modulesCount: { $size: { $ifNull: ['$modules', []] } },
                 sessionsCount: { $size: { $ifNull: ['$sessions', []] } },
                 createdAt: 1,

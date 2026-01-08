@@ -9,7 +9,8 @@ const Default = () => {
   const fetchNewStudent = async () => {
     const bdaName = localStorage.getItem("bdaName");
     try {
-      const response = await axios.get(`${API}/getnewstudentenroll`);
+      // Fetch all records to ensure we get data for this BDA across all months
+      const response = await axios.get(`${API}/getnewstudentenroll?all=true`);
       const bookedStudents = response.data.filter(
         (item) => item.counselor === bdaName && item.status === "default"
       );
@@ -63,11 +64,11 @@ const Default = () => {
         (student.createdAt &&
           student.createdAt.toLowerCase().includes(value.toLowerCase())) ||
         (student.clearPaymentMonth &&
-          student.clearPaymentMonth.toLowerCase().includes(value.toLowerCase()))||
-          (student.collegeName &&
-            student.collegeName.toLowerCase().includes(value.toLowerCase()))||
-            (student.branch &&
-              student.branch.toLowerCase().includes(value.toLowerCase()))
+          student.clearPaymentMonth.toLowerCase().includes(value.toLowerCase())) ||
+        (student.collegeName &&
+          student.collegeName.toLowerCase().includes(value.toLowerCase())) ||
+        (student.branch &&
+          student.branch.toLowerCase().includes(value.toLowerCase()))
       );
     });
     setFilteredStudents(filtered);
@@ -86,7 +87,7 @@ const Default = () => {
   // Format date to display
   const formatDate = (date) => new Date(date).toLocaleDateString("en-GB");
 
-  // Get current month (in string format like "Jan", "Feb", etc.)
+  // Get current month with year (format: "January 2026")
   const getCurrentMonth = () => {
     const months = [
       "January",
@@ -103,11 +104,13 @@ const Default = () => {
       "December",
     ];
 
-    const currentMonthIndex = new Date().getMonth();
-    return months[currentMonthIndex];
+    const currentDate = new Date();
+    const currentMonthIndex = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+    return `${months[currentMonthIndex]} ${currentYear}`;
   };
 
-  // Get the previous months including the current month
+  // Get the previous months including the current month (with year awareness)
   const getPastMonths = () => {
     const months = [
       "January",
@@ -124,18 +127,22 @@ const Default = () => {
       "December",
     ];
 
-    const currentMonthIndex = new Date().getMonth();
+    const currentDate = new Date();
+    const currentMonthIndex = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
     let pastMonths = [];
 
     for (let i = 0; i < 4; i++) {
-      const index = (currentMonthIndex - i + 12) % 12; // handles wrap-around
-      pastMonths.push(months[index]);
+      const targetDate = new Date(currentYear, currentMonthIndex - i, 1);
+      const monthName = months[targetDate.getMonth()];
+      const year = targetDate.getFullYear();
+      pastMonths.push(`${monthName} ${year}`);
     }
-  
-    return pastMonths; 
+
+    return pastMonths;
   };
 
-  // Get the month from the student's created date
+  // Get the month from the student's created date (with year)
   const getMonthFromDate = (date) => {
     const months = [
       "January",
@@ -152,8 +159,10 @@ const Default = () => {
       "December",
     ];
 
-    const monthIndex = new Date(date).getMonth();
-    return months[monthIndex];
+    const dateObj = new Date(date);
+    const monthIndex = dateObj.getMonth();
+    const year = dateObj.getFullYear();
+    return `${months[monthIndex]} ${year}`;
   };
 
   const groupedData = filteredStudents.reduce((acc, item) => {
@@ -189,20 +198,20 @@ const Default = () => {
           <h2>Default Payment</h2>
         </div>
         <div>
-            <select
+          <select
             className="border border-black px-2 py-1 rounded-lg"
-              name="month"
-              id="month"
-              value={selectedMonth} // Bind to selectedMonth state
-              onChange={handleMonthChange} // Trigger filter on month change
-            > 
-              {months.map((month, index) => (
-                <option key={index} value={month}>
-                  {month}
-                </option>
-              ))}
-            </select>
-          </div>
+            name="month"
+            id="month"
+            value={selectedMonth} // Bind to selectedMonth state
+            onChange={handleMonthChange} // Trigger filter on month change
+          >
+            {months.map((month, index) => (
+              <option key={index} value={month}>
+                {month}
+              </option>
+            ))}
+          </select>
+        </div>
         <table>
           <thead>
             <tr>

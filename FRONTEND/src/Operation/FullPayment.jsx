@@ -7,7 +7,8 @@ const FullPayment = () => {
   const fetchNewStudent = async () => {
     const operationName = localStorage.getItem("operationName");
     try {
-      const response = await axios.get(`${API}/getnewstudentenroll`);
+      // Operations need all records to filter by month across 4 months
+      const response = await axios.get(`${API}/getnewstudentenroll?all=true`);
       const bookedStudents = response.data.filter(
         (item) =>
           item.status === "fullPaid" && item.operationName === operationName
@@ -62,101 +63,130 @@ const FullPayment = () => {
         (student.createdAt &&
           student.createdAt.toLowerCase().includes(value.toLowerCase())) ||
         (student.clearPaymentMonth &&
-          student.clearPaymentMonth.toLowerCase().includes(value.toLowerCase()))||
-          (student.collegeName &&
-            student.collegeName.toLowerCase().includes(value.toLowerCase()))||
-            (student.branch &&
-              student.branch.toLowerCase().includes(value.toLowerCase()))
+          student.clearPaymentMonth.toLowerCase().includes(value.toLowerCase())) ||
+        (student.collegeName &&
+          student.collegeName.toLowerCase().includes(value.toLowerCase())) ||
+        (student.branch &&
+          student.branch.toLowerCase().includes(value.toLowerCase()))
       );
     });
     setFilteredStudents(filtered);
   };
 
-const [selectedMonth, setSelectedMonth] = useState("");
-    const [months, setMonths] = useState([]);
-    const handleMonthChange = (event) => {
-      const selectedMonth = event.target.value;
-      setSelectedMonth(selectedMonth); // Update selected month
-      const filtered = newStudent.filter(
-        (student) => getMonthFromDate(student.createdAt) === selectedMonth
-      );
-      setFilteredStudents(filtered); // Update filtered students
-    };
-    // Format date to display
-    // const formatDate = (date) => new Date(date).toLocaleDateString("en-GB");
-  
-    // Get current month (in string format like "Jan", "Feb", etc.)
-    const getCurrentMonth = () => {
-      const months = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ];
-  
-      const currentMonthIndex = new Date().getMonth();
-      return months[currentMonthIndex];
-    };
-  
-    // Get the previous months including the current month
-    const getPastMonths = () => {
-      const months = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ];
-  
-      const currentMonthIndex = new Date().getMonth();
-      let pastMonths = [];
-  
-      for (let i = 0; i < 4; i++) {
-        const index = (currentMonthIndex - i + 12) % 12; // handles wrap-around
-        pastMonths.push(months[index]);
-      }
-    
-      return pastMonths; 
-    };
-  
-    // Get the month from the student's created date
-    const getMonthFromDate = (date) => {
-      const months = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ];
-  
-      const monthIndex = new Date(date).getMonth();
-      return months[monthIndex];
-    };
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [months, setMonths] = useState([]);
+  const handleMonthChange = (event) => {
+    const selectedMonth = event.target.value;
+    setSelectedMonth(selectedMonth); // Update selected month
+    const filtered = newStudent.filter(
+      (student) => getMonthFromDate(student.createdAt) === selectedMonth
+    );
+    setFilteredStudents(filtered); // Update filtered students
+  };
+  // Format date to display
+  // const formatDate = (date) => new Date(date).toLocaleDateString("en-GB");
+
+  // Get current month (in string format like "Jan", "Feb", etc.)
+  const getCurrentMonth = () => {
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    const currentDate = new Date();
+    const currentMonthIndex = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+    return `${months[currentMonthIndex]} ${currentYear}`;
+  };
+
+  // Get the previous months including the current month (with year awareness)
+  const getPastMonths = () => {
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    const currentDate = new Date();
+    const currentMonthIndex = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+    let pastMonths = [];
+
+    for (let i = 0; i < 4; i++) {
+      const targetDate = new Date(currentYear, currentMonthIndex - i, 1);
+      const monthName = months[targetDate.getMonth()];
+      const year = targetDate.getFullYear();
+      pastMonths.push(`${monthName} ${year}`);
+    }
+
+    return pastMonths;
+  };
+
+  // Get the month from the student's created date (with year)
+  const getMonthFromDate = (date) => {
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    const dateObj = new Date(date);
+    const monthIndex = dateObj.getMonth();
+    const year = dateObj.getFullYear();
+    return `${months[monthIndex]} ${year}`;
+  };
+
+  // Pagination Logic
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 30;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedMonth, newStudent]);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredStudents.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
+
+  const nextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
 
   return (
-    <div  id="AdminAddCourse">
+    <div id="AdminAddCourse">
       <div className="coursetable">
         <h1>Full Payments </h1>
         <section className="flex items-center gap-1">
@@ -176,18 +206,18 @@ const [selectedMonth, setSelectedMonth] = useState("");
           </div>
         </section>
         <select
-            className="border border-black px-2 py-1 rounded-lg"
-            name="month"
-            id="month"
-            value={selectedMonth} // Bind to selectedMonth state
-            onChange={handleMonthChange} // Trigger filter on month change
-          >
-            {months.map((month, index) => (
-              <option key={index} value={month}>
-                {month}
-              </option>
-            ))}
-          </select>
+          className="border border-black px-2 py-1 rounded-lg"
+          name="month"
+          id="month"
+          value={selectedMonth} // Bind to selectedMonth state
+          onChange={handleMonthChange} // Trigger filter on month change
+        >
+          {months.map((month, index) => (
+            <option key={index} value={month}>
+              {month}
+            </option>
+          ))}
+        </select>
         <table>
           <thead>
             <tr>
@@ -208,8 +238,8 @@ const [selectedMonth, setSelectedMonth] = useState("");
             </tr>
           </thead>
           <tbody>
-            {Array.isArray(filteredStudents) && filteredStudents.length > 0 ? (
-              filteredStudents?.map((item, index) => (
+            {Array.isArray(currentItems) && currentItems.length > 0 ? (
+              currentItems?.map((item, index) => (
                 <tr key={item._id}>
                   <td>{index + 1}</td>
                   <td className="capitalize">{item.fullname}</td>
@@ -229,7 +259,7 @@ const [selectedMonth, setSelectedMonth] = useState("");
                   {/* <td className="whitespace-nowrap">
                     {item.clearPaymentMonth}
                   </td> */}
-                 <td>{item.mailSended ? 'True' : 'False'}</td>
+                  <td>{item.mailSended ? 'True' : 'False'}</td>
                 </tr>
               ))
             ) : (
@@ -239,6 +269,28 @@ const [selectedMonth, setSelectedMonth] = useState("");
             )}
           </tbody>
         </table>
+
+        {filteredStudents.length > itemsPerPage && (
+          <div className="flex justify-center items-center gap-4 mt-4 mb-4">
+            <button
+              onClick={prevPage}
+              disabled={currentPage === 1}
+              className={`px-4 py-2 rounded ${currentPage === 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+            >
+              Previous
+            </button>
+            <span className="font-semibold">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={nextPage}
+              disabled={currentPage === totalPages}
+              className={`px-4 py-2 rounded ${currentPage === totalPages ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

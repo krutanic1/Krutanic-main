@@ -34,42 +34,56 @@ const Target = () => {
   // Fetch enrolled students to calculate actual revenue
   const fetchEnrolledStudents = async () => {
     try {
-      const response = await axios.get(`${API}/getnewstudentenroll`);
+      const response = await axios.get(`${API}/getnewstudentenroll?all=true`);
       setEnrolledStudents(response.data);
     } catch (error) {
       console.error("Error fetching enrolled students:", error);
     }
   };
 
-  // Get month name from date
+  // Get month name from date with year
   const getMonthFromDate = (date) => {
     const months = [
-      "January", "February", "March", "April", "May", "June", 
+      "January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December"
     ];
-    const monthIndex = new Date(date).getMonth();
-    return months[monthIndex];
+    const dateObj = new Date(date);
+    const monthIndex = dateObj.getMonth();
+    const year = dateObj.getFullYear();
+    return `${months[monthIndex]} ${year}`;
   };
 
-  // Get current month name
+  // Get current month name with year
   const getCurrentMonthName = () => {
     const months = [
-      "January", "February", "March", "April", "May", "June", 
+      "January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December"
     ];
-    return months[new Date().getMonth()];
+    const dateObj = new Date();
+    const monthIndex = dateObj.getMonth();
+    const year = dateObj.getFullYear();
+    return `${months[monthIndex]} ${year}`;
   };
 
-  // Get the previous months including the current month
+  // Get the previous months including the current month (year-aware, last 12 months for Admin Target to be safe, or just 4. Let's do 4 like others to match)
+  // Actually, for targets, maybe they want to see the whole year? The previous code was `i >= 0`, so it showed Jan to Current Month. 
+  // If we are in Jan, it showed only Jan.
+  // Let's show the last 6 months to be safe and useful.
   const getPastMonths = () => {
     const months = [
-      "January", "February", "March", "April", "May", "June", 
+      "January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December"
     ];
     const currentMonthIndex = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
     let pastMonths = [];
-    for (let i = currentMonthIndex; i >= 0; i--) {
-      pastMonths.push(months[i]);
+
+    // Show last 6 months
+    for (let i = 0; i < 6; i++) {
+      const targetDate = new Date(currentYear, currentMonthIndex - i, 1);
+      const monthName = months[targetDate.getMonth()];
+      const year = targetDate.getFullYear();
+      pastMonths.push(`${monthName} ${year}`);
     }
     return pastMonths;
   };
@@ -78,40 +92,40 @@ const Target = () => {
   useEffect(() => {
     if (bda.length > 0 && enrolledStudents.length > 0 && selectedMonth) {
       const revenueByTeam = {};
-      
+
       // Filter students: fullPaid status and selected month
       const fullyPaidStudents = enrolledStudents.filter((student) => {
         const isSelectedMonth = getMonthFromDate(student.createdAt) === selectedMonth;
         const isFullPaid = student.status === "fullPaid";
-        
+
         return isSelectedMonth && isFullPaid;
       });
-      
+
       console.log("Selected Month:", selectedMonth);
       console.log("Total FullPaid Students in", selectedMonth, ":", fullyPaidStudents.length);
-      
+
       fullyPaidStudents.forEach((student) => {
         // Find the BDA by counselor name (case-insensitive match)
         const bdaMatch = bda.find(
           (b) => b.fullname?.toLowerCase().trim() === student.counselor?.toLowerCase().trim()
         );
-        
+
         if (bdaMatch && bdaMatch.team) {
           const teamName = bdaMatch.team;
           // Use programPrice for fully paid students (the total course value)
           const amount = Number(student.programPrice) || 0;
-          
+
           if (!revenueByTeam[teamName]) {
             revenueByTeam[teamName] = 0;
           }
           revenueByTeam[teamName] += amount;
-          
+
           console.log(`Student: ${student.fullname}, Counselor: ${student.counselor}, Team: ${teamName}, Amount: ${amount}`);
         } else {
           console.log(`No BDA match for counselor: ${student.counselor}`);
         }
       });
-      
+
       console.log("Revenue by Team:", revenueByTeam);
       setTeamRevenue(revenueByTeam);
     }
@@ -144,7 +158,7 @@ const Target = () => {
   const handleAsignTarget = async (e, id) => {
     e.preventDefault();
     const targetValue = targets[id];
-     const payments = noOfPayments[id];
+    const payments = noOfPayments[id];
     // if (!targetValue) {
     //   toast.error("Please enter a target value.");
     //   return;
@@ -156,7 +170,7 @@ const Target = () => {
         target: {
           currentMonth,
           targetValue: targetValue,
-            payments,
+          payments,
         },
       });
       // console.log("response", response);
@@ -180,7 +194,7 @@ const Target = () => {
   const handleDeleteTarget = (target, id) => {
     const confirmation = window.confirm(
       "Are you sure you want to delete this target? This action cannot be undone." +
-        "Please ok to proceed."
+      "Please ok to proceed."
     );
     if (confirmation) {
       if (target.currentMonth === currentMonth) {
@@ -348,7 +362,7 @@ const Target = () => {
                     </td>
                     <td>
                       {team.target.length > 0 &&
-                      team.target[team.target.length - 1].currentMonth ===
+                        team.target[team.target.length - 1].currentMonth ===
                         currentMonth ? (
                         <p>
                           {team.target[team.target.length - 1].currentMonth} : ₹
@@ -383,7 +397,7 @@ const Target = () => {
                     </td>
                     <td>
                       {team.target.length > 0 &&
-                      team.target[team.target.length - 1].currentMonth ===
+                        team.target[team.target.length - 1].currentMonth ===
                         currentMonth ? (
                         <p>already assign</p>
                       ) : (
@@ -470,14 +484,14 @@ const Target = () => {
                     <select className="border rounded-md px-2 py-1">
                       {bda.target.map((target, index) => (
                         <option key={index}>
-                        {target.payments}
+                          {target.payments}
                         </option>
                       ))}
                     </select>
                   </td>
                   <td>
                     {bda.target.length > 0 &&
-                    bda.target[bda.target.length - 1].currentMonth ===
+                      bda.target[bda.target.length - 1].currentMonth ===
                       currentMonth ? (
                       <p>
                         {bda.target[bda.target.length - 1].currentMonth} : ₹
@@ -500,7 +514,7 @@ const Target = () => {
 
                   <td>
                     {bda.target.length > 0 &&
-                    bda.target[bda.target.length - 1].currentMonth ===
+                      bda.target[bda.target.length - 1].currentMonth ===
                       currentMonth ? (
                       <p>already assign</p>
                     ) : (

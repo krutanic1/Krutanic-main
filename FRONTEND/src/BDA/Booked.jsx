@@ -9,7 +9,8 @@ const Booked = () => {
   const fetchNewStudent = async () => {
     const bdaName = localStorage.getItem("bdaName");
     try {
-      const response = await axios.get(`${API}/getnewstudentenroll`);
+      // Fetch all records to ensure we get data for this BDA across all months
+      const response = await axios.get(`${API}/getnewstudentenroll?all=true`);
       const bookedStudents = response.data.filter(
         (item) => item.counselor === bdaName && item.status === "booked"
       );
@@ -62,11 +63,11 @@ const Booked = () => {
         (student.createdAt &&
           student.createdAt.toLowerCase().includes(value.toLowerCase())) ||
         (student.clearPaymentMonth &&
-          student.clearPaymentMonth.toLowerCase().includes(value.toLowerCase()))||
-          (student.collegeName &&
-            student.collegeName.toLowerCase().includes(value.toLowerCase()))||
-            (student.branch &&
-              student.branch.toLowerCase().includes(value.toLowerCase()))
+          student.clearPaymentMonth.toLowerCase().includes(value.toLowerCase())) ||
+        (student.collegeName &&
+          student.collegeName.toLowerCase().includes(value.toLowerCase())) ||
+        (student.branch &&
+          student.branch.toLowerCase().includes(value.toLowerCase()))
       );
     });
     setFilteredStudents(filtered);
@@ -85,7 +86,7 @@ const Booked = () => {
   // Format date to display
   const formatDate = (date) => new Date(date).toLocaleDateString("en-GB");
 
-  // Get current month (in string format like "Jan", "Feb", etc.)
+  // Get current month with year (format: "January 2026")
   const getCurrentMonth = () => {
     const months = [
       "January",
@@ -102,11 +103,13 @@ const Booked = () => {
       "December",
     ];
 
-    const currentMonthIndex = new Date().getMonth();
-    return months[currentMonthIndex];
+    const currentDate = new Date();
+    const currentMonthIndex = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+    return `${months[currentMonthIndex]} ${currentYear}`;
   };
 
-  // Get the previous months including the current month
+  // Get the previous months including the current month (with year awareness)
   const getPastMonths = () => {
     const months = [
       "January",
@@ -123,18 +126,22 @@ const Booked = () => {
       "December",
     ];
 
-    const currentMonthIndex = new Date().getMonth();
+    const currentDate = new Date();
+    const currentMonthIndex = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
     let pastMonths = [];
 
     for (let i = 0; i < 4; i++) {
-      const index = (currentMonthIndex - i + 12) % 12; // handles wrap-around
-      pastMonths.push(months[index]);
+      const targetDate = new Date(currentYear, currentMonthIndex - i, 1);
+      const monthName = months[targetDate.getMonth()];
+      const year = targetDate.getFullYear();
+      pastMonths.push(`${monthName} ${year}`);
     }
-  
-    return pastMonths; 
+
+    return pastMonths;
   };
 
-  // Get the month from the student's created date
+  // Get the month from the student's created date (with year)
   const getMonthFromDate = (date) => {
     const months = [
       "January",
@@ -151,8 +158,10 @@ const Booked = () => {
       "December",
     ];
 
-    const monthIndex = new Date(date).getMonth();
-    return months[monthIndex];
+    const dateObj = new Date(date);
+    const monthIndex = dateObj.getMonth();
+    const year = dateObj.getFullYear();
+    return `${months[monthIndex]} ${year}`;
   };
 
   const groupedData = filteredStudents.reduce((acc, item) => {
@@ -170,7 +179,7 @@ const Booked = () => {
         <div className="mb-2">
           <h2>Booked Payments</h2>
           <section className="flex items-center gap-1">
-          <div className="relative group inline-block">
+            <div className="relative group inline-block">
               <i className="fa fa-info-circle text-lg cursor-pointer"></i>
               <div className="absolute z-[9999] left-1/2 -translate-x-1/2 bottom-full mb-2 hidden w-max bg-gray-800 text-white text-sm rounded-md py-2 px-3 group-hover:block">
                 Name, Email, Contact ,Counselor Name, Operation Name
@@ -183,7 +192,7 @@ const Booked = () => {
               value={searchQuery}
               onChange={handleSearchChange}
               className="border border-black px-2 py-1 rounded-lg"
-            />   
+            />
           </section>
         </div>
         <div>

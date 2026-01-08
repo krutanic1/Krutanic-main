@@ -47,7 +47,7 @@ const AdminDashboard = () => {
     try {
       // ✅ OPTIMIZATION: Limit to 1000 records for dashboard statistics
       // (Full data available via pagination on dedicated pages)
-      const response = await axios.get(`${API}/getnewstudentenroll?limit=1000`);
+      const response = await axios.get(`${API}/getnewstudentenroll?all=true`);
       setPayment(response.data);
     } catch (error) {
       console.error("There was an error fetching new student:", error);

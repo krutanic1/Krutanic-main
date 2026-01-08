@@ -36,7 +36,7 @@ const Dialog = ({ isOpen, onClose, fullname, errorMessage, email, counselor, dom
             </p>
             <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-500 rounded">
               <p className="text-sm text-gray-700">
-                <strong>Note:</strong> Please contact your assigned operations executive <br/>Bhumika HK <br/> 7022936875<br/> bhumika@krutanic.org
+                <strong>Note:</strong> Please contact your assigned operations executive <br />Bhumika HK <br /> 7022936875<br /> bhumika@krutanic.org
               </p>
               <a
                 href={whatsappLink}
@@ -144,11 +144,15 @@ const DashboardAccessForm = () => {
 
     months = [
       `${monthNames[startMonthIndex]} ${nextYear}`,
-      `${monthNames[(startMonthIndex + 1) % 12]} ${
-        startMonthIndex + 1 > 11 ? nextYear + 1 : nextYear
+      `${monthNames[(startMonthIndex + 1) % 12]} ${startMonthIndex + 1 > 11 ? nextYear + 1 : nextYear
       }`,
-      `${monthNames[(startMonthIndex + 2) % 12]} ${
-        startMonthIndex + 2 > 11 ? nextYear + 1 : nextYear
+      `${monthNames[(startMonthIndex + 2) % 12]} ${startMonthIndex + 2 > 11 ? nextYear + 1 : nextYear
+      }`,
+      `${monthNames[(startMonthIndex + 3) % 12]} ${startMonthIndex + 3 > 11 ? nextYear + 1 : nextYear
+      }`,
+      `${monthNames[(startMonthIndex + 4) % 12]} ${startMonthIndex + 4 > 11 ? nextYear + 1 : nextYear
+      }`,
+      `${monthNames[(startMonthIndex + 5) % 12]} ${startMonthIndex + 5 > 11 ? nextYear + 1 : nextYear
       }`,
     ];
 
@@ -316,27 +320,27 @@ const DashboardAccessForm = () => {
   // };
 
   const handleEmailChange = (e) => {
-  const enteredEmail = e.target.value.trim();
-  setEmail(enteredEmail);
+    const enteredEmail = e.target.value.trim();
+    setEmail(enteredEmail);
 
-  // Defensive nullish checks
-  if (getTransactionId?.transaction?.includes(enteredEmail)) {
-    const index = getTransactionId.transaction.indexOf(enteredEmail);
+    // Defensive nullish checks
+    if (getTransactionId?.transaction?.includes(enteredEmail)) {
+      const index = getTransactionId.transaction.indexOf(enteredEmail);
 
-    const matchedCounselor = getTransactionId.counselor?.[index];
-    const matchedLead = getTransactionId.lead?.[index];
+      const matchedCounselor = getTransactionId.counselor?.[index];
+      const matchedLead = getTransactionId.lead?.[index];
 
-    console.log("Matched Counselor:", matchedCounselor);
-    console.log("Counselor Lead:", matchedLead);
+      console.log("Matched Counselor:", matchedCounselor);
+      console.log("Counselor Lead:", matchedLead);
 
-    if (matchedCounselor) {
-      setCounselor(matchedCounselor);
+      if (matchedCounselor) {
+        setCounselor(matchedCounselor);
+      }
+      if (matchedLead) {
+        setLead(matchedLead);
+      }
     }
-    if (matchedLead) {
-      setLead(matchedLead);
-    }
-  }
-};
+  };
 
 
 
@@ -383,19 +387,19 @@ const DashboardAccessForm = () => {
     setMaxDate(maxDate);
   }, [monthOpted, monthsToShow]);
 
-  return ( 
+  return (
     <div id="onboardingform">
       <Toaster position="top-center" reverseOrder={false} />
       <div className="container m-auto">
         <div className="marquee-container">
-      <div className="marquee-text">
-        <strong>Kind Reminder:</strong> Please ensure that you complete the <strong>Dashboard Access
-        Form on the same day your payment is made.</strong> Submissions will not be
-        accepted on the following day or any later date, and access will not
-        be granted if the form is not submitted on time (We appreciate your
-        understanding and adherence to this policy).
-      </div>
-    </div>
+          <div className="marquee-text">
+            <strong>Kind Reminder:</strong> Please ensure that you complete the <strong>Dashboard Access
+              Form on the same day your payment is made.</strong> Submissions will not be
+            accepted on the following day or any later date, and access will not
+            be granted if the form is not submitted on time (We appreciate your
+            understanding and adherence to this policy).
+          </div>
+        </div>
 
         <h2 className="mt-2">DashBoard Access Form</h2>
         <form onSubmit={handleSubmit}>
@@ -470,9 +474,9 @@ const DashboardAccessForm = () => {
                 {" "}
                 Mode of Program
               </option>
-            <option value="Self-Guided [2 Months – Training & Internship]">Self-Guided [2 Months – Training & Internship]</option>
-           <option value="Instructor-Led [2 Months – Training & Internship]">Instructor-Led [2 Months – Training & Internship]</option>
-         <option value="Career Advancement [3 Months – Training, Internship & Placement Assistance]">Career Advancement [3 Months – Training, Internship & Placement Assistance]</option>
+              <option value="Self-Guided [2 Months – Training & Internship]">Self-Guided [2 Months – Training & Internship]</option>
+              <option value="Instructor-Led [2 Months – Training & Internship]">Instructor-Led [2 Months – Training & Internship]</option>
+              <option value="Career Advancement [3 Months – Training, Internship & Placement Assistance]">Career Advancement [3 Months – Training, Internship & Placement Assistance]</option>
 
             </select>
 
@@ -649,7 +653,7 @@ const DashboardAccessForm = () => {
               ))}
             </select>
 
-            
+
 
           </div>
 

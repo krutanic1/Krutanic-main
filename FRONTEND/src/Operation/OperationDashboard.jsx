@@ -24,18 +24,18 @@ ChartJS.register(
 );
 
 const OperationDashboard = () => {
-     const [operationData, setOperationData] = useState([]);
-      const [newStudent, setNewStudent] = useState([]);
-     const [operation, setOperation] = useState([]);
-     const today = new Date();
-     const currentMonthWithDate = today.toISOString().slice(0, 7);
-     const operationName = localStorage.getItem("operationName");
+  const [operationData, setOperationData] = useState([]);
+  const [newStudent, setNewStudent] = useState([]);
+  const [operation, setOperation] = useState([]);
+  const today = new Date();
+  const currentMonthWithDate = today.toISOString().slice(0, 7);
+  const operationName = localStorage.getItem("operationName");
 
   const fetchOperationData = async () => {
     const operationId = localStorage.getItem("operationId");
     const operationName = localStorage.getItem("operationName");
     try {
-      const response = await axios.get(`${API}/getnewstudentenroll`, {
+      const response = await axios.get(`${API}/getnewstudentenroll?all=true`, {
         params: { operationId },
       });
       setOperationData(
@@ -46,7 +46,7 @@ const OperationDashboard = () => {
     }
   };
 
-    const fetchOperation = async () => {
+  const fetchOperation = async () => {
     try {
       const response = await axios.get(`${API}/getoperation`);
       setOperation(response.data.filter((item) => item.fullname === operationName));
@@ -54,9 +54,9 @@ const OperationDashboard = () => {
       console.error("There was an error fetching bda:", error);
     }
   };
-    const fetchNewStudent = async () => {
+  const fetchNewStudent = async () => {
     try {
-      const response = await axios.get(`${API}/getnewstudentenroll`);
+      const response = await axios.get(`${API}/getnewstudentenroll?all=true`);
       setNewStudent(
         response.data.filter(
           (item) => item.counselor && item.operationName === operationName
@@ -91,13 +91,13 @@ const OperationDashboard = () => {
 
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
-  
+
   // Filter operationData to only include current month's records
   const currentMonthData = operationData.filter((student) => {
     const createdAt = new Date(student.createdAt);
     return createdAt.getMonth() === currentMonth && createdAt.getFullYear() === currentYear;
   });
-  
+
   const totalRevenue = currentMonthData.reduce(
     (acc, student) => acc + (student.programPrice || 0),
     0
@@ -107,24 +107,24 @@ const OperationDashboard = () => {
     (acc, student) => acc + (student.paidAmount || 0),
     0
   );
-  
+
   const creditedRevenue = currentMonthData.reduce((acc, student) => {
     const lastRemark = Array.isArray(student.remark) && student.remark.length > 0
       ? student.remark[student.remark.length - 1]
       : null;
-  
+
     if (
       student.status === "fullPaid" ||
       lastRemark === "Half_Cleared"
     ) {
       return acc + (student.paidAmount || 0);
     }
-  
+
     return acc;
   }, 0);
-  
-  
-  
+
+
+
   const pendingRevenue = totalRevenue - creditedRevenue;
 
   const revenueByMonth = operationData.reduce((acc, student) => {
@@ -216,25 +216,25 @@ const OperationDashboard = () => {
         </div>
 
         <div className="revenue-card">
-           <h2 className="text-lg font-bold mb-4">Your Target</h2>
+          <h2 className="text-lg font-bold mb-4">Your Target</h2>
           <div>
-           {operation.map((item, index) => {
-  if (item.target && item.target.length > 0) {
-    const lastTarget = item.target[item.target.length - 1];
+            {operation.map((item, index) => {
+              if (item.target && item.target.length > 0) {
+                const lastTarget = item.target[item.target.length - 1];
 
-    if (lastTarget.currentMonth === currentMonthWithDate && lastTarget.percentage) {
-      return (
-        <div key={index}>
-          <p>📅 Payment Percentage: {lastTarget.percentage}</p>
-        </div>
-      );
-    } else {
-      return <p key={index}>No target assigned for this month.</p>;
-    }
-  } else {
-    return <p key={index}>No target assigned.</p>;
-  }
-})}
+                if (lastTarget.currentMonth === currentMonthWithDate && lastTarget.percentage) {
+                  return (
+                    <div key={index}>
+                      <p>📅 Payment Percentage: {lastTarget.percentage}</p>
+                    </div>
+                  );
+                } else {
+                  return <p key={index}>No target assigned for this month.</p>;
+                }
+              } else {
+                return <p key={index}>No target assigned.</p>;
+              }
+            })}
 
           </div>
         </div>

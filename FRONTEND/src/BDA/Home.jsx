@@ -33,7 +33,7 @@ const Home = () => {
 
   const fetchNewStudent = async () => {
     try {
-      const response = await axios.get(`${API}/getnewstudentenroll`);
+      const response = await axios.get(`${API}/getnewstudentenroll?all=true`);
       setNewStudent(
         response.data.filter(
           (item) => item.counselor && item.counselor === bdaName
@@ -70,17 +70,17 @@ const Home = () => {
     const lastRemark = Array.isArray(student.remark) && student.remark.length > 0
       ? student.remark[student.remark.length - 1]
       : null;
-  
+
     if (
       student.status === "fullPaid" ||
       lastRemark === "Half_Cleared"
     ) {
       return acc + (student.paidAmount || 0);
     }
-  
+
     return acc;
   }, 0);
-  
+
   const pendingRevenue = totalRevenue - creditedRevenue;
 
   const revenueByMonth = newStudent.reduce((acc, student) => {
@@ -138,8 +138,8 @@ const Home = () => {
     );
   }
 
-    const processedData = [];
-    const monthsToShow = Array.from({ length: 4 }, (_, i) => {
+  const processedData = [];
+  const monthsToShow = Array.from({ length: 4 }, (_, i) => {
     const date = new Date(currentMonth);
     date.setMonth(date.getMonth() - (3 - i));
     return date.toISOString().slice(0, 7); // YYYY-MM
@@ -230,10 +230,10 @@ const Home = () => {
           </div>
         </div>
 
-       
+
       </div>
       <div id="targetSection">
-         <div className="revenue-card">
+        <div className="revenue-card">
           <h2 className="text-lg font-bold mb-4">Your Target</h2>
           <div>
             {bda.map((item, index) => {
@@ -261,20 +261,20 @@ const Home = () => {
                   const pendingTarget = lastTarget.targetValue - achievedTarget;
                   const assignedPaymentNumber = lastTarget.payments
                   const allPaymentsThisMonth = newStudent.filter((enroll) => {
-          const enrollMonth = new Date(enroll.createdAt).toISOString().slice(0, 7);
-          return enrollMonth === currentMonth;
-        });
+                    const enrollMonth = new Date(enroll.createdAt).toISOString().slice(0, 7);
+                    return enrollMonth === currentMonth;
+                  });
 
-      const actualPayments = allPaymentsThisMonth.length;
+                  const actualPayments = allPaymentsThisMonth.length;
 
-    
 
-         processedData.push({
-              month: currentMonth,
-              assigned: lastTarget.targetValue,
-              achieved: achievedTarget,
-            });
- 
+
+                  processedData.push({
+                    month: currentMonth,
+                    assigned: lastTarget.targetValue,
+                    achieved: achievedTarget,
+                  });
+
                   return (
                     <div key={index}>
                       <p>🎯 Target Assigned: ₹{lastTarget.targetValue}</p>
@@ -295,7 +295,7 @@ const Home = () => {
                             ⏳ Pending Target: ₹
                             {pendingTarget > 0 ? pendingTarget : 0}
                           </p>
-                            <p>📅 No Of Payments : {assignedPaymentNumber}</p>
+                          <p>📅 No Of Payments : {assignedPaymentNumber}</p>
                           <p>💰 Payments Received: {actualPayments}</p>
                         </>
                       )}
@@ -309,11 +309,11 @@ const Home = () => {
               }
             })}
 
-          {processedData.length > 0 && <GrowthBarChart data={processedData} />}
+            {processedData.length > 0 && <GrowthBarChart data={processedData} />}
           </div>
         </div>
       </div>
-      
+
     </div>
   );
 };

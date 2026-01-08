@@ -27,6 +27,7 @@ router.post("/createbda", async (req, res) => {
 
     res.status(201).json(newbda);
   } catch (error) {
+    console.error("Error creating BDA:", error);
     res.status(400).json({ message: error.message });
   }
 });

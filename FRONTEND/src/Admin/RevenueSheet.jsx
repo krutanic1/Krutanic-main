@@ -57,7 +57,7 @@ const RevenueSheet = () => {
   const fetchDailyData = async () => {
     try {
       setLoadingDaily(true);
-      let params = {};
+      let params = { all: true };
 
       if (viewMode === "custom") {
         if (!startDate || !endDate) {

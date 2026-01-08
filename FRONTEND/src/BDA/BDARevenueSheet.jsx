@@ -1,4 +1,4 @@
- import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import API from "../API";
 
@@ -11,7 +11,7 @@ const BDARevenueSheet = () => {
   const fetchNewStudent = async () => {
     const bdaName = localStorage.getItem("bdaName");
     try {
-      const response = await axios.get(`${API}/getnewstudentenroll`);
+      const response = await axios.get(`${API}/getnewstudentenroll?all=true`);
       const filteredData = response.data.filter(
         (item) => item.counselor && item.counselor === bdaName
       );
@@ -67,76 +67,76 @@ const BDARevenueSheet = () => {
   //   totalRevenue += revenue;
   // });
 
-const today = new Date();
-const threeMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 3, 1);
-
-newStudent.forEach((student) => {
-  const createdDate = new Date(student.createdAt);
-  
-  // Skip students older than 3 months
-  if (createdDate < threeMonthsAgo) {
-    return;
-  }
-
-  const date = createdDate.toLocaleDateString("en-GB");
-  const month = createdDate.toLocaleString("default", {
-    month: "long",
-    year: "numeric",
-  });
-
-  const revenue = student.programPrice || 0;
-  const bookedAmount = student.paidAmount || 0;
-  const isHalfCleared = Array.isArray(student.remark) && student.remark[student.remark.length - 1] === "Half_Cleared";
-  const credited = student.status === "fullPaid" || isHalfCleared ? bookedAmount : 0;
-  const pending = revenue - credited;
-
-  if (!revenueByDay[date]) {
-    revenueByDay[date] = { total: 0, booked: 0, credited: 0, pending: 0, month };
-  }
-  if (!revenueByMonth[month]) {
-    revenueByMonth[month] = { total: 0, booked: 0, credited: 0, pending: 0 };
-  }
-
-  revenueByDay[date].total += revenue;
-  revenueByDay[date].booked += bookedAmount;
-  revenueByDay[date].credited += credited;
-  revenueByDay[date].pending += pending;
-
-  // Calculate cutoff date: 8th of next month for this student's month
-  const [monthName, yearStr] = month.split(" ");
-  const monthIndex = new Date(`${monthName} 1, ${yearStr}`).getMonth(); // 0-based
-  const year = parseInt(yearStr);
-  const cutoffDate = new Date(year, monthIndex + 1, 8); // 8th of next month
-
-  // ✅ Only include credited if student's createdAt is before cutoffDate
-  if (createdDate <= cutoffDate) {
-    revenueByMonth[month].credited += credited;
-  }
-
-  revenueByMonth[month].total += revenue;
-  revenueByMonth[month].booked += bookedAmount;
-  revenueByMonth[month].pending += pending;
-
-  totalRevenue += revenue;
-});
-
-function getLastNMonths(n) {
-  const result = [];
   const today = new Date();
+  const threeMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 3, 1);
 
-  for (let i = 0; i < n; i++) {
-    const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
-    const monthString = date.toLocaleString("default", {
+  newStudent.forEach((student) => {
+    const createdDate = new Date(student.createdAt);
+
+    // Skip students older than 3 months
+    if (createdDate < threeMonthsAgo) {
+      return;
+    }
+
+    const date = createdDate.toLocaleDateString("en-GB");
+    const month = createdDate.toLocaleString("default", {
       month: "long",
       year: "numeric",
     });
-    result.push(monthString);
-  }
 
-  return result;
-}
-const monthsToShow = getLastNMonths(3); // last 3 months only
-const months = monthsToShow.filter((m) => revenueByMonth[m]); 
+    const revenue = student.programPrice || 0;
+    const bookedAmount = student.paidAmount || 0;
+    const isHalfCleared = Array.isArray(student.remark) && student.remark[student.remark.length - 1] === "Half_Cleared";
+    const credited = student.status === "fullPaid" || isHalfCleared ? bookedAmount : 0;
+    const pending = revenue - credited;
+
+    if (!revenueByDay[date]) {
+      revenueByDay[date] = { total: 0, booked: 0, credited: 0, pending: 0, month };
+    }
+    if (!revenueByMonth[month]) {
+      revenueByMonth[month] = { total: 0, booked: 0, credited: 0, pending: 0 };
+    }
+
+    revenueByDay[date].total += revenue;
+    revenueByDay[date].booked += bookedAmount;
+    revenueByDay[date].credited += credited;
+    revenueByDay[date].pending += pending;
+
+    // Calculate cutoff date: 8th of next month for this student's month
+    const [monthName, yearStr] = month.split(" ");
+    const monthIndex = new Date(`${monthName} 1, ${yearStr}`).getMonth(); // 0-based
+    const year = parseInt(yearStr);
+    const cutoffDate = new Date(year, monthIndex + 1, 8); // 8th of next month
+
+    // ✅ Only include credited if student's createdAt is before cutoffDate
+    if (createdDate <= cutoffDate) {
+      revenueByMonth[month].credited += credited;
+    }
+
+    revenueByMonth[month].total += revenue;
+    revenueByMonth[month].booked += bookedAmount;
+    revenueByMonth[month].pending += pending;
+
+    totalRevenue += revenue;
+  });
+
+  function getLastNMonths(n) {
+    const result = [];
+    const today = new Date();
+
+    for (let i = 0; i < n; i++) {
+      const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+      const monthString = date.toLocaleString("default", {
+        month: "long",
+        year: "numeric",
+      });
+      result.push(monthString);
+    }
+
+    return result;
+  }
+  const monthsToShow = getLastNMonths(3); // last 3 months only
+  const months = monthsToShow.filter((m) => revenueByMonth[m]);
 
 
   // const months = Object.keys(revenueByMonth).sort((a, b) => new Date(b) - new Date(a));

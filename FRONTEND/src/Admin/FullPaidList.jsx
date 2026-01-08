@@ -14,7 +14,8 @@ const FullPaidList = () => {
   const fetchNewStudent = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API}/getnewstudentenroll`);
+      // Admin needs all records without limit
+      const response = await axios.get(`${API}/getnewstudentenroll?all=true`);
       const studentsData = response.data.filter(
         (item) => item.status === "fullPaid"
       );
@@ -28,7 +29,7 @@ const FullPaidList = () => {
       const currentMonth = getCurrentMonthYear();
       const defaultMonth = availableMonths.includes(currentMonth) ? currentMonth : availableMonths[0] || "";
       setSelectedMonth(defaultMonth);
-      
+
       // Filter the students based on the selected month by default
       const filtered = studentsData.filter((student) => getMonthYearFromDate(student.createdAt) === defaultMonth);
       setFilteredStudents(filtered);
@@ -78,11 +79,11 @@ const FullPaidList = () => {
         (student.createdAt &&
           student.createdAt.toLowerCase().includes(value.toLowerCase())) ||
         (student.clearPaymentMonth &&
-          student.clearPaymentMonth.toLowerCase().includes(value.toLowerCase()))||
-          (student.collegeName &&
-            student.collegeName.toLowerCase().includes(value.toLowerCase()))||
-            (student.branch &&
-              student.branch.toLowerCase().includes(value.toLowerCase()))
+          student.clearPaymentMonth.toLowerCase().includes(value.toLowerCase())) ||
+        (student.collegeName &&
+          student.collegeName.toLowerCase().includes(value.toLowerCase())) ||
+        (student.branch &&
+          student.branch.toLowerCase().includes(value.toLowerCase()))
       );
     });
     setFilteredStudents(filtered);
@@ -105,7 +106,7 @@ const FullPaidList = () => {
     const monthNames = [
       "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
     ];
-    
+
     const monthSet = new Set();
     students.forEach(student => {
       if (student.createdAt) {
@@ -114,7 +115,7 @@ const FullPaidList = () => {
         monthSet.add(monthYear);
       }
     });
-    
+
     // Convert to array and sort by date (most recent first)
     return Array.from(monthSet).sort((a, b) => {
       const [monthA, yearA] = a.split(' ');
@@ -144,7 +145,28 @@ const FullPaidList = () => {
     return `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
   };
 
-  const groupedData = filteredStudents.reduce((acc, item) => {
+  // Pagination Logic
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 30;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedMonth, newStudent]);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredStudents.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
+
+  const nextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const groupedData = currentItems.reduce((acc, item) => {
     const date = formatDate(item.createdAt);
     if (!acc[date]) {
       acc[date] = [];
@@ -186,12 +208,12 @@ const FullPaidList = () => {
           </div>
           <div>
             <select
-            className="border border-black px-2 py-1 rounded-lg"
+              className="border border-black px-2 py-1 rounded-lg"
               name="month"
               id="month"
               value={selectedMonth} // Bind to selectedMonth state
               onChange={handleMonthChange} // Trigger filter on month change
-            > 
+            >
               {months.map((month, index) => (
                 <option key={index} value={month}>
                   {month}
@@ -260,6 +282,28 @@ const FullPaidList = () => {
               )}
             </tbody>
           </table>
+
+          {filteredStudents.length > itemsPerPage && (
+            <div className="flex justify-center items-center gap-4 mt-4 mb-4">
+              <button
+                onClick={prevPage}
+                disabled={currentPage === 1}
+                className={`px-4 py-2 rounded ${currentPage === 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+              >
+                Previous
+              </button>
+              <span className="font-semibold">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={nextPage}
+                disabled={currentPage === totalPages}
+                className={`px-4 py-2 rounded ${currentPage === totalPages ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

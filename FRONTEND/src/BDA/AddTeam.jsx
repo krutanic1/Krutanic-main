@@ -5,7 +5,7 @@ import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
 
 const AddTeam = () => {
- const bdaId = localStorage.getItem("bdaId");
+  const bdaId = localStorage.getItem("bdaId");
   const [bdaData, setBdaData] = useState(null);
   const fetchBdaData = async () => {
     try {
@@ -64,7 +64,7 @@ const AddTeam = () => {
         );
         toast.success("BDA updated successfully!");
       } else {
-        const response = await axios.post(` ${API}/createbda`, newBda);
+        const response = await axios.post(`${API}/createbda`, newBda);
         toast.success("BDA created successfully!");
       }
       resetForm();
@@ -74,7 +74,7 @@ const AddTeam = () => {
       console.error("There was an error submitting the bda:", error);
     }
   };
-      
+
   const navigate = useNavigate();
   const fetchBda = async () => {
     setLoading(true);
@@ -84,7 +84,7 @@ const AddTeam = () => {
       setBda(response.data);
     } catch (error) {
       console.error("There was an error fetching bda:", error);
-    } finally{
+    } finally {
       setLoading(false);
     }
   };

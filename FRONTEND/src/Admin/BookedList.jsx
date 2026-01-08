@@ -16,20 +16,21 @@ const BookedList = () => {
   const fetchNewStudent = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API}/getnewstudentenroll`);
+      // Admin needs all records without limit
+      const response = await axios.get(`${API}/getnewstudentenroll?all=true`);
       const studentsData = response.data.filter(
         (item) => item.status === "booked"
       );
       setNewStudent(studentsData);
-      
+
       // Generate available months from the database data
       const availableMonths = getAvailableMonths(studentsData);
       setMonths(availableMonths);
-      
+
       // Set the current month for default selection
       const currentMonth = getCurrentMonthYear();
       setSelectedMonth(currentMonth);
-      
+
       // Filter the students based on the current month by default
       const filtered = studentsData.filter((student) => getMonthYearFromDate(student.createdAt) === currentMonth);
       setFilteredStudents(filtered);
@@ -44,7 +45,7 @@ const BookedList = () => {
     fetchNewStudent();
   }, []);
 
-  const handleStatusChange = async (studentId, action , userCreated) => {
+  const handleStatusChange = async (studentId, action, userCreated) => {
     try {
       if (!userCreated) {
         toast.error("User is not created yet. Please ensure login credentials are set up before proceeding.");
@@ -91,11 +92,11 @@ const BookedList = () => {
         (student.createdAt &&
           student.createdAt.toLowerCase().includes(value.toLowerCase())) ||
         (student.clearPaymentMonth &&
-          student.clearPaymentMonth.toLowerCase().includes(value.toLowerCase()))||
-          (student.collegeName &&
-            student.collegeName.toLowerCase().includes(value.toLowerCase()))||
-            (student.branch &&
-              student.branch.toLowerCase().includes(value.toLowerCase()))
+          student.clearPaymentMonth.toLowerCase().includes(value.toLowerCase())) ||
+        (student.collegeName &&
+          student.collegeName.toLowerCase().includes(value.toLowerCase())) ||
+        (student.branch &&
+          student.branch.toLowerCase().includes(value.toLowerCase()))
       );
     });
     setFilteredStudents(filtered);
@@ -104,7 +105,7 @@ const BookedList = () => {
 
 
   const formatDate = (date) => new Date(date).toLocaleDateString("en-GB");
-  
+
   // Get current month with year (format: "January 2026")
   const getCurrentMonthYear = () => {
     const monthNames = [
@@ -119,7 +120,7 @@ const BookedList = () => {
     const monthNames = [
       "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
     ];
-    
+
     const monthSet = new Set();
     students.forEach(student => {
       if (student.createdAt) {
@@ -128,7 +129,7 @@ const BookedList = () => {
         monthSet.add(monthYear);
       }
     });
-    
+
     // Convert to array and sort by date (most recent first)
     return Array.from(monthSet).sort((a, b) => {
       const [monthA, yearA] = a.split(' ');
@@ -157,7 +158,28 @@ const BookedList = () => {
     const d = new Date(date);
     return `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
   };
-  const groupedData = filteredStudents.reduce((acc, item) => {
+  // Pagination Logic
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 30;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedMonth, newStudent]);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredStudents.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
+
+  const nextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const groupedData = currentItems.reduce((acc, item) => {
     const date = formatDate(item.createdAt);
     if (!acc[date]) {
       acc[date] = [];
@@ -184,7 +206,7 @@ const BookedList = () => {
   const [program, setProgram] = useState([]);
   const [counselor, setCounselor] = useState([]);
   const [operationName, setOperationName] = useState("");
-  const [operationId , setOperationId] = useState("");
+  const [operationId, setOperationId] = useState("");
   const [domain, setDomain] = useState([]);
   const [programPrice, setProgramPrice] = useState("");
   const [paidAmount, setPaidAmount] = useState("");
@@ -453,13 +475,13 @@ const BookedList = () => {
               placeholder="Paid Amount"
               required
             />
-             <select value={lead} required onChange={(e) => setLead(e.target.value)} >
+            <select value={lead} required onChange={(e) => setLead(e.target.value)} >
               <option value="" disabled selected> Select Lead</option>
               <option value="CGFL"> CGFL </option>
               <option value="SGFL"> SGFL </option>
               <option value="Ram Charan"> Ram Charan</option>
               <option value="Abhilash"> Abhilash </option>
-             </select>
+            </select>
             Due date for clear payment ?
             <input
               value={clearPaymentMonth}
@@ -470,7 +492,7 @@ const BookedList = () => {
               min={minDate}
               max={maxDate}
             />
-           
+
             <input
               className="cursor-pointer"
               type="submit"
@@ -510,12 +532,12 @@ const BookedList = () => {
           </div>
           <div>
             <select
-            className="border border-black px-2 py-1 rounded-lg"
+              className="border border-black px-2 py-1 rounded-lg"
               name="month"
               id="month"
-              value={selectedMonth} 
+              value={selectedMonth}
               onChange={handleMonthChange}
-            > 
+            >
               {months.map((month, index) => (
                 <option key={index} value={month}>
                   {month}
@@ -573,7 +595,7 @@ const BookedList = () => {
                           <button
                             className="button"
                             onClick={() =>
-                              handleStatusChange(item._id, "fullPaid" , item.userCreated)
+                              handleStatusChange(item._id, "fullPaid", item.userCreated)
                             }
                           >
                             <div className="relative group inline-block">
@@ -635,16 +657,38 @@ const BookedList = () => {
               )}
             </tbody>
           </table>
+
+          {filteredStudents.length > itemsPerPage && (
+            <div className="flex justify-center items-center gap-4 mt-4 mb-4">
+              <button
+                onClick={prevPage}
+                disabled={currentPage === 1}
+                className={`px-4 py-2 rounded ${currentPage === 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+              >
+                Previous
+              </button>
+              <span className="font-semibold">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={nextPage}
+                disabled={currentPage === totalPages}
+                className={`px-4 py-2 rounded ${currentPage === totalPages ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+              >
+                Next
+              </button>
+            </div>
+          )}
           {dialogVisible && dialogData && (
             <div className="fixed flex flex-col rounded-md top-[30%] left-[50%] shadow-black shadow-sm transform translate-x-[-50%] transalate-y-[-50%] bg-white p-[20px] z-[1000]">
               <h2>Details</h2>
               <div className="space-y-2">
                 <p>
-                <strong>Phone:</strong> {dialogData.phone}
-              </p>
-              <p>
-                <strong>Due Date:</strong> {dialogData.clearPaymentMonth}
-              </p>
+                  <strong>Phone:</strong> {dialogData.phone}
+                </p>
+                <p>
+                  <strong>Due Date:</strong> {dialogData.clearPaymentMonth}
+                </p>
                 <p>
                   <strong>Program:</strong> {dialogData.program}
                 </p>
