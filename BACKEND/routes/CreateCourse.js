@@ -1,4 +1,4 @@
-const express = require("express");
+  const express = require("express");
 const CreateCourse = require("../models/CreateCourse");
 const { cachedQuery, invalidateCache } = require("../utils/cache");
 const router = express.Router();

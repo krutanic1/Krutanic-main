@@ -120,6 +120,17 @@ router.get("/dashboard", authMiddleware, (req, res) => {
   res.status(200).json({ message: "Welcome to the dashboard!" });
 });
 
+// Verify token validity (for frontend auth checks)
+router.get("/verify-token", authMiddleware, (req, res) => {
+  res.status(200).json({ 
+    valid: true, 
+    user: { 
+      id: req.user.id, 
+      email: req.user.email 
+    } 
+  });
+});
+
 
 // send otp route
 router.post("/send-otp",async (req, res) => {
