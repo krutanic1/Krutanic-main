@@ -515,7 +515,8 @@ router.get("/enrollments", async (req, res) => {
                 modulesCount: { $size: { $ifNull: ['$modules', []] } },
                 sessionsCount: { $size: { $ifNull: ['$sessions', []] } },
                 createdAt: 1,
-                updatedAt: 1
+                updatedAt: 1,
+                title: 1
               }
             }
           ],

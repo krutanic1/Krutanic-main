@@ -20,13 +20,13 @@ const JobPost = () => {
         setDescription("");
         setEditingJobId(null);
         setisjobFormVisible(false);
-    }; 
+    };
     const handleSumbit = async (e) => {
         e.preventDefault();
         const newJob = { title, company, expiryDate, description };
         try {
             if (editingJobId) {
-                await axios.put(`${API}/jobs/${editingJobId}`, newJob);   
+                await axios.put(`${API}/jobs/${editingJobId}`, newJob);
                 alert("Job updated successfully!");
             } else {
                 await axios.post(`${API}/jobs`, newJob);
@@ -44,7 +44,7 @@ const JobPost = () => {
             setJobs(response.data);
             // console.log("jobs" ,response.data);
         } catch (error) {
-            console.error("There was an error fetching Jobs:", error) 
+            console.error("There was an error fetching Jobs:", error)
         }
     };
     const handleEdit = (jobId) => {
@@ -130,7 +130,7 @@ const JobPost = () => {
                             </thead>
                             <tbody>
                                 {selectedJob.applications?.map((application, index) => (
-                                    <tr key={index}> 
+                                    <tr key={index}>
                                         <td>{index + 1}</td>
                                         <td>{application.userId.fullname}</td>
                                         <td>{application.userId.email}</td>

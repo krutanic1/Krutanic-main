@@ -10,6 +10,12 @@ export default {
         "primary": "#f15a27",
         "background-light": "#f8f6f6",
         "background-dark": "#221510",
+        "surface-light": "#ffffff",
+        "surface-dark": "#2c201d",
+        "border-light": "#e8d5cf",
+        "border-dark": "#4a3b36",
+        "text-main": "#1c110d",
+        "text-light": "#f3eae7",
       },
       fontFamily: {
         "display": ["Lexend", "sans-serif"]

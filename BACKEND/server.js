@@ -33,13 +33,14 @@ const MasterClass = require("./routes/MasterClass")
 const AddEvent = require("./routes/AddEvent")
 const Certificate = require("./routes/Certificate")
 const ReferAndEarn = require("./routes/ReferAndEarn");
+const Scraper = require("./routes/Scraper");
 const cookieParser = require("cookie-parser");
 const os = require("os");
 
 const app = express();
 
-// ✅ FIX #4: Apply Request Timeout Middleware (8 seconds - before MongoDB's 10s timeout)
-app.use(requestTimeout(8000));
+// ✅ FIX #4: Apply Request Timeout Middleware (60 seconds - before MongoDB's 10s timeout)
+app.use(requestTimeout(60000));
 
 // ✅ MIDDLEWARES
 const allowedOrigins = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',').map(o => o.trim()) : [];
@@ -109,6 +110,7 @@ app.use("/", Excercise);
 
 app.use("/", Certificate);
 app.use("/", ReferAndEarn);
+app.use("/", Scraper);
 
 //AddEvent
 app.use("/", AddEvent);

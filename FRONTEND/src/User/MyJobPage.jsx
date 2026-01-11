@@ -4,7 +4,7 @@ import MyJob from "./MyJob";
 
 const MyJobPage = () => {
   return (
-    <UserLayout title="My Job Applications">
+    <UserLayout title="">
       <MyJob />
     </UserLayout>
   );
