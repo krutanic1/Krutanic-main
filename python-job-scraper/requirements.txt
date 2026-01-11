@@ -6,5 +6,4 @@ python-dotenv
 pandas
 pymongo
 dnspython
-numpy>=1.26.0; python_version < "3.13"
-numpy>=1.26.4; python_version >= "3.13"
+numpy==1.26.3
