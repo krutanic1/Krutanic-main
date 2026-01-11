@@ -1,29 +1,70 @@
-# Ignore node_modules folder
+# Dependencies
 node_modules/
 Backend/node_modules/
 Frontend/node_modules/
+BACKEND/node_modules/
+FRONTEND/node_modules/
+python-job-scraper/.venv/
+python-job-scraper/venv/
 
-# Ignore log files
+# Logs
 *.log
-
-# Ignore build output
-dist/
-build/
-
-# Ignore environment variables
-Backend/.env
-Frontend/.env
-
-
-# Ignore IDE specific files
-.vscode/
-.idea/
-
-# Ignore OS specific files
-.DS_Store
-Thumbs.db
-
-# Ignore npm debug files
+logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build output
+dist/
+build/
+.vite/
+dist-ssr/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+Backend/.env
+Frontend/.env
+BACKEND/.env
+FRONTEND/.env
+python-job-scraper/.env
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sw?
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS specific files
+.DS_Store
+Thumbs.db
+.AppleDouble
+.LSOverride
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/

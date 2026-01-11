@@ -23,8 +23,8 @@ router.post("/marketingverifyotp", async (req, res) => {
     }
     user.otp = null;
     await user.save();
-    const token = jwt.sign({ _id: user._id, email: user.email, designation:user.designation, team: user.team },process.env.JWT_SECRET,{ expiresIn: "10h" });
-    res.status(200).json({token, user: user.fullname, message: "Login successful!",});
+    const token = jwt.sign({ _id: user._id, email: user.email, designation: user.designation, team: user.team }, process.env.JWT_SECRET, { expiresIn: "10h" });
+    res.status(200).json({ token, user: user.fullname, message: "Login successful!", });
   } catch (error) {
     console.error("Failed to verify OTP:", error);
     res
@@ -86,7 +86,7 @@ router.post("/marketingsendotp", async (req, res) => {
 router.post("/addmarketingteamname", async (req, res) => {
   const { teamname } = req.body;
   try {
-    const newTeam = new MarketingTeamName({teamname,});
+    const newTeam = new MarketingTeamName({ teamname, });
     await newTeam.save();
     res.status(200).json(newTeam);
   } catch (error) {
@@ -191,7 +191,7 @@ router.get("/getmarketingexecutive", async (req, res) => {
 
   try {
     const decoded = jwt.verify(marketingToken, process.env.JWT_SECRET);
-    const executive = await CreateMarketing.find({team: decoded.team}).select("fullname designation team");
+    const executive = await CreateMarketing.find({ team: decoded.team }).select("fullname designation team");
     res.status(200).json(executive);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch marketing executive detals", error: error.message });
@@ -207,7 +207,7 @@ router.put("/updatemarketing/:id", async (req, res) => {
       id,
       { fullname, email, designation, team, password },
       { new: true }
-    );   
+    );
     if (!updatedOperation) {
       return res.status(404).json({ error: "Operation not found" });
     }
@@ -275,7 +275,7 @@ router.put('/mailsendedmarketing/:id', async (req, res) => {
   const { mailSended } = req.body;
   const objectId = new mongoose.Types.ObjectId(id);
   try {
-    const opData = await CreateMarketing.findById({ _id: objectId});
+    const opData = await CreateMarketing.findById({ _id: objectId });
     if (!opData) {
       return res.status(404).send({ message: 'Operation not found.' });
     }
@@ -302,7 +302,7 @@ router.get("/getmarketinguser", async (req, res) => {
     const marketingUser = await CreateMarketing.findById(decoded._id).select("fullname email designation team");
 
     if (!marketingUser) {
-      return res.status(404).json({ message: "Marketing user not found" }); 
+      return res.status(404).json({ message: "Marketing user not found" });
     }
 
     res.status(200).json(marketingUser);
@@ -321,12 +321,23 @@ router.get("/getmarketingcurrentleads", async (req, res) => {
 
   try {
     const decoded = jwt.verify(marketingToken, process.env.JWT_SECRET);
-     
+
+    console.log('=== EXECUTIVE DASHBOARD QUERY DEBUG ===');
+    console.log('Decoded JWT _id:', decoded._id);
+    console.log('Type of decoded._id:', typeof decoded._id);
+
     const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1); 
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
-    
-    const allpayments = await NewEnrollStudent.find({executiveId: decoded._id , createdAt: { $gte: startOfMonth, $lte: endOfMonth },});
+
+    const allpayments = await NewEnrollStudent.find({ executiveId: decoded._id, createdAt: { $gte: startOfMonth, $lte: endOfMonth }, });
+
+    console.log('Query executiveId:', decoded._id);
+    console.log('Found students:', allpayments.length);
+    if (allpayments.length > 0) {
+      console.log('Sample student executiveId:', allpayments[0].executiveId, 'Type:', typeof allpayments[0].executiveId);
+    }
+
     res.status(200).json(allpayments);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch user payment detals user", error: error.message });
@@ -343,12 +354,12 @@ router.get("/getmarketingpreviousleads", async (req, res) => {
 
   try {
     const decoded = jwt.verify(marketingToken, process.env.JWT_SECRET);
-     
+
     const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1); 
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const endOfMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
-    
-    const allpayments = await NewEnrollStudent.find({executiveId: decoded._id , createdAt: { $gte: startOfMonth, $lte: endOfMonth },});
+
+    const allpayments = await NewEnrollStudent.find({ executiveId: decoded._id, createdAt: { $gte: startOfMonth, $lte: endOfMonth }, });
     res.status(200).json(allpayments);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch user payment detals user", error: error.message });
@@ -367,7 +378,7 @@ router.get("/getmarketingleadsall", async (req, res) => {
   try {
     const decoded = jwt.verify(marketingToken, process.env.JWT_SECRET);
     // select("fullname email designation team")
-    const allpayments = await NewEnrollStudent.find({lead: decoded.team});
+    const allpayments = await NewEnrollStudent.find({ lead: decoded.team });
     res.status(200).json(allpayments);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch user payment detals user", error: error.message });
@@ -392,6 +403,34 @@ router.put("/marketingUpdateExecutive/:leadId", async (req, res) => {
     res.status(200).json({ success: true, message: "Executive updated", data: updatedLead });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server Error", error: error.message });
+  }
+});
+
+// Admin routes for marketing leads management
+// GET all marketing leads for admin
+router.get("/admin/getallmarketingleads", async (req, res) => {
+  try {
+    const allLeads = await NewEnrollStudent.find()
+      .sort({ createdAt: -1 })
+      .lean();
+    res.status(200).json(allLeads);
+  } catch (error) {
+    console.error("Error fetching all marketing leads:", error);
+    res.status(500).json({ message: "Failed to fetch marketing leads", error: error.message });
+  }
+});
+
+// GET all marketing executives for admin
+router.get("/admin/getallmarketingexecutives", async (req, res) => {
+  try {
+    const allExecutives = await CreateMarketing.find()
+      .select("fullname email designation team")
+      .sort({ fullname: 1 })
+      .lean();
+    res.status(200).json(allExecutives);
+  } catch (error) {
+    console.error("Error fetching all marketing executives:", error);
+    res.status(500).json({ message: "Failed to fetch executives", error: error.message });
   }
 });
 

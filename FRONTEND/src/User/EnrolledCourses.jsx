@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../API";
 
@@ -11,13 +11,14 @@ const EnrolledCourse = () => {
   const [enrollData, setenrollData] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const navigate = useNavigate();
+  const hasFetched = useRef(false);
 
   const handleStartLearning = (title, sessionlist) => {
     const firstSessionKey = Object.keys(sessionlist)[0];  // Get the first session's key
-  const firstSession = { [firstSessionKey]: sessionlist[firstSessionKey] }; // Create a new object with only the first session
-    
+    const firstSession = { [firstSessionKey]: sessionlist[firstSessionKey] }; // Create a new object with only the first session
+
     navigate("/Learning", {
-      state: { courseTitle: title, sessions: firstSession },
+      state: { courseTitle: title, sessions: firstSession, thumbnail: selectedCourse?.thumbnail },
     });
   };
 
@@ -41,6 +42,8 @@ const EnrolledCourse = () => {
   };
 
   useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
     fetchenrollData();
   }, []);
 
@@ -50,25 +53,25 @@ const EnrolledCourse = () => {
     }
   }, [enrollData]);
 
-  if(!enrollData){
+  if (!enrollData) {
     return <div id="loader">
-    <div className="three-body">
-  <div className="three-body__dot"></div>
-  <div className="three-body__dot"></div>
-  <div className="three-body__dot"></div>
-  </div>
-  </div>;
- }
+      <div className="three-body">
+        <div className="three-body__dot"></div>
+        <div className="three-body__dot"></div>
+        <div className="three-body__dot"></div>
+      </div>
+    </div>;
+  }
 
- if(!selectedCourse){
-  return <div id="loader">
-  <div className="three-body">
-<div className="three-body__dot"></div>
-<div className="three-body__dot"></div>
-<div className="three-body__dot"></div>
-</div>
-</div>;
-}
+  if (!selectedCourse) {
+    return <div id="loader">
+      <div className="three-body">
+        <div className="three-body__dot"></div>
+        <div className="three-body__dot"></div>
+        <div className="three-body__dot"></div>
+      </div>
+    </div>;
+  }
 
 
   return (
@@ -83,17 +86,17 @@ const EnrolledCourse = () => {
             ></span>
           </strong>
           <ul>
-          {enrollData.length === 0 ? (
-        <li>No course found</li>
-      ) : (
-        enrollData.map((item, index) => {
-          return (
-            <li key={index} onClick={() => handleCourseClick(item.domain)}>
-              {item.domain.title}
-            </li>
-          );
-        })
-      )}
+            {enrollData.length === 0 ? (
+              <li>No course found</li>
+            ) : (
+              enrollData.map((item, index) => {
+                return (
+                  <li key={index} onClick={() => handleCourseClick(item.domain)}>
+                    {item.domain.title}
+                  </li>
+                );
+              })
+            )}
           </ul>
         </div>
       )}
@@ -107,7 +110,7 @@ const EnrolledCourse = () => {
             ><span>☰ </span></h2>
             <h2>{selectedCourse.title}</h2>
             <h2></h2>
-            <button onClick={() => handleStartLearning(selectedCourse.title,selectedCourse.session)}>DEMO</button>
+            <button onClick={() => handleStartLearning(selectedCourse.title, selectedCourse.session)}>DEMO</button>
           </div>
           {/* <pre dangerouslySetInnerHTML={{ __html: sanitizedDescription }} /> */}
           <pre>{selectedCourse.description}</pre>

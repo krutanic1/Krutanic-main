@@ -32,18 +32,32 @@ router.post("/users", async (req, res) => {
 
 // fetch user
 router.get("/users", async (req, res) => {
-  const { userId } = req.query;
+  const { userId, limit, all } = req.query;
   try {
     let users;
     if (userId) {
-      users = await User.findById(userId);
+      // ✅ FIX #3: Use .lean() for read-only operations (faster)
+      users = await User.findById(userId).lean();
       if (!users) {
         return res
           .status(404)
           .json({ message: "user not found for the given userId" });
       }
     } else {
-      users = await User.find().sort({ _id: -1 });
+      // If all=true or limit=0, fetch all records (for dashboard)
+      const queryLimit = all === 'true' || limit === '0' ? 0 : (parseInt(limit) || 0);
+      
+      if (queryLimit > 0) {
+        users = await User.find()
+          .sort({ _id: -1 })
+          .limit(queryLimit)
+          .lean();
+      } else {
+        // No limit - fetch all for dashboard
+        users = await User.find()
+          .sort({ _id: -1 })
+          .lean();
+      }
     }
     res.status(200).json(users);
   } catch (error) {
@@ -104,6 +118,17 @@ router.post("/checkuserauth", async (req, res) => {
 
 router.get("/dashboard", authMiddleware, (req, res) => {
   res.status(200).json({ message: "Welcome to the dashboard!" });
+});
+
+// Verify token validity (for frontend auth checks)
+router.get("/verify-token", authMiddleware, (req, res) => {
+  res.status(200).json({ 
+    valid: true, 
+    user: { 
+      id: req.user.id, 
+      email: req.user.email 
+    } 
+  });
 });
 
 

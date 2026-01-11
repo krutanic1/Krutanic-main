@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import API from "../API";
 const PostedJob = () => {
   const [jobs, setJobs] = useState([]);
@@ -10,6 +10,7 @@ const PostedJob = () => {
   const [resumeUploaded, setResumeUploaded] = useState(false);
   const [uploading, setUploading] = useState(false);
   const userId = localStorage.getItem("userId");
+  const hasFetched = useRef(false);
   const checkResumeStatus = async () => {
     if (!userId) {
       console.error("No userId found in localStorage");
@@ -104,13 +105,15 @@ const PostedJob = () => {
     }
   };
   useEffect(() => {
-    const initializeComponent = async () => {
-      await checkResumeStatus();
-      if (resumeUploaded) {
-        fetchJobs();
-      }
-    };
-    initializeComponent();
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+    checkResumeStatus();
+  }, []);
+
+  useEffect(() => {
+    if (resumeUploaded) {
+      fetchJobs();
+    }
   }, [resumeUploaded]);
   if (!resumeUploaded) {
     return (

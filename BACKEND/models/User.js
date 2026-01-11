@@ -97,6 +97,12 @@ const userSchema = new mongoose.Schema({
     default: false,
   }
 },
+{ timestamps: true }
 );
+
+// ✅ FIX #2: Add Database Indexes for faster queries
+// Note: email index already created by unique: true in schema
+userSchema.index({ status: 1 });
+userSchema.index({ phone: 1 });
 
 module.exports = mongoose.model('User', userSchema);

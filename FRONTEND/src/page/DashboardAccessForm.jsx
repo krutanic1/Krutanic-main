@@ -3,9 +3,14 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
+import { FaWhatsapp } from "react-icons/fa";
 
-const Dialog = ({ isOpen, onClose, fullname, errorMessage }) => {
+const Dialog = ({ isOpen, onClose, fullname, errorMessage, email, counselor, domain }) => {
   if (!isOpen) return null;
+
+  // Create WhatsApp message with user details
+  const whatsappMessage = `Hello, I am ${fullname}. Email: ${email}. Counselor: ${counselor}. Domain: ${domain}.`;
+  const whatsappLink = `https://wa.me/917022936875?text=${encodeURIComponent(whatsappMessage)}`;
 
   return (
     <div style={styles.modal}>
@@ -20,6 +25,9 @@ const Dialog = ({ isOpen, onClose, fullname, errorMessage }) => {
           </div>
         ) : (
           <div>
+            <h3 className="mb-2 text-lg font-semibold text-gray-800">
+              Thank you for registration!
+            </h3>
             <h3 className="mb-2 text-green-600 font-bold">
               Welcome to Krutanic!
             </h3>
@@ -28,8 +36,17 @@ const Dialog = ({ isOpen, onClose, fullname, errorMessage }) => {
             </p>
             <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-500 rounded">
               <p className="text-sm text-gray-700">
-                <strong>Note:</strong> Our operation department will contact you within 24hrs regarding the further process.
+                <strong>Note:</strong> Please contact your assigned operations executive <br/>Bhumika HK <br/> 7022936875<br/> bhumika@krutanic.org
               </p>
+              <a
+                href={whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 mt-3 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200"
+              >
+                <FaWhatsapp size={20} />
+                Contact on WhatsApp
+              </a>
             </div>
           </div>
         )}
@@ -46,6 +63,20 @@ const Dialog = ({ isOpen, onClose, fullname, errorMessage }) => {
 
 const DashboardAccessForm = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Helper function to format name to Title Case
+  const toTitleCase = (value) => {
+    if (!value) return "";
+    // Check if the value ends with a space (user is typing a new word)
+    const endsWithSpace = value.endsWith(" ");
+    const formatted = value
+      .split(/\s+/)
+      .filter((word) => word.length > 0)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+    // Preserve trailing space so user can continue typing
+    return endsWithSpace ? formatted + " " : formatted;
+  };
 
   const [fullname, setFullname] = useState("");
   const [email, setEmail] = useState("");
@@ -99,27 +130,28 @@ const DashboardAccessForm = () => {
     let months = [];
     let startMonthIndex;
 
-    // Agar date 1 se 7 ke beech hai, toh current month se list shuru hogi
-    if (currentDay >= 1 && currentDay <= 7) {
+    // If date is 10 or below, show current month; otherwise skip to next month
+    if (currentDay >= 1 && currentDay <= 10) {
       startMonthIndex = currentMonthIndex;
     } else {
-      // Warna agle month se shuru hoga
+      // After 10th, start from next month
       startMonthIndex = currentMonthIndex + 1;
     }
 
-    // Handle December case (Agar December hai toh agla saal start ho jayega)
-    const nextYear = startMonthIndex > 11 ? currentYear + 1 : currentYear;
-    startMonthIndex = startMonthIndex % 12;
+    // Handle December case (if December, next year starts)
+    let yearOffset = 0;
+    if (startMonthIndex > 11) {
+      yearOffset = 1;
+      startMonthIndex = startMonthIndex % 12;
+    }
 
-    months = [
-      `${monthNames[startMonthIndex]} ${nextYear}`,
-      `${monthNames[(startMonthIndex + 1) % 12]} ${
-        startMonthIndex + 1 > 11 ? nextYear + 1 : nextYear
-      }`,
-      `${monthNames[(startMonthIndex + 2) % 12]} ${
-        startMonthIndex + 2 > 11 ? nextYear + 1 : nextYear
-      }`,
-    ];
+    // Generate 6 months from the eligible start month
+    months = [];
+    for (let i = 0; i < 6; i++) {
+      const monthIndex = (startMonthIndex + i) % 12;
+      const year = currentYear + yearOffset + Math.floor((startMonthIndex + i) / 12);
+      months.push(`${monthNames[monthIndex]} ${year}`);
+    }
 
     setMonthsToShow(months);
   }, []);
@@ -372,7 +404,7 @@ const DashboardAccessForm = () => {
             <div className="input-field">
               <input
                 value={fullname}
-                onChange={(e) => setFullname(e.target.value)}
+                onChange={(e) => setFullname(toTitleCase(e.target.value))}
                 type="text"
                 required
               />
@@ -479,7 +511,7 @@ const DashboardAccessForm = () => {
               required
             >
               <option value="" selected disabled>
-                Select Opted Month
+                Program starting Month
               </option>
               {monthsToShow.map((month, index) => (
                 <option key={index} value={month}>
@@ -648,6 +680,9 @@ const DashboardAccessForm = () => {
           isOpen={isModalOpen}
           onClose={closeModal}
           fullname={fullname}
+          email={email}
+          counselor={counselor}
+          domain={domain}
           errorMessage={errorMessage}
         />
       </div>

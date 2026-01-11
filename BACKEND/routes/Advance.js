@@ -4,8 +4,23 @@ const Advance = require("../models/Advance");
 
 
 router.get("/advancequeries", async (req, res) => {
+  const { limit, all } = req.query;
   try {
-      queries = await Advance.find().sort({ _id: -1 });
+    // If all=true or limit=0, fetch all records (for dashboard)
+    const queryLimit = all === 'true' || limit === '0' ? 0 : (parseInt(limit) || 0);
+    
+    let queries;
+    if (queryLimit > 0) {
+      queries = await Advance.find()
+        .sort({ _id: -1 })
+        .limit(queryLimit)
+        .lean();
+    } else {
+      // No limit - fetch all
+      queries = await Advance.find()
+        .sort({ _id: -1 })
+        .lean();
+    }
     res.status(200).json(queries);
   } catch (error) {
     res.status(500).json({ message: "An error occurred while fetching data", error: error.message });

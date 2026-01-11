@@ -6,6 +6,14 @@ export default {
   ],
   theme: {
     extend: {
+      colors: {
+        "primary": "#f15a27",
+        "background-light": "#f8f6f6",
+        "background-dark": "#221510",
+      },
+      fontFamily: {
+        "display": ["Lexend", "sans-serif"]
+      },
       animation: {
         marquee: 'marquee 10s linear infinite',
       },

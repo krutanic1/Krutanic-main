@@ -85,14 +85,14 @@ const MarketingHeader = () => {
           </Link>
           {["LEADER", "MANAGER"].includes(marketingData?.designation) && (
             <>
-            <Link to="/marketing/leads">
+              {/* <Link to="/marketing/leads">
             {" "}
             <i className="fa fa-users"></i> All Leads{" "}
-          </Link>
-          <Link to="/marketing/addexecutive">
-            {" "}
-            <i className="fa fa-users"></i> + Executive{" "}
-          </Link>
+          </Link> */}  {/* DISABLED */}
+              <Link to="/marketing/addexecutive">
+                {" "}
+                <i className="fa fa-users"></i> + Executive{" "}
+              </Link>
             </>
           )}
           <button onClick={handleLogout}>

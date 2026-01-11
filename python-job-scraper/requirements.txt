@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+python-jobspy>=1.1.80
+pydantic
+python-dotenv
+pandas
+pymongo
+dnspython
+numpy>=1.26.0; python_version < "3.13"
+numpy>=1.26.4; python_version >= "3.13"

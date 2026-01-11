@@ -3,6 +3,7 @@ const router = express.Router();
 const CreateBDA = require("../models/CreateBDA");
 const NewEnrollStudent = require("../models/NewStudentEnroll");
 const CreateCourse = require("../models/CreateCourse");
+const CreateMarketing = require("../models/CreateMarketing");
 const mongoose = require("mongoose");
 
 router.post("/newstudentenroll", async (req, res) => {
@@ -45,6 +46,27 @@ router.post("/newstudentenroll", async (req, res) => {
         .json({ message: "You have already submitted your details." });
     }
 
+    // Set executive name from lead and find executiveId
+    let executiveName = null;
+    let executiveId = null;
+
+    if (lead) {
+      executiveName = lead; // Executive name is same as lead name
+      
+      // Find the executive in CreateMarketing by fullname
+      const executive = await CreateMarketing.findOne({
+        fullname: lead,
+        status: "Active"
+      });
+
+      if (executive) {
+        executiveId = executive._id.toString();
+        console.log(`Assigned executive: ${executiveName} (ID: ${executiveId})`);
+      } else {
+        console.log(`No active executive found with name: ${lead}`);
+      }
+    }
+
     const newStudent = new NewEnrollStudent({
       fullname,
       email,
@@ -72,7 +94,9 @@ router.post("/newstudentenroll", async (req, res) => {
       referFriend,
       internshipstartsmonth,
       internshipendsmonth,
-      yearOfStudy
+      yearOfStudy,
+      executive: executiveName,
+      executiveId: executiveId
     });
 
     await newStudent.save();

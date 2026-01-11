@@ -37,6 +37,7 @@ const CreateBDA = () => {
       team: teamValue,
       designation: formData.designation.trim(),
       teams: formData.designation === "MANAGER" ? teams.map(t => t.name.trim()).filter(name => name !== "") : [],
+      appendTeams: editingBdaId ? true : false, // Append teams when editing
     };
     try {
       if (editingBdaId) {
@@ -146,6 +147,14 @@ const CreateBDA = () => {
       team: bdaId.team,
       designation: bdaId.designation,
     });
+    
+    // If the person is a MANAGER and has existing teams, load them
+    if (bdaId.designation === "MANAGER" && bdaId.teams && bdaId.teams.length > 0) {
+      setTeams(bdaId.teams.map((teamName, index) => ({ id: index + 1, name: teamName })));
+    } else {
+      setTeams([{ id: 1, name: "" }]);
+    }
+    
     setEditingBdaId(bdaId._id);
     setiscourseFormVisible(true);
   };

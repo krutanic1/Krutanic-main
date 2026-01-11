@@ -83,10 +83,17 @@ const newStudentEnrollSchema = new Schema(
   },
   {
     timestamps: true,
-  },
-
-
+  }
 );
+
+// ✅ FIX #2: Add Database Indexes for faster queries
+// Note: email index already created by unique: true in schema
+newStudentEnrollSchema.index({ status: 1 });
+newStudentEnrollSchema.index({ createdAt: -1 });
+newStudentEnrollSchema.index({ operationId: 1 });
+newStudentEnrollSchema.index({ executiveId: 1 });
+newStudentEnrollSchema.index({ domain: 1 });
+newStudentEnrollSchema.index({ status: 1, createdAt: -1 }); // Composite index for filtered queries
 
 const NewEnroll = mongoose.model("NewEnroll", newStudentEnrollSchema);
 module.exports = NewEnroll;

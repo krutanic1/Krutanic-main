@@ -87,10 +87,10 @@ const AdminHeader = () => {
           <i className="fa fa-calendar-check-o mr-2"></i>Event Registrations
         </Link>
         <Link to="/AlumniData">
-        <i className="fa fa-lightbulb-o mr-2"></i>Alumni Review
+          <i className="fa fa-lightbulb-o mr-2"></i>Alumni Review
         </Link>
         <Link to="/ReferAndEarnResponse">
-       <i className="fa fa-bell mr-2"></i>Refer & Earn
+          <i className="fa fa-bell mr-2"></i>Refer & Earn
         </Link>
         <Link to="/AllTeamDetail">
           <i className="fa fa-users mr-2"></i>Team Detail
