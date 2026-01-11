@@ -4,7 +4,7 @@ const router = express.Router();
 
 // Define the Python service URL
 const PYTHON_SERVICE_URL = process.env.PYTHON_SERVICE_URL || "http://localhost:8001";
-const PYTHON_API_KEY = process.env.PYTHON_API_KEY || "dev-key-123";
+const PYTHON_API_KEY = process.env.PYTHON_SERVICE_API_KEY || process.env.PYTHON_API_KEY || "dev-key-123";
 
 // Route to proxy job search requests to the Python microservice
 router.post("/api/jobs/search", async (req, res) => {

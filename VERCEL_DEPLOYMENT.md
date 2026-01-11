@@ -21,6 +21,7 @@ NODE_ENV=production
 ```
 API_KEY=n8FQv4WmP9ZxA7C2yE6DkR5S3JH0UeB1LTaIYgKcMfwOohNrbV
 NODE_BACKEND_URL=https://your-backend.vercel.app
+MONGO_URI=mongodb+srv://shrikant:3EMYjxbi8cUiGCZN@krutanic.pkdq7.mongodb.net/?retryWrites=true&w=majority&appName=krutanic
 ```
 
 ### 3. Frontend
