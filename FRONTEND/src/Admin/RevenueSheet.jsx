@@ -65,12 +65,12 @@ const RevenueSheet = () => {
           setLoadingDaily(false);
           return;
         }
-        params = { startDate, endDate };
+        params = { ...params, startDate, endDate };
       } else {
         // Monthly Mode
         if (!selectedMonth) return;
         const [month, year] = selectedMonth.split(" ");
-        params = { month, year };
+        params = { ...params, month, year };
       }
 
       const response = await axios.get(`${API}/getnewstudentenroll`, { params });

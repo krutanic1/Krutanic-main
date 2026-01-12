@@ -12,6 +12,7 @@ const BookedList = () => {
   const [editingStudentId, setEditingStudentId] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(""); // Store selected month (format: "Month-Year")
   const [months, setMonths] = useState([]); // Store list of months with years
+  const [executives, setExecutives] = useState([]); // Store list of executives
 
   const fetchNewStudent = async () => {
     setLoading(true);
@@ -164,7 +165,7 @@ const BookedList = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, selectedMonth, newStudent]);
+  }, [searchQuery, selectedMonth]);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -230,7 +231,7 @@ const BookedList = () => {
       setPaidAmount(editStudent.paidAmount);
       setMonthOpted(editStudent.monthOpted);
       setClearPaymentMonth(editStudent.clearPaymentMonth);
-      setLead(editStudent.lead);
+      setLead(editStudent.lead || editStudent.executive || "");
       setEditingStudentId(studentId);
       setiscourseFormVisible(true);
     }
@@ -320,6 +321,15 @@ const BookedList = () => {
     }
   };
 
+  const fetchExecutives = async () => {
+    try {
+      const response = await axios.get(`${API}/admin/getallmarketingexecutives`);
+      setExecutives(response.data);
+    } catch (error) {
+      console.error("Error fetching executives:", error);
+    }
+  };
+
   const [minDate, setMinDate] = useState("");
   const [maxDate, setMaxDate] = useState("");
 
@@ -363,6 +373,7 @@ const BookedList = () => {
     fetchCourses();
     fetchBda();
     fetchOperation();
+    fetchExecutives();
   }, []);
 
 
@@ -479,8 +490,11 @@ const BookedList = () => {
               <option value="" disabled selected> Select Lead</option>
               <option value="CGFL"> CGFL </option>
               <option value="SGFL"> SGFL </option>
-              <option value="Ram Charan"> Ram Charan</option>
-              <option value="Abhilash"> Abhilash </option>
+              {executives.map((exec) => (
+                <option key={exec._id} value={exec.fullname}>
+                  {exec.fullname}
+                </option>
+              ))}
             </select>
             Due date for clear payment ?
             <input
