@@ -107,14 +107,11 @@ const PendingApplication = () => {
                     <td>{user.password}</td>
                     <td>{user.status}</td>
                     <td>
-                      <button onClick={() => handleActiveNow(user._id)}>
-                        <div className="relative group inline-block">
-                          <i className="fa fa-eye"></i>
-                          <div className="absolute left-1/2 -translate-x-1/2 bottom-full z-[9999] mb-2 hidden w-max bg-gray-800 text-white text-sm rounded-md py-2 px-3 group-hover:block">
-                            Active
-                            <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-t-8 border-gray-800 border-x-8 border-x-transparent"></div>
-                          </div>
-                        </div>
+                      <button 
+                        className="px-2 py-1 rounded bg-green-500 text-white hover:bg-green-600"
+                        onClick={() => handleActiveNow(user._id)}
+                      >
+                        Active
                       </button>
                     </td>
                   </tr>

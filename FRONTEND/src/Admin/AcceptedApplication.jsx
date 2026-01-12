@@ -164,6 +164,84 @@ const AcceptedApplication = () => {
     []
   );
 
+  const handleToggleProAccess = useCallback(
+    async (userId, enableAll) => {
+      const components = ["atschecker", "jobboard", "myjob", "mockinterview", "exercise"];
+      const toastId = toast.info(
+        <div>
+          <p>
+            Are you sure you want to {enableAll ? "enable" : "disable"} Pro Access (all components)?
+          </p>
+          <div className="flex gap-2">
+            <button
+              className="bg-blue-500 text-white px-2 py-1 rounded"
+              onClick={async () => {
+                toast.dismiss(toastId);
+                setUsers((prev) =>
+                  prev.map((u) =>
+                    u._id === userId ? { ...u, isLoadingComponent: true } : u
+                  )
+                );
+                try {
+                  const updatePromises = components.map(component => 
+                    axios.put(`${API}/user-components/${userId}`, {
+                      component,
+                      status: enableAll,
+                    })
+                  );
+                  
+                  await Promise.all(updatePromises);
+                  
+                  const response = await axios.get(`${API}/user-components`, {
+                    params: { userId },
+                  });
+                  const updatedComponents = response.data.components;
+                  setUsers((prev) =>
+                    prev.map((u) =>
+                      u._id === userId
+                        ? { ...u, components: updatedComponents, isLoadingComponent: false }
+                        : u
+                    )
+                  );
+                  toast.success(
+                    `Pro Access ${enableAll ? "enabled" : "disabled"} successfully`,
+                    {
+                      position: "top-center",
+                      autoClose: 3000,
+                    }
+                  );
+                } catch (error) {
+                  console.error('Error updating Pro Access:', error);
+                  setUsers((prev) =>
+                    prev.map((u) =>
+                      u._id === userId ? { ...u, isLoadingComponent: false } : u
+                    )
+                  );
+                  toast.error(`Failed to update Pro Access`);
+                }
+              }}
+            >
+              Yes
+            </button>
+            <button
+              className="bg-gray-500 text-white px-2 py-1 rounded"
+              onClick={() => toast.dismiss(toastId)}
+            >
+              No
+            </button>
+          </div>
+        </div>,
+        {
+          position: "top-center",
+          autoClose: false,
+          closeOnClick: false,
+          closeButton: false,
+        }
+      );
+    },
+    []
+  );
+
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {
       const matchesSearch =
@@ -232,6 +310,13 @@ const AcceptedApplication = () => {
   }, [fetchUsers]);
 
   const RenderRow = React.memo(({ user, index }) => {
+    const allComponentsEnabled = user.components && 
+      user.components.atschecker && 
+      user.components.jobboard && 
+      user.components.myjob && 
+      user.components.mockinterview && 
+      user.components.exercise;
+
     return (
       <tr key={user._id}>
         <td>{(currentPage - 1) * ITEMS_PER_PAGE + index + 1}</td>
@@ -244,30 +329,26 @@ const AcceptedApplication = () => {
             <>
               <button
                 className={`px-2 py-1 rounded mr-1 ${
-                  user.components?.atschecker
+                  allComponentsEnabled
                     ? "bg-green-500 text-white"
                     : "bg-gray-300"
                 } ${
                   user.isLoadingComponent ? "opacity-50 cursor-not-allowed" : ""
                 }`}
-                onClick={() =>
-                  handleToggleComponent(user._id, "atschecker", true)
-                }
+                onClick={() => handleToggleProAccess(user._id, true)}
                 disabled={user.isLoadingComponent}
               >
                 {user.isLoadingComponent ? "Loading..." : "Enable"}
               </button>
               <button
                 className={`px-2 py-1 rounded ${
-                  !user.components?.atschecker
+                  !allComponentsEnabled
                     ? "bg-red-500 text-white"
                     : "bg-gray-300"
                 } ${
                   user.isLoadingComponent ? "opacity-50 cursor-not-allowed" : ""
                 }`}
-                onClick={() =>
-                  handleToggleComponent(user._id, "atschecker", false)
-                }
+                onClick={() => handleToggleProAccess(user._id, false)}
                 disabled={user.isLoadingComponent}
               >
                 {user.isLoadingComponent ? "Loading..." : "Disable"}
@@ -278,163 +359,14 @@ const AcceptedApplication = () => {
           )}
         </td>
         <td>
-          {user.components ? (
-            <>
-              <button
-                className={`px-2 py-1 rounded mr-1 ${
-                  user.components?.jobboard
-                    ? "bg-green-500 text-white"
-                    : "bg-gray-300"
-                } ${
-                  user.isLoadingComponent ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                onClick={() =>
-                  handleToggleComponent(user._id, "jobboard", true)
-                }
-                disabled={user.isLoadingComponent}
-              >
-                {user.isLoadingComponent ? "Loading..." : "Enable"}
-              </button>
-              <button
-                className={`px-2 py-1 rounded ${
-                  !user.components?.jobboard
-                    ? "bg-red-500 text-white"
-                    : "bg-gray-300"
-                } ${
-                  user.isLoadingComponent ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                onClick={() =>
-                  handleToggleComponent(user._id, "jobboard", false)
-                }
-                disabled={user.isLoadingComponent}
-              >
-                {user.isLoadingComponent ? "Loading..." : "Disable"}
-              </button>
-            </>
-          ) : (
-            "Loading..."
-          )}
-        </td>
-        <td>
-          {user.components ? (
-            <>
-              <button
-                className={`px-2 py-1 rounded mr-1 ${
-                  user.components?.myjob
-                    ? "bg-green-500 text-white"
-                    : "bg-gray-300"
-                } ${
-                  user.isLoadingComponent ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                onClick={() => handleToggleComponent(user._id, "myjob", true)}
-                disabled={user.isLoadingComponent}
-              >
-                {user.isLoadingComponent ? "Loading..." : "Enable"}
-              </button>
-              <button
-                className={`px-2 py-1 rounded ${
-                  !user.components?.myjob
-                    ? "bg-red-500 text-white"
-                    : "bg-gray-300"
-                } ${
-                  user.isLoadingComponent ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                onClick={() => handleToggleComponent(user._id, "myjob", false)}
-                disabled={user.isLoadingComponent}
-              >
-                {user.isLoadingComponent ? "Loading..." : "Disable"}
-              </button>
-            </>
-          ) : (
-            "Loading..."
-          )}
-        </td>
-        <td>
-          {user.components ? (
-            <>
-              <button
-                className={`px-2 py-1 rounded mr-1 ${
-                  user.components?.mockinterview
-                    ? "bg-green-500 text-white"
-                    : "bg-gray-300"
-                } ${
-                  user.isLoadingComponent ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                onClick={() =>
-                  handleToggleComponent(user._id, "mockinterview", true)
-                }
-                disabled={user.isLoadingComponent}
-              >
-                {user.isLoadingComponent ? "Loading..." : "Enable"}
-              </button>
-              <button
-                className={`px-2 py-1 rounded ${
-                  !user.components?.mockinterview
-                    ? "bg-red-500 text-white"
-                    : "bg-gray-300"
-                } ${
-                  user.isLoadingComponent ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                onClick={() =>
-                  handleToggleComponent(user._id, "mockinterview", false)
-                }
-                disabled={user.isLoadingComponent}
-              >
-                {user.isLoadingComponent ? "Loading..." : "Disable"}
-              </button>
-            </>
-          ) : (
-            "Loading..."
-          )}
-        </td>
-        <td>
-          {user.components ? (
-            <>
-              <button
-                className={`px-2 py-1 rounded mr-1 ${
-                  user.components?.exercise
-                    ? "bg-green-500 text-white"
-                    : "bg-gray-300"
-                } ${
-                  user.isLoadingComponent ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                onClick={() =>
-                  handleToggleComponent(user._id, "exercise", true)
-                }
-                disabled={user.isLoadingComponent}
-              >
-                {user.isLoadingComponent ? "Loading..." : "Enable"}
-              </button>
-              <button
-                className={`px-2 py-1 rounded ${
-                  !user.components?.exercise
-                    ? "bg-red-500 text-white"
-                    : "bg-gray-300"
-                } ${
-                  user.isLoadingComponent ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                onClick={() =>
-                  handleToggleComponent(user._id, "exercise", false)
-                }
-                disabled={user.isLoadingComponent}
-              >
-                {user.isLoadingComponent ? "Loading..." : "Disable"}
-              </button>
-            </>
-          ) : (
-            "Loading..."
-          )}
-        </td>
-        <td>
-          <button onClick={() => handleInactivate(user._id)}>
-            <div className="relative group inline-block">
-              <i className="fa fa-eye-slash"></i>
-              <div className="absolute left-1/2 -translate-x-1/2 bottom-full z-[9999] mb-2 hidden w-max bg-gray-800 text-white text-sm rounded-md py-2 px-3 group-hover:block">
-                Inactive
-                <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-t-8 border-gray-800 border-x-8 border-x-transparent"></div>
-              </div>
-            </div>
+          <button
+            className="px-2 py-1 rounded bg-red-500 text-white hover:bg-red-600"
+            onClick={() => handleInactivate(user._id)}
+          >
+            Inactive
           </button>
+        </td>
+        <td>
           <button onClick={() => handleEdit(user)}>
             <div className="relative group inline-block">
               <i className="fa fa-edit"></i>
@@ -449,7 +381,7 @@ const AcceptedApplication = () => {
     );
   }, [
     currentPage,
-    handleToggleComponent,
+    handleToggleProAccess,
     handleInactivate,
     handleEdit,
   ]);
@@ -612,11 +544,8 @@ const AcceptedApplication = () => {
                 <th>Email</th>
                 <th>Contact</th>
                 <th>Status</th>
-                <th>ATS Checker</th>
-                <th>Job Board</th>
-                <th>My Job</th>
-                <th>Mock Interview</th>
-                <th>Exercise</th>
+                <th>Pro Access</th>
+                <th>User Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -627,7 +556,7 @@ const AcceptedApplication = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="11">
+                  <td colSpan="8">
                     No active users found
                     {showFullyPaidOnly && " with full payment"}
                     {programFilter &&
