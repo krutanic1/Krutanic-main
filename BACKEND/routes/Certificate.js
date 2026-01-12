@@ -85,4 +85,30 @@ router.get("/verify-certificate/:id", async (req, res) => {
 
 
 
+// Proxy route to bypass CORS for downloads
+router.get("/download-proxy", async (req, res) => {
+    try {
+        const { url } = req.query;
+        if (!url) {
+            return res.status(400).json({ error: "URL parameter is required" });
+        }
+
+        const axios = require('axios'); // Require here or top level
+        const response = await axios({
+            url,
+            method: 'GET',
+            responseType: 'stream'
+        });
+
+        // Set headers to force download
+        res.setHeader('Content-Disposition', 'attachment; filename="certificate.jpg"');
+        res.setHeader('Content-Type', response.headers['content-type']);
+
+        response.data.pipe(res);
+    } catch (error) {
+        console.error("Proxy Download Error:", error.message);
+        res.status(500).json({ error: "Failed to download file" });
+    }
+});
+
 module.exports = router;

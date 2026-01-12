@@ -6,6 +6,7 @@ import debounce from "lodash/debounce";
 import toast, { Toaster } from "react-hot-toast";
 import logo from "../assets/LOGO3.png";
 import UserSidebar from "./UserSidebar";
+import { FaWhatsapp } from "react-icons/fa";
 
 const NewDashboard = () => {
   const userEmail = localStorage.getItem("userEmail");
@@ -118,34 +119,27 @@ const NewDashboard = () => {
     }
   };
 
-  const trainingCertificateDownload = async () => {
+  const getTrainingCertUrl = () => {
+    if (!selectedCertificate) return "";
     let finalOutput = selectedCertificate.domain + " on " + new Date(selectedCertificate.startdate).toLocaleString('en-US', { month: 'long', year: 'numeric' });
-    try {
-      const imageUrl = `https://res.cloudinary.com/do5gatqvs/image/upload/co_rgb:000000,l_text:times%20new%20roman_65_bold_normal_left:${encodeURIComponent(selectedCertificate.name)}/fl_layer_apply,y_20/co_rgb:000000,l_text:times%20new%20roman_25_bold_normal_left:${encodeURIComponent(finalOutput)}/fl_layer_apply,y_225/training_certificate_demo_vknkst`;
-      const imageResponse = await fetch(imageUrl);
-      const blob = await imageResponse.blob();
-      const blobUrl = window.URL.createObjectURL(blob);
-
-      const a = document.createElement("a");
-      a.href = blobUrl;
-      a.download = "Training_Certificate.jpg";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(blobUrl);
-
-      toast.success("Training Certificate downloaded successfully!");
-    } catch (error) {
-      toast.error("Failed to download training certificate");
-      console.error("Download error:", error);
-    }
+    return `https://res.cloudinary.com/do5gatqvs/image/upload/co_rgb:000000,l_text:times%20new%20roman_65_bold_normal_left:${encodeURIComponent(selectedCertificate.name)}/fl_layer_apply,y_20/co_rgb:000000,l_text:times%20new%20roman_25_bold_normal_left:${encodeURIComponent(finalOutput)}/fl_layer_apply,y_225/training_certificate_demo_vknkst`;
   };
 
-  const addLinkedin = (data) => {
+  const addLinkedin = (data, isTraining = false) => {
     let year = new Date(data.date).toLocaleDateString("en-US", { year: "numeric" });
     let month = new Date(data.date).toLocaleDateString("en-US", { month: "numeric" });
-    let linkurl = `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${data.domain}&organizationName=Krutanic&issueYear=${year}&issueMonth=${month}&certUrl=${data.url}&certId=${data._id}`;
+    let certUrl = isTraining ? getTrainingCertUrl() : data.url;
+    let certName = isTraining ? `Training Certificate - ${data.domain}` : data.domain;
+
+    let linkurl = `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${certName}&organizationName=Krutanic&issueYear=${year}&issueMonth=${month}&certUrl=${certUrl}&certId=${data._id}`;
     window.open(linkurl, "_blank");
+  };
+
+  const downloadInternshipCertificate = () => {
+    // Use backend proxy to force download and avoid CORS issues
+    const proxyUrl = `${API}/download-proxy?url=${encodeURIComponent(selectedCertificate.url)}`;
+    window.open(proxyUrl, "_self"); // Trigger download in same tab
+    toast.success("Download started...");
   };
 
   const handleLogout = () => {
@@ -269,7 +263,7 @@ const NewDashboard = () => {
             </div>
 
             {/* Certificate Image */}
-            <div className="p-6 bg-gray-50">
+            <div className="p-6 bg-gray-50 flex flex-col gap-4">
               <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
                 <img
                   src={selectedCertificate.url}
@@ -303,19 +297,19 @@ const NewDashboard = () => {
                 <div className="flex flex-wrap items-center gap-3">
                   <button
                     className="bg-[#0077B5] hover:bg-[#006097] text-white px-5 py-2.5 rounded-lg flex items-center gap-2 font-medium transition-colors shadow-sm"
-                    onClick={() => addLinkedin(selectedCertificate)}
+                    onClick={() => addLinkedin(selectedCertificate, true)}
                   >
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                     </svg>
-                    Add to LinkedIn
+                    Add Training to LinkedIn
                   </button>
                   <button
                     className="bg-primary hover:bg-orange-600 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 font-medium transition-colors shadow-sm"
-                    onClick={trainingCertificateDownload}
+                    onClick={downloadInternshipCertificate}
                   >
                     <span className="material-symbols-outlined text-lg">download</span>
-                    Download
+                    Download Certificate
                   </button>
                 </div>
               </div>
@@ -338,6 +332,16 @@ const NewDashboard = () => {
           </div>
         </div>
         <div className="flex items-center gap-4 sm:gap-8">
+          <a
+            href="https://wa.me/8310626647"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex min-w-[40px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-9 px-3 bg-green-100 hover:bg-green-200 text-green-600 transition-colors text-sm font-bold"
+            title="Chat with us on WhatsApp"
+          >
+            <FaWhatsapp className="text-xl" />
+            <span>Support</span>
+          </a>
           <Link
             to="/Setting"
             className="hidden sm:flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-9 px-4 bg-primary/10 hover:bg-primary/20 text-primary transition-colors text-sm font-bold leading-normal tracking-wide"
