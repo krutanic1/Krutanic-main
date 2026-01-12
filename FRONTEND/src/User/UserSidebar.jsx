@@ -18,6 +18,11 @@ const UserSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     exercise: false,
   });
 
+  const [courseName, setCourseName] = useState("");
+  const [userProgram, setUserProgram] = useState("");
+  const [enrollmentDate, setEnrollmentDate] = useState(null);
+  const [paymentStatus, setPaymentStatus] = useState("");
+
   const fetchUserData = async () => {
     if (!userId) return;
     try {
@@ -25,6 +30,23 @@ const UserSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
       setUserData(response.data);
     } catch (err) {
       console.log("Failed to fetch user data");
+    }
+  };
+
+  const fetchEnrollmentData = async () => {
+    if (!localStorage.getItem("userEmail")) return;
+    try {
+      const response = await axios.get(`${API}/enrollments`, {
+        params: { userEmail: localStorage.getItem("userEmail") },
+      });
+      if (response.data && response.data.length > 0) {
+        setCourseName(response.data[0].domain?.title || "");
+        setUserProgram(response.data[0].program || "");
+        setEnrollmentDate(response.data[0].createdAt);
+        setPaymentStatus(response.data[0].status || "");
+      }
+    } catch (error) {
+      console.error("Error fetching enrollment data for sidebar:", error);
     }
   };
 
@@ -58,6 +80,19 @@ const UserSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     }
   };
 
+  const handleUpgradeClick = () => {
+    const phoneNumber = "7022936875";
+    const name = userData?.fullname || "Student";
+    const email = userData?.email || "No Email";
+    const course = courseName || "Course";
+
+    const message = `Hello, I want to upgrade to pro.\nName: ${name}\nEmail: ${email}\nCourse: ${course}`;
+    const encodedMessage = encodeURIComponent(message);
+
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+    window.open(whatsappUrl, "_blank");
+  };
+
   const isActive = (path) => location.pathname.toLowerCase() === path.toLowerCase();
 
   useEffect(() => {
@@ -65,6 +100,7 @@ const UserSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     hasFetched.current = true;
     fetchUserData();
     fetchComponentsAccess();
+    fetchEnrollmentData();
   }, []);
 
   const menuItems = [
@@ -94,18 +130,30 @@ const UserSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
           <div className="flex flex-col gap-1">
             {menuItems.map((item) => {
               const active = isActive(item.path);
-              const hasAccess = item.restricted ? componentsAccess[item.access] : true;
-              
+
+              let hasAccess = item.restricted ? componentsAccess[item.access] : true;
+
+              // Automatic unlock for Career Advancement after 1 month AND full payment
+              if (item.restricted && !hasAccess && userProgram?.includes("Career Advancement") && enrollmentDate && paymentStatus === "fullPaid") {
+                const joinedDate = new Date(enrollmentDate);
+                const currentDate = new Date();
+                const diffTime = Math.abs(currentDate - joinedDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                if (diffDays > 30) {
+                  hasAccess = true;
+                }
+              }
+
               if (item.restricted) {
                 return (
                   <button
                     key={item.path}
+                    title={!hasAccess ? "Upgrade to Pro" : ""}
                     onClick={() => handleRestrictedClick(item.path, hasAccess)}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group w-full text-left ${
-                      active
-                        ? "bg-primary/10 text-primary border-r-4 border-primary/50"
-                        : `hover:bg-gray-50 text-gray-600 ${!hasAccess ? 'opacity-50' : ''}`
-                    }`}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group w-full text-left ${active
+                      ? "bg-primary/10 text-primary border-r-4 border-primary/50"
+                      : `hover:bg-gray-50 text-gray-600 ${!hasAccess ? 'opacity-50' : ''}`
+                      }`}
                   >
                     <span className={`material-symbols-outlined ${active ? 'fill-icon text-primary' : 'text-gray-400 group-hover:text-primary'} transition-colors`}>
                       {item.icon}
@@ -119,11 +167,10 @@ const UserSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group ${
-                    active
-                      ? "bg-primary/10 text-primary border-r-4 border-primary/50"
-                      : "hover:bg-gray-50 text-gray-600"
-                  }`}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group ${active
+                    ? "bg-primary/10 text-primary border-r-4 border-primary/50"
+                    : "hover:bg-gray-50 text-gray-600"
+                    }`}
                 >
                   <span className={`material-symbols-outlined ${active ? 'fill-icon text-primary' : 'text-gray-400 group-hover:text-primary'} transition-colors`}>
                     {item.icon}
@@ -135,9 +182,18 @@ const UserSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
           </div>
         </div>
         <div className="mt-auto p-6 pt-2 border-t border-gray-100">
-          <Link to="/Setting" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group mb-1 ${
-            isActive("/Setting") ? "bg-primary/10 text-primary border-r-4 border-primary/50" : "hover:bg-gray-50 text-gray-600"
-          }`}>
+          {!userProgram?.includes("Career Advancement") && (
+            <button
+              onClick={handleUpgradeClick}
+              className="btn-shine w-full flex items-center justify-center gap-3 px-3 py-2.5 rounded-lg mb-4 hover:opacity-90 transition-opacity group"
+            >
+              <span className="material-symbols-outlined text-white">rocket_launch</span>
+              <p className="text-sm font-bold leading-normal text-white">Upgrade to Pro</p>
+            </button>
+          )}
+
+          <Link to="/Setting" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group mb-1 ${isActive("/Setting") ? "bg-primary/10 text-primary border-r-4 border-primary/50" : "hover:bg-gray-50 text-gray-600"
+            }`}>
             <span className={`material-symbols-outlined ${isActive("/Setting") ? 'fill-icon text-primary' : 'text-gray-400 group-hover:text-gray-600'} transition-colors`}>settings</span>
             <p className={`text-sm leading-normal ${isActive("/Setting") ? 'font-bold' : 'font-medium'}`}>Setting</p>
           </Link>
@@ -147,6 +203,7 @@ const UserSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
           </button>
         </div>
       </aside>
+
 
       {/* Sidebar Overlay for Mobile */}
       {isSidebarOpen && (

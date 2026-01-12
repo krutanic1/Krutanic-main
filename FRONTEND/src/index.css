@@ -372,4 +372,26 @@ h1 {
    opacity: 0.8;
   }
  }
+
+@keyframes shine {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.btn-shine {
+  background: linear-gradient(-45deg, #FF3D00, #FF9100, #FF3D00);
+  background-size: 200% 200%;
+  animation: shine 2s ease infinite;
+  color: white;
+  border: none;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(255, 61, 0, 0.4);
+}
  
