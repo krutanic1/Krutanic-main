@@ -154,12 +154,6 @@ const NewEnrolledCourses = () => {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <button className="hidden sm:flex items-center justify-center rounded-lg h-10 w-10 hover:bg-gray-100 text-gray-700">
-            <span className="material-symbols-outlined">notifications</span>
-          </button>
-          <Link to="/Setting" className="hidden sm:flex items-center justify-center rounded-lg h-10 w-10 hover:bg-gray-100 text-gray-700">
-            <span className="material-symbols-outlined">account_circle</span>
-          </Link>
           <div className="relative group cursor-pointer">
             <div className="bg-primary/20 rounded-full size-10 flex items-center justify-center text-primary font-bold text-lg border-2 border-white shadow-sm">
               {userData?.fullname?.charAt(0)?.toUpperCase() || "U"}
