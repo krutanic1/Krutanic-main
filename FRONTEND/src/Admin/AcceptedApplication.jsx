@@ -44,7 +44,7 @@ const AcceptedApplication = () => {
       const [usersResponse, enrollmentsResponse, componentsResponse] =
         await Promise.all([
           axios.get(`${API}/users`),
-          axios.get(`${API}/getnewstudentenroll`, { params: { all: "true" } }),
+          axios.get(`${API}/getnewstudentenroll`),
           axios.get(`${API}/all-user-components`),
         ]);
 
@@ -54,7 +54,6 @@ const AcceptedApplication = () => {
           {
             program: e.program,
             isFullyPaid: e.paidAmount === e.programPrice,
-            createdAt: e.createdAt,
           },
         ])
       );
@@ -67,32 +66,11 @@ const AcceptedApplication = () => {
         .filter((user) => user.status === "active")
         .map((user) => {
           const enrollment = enrollmentsMap.get(user.email);
-          let components = componentsMap.get(user._id) || {};
-
-          // Auto-unlock logic
-          if (enrollment?.program?.includes("Career Advancement") && enrollment?.isFullyPaid && enrollment?.createdAt) {
-            const joinedDate = new Date(enrollment.createdAt);
-            const currentDate = new Date();
-            const diffTime = Math.abs(currentDate - joinedDate);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-            if (diffDays > 30) {
-              // Override components to be true for UI display
-              components = {
-                atschecker: true,
-                jobboard: true,
-                myjob: true,
-                mockinterview: true,
-                exercise: true
-              };
-            }
-          }
-
           return {
             ...user,
             program: enrollment?.program || "Self-guided",
             isFullyPaid: enrollment?.isFullyPaid || false,
-            components: components,
+            components: componentsMap.get(user._id) || {},
             isLoadingComponent: false,
           };
         });
@@ -147,7 +125,8 @@ const AcceptedApplication = () => {
                     )
                   );
                   toast.success(
-                    `${component} component ${status ? "enabled" : "disabled"
+                    `${component} component ${
+                      status ? "enabled" : "disabled"
                     } successfully`,
                     {
                       position: "top-center",
@@ -204,15 +183,15 @@ const AcceptedApplication = () => {
                   )
                 );
                 try {
-                  const updatePromises = components.map(component =>
+                  const updatePromises = components.map(component => 
                     axios.put(`${API}/user-components/${userId}`, {
                       component,
                       status: enableAll,
                     })
                   );
-
+                  
                   await Promise.all(updatePromises);
-
+                  
                   const response = await axios.get(`${API}/user-components`, {
                     params: { userId },
                   });
@@ -330,13 +309,82 @@ const AcceptedApplication = () => {
     fetchUsers();
   }, [fetchUsers]);
 
-  /* RenderRow moved outside */
-  const handleEditUser = handleEdit;
-  const handleInactivateUser = handleInactivate;
-  const handleTogglePro = handleToggleProAccess;
+  const RenderRow = React.memo(({ user, index }) => {
+    const allComponentsEnabled = user.components && 
+      user.components.atschecker && 
+      user.components.jobboard && 
+      user.components.myjob && 
+      user.components.mockinterview && 
+      user.components.exercise;
 
-  // Note: RenderRow is now defined outside or we use it inline properly. 
-  // For least friction, I will define it outside.
+    return (
+      <tr key={user._id}>
+        <td>{(currentPage - 1) * ITEMS_PER_PAGE + index + 1}</td>
+        <td>{user.fullname}</td>
+        <td>{user.email}</td>
+        <td>{user.phone}</td>
+        <td>{user.status}</td>
+        <td>
+          {user.components ? (
+            <>
+              <button
+                className={`px-2 py-1 rounded mr-1 ${
+                  allComponentsEnabled
+                    ? "bg-green-500 text-white"
+                    : "bg-gray-300"
+                } ${
+                  user.isLoadingComponent ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                onClick={() => handleToggleProAccess(user._id, true)}
+                disabled={user.isLoadingComponent}
+              >
+                {user.isLoadingComponent ? "Loading..." : "Enable"}
+              </button>
+              <button
+                className={`px-2 py-1 rounded ${
+                  !allComponentsEnabled
+                    ? "bg-red-500 text-white"
+                    : "bg-gray-300"
+                } ${
+                  user.isLoadingComponent ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                onClick={() => handleToggleProAccess(user._id, false)}
+                disabled={user.isLoadingComponent}
+              >
+                {user.isLoadingComponent ? "Loading..." : "Disable"}
+              </button>
+            </>
+          ) : (
+            "Loading..."
+          )}
+        </td>
+        <td>
+          <button
+            className="px-2 py-1 rounded bg-red-500 text-white hover:bg-red-600"
+            onClick={() => handleInactivate(user._id)}
+          >
+            Inactive
+          </button>
+        </td>
+        <td>
+          <button onClick={() => handleEdit(user)}>
+            <div className="relative group inline-block">
+              <i className="fa fa-edit"></i>
+              <div className="absolute left-1/2 -translate-x-1/2 bottom-full z-[9999] mb-2 hidden w-max bg-gray-800 text-white text-sm rounded-md py-2 px-3 group-hover:block">
+                Edit
+                <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-t-8 border-gray-800 border-x-8 border-x-transparent"></div>
+              </div>
+            </div>
+          </button>
+        </td>
+      </tr>
+    );
+  }, [
+    currentPage,
+    handleToggleProAccess,
+    handleInactivate,
+    handleEdit,
+  ]);
 
   return (
     <div id="AdminAddCourse">
@@ -419,10 +467,11 @@ const AcceptedApplication = () => {
                 <i className="fa fa-info-circle text-lg cursor-pointer text-gray-500"></i>
                 <div className="absolute left-1/2 -translate-x-1/2 bottom-full z-[9999] mb-2 hidden w-max bg-gray-800 text-white text-sm rounded-md py-2 px-3 group-hover:block">
                   {programFilter
-                    ? `Searching within ${PROGRAM_OPTIONS.find(
-                      (opt) => opt.value === programFilter
-                    )?.label
-                    } program`
+                    ? `Searching within ${
+                        PROGRAM_OPTIONS.find(
+                          (opt) => opt.value === programFilter
+                        )?.label
+                      } program`
                     : "Search by Name, Email, or Contact No across all programs"}
                   <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-t-8 border-gray-800 border-x-8 border-x-transparent"></div>
                 </div>
@@ -432,10 +481,11 @@ const AcceptedApplication = () => {
                   type="text"
                   placeholder={
                     programFilter
-                      ? `Search within ${PROGRAM_OPTIONS.find(
-                        (opt) => opt.value === programFilter
-                      )?.label
-                      }...`
+                      ? `Search within ${
+                          PROGRAM_OPTIONS.find(
+                            (opt) => opt.value === programFilter
+                          )?.label
+                        }...`
                       : "Search by name, email, or contact..."
                   }
                   value={searchQuery}
@@ -502,15 +552,7 @@ const AcceptedApplication = () => {
             <tbody>
               {paginatedUsers.length > 0 ? (
                 paginatedUsers.map((user, index) => (
-                  <RenderRow
-                    key={user._id}
-                    user={user}
-                    index={index}
-                    currentPage={currentPage}
-                    onToggleProAccess={handleTogglePro}
-                    onInactivate={handleInactivateUser}
-                    onEdit={handleEditUser}
-                  />
+                  <RenderRow key={user._id} user={user} index={index} />
                 ))
               ) : (
                 <tr>
@@ -518,9 +560,10 @@ const AcceptedApplication = () => {
                     No active users found
                     {showFullyPaidOnly && " with full payment"}
                     {programFilter &&
-                      ` in ${PROGRAM_OPTIONS.find(
-                        (opt) => opt.value === programFilter
-                      )?.label
+                      ` in ${
+                        PROGRAM_OPTIONS.find(
+                          (opt) => opt.value === programFilter
+                        )?.label
                       }`}
                   </td>
                 </tr>
@@ -563,83 +606,5 @@ const AcceptedApplication = () => {
     </div>
   );
 };
-
-const RenderRow = React.memo(({ user, index, currentPage, onToggleProAccess, onInactivate, onEdit }) => {
-  const allComponentsEnabled = user.components &&
-    user.components.atschecker &&
-    user.components.jobboard &&
-    user.components.myjob &&
-    user.components.mockinterview &&
-    user.components.exercise;
-
-  const someComponentsEnabled = user.components && (
-    user.components.atschecker ||
-    user.components.jobboard ||
-    user.components.myjob ||
-    user.components.mockinterview ||
-    user.components.exercise);
-
-  return (
-    <tr key={user._id}>
-      <td>{(currentPage - 1) * ITEMS_PER_PAGE + index + 1}</td>
-      <td>{user.fullname}</td>
-      <td>{user.email}</td>
-      <td>{user.phone}</td>
-      <td>{user.status}</td>
-      <td>
-        {user.components ? (
-          <>
-            <button
-              className={`px-2 py-1 rounded mr-1 ${allComponentsEnabled
-                ? "bg-green-500 text-white"
-                : someComponentsEnabled
-                  ? "bg-yellow-500 text-white"
-                  : "bg-gray-300"
-                } ${user.isLoadingComponent ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-              onClick={() => onToggleProAccess(user._id, true)}
-              disabled={user.isLoadingComponent}
-              title={someComponentsEnabled && !allComponentsEnabled ? "Partially Enabled" : ""}
-            >
-              {user.isLoadingComponent ? "Loading..." : allComponentsEnabled ? "Enabled" : "Enable"}
-            </button>
-            <button
-              className={`px-2 py-1 rounded ${!allComponentsEnabled
-                ? "bg-red-500 text-white"
-                : "bg-gray-300"
-                } ${user.isLoadingComponent ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-              onClick={() => onToggleProAccess(user._id, false)}
-              disabled={user.isLoadingComponent}
-            >
-              {user.isLoadingComponent ? "Loading..." : "Disable"}
-            </button>
-          </>
-        ) : (
-          "Loading..."
-        )}
-      </td>
-      <td>
-        <button
-          className="px-2 py-1 rounded bg-red-500 text-white hover:bg-red-600"
-          onClick={() => onInactivate(user._id)}
-        >
-          Inactive
-        </button>
-      </td>
-      <td>
-        <button onClick={() => onEdit(user)}>
-          <div className="relative group inline-block">
-            <i className="fa fa-edit"></i>
-            <div className="absolute left-1/2 -translate-x-1/2 bottom-full z-[9999] mb-2 hidden w-max bg-gray-800 text-white text-sm rounded-md py-2 px-3 group-hover:block">
-              Edit
-              <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-t-8 border-gray-800 border-x-8 border-x-transparent"></div>
-            </div>
-          </div>
-        </button>
-      </td>
-    </tr>
-  );
-});
 
 export default AcceptedApplication;

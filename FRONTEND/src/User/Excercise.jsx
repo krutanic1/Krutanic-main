@@ -519,7 +519,10 @@ const Exercise = () => {
           >
             Back to Dashboard
           </button>
-        </div>
+          {/* Footer */}
+          <footer className="mt-16 py-6 text-center text-gray-600 text-sm">
+            © 2026 All Rights Reserved. Powered by Krutanic.
+          </footer>        </div>
       </div>
     );
   }

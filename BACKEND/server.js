@@ -123,6 +123,28 @@ app.use("/", ResumeATS);
 // app.use("/", PlacementCoordinator);
 
 // ✅ FIX #4: Error handling middleware (must be after routes)
+const axios = require('axios');
+// Global Proxy Route for Downloads (Moved here for reliability)
+app.get("/download-proxy", async (req, res) => {
+  try {
+    const { url } = req.query;
+    if (!url) return res.status(400).json({ error: "URL parameter is required" });
+
+    const response = await axios({
+      url,
+      method: 'GET',
+      responseType: 'stream'
+    });
+
+    res.setHeader('Content-Disposition', 'attachment; filename="certificate.jpg"');
+    res.setHeader('Content-Type', response.headers['content-type']);
+    response.data.pipe(res);
+  } catch (error) {
+    console.error("Proxy Download Error:", error.message);
+    res.status(500).json({ error: "Failed to download file" });
+  }
+});
+
 app.use(dbErrorHandler);
 app.use(globalErrorHandler);
 

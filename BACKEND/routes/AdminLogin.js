@@ -1,13 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const adminMail = require("../models/AdminMail");
+const adminMail = require("../models/AdminMail"); 
 const Operation = require("../models/CreateOperation");
 const bda = require("../models/CreateBDA");
 const expressAsyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const { sendEmail } = require("../controllers/emailController");
-const crypto = require('crypto');
+const crypto = require('crypto'); 
 // const PlacementCoordinator = require("../models/PlacementCoordinator");
 const { default: mongoose } = require("mongoose");
 const User = require("../models/User");
@@ -16,41 +16,41 @@ const verifyAdminCookie = require("../middleware/verifyAdminCookie");
 
 
 // Route to save admin email
-router.post("/admin", expressAsyncHandler(async (req, res) => {
-  const { email, password, otp } = req.body;
-  if (!email) {
-    return res.status(400).json({ error: "Email is required" });
-  }
-  try {
-    const newAdmin = new adminMail({ email, password, otp });
-    await newAdmin.save();
-    res.status(200).json({ message: "Admin email saved successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Failed to save admin email", error: error.message });
-  }
-})
+router.post("/admin",expressAsyncHandler(async (req, res) => {
+    const { email , password , otp } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+    try {
+      const newAdmin = new adminMail({ email , password , otp });
+      await newAdmin.save();
+      res.status(200).json({ message: "Admin email saved successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to save admin email", error: error.message });
+    }
+  })
 );
 
 
 // Route to send OTP
-router.post("/otpsend", expressAsyncHandler(async (req, res) => {
-  const { email } = req.body;
-  if (!email) {
-    return res.status(400).json({ error: "Email is required" });
-  }
-  try {
-    const admin = await adminMail.findOne({ email });
-    if (!admin) {
-      return res.status(500).json({ error: "Admin email not found" });
+router.post("/otpsend",expressAsyncHandler(async (req, res) => {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
     }
+    try {
+      const admin = await adminMail.findOne({email});
+      if (!admin) {
+        return res.status(500).json({ error: "Admin email not found" });
+      }
 
-    if (email !== admin.email) {
-      return res.status(401).json({ error: "You are not authorized as admin" });
-    }
+      if (email !== admin.email) {
+        return res.status(401).json({ error: "You are not authorized as admin" });
+      }
 
-    const otp = crypto.randomInt(100000, 1000000);
-
-    const EmailMessage = `
+      const otp = crypto.randomInt(100000, 1000000);
+ 
+         const EmailMessage = `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
               <div style="background-color: #F15B29; color: #fff; text-align: center; padding: 20px;">
                 <h1>Krutanic</h1>
@@ -67,57 +67,57 @@ router.post("/otpsend", expressAsyncHandler(async (req, res) => {
               </div>
             </div>
           `;
-    admin.otp = otp;
-    await Promise.all([
-      admin.save(),
-      sendEmail({ email, subject: "Krutanic Admin Login Credentials", message: EmailMessage }),
-    ]);
-    res.status(200).json({ message: "OTP sent to your email!" });
-  } catch (error) {
-    res.status(500).json({ message: "Failed to send OTP", error: error.message });
-  }
-})
+      admin.otp = otp;
+        await Promise.all([
+          admin.save(),
+          sendEmail({ email , subject: "Krutanic Admin Login Credentials", message: EmailMessage}),
+        ]);
+      res.status(200).json({ message: "OTP sent to your email!" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to send OTP", error: error.message });
+    }
+  })
 );
 
 // Route to verify OTP
-router.post("/otpverify", expressAsyncHandler(async (req, res) => {
-  const { email, otp } = req.body;
-  if (!email || !otp) {
-    return res.status(400).json({ error: "Email and OTP are required" });
-  }
-  try {
-    const admin = await adminMail.findOne({ email });
-    if (!admin) {
-      return res.status(404).json({ error: "Admin not found" });
+router.post("/otpverify",expressAsyncHandler(async (req, res) => {
+    const { email, otp } = req.body;
+    if (!email || !otp) {
+      return res.status(400).json({ error: "Email and OTP are required" });
     }
+    try {
+      const admin = await adminMail.findOne({ email });
+      if (!admin) {
+        return res.status(404).json({ error: "Admin not found" });
+      }
 
-    if (admin.otp !== otp) {
-      return res.status(401).json({ error: "Invalid OTP" });
+      if (admin.otp !== otp) {
+        return res.status(401).json({ error: "Invalid OTP" });
+      }
+
+      // Clear OTP after verification
+      admin.otp = null;
+      await admin.save();
+
+      // Generate JWT
+      const token = jwt.sign(
+        { email: admin.email }, 
+        process.env.JWT_SECRET, 
+        { expiresIn: "1h" } 
+      );
+
+      res.cookie("adminToken", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+        maxAge: 60 * 60 * 1000 // 1 hour
+      });
+
+      res.status(200).json({ message: "OTP verified successfully", token });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to verify OTP", error: error.message });
     }
-
-    // Clear OTP after verification
-    admin.otp = null;
-    await admin.save();
-
-    // Generate JWT
-    const token = jwt.sign(
-      { email: admin.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
-
-    res.cookie("adminToken", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-      maxAge: 60 * 60 * 1000 // 1 hour
-    });
-
-    res.status(200).json({ message: "OTP verified successfully", token });
-  } catch (error) {
-    res.status(500).json({ message: "Failed to verify OTP", error: error.message });
-  }
-})
+  })
 );
 
 
@@ -141,9 +141,9 @@ router.post("/checkadmin", async (req, res) => {
       { expiresIn: "1h" }
     );
 
+        
 
-
-    res.status(200).json({ message: "Login successful", token });
+    res.status(200).json({ message: "Login successful" , token});
   } catch (err) {
     console.error("Error during login", err);
     res.status(500).json({ message: "Server error" });
@@ -195,7 +195,7 @@ router.put('/mailsendedoperation/:id', async (req, res) => {
   const { mailSended } = req.body;
   const objectId = new mongoose.Types.ObjectId(id);
   try {
-    const opData = await Operation.findById({ _id: objectId });
+    const opData = await Operation.findById({ _id: objectId});
     if (!opData) {
       return res.status(404).send({ message: 'Operation not found.' });
     }
@@ -252,7 +252,7 @@ router.put('/mailsendedbda/:id', async (req, res) => {
   const { mailSended } = req.body;
   const objectId = new mongoose.Types.ObjectId(id);
   try {
-    const bdaData = await bda.findById({ _id: objectId });
+    const bdaData = await bda.findById({ _id: objectId});
     if (!bdaData) {
       return res.status(404).send({ message: 'Bda not found.' });
     }
@@ -347,7 +347,7 @@ router.get('/user-components', async (req, res) => {
 router.put('/user-components/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
-    const { component, status } = req.body;
+    const { component, status } = req.body; 
 
     if (!userId || !component || typeof status !== 'boolean') {
       return res.status(400).json({ message: 'User ID, component, and status are required' });
@@ -377,8 +377,7 @@ router.get('/all-user-components', async (req, res) => {
       '_id atschecker jobboard myjob mockinterview exercise'
     );
     if (!users || users.length === 0) {
-      // return res.status(404).json({ message: 'No active users found' });
-      return res.json([]);
+      return res.status(404).json({ message: 'No active users found' });
     }
 
     const componentsData = users.map((user) => ({
@@ -431,8 +430,8 @@ router.post('/batch-user-components', async (req, res) => {
     res.json(componentsData);
   } catch (error) {
     console.error('Error fetching batch user components:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
+    res.status(500).json({ message: 'Server error' });
+  }
 });
 
 // alumni data and retreive route 

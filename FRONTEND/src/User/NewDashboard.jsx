@@ -6,7 +6,6 @@ import debounce from "lodash/debounce";
 import toast, { Toaster } from "react-hot-toast";
 import logo from "../assets/LOGO3.png";
 import UserSidebar from "./UserSidebar";
-import { FaWhatsapp } from "react-icons/fa";
 
 const NewDashboard = () => {
   const userEmail = localStorage.getItem("userEmail");
@@ -119,12 +118,14 @@ const NewDashboard = () => {
     }
   };
 
+  /* Helper to generate Training Certificate URL */
   const getTrainingCertUrl = () => {
     if (!selectedCertificate) return "";
     let finalOutput = selectedCertificate.domain + " on " + new Date(selectedCertificate.startdate).toLocaleString('en-US', { month: 'long', year: 'numeric' });
     return `https://res.cloudinary.com/do5gatqvs/image/upload/co_rgb:000000,l_text:times%20new%20roman_65_bold_normal_left:${encodeURIComponent(selectedCertificate.name)}/fl_layer_apply,y_20/co_rgb:000000,l_text:times%20new%20roman_25_bold_normal_left:${encodeURIComponent(finalOutput)}/fl_layer_apply,y_225/training_certificate_demo_vknkst`;
   };
 
+  /* Helper to add to LinkedIn */
   const addLinkedin = (data, isTraining = false) => {
     let year = new Date(data.date).toLocaleDateString("en-US", { year: "numeric" });
     let month = new Date(data.date).toLocaleDateString("en-US", { month: "numeric" });
@@ -135,12 +136,15 @@ const NewDashboard = () => {
     window.open(linkurl, "_blank");
   };
 
+  /* Download Internship Certificate via Proxy */
   const downloadInternshipCertificate = () => {
     // Use backend proxy to force download and avoid CORS issues
     const proxyUrl = `${API}/download-proxy?url=${encodeURIComponent(selectedCertificate.url)}`;
     window.open(proxyUrl, "_self"); // Trigger download in same tab
     toast.success("Download started...");
   };
+
+  /* Removed old trainingCertificateDownload function as it's replaced or unused for direct download now */
 
   const handleLogout = () => {
     toast.success("Logout successful!");
@@ -263,7 +267,7 @@ const NewDashboard = () => {
             </div>
 
             {/* Certificate Image */}
-            <div className="p-6 bg-gray-50 flex flex-col gap-4">
+            <div className="p-6 bg-gray-50">
               <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
                 <img
                   src={selectedCertificate.url}
@@ -332,16 +336,6 @@ const NewDashboard = () => {
           </div>
         </div>
         <div className="flex items-center gap-4 sm:gap-8">
-          <a
-            href="https://wa.me/8310626647"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex min-w-[40px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-9 px-3 bg-green-100 hover:bg-green-200 text-green-600 transition-colors text-sm font-bold"
-            title="Chat with us on WhatsApp"
-          >
-            <FaWhatsapp className="text-xl" />
-            <span>Support</span>
-          </a>
           <Link
             to="/Setting"
             className="hidden sm:flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-9 px-4 bg-primary/10 hover:bg-primary/20 text-primary transition-colors text-sm font-bold leading-normal tracking-wide"
@@ -572,6 +566,11 @@ const NewDashboard = () => {
               </div>
             </section>
           </div>
+
+          {/* Footer */}
+          <footer className="mt-16 py-6 text-center text-gray-600 text-sm border-t border-gray-200">
+            © 2026 All Rights Reserved. Powered by Krutanic.
+          </footer>
         </main>
       </div>
     </div>
