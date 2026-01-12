@@ -236,7 +236,7 @@ const AppContent = () => {
 
   ];
 
-  const lmsFooterPaths = ['/jobboard', '/myjob'];
+  const lmsFooterPaths = ['/jobboard'];
 
   const isAuthenticated = () => !!localStorage.getItem("token");
   const isAuthenticatedBda = () => !!localStorage.getItem("bdaToken");
