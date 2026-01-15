@@ -407,82 +407,91 @@ const NewDashboard = () => {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-6">
-                  {enrollData.map((item, index) => (
-                    <div key={index} className={`bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow relative ${item.status !== "fullPaid" ? '' : ''}`}>
-                      {item.status !== "fullPaid" && (
-                        <div className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-10">Payment Pending</div>
-                      )}
-                      <div className="p-5 flex flex-col md:flex-row gap-6">
-                        <div className={`w-full md:w-80 aspect-video shrink-0 rounded-lg overflow-hidden ${item.status !== "fullPaid" ? 'grayscale' : ''}`}>
-                          <img
-                            src={getThumbnail(item.domain?.title) || item.domain?.thumbnail || item.domain?.image}
-                            alt={item.domain?.title}
-                            className="w-full h-full object-fill"
-                          />
-                        </div>
-                        <div className="flex flex-col flex-1">
-                          <div className="flex justify-between items-start">
-                            <div className="flex gap-2 mb-2">
-                              <span className="bg-orange-100 text-orange-700 text-xs px-2 py-1 rounded font-medium">{item.domain?.category || "Course"}</span>
-                            </div>
-                            <div className="flex items-center gap-1 text-yellow-500 text-sm font-bold">
-                              <span>4.5</span>
-                              <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
-                            </div>
-                          </div>
-                          <h3 className="text-gray-900 text-lg font-bold leading-tight mb-2">{item.domain?.title}</h3>
-                          <p className="text-gray-500 text-sm mb-4 line-clamp-2">{item.domain?.description?.substring(0, 100) || "Master the skills in this comprehensive course."}</p>
-                          <div className="flex items-center gap-4 text-sm text-gray-500 mb-6">
-                            <div className="flex items-center gap-1">
-                              <span className="material-symbols-outlined text-[18px]">calendar_month</span>
-                              <span>Opted: {item.monthOpted}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <span className="material-symbols-outlined text-[18px]">play_lesson</span>
-                              <span>{Object.keys(item.domain?.session || {}).length} Sessions</span>
-                            </div>
-                          </div>
+                  {enrollData.map((item, index) => {
+                    // Check if fully paid: explicit status OR 0 remaining
+                    // Note: accessing programPrice/paidAmount, handling potential undefineds with default 0
+                    const price = item.programPrice || 0;
+                    const paid = item.paidAmount || 0;
+                    const remaining = price - paid;
+                    const isFullyPaid = item.status === "fullPaid" || remaining <= 0;
 
-                          {item.status === "fullPaid" ? (
-                            <div className="mt-auto flex flex-wrap gap-3">
-                              <button
-                                onClick={() => handleStartLearning(item.domain.title, item.domain.session, getThumbnail(item.domain?.title) || item.domain.thumbnail)}
-                                className="flex-1 min-w-[140px] bg-primary hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
-                              >
-                                <span className="material-symbols-outlined text-[20px]">play_circle</span>
-                                Start Learning
-                              </button>
-                              <button
-                                onClick={() => handleSubmit(item)}
-                                className="flex-1 min-w-[140px] bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
-                              >
-                                <span className="material-symbols-outlined text-[20px]">workspace_premium</span>
-                                Certificate
-                              </button>
-                            </div>
-                          ) : (
-                            <div className="mt-auto">
-                              <div className="flex items-center gap-1 text-red-500 font-medium mb-2">
-                                <span className="material-symbols-outlined text-[18px]">event_busy</span>
-                                <span>Due: {item.clearPaymentMonth}</span>
+                    return (
+                      <div key={index} className={`bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow relative ${!isFullyPaid ? '' : ''}`}>
+                        {!isFullyPaid && (
+                          <div className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-10">Payment Pending</div>
+                        )}
+                        <div className="p-5 flex flex-col md:flex-row gap-6">
+                          <div className={`w-full md:w-80 aspect-video shrink-0 rounded-lg overflow-hidden ${!isFullyPaid ? 'grayscale' : ''}`}>
+                            <img
+                              src={getThumbnail(item.domain?.title) || item.domain?.thumbnail || item.domain?.image}
+                              alt={item.domain?.title}
+                              className="w-full h-full object-fill"
+                            />
+                          </div>
+                          <div className="flex flex-col flex-1">
+                            <div className="flex justify-between items-start">
+                              <div className="flex gap-2 mb-2">
+                                <span className="bg-orange-100 text-orange-700 text-xs px-2 py-1 rounded font-medium">{item.domain?.category || "Course"}</span>
                               </div>
-                              <div className="flex flex-wrap items-center justify-between gap-3">
-                                <div className="text-xl font-bold text-gray-900">₹{item.programPrice - item.paidAmount}</div>
-                                <a
-                                  href="https://smartpay.easebuzz.in/219610/Krutanic"
-                                  target="_blank"
-                                  className="bg-black hover:bg-gray-800 text-white font-medium py-2 px-6 rounded-lg transition-colors flex items-center gap-2"
+                              <div className="flex items-center gap-1 text-yellow-500 text-sm font-bold">
+                                <span>4.5</span>
+                                <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+                              </div>
+                            </div>
+                            <h3 className="text-gray-900 text-lg font-bold leading-tight mb-2">{item.domain?.title}</h3>
+                            <p className="text-gray-500 text-sm mb-4 line-clamp-2">{item.domain?.description?.substring(0, 100) || "Master the skills in this comprehensive course."}</p>
+                            <div className="flex items-center gap-4 text-sm text-gray-500 mb-6">
+                              <div className="flex items-center gap-1">
+                                <span className="material-symbols-outlined text-[18px]">calendar_month</span>
+                                <span>Opted: {item.monthOpted}</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <span className="material-symbols-outlined text-[18px]">play_lesson</span>
+                                <span>{Object.keys(item.domain?.session || {}).length} Sessions</span>
+                              </div>
+                            </div>
+
+                            {isFullyPaid ? (
+                              <div className="mt-auto flex flex-wrap gap-3">
+                                <button
+                                  onClick={() => handleStartLearning(item.domain.title, item.domain.session, getThumbnail(item.domain?.title) || item.domain.thumbnail)}
+                                  className="flex-1 min-w-[140px] bg-primary hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
                                 >
-                                  Pay Now
-                                  <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-                                </a>
+                                  <span className="material-symbols-outlined text-[20px]">play_circle</span>
+                                  Start Learning
+                                </button>
+                                <button
+                                  onClick={() => handleSubmit(item)}
+                                  className="flex-1 min-w-[140px] bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                                >
+                                  <span className="material-symbols-outlined text-[20px]">workspace_premium</span>
+                                  Certificate
+                                </button>
                               </div>
-                            </div>
-                          )}
+                            ) : (
+                              <div className="mt-auto">
+                                <div className="flex items-center gap-1 text-red-500 font-medium mb-2">
+                                  <span className="material-symbols-outlined text-[18px]">event_busy</span>
+                                  <span>Due: {item.clearPaymentMonth}</span>
+                                </div>
+                                <div className="flex flex-wrap items-center justify-between gap-3">
+                                  <div className="text-xl font-bold text-gray-900">₹{remaining}</div>
+                                  <a
+                                    href="https://smartpay.easebuzz.in/219610/Krutanic"
+                                    target="_blank"
+                                    className="bg-black hover:bg-gray-800 text-white font-medium py-2 px-6 rounded-lg transition-colors flex items-center gap-2"
+                                  >
+                                    Pay Now
+                                    <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                                  </a>
+                                </div>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </section>
