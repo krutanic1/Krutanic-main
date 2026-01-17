@@ -5,7 +5,6 @@ import API from "../API";
 import debounce from "lodash/debounce";
 import toast, { Toaster } from "react-hot-toast";
 import logo from "../assets/LOGO3.png";
-import UserSidebar from "./UserSidebar";
 
 const NewDashboard = () => {
   const userEmail = localStorage.getItem("userEmail");
@@ -16,7 +15,6 @@ const NewDashboard = () => {
   const [certificate, setCertificate] = useState("");
   const [selectedCertificate, setSelectedCertificate] = useState(null);
   const [userData, setUserData] = useState(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const hasFetched = useRef(false);
   const [componentsAccess, setComponentsAccess] = useState({
     atschecker: false,
@@ -322,41 +320,11 @@ const NewDashboard = () => {
         </div>
       )}
 
-      {/* Top Navigation Bar */}
-      <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 shrink-0 z-20 relative">
-        <div className="flex items-center gap-4 text-gray-900">
-          <button
-            className="p-1 rounded-md hover:bg-gray-100 text-gray-600 lg:hidden"
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          >
-            <span className="material-symbols-outlined">menu</span>
-          </button>
-          <div className="flex items-center gap-2">
-            <img src={logo} alt="Krutanic" className="h-8" />
-          </div>
-        </div>
-        <div className="flex items-center gap-4 sm:gap-8">
-          <Link
-            to="/Setting"
-            className="hidden sm:flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-9 px-4 bg-primary/10 hover:bg-primary/20 text-primary transition-colors text-sm font-bold leading-normal tracking-wide"
-          >
-            <span className="truncate">Change Password</span>
-          </Link>
-          <div className="relative group cursor-pointer">
-            <div className="bg-primary/20 rounded-full size-10 flex items-center justify-center text-primary font-bold text-lg border-2 border-primary/20">
-              {userData?.fullname?.charAt(0)?.toUpperCase() || "U"}
-            </div>
-            <div className="absolute bottom-0 right-0 size-3 bg-green-500 rounded-full border-2 border-white"></div>
-          </div>
-        </div>
-      </header>
+      {/* Top Navigation Bar - Removed as it's in UserLayout */}
 
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <UserSidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
-
+      <div className="flex flex-1 overflow-hidden h-full">
         {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto bg-background-light p-4 md:p-8">
+        <div className="flex-1 overflow-y-auto bg-background-light p-4 md:p-8">
           <div className="max-w-6xl mx-auto flex flex-col gap-8">
             {/* Page Header & Stats */}
             <div className="flex flex-col gap-6">
@@ -580,7 +548,7 @@ const NewDashboard = () => {
           <footer className="mt-16 py-6 text-center text-gray-600 text-sm border-t border-gray-200">
             © 2026 All Rights Reserved. Powered by Krutanic.
           </footer>
-        </main>
+        </div>
       </div>
     </div>
   );

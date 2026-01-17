@@ -3,8 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
-import logo from "../assets/LOGO3.png";
-import UserSidebar from "./UserSidebar";
+
 
 const NewEnrolledCourses = () => {
   const userEmail = localStorage.getItem("userEmail");
@@ -13,7 +12,6 @@ const NewEnrolledCourses = () => {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const navigate = useNavigate();
 
   const fetchUserData = async () => {
@@ -138,34 +136,10 @@ const NewEnrolledCourses = () => {
     <div className="bg-background-light min-h-screen h-screen flex flex-col font-display overflow-hidden">
       <Toaster position="top-center" reverseOrder={false} />
 
-      {/* Top Navigation */}
-      <header className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-6 shrink-0 z-20 relative">
-        <div className="flex items-center gap-8">
-          <div className="flex items-center gap-4 text-gray-900">
-            <button
-              className="p-1 rounded-md hover:bg-gray-100 text-gray-600 lg:hidden"
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            >
-              <span className="material-symbols-outlined">menu</span>
-            </button>
-            <Link to="/Dashboard" className="flex items-center gap-2">
-              <img src={logo} alt="Krutanic" className="h-8" />
-            </Link>
-          </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="relative group cursor-pointer">
-            <div className="bg-primary/20 rounded-full size-10 flex items-center justify-center text-primary font-bold text-lg border-2 border-white shadow-sm">
-              {userData?.fullname?.charAt(0)?.toUpperCase() || "U"}
-            </div>
-          </div>
-        </div>
-      </header>
+      {/* Top Navigation - Removed */}
 
       {/* Main Layout */}
       <div className="flex flex-1 h-full overflow-hidden">
-        {/* Sidebar */}
-        <UserSidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto bg-background-light relative">

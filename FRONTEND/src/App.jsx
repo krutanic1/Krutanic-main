@@ -95,6 +95,7 @@ import AdminDashboard from "./Admin/AdminDashboard";
 import PageNotFound from "./PageNotFound";
 import AdvanceQueries from "./Admin/AdvanceQueries";
 import MentorQueries from "./Admin/MentorQueries";
+import UserLayout from "./User/UserLayout";
 
 
 
@@ -360,15 +361,17 @@ const AppContent = () => {
         {/* bda panel ends */}
 
         {/* User Panel */}
-        <Route path="/Dashboard" element={isAuthenticated() ? <Dashboard /> : <Navigate to="/login" />} />
-        <Route path="/EnrolledCourses" element={isAuthenticated() ? <EnrolledCourses /> : <Navigate to="/login" />} />
-        <Route path="/Setting" element={isAuthenticated() ? <Setting /> : <Navigate to="/login" />} />
-        <Route path="/Learning" element={isAuthenticated() ? <Learning /> : <Navigate to="/login" />} />
-        <Route path="/JobBoard" element={isAuthenticated() ? <JobBoardPage /> : <Navigate to="/login" />} />
-        <Route path="/MyJob" element={isAuthenticated() ? <MyJobPage /> : <Navigate to="/login" />} />
-        <Route path="/MockInterview" element={isAuthenticated() ? <MockInterviewPage /> : <Navigate to="/login" />} />
-        <Route path="/Exercise" element={isAuthenticated() ? <ExercisePage /> : <Navigate to="/login" />} />
-        <Route path="/ResumeATS" element={isAuthenticated() ? <ResumeATSPage /> : <Navigate to="/login" />} />
+        <Route element={<UserLayout />}>
+          <Route path="/Dashboard" element={isAuthenticated() ? <Dashboard /> : <Navigate to="/login" />} />
+          <Route path="/EnrolledCourses" element={isAuthenticated() ? <EnrolledCourses /> : <Navigate to="/login" />} />
+          <Route path="/Setting" element={isAuthenticated() ? <Setting /> : <Navigate to="/login" />} />
+          <Route path="/Learning" element={isAuthenticated() ? <Learning /> : <Navigate to="/login" />} />
+          <Route path="/JobBoard" element={isAuthenticated() ? <JobBoardPage /> : <Navigate to="/login" />} />
+          <Route path="/MyJob" element={isAuthenticated() ? <MyJobPage /> : <Navigate to="/login" />} />
+          <Route path="/MockInterview" element={isAuthenticated() ? <MockInterviewPage /> : <Navigate to="/login" />} />
+          <Route path="/Exercise" element={isAuthenticated() ? <ExercisePage /> : <Navigate to="/login" />} />
+          <Route path="/ResumeATS" element={isAuthenticated() ? <ResumeATSPage /> : <Navigate to="/login" />} />
+        </Route>
         {/* User Panel End */}
 
         {/* placement coodinator panel starts */}
