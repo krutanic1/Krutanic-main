@@ -27,8 +27,9 @@ const LeaderBoard = () => {
       current.setMonth(current.getMonth() + 1);
     }
 
-    return months;
+    return months.reverse();
   };
+
 
   const visibleMonths = getVisibleMonths();
 
