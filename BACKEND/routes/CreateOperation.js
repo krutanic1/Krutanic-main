@@ -125,7 +125,7 @@ router.post("/operationsendotp", async (req, res) => {
           <h1>Krutanic</h1>
         </div>
         <div style="padding: 20px; text-align: center;">
-          <p style="font-size: 16px; color: #333;">Welcome back! Operation Agent,</p>
+          <p style="font-size: 16px; color: #333;">Welcome back! ${operation.fullname},</p>
           <p style="font-size: 14px; color: #555;">Your One-Time Password (OTP) for verification is:</p>
           <p style="font-size: 24px; font-weight: bold; color: #4a90e2; margin: 10px 0;">${otp}</p>
           <p style="font-size: 14px; color: #555;">This OTP is valid for <strong>10 minutes</strong>. Please do not share it with anyone.</p>

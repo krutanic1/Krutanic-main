@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
-import logo from "../assets/LOGO3.png";
+
 import playerlogo from "./playerlogo.jpg";
 
 const NewLearning = () => {
@@ -71,37 +71,7 @@ const NewLearning = () => {
       <Toaster position="top-center" reverseOrder={false} />
 
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-100 px-4 md:px-6 py-3 shadow-sm">
-        <div className="max-w-[1440px] mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link to="/Dashboard" className="flex items-center gap-2">
-              <img src={logo} alt="Krutanic" className="h-8" />
-            </Link>
-          </div>
-          <div className="flex items-center gap-4 md:gap-8">
-            <nav className="hidden md:flex items-center gap-8">
-              <Link to="/Dashboard" className="text-gray-700 hover:text-primary transition-colors text-sm font-medium">Dashboard</Link>
-              <Link to="/EnrolledCourses" className="text-primary text-sm font-medium border-b-2 border-primary pb-0.5">My Courses</Link>
-            </nav>
-            <div className="flex items-center gap-2">
-              {/* Mobile back button */}
-              <Link
-                to="/Dashboard"
-                className="flex md:hidden items-center justify-center rounded-lg size-9 bg-primary/10 hover:bg-primary/20 text-primary transition-colors"
-              >
-                <span className="material-symbols-outlined text-[20px]">arrow_back</span>
-              </Link>
-              {/* Desktop back button */}
-              <Link
-                to="/Dashboard"
-                className="hidden md:flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-9 px-4 bg-primary/10 hover:bg-primary/20 text-primary text-sm font-bold transition-colors"
-              >
-                <span className="truncate">Back to Dashboard</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+
 
       <main className="flex-1 w-full max-w-[1440px] mx-auto p-4 md:px-8 md:py-6">
         {/* Breadcrumbs & Progress */}
@@ -175,8 +145,8 @@ const NewLearning = () => {
               onClick={handlePrevious}
               disabled={currentSessionIndex === 0}
               className={`flex-1 min-w-0 flex items-center gap-3 p-4 rounded-xl border transition-all ${currentSessionIndex === 0
-                  ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
-                  : "bg-white border-gray-200 hover:border-primary hover:shadow-md cursor-pointer"
+                ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                : "bg-white border-gray-200 hover:border-primary hover:shadow-md cursor-pointer"
                 }`}
             >
               <div className={`size-10 shrink-0 rounded-full flex items-center justify-center ${currentSessionIndex === 0 ? "bg-gray-200" : "bg-primary/10"
@@ -199,8 +169,8 @@ const NewLearning = () => {
               onClick={handleNext}
               disabled={currentSessionIndex >= totalSessions - 1}
               className={`flex-1 min-w-0 flex items-center gap-3 p-4 rounded-xl border transition-all ${currentSessionIndex >= totalSessions - 1
-                  ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
-                  : "bg-white border-gray-200 hover:border-primary hover:shadow-md cursor-pointer"
+                ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                : "bg-white border-gray-200 hover:border-primary hover:shadow-md cursor-pointer"
                 }`}
             >
               <div className="flex-1 min-w-0 text-right overflow-hidden">

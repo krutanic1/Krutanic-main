@@ -5,11 +5,15 @@ const AdminSchema = new mongoose.Schema({
     type: String,
     lowercase: true,
   },
-  otp:{
-    type:String,
+  fullname: {
+    type: String,
+    required: false, // Optional for backward compatibility
   },
-  password:{
-    type:String,
+  otp: {
+    type: String,
+  },
+  password: {
+    type: String,
     default: "Admin@123"
   }
 });
