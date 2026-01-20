@@ -122,6 +122,12 @@ app.use("/", ResumeATS);
 
 // app.use("/", PlacementCoordinator);
 
+const InterviewerRoutes = require("./routes/Interviewer");
+const InterviewRoutes = require("./routes/Interview");
+
+app.use("/api/interviewer", InterviewerRoutes);
+app.use("/api/interview", InterviewRoutes);
+
 // ✅ FIX #4: Error handling middleware (must be after routes)
 const axios = require('axios');
 // Global Proxy Route for Downloads (Moved here for reliability)

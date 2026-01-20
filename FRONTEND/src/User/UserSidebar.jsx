@@ -102,7 +102,7 @@ const UserSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     { path: "/EnrolledCourses", label: "Enrolled Courses", icon: "menu_book", restricted: false },
     // { path: "/JobBoard", label: "Job Board", icon: "work", restricted: true, access: "jobboard" },
     { path: "/MyJob", label: "My Job", icon: "person", restricted: true, access: "myjob" },
-    { path: "/MockInterview", label: "Mock Prep", icon: "assignment", restricted: true, access: "mockinterview" },
+    // { path: "/MockInterview", label: "Mock Prep", icon: "assignment", restricted: true, access: "mockinterview" },
     { path: "/Exercise", label: "Exercise Prep", icon: "edit_note", restricted: true, access: "exercise" },
     { path: "/ResumeATS", label: "ATS Checker", icon: "fact_check", restricted: true, access: "atschecker" },
   ];
