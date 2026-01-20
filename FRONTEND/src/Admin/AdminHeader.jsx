@@ -50,6 +50,13 @@ const AdminHeader = () => {
         <Link to="/CreatePlacementCoordinator">
           <i className="fa fa-user mr-2"></i>Create PC A/c
         </Link>
+        {/* NEW INTERVIEWER LINKS */}
+        <Link to="/CreateInterviewer">
+          <i className="fa fa-user-plus mr-2"></i>Create Interviewer
+        </Link>
+        <Link to="/CreateInterview">
+          <i className="fa fa-calendar-plus-o mr-2"></i>Create Mock Interview
+        </Link>
         <Link to="/AcceptedApplication">
           <i className="fa fa-check-circle mr-2"></i>Active Users
         </Link>

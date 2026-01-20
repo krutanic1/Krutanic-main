@@ -12,7 +12,7 @@ import {
   LineElement,
 } from "chart.js";
 import API from "../API";
-import GrowthBarChart from "./New folder/GrowthBarChart";
+import GrowthBarChart from "./GrowthBarChart";
 
 ChartJS.register(
   ArcElement,

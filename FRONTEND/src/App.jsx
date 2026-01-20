@@ -105,6 +105,12 @@ import PClogin from "./PlacementCoordinator.jsx/PClogin";
 import PCDashboard from "./PlacementCoordinator.jsx/PCDashboard";
 import JobPost from "./PlacementCoordinator.jsx/JobPost";
 import CreatePlacementCoordinator from "./Admin/CreatePlacementCoordinator";
+import CreateInterviewer from "./Admin/CreateInterviewer";
+import CreateInterview from "./Admin/CreateInterview";
+
+// Interviewer
+import InterviewerLogin from "./Interviewer/InterviewerLogin";
+import InterviewerDashboard from "./Interviewer/InterviewerDashboard";
 
 //event
 import EventDashBoard from "./Event/EventDashBoard";
@@ -164,7 +170,10 @@ const AppContent = () => {
     "/alumni",
     "/verify",
     "/referandearn",
+    "/referandearn",
     "/marketing/login",
+    "/interviewer-login",
+    "/interviewerlogin", // Handle potential typo or case
   ];
 
   const adminheaderPaths = [
@@ -193,7 +202,10 @@ const AppContent = () => {
     "/alumnidata",
     "/inactivebda",
     "/referandearnresponse",
-    "/createmarketingteam"
+    "/referandearnresponse",
+    "/createmarketingteam",
+    "/createinterviewer",
+    "/createinterview"
 
   ];
 
@@ -317,6 +329,8 @@ const AppContent = () => {
         <Route path="/InactiveBda" element={isAuthenticatedAdmin() ? (<InactiveBda />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/ReferAndEarnResponse" element={isAuthenticatedAdmin() ? (<ReferAndEarnResponse />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/CreateMarketingTeam" element={isAuthenticatedAdmin() ? (<CreateMarketingTeam />) : (<Navigate to="/AdminLogin" />)} />
+        <Route path="/CreateInterviewer" element={isAuthenticatedAdmin() ? (<CreateInterviewer />) : (<Navigate to="/AdminLogin" />)} />
+        <Route path="/CreateInterview" element={isAuthenticatedAdmin() ? (<CreateInterview />) : (<Navigate to="/AdminLogin" />)} />
 
 
 
@@ -379,6 +393,10 @@ const AppContent = () => {
         <Route path="/PCDashboard" element={isAuthenticatedPC() ? <PCDashboard /> : <Navigate to="/PClogin" />} />
         <Route path="/JobPost" element={isAuthenticatedPC() ? <JobPost /> : <Navigate to="/PClogin" />} />
         {/* placement coodinator panel ends */}
+
+        {/* Interviewer Panel */}
+        <Route path="/interviewer-login" element={<InterviewerLogin />} />
+        <Route path="/InterviewerDashboard" element={<InterviewerDashboard />} />
 
         {/* event */}
         <Route path="/EventDashboard" element={isAuthenticatedEventUser() ? <EventDashBoard /> : <Navigate to="/TalentHunt" />} />
