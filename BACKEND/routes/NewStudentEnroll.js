@@ -81,9 +81,7 @@ router.post("/newstudentenroll", async (req, res) => {
       modeofpayment,
       transactionId,
       operationId,
-      transactionId,
-      operationId,
-      status: (programPrice - paidAmount <= 0) ? "fullPaid" : "booked",
+      status: "booked",
       domainId: course ? course._id : null,
       whatsAppNumber,
       remainingAmount,
@@ -104,23 +102,47 @@ router.post("/newstudentenroll", async (req, res) => {
     await newStudent.save();
     console.log('Student saved successfully');
     res.status(201).json({ message: "Registration successful!" });
-    await convertExcel(newStudent);
+    
+    // Submit to Google Sheets in background (non-blocking)
+    convertExcel(newStudent).catch(err => {
+      console.error('Background Google Sheets submission error:', err);
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error. Please try again later." });
   }
 });
 
-const convertExcel = async (studentData) => {
+/**
+ * Submits student enrollment data to Google Sheets via Google Apps Script
+ * Features:
+ * - Automatic retry with exponential backoff (up to 3 attempts)
+ * - 10-second timeout per request
+ * - Graceful error handling (non-critical operation)
+ * - Returns true on success, false on failure
+ * 
+ * @param {Object} studentData - Student enrollment data
+ * @param {number} retryCount - Current retry attempt (internal use)
+ * @returns {Promise<boolean>} Success status
+ */
+const convertExcel = async (studentData, retryCount = 0) => {
+  const MAX_RETRIES = 3;
+  const TIMEOUT_MS = 10000; // 10 seconds timeout
+  const RETRY_DELAY_MS = 1000; // 1 second base delay
+
   try {
+    // Create an AbortController for timeout handling
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
     const response = await fetch(
       "https://script.google.com/macros/s/AKfycbzNjOLLASJArLOojBwDoNMkYaHYBqRf-nq5_e4esAl5epYN9chf3RjAZP2eyhc5iXUi/exec",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
+          "Connection": "keep-alive",
         },
-
         body: new URLSearchParams({
           // _id: studentData._id,
           createdAt: studentData.createdAt,
@@ -153,188 +175,67 @@ const convertExcel = async (studentData) => {
           // updatedAt: studentData.updatedAt,
           // onboardingSended: studentData.onboardingSended,
         }),
+        signal: controller.signal,
       }
     );
+
+    clearTimeout(timeoutId);
+
     if (response.ok) {
-      console.log("Form submitted successfully!");
+      console.log("✓ Google Sheets submission successful for:", studentData.email);
+      return true;
     } else {
-      throw new Error("Failed to submit form");
+      const errorText = await response.text().catch(() => 'Unable to read error response');
+      throw new Error(`Google Sheets API returned ${response.status}: ${errorText}`);
     }
   } catch (error) {
-    console.error("Error in convertExcel:", error);
+    // Check if this is a retryable error
+    const isRetryableError = 
+      error.name === 'AbortError' || 
+      error.code === 'ECONNRESET' || 
+      error.code === 'ETIMEDOUT' ||
+      error.code === 'ENOTFOUND' ||
+      error.message.includes('fetch failed') ||
+      error.message.includes('network');
+
+    if (isRetryableError && retryCount < MAX_RETRIES) {
+      const delay = RETRY_DELAY_MS * Math.pow(2, retryCount); // Exponential backoff
+      console.warn(`⚠ Google Sheets submission failed (attempt ${retryCount + 1}/${MAX_RETRIES + 1}). Retrying in ${delay}ms...`);
+      console.warn(`Error details:`, error.message);
+      
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return convertExcel(studentData, retryCount + 1);
+    } else {
+      // Log error but don't throw - this is a non-critical background operation
+      console.error("✗ Google Sheets submission failed after retries for:", studentData.email);
+      console.error("Error details:", {
+        message: error.message,
+        code: error.code,
+        name: error.name,
+        retryCount: retryCount
+      });
+      return false;
+    }
   }
 };
 
-/**
- * GET /getnewstudentenroll
- * 
- * Retrieve student enrollments with optional filtering and pagination.
- * 
- * Query Parameters:
- * @param {string} [studentenrollid] - Fetch specific enrollment by ID
- * @param {number} [limit=100] - Maximum records to return (default: 100)
- * @param {string} [all] - Set to 'true' to bypass limit and fetch all records
- * @param {string} [month] - Filter by month name (e.g., "January")
- * @param {string} [year] - Filter by year (e.g., "2025")
- * @param {string} [startDate] - Custom date range start (ISO 8601)
- * @param {string} [endDate] - Custom date range end (ISO 8601)
- * 
- * Default Behavior:
- * - NO limit parameter → Returns first 100 records (prevents accidental full-table scans)
- * - limit=50 → Returns 50 records
- * - limit=0 OR all=true → Returns ALL records (use with caution on large datasets)
- * 
- * Response Format (Current):
- * - Array of enrollment objects
- * 
- * Recommended Response Format (Future Enhancement):
- * {
- *   "data": [...],
- *   "meta": {
- *     "appliedLimit": 100,
- *     "returnedCount": 100,
- *     "hasMore": true,
- *     "totalRecords": 5432  // Optional, expensive to compute
- *   }
- * }
- * 
- * Examples:
- * - GET /getnewstudentenroll → First 100 records
- * - GET /getnewstudentenroll?limit=50 → First 50 records
- * - GET /getnewstudentenroll?all=true → All records (potentially slow!)
- * - GET /getnewstudentenroll?month=January&year=2025 → All January 2025 records (up to 100)
- * - GET /getnewstudentenroll?startDate=2025-01-01&endDate=2025-01-31&limit=500 → Custom range, 500 max
- */
+// GET request to retrieve all new student enroll
 router.get("/getnewstudentenroll", async (req, res) => {
-  const { studentenrollid, limit, all } = req.query;
+  const { studentenrollid } = req.query;
   try {
     let StudentEnroll;
-
-    // CASE 1: Fetch single enrollment by ID
     if (studentenrollid) {
+      // Fetch specific operation by userId
       StudentEnroll = await NewEnrollStudent.findById(studentenrollid).lean();
       if (!StudentEnroll) {
         return res
           .status(404)
           .json({ message: "Student Eroll not found for the given userId" });
       }
-    } else {
-      // CASE 2: Fetch multiple enrollments with optional filtering
-
-      // Build MongoDB query filter
-      let query = {};
-
-      const { month, year, startDate, endDate } = req.query;
-
-      // Date Filtering Logic
-      if (startDate && endDate) {
-        // Custom Date Range Filter
-        query.createdAt = {
-          $gte: new Date(startDate), // Start of day
-          $lte: new Date(new Date(endDate).setHours(23, 59, 59, 999)) // End of day
-        };
-      } else if (month && year) {
-        // Specific Month Filter
-        const monthIndex = new Date(`${month} 1, 2000`).getMonth(); // Parse month name to index
-        const startOfMonth = new Date(year, monthIndex, 1);
-        const endOfMonth = new Date(year, monthIndex + 1, 0, 23, 59, 59, 999);
-
-        query.createdAt = {
-          $gte: startOfMonth,
-          $lte: endOfMonth
-        };
-      }
-
-      // ========================================
-      // PAGINATION LOGIC - DEFAULT LIMIT: 100
-      // ========================================
-      // 
-      // Behavior:
-      // - all=true OR limit=0 → No limit (fetch all matching records)
-      // - limit=<number> → Fetch exactly that many records
-      // - NO limit parameter → DEFAULT to 100 records (SAFETY FEATURE)
-      //
-      // Rationale:
-      // Without a default limit, a single API call could accidentally load
-      // 10,000+ records, causing:
-      //   - Memory exhaustion in serverless functions
-      //   - Slow response times (2-5 seconds)
-      //   - High MongoDB connection hold time
-      //   - Poor user experience
-      //
-      // The 100-record default is a conservative safety net that:
-      //   - Handles most dashboard/list use cases
-      //   - Prevents accidental DoS from client bugs
-      //   - Keeps response times <500ms
-      //
-      const queryLimit = all === 'true' || limit === '0'
-        ? 0                      // No limit: fetch all
-        : (parseInt(limit) || 100); // Explicit limit or DEFAULT 100
-
-      // ========================================
-      // CONDITIONAL CACHING FOR DASHBOARD QUERY
-      // ========================================
-      // Only cache if:
-      // 1. No specific filters (default query)
-      // 2. limit=1000 (AdminDashboard specific query)
-      // This is the most frequent query pattern
-      const isCacheable = !month && !year && !startDate && !endDate && limit === '1000';
-
-      if (isCacheable) {
-        // ✅ CACHE: Dashboard query (real-time data, short 60 sec TTL)
-        const { cachedQuery } = require('../utils/cache');
-
-        StudentEnroll = await cachedQuery(
-          'enrollments:dashboard:1000',
-          () => NewEnrollStudent.find(query)
-            .sort({ createdAt: -1 })
-            .limit(1000)
-            .lean(),
-          60,  // 1 minute TTL (tolerant of slight staleness)
-          'dynamic'
-        );
-
-        // Add HTTP cache header for browser caching
-        res.set('Cache-Control', 'public, max-age=60');
-      } else if (queryLimit > 0) {
-        // Apply limit (most common path, not cached due to varying queries)
-        StudentEnroll = await NewEnrollStudent.find(query)
-          .sort({ createdAt: -1 })
-          .limit(queryLimit)
-          .lean();
-      } else {
-        // No limit - fetch ALL matching records
-        // ⚠️ WARNING: Can be slow on large collections (5000+ docs)
-        StudentEnroll = await NewEnrollStudent.find(query)
-          .sort({ createdAt: -1 })
-          .lean();
-      }
+    } else {                                                                //.limit(700)
+      StudentEnroll = await NewEnrollStudent.find().sort({ createdAt: -1 }).lean();
     }
-
-    // ========================================
-    // CURRENT RESPONSE FORMAT
-    // ========================================
-    // Returns: Array of enrollment objects
-    // 
-    // LIMITATION: Client cannot determine if more records exist
-    //
     res.status(200).json(StudentEnroll);
-
-    // ========================================
-    // RECOMMENDED RESPONSE FORMAT (Future)
-    // ========================================
-    // Uncomment and modify when ready to enhance API:
-    //
-    // res.status(200).json({
-    //   data: StudentEnroll,
-    //   meta: {
-    //     appliedLimit: queryLimit || null,
-    //     returnedCount: StudentEnroll.length,
-    //     hasMore: queryLimit > 0 && StudentEnroll.length === queryLimit,
-    //     // totalRecords: await NewEnrollStudent.countDocuments(query) // Expensive!
-    //   }
-    // });
-    //
   } catch (error) {
     res.status(500).json({
       message: "An error occurred while fetching data",
@@ -492,49 +393,25 @@ router.post("/update-operation/:id", async (req, res) => {
 router.get("/enrollments", async (req, res) => {
   const { userEmail } = req.query;
   try {
-    // ✅ OPTIMIZATION: Single aggregation query with $lookup (eliminates N+1 pattern)
-    // ✅ PAYLOAD OPTIMIZATION: Use $lookup pipeline to fetch only essential course fields
-    // Old: 1 + N queries (N = number of enrollments)
-    // New: 1 aggregation query with selective field projection
-    const enrollments = await NewEnrollStudent.aggregate([
-      { $match: { email: userEmail } },
-      {
-        $lookup: {
-          from: 'createcourses',
-          localField: 'domainId',
-          foreignField: '_id',
-          // ✅ Use pipeline to project only essential fields
-          pipeline: [
-            {
-              $project: {
-                // Restore fields needed by frontend
-                session: 1,
-                sessions: 1, // Include both just in case
-                thumbnail: 1,
-                modules: 1, // Frontend might need modules too
+    // Fetch all enrollments
+    const enrollments = await NewEnrollStudent.find({
+      email: userEmail,
+    }).lean();
 
-                // Keep counts if needed for other views, but we need data here
-                modulesCount: { $size: { $ifNull: ['$modules', []] } },
-                sessionsCount: { $size: { $ifNull: ['$sessions', []] } },
-                createdAt: 1,
-                updatedAt: 1,
-                title: 1
-              }
-            }
-          ],
-          as: 'domain'
+    // Iterate over enrollments and replace domainId with course data
+    const updatedEnrollments = await Promise.all(
+      enrollments.map(async (enrollment) => {
+        if (enrollment.domainId) {
+          const course = await CreateCourse.findById(
+            enrollment.domainId
+          ).lean();
+          enrollment.domain = course || null; // Replace domainId with course data
         }
-      },
-      {
-        $unwind: {
-          path: '$domain',
-          preserveNullAndEmptyArrays: true  // Keep enrollments even if course not found
-        }
-      },
-      { $sort: { createdAt: -1 } }
-    ]);
-
-    res.status(200).json(enrollments);
+        return enrollment;
+      })
+    );
+    // res.status(200).json(enrollments);
+    res.status(200).json(updatedEnrollments);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to fetch enrollments", error });
@@ -592,95 +469,6 @@ router.get("/databybdaname", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to fetch enrollments", error });
-  }
-});
-
-// Route to get aggregated monthly revenue stats
-router.get("/getmonthlyrevenue", async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10; // Default limit
-    const skip = (page - 1) * limit;
-
-    // Improved Aggregation with Lead Counts and Pagination
-    const aggregationPipeline = [
-      {
-        $addFields: {
-          monthDate: { $dateToString: { format: "%B %Y", date: "$createdAt" } },
-          isCredited: {
-            $or: [
-              { $eq: ["$status", "fullPaid"] },
-              { $in: ["Half_Cleared", { $ifNull: ["$remark", []] }] }
-            ]
-          }
-        }
-      },
-      {
-        $group: {
-          _id: "$monthDate",
-          totalRevenue: { $sum: { $ifNull: ["$programPrice", 0] } },
-          bookedRevenue: { $sum: { $ifNull: ["$paidAmount", 0] } },
-          creditedRevenue: {
-            $sum: {
-              $cond: ["$isCredited", { $ifNull: ["$paidAmount", 0] }, 0]
-            }
-          },
-          pendingRevenue: { $sum: { $subtract: [{ $ifNull: ["$programPrice", 0] }, { $ifNull: ["$paidAmount", 0] }] } },
-          payments: { $sum: 1 },
-          leads: { $push: "$lead" },
-          // Sort helper
-          originalDate: { $max: "$createdAt" }
-        }
-      },
-      { $sort: { originalDate: -1 } },
-      {
-        $facet: {
-          metadata: [{ $count: "total" }],
-          grandTotal: [
-            { $group: { _id: null, totalRevenue: { $sum: "$totalRevenue" } } }
-          ],
-          data: [{ $skip: skip }, { $limit: limit }]
-        }
-      }
-    ];
-
-    const result = await NewEnrollStudent.aggregate(aggregationPipeline);
-
-    // Extract metadata and data
-    const metadata = result[0].metadata[0] || { total: 0 };
-    const grandTotalData = result[0].grandTotal[0] || { totalRevenue: 0 };
-    const advancedStats = result[0].data;
-
-    // Process leads count
-    const finalStats = advancedStats.map(stat => {
-      const leadCounts = {};
-      stat.leads.forEach(lead => {
-        if (lead) leadCounts[lead] = (leadCounts[lead] || 0) + 1;
-      });
-      return {
-        month: stat._id,
-        total: stat.totalRevenue,
-        booked: stat.bookedRevenue,
-        credited: stat.creditedRevenue,
-        pending: stat.totalRevenue - stat.creditedRevenue,
-        payments: stat.payments,
-        paymentsByLead: leadCounts
-      };
-    });
-
-    res.status(200).json({
-      data: finalStats,
-      pagination: {
-        total: metadata.total,
-        grandTotal: grandTotalData.totalRevenue,
-        page,
-        limit,
-        totalPages: Math.ceil(metadata.total / limit)
-      }
-    });
-  } catch (error) {
-    console.error("Aggregation Error:", error);
-    res.status(500).json({ error: "Failed to fetch revenue stats" });
   }
 });
 
