@@ -366,14 +366,14 @@ router.post("/sendedOnboardingMail", async (req, res) => {
 
 router.post("/sendofferletter", async (req, res) => {
   try {
-    const { id, fullname, domain, email, date, duration, start, end } = req.body;
+    const { id, fullname, domain, email, date, duration, start, end, location } = req.body;
 
     const formattedName = fullname
       .split(' ')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ');
 
-    await sendOfferLetter({ email, fullname: formattedName, date, start, end, domain, duration });
+    await sendOfferLetter({ email, fullname: formattedName, date, start, end, domain, duration, location });
 
     const updatedStudent = await NewEnrollStudent.findByIdAndUpdate(id, { offerlettersended: true }, { new: true });
 

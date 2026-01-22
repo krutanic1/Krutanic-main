@@ -65,6 +65,17 @@ const CreateInterview = () => {
         }
     };
 
+    const handleDelete = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this interview schedule?")) return;
+        try {
+            await axios.delete(`${API}/api/interview/delete-interview/${id}`);
+            toast.success("Interview deleted successfully");
+            fetchInterviews();
+        } catch (error) {
+            toast.error("Failed to delete interview");
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-100 font-sans p-6 md:p-10 md:ml-64">
             <div className="w-full max-w-7xl mx-auto bg-white rounded-lg shadow-md p-8">
@@ -188,6 +199,7 @@ const CreateInterview = () => {
                                     <th className="px-6 py-3">Time</th>
                                     <th className="px-6 py-3">Mode</th>
                                     <th className="px-6 py-3">Status</th>
+                                    <th className="px-6 py-3 text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
@@ -207,6 +219,15 @@ const CreateInterview = () => {
                                                 <span className={`px-2 py-1 rounded-full text-xs font-bold ${item.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                                                     {item.isActive ? 'Active' : 'Inactive'}
                                                 </span>
+                                            </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <button
+                                                    onClick={() => handleDelete(item._id)}
+                                                    className="text-red-500 hover:text-red-700 transition-colors"
+                                                    title="Delete Interview"
+                                                >
+                                                    <i className="fa fa-trash"></i>
+                                                </button>
                                             </td>
                                         </tr>
                                     ))

@@ -32,6 +32,7 @@ const BookedAmount = () => {
   const [offerDuration, setOfferDuration] = useState("");
   const [offerStart, setOfferStart] = useState("");
   const [offerEnd, setOfferEnd] = useState("");
+  const [offerLocation, setOfferLocation] = useState("Online");
   const [isOfferLetterSending, setIsOfferLetterSending] = useState(false);
 
   const resetOfferLeter = () => {
@@ -40,6 +41,7 @@ const BookedAmount = () => {
     setOfferDuration("");
     setOfferStart("");
     setOfferEnd("");
+    setOfferLocation("Online");
   };
 
   const sendOfferleter = async (e) => {
@@ -70,6 +72,7 @@ const BookedAmount = () => {
         month: "long",
         day: "numeric",
       }),
+      location: offerLocation,
     };
     // console.log("Sending Offer Letter:", offerLetterDetails);
     try {
@@ -713,6 +716,16 @@ const BookedAmount = () => {
               onChange={(e) => setOfferEnd(e.target.value)}
               required
             />
+            <label>Reporting Location:</label>
+            <select
+              value={offerLocation}
+              onChange={(e) => setOfferLocation(e.target.value)}
+              className="border p-2 rounded w-full mb-4"
+              required
+            >
+              <option value="Online">Online</option>
+              <option value="Offline">Offline</option>
+            </select>
             <input
               type="submit"
               value={

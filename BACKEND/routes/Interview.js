@@ -60,12 +60,63 @@ router.post("/create-interview", async (req, res) => {
 });
 
 // Get Available Interviews (User)
+// Get Available Interviews (User)
 router.get("/available-interviews", async (req, res) => {
     try {
-        // Get interviews where isActive is true
-        // Also populate interviewer name
-        const interviews = await Interview.find({ isActive: true }).populate("interviewer", "fullname");
-        res.status(200).json(interviews);
+        const now = new Date();
+        const today = new Date(now);
+        today.setHours(0, 0, 0, 0);
+
+        // 1. Permanently delete past interviews (date < today)
+        await Interview.deleteMany({ date: { $lt: today } });
+
+        // 2. Fetch potentially valid interviews
+        // We fetch all active ones >= today
+        let interviews = await Interview.find({
+            isActive: true,
+            date: { $gte: today }
+        }).populate("interviewer", "fullname").sort({ date: 1 });
+
+        // 3. Process today's interviews to remove expired slots from DB
+        const processedInterviews = await Promise.all(interviews.map(async (interview) => {
+            const interviewDate = new Date(interview.date);
+
+            // If future date (tomorrow+), no slots expired yet
+            if (interviewDate > now) return interview;
+
+            // If it is today, check slots time
+            const originalSlotCount = interview.slots.length;
+            const validSlots = interview.slots.filter(slot => {
+                const [timeRange] = slot.time.split("-"); // "10:00"
+                const [slotHour, slotMin] = timeRange.split(":").map(Number);
+
+                const slotDate = new Date(today);
+                slotDate.setHours(slotHour, slotMin, 0, 0);
+
+                return slotDate > now;
+            });
+
+            // If changes needed
+            if (validSlots.length !== originalSlotCount) {
+                if (validSlots.length === 0) {
+                    // All slots expired, delete whole interview
+                    await Interview.findByIdAndDelete(interview._id);
+                    return null;
+                } else {
+                    // Update specific slots
+                    interview.slots = validSlots;
+                    await interview.save();
+                    return interview;
+                }
+            }
+
+            return interview;
+        }));
+
+        // Filter out nulls (deleted interviews)
+        const validInterviews = processedInterviews.filter(Boolean);
+
+        res.status(200).json(validInterviews);
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
@@ -76,6 +127,22 @@ router.get("/all", async (req, res) => {
     try {
         const interviews = await Interview.find({}).populate("interviewer", "fullname").sort({ date: -1 });
         res.status(200).json(interviews);
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+
+// Delete Interview (Admin)
+router.delete("/delete-interview/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedInterview = await Interview.findByIdAndDelete(id);
+
+        if (!deletedInterview) {
+            return res.status(404).json({ message: "Interview not found" });
+        }
+
+        res.status(200).json({ message: "Interview deleted successfully" });
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
@@ -126,7 +193,7 @@ router.post("/book-slot", async (req, res) => {
         );
 
         if (!updatedInterview) {
-            return res.status(400).json({ message: "Slot already booked or invalid info" });
+            return res.status(409).json({ message: "This slot was just booked by another user. Please select a different time." });
         }
 
         res.status(200).json({ message: "Slot booked successfully", interview: updatedInterview });

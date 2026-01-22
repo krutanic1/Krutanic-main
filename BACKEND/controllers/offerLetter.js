@@ -19,7 +19,7 @@ let transporter = nodemailer.createTransport({
     pool: true,
 });
 
-const createOfferLetterPDF = async (pdfword1,pdfword2) => {
+const createOfferLetterPDF = async (pdfword1, pdfword2) => {
     const pdfDoc = await PDFDocument.create();
 
     // Load and embed image for page 1
@@ -31,9 +31,9 @@ const createOfferLetterPDF = async (pdfword1,pdfword2) => {
     const imagePath2 = path.join(__dirname, "offerback.jpg"); // Make sure this image exists
     const imageBytes2 = fs.readFileSync(imagePath2);
     const jpgImage2 = await pdfDoc.embedJpg(imageBytes2);
-    
+
     const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-    
+
     const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman)
     const { width, height } = jpgImage.scale(1);
 
@@ -59,7 +59,7 @@ const createOfferLetterPDF = async (pdfword1,pdfword2) => {
         x: 50,
         y: 690,
         size: 12,
-        font:timesRomanFont,
+        font: timesRomanFont,
         color: rgb(0, 0, 0),
         maxWidth: 495,
         lineHeight: 14,
@@ -84,7 +84,7 @@ const createOfferLetterPDF = async (pdfword1,pdfword2) => {
         x: 50,
         y: 700,
         size: 12,
-        font:timesRomanFont,
+        font: timesRomanFont,
         color: rgb(0, 0, 0),
         maxWidth: 495,
         lineHeight: 14,
@@ -102,7 +102,7 @@ const createOfferLetterPDF = async (pdfword1,pdfword2) => {
 };
 
 
-const sendOfferLetter = async ({ email, fullname, date, start, end, domain, duration }) => {
+const sendOfferLetter = async ({ email, fullname, date, start, end, domain, duration, location }) => {
     const subject = `Offer Letter - ${domain} Intern`;
     const body = `
     <p> <strong>Dear</strong> ${fullname},</p>
@@ -151,7 +151,7 @@ Working Hours: Flexible
     
 Job Type: Internship
     
-Reporting Location: Online
+Reporting Location: ${location || 'Online'}
     
     
 I have read and understood the above terms and conditions and I accept this offer, as set forth above with Krutanic.
@@ -165,7 +165,7 @@ DATE:
 (Candidate’s Signature)
 `;
 
-    const pdfBuffer = await createOfferLetterPDF(pdfword1,pdfword2);
+    const pdfBuffer = await createOfferLetterPDF(pdfword1, pdfword2);
 
     const mailOptions = {
         from: process.env.SMTP_OFFERMAIL,

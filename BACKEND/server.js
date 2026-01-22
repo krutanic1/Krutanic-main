@@ -196,6 +196,9 @@ const PORT = process.env.PORT || 5000;
 // Only start server locally (Vercel handles this automatically)
 if (process.env.NODE_ENV !== "production") {
   connectDB().then(() => {
+    // Run seeders if needed
+    if (Excercise.seedQuestions) Excercise.seedQuestions();
+
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
     });
