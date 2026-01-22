@@ -102,7 +102,7 @@ router.post("/newstudentenroll", async (req, res) => {
     await newStudent.save();
     console.log('Student saved successfully');
     res.status(201).json({ message: "Registration successful!" });
-    
+
     // Submit to Google Sheets in background (non-blocking)
     convertExcel(newStudent).catch(err => {
       console.error('Background Google Sheets submission error:', err);
@@ -190,9 +190,9 @@ const convertExcel = async (studentData, retryCount = 0) => {
     }
   } catch (error) {
     // Check if this is a retryable error
-    const isRetryableError = 
-      error.name === 'AbortError' || 
-      error.code === 'ECONNRESET' || 
+    const isRetryableError =
+      error.name === 'AbortError' ||
+      error.code === 'ECONNRESET' ||
       error.code === 'ETIMEDOUT' ||
       error.code === 'ENOTFOUND' ||
       error.message.includes('fetch failed') ||
@@ -202,7 +202,7 @@ const convertExcel = async (studentData, retryCount = 0) => {
       const delay = RETRY_DELAY_MS * Math.pow(2, retryCount); // Exponential backoff
       console.warn(`⚠ Google Sheets submission failed (attempt ${retryCount + 1}/${MAX_RETRIES + 1}). Retrying in ${delay}ms...`);
       console.warn(`Error details:`, error.message);
-      
+
       await new Promise(resolve => setTimeout(resolve, delay));
       return convertExcel(studentData, retryCount + 1);
     } else {
@@ -219,9 +219,145 @@ const convertExcel = async (studentData, retryCount = 0) => {
   }
 };
 
+
+/**
+ * GET /getmonthlyrevenue
+ * Aggregates revenue data by month including total, credited, and pending amounts.
+ * Supports pagination.
+ */
+router.get("/getmonthlyrevenue", async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // 1. Aggregation Pipeline for Monthly Stats
+    const pipeline = [
+      {
+        $project: {
+          month: { $month: "$createdAt" },
+          year: { $year: "$createdAt" },
+          createdAt: 1,
+          programPrice: { $ifNull: ["$programPrice", 0] },
+          paidAmount: { $ifNull: ["$paidAmount", 0] },
+          status: 1,
+          remark: 1
+        }
+      },
+      {
+        $addFields: {
+          // Determine if credited based on status or remark (matching frontend logic)
+          isCredited: {
+            $or: [
+              { $eq: ["$status", "fullPaid"] },
+              {
+                $and: [
+                  { $isArray: "$remark" },
+                  { $gt: [{ $size: "$remark" }, 0] },
+                  { $eq: [{ $arrayElemAt: ["$remark", -1] }, "Half_Cleared"] }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        $addFields: {
+          creditedAmount: {
+            $cond: { if: "$isCredited", then: "$paidAmount", else: 0 }
+          }
+        }
+      },
+      {
+        $addFields: {
+          pendingAmount: { $subtract: ["$programPrice", "$creditedAmount"] }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            month: "$month",
+            year: "$year"
+          },
+          totalRevenue: { $sum: "$programPrice" },
+          creditedRevenue: { $sum: "$creditedAmount" },
+          pendingRevenue: { $sum: "$pendingAmount" },
+          totalPayments: { $sum: 1 },
+          firstDate: { $min: "$createdAt" } // Used for sorting
+        }
+      },
+      {
+        $sort: { firstDate: -1 } // Sort by most recent month first
+      },
+      {
+        $project: {
+          _id: 0,
+          month: {
+            $concat: [
+              {
+                $switch: {
+                  branches: [
+                    { case: { $eq: ["$_id.month", 1] }, then: "January" },
+                    { case: { $eq: ["$_id.month", 2] }, then: "February" },
+                    { case: { $eq: ["$_id.month", 3] }, then: "March" },
+                    { case: { $eq: ["$_id.month", 4] }, then: "April" },
+                    { case: { $eq: ["$_id.month", 5] }, then: "May" },
+                    { case: { $eq: ["$_id.month", 6] }, then: "June" },
+                    { case: { $eq: ["$_id.month", 7] }, then: "July" },
+                    { case: { $eq: ["$_id.month", 8] }, then: "August" },
+                    { case: { $eq: ["$_id.month", 9] }, then: "September" },
+                    { case: { $eq: ["$_id.month", 10] }, then: "October" },
+                    { case: { $eq: ["$_id.month", 11] }, then: "November" },
+                    { case: { $eq: ["$_id.month", 12] }, then: "December" }
+                  ],
+                  default: "Unknown"
+                }
+              },
+              " ",
+              { $toString: "$_id.year" }
+            ]
+          },
+          total: "$totalRevenue",
+          credited: "$creditedRevenue",
+          pending: "$pendingRevenue",
+          payments: "$totalPayments"
+        }
+      }
+    ];
+
+    // execute aggregation
+    const allMonthlyStats = await NewEnrollStudent.aggregate(pipeline);
+
+    // 2. Pagination Logic (in memory since aggregation result needs slicing)
+    // Note: optimization for huge datasets would require $facet in aggregation, 
+    // but for monthly stats, the array size is small (number of months in operation).
+    const totalItems = allMonthlyStats.length;
+    const totalPages = Math.ceil(totalItems / limit);
+    const paginatedData = allMonthlyStats.slice(skip, skip + limit);
+
+    // 3. Calculate Grand Total Revenue (All Time)
+    // We can sum up the results from the aggregation directly
+    const grandTotal = allMonthlyStats.reduce((acc, curr) => acc + (curr.total || 0), 0);
+
+    res.status(200).json({
+      data: paginatedData,
+      pagination: {
+        currentPage: page,
+        totalPages: totalPages,
+        totalItems: totalItems,
+        grandTotal: grandTotal
+      }
+    });
+
+  } catch (error) {
+    console.error("Error in /getmonthlyrevenue:", error);
+    res.status(500).json({ message: "Server error fetching monthly revenue", error: error.message });
+  }
+});
+
 // GET request to retrieve all new student enroll
 router.get("/getnewstudentenroll", async (req, res) => {
-  const { studentenrollid } = req.query;
+  const { studentenrollid, month, year, startDate, endDate, all } = req.query;
   try {
     let StudentEnroll;
     if (studentenrollid) {
@@ -232,11 +368,52 @@ router.get("/getnewstudentenroll", async (req, res) => {
           .status(404)
           .json({ message: "Student Eroll not found for the given userId" });
       }
-    } else {                                                                //.limit(700)
-      StudentEnroll = await NewEnrollStudent.find().sort({ createdAt: -1 }).lean();
+    } else {
+      let query = {};
+
+      // Filter by Date Range (Custom or Monthly)
+      if (startDate && endDate) {
+        // Custom Range
+        // Ensure endDate covers the full day
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+
+        query.createdAt = {
+          $gte: new Date(startDate),
+          $lte: end
+        };
+      } else if (month && year) {
+        // Monthly Range
+        // Map month names to index (Case-insensitive)
+        const monthMap = {
+          "january": 0, "february": 1, "march": 2, "april": 3, "may": 4, "june": 5,
+          "july": 6, "august": 7, "september": 8, "october": 9, "november": 10, "december": 11
+        };
+
+        const cleanMonth = (month || "").trim().toLowerCase();
+        const monthIndex = monthMap[cleanMonth];
+
+        if (monthIndex !== undefined) {
+          const y = parseInt(year);
+          const start = new Date(y, monthIndex, 1);
+          const end = new Date(y, monthIndex + 1, 0, 23, 59, 59, 999);
+
+          query.createdAt = {
+            $gte: start,
+            $lte: end
+          };
+        } else {
+          console.warn("Invalid month name received:", month);
+        }
+      }
+
+
+      StudentEnroll = await NewEnrollStudent.find(query).sort({ createdAt: -1 }).lean();
+
     }
     res.status(200).json(StudentEnroll);
   } catch (error) {
+    console.error("Error in /getnewstudentenroll:", error);
     res.status(500).json({
       message: "An error occurred while fetching data",
       error: error.message,
