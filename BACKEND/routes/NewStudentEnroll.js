@@ -280,6 +280,7 @@ router.get("/getmonthlyrevenue", async (req, res) => {
             year: "$year"
           },
           totalRevenue: { $sum: "$programPrice" },
+          bookedRevenue: { $sum: "$paidAmount" },
           creditedRevenue: { $sum: "$creditedAmount" },
           pendingRevenue: { $sum: "$pendingAmount" },
           totalPayments: { $sum: 1 },
@@ -318,6 +319,7 @@ router.get("/getmonthlyrevenue", async (req, res) => {
             ]
           },
           total: "$totalRevenue",
+          booked: "$bookedRevenue",
           credited: "$creditedRevenue",
           pending: "$pendingRevenue",
           payments: "$totalPayments"

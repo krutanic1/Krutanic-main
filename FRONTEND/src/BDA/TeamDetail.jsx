@@ -78,6 +78,36 @@ const TeamDetail = () => {
     fetchAllData();
     fetchTeamname();
   }, []);
+  //add 
+  const handleSendEmail = async (value) => {
+    const emailData = {
+      fullname: value.fullname,
+      email: value.email,
+    };
+    try {
+      const response = await axios.post(`${API}/sendmailtobda`, emailData);
+      if (response.status === 200) {
+        toast.success("Email sent successfully!");
+        const bdaData = {
+          mailSended: true,
+        };
+        const updateResponse = await axios.put(
+          `${API}/mailsendedbda/${value._id}`,
+          bdaData
+        );
+        if (updateResponse.status === 200) {
+          toast.success("BDA record updated successfully!");
+        } else {
+          toast.error("Failed to update Bda record.");
+        }
+      } else {
+        toast.error("Failed to send email.");
+      }
+    } catch (error) {
+      toast.error("An error occurred while sending the email.");
+    }
+    fetchBda();
+  };
 
   // Function to group enrollments by date (last 7 days only)
   const groupByDate = (enrollments) => {
@@ -785,6 +815,7 @@ const TeamDetail = () => {
               <th>Total</th>
               <th>Full Paid</th>
               <th>Default</th>
+              <th>Send Credentials</th>
             </tr>
           </thead>
           <tbody>
@@ -813,6 +844,19 @@ const TeamDetail = () => {
                     bda.enrollments.filter((item) => item.status === "default")
                       .length
                   }
+                </td>
+                <td>
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => handleSendEmail(bda)}
+                    disabled={bda.mailSended}
+                  >
+                    {bda.mailSended ? (
+                      <i className="fa fa-send-o text-green-600"></i>
+                    ) : (
+                      <i className="fa fa-send-o text-red-600"></i>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}

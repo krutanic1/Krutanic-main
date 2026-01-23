@@ -54,17 +54,13 @@ const CreateInterviewer = () => {
     };
 
     const handleDelete = async (id) => {
-        // Note: Backend delete route wasn't explicitly requested/created in previous steps.
-        // I will add a placeholder or simple alert if route missing, 
-        // BUT since I am mimicking CreateBDA which has delete, I should logically have it.
-        // For now, I will omit the delete call or just mock it to avoid erroring if route doesn't exist.
-        // Actually, I should probably add the delete route to backend if I want this fully functional.
-        // Given the prompt "make it like same how createbea", I will include the button but maybe just toast "Feature coming soon" 
-        // if I don't want to touch backend again. OR better, I'll just assume I can add it quickly or just show the structure first.
-        // Let's stick to structure first.
-        if (window.confirm("Are you sure you want to delete?")) {
-            // Placeholder for future delete implementation
-            toast.error("Delete function not yet implemented in backend");
+        if (!window.confirm("Are you sure you want to delete this interviewer?")) return;
+        try {
+            await axios.delete(`${API}/api/interviewer/delete-interviewer/${id}`);
+            toast.success("Interviewer deleted successfully");
+            fetchInterviewers(); // Refresh list
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to delete interviewer");
         }
     };
 

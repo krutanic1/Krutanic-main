@@ -89,4 +89,20 @@ router.get("/all", async (req, res) => {
     }
 });
 
+// Delete Interviewer (Admin)
+router.delete("/delete-interviewer/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedInterviewer = await Interviewer.findByIdAndDelete(id);
+
+        if (!deletedInterviewer) {
+            return res.status(404).json({ message: "Interviewer not found" });
+        }
+
+        res.status(200).json({ message: "Interviewer deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+
 module.exports = router;

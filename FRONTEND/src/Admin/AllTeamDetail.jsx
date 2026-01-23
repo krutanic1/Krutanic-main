@@ -244,6 +244,92 @@ const AllTeamDetail = () => {
     return bdaRevenueList.sort((a, b) => b.grossRevenue - a.grossRevenue).slice(0, 5);
   };
 
+  // Utility: Get Top 3 Teams by Revenue (Current Month)
+  const getTop3Teams = () => {
+    const teamRevenue = {};
+
+    allData.forEach((bda) => {
+      const teamName = bda.team || "Unknown";
+      const monthEnrollments = bda.enrollments.filter(
+        (item) =>
+          new Date(item.createdAt).toISOString().slice(0, 7) === currentMonth
+      );
+
+      const totalRevenue = monthEnrollments.reduce(
+        (sum, item) => sum + (item.programPrice || 0),
+        0
+      );
+
+      const creditedRevenue = monthEnrollments.reduce((sum, item) => {
+        const isHalfCleared =
+          Array.isArray(item.remark) &&
+          item.remark[item.remark.length - 1] === "Half_Cleared";
+        if (item.status === "fullPaid" || isHalfCleared) {
+          return sum + (item.paidAmount || 0);
+        }
+        return sum;
+      }, 0);
+
+      const paymentCount = monthEnrollments.length;
+
+      if (!teamRevenue[teamName]) {
+        teamRevenue[teamName] = {
+          team: teamName,
+          totalRevenue: 0,
+          creditedRevenue: 0,
+          paymentCount: 0,
+        };
+      }
+
+      teamRevenue[teamName].totalRevenue += totalRevenue;
+      teamRevenue[teamName].creditedRevenue += creditedRevenue;
+      teamRevenue[teamName].paymentCount += paymentCount;
+    });
+
+    return Object.values(teamRevenue)
+      .sort((a, b) => b.creditedRevenue - a.creditedRevenue)
+      .slice(0, 3);
+  };
+
+  // Utility: Get Top 3 Leaders by Revenue (Current Month)
+  const getTop3Leaders = () => {
+    const leaderRevenue = allData.map((bda) => {
+      const monthEnrollments = bda.enrollments.filter(
+        (item) =>
+          new Date(item.createdAt).toISOString().slice(0, 7) === currentMonth
+      );
+
+      const totalRevenue = monthEnrollments.reduce(
+        (sum, item) => sum + (item.programPrice || 0),
+        0
+      );
+
+      const creditedRevenue = monthEnrollments.reduce((sum, item) => {
+        const isHalfCleared =
+          Array.isArray(item.remark) &&
+          item.remark[item.remark.length - 1] === "Half_Cleared";
+        if (item.status === "fullPaid" || isHalfCleared) {
+          return sum + (item.paidAmount || 0);
+        }
+        return sum;
+      }, 0);
+
+      const paymentCount = monthEnrollments.length;
+
+      return {
+        fullname: bda.fullname,
+        team: bda.team,
+        totalRevenue,
+        creditedRevenue,
+        paymentCount,
+      };
+    });
+
+    return leaderRevenue
+      .sort((a, b) => b.creditedRevenue - a.creditedRevenue)
+      .slice(0, 3);
+  };
+
 
 
 
@@ -566,6 +652,65 @@ const AllTeamDetail = () => {
             ))}
           </tbody>
         </table>
+
+        {/* Top 3 Teams and Leaders Section */}
+        <div className="flex gap-4 my-6 flex-wrap">
+          {/* Top 3 Teams */}
+          <div className="flex-1 min-w-[300px]">
+            <h3 className="text-lg font-bold mb-2">🏆 Top 3 Teams (Current Month - {currentMonth})</h3>
+            <table className="bdarevenuetable">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Team</th>
+                  <th>Credited Revenue</th>
+                  <th>Total Revenue</th>
+                  <th>Payments</th>
+                </tr>
+              </thead>
+              <tbody>
+                {getTop3Teams().map((team, index) => (
+                  <tr key={index}>
+                    <td>#{index + 1}</td>
+                    <td>{team.team}</td>
+                    <td>₹ {team.creditedRevenue.toLocaleString()}</td>
+                    <td>₹ {team.totalRevenue.toLocaleString()}</td>
+                    <td>{team.paymentCount}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Top 3 Leaders */}
+          <div className="flex-1 min-w-[300px]">
+            <h3 className="text-lg font-bold mb-2">⭐ Top 3 Leaders (Current Month - {currentMonth})</h3>
+            <table className="bdarevenuetable">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Name</th>
+                  <th>Team</th>
+                  <th>Credited Revenue</th>
+                  <th>Total Revenue</th>
+                  <th>Payments</th>
+                </tr>
+              </thead>
+              <tbody>
+                {getTop3Leaders().map((leader, index) => (
+                  <tr key={index}>
+                    <td>#{index + 1}</td>
+                    <td>{leader.fullname}</td>
+                    <td>{leader.team}</td>
+                    <td>₹ {leader.creditedRevenue.toLocaleString()}</td>
+                    <td>₹ {leader.totalRevenue.toLocaleString()}</td>
+                    <td>{leader.paymentCount}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
         <div className="flex flex-col mt-6">
           <h3>🏆 Top 5 BDAs by Gross Revenue (Month-wise)</h3>

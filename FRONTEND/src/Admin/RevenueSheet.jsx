@@ -280,7 +280,7 @@ const RevenueSheet = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" className="p-4 text-center text-gray-500">
+                  <td colSpan="5" className="p-4 text-center text-gray-500">
                     {loadingDaily ? "Fetching data..." : "No records found for this period."}
                   </td>
                 </tr>
@@ -307,7 +307,7 @@ const RevenueSheet = () => {
             </thead>
             <tbody>
               {loadingMonthly ? (
-                <tr><td colSpan="6" className="p-4 text-center">Loading Summary...</td></tr>
+                <tr><td colSpan="5" className="p-4 text-center">Loading Summary...</td></tr>
               ) : (
                 monthlyStats.map((stat, index) => (
                   <tr key={stat.month} className={`text-sm ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}>
