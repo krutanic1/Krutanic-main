@@ -143,8 +143,7 @@ const Exercise = () => {
       setResult(res.data);
       setView("result");
 
-      const historyRes = await axios.get(`${API}/exercise/user-results`, { params: { email } });
-      setHistory(historyRes.data || []);
+      // Removed unused history fetch that was causing ReferenceError (setHistory not defined)
     } catch (err) {
       console.error(err);
       setError("Failed to submit test.");

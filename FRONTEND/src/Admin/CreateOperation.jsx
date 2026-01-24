@@ -101,9 +101,9 @@ const CreateOperation = () => {
           }
           revenueByDay[date].total += revenue;
           revenueByDay[date].pending += pending;
-          if (student.status === "fullPaid"|| (Array.isArray(student.remark) && student.remark[student.remark.length - 1] === "Half_Cleared")) {
+          if (student.status === "fullPaid" || (Array.isArray(student.remark) && student.remark[student.remark.length - 1] === "Half_Cleared")) {
             revenueByDay[date].credited += credited;
-        }
+          }
         }
 
         // Filter out data that is outside of the last 3 months
@@ -113,9 +113,9 @@ const CreateOperation = () => {
           }
           revenueByMonth[month].total += revenue;
           revenueByMonth[month].pending += pending;
-          if (student.status === "fullPaid"|| (Array.isArray(student.remark) && student.remark[student.remark.length - 1] === "Half_Cleared")) {
-          revenueByMonth[month].credited += credited;
-        }
+          if (student.status === "fullPaid" || (Array.isArray(student.remark) && student.remark[student.remark.length - 1] === "Half_Cleared")) {
+            revenueByMonth[month].credited += credited;
+          }
         }
 
         totalRevenue += revenue;
@@ -216,20 +216,20 @@ const CreateOperation = () => {
     setIsDialogVisible(false);
   };
 
-  const handleloginteam = async (email,password) => {
+  const handleloginteam = async (email, password) => {
     try {
       const response = await axios.post(`${API}/checkoperation`, { email, password });
       if (response.status === 200) {
-      toast.success("Login successful!");
-      const loginTime = new Date().getTime();
-      setTimeout(() => {
-        localStorage.setItem("operationId", response.data._id);
-        localStorage.setItem("operationName", response.data.operationName);
-        localStorage.setItem("operationToken", response.data.token);
-        localStorage.setItem("sessionStartTime", loginTime);
-        window.open("/operationdashboard", "_blank"); 
-    }, 500);
-    }
+        toast.success("Login successful!");
+        const loginTime = new Date().getTime();
+        setTimeout(() => {
+          localStorage.setItem("operationId", response.data._id);
+          localStorage.setItem("operationName", response.data.operationName);
+          localStorage.setItem("operationToken", response.data.token);
+          localStorage.setItem("sessionStartTime", loginTime);
+          window.open("/operationdashboard", "_blank");
+        }, 500);
+      }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to verify OTP!");
     }
@@ -261,7 +261,7 @@ const CreateOperation = () => {
           ...prev,
           [id]: "",
         }));
-         fetchOperation();
+        fetchOperation();
       } else {
         toast.error("Failed to assign target.");
       }
@@ -372,49 +372,49 @@ const CreateOperation = () => {
                   </div>
                 </td>
                 <td>
-                   <select className="border rounded-md px-2 py-1">
-                        {operation.target.map((target, index) => (
-                          <option key={index}>
-                            {new Date(
-                              `${target.currentMonth}-01`
-                            ).toLocaleString("en-US", {
-                              month: "long",
-                              year: "numeric",
-                            })}{" "}
-                            : {target.percentage}
-                          </option>
-                        ))}
-                      </select>
+                  <select className="border rounded-md px-2 py-1">
+                    {operation.target.map((target, index) => (
+                      <option key={index}>
+                        {new Date(
+                          `${target.currentMonth}-01`
+                        ).toLocaleString("en-US", {
+                          month: "long",
+                          year: "numeric",
+                        })}{" "}
+                        : {target.percentage}
+                      </option>
+                    ))}
+                  </select>
                 </td>
                 <td>
-                    {operation.target.length > 0 &&
+                  {operation.target.length > 0 &&
                     operation.target[operation.target.length - 1].currentMonth ===
-                      currentMonth ? (
-                      <p>already assign</p>
-                    ) : (
-                      <form onSubmit={(e) => handleAsignTarget(e, operation._id)}>
-                        <input
-                          type="text"
-                          placeholder="Target %"
-                          value={targets[operation._id] || ""}
-                          onChange={(e) =>
-                            handleInputChange(e, operation._id)
-                          }
-                          name="target"
-                          className="border rounded-md px-1 py-1 mr-1"
-                        />
-                        <button type="submit" id="target">
-                          Submit
-                        </button>
-                      </form>
-                    )}
-                  </td>
+                    currentMonth ? (
+                    <p>already assign</p>
+                  ) : (
+                    <form onSubmit={(e) => handleAsignTarget(e, operation._id)}>
+                      <input
+                        type="text"
+                        placeholder="Target %"
+                        value={targets[operation._id] || ""}
+                        onChange={(e) =>
+                          handleInputChange(e, operation._id)
+                        }
+                        name="target"
+                        className="border rounded-md px-1 py-1 mr-1"
+                      />
+                      <button type="submit" id="target">
+                        Submit
+                      </button>
+                    </form>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      
+
       {isDialogVisible && revenueData && selectedOperationName && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div className="bg-white relative w-full sm:w-3/4 md:w-1/2 lg:w-1/3 p-4 sm:p-6 rounded-xl shadow-lg overflow-hidden max-h-[80vh] scrollbar-hide  overflow-y-auto">
