@@ -66,11 +66,15 @@ router.get("/verify-certificate/:id", async (req, res) => {
     try {
         const { id } = req.params;
 
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ error: "Invalid certificate ID" });
+        let query = { delivered: true };
+
+        if (mongoose.Types.ObjectId.isValid(id)) {
+            query.$or = [{ _id: id }, { enrolment: id }];
+        } else {
+            query.enrolment = id;
         }
 
-        const certificate = await Certificate.findOne({ _id: id, delivered: true }, { name: 1, domain: 1, url: 1 });
+        const certificate = await Certificate.findOne(query, { name: 1, domain: 1, url: 1 });
 
         if (!certificate) {
             return res.status(404).json({ error: "Certificate not found." });

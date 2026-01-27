@@ -4,6 +4,7 @@ const CreateBDA = require("../models/CreateBDA");
 const NewEnrollStudent = require("../models/NewStudentEnroll");
 const CreateCourse = require("../models/CreateCourse");
 const TransactionId = require("../models/AddTransactionId");
+const CreateOperation = require("../models/CreateOperation");
 const mongoose = require("mongoose");
 
 router.post("/newstudentenroll", async (req, res) => {
@@ -33,7 +34,8 @@ router.post("/newstudentenroll", async (req, res) => {
       referFriend,
       internshipstartsmonth,
       internshipendsmonth,
-      yearOfStudy
+      yearOfStudy,
+      languages
     } = req.body;
     const course = await CreateCourse.findOne({ title: domain });
 
@@ -64,6 +66,77 @@ router.post("/newstudentenroll", async (req, res) => {
       console.log('NO TRANSACTION RECORD FOUND FOR EMAIL:', email);
     }
 
+    // --- Auto-Assignment Logic for Operation Executive ---
+    let assignedOperationId = operationId;
+    let assignedOperationName = operationName;
+
+    try {
+      // 1. Fetch all active Operation Executives (Online only)
+      const allOps = await CreateOperation.find({ isOnline: { $ne: false } });
+
+      if (allOps.length > 0) {
+        // 2. Get today's counts for each executive
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+
+        const counts = await NewEnrollStudent.aggregate([
+          { $match: { createdAt: { $gte: startOfDay } } },
+          { $group: { _id: "$operationId", count: { $sum: 1 } } }
+        ]);
+
+        const countMap = {};
+        counts.forEach(c => {
+          if (c._id) countMap[c._id.toString()] = c.count;
+        });
+
+        // Helper to get count (default 0)
+        const getCount = (opId) => countMap[opId.toString()] || 0;
+
+        // 3. Filter for capacity (< 15)
+        const MAX_DAILY_CAPACITY = 15;
+
+        // Enhance ops with current count
+        const opsWithCount = allOps.map(op => ({
+          doc: op,
+          count: getCount(op._id),
+          hasLanguage: (languages && Array.isArray(languages) && op.languages && Array.isArray(op.languages))
+            ? languages.some(l => op.languages.includes(l))
+            : false
+        }));
+
+        // Strategy A: Find Language Match AND Under Capacity
+        let candidates = opsWithCount.filter(item => item.hasLanguage && item.count < MAX_DAILY_CAPACITY);
+
+        if (candidates.length > 0) {
+          // Sort by count ascending (load balancing)
+          candidates.sort((a, b) => a.count - b.count);
+          assignedOperationId = candidates[0].doc._id;
+          assignedOperationName = candidates[0].doc.fullname;
+          console.log(`Assigned to Language Match (Count: ${candidates[0].count}): ${assignedOperationName}`);
+        } else {
+          // Strategy B: Fallback - Any Under Capacity (Least Loaded)
+          candidates = opsWithCount.filter(item => item.count < MAX_DAILY_CAPACITY);
+
+          if (candidates.length > 0) {
+            candidates.sort((a, b) => a.count - b.count);
+            assignedOperationId = candidates[0].doc._id;
+            assignedOperationName = candidates[0].doc.fullname;
+            console.log(`Assigned to Fallback Capacity (Count: ${candidates[0].count}): ${assignedOperationName}`);
+          } else {
+            // Strategy C: Absolute Fallback - Least Loaded Overall (even if full)
+            opsWithCount.sort((a, b) => a.count - b.count);
+            assignedOperationId = opsWithCount[0].doc._id;
+            assignedOperationName = opsWithCount[0].doc.fullname;
+            console.log(`Assigned to Global Fallback (Count: ${opsWithCount[0].count}): ${assignedOperationName}`);
+          }
+        }
+      }
+    } catch (assErr) {
+      console.error("Error in auto-assignment logic:", assErr);
+      // Proceed with default/null if error
+    }
+    // -----------------------------------------------------
+
     const newStudent = new NewEnrollStudent({
       fullname,
       email,
@@ -77,10 +150,10 @@ router.post("/newstudentenroll", async (req, res) => {
       paidAmount,
       monthOpted,
       clearPaymentMonth,
-      operationName,
+      operationName: assignedOperationName,
       modeofpayment,
       transactionId,
-      operationId,
+      operationId: assignedOperationId,
       status: "booked",
       domainId: course ? course._id : null,
       whatsAppNumber,
@@ -93,7 +166,8 @@ router.post("/newstudentenroll", async (req, res) => {
       internshipendsmonth,
       yearOfStudy,
       executiveId: executiveId,  // Add executive assignment from BDA
-      executive: executive       // Add executive assignment from BDA
+      executive: executive,       // Add executive assignment from BDA
+      languages
     });
 
     console.log('Creating new student with executiveId:', newStudent.executiveId);
@@ -471,7 +545,8 @@ router.put("/editstudentdetails/:_id", async (req, res) => {
     branch,
     aadharNumber,
     referFriend,
-    lead
+    lead,
+    languages
   } = req.body;
   try {
     // Check if domain has changed
@@ -510,7 +585,8 @@ router.put("/editstudentdetails/:_id", async (req, res) => {
         branch,
         aadharNumber,
         referFriend,
-        lead
+        lead,
+        languages
       },
       { new: true }
     );

@@ -80,6 +80,7 @@ const newStudentEnrollSchema = new Schema(
     yearOfStudy: { type: String },
     executiveId: { type: String },
     executive: { type: String },
+    languages: [{ type: String }],
   },
   {
     timestamps: true,

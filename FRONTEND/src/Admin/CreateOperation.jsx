@@ -8,7 +8,9 @@ const CreateOperation = () => {
     fullname: "",
     email: "",
     password: "",
+    languages: [],
   });
+  const LANGUAGE_OPTIONS = ["English", "Kannada", "Hindi", "Malayalam", "Tamil", "Telugu", "Bengali"];
   const [operation, setOperation] = useState([]);
   const [selectedOperationName, setSelectedOperationName] = useState(null);
   const [revenueData, setRevenueData] = useState(null);
@@ -24,6 +26,7 @@ const CreateOperation = () => {
       fullname: formData.fullname.trim(),
       email: formData.email.trim(),
       password: formData.password.trim(),
+      languages: formData.languages,
     };
     try {
       if (editingOperationId) {
@@ -140,6 +143,7 @@ const CreateOperation = () => {
       fullname: "",
       email: "",
       password: "",
+      languages: [],
     });
     setEditingOperationId(null);
     setiscourseFormVisible(false);
@@ -175,6 +179,7 @@ const CreateOperation = () => {
         fullname: operation.fullname.trim(),
         email: operation.email.trim(),
         password: operation.password,
+        languages: operation.languages || [],
       });
       setEditingOperationId(operation._id);
       setiscourseFormVisible(true);
@@ -271,6 +276,19 @@ const CreateOperation = () => {
     }
   };
 
+  const handleToggleStatus = async (id) => {
+    try {
+      const response = await axios.put(`${API}/toggleonlinestatus/${id}`);
+      if (response.status === 200) {
+        toast.success(`Status updated successfully`);
+        fetchOperation();
+      }
+    } catch (error) {
+      console.error("Error toggling status:", error);
+      toast.error("Failed to update status");
+    }
+  };
+
   return (
     <div id="AdminAddCourse" >
       <Toaster position="top-center" reverseOrder={false} />
@@ -315,6 +333,32 @@ const CreateOperation = () => {
               type="submit"
               value={editingOperationId ? "Update Account" : "Create Account"}
             />
+            {/* Language Selection */}
+            <div className="language-selection">
+              <h3 className="text-lg font-semibold mb-2">Select Languages:</h3>
+              <div className="flex flex-wrap gap-4">
+                {LANGUAGE_OPTIONS.map((lang) => (
+                  <label key={lang} className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      value={lang}
+                      checked={formData.languages.includes(lang)}
+                      onChange={(e) => {
+                        const { value, checked } = e.target;
+                        setFormData((prev) => {
+                          const newLanguages = checked
+                            ? [...prev.languages, value]
+                            : prev.languages.filter((l) => l !== value);
+                          return { ...prev, languages: newLanguages };
+                        });
+                      }}
+                      className="form-checkbox h-4 w-4 text-bg-[#F15B29]"
+                    />
+                    <span>{lang}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
           </form>
         </div>
       )}
@@ -331,6 +375,8 @@ const CreateOperation = () => {
               <th>Email</th>
               <th>Password</th>
               <th>Login</th>
+              <th>Status</th>
+              <th>Languages</th>
               <th>Action</th>
               <th>Send Login Credentials</th>
               <th>Assinged Target</th>
@@ -350,6 +396,17 @@ const CreateOperation = () => {
                 <td>{operation.email}</td>
                 <td>{operation.password}</td>
                 <td className="cursor-pointer font-semibold" onClick={() => handleloginteam(operation.email, operation.password)}>Login <i className="fa fa-sign-in"></i></td>
+                <td className="text-center">
+                  <div
+                    className={`cursor-pointer inline-flex items-center px-2 py-1 rounded-full text-xs font-bold ${operation.isOnline !== false ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}
+                    onClick={() => handleToggleStatus(operation._id)}
+                  >
+                    <span className={`w-2 h-2 rounded-full mr-1 ${operation.isOnline !== false ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                    {operation.isOnline !== false ? 'Online' : 'Offline'}
+                  </div>
+                </td>
+                <td>{operation.languages && operation.languages.length > 0 ? operation.languages.join(", ") : "N/A"}</td>
                 <td>
                   <button onClick={() => handleEdit(operation)}>
                     <i className="fa fa-edit"></i>

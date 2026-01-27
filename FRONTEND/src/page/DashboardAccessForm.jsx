@@ -102,6 +102,9 @@ const DashboardAccessForm = () => {
   const [yearOfStudy, setYearOfStudy] = useState("");
   const [course, setCourse] = useState([]);
   const [lead, setLead] = useState("");
+  const [languages, setLanguages] = useState(["English"]);
+
+  const LANGUAGE_OPTIONS = ["English", "Hindi", "Kannada", "Telugu", "Tamil", "Malayalam", "Bengali"];
 
   const [monthsToShow, setMonthsToShow] = useState([]);
   const [endsMonthsToShow, setEndsMonthsToShow] = useState([]);
@@ -213,6 +216,7 @@ const DashboardAccessForm = () => {
     setInternshipStartsMonth("");
     setInternshipEndsMonth("");
     setYearOfStudy("");
+    setLanguages(["English"]);
     navigate("/dashboardaccessform");
   };
 
@@ -261,6 +265,7 @@ const DashboardAccessForm = () => {
       internshipendsmonth: internshipendsmonth,
       yearOfStudy: yearOfStudy,
       lead: lead.trim(),
+      languages: languages,
     };
 
     if (
@@ -608,18 +613,54 @@ const DashboardAccessForm = () => {
               <label htmlFor="Aadhar Number">Aadhar Number</label>
             </div>
 
-            <div style={{ display: "flex" }}>
-              <label htmlFor="">Due date for clear payment ?</label>
+            <div className="col-span-1 md:col-span-2 lg:col-span-3 border border-[#CCCCCC] rounded-[10px] p-4 relative mt-2">
+              <label style={{
+                position: 'absolute',
+                top: 0,
+                left: '10px',
+                transform: 'translateY(-50%)',
+                backgroundColor: 'white',
+                padding: '0 5px',
+                color: '#8d8d8d',
+                fontSize: '0.8rem',
+                letterSpacing: '1px'
+              }}>Languages Known</label>
+              <div className="flex flex-wrap gap-4 mt-2">
+                {LANGUAGE_OPTIONS.map((lang) => (
+                  <label key={lang} className="flex items-center space-x-2" style={{ cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      value={lang}
+                      checked={languages.includes(lang)}
+                      onChange={(e) => {
+                        const { value, checked } = e.target;
+                        setLanguages((prev) => {
+                          const newLanguages = checked
+                            ? [...prev, value]
+                            : prev.filter((l) => l !== value);
+                          return newLanguages;
+                        });
+                      }}
+                      className="form-checkbox h-4 w-4 text-[#F15B29]"
+                    />
+                    <span className="text-gray-700">{lang}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="input-field">
               <input
                 value={clearPaymentMonth}
                 onChange={(e) => setClearPaymentMonth(e.target.value)}
                 type="date"
                 name=""
-                id=""
+                id="clearPaymentMonth"
                 required
                 min={minDate}
                 max={maxDate}
               />
+              <label htmlFor="clearPaymentMonth">Due date for clear payment ?</label>
             </div>
 
             <select

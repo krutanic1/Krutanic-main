@@ -15,12 +15,13 @@ const crypto = require("crypto");
 
 //post to create a new operation account
 router.post("/createoperation", async (req, res) => {
-  const { fullname, email, password } = req.body;
+  const { fullname, email, password, languages } = req.body;
   try {
     const newoperation = new CreateOperation({
       fullname: fullname,
       email: email,
       password: password,
+      languages: languages,
     });
     await newoperation
       .save()
@@ -79,10 +80,10 @@ router.get("/getoperation", async (req, res) => {
 router.put("/updateoperation/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { fullname, email, password } = req.body;
+    const { fullname, email, password, languages } = req.body;
     const updatedOperation = await CreateOperation.findByIdAndUpdate(
       id,
-      { fullname, email, password },
+      { fullname, email, password, languages },
       { new: true }
     );
     if (!updatedOperation) {
@@ -91,6 +92,26 @@ router.put("/updateoperation/:id", async (req, res) => {
     res.status(200).json(updatedOperation);
   } catch (error) {
     res.status(400).json({ error: "Error updating operation" });
+  }
+});
+
+// Toggle Online/Offline status
+router.put("/toggleonlinestatus/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const operation = await CreateOperation.findById(id);
+    if (!operation) {
+      return res.status(404).json({ error: "Operation not found" });
+    }
+    operation.isOnline = !operation.isOnline;
+    await operation.save();
+
+    // Invalidate cache so updated list is fetched
+    invalidateCache('operations:all', 'static');
+
+    res.status(200).json({ message: "Status updated", isOnline: operation.isOnline });
+  } catch (error) {
+    res.status(500).json({ error: "Error updating status", details: error.message });
   }
 });
 
