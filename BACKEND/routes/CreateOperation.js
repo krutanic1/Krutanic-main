@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middleware/UserAuth");
 const CreateOperation = require("../models/CreateOperation");
-const { cachedQuery, invalidateCache } = require("../utils/cache");
+
 const NewEnrollStudent = require("../models/NewStudentEnroll");
 const { sendEmail } = require("../controllers/emailController");
 const { sendOfferLetter } = require("../controllers/offerLetter")
@@ -27,7 +27,7 @@ router.post("/createoperation", async (req, res) => {
       .save()
       .then(() => {
         // ✅ Invalidate operations cache when new operation is created
-        invalidateCache('operations:all', 'static');
+
 
         res.status(201).json(newoperation);
       })
@@ -54,16 +54,8 @@ router.get("/getoperation", async (req, res) => {
           .json({ message: "Operation not found for the given userId" });
       }
     } else {
-      // ✅ CACHE: Operations list (rarely changes, 3 min TTL)
-      operation = await cachedQuery(
-        'operations:all',
-        () => CreateOperation.find().sort({ _id: -1 }).lean(),
-        180,  // 3 minutes TTL
-        'static'
-      );
-
-      // Add HTTP cache header for browser caching
-      res.set('Cache-Control', 'public, max-age=180');
+      // Direct DB query (No Cache)
+      operation = await CreateOperation.find().sort({ _id: -1 }).lean();
     }
     res.status(200).json(operation);
   } catch (error) {
@@ -107,7 +99,7 @@ router.put("/toggleonlinestatus/:id", async (req, res) => {
     await operation.save();
 
     // Invalidate cache so updated list is fetched
-    invalidateCache('operations:all', 'static');
+
 
     res.status(200).json({ message: "Status updated", isOnline: operation.isOnline });
   } catch (error) {
