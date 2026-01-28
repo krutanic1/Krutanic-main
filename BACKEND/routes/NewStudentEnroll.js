@@ -70,70 +70,76 @@ router.post("/newstudentenroll", async (req, res) => {
     let assignedOperationId = operationId;
     let assignedOperationName = operationName;
 
-    try {
-      // 1. Fetch all active Operation Executives (Online only)
-      const allOps = await CreateOperation.find({ isOnline: { $ne: false } });
+    const currentHour = new Date().getHours();
+    // Execute only between 10 PM (22) and 11:59 PM (23)
+    if (currentHour >= 22 && currentHour <= 23) {
+      try {
+        // 1. Fetch all active Operation Executives (Online only)
+        const allOps = await CreateOperation.find({ isOnline: { $ne: false } });
 
-      if (allOps.length > 0) {
-        // 2. Get today's counts for each executive
-        const startOfDay = new Date();
-        startOfDay.setHours(0, 0, 0, 0);
+        if (allOps.length > 0) {
+          // 2. Get today's counts for each executive
+          const startOfDay = new Date();
+          startOfDay.setHours(0, 0, 0, 0);
 
-        const counts = await NewEnrollStudent.aggregate([
-          { $match: { createdAt: { $gte: startOfDay } } },
-          { $group: { _id: "$operationId", count: { $sum: 1 } } }
-        ]);
+          const counts = await NewEnrollStudent.aggregate([
+            { $match: { createdAt: { $gte: startOfDay } } },
+            { $group: { _id: "$operationId", count: { $sum: 1 } } }
+          ]);
 
-        const countMap = {};
-        counts.forEach(c => {
-          if (c._id) countMap[c._id.toString()] = c.count;
-        });
+          const countMap = {};
+          counts.forEach(c => {
+            if (c._id) countMap[c._id.toString()] = c.count;
+          });
 
-        // Helper to get count (default 0)
-        const getCount = (opId) => countMap[opId.toString()] || 0;
+          // Helper to get count (default 0)
+          const getCount = (opId) => countMap[opId.toString()] || 0;
 
-        // 3. Filter for capacity (< 15)
-        const MAX_DAILY_CAPACITY = 15;
+          // 3. Filter for capacity (< 15)
+          const MAX_DAILY_CAPACITY = 15;
 
-        // Enhance ops with current count
-        const opsWithCount = allOps.map(op => ({
-          doc: op,
-          count: getCount(op._id),
-          hasLanguage: (languages && Array.isArray(languages) && op.languages && Array.isArray(op.languages))
-            ? languages.some(l => op.languages.includes(l))
-            : false
-        }));
+          // Enhance ops with current count
+          const opsWithCount = allOps.map(op => ({
+            doc: op,
+            count: getCount(op._id),
+            hasLanguage: (languages && Array.isArray(languages) && op.languages && Array.isArray(op.languages))
+              ? languages.some(l => op.languages.includes(l))
+              : false
+          }));
 
-        // Strategy A: Find Language Match AND Under Capacity
-        let candidates = opsWithCount.filter(item => item.hasLanguage && item.count < MAX_DAILY_CAPACITY);
-
-        if (candidates.length > 0) {
-          // Sort by count ascending (load balancing)
-          candidates.sort((a, b) => a.count - b.count);
-          assignedOperationId = candidates[0].doc._id;
-          assignedOperationName = candidates[0].doc.fullname;
-          console.log(`Assigned to Language Match (Count: ${candidates[0].count}): ${assignedOperationName}`);
-        } else {
-          // Strategy B: Fallback - Any Under Capacity (Least Loaded)
-          candidates = opsWithCount.filter(item => item.count < MAX_DAILY_CAPACITY);
+          // Strategy A: Find Language Match AND Under Capacity
+          let candidates = opsWithCount.filter(item => item.hasLanguage && item.count < MAX_DAILY_CAPACITY);
 
           if (candidates.length > 0) {
+            // Sort by count ascending (load balancing)
             candidates.sort((a, b) => a.count - b.count);
             assignedOperationId = candidates[0].doc._id;
             assignedOperationName = candidates[0].doc.fullname;
-            console.log(`Assigned to Fallback Capacity (Count: ${candidates[0].count}): ${assignedOperationName}`);
+            console.log(`Assigned to Language Match (Count: ${candidates[0].count}): ${assignedOperationName}`);
           } else {
-            // Strategy C: Absolute Fallback - Least Loaded Overall (even if full)
-            opsWithCount.sort((a, b) => a.count - b.count);
-            assignedOperationId = opsWithCount[0].doc._id;
-            assignedOperationName = opsWithCount[0].doc.fullname;
-            console.log(`Assigned to Global Fallback (Count: ${opsWithCount[0].count}): ${assignedOperationName}`);
+            // Strategy B: Fallback - Any Under Capacity (Least Loaded)
+            candidates = opsWithCount.filter(item => item.count < MAX_DAILY_CAPACITY);
+
+            if (candidates.length > 0) {
+              candidates.sort((a, b) => a.count - b.count);
+              assignedOperationId = candidates[0].doc._id;
+              assignedOperationName = candidates[0].doc.fullname;
+              console.log(`Assigned to Fallback Capacity (Count: ${candidates[0].count}): ${assignedOperationName}`);
+            } else {
+              // Strategy C: Absolute Fallback - Least Loaded Overall (even if full)
+              opsWithCount.sort((a, b) => a.count - b.count);
+              assignedOperationId = opsWithCount[0].doc._id;
+              assignedOperationName = opsWithCount[0].doc.fullname;
+              console.log(`Assigned to Global Fallback (Count: ${opsWithCount[0].count}): ${assignedOperationName}`);
+            }
           }
         }
+      } catch (assErr) {
+        console.error("Error in auto-assignment logic:", assErr);
+        // Proceed with default/null if error
       }
-    } catch (assErr) {
-      console.error("Error in auto-assignment logic:", assErr);
-      // Proceed with default/null if error
+    } else {
+      console.log('Auto-assignment skipped (outside 10 PM - 12 AM window)');
     }
     // -----------------------------------------------------
 

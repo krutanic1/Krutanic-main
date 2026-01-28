@@ -18,20 +18,20 @@ router.post("/applycertificate", async (req, res) => {
             return res.status(400).json({ error: "Certificate already exists for this email" });
         }
         // Auto-generate certificate details
-        const date = new Date();
-        const startdate = date.toISOString();
-        const finalOutput = `${domain} on ${date.toLocaleString('en-US', { month: 'long', year: 'numeric' })}`;
+        // const date = new Date();
+        // const startdate = date.toISOString();
+        // const finalOutput = `${domain} on ${date.toLocaleString('en-US', { month: 'long', year: 'numeric' })}`;
 
         // Cloudinary URL generation matching frontend logic
-        const url = `https://res.cloudinary.com/do5gatqvs/image/upload/co_rgb:000000,l_text:times%20new%20roman_65_bold_normal_left:${encodeURIComponent(formattedName)}/fl_layer_apply,y_20/co_rgb:000000,l_text:times%20new%20roman_25_bold_normal_left:${encodeURIComponent(finalOutput)}/fl_layer_apply,y_225/training_certificate_demo_vknkst`;
+        // const url = `https://res.cloudinary.com/do5gatqvs/image/upload/co_rgb:000000,l_text:times%20new%20roman_65_bold_normal_left:${encodeURIComponent(formattedName)}/fl_layer_apply,y_20/co_rgb:000000,l_text:times%20new%20roman_25_bold_normal_left:${encodeURIComponent(finalOutput)}/fl_layer_apply,y_225/training_certificate_demo_vknkst`;
 
         const newCertificate = new Certificate({
             name: formattedName,
             email,
             domain,
-            delivered: true,
-            startdate: startdate,
-            url: url
+            // delivered: true,
+            // startdate: startdate,
+            // url: url
         });
 
         await newCertificate.save();
