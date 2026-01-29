@@ -72,7 +72,7 @@ router.post("/newstudentenroll", async (req, res) => {
 
     const currentHour = new Date().getHours();
     // Execute only between 10 PM (22) and 11:59 PM (23)
-    if (currentHour >= 22 && currentHour <= 23) {
+    if (!assignedOperationId && currentHour >= 22 && currentHour <= 23) {
       try {
         // 1. Fetch all active Operation Executives (Online only)
         const allOps = await CreateOperation.find({ isOnline: { $ne: false } });
