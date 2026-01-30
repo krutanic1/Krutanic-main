@@ -18,7 +18,10 @@ const Advance = require("./routes/Advance");
 const NewStudentEnroll = require("./routes/NewStudentEnroll");
 const CreateMarketing = require("./routes/CreateMarketing");
 const sendMailWithAttchement = require("./routes/SendMailWithAttechment");
+const CronRoutes = require("./routes/CronRoutes"); // Vercel Cron Routes
+
 const Mockai = require("./routes/mock");
+
 const Excercise = require("./routes/excercise");
 // const PlacementCoordinator = require("./routes/PlacementCoordinator");
 const ResumeATS = require("./routes/resumeats");
@@ -127,6 +130,9 @@ const InterviewRoutes = require("./routes/Interview");
 
 app.use("/api/interviewer", InterviewerRoutes);
 app.use("/api/interview", InterviewRoutes);
+
+// Vercel Cron Route
+app.use("/", CronRoutes);
 
 // ✅ FIX #4: Error handling middleware (must be after routes)
 const axios = require('axios');
