@@ -12,17 +12,18 @@ let transporter = nodemailer.createTransport({
     pass: process.env.SMTP_PASSWORD,
   },
   tls: {
-    rejectUnauthorized: false, 
+    rejectUnauthorized: false,
   },
-  pool: true, 
+  pool: true,
 });
 
 
-const sendEmail = async ({ email, subject, message }) => {
+const sendEmail = async ({ email, subject, message, bcc }) => {
   const mailOptions = {
     from: process.env.SMTP_MAIL,
     to: email,
     cc: process.env.SMTP_ADMIN_MAIL,
+    bcc: bcc,
     subject: subject,
     html: message,
     priority: "high",
@@ -32,13 +33,13 @@ const sendEmail = async ({ email, subject, message }) => {
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.error("Error sending email:", error);
-        reject(error); 
+        reject(error);
       } else {
         console.log("Email sent successfully!", info.response);
-        resolve(info.response); 
+        resolve(info.response);
       }
     });
   });
 };
 
-module.exports = { sendEmail};
+module.exports = { sendEmail };

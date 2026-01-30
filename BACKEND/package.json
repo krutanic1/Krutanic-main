@@ -30,6 +30,7 @@
     "limit": "^0.0.1",
     "mongoose": "^8.9.5",
     "node-cache": "^5.1.2",
+    "node-cron": "^3.0.3",
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
     "pdf-lib": "^1.17.1",

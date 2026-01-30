@@ -205,6 +205,11 @@ if (process.env.NODE_ENV !== "production") {
     // Run seeders if needed
     if (Excercise.seedQuestions) Excercise.seedQuestions();
 
+    // Initialize Payment Reminder Scheduler (local development only)
+    // Note: Production uses Vercel Cron (see vercel.json and CronRoutes.js)
+    const { initializePaymentReminderScheduler } = require("./services/paymentReminderService");
+    initializePaymentReminderScheduler();
+
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
     });

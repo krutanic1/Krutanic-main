@@ -42,4 +42,48 @@ router.get('/api/cron/auto-assign', async (req, res) => {
     }
 });
 
+// Payment Reminder Cron Endpoint (Triggered by Vercel Cron)
+router.post('/api/cron/payment-reminders', async (req, res) => {
+    console.log('⏰ Running Vercel Cron: Payment Reminders');
+
+    try {
+        // Security: Verify Vercel Cron Secret
+        const authHeader = req.headers.authorization;
+        const expectedAuth = `Bearer ${process.env.CRON_SECRET}`;
+
+        if (!process.env.CRON_SECRET || authHeader !== expectedAuth) {
+            console.error('❌ Unauthorized cron request');
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+
+        // Import and execute payment reminder service
+        const { sendPaymentReminders } = require('../services/paymentReminderService');
+        const result = await sendPaymentReminders();
+
+        if (result.success) {
+            res.status(200).json({
+                success: true,
+                message: `Payment reminders sent successfully`,
+                sent: result.sent,
+                failed: result.failed,
+                timestamp: new Date().toISOString()
+            });
+        } else {
+            res.status(500).json({
+                success: false,
+                error: result.error,
+                timestamp: new Date().toISOString()
+            });
+        }
+
+    } catch (error) {
+        console.error('Error in Payment Reminder Cron Route:', error);
+        res.status(500).json({
+            error: 'Internal Server Error',
+            details: error.message,
+            timestamp: new Date().toISOString()
+        });
+    }
+});
+
 module.exports = router;

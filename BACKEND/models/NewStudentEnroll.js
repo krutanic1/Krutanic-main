@@ -69,7 +69,7 @@ const newStudentEnrollSchema = new Schema(
     offerlettersended: { type: Boolean, default: false },
 
     whatsAppNumber: { type: String },
-    remainingAmount: { type: String },
+    remainingAmount: { type: Number },
     collegeName: { type: String },
     branch: { type: String },
     aadharNumber: { type: String },
