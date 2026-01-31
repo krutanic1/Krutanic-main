@@ -9,17 +9,17 @@ const AddEvent = () => {
   const [editId, setEditId] = useState(null);
   const [allEvents, setAllEvents] = useState([]);
   const [selectedEvent, setSetectedEvent] = useState([]);
-  const [showAppliedDetails , setShowAppliedDetails] = useState(null)
+  const [showAppliedDetails, setShowAppliedDetails] = useState(null)
 
 
   const [form, setForm] = useState({
-      question: "",
-      option1: "",
-      option2: "",
-      option3: "",
-      option4: "",
-      answer: "",
-      coin: "",
+    question: "",
+    option1: "",
+    option2: "",
+    option3: "",
+    option4: "",
+    answer: "",
+    coin: "",
   });
 
   const [formData, setFormData] = useState({
@@ -131,7 +131,7 @@ const AddEvent = () => {
   useEffect(() => {
     fetchEvent();
   }, []);
- 
+
   const handleSubmitQuestion = async (e) => {
     e.preventDefault();
     const newQuestion = {
@@ -141,7 +141,7 @@ const AddEvent = () => {
       option3: form.option3,
       option4: form.option4,
       answer: form.answer,
-      coin:form.coin,
+      coin: form.coin,
     };
     try {
       let response;
@@ -170,7 +170,7 @@ const AddEvent = () => {
 
   const handleDeleteQuestion = async (eventId, questionId) => {
     const isConfirmed = window.confirm("Are you sure you want to delete this question?");
-    if (!isConfirmed) return; 
+    if (!isConfirmed) return;
     try {
       const response = await axios.delete(`${API}/allevents/${eventId}/questions/${questionId}`);
       toast.success("Question deleted successfully!");
@@ -184,13 +184,13 @@ const AddEvent = () => {
     const isConfirmed = window.confirm("Are you sure you want to edit the event?");
     if (!isConfirmed) return;
     setForm({
-        question: question.question,
-        option1: question.option1,
-        option2: question.option2,
-        option3: question.option3,
-        option4: question.option4,
-        answer: question.answer,
-        coin: question.coin,
+      question: question.question,
+      option1: question.option1,
+      option2: question.option2,
+      option3: question.option3,
+      option4: question.option4,
+      answer: question.answer,
+      coin: question.coin,
     });
     setEditId(question._id);
     setisQuestionFormVisible(true);
@@ -205,14 +205,14 @@ const AddEvent = () => {
   const handleStatusChange = async (e, id) => {
     const status = e.target.value;
     try {
-      const response = await axios.put(`${API}/updatestatus/${id}`, { status: status });
+      const response = await axios.put(`${API}/updateeventstatus/${id}`, { status: status });
       console.log(response.data.message);
       fetchEvent();
     } catch (error) {
       console.error("Error updating status:", error.response?.data?.message || error.message);
     }
   };
-  
+
   return (
     <div id="Event" className="ml-[270px]">
       <Toaster position="top-center" reverseOrder={false} />
@@ -328,15 +328,15 @@ const AddEvent = () => {
         </div>
       )}
 
-{showAppliedDetails && (
-      <div className="jobdetails">
-        <div className="jobdetailsdiv">
-          <div className="title">
-            <h2>Applied Users</h2>
-            <span onClick={() => setShowAppliedDetails(null)}>✖</span>
-          </div>
+      {showAppliedDetails && (
+        <div className="jobdetails">
+          <div className="jobdetailsdiv">
+            <div className="title">
+              <h2>Applied Users</h2>
+              <span onClick={() => setShowAppliedDetails(null)}>✖</span>
+            </div>
 
-          <table>
+            <table>
               <thead>
                 <tr>
                   <th>Sl</th>
@@ -356,17 +356,17 @@ const AddEvent = () => {
                     <td>{user.email}</td>
                     <td>{user.phone}</td>
                     <td>{user.collegeEmailId}</td>
-                    <td>{user.collegeName}</td>   
-                   {showAppliedDetails?.enrollments?.map((item)=>(
-                     <td> { item.user_id === user.id ? item.coin : 0}</td>
+                    <td>{user.collegeName}</td>
+                    {showAppliedDetails?.enrollments?.map((item) => (
+                      <td> {item.user_id === user.id ? item.coin : 0}</td>
                     ))}
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
         </div>
-      </div>
-    )}
+      )}
 
 
       <div className="coursetable">
@@ -381,110 +381,110 @@ const AddEvent = () => {
           </button>
         </div>
         <div className="qanda">
-        <table>
-          <thead>
-            <tr>
-              <th>Sl No.</th>
-              <th>Title</th>
-              <th>Total Questions</th>
-              <th>Start Time</th>
-              <th>Status</th>
-              <th>Applied</th>
-              <th>Change Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-          {allEvents?.map((events, index) => {
-      return (
-        <tr key={index}>
-          <td>{index + 1}</td>
-          <td className=" cursor-pointer" onClick={() => setSetectedEvent(events)}>{events.title}</td>
-          <td>{events.questions.length}</td>
-          <td>
-            {new Date(events.start).toLocaleString("en-US", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-              hour: "numeric",
-              minute: "2-digit",
-              hour12: true,
-            })}
-          </td>
-          <td>{events.status}</td>
-          <td className="cursor-pointer text-red-600 font-bold" onClick={() => handleShowAppliedDetails(events._id)}> {events.enrollments.length}</td>
-          <td>
-            <select className="border border-gray-800 rounded-full" onChange={(e) => handleStatusChange(e, events._id)} name="status" id="status">
-              <option value="Select Status"> Select Status</option>
-              <option value="Ongoing">Ongoing</option>
-              <option value="Completed">Completed</option>
-              <option value="Upcoming Events">Upcoming Events</option>
-            </select>
-          </td>
-          <td>
-            <button>
-              <i
-                className="fa fa-edit"
-                onClick={() => handleEdit(events)}
-              ></i>
-            </button>
-            <button onClick={() => handleDelete(events._id)}>
-              <i className="fa fa-trash-o text-red-700"></i>
-            </button>
-          </td>
-        </tr>
-      );
-    })}
-          </tbody>
-        </table>
+          <table>
+            <thead>
+              <tr>
+                <th>Sl No.</th>
+                <th>Title</th>
+                <th>Total Questions</th>
+                <th>Start Time</th>
+                <th>Status</th>
+                <th>Applied</th>
+                <th>Change Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {allEvents?.map((events, index) => {
+                return (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td className=" cursor-pointer" onClick={() => setSetectedEvent(events)}>{events.title}</td>
+                    <td>{events.questions.length}</td>
+                    <td>
+                      {new Date(events.start).toLocaleString("en-US", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                        hour: "numeric",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
+                    </td>
+                    <td>{events.status}</td>
+                    <td className="cursor-pointer text-red-600 font-bold" onClick={() => handleShowAppliedDetails(events._id)}> {events.enrollments.length}</td>
+                    <td>
+                      <select className="border border-gray-800 rounded-full" value={events.status} onChange={(e) => handleStatusChange(e, events._id)} name="status" id="status">
+                        <option value="Select Status"> Select Status</option>
+                        <option value="Ongoing">Ongoing</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Upcoming Events">Upcoming Events</option>
+                      </select>
+                    </td>
+                    <td>
+                      <button>
+                        <i
+                          className="fa fa-edit"
+                          onClick={() => handleEdit(events)}
+                        ></i>
+                      </button>
+                      <button onClick={() => handleDelete(events._id)}>
+                        <i className="fa fa-trash-o text-red-700"></i>
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       </div>
 
       {selectedEvent && (
         <div>
           <div className="coursetable">
-          <div className="eventdetail">
-            <h2>{selectedEvent.title}</h2>
-            <button
-              onClick={() => setisQuestionFormVisible(true)}
-              className="p-1 flex whitespace-nowrap items-center gap-2 border border-black rounded-md"
-            >
-              + Add Question
-            </button>
-          </div>
-          <div className="qanda">
-            {selectedEvent?.questions?.length ? (
-              selectedEvent.questions.map((question, index) => (
-                <div key={index}>
-                  <p className="flex items-center gap-2">
-                    {index + 1}. {question.question}
-                    <div className="flex items-center gap-2">
-                    <button>
-                    <i
-                      className="fa fa-edit"
-                      onClick={() => handleEditQuestion(question)}
-                    ></i>
-                  </button>
-                  <button onClick={() => handleDeleteQuestion(selectedEvent._id, question._id)}>
-                    <i className="fa fa-trash-o text-red-600"></i>
-                  </button>
-                    </div>
-                  </p>
-                  <ul>
-                    <li>Option1: {question.option1}</li>
-                    <li>Option2: {question.option2}</li>
-                    <li>Option3: {question.option3}</li>
-                    <li>Option4: {question.option4}</li>
-                  </ul>
-                  <p>
-                    <strong>Answer:</strong> {question.answer} ({question.coin} coins)
-                  </p>
-                </div>
-              ))
-            ) : (
-              <p>No questions available</p>
-            )}
-          </div>
+            <div className="eventdetail">
+              <h2>{selectedEvent.title}</h2>
+              <button
+                onClick={() => setisQuestionFormVisible(true)}
+                className="p-1 flex whitespace-nowrap items-center gap-2 border border-black rounded-md"
+              >
+                + Add Question
+              </button>
+            </div>
+            <div className="qanda">
+              {selectedEvent?.questions?.length ? (
+                selectedEvent.questions.map((question, index) => (
+                  <div key={index}>
+                    <p className="flex items-center gap-2">
+                      {index + 1}. {question.question}
+                      <div className="flex items-center gap-2">
+                        <button>
+                          <i
+                            className="fa fa-edit"
+                            onClick={() => handleEditQuestion(question)}
+                          ></i>
+                        </button>
+                        <button onClick={() => handleDeleteQuestion(selectedEvent._id, question._id)}>
+                          <i className="fa fa-trash-o text-red-600"></i>
+                        </button>
+                      </div>
+                    </p>
+                    <ul>
+                      <li>Option1: {question.option1}</li>
+                      <li>Option2: {question.option2}</li>
+                      <li>Option3: {question.option3}</li>
+                      <li>Option4: {question.option4}</li>
+                    </ul>
+                    <p>
+                      <strong>Answer:</strong> {question.answer} ({question.coin} coins)
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p>No questions available</p>
+              )}
+            </div>
           </div>
         </div>
       )}

@@ -11,6 +11,8 @@ import FeeStructure from "./page/FeeStructure";
 import TalentHunt from "./page/TalentHunt";
 import Footer from "./Components/Footer";
 import LoginWithOtp from "./page/LoginWithOtp";
+import EventRegister from "./page/EventRegister";
+import EventLogin from "./page/EventLogin";
 import ScrollToTop from "./Components/ScrollToTop";
 import Advance from "./page/Advance";
 import Mentorship from "./page/Mentorship";
@@ -148,7 +150,7 @@ const AppContent = () => {
     "/collabration",
     "/advancecourses",
     "/feestructure",
-    "/talenthunt",
+    // "/talenthunt", // Hidden for custom navbar in TalentHunt page
     "/advance",
     "/mentorship",
     "/datascience",
@@ -284,6 +286,7 @@ const AppContent = () => {
         <Route path="/AdvanceCourses" element={<AdvanceCourses />} />
         <Route path="/FeeStructure" element={<FeeStructure />} />
         <Route path="/TalentHunt" element={<TalentHunt />} />
+        <Route path="/EventRegister" element={<EventRegister />} />
         <Route path="/Advance" element={<Advance />} />
         <Route path="/Mentorship" element={<Mentorship />} />
         <Route path="/DataScience" element={<DataScience />} />
@@ -399,6 +402,7 @@ const AppContent = () => {
         <Route path="/InterviewerDashboard" element={<InterviewerDashboard />} />
 
         {/* event */}
+        <Route path="/EventLogin" element={<EventLogin />} />
         <Route path="/EventDashboard" element={isAuthenticatedEventUser() ? <EventDashBoard /> : <Navigate to="/TalentHunt" />} />
 
       </Routes>

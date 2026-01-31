@@ -68,7 +68,7 @@ const Playground = () => {
       if (document.hidden && state.isDialogOpen && !state.quizCompleted) {
         storeScore(scoreRef.current);
       }
-    }; 
+    };
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [state.isDialogOpen, state.quizCompleted]);
@@ -163,11 +163,11 @@ const Playground = () => {
     setState((prev) =>
       nextIndex < state.currentQuiz.questions.length
         ? {
-            ...prev,
-            currentQuestionIndex: nextIndex,
-            timeLeft: 60,
-            selectedOption: null,
-          }
+          ...prev,
+          currentQuestionIndex: nextIndex,
+          timeLeft: 60,
+          selectedOption: null,
+        }
         : { ...prev, quizCompleted: true, selectedOption: null }
     );
   };
@@ -244,7 +244,7 @@ const Playground = () => {
       <div className="h-full backdrop-blur-xl  p-1">
         <div className="grid gap-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-center">
           {appliedUsers.filter((quiz) => quiz.status === "Ongoing").length >
-          0 ? (
+            0 ? (
             appliedUsers
               .filter((quiz) => quiz.status === "Ongoing")
               .map((quiz, index) => {
@@ -258,43 +258,43 @@ const Playground = () => {
                   <div
                     key={index}
                     className="p-[4px] relative overflow-hidden  rounded-md text-center backdrop-blur-md shadow-xl border border-[#eeeeee2d] hover:shadow-xl transition-shadow duration-300 w-full lg:min-w-[500px] mx-auto">
-                       <span className="absolute  inset-0 bg-gradient-to-r animate-pulse from-blue-500 to-purple-500 mask mask-out"></span>
-                       <span className="relative block rounded-md bg-[#000000] w-full px-4 py-3">
-                    <h2 className="text-lg text-center font-semibold mb-2">
-                      {quiz.title}
-                    </h2>
-                    <h2 className="text-center animate-bounce">
-                      {quiz.status}
-                    </h2>
-                    <p className="text-md text-center mt-2">
-                      {new Date(quiz.start).toLocaleString("en-US", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                        hour: "numeric",
-                        minute: "2-digit",
-                        hour12: true,
-                      })}
-                    </p>
-                    {!hasCoins ? (
-                      <button
-                        onClick={() => startQuiz(quiz)}
-                        className="px-4 py-2 mt-3 w-full active:animate-ping bg-gradient-to-r  from-blue-500 to-purple-500 rounded-md transition-colors duration-200"
-                      >
-                        Start Quiz
-                      </button>
-                    ) : (
-                      <h2 className="text-md px-4 py-2 mt-3 rounded-md bg-gradient-to-r  from-green-500 to-green-800 text-white">Completed</h2>
-                    )}
-                      </span>
+                    <span className="absolute  inset-0 bg-gradient-to-r animate-pulse from-blue-500 to-purple-500 mask mask-out"></span>
+                    <span className="relative block rounded-md bg-[#000000] w-full px-4 py-3">
+                      <h2 className="text-lg text-center font-semibold mb-2">
+                        {quiz.title}
+                      </h2>
+                      <h2 className="text-center animate-bounce">
+                        {quiz.status}
+                      </h2>
+                      <p className="text-md text-center mt-2">
+                        {new Date(quiz.start).toLocaleString("en-US", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        })}
+                      </p>
+                      {!hasCoins ? (
+                        <button
+                          onClick={() => startQuiz(quiz)}
+                          className="px-4 py-2 mt-3 w-full active:animate-ping bg-gradient-to-r  from-blue-500 to-purple-500 rounded-md transition-colors duration-200"
+                        >
+                          Start Quiz
+                        </button>
+                      ) : (
+                        <h2 className="text-md px-4 py-2 mt-3 rounded-md bg-gradient-to-r  from-green-500 to-green-800 text-white">Completed</h2>
+                      )}
+                    </span>
                   </div>
                 );
               })
           ) : (
             <div className=" absolute -z-10 top-[50%] left-[50%] trannform translate-x-[-50%] translate-y-[-50%]">
               <h2 className="text-lg font-semibold text-black mb-2 text-center w-full">
-              No Ongoing Quiz Available
-            </h2>
+                No Ongoing Quiz Available
+              </h2>
             </div>
           )}
         </div>
@@ -309,13 +309,13 @@ const Playground = () => {
                 {currentQuiz.questions.length}
               </div>
               <div className="text-lg text-center  p-3 whitespace-nowrap  text-red-700 font-bold tracking-wide  drop-shadow-lg">
-               <span className="animate-pulse">⏳</span> Time Left: {timeLeft}s
+                <span className="animate-pulse">⏳</span> Time Left: {timeLeft}s
               </div>
               <div>{currentQuiz.title}</div>
             </div>
             <div className="relative flex justify-between items-center text-center my-4 gap-3 p-[3px] rounded-full">
               <div className="absolute inset-0 rounded-full p-[2px] bg-gradient-to-r animate-pulse from-blue-500 to-purple-500"></div>
-              <div className="relative bg-[#000000] w-full text-lg rounded-full p-10">
+              <div className="relative bg-[#000000] w-full text-lg rounded-full p-10 text-white">
                 {currentQuiz.questions[currentQuestionIndex].question}{" "} <span className="text-blue-600"> ( {currentQuiz.questions[currentQuestionIndex].coin} coins )</span>
               </div>
             </div>
@@ -323,22 +323,21 @@ const Playground = () => {
               {[1, 2, 3, 4].map((opt) => (
                 <label
                   key={opt}
-                  className={`relative flex items-center p-[3px] rounded-full cursor-pointer transition-colors duration-200 ${
-                    selectedOption ===
+                  className={`relative flex items-center p-[3px] rounded-full cursor-pointer transition-colors duration-200 ${selectedOption ===
                     currentQuiz.questions[currentQuestionIndex][`option${opt}`]
-                      ? "border-transparent"
-                      : "border border-[#eeeeee2d]"
-                  }`}
+                    ? "border-transparent"
+                    : "border border-[#eeeeee2d]"
+                    }`}
                 >
                   <span className="absolute inset-0 rounded-full animate-pulse bg-gradient-to-r from-blue-500 to-purple-500"></span>
-                  <span className="relative flex items-center bg-[#000000] w-full h-full  rounded-full p-5">
+                  <span className="relative flex items-center bg-[#000000] w-full h-full  rounded-full p-5 text-white">
                     <input
                       type="radio"
                       name="option"
                       checked={
                         selectedOption ===
                         currentQuiz.questions[currentQuestionIndex][
-                          `option${opt}`
+                        `option${opt}`
                         ]
                       }
                       onChange={() =>
@@ -346,22 +345,21 @@ const Playground = () => {
                           ...prev,
                           selectedOption:
                             currentQuiz.questions[currentQuestionIndex][
-                              `option${opt}`
+                            `option${opt}`
                             ],
                         }))
                       }
-                      className={`mr-2 ${
-                        selectedOption ===
+                      className={`mr-2 ${selectedOption ===
                         currentQuiz.questions[currentQuestionIndex][
-                          `option${opt}`
+                        `option${opt}`
                         ]
-                          ? "animate-ping"
-                          : ""
-                      }`}
+                        ? "animate-ping"
+                        : ""
+                        }`}
                     />
                     {
                       currentQuiz.questions[currentQuestionIndex][
-                        `option${opt}`
+                      `option${opt}`
                       ]
                     }
                   </span>
@@ -384,9 +382,9 @@ const Playground = () => {
               >
                 <span className="absolute inset-0 bg-gradient-to-r animate-pulse   from-blue-500 to-purple-500 rounded-full p-[2px] mask mask-out"></span>
                 <span className="relative block active:animate-ping font-bold  bg-black rounded-full px-4 py-3">
-                {currentQuestionIndex + 1 === currentQuiz.questions.length
-                  ? "Submit"
-                  : "Next"}
+                  {currentQuestionIndex + 1 === currentQuiz.questions.length
+                    ? "Submit"
+                    : "Next"}
                 </span>
               </button>
             </div>

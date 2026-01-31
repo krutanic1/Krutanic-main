@@ -3,7 +3,7 @@ const AddEvent = require("../models/AddEvent");
 const EventRegistration = require("../models/EventRegistration");
 const EventApplication = require("../models/EventApplication");
 const router = express.Router();
-const crypto = require('crypto'); 
+const crypto = require('crypto');
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const { sendEmail } = require("../controllers/emailController");
@@ -11,35 +11,35 @@ const cloudinary = require("../middleware/cloudinary.js")
 
 // add a new event
 router.post("/addevent", async (req, res) => {
-    try {
-        const addevent = new AddEvent(req.body);
-        await addevent.save();
-        res.status(201).json(addevent);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
+  try {
+    const addevent = new AddEvent(req.body);
+    await addevent.save();
+    res.status(201).json(addevent);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 });
 
 // Get all Events
 router.get("/allevents", async (req, res) => {
-    try {
-      const addEvent = await AddEvent.find().sort({ _id: -1 });
-      res.status(200).json(addEvent);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  });
+  try {
+    const addEvent = await AddEvent.find().sort({ _id: -1 });
+    res.status(200).json(addEvent);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // Update a events
 router.put("/allevents/:id", async (req, res) => {
-    try {
-      const addEvent = await AddEvent.findByIdAndUpdate(req.params.id, req.body, { new: true });
-      if (!addEvent) return res.status(404).json({ error: "Event not found" });
-      res.status(200).json(addEvent);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  });
+  try {
+    const addEvent = await AddEvent.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!addEvent) return res.status(404).json({ error: "Event not found" });
+    res.status(200).json(addEvent);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // Delete a events
 router.delete("/allevents/:id", async (req, res) => {
@@ -54,8 +54,8 @@ router.delete("/allevents/:id", async (req, res) => {
 
 
 //update status
-router.put("/updatestatus/:id", async (req, res) => {
-  console.log(req.body , "status");
+router.put("/updateeventstatus/:id", async (req, res) => {
+  console.log(req.body, "status");
   console.log(req.params.id, "id")
   try {
     const addEvent = await AddEvent.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -73,14 +73,15 @@ router.put("/addquestions/:id", async (req, res) => {
     if (req.body.question) {
       const newQuestion = {
         question: req.body.question,
-        option1: req.body.option1, 
-        option2: req.body.option2, 
-        option3:req.body.option3,
-        option4: req.body.option4, 
-        answer: req.body.answer ,
-        coin:req.body.coin
-      }; 
-    event.questions.push(newQuestion);}
+        option1: req.body.option1,
+        option2: req.body.option2,
+        option3: req.body.option3,
+        option4: req.body.option4,
+        answer: req.body.answer,
+        coin: req.body.coin
+      };
+      event.questions.push(newQuestion);
+    }
     const updatedEvent = await event.save();
     res.status(200).json(updatedEvent);
   } catch (error) {
@@ -111,9 +112,9 @@ router.put('/addquestions/:eventId/questions/:questionId', async (req, res) => {
   const { question, option1, option2, option3, option4, answer } = req.body;
   try {
     const event = await AddEvent.findById(eventId);
-    if (!event) {return res.status(404).json({ message: 'Event not found' });}
-    const existingQuestion =  event.questions.find(q => q._id.toString() === questionId);
-    if (!existingQuestion) {return res.status(404).json({ message: 'Question not found' });}
+    if (!event) { return res.status(404).json({ message: 'Event not found' }); }
+    const existingQuestion = event.questions.find(q => q._id.toString() === questionId);
+    if (!existingQuestion) { return res.status(404).json({ message: 'Question not found' }); }
     existingQuestion.question = question;
     existingQuestion.option1 = option1;
     existingQuestion.option2 = option2;
@@ -133,17 +134,17 @@ router.put('/addquestions/:eventId/questions/:questionId', async (req, res) => {
 
 // Event Registration
 router.post("/eventregistration", async (req, res) => {
-    try {
-       const existingUser = await EventRegistration.findOne({ email:req.body.email });
-          if (existingUser) {
-            return res.status(400).json({ message: "user already exists" });
-          }
-        const eventregister = new EventRegistration(req.body);
-        await eventregister.save();
-        res.status(201).json(eventregister);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
+  try {
+    const existingUser = await EventRegistration.findOne({ email: req.body.email });
+    if (existingUser) {
+      return res.status(400).json({ message: "user already exists" });
     }
+    const eventregister = new EventRegistration(req.body);
+    await eventregister.save();
+    res.status(201).json(eventregister);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 })
 
 // Get all Event Registrations - take it 
@@ -197,16 +198,16 @@ router.get("/alleventregistrations", async (req, res) => {
 });
 
 // send otp route
-router.post("/eventsendotp",async (req, res) => {
+router.post("/eventsendotp", async (req, res) => {
   const { email } = req.body;
   try {
     const eventuser = await EventRegistration.findOne({ email });
     if (!eventuser) {
       return res.status(404).json({ message: "User not found enter a valid email" });
     }
-     const otp = crypto.randomInt(100000, 1000000);
+    const otp = crypto.randomInt(100000, 1000000);
     const otpExpires = Date.now() + 10 * 60 * 1000; // 10 mins expiration
-       const  EmailMessage = `
+    const EmailMessage = `
        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
     <div style="background-color: #F15B29; color: #fff; text-align: center; padding: 20px;">
         <h1>Krutanic Talent Hunt</h1>
@@ -228,7 +229,7 @@ router.post("/eventsendotp",async (req, res) => {
     eventuser.otpExpires = otpExpires;
     await Promise.all([
       eventuser.save(),
-      sendEmail({email ,  subject: "Your OTP for Login", message: EmailMessage}),
+      sendEmail({ email, subject: "Your OTP for Login", message: EmailMessage }),
     ]);
     res.status(200).json({ message: "OTP sent successfully" });
   } catch (err) {
@@ -245,9 +246,9 @@ router.post("/eventverifyotp", async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-      if (user.status === "inactive") {
-        return res.status(403).json({ message: "Your account is inactive. Please contact support." });
-      }
+    if (user.status === "inactive") {
+      return res.status(403).json({ message: "Your account is inactive. Please contact support." });
+    }
 
     if (!user.otp || user.otpExpires < Date.now()) {
       return res
@@ -268,7 +269,7 @@ router.post("/eventverifyotp", async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    res.status(200).json({ token, _id: user._id, email: user.email , name: user.name });
+    res.status(200).json({ token, _id: user._id, email: user.email, name: user.name });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error verifying OTP" });
@@ -279,7 +280,7 @@ router.post("/eventverifyotp", async (req, res) => {
 //apply on event
 router.post("/eventapplications", async (req, res) => {
   try {
-    const { userId, eventId , remarks} = req.body;
+    const { userId, eventId, remarks } = req.body;
 
     if (!userId || !eventId) {
       return res.status(400).json({ error: "userId and eventId are required" });
@@ -291,7 +292,7 @@ router.post("/eventapplications", async (req, res) => {
       return res.status(400).json({ error: "User has already applied for this event" });
     }
 
-    const newEventApplication = new EventApplication({ userId, eventId , remarks});
+    const newEventApplication = new EventApplication({ userId, eventId, remarks });
     await newEventApplication.save();
     res.status(201).json({ message: "Job Applied successfully", application: newEventApplication });
   } catch (error) {
@@ -304,15 +305,15 @@ router.post("/eventapplications", async (req, res) => {
 router.get("/eventapplications", async (req, res) => {
   try {
     const appliedEvent = await EventApplication.find()
-    .populate('userId','id')
-    .populate('eventId', 'id');
-  
-  const response = appliedEvent.map(event => {
-    const { createdAt, updatedAt, ...rest } = event.toObject();
-    return rest;
-  });
+      .populate('userId', 'id')
+      .populate('eventId', 'id');
 
-  res.status(200).json(response);
+    const response = appliedEvent.map(event => {
+      const { createdAt, updatedAt, ...rest } = event.toObject();
+      return rest;
+    });
+
+    res.status(200).json(response);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -336,7 +337,7 @@ router.get("/events-with-applications", async (req, res) => {
             $cond: {
               if: { $isArray: "$enrollments" }, // Check if enrollments is an array
               then: "$enrollments", // If it's already an array, keep it
-              else: [ "$enrollments" ], // Otherwise, wrap it in an array
+              else: ["$enrollments"], // Otherwise, wrap it in an array
             },
           },
         },
@@ -375,7 +376,7 @@ router.get("/events-with-applications", async (req, res) => {
           foreignField: "_id", // Foreign field (userId in eventregistrations)
           as: "userDetails", // Store matched user details in 'userDetails'
         },
-      }, 
+      },
       {
         $project: {
           title: 1,
@@ -390,7 +391,7 @@ router.get("/events-with-applications", async (req, res) => {
             email: 1,
             collegeName: 1,
             collegeEmailId: 1, // Only include relevant user fields
-            _id:1,
+            _id: 1,
           },
         },
       },
@@ -406,13 +407,13 @@ router.get("/events-with-applications", async (req, res) => {
 //store the score as coin 
 router.post("/finalscore", async (req, res) => {
   try {
-    const { userId, eventId, coin , remarks } = req.body;
+    const { userId, eventId, coin, remarks } = req.body;
     if (!userId || !eventId || coin === undefined) {
       return res.status(400).json({ error: "userId, eventId, and coin are required" });
     }
     const updatedApplication = await EventApplication.findOneAndUpdate(
       { userId, eventId },
-      { $set: { coin}},
+      { $set: { coin } },
       { new: true, upsert: false }
     );
 
@@ -431,8 +432,8 @@ router.post("/finalscore", async (req, res) => {
 //from admin side
 router.post("/redeemcoins", async (req, res) => {
   try {
-    const { userId, coin, remarks} = req.body;
-    const newEventApplication = new EventApplication({ userId, coin, remarks});
+    const { userId, coin, remarks } = req.body;
+    const newEventApplication = new EventApplication({ userId, coin, remarks });
     await newEventApplication.save();
     res.status(201).json({ message: "Job Applied successfully", application: newEventApplication });
   } catch (error) {

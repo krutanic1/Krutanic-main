@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import logo from "../assets/logowhite.png";
+import logo from "../assets/LOGO3.png";
 import { useNavigate } from "react-router-dom";
 import Profile from "./Profile";
 import Events from "./Events";
@@ -9,27 +9,18 @@ import Playground from "./Playground";
 const EventDashBoard = () => {
   const [activePage, setActivePage] = useState("events");
   const [information, setInformation] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const userName = localStorage.getItem("eventUserName") || "User";
 
   const handleLogOut = () => {
-    toast.success("Logout Successful!", {
-      style: {
-        border: "1px solid #f15b29",
-        padding: "16px",
-        color: "#ffffff",
-        background: "#1d1e20",
-      },
-      iconTheme: {
-        primary: "#f15b29",
-        secondary: "#ffffff",
-      },
-    });
+    toast.success("Logout Successful!");
     setTimeout(() => {
       localStorage.removeItem("eventuserId");
       localStorage.removeItem("eventuserEmail");
       localStorage.removeItem("eventToken");
       localStorage.removeItem("eventUserName");
-      navigate("/Talenthunt");
+      navigate("/TalentHunt");
     }, 1500);
   };
 
@@ -46,154 +37,220 @@ const EventDashBoard = () => {
     }
   };
 
+  const navigationItems = [
+    { id: "events", label: "Events", icon: "fa-calendar" },
+    { id: "quiz", label: "Playground", icon: "fa-gamepad" },
+  ];
+
   return (
-    <div className="">
-      <Toaster position="top-center" reverseOrder={false} />
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <Toaster position="top-center" />
 
-      <header className="sticky top-0 z-50 bg-[#080808] text-white  shadow-lg px-[10px] py-3">
-        <div className="flex items-center justify-between">
-          <img
-            src={logo}
-            alt="Logo"
-            className="w-24 lg:w-36 transform hover:scale-105 transition-transform duration-300"
-          />
+      {/* Modern Header */}
+      <header className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <div className="flex items-center">
+              <img
+                src={logo}
+                alt="Krutanic"
+                className="h-10 cursor-pointer"
+                onClick={() => navigate("/TalentHunt")}
+              />
+            </div>
 
-          <nav className="flex gap-2 font-semibold">
-            <button
-              onClick={() => setActivePage("events")}
-              className={`px-4 py-2 rounded-lg transition-all duration-300 ${
-                activePage === "events"
-                  ? " text-purple-700 ease-linear duration-300 shadow-md"
-                  : " hover:bg-gray-950"
-              }`}
-            >
-              Events
-            </button>
-            <button
-              onClick={() => setActivePage("quiz")}
-              className={`px-4 py-2 rounded-lg transition-all duration-300 ${
-                activePage === "quiz"
-                  ? " text-purple-700 ease-linear duration-300 shadow-md"
-                  : " hover:bg-gray-950"
-              }`}
-            >
-              Playground
-            </button>
-          </nav>
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center space-x-1">
+              {navigationItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setActivePage(item.id)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all ${activePage === item.id
+                      ? "bg-blue-50 text-blue-700"
+                      : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                >
+                  <i className={`fa ${item.icon} mr-2`}></i>
+                  {item.label}
+                </button>
+              ))}
+            </nav>
 
-          <i
-            onClick={() => setActivePage("profile")}
-            className={`fa fa-user text-xl mr-2 cursor-pointer ease-linear hover:text-purple-700 transition-colors duration-300 ${
-              activePage === "profile"
-                ? " text-purple-700 ease-linear duration-300 shadow-md"
-                : " hover:bg-gray-950"
-            }`}
-            aria-hidden="true"
-          />
+            {/* User Actions */}
+            <div className="flex items-center space-x-3">
+              {/* User Profile Button */}
+              <button
+                onClick={() => setActivePage("profile")}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${activePage === "profile"
+                    ? "bg-blue-50 text-blue-700"
+                    : "text-gray-700 hover:bg-gray-100"
+                  }`}
+              >
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
+                  {userName.charAt(0).toUpperCase()}
+                </div>
+                <span className="hidden md:block font-medium">{userName}</span>
+              </button>
+
+              {/* Mobile Menu Toggle */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+              >
+                <i className={`fa ${mobileMenuOpen ? 'fa-times' : 'fa-bars'} text-xl`}></i>
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile Navigation */}
+          {mobileMenuOpen && (
+            <div className="md:hidden py-4 border-t border-gray-100">
+              <nav className="flex flex-col space-y-2">
+                {navigationItems.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      setActivePage(item.id);
+                      setMobileMenuOpen(false);
+                    }}
+                    className={`px-4 py-3 rounded-lg font-medium text-left transition-all ${activePage === item.id
+                        ? "bg-blue-50 text-blue-700"
+                        : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                  >
+                    <i className={`fa ${item.icon} mr-3`}></i>
+                    {item.label}
+                  </button>
+                ))}
+              </nav>
+            </div>
+          )}
         </div>
       </header>
 
-      <main>{renderPage()}</main>
+      {/* Main Content */}
+      <main className="flex-1">
+        {renderPage()}
+      </main>
 
-      <footer className="backdrop-blur-md sticky b-0 z-50 text-white bg-[#080808]  px-[10px] py-2 shadow-lg">
-        <div className=" mx-auto flex items-center justify-between">
-          <p className="text-sm opacity-75 hover:opacity-100 transition-opacity duration-300">
-            © 2024 Krutanic Event. All Rights Reserved.
-          </p>
-          <div className="flex gap-4 items-center">
-            <i
-              className="fa fa-info-circle text-xl hover:text-purple-700 ease-linear duration-300 shadow-md animate-bounce cursor-pointer"
-              onClick={() => setInformation(true)}
-              aria-hidden="true"
-            ></i>
-            <button
-              onClick={handleLogOut}
-              className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 transition-all duration-300 transform hover:scale-105 font-medium"
-            >
-              Log Out
-            </button>
+      {/* Modern Footer */}
+      <footer className="bg-white border-t border-gray-100 mt-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-sm text-gray-600">
+              © 2024 Krutanic Events. All Rights Reserved.
+            </p>
+            <div className="flex items-center gap-3">
+              {/* Info Button */}
+              <button
+                onClick={() => setInformation(true)}
+                className="flex items-center space-x-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-all font-medium"
+              >
+                <i className="fa fa-info-circle"></i>
+                <span className="hidden sm:inline">Rewards Info</span>
+              </button>
+
+              {/* Logout Button */}
+              <button
+                onClick={handleLogOut}
+                className="flex items-center space-x-2 px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-all font-medium"
+              >
+                <i className="fa fa-sign-out"></i>
+                <span className="hidden sm:inline">Logout</span>
+              </button>
+            </div>
           </div>
         </div>
       </footer>
 
+      {/* Information Modal */}
       {information && (
-        <div className="fixed inset-0 z-50 bg-opacity-70 bg-black p-3  flex items-center justify-center">
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <span className=" text-xl cursor-pointer float-right" onClick={() => setInformation(false)}>
-              <i className="fa fa-times-circle" aria-hidden="true"></i>
-            </span>
-            <div className="p-4">
-              <h2 className="text-center font-bold text-xl mb-4">
-                Krutanic Coins Redemption Instructions
-              </h2>
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-4 rounded-t-2xl flex items-center justify-between">
+              <h2 className="text-2xl font-bold">🏆 Krutanic Coins Rewards</h2>
+              <button
+                onClick={() => setInformation(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors"
+              >
+                <i className="fa fa-times text-xl"></i>
+              </button>
+            </div>
 
-              <p className="mb-4">
-                <strong>Collect 5000 Krutanic Coins:</strong>
-                <br />
-                Unlock exclusive offers by collecting a total of 5000 Krutanic
-                Coins.
-              </p>
-
-              <div className="mb-6">
-                <h3 className="font-semibold text-lg mb-2">
-                  Available Offers:
-                </h3>
-                <ul className="list-disc list-inside space-y-2">
-                  <li>
-                    <strong>Krutanic Self-Learning Program: </strong> Choose any
-                    domain and gain access to our self-learning program.
-                  </li>
-                  <li>
-                    <strong>Placement Assistance Program: </strong> Get access
-                    to our placement assistance program to help kickstart your
-                    career.
-                  </li>
-                  <li>
-                    <strong>₹1000 Cash: </strong> Redeem your coins to receive
-                    up to ₹1000 in cash.
-                  </li>
-                </ul>
-              </div>
-
-              <div className="mb-6">
-                <h3 className="font-semibold text-lg mb-2">
-                  Additional Offers:
-                </h3>
-                <ul className="list-disc list-inside space-y-2">
-                  <li>
-                    <strong>Add 2000 Coins for ₹2000 Cash: </strong> Add 2000
-                    more coins to your redemption and receive up to ₹2000 in
-                    cash.
-                  </li>
-                  <li>
-                    <strong>Add 4000 Coins for ₹3000 Cash: </strong> Increase
-                    your total redemption to 9000 coins and receive up to ₹3000
-                    in cash.
-                  </li>
-                </ul>
-              </div>
-
-              <p className="mb-4">
-                <strong>Note:</strong> Make sure to collect enough coins to
-                access these valuable offers!
-              </p>
-
-              <div className="border border-gray-950 p-4 rounded-md text-center">
-                <p className="font-semibold">Ready to redeem your coins?</p>
-                <p>
-                  Contact us to convert your Krutanic Coins into any of the
-                  offers above.
+            {/* Modal Content */}
+            <div className="p-6 space-y-6">
+              {/* Introduction */}
+              <div className="bg-blue-50 border-l-4 border-blue-600 p-4 rounded-r-lg">
+                <p className="text-gray-800">
+                  <strong className="text-blue-700">Collect 5000 Krutanic Coins</strong> to unlock exclusive offers and rewards!
                 </p>
-                <p className="mt-2 font-semibold">
-                  Email:{" "}
+              </div>
+
+              {/* Main Offers */}
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center">
+                  <span className="w-8 h-8 bg-yellow-100 text-yellow-700 rounded-full flex items-center justify-center mr-2">
+                    ⭐
+                  </span>
+                  Available Offers
+                </h3>
+                <div className="space-y-3">
+                  <div className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-md transition-all">
+                    <h4 className="font-semibold text-gray-900 mb-1">Krutanic Self-Learning Program</h4>
+                    <p className="text-sm text-gray-600">Choose any domain and gain access to our comprehensive self-learning program.</p>
+                  </div>
+                  <div className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-md transition-all">
+                    <h4 className="font-semibold text-gray-900 mb-1">Placement Assistance Program</h4>
+                    <p className="text-sm text-gray-600">Get expert guidance and support to kickstart your career journey.</p>
+                  </div>
+                  <div className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-md transition-all">
+                    <h4 className="font-semibold text-gray-900 mb-1">₹1000 Cash Reward</h4>
+                    <p className="text-sm text-gray-600">Redeem your coins to receive up to ₹1000 in cash.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Offers */}
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center">
+                  <span className="w-8 h-8 bg-green-100 text-green-700 rounded-full flex items-center justify-center mr-2">
+                    💰
+                  </span>
+                  Bonus Offers
+                </h3>
+                <div className="space-y-3">
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-gray-900 mb-1">Add 2000 Coins → Get ₹2000 Cash</h4>
+                    <p className="text-sm text-gray-600">Add 2000 more coins to your redemption and receive up to ₹2000.</p>
+                  </div>
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-gray-900 mb-1">Add 4000 Coins → Get ₹3000 Cash</h4>
+                    <p className="text-sm text-gray-600">Increase to 9000 total coins and receive up to ₹3000 in cash.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Contact Section */}
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-5">
+                <p className="font-semibold text-gray-900 mb-2">Ready to redeem your coins?</p>
+                <p className="text-gray-600 mb-3">Contact us to convert your Krutanic Coins into any of the offers above.</p>
+                <div className="flex items-center space-x-2 text-blue-600">
+                  <i className="fa fa-envelope"></i>
                   <a
                     href="mailto:support@krutanic.com"
-                    className="text-blue-600 underline"
+                    className="font-semibold hover:underline"
                   >
                     support@krutanic.com
                   </a>
-                </p>
+                </div>
               </div>
+
+              {/* Note */}
+              <p className="text-sm text-gray-500 text-center italic">
+                Make sure to collect enough coins to access these valuable offers!
+              </p>
             </div>
           </div>
         </div>

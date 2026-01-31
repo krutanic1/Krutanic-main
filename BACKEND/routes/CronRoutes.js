@@ -30,10 +30,30 @@ router.get('/api/cron/auto-assign', async (req, res) => {
             }
         }
 
+        // --- NEW: Update Event Status ---
+        const AddEvent = require('../models/AddEvent');
+        const now = new Date();
+        const upcomingEvents = await AddEvent.find({
+            status: "Upcoming Events",
+            start: { $lte: now }
+        });
+
+        const eventResults = [];
+        for (const event of upcomingEvents) {
+            event.status = "Ongoing";
+            await event.save();
+            eventResults.push(`Updated event "${event.title}" to Ongoing`);
+            console.log(`✓ Updated event "${event.title}" to Ongoing`);
+        }
+        // --------------------------------
+
         res.status(200).json({
             success: true,
-            message: `Processed ${unassignedStudents.length} students`,
-            details: results
+            message: `Processed ${unassignedStudents.length} students and ${upcomingEvents.length} events`,
+            details: {
+                students: results,
+                events: eventResults
+            }
         });
 
     } catch (error) {

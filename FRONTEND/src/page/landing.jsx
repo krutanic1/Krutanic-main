@@ -20,14 +20,35 @@ import comingsoon from "../assets/comingsoon.jpg";
 
 // import roadmap from "../assets/roadmap.png";
 import AdvanceCounses from "../Components/advancecourses";
+import HomePopup from "../Components/HomePopup";
+import { useState } from "react";
 
 const HomePage = () => {
+  const [showPopup, setShowPopup] = useState(false);
+
   useEffect(() => {
     AOS.init({ duration: 1000, once: false });
+
+    let interval;
+    // Show popup after 10 seconds
+    const timer = setTimeout(() => {
+      setShowPopup(true);
+
+      // After first popup, start loop for every 2 minutes
+      interval = setInterval(() => {
+        setShowPopup(true);
+      }, 120000); // 2 minutes = 120,000 ms
+    }, 10000); // 10 seconds
+
+    return () => {
+      clearTimeout(timer);
+      if (interval) clearInterval(interval);
+    };
   }, []);
 
   return (
     <div id="landingpage">
+      {showPopup && <HomePopup onClose={() => setShowPopup(false)} />}
       {/* section hero */}
       <div className="hero">
         <ShuffleHero />
@@ -41,8 +62,8 @@ const HomePage = () => {
           <div className="text">
             <h1 data-aos="zoom-in">| About Us</h1>
             <p>
-            {/* Krutanic is your trusted partner for career growth, offering advanced tech courses designed to prepare you for the fast-paced job market. We focus on delivering industry-relevant skills through expert guidance, ensuring that you gain both theoretical knowledge and practical experience. Each course is backed by hands-on projects, allowing you to work on real-world challenges that employers value. Whether you're starting your career or looking to upskill, our programs in Web Development, Data Science, and Digital Marketing are tailored to help you succeed. Join Krutanic today and take the next step toward achieving your career goals. */}
-            Krutanic is dedicated to empowering your career growth with industry-leading tech courses designed for today’s fast-evolving job market. Learn from experienced industry experts who provide expert guidance and hands-on training through real-world projects. Gain personalized placement support and mentorship as you advance, whether you’re starting fresh or upskilling. Join Krutanic and explore courses that boost your skills and open doors to new career opportunities. 
+              {/* Krutanic is your trusted partner for career growth, offering advanced tech courses designed to prepare you for the fast-paced job market. We focus on delivering industry-relevant skills through expert guidance, ensuring that you gain both theoretical knowledge and practical experience. Each course is backed by hands-on projects, allowing you to work on real-world challenges that employers value. Whether you're starting your career or looking to upskill, our programs in Web Development, Data Science, and Digital Marketing are tailored to help you succeed. Join Krutanic today and take the next step toward achieving your career goals. */}
+              Krutanic is dedicated to empowering your career growth with industry-leading tech courses designed for today’s fast-evolving job market. Learn from experienced industry experts who provide expert guidance and hands-on training through real-world projects. Gain personalized placement support and mentorship as you advance, whether you’re starting fresh or upskilling. Join Krutanic and explore courses that boost your skills and open doors to new career opportunities.
 
             </p>
             <Link to="/AboutUs">
@@ -85,7 +106,7 @@ const HomePage = () => {
             <span className="fa fa-flag text-yellow-500"></span>
             <h2>Success Starts Here</h2>
           </div>
-          <div data-aos="fade-up"  data-aos-duration="600" data-aos-delay="800" >
+          <div data-aos="fade-up" data-aos-duration="600" data-aos-delay="800" >
             <span className="fa fa-globe text-green-700"></span>
             <h2>Flexible Learning</h2>
           </div>
@@ -97,14 +118,14 @@ const HomePage = () => {
       </div>
       {/* section aboutus end*/}
 
-     
-        {/* <div className="roadmap">
+
+      {/* <div className="roadmap">
           <div>
           <h1>| Roadmap to your Success</h1>
             <img src={roadmap} alt="Road Map" />
           </div>
         </div> */}
-   
+
 
       {/* Start Your Career */}
       <div className="startcareer">
@@ -203,10 +224,10 @@ const HomePage = () => {
         <div>
           <h1 data-aos="zoom-in">| Our specialization</h1>
           <p>
-            Building Expertise and Confidence with a Complete Online Certification and Mentorship Experience 
+            Building Expertise and Confidence with a Complete Online Certification and Mentorship Experience
           </p>
           <div className="specializationiner">
-            <div  data-aos="fade-up-right" className="img">
+            <div data-aos="fade-up-right" className="img">
               <img src={specialization} alt="Bangalore Internship companies for students " />
             </div>
             <div className="textdiv">
@@ -214,25 +235,25 @@ const HomePage = () => {
                 <span className="fa fa-check-square-o"></span>
                 <p>
                   {" "}
-                  We cover all aspects, from basic concepts to advanced techniques, ensuring you gain comprehensive tech skills. 
+                  We cover all aspects, from basic concepts to advanced techniques, ensuring you gain comprehensive tech skills.
                 </p>
               </div>
               <div data-aos="fade-left" data-aos-duration="600" data-aos-delay="600" className="specialtext">
                 <span className="fa fa-search"></span>
                 <p>
-                  Your learning journey is closely monitored through regular assessments to guarantee you fully understand and retain the digital marketing concepts taught. 
+                  Your learning journey is closely monitored through regular assessments to guarantee you fully understand and retain the digital marketing concepts taught.
                 </p>
               </div>
               <div data-aos="fade-left" data-aos-duration="800" data-aos-delay="800" className="specialtext">
                 <span className="fa fa-star"></span>
                 <p>
-                  Each program is structured to meet individual needs, ensuring maximum growth and success in professional training. 
+                  Each program is structured to meet individual needs, ensuring maximum growth and success in professional training.
                 </p>
               </div>
               <div data-aos="fade-left" data-aos-duration="1200" data-aos-delay="1200" className="specialtext">
                 <span className="fa fa-gear"></span>
                 <p>
-                  Our personalized approach empowers you to progress at your own pace, delivering a comprehensive and effective online certification experience. 
+                  Our personalized approach empowers you to progress at your own pace, delivering a comprehensive and effective online certification experience.
                 </p>
               </div>
             </div>
@@ -252,7 +273,7 @@ const HomePage = () => {
       {/* section Popular course end */}
 
       {/* advance courses */}
-      <div  className="popularcourse" >
+      <div className="popularcourse" >
         <AdvanceCounses />
       </div>
       {/* advance courses end  */}
@@ -261,10 +282,10 @@ const HomePage = () => {
       <div className="whychoose">
         <h1 data-aos="zoom-in">| Why choose us ?</h1>
         <p>
-        Expertise, quality service, and student satisfaction guaranteed every time.
+          Expertise, quality service, and student satisfaction guaranteed every time.
         </p>
         <div className="whydiv">
-          <div  data-aos="fade-up-right" className="whyimg">
+          <div data-aos="fade-up-right" className="whyimg">
             <img src={whyimg} alt="Best internship company in bangalore for students " />
           </div>
           <div className="whytext">
@@ -273,7 +294,7 @@ const HomePage = () => {
               <div>
                 <h2>Digital Skills</h2>
                 <p>
-                 Learn AI, Data Science, Digital Marketing, Web Development, UI/UX & more in-demand skills.
+                  Learn AI, Data Science, Digital Marketing, Web Development, UI/UX & more in-demand skills.
                 </p>
               </div>
             </div>
@@ -282,7 +303,7 @@ const HomePage = () => {
               <div>
                 <h2>Career Support</h2>
                 <p>
-                 Job-oriented training with resume building, mock interviews, and placement assistance.
+                  Job-oriented training with resume building, mock interviews, and placement assistance.
                 </p>
               </div>
             </div>
@@ -407,7 +428,7 @@ const HomePage = () => {
               <div>
                 <h2>Innovative Learning</h2>
                 <p>
-                 Real-time training with the latest technologies for hands-on, impactful learning experiences.
+                  Real-time training with the latest technologies for hands-on, impactful learning experiences.
                 </p>
               </div>
             </div>
