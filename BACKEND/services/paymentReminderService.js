@@ -1,7 +1,7 @@
 require("dotenv").config();
 const cron = require("node-cron");
 const NewEnroll = require("../models/NewStudentEnroll");
-const { sendEmail } = require("../controllers/emailController");
+const { sendPaymentReminderEmail } = require("../controllers/emailController");
 
 // Note: Using NewEnroll model for payment reminders (students with pending payments)
 
@@ -255,7 +255,7 @@ const sendPaymentReminders = async () => {
       try {
         const emailHTML = generateReminderEmail(reminder);
 
-        await sendEmail({
+        await sendPaymentReminderEmail({
           email: reminder.email,
           subject: `Payment Reminder - Pending Amount ₹${reminder.remainingAmount.toLocaleString('en-IN')} - Krutanic`,
           message: emailHTML,
