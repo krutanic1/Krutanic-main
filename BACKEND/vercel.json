@@ -19,31 +19,38 @@
     },
     {
       "path": "/api/cron/payment-reminders",
-      "schedule": "30 2 * * 1"
+      "schedule": "30 2 * * 1",
+      "comment": "Monday 2:30 AM UTC (8:00 AM IST)"
     },
     {
       "path": "/api/cron/payment-reminders",
-      "schedule": "30 5 * * 2"
+      "schedule": "30 5 * * 2",
+      "comment": "Tuesday 5:30 AM UTC (11:00 AM IST)"
     },
     {
       "path": "/api/cron/payment-reminders",
-      "schedule": "30 7 * * 3"
+      "schedule": "30 7 * * 3",
+      "comment": "Wednesday 7:30 AM UTC (1:00 PM IST)"
     },
     {
       "path": "/api/cron/payment-reminders",
-      "schedule": "30 10 * * 4"
+      "schedule": "30 10 * * 4",
+      "comment": "Thursday 10:30 AM UTC (4:00 PM IST)"
     },
     {
       "path": "/api/cron/payment-reminders",
-      "schedule": "30 12 * * 5"
+      "schedule": "30 12 * * 5",
+      "comment": "Friday 12:30 PM UTC (6:00 PM IST)"
     },
     {
       "path": "/api/cron/payment-reminders",
-      "schedule": "30 5 * * 6"
+      "schedule": "30 5 * * 6",
+      "comment": "Saturday 5:30 AM UTC (11:00 AM IST)"
     },
     {
       "path": "/api/cron/payment-reminders",
-      "schedule": "30 7 * * 0"
+      "schedule": "30 7 * * 0",
+      "comment": "Sunday 7:30 AM UTC (1:00 PM IST)"
     }
   ]
 }

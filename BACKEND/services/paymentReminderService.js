@@ -5,15 +5,16 @@ const { sendEmail } = require("../controllers/emailController");
 
 // Note: Using NewEnroll model for payment reminders (students with pending payments)
 
-// Schedule configuration: Days and times for sending payment reminders (IST - Indian Standard Time)
+// Schedule configuration: Days and times for sending payment reminders (UTC - for Vercel Cron)
+// Note: Vercel Cron uses UTC timezone. IST = UTC + 5:30
 const REMINDER_SCHEDULE = [
-  { day: 1, time: "8:00 AM IST", cron: "0 8 * * 1" },    // Monday - 8:00 AM IST
-  { day: 2, time: "11:00 AM IST", cron: "0 11 * * 2" },  // Tuesday - 11:00 AM IST
-  { day: 3, time: "1:00 PM IST", cron: "0 13 * * 3" },   // Wednesday - 1:00 PM IST
-  { day: 4, time: "4:00 PM IST", cron: "0 16 * * 4" },   // Thursday - 4:00 PM IST
-  { day: 5, time: "6:00 PM IST", cron: "0 18 * * 5" },   // Friday - 6:00 PM IST
-  { day: 6, time: "11:00 AM IST", cron: "0 11 * * 6" },  // Saturday - 11:00 AM IST
-  { day: 0, time: "1:00 PM IST", cron: "0 13 * * 0" },   // Sunday - 1:00 PM IST
+  { day: 1, time: "2:30 AM UTC (8:00 AM IST)", cron: "30 2 * * 1" },    // Monday
+  { day: 2, time: "5:30 AM UTC (11:00 AM IST)", cron: "30 5 * * 2" },  // Tuesday
+  { day: 3, time: "7:30 AM UTC (1:00 PM IST)", cron: "30 7 * * 3" },   // Wednesday
+  { day: 4, time: "10:30 AM UTC (4:00 PM IST)", cron: "30 10 * * 4" }, // Thursday
+  { day: 5, time: "12:30 PM UTC (6:00 PM IST)", cron: "30 12 * * 5" }, // Friday
+  { day: 6, time: "5:30 AM UTC (11:00 AM IST)", cron: "30 5 * * 6" },  // Saturday
+  { day: 0, time: "7:30 AM UTC (1:00 PM IST)", cron: "30 7 * * 0" },   // Sunday
 ];
 
 /**
