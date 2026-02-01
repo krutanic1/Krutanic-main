@@ -175,7 +175,9 @@ const generateReminderEmail = (student) => {
             
             <div class="amount-highlight">
                 <p>Remaining Amount Due</p>
-                <h2>₹${student.remainingAmount?.toLocaleString('en-IN') || 0}</h2>
+                <h2>₹${
+                  ((student.programPrice || 0) - (student.paidAmount || 0)).toLocaleString('en-IN')
+                }</h2>
             </div>
             
             <div class="urgent-note">
