@@ -30,6 +30,28 @@ router.get("/allevents", async (req, res) => {
   }
 });
 
+// Get single event by ID
+router.get("/allevents/:id", async (req, res) => {
+  try {
+    const event = await AddEvent.findById(req.params.id);
+    if (!event) return res.status(404).json({ error: "Event not found" });
+    res.status(200).json(event);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get single event by Slug
+router.get("/event-by-slug/:slug", async (req, res) => {
+  try {
+    const event = await AddEvent.findOne({ slug: req.params.slug });
+    if (!event) return res.status(404).json({ error: "Event not found" });
+    res.status(200).json(event);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Update a events
 router.put("/allevents/:id", async (req, res) => {
   try {
@@ -380,9 +402,29 @@ router.get("/events-with-applications", async (req, res) => {
       {
         $project: {
           title: 1,
-          start: 1,
-          status: 1,
+          slug: 1,
+          category: 1,
           type: 1,
+          mode: 1,
+          location: 1,
+          status: 1,
+          isFree: 1,
+          startDate: 1,
+          endDate: 1,
+          startTime: 1,
+          endTime: 1,
+          timezone: 1,
+          shortDescription: 1,
+          fullDescription: 1,
+          eligibility: 1,
+          benefits: 1,
+          registrationLink: 1,
+          maxParticipants: 1,
+          isPublished: 1,
+          metaTitle: 1,
+          metaDescription: 1,
+          prizeMoney: 1,
+          image: 1,
           questions: 1,
           enrollments: 1, // Final result will have an array of userIds
           userDetails: {

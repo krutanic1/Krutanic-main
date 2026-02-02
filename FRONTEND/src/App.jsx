@@ -129,6 +129,7 @@ import MarketingPrePayment from "./Marketing/MarketingPrePayment";
 import MarketingLeads from "./Marketing/MarketingLeads";
 import MarketingAddExecutive from "./Marketing/MarketingAddExecutive";
 import BDAAgainLogin from "./BDA/BDAAgainLogin";
+import EventDetails from "./page/EventDetails";
 
 const App = () => {
   return (
@@ -404,6 +405,7 @@ const AppContent = () => {
         {/* event */}
         <Route path="/EventLogin" element={<EventLogin />} />
         <Route path="/EventDashboard" element={isAuthenticatedEventUser() ? <EventDashBoard /> : <Navigate to="/TalentHunt" />} />
+        <Route path="/register/:slug" element={<EventDetails />} />
 
       </Routes>
 

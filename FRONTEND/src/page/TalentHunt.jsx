@@ -104,11 +104,13 @@ const TalentHunt = () => {
                 >
                   {/* Event Image */}
                   <div className="h-56 overflow-hidden relative p-3">
-                    <img
-                      src={event.image || "https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=2070&auto=format&fit=crop"}
-                      alt={event.title}
-                      className="w-full h-full object-cover rounded-lg transition-transform duration-500 group-hover:scale-110"
-                    />
+                    <Link to={`/register/${event.slug}`}>
+                      <img
+                        src={event.image || "https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=2070&auto=format&fit=crop"}
+                        alt={event.title}
+                        className="w-full h-full object-cover rounded-lg transition-transform duration-500 group-hover:scale-110 cursor-pointer"
+                      />
+                    </Link>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent m-3 rounded-lg pointer-events-none"></div>
                     <div className="absolute top-7 right-7 bg-blue-600 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-lg z-10">
                       {event.type || "Workshop"}
@@ -117,9 +119,11 @@ const TalentHunt = () => {
 
                   {/* Card Content */}
                   <div className="p-6 flex-grow flex flex-col">
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 min-h-[3.5rem]">
-                      {event.title}
-                    </h3>
+                    <Link to={`/register/${event.slug}`}>
+                      <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 min-h-[3.5rem] hover:text-orange-600 transition-colors">
+                        {event.title}
+                      </h3>
+                    </Link>
 
                     {/* Date & Time */}
                     {(event.start || event.date) && (
@@ -136,7 +140,7 @@ const TalentHunt = () => {
                     )}
 
                     <p className="text-gray-600 text-sm mb-6 line-clamp-3 flex-grow leading-relaxed">
-                      {event.description || "Enhance your skills with our comprehensive training program designed by industry experts."}
+                      {event.shortDescription || event.fullDescription || event.description || "Enhance your skills with our comprehensive training program designed by industry experts."}
                     </p>
 
                     {/* Footer with CTA */}
@@ -152,12 +156,12 @@ const TalentHunt = () => {
                           )}
                         </div>
                       </div>
-                      <button
-                        onClick={() => handleJoinNow(event._id)}
-                        className="w-full px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold rounded-lg hover:shadow-xl transition-all transform hover:scale-105"
+                      <Link
+                        to={`/register/${event.slug}`}
+                        className="block w-full text-center px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold rounded-lg hover:shadow-xl transition-all transform hover:scale-105"
                       >
-                        Join Now →
-                      </button>
+                        View Details →
+                      </Link>
                     </div>
                   </div>
                 </div>
