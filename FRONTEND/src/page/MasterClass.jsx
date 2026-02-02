@@ -1,5 +1,6 @@
 import { Helmet } from "react-helmet";
 import React, { useEffect, useState } from "react";
+import HomePopup from "../Components/HomePopup";
 // import { Link } from "react-router-dom";
 // import { useNavigate } from "react-router-dom";
 import API from "../API";
@@ -17,8 +18,21 @@ import Popularcourse from "../Components/popularcourse";
 import logo from "../User/playerlogo.jpg";
 
 const MasterClass = () => {
+  const [showPopup, setShowPopup] = useState(false);
   useEffect(() => {
     AOS.init({ duration: 1000, once: false });
+
+    let interval;
+    const timer = setTimeout(() => {
+      setShowPopup(true);
+      interval = setInterval(() => {
+        setShowPopup(true);
+      }, 60000);
+    }, 5000);
+    return () => {
+      clearTimeout(timer);
+      if (interval) clearInterval(interval);
+    };
   }, []);
 
   const [openIndex, setOpenIndex] = useState(null);
@@ -189,6 +203,7 @@ const MasterClass = () => {
 
   return (
     <div id="MasterClass">
+      {showPopup && <HomePopup onClose={() => setShowPopup(false)} />}
       <Helmet>
         <title>Krutanic MasterClass | Upskill in Tech, Coding & AI</title>
         <meta

@@ -15,12 +15,15 @@ import PopularCourse from "./Mentorship/PopularCourse";
 import CourseMentor from "./Mentorship/CourseMentor";
 import Getintouch from "../Components/Getintouch";
 import { useNavigate } from "react-router-dom";
+import HomePopup from "../Components/HomePopup";
+import { useState } from "react";
 import MentorShipMentors from "../Components/MentorShipMentors";
 import MentorshipForm from "./MentorshipForm";
 import LinkedIn from '../Components/LinkedIn';
 
 
 const Mentorship = () => {
+  const [showPopup, setShowPopup] = useState(false);
 
 
   const courseSectionRef = useRef(null);
@@ -30,6 +33,18 @@ const Mentorship = () => {
 
   useEffect(() => {
     AOS.init({ duration: 2000, once: false });
+
+    let interval;
+    const timer = setTimeout(() => {
+      setShowPopup(true);
+      interval = setInterval(() => {
+        setShowPopup(true);
+      }, 60000);
+    }, 5000);
+    return () => {
+      clearTimeout(timer);
+      if (interval) clearInterval(interval);
+    };
   }, []);
 
   const navigate = useNavigate();
@@ -39,6 +54,7 @@ const Mentorship = () => {
 
   return (
     <div id="mentorship" className="text-white bg-black">
+      {showPopup && <HomePopup onClose={() => setShowPopup(false)} />}
     <Helmet>
         <title>Krutanic Mentorship Program - Data Science, AI, Full Stack, Digital Marketing  </title>
         <meta name="keywords" content="Top E-learning, mentorship, tech mentorship, data science, coding, online learning, career growth"/>

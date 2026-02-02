@@ -1,10 +1,25 @@
 import { Helmet } from "react-helmet";
-import { useState , useMemo } from "react";
+import { useState , useMemo, useEffect } from "react";
+import HomePopup from "../Components/HomePopup";
 import axios from "axios";
 import AlumniData from "../Components/alumniData";
 import API from "../API";
 
 const Alumni = () => {
+  const [showPopup, setShowPopup] = useState(false);
+    useEffect(() => {
+      let interval;
+      const timer = setTimeout(() => {
+        setShowPopup(true);
+        interval = setInterval(() => {
+          setShowPopup(true);
+        }, 60000);
+      }, 5000);
+      return () => {
+        clearTimeout(timer);
+        if (interval) clearInterval(interval);
+      };
+    }, []);
   const [filters, setFilters] = useState({ post: "", location: "", role: "" });
   const [dropdownOpen, setDropdownOpen] = useState({ post: false, location: false, role: false,});
   const [selectedAlumni, setSelectedAlumni] = useState(null);
@@ -125,6 +140,7 @@ const Alumni = () => {
 
   return (
     <div className="container m-auto px-[10px] py-[20px]">
+      {showPopup && <HomePopup onClose={() => setShowPopup(false)} />}
       <Helmet>
           <title>Krutanic Alumni | Success Stories from E-Learning Leaders</title>
           <meta name="keywords" content="e-learning alumni, Krutanic graduates, tech careers, coding success, mentorship stories"/>

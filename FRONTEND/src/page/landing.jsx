@@ -30,15 +30,15 @@ const HomePage = () => {
     AOS.init({ duration: 1000, once: false });
 
     let interval;
-    // Show popup after 10 seconds
+    // Show popup after 5 seconds
     const timer = setTimeout(() => {
       setShowPopup(true);
 
-      // After first popup, start loop for every 2 minutes
+      // After first popup, start loop for every 1 minute
       interval = setInterval(() => {
         setShowPopup(true);
-      }, 120000); // 2 minutes = 120,000 ms
-    }, 10000); // 10 seconds
+      }, 60000); // 1 minute = 60,000 ms
+    }, 5000); // 5 seconds
 
     return () => {
       clearTimeout(timer);

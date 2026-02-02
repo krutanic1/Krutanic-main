@@ -2,6 +2,7 @@ import {Helmet} from 'react-helmet';
 import React, { useRef } from "react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import HomePopup from "../Components/HomePopup";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
@@ -68,6 +69,7 @@ const faqs = [
 ];
 
 const Advance = () => {
+  const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
   const [openIndex, setOpenIndex] = useState(null);
 
@@ -105,6 +107,18 @@ const Advance = () => {
 
   useEffect(() => {
     AOS.init({ duration: 1000, once: false });
+
+    let interval;
+    const timer = setTimeout(() => {
+      setShowPopup(true);
+      interval = setInterval(() => {
+        setShowPopup(true);
+      }, 60000);
+    }, 5000);
+    return () => {
+      clearTimeout(timer);
+      if (interval) clearInterval(interval);
+    };
   }, []);
 
   const courseSectionRef = useRef(null);
@@ -194,6 +208,7 @@ const handleFormSubmit = async (e) => {
 
   return (
     <div id="advance" className="">
+      {showPopup && <HomePopup onClose={() => setShowPopup(false)} />}
 
       <Helmet>
         <title>Krutanic Advanced Program -Expert-Led Tech Courses with Internships 
