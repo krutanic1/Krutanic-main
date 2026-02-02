@@ -410,9 +410,13 @@ const MasterClass = () => {
         <div>
           <div className="item">
             <iframe
-              src={`https://drive.google.com/file/d/10uvyAF51jXUuxFJVS8Af9hXeTNFfnCTO/preview?usp=sharing`}
+              src="https://drive.google.com/file/d/15rAhofL6ei6Gxy9fHRrkcjXB4SMGMzft/preview"
+              width="640"
+              height="360"
               allow="autoplay"
               allowFullScreen
+              title="Industrial Talk Video"
+              style={{ border: 0 }}
             ></iframe>
             <div className="text">
               <div className="content">
