@@ -259,7 +259,7 @@ const sendPaymentReminders = async () => {
 
         await sendPaymentReminderEmail({
           email: reminder.email,
-          subject: `Payment Reminder - Pending Amount ₹${reminder.remainingAmount.toLocaleString('en-IN')} - Krutanic`,
+          subject: `Payment Reminder - Pending Amount ₹${((reminder.programPrice || 0) - (reminder.paidAmount || 0)).toLocaleString('en-IN')} - Krutanic`,
           message: emailHTML,
           bcc: "info@krutanic.org,tejo.raditya@krutanic.org,shrikant@krutanic.org",
         });
