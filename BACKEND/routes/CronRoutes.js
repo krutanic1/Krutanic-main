@@ -34,13 +34,13 @@ router.get('/api/cron/auto-assign', async (req, res) => {
         const AddEvent = require('../models/AddEvent');
         const now = new Date();
         const upcomingEvents = await AddEvent.find({
-            status: "Upcoming Events",
+            status: { $in: ["Upcoming Events", "upcoming"] },
             start: { $lte: now }
         });
 
         const eventResults = [];
         for (const event of upcomingEvents) {
-            event.status = "Ongoing";
+            event.status = "ongoing";
             await event.save();
             eventResults.push(`Updated event "${event.title}" to Ongoing`);
             console.log(`✓ Updated event "${event.title}" to Ongoing`);

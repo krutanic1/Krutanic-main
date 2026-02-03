@@ -32,11 +32,11 @@ const Events = () => {
       const response = await axios.get(`${API}/allevents`);
       // console.log("event", response.data);
       setEvent(
-        response.data?.filter((item) => item.status === "Upcoming Events")
+        response.data?.filter((item) => item.status === "Upcoming Events" || item.status === "upcoming")
       );
-      setOngoing(response.data?.filter((item) => item.status === "Ongoing"));
+      setOngoing(response.data?.filter((item) => item.status === "Ongoing" || item.status === "ongoing"));
       setCompleted(
-        response.data?.filter((item) => item.status === "Completed")
+        response.data?.filter((item) => item.status === "Completed" || item.status === "completed")
       );
     } catch (error) {
       console.error("Error fetching events:", error);
@@ -86,25 +86,24 @@ const Events = () => {
   const EventCard = ({ dets, status }) => {
     const appliedCount = Array.isArray(appliedUsers)
       ? appliedUsers.filter(
-          (user) => user.eventId && user.eventId._id === dets._id
-        ).length
+        (user) => user.eventId && user.eventId._id === dets._id
+      ).length
       : 0;
     const isAlreadyApplied = Array.isArray(appliedUsers)
       ? appliedUsers.some(
-          (user) =>
-            user.eventId &&
-            user.eventId._id === dets._id &&
-            user.userId &&
-            user.userId._id === userId
-        )
+        (user) =>
+          user.eventId &&
+          user.eventId._id === dets._id &&
+          user.userId &&
+          user.userId._id === userId
+      )
       : false;
 
     return (
       <div className="p-[4px] mb-4 relative rounded-lg shadow-black shadow-md bg-[#080808]">
         <span
-          className={`absolute rounded-lg inset-0 bg-gradient-to-r ${
-            status === "Ongoing" ? "animate-pulse" : null
-          }  from-blue-500 to-purple-500 p-[2px] mask mask-out`}
+          className={`absolute rounded-lg inset-0 bg-gradient-to-r ${status === "Ongoing" ? "animate-pulse" : null
+            }  from-blue-500 to-purple-500 p-[2px] mask mask-out`}
         ></span>
         <span className="relative block bg-black w-full rounded-lg px-4 py-4">
           <h2 className="text-xl font-bold text-white text-center mb-2">
@@ -251,11 +250,10 @@ const Events = () => {
                     .map((user) => (
                       <img
                         src={user.profilePhoto}
-                        className={`h-12 w-12 ${
-                          !user.profilePhoto
+                        className={`h-12 w-12 ${!user.profilePhoto
                             ? "bg-gradient-to-r animate-pulse from-blue-500 to-purple-500"
                             : ""
-                        } rounded-full`}
+                          } rounded-full`}
                         alt=""
                       />
                     ))}
