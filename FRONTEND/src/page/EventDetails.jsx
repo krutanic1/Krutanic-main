@@ -59,7 +59,7 @@ const EventDetails = () => {
                     <div className="text-center">
                         <h2 className="text-2xl font-bold text-gray-800">Event Not Found</h2>
                         <button
-                            onClick={() => navigate("/TalentHunt")}
+                            onClick={() => navigate("/events")}
                             className="mt-4 text-orange-600 hover:underline"
                         >
                             Back to Events

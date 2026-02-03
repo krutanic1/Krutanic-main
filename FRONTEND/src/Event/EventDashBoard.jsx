@@ -20,7 +20,7 @@ const EventDashBoard = () => {
       localStorage.removeItem("eventuserEmail");
       localStorage.removeItem("eventToken");
       localStorage.removeItem("eventUserName");
-      navigate("/TalentHunt");
+      navigate("/events");
     }, 1500);
   };
 
@@ -56,7 +56,7 @@ const EventDashBoard = () => {
                 src={logo}
                 alt="Krutanic"
                 className="h-10 cursor-pointer"
-                onClick={() => navigate("/TalentHunt")}
+                onClick={() => navigate("/events")}
               />
             </div>
 
@@ -67,8 +67,8 @@ const EventDashBoard = () => {
                   key={item.id}
                   onClick={() => setActivePage(item.id)}
                   className={`px-4 py-2 rounded-lg font-medium transition-all ${activePage === item.id
-                      ? "bg-blue-50 text-blue-700"
-                      : "text-gray-700 hover:bg-gray-100"
+                    ? "bg-blue-50 text-blue-700"
+                    : "text-gray-700 hover:bg-gray-100"
                     }`}
                 >
                   <i className={`fa ${item.icon} mr-2`}></i>
@@ -83,8 +83,8 @@ const EventDashBoard = () => {
               <button
                 onClick={() => setActivePage("profile")}
                 className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${activePage === "profile"
-                    ? "bg-blue-50 text-blue-700"
-                    : "text-gray-700 hover:bg-gray-100"
+                  ? "bg-blue-50 text-blue-700"
+                  : "text-gray-700 hover:bg-gray-100"
                   }`}
               >
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
@@ -115,8 +115,8 @@ const EventDashBoard = () => {
                       setMobileMenuOpen(false);
                     }}
                     className={`px-4 py-3 rounded-lg font-medium text-left transition-all ${activePage === item.id
-                        ? "bg-blue-50 text-blue-700"
-                        : "text-gray-700 hover:bg-gray-100"
+                      ? "bg-blue-50 text-blue-700"
+                      : "text-gray-700 hover:bg-gray-100"
                       }`}
                   >
                     <i className={`fa ${item.icon} mr-3`}></i>

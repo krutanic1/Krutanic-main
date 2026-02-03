@@ -1,4 +1,4 @@
-import React, {useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import WaveSingle from "./Wave_single";
 import Razorpay from "../assets/Razorpay.png";
@@ -36,7 +36,7 @@ const Footer = () => {
           <a href="mailto:support@krutanic.com" target="blank">
             {" "}
             <i className="fa fa-envelope text-red-600"></i> <br /> Mail us <br />{" "}
-           support@krutanic.com
+            support@krutanic.com
           </a>
           <a href="tel:+917022812878" target="blank">
             {" "}
@@ -61,32 +61,32 @@ const Footer = () => {
             <br />
             <h2>Follow Us</h2>
             <a
-            target="_blank"
+              target="_blank"
               href="https://www.facebook.com/people/Krutanic-Solutions/61563953173071/"
               className="text-blue-500  hover:text-blue-700"
             >
               <span className="fa fa-facebook"></span>
             </a>
-            <a 
-            target="_blank" href="https://www.youtube.com/@KrutanicSolutions" className="text-red-800  hover:text-red-900">
+            <a
+              target="_blank" href="https://www.youtube.com/@KrutanicSolutions" className="text-red-800  hover:text-red-900">
               <span className="fa fa-youtube"></span>
             </a>
             <a
-            target="_blank"
+              target="_blank"
               href="https://www.instagram.com/krutanic"
               className="text-pink-500  hover:text-pink-700"
             >
               <span className="fa fa-instagram"></span>
             </a>
             <a
-            target="_blank"
+              target="_blank"
               href="https://www.linkedin.com/company/krutanic/"
               className="text-blue-700  hover:text-blue-900"
             >
               <span className="fa fa-linkedin"></span>
             </a>
             <a
-            target="_blank"
+              target="_blank"
               href="https://github.com/Krutanic/"
               className="text-white"
             >
@@ -134,7 +134,7 @@ const Footer = () => {
               <h2>Useful Links</h2>
               <ul>
                 <li>
-                  <Link to="/TalentHunt" onClick={scrollToTop}>
+                  <Link to="/events" onClick={scrollToTop}>
                     Talent Hunt
                   </Link>
                 </li>
@@ -386,8 +386,8 @@ const Footer = () => {
             <div className="text">
               <h2>No Refund Policy </h2>
               <p>
-              By enrolling in any of our educational programs, you acknowledge and agree that all fees, tuition, and payments made towards the program are strictly "Non-refundable" under any circumstances. This policy applies regardless of withdrawal, cancellation, non-completion, dismissal, or any other reason.
-              By making payment, you confirm that you have read, understood, and accepted this "Non-refundable" policy.
+                By enrolling in any of our educational programs, you acknowledge and agree that all fees, tuition, and payments made towards the program are strictly "Non-refundable" under any circumstances. This policy applies regardless of withdrawal, cancellation, non-completion, dismissal, or any other reason.
+                By making payment, you confirm that you have read, understood, and accepted this "Non-refundable" policy.
               </p>
               <h3>Policy Details</h3>
               <h2>Non-Refundable Payments</h2>

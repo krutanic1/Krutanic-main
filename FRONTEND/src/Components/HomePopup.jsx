@@ -31,7 +31,7 @@ const HomePopup = ({ onClose }) => {
                 </p>
 
                 <Link
-                    to="/TalentHunt"
+                    to="/events"
                     className="block w-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl hover:from-orange-600 hover:to-red-700 transform hover:-translate-y-1 transition-all duration-300 text-lg uppercase tracking-wide"
                     onClick={onClose}
                 >

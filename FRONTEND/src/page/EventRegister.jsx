@@ -64,7 +64,7 @@ const EventRegister = () => {
                         </Link>
                     </div>
                     <div className="menu" style={{ display: 'flex' }}>
-                        <Link to="/TalentHunt">
+                        <Link to="/events">
                             EVENTS
                         </Link>
                         <Link to="/EventLogin" className="btn">

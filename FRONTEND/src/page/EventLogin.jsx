@@ -16,7 +16,7 @@ const EventLogin = () => {
     const location = useLocation();
 
     // Check if we need to redirect back to Talent Hunt after login
-    const from = location.state?.from?.pathname || "/TalentHunt";
+    const from = location.state?.from?.pathname || "/events";
 
     const handleSendOtp = async (e) => {
         e.preventDefault();
@@ -80,7 +80,7 @@ const EventLogin = () => {
                         </Link>
                     </div>
                     <div className="menu" style={{ display: 'flex' }}>
-                        <Link to="/TalentHunt">
+                        <Link to="/events">
                             EVENTS
                         </Link>
                     </div>

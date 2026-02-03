@@ -105,7 +105,7 @@ const UserSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     { path: "/MockInterview", label: "Mock Prep", icon: "assignment", restricted: true, access: "mockinterview" },
     { path: "/Exercise", label: "Exercise Prep", icon: "edit_note", restricted: true, access: "exercise" },
     { path: "/ResumeATS", label: "ATS Checker", icon: "fact_check", restricted: true, access: "atschecker" },
-    { path: "/TalentHunt", label: "Join Events", icon: "celebration", restricted: false },
+    { path: "/events", label: "Join Events", icon: "celebration", restricted: false },
   ];
 
   return (

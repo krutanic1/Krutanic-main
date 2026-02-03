@@ -151,7 +151,7 @@ const AppContent = () => {
     "/collabration",
     "/advancecourses",
     "/feestructure",
-    // "/talenthunt", // Hidden for custom navbar in TalentHunt page
+    // "/events", // Hidden for custom navbar in TalentHunt/Events page
     "/advance",
     "/mentorship",
     "/datascience",
@@ -286,7 +286,7 @@ const AppContent = () => {
         <Route path="/Collabration" element={<Collabration />} />
         <Route path="/AdvanceCourses" element={<AdvanceCourses />} />
         <Route path="/FeeStructure" element={<FeeStructure />} />
-        <Route path="/TalentHunt" element={<TalentHunt />} />
+        <Route path="/events" element={<TalentHunt />} />
         <Route path="/EventRegister" element={<EventRegister />} />
         <Route path="/Advance" element={<Advance />} />
         <Route path="/Mentorship" element={<Mentorship />} />
@@ -404,7 +404,7 @@ const AppContent = () => {
 
         {/* event */}
         <Route path="/EventLogin" element={<EventLogin />} />
-        <Route path="/EventDashboard" element={isAuthenticatedEventUser() ? <EventDashBoard /> : <Navigate to="/TalentHunt" />} />
+        <Route path="/EventDashboard" element={isAuthenticatedEventUser() ? <EventDashBoard /> : <Navigate to="/events" />} />
         <Route path="/register/:slug" element={<EventDetails />} />
 
       </Routes>

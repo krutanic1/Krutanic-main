@@ -76,7 +76,7 @@ const Header = () => {
           <Link to="/Alumni">ALUMNI</Link>
           <Link to="/MasterClass" onClick={scrollToTop}>MASTERCLASS</Link>
           {/* <Link to="/Career">CAREER</Link> */}
-          <Link to="/TalentHunt" onClick={scrollToTop}>
+          <Link to="/events" onClick={scrollToTop}>
             EVENTS
           </Link>
           <Link to="/ReferAndEarn" onClick={scrollToTop}>
@@ -109,7 +109,7 @@ const Header = () => {
             <Link to="/Collabration" onClick={scrollToTop}>
               <li>COLLABRATION</li>
             </Link>
-            <Link to="/TalentHunt" onClick={scrollToTop}>
+            <Link to="/events" onClick={scrollToTop}>
               <li>EVENTS</li>
             </Link>
             <Link to="/ContactUs" onClick={scrollToTop}>
