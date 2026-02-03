@@ -426,6 +426,7 @@ router.get("/events-with-applications", async (req, res) => {
           prizeMoney: 1,
           image: 1,
           questions: 1,
+          faqs: 1,
           enrollments: 1, // Final result will have an array of userIds
           userDetails: {
             name: 1,

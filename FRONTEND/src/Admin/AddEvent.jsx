@@ -46,7 +46,9 @@ const AddEvent = () => {
     metaTitle: "",
     metaDescription: "",
     prizeMoney: "",
+
     image: "",
+    faqs: [],
   });
 
   // ... (rest of code) ...
@@ -76,7 +78,9 @@ const AddEvent = () => {
       metaTitle: "",
       metaDescription: "",
       prizeMoney: "",
+
       image: "",
+      faqs: [],
     });
     setForm({
       question: "",
@@ -184,7 +188,9 @@ const AddEvent = () => {
         metaTitle: events.metaTitle || "",
         metaDescription: events.metaDescription || "",
         prizeMoney: events.prizeMoney || "",
+
         image: events.image || "",
+        faqs: events.faqs || [],
       });
       setEditId(events._id);
       setisFormVisible(true);
@@ -621,6 +627,56 @@ const AddEvent = () => {
                   name="metaDescription"
                   className="w-full p-2 border rounded"
                 />
+              </div>
+
+              {/* FAQs */}
+              <div className="col-span-1 md:col-span-2 mt-4">
+                <h3 className="font-semibold text-lg border-b pb-1 mb-2">FAQs</h3>
+                {formData.faqs.map((faq, index) => (
+                  <div key={index} className="flex gap-2 mb-2 items-start">
+                    <div className="flex-1 space-y-2">
+                      <input
+                        type="text"
+                        placeholder="Question"
+                        value={faq.question}
+                        onChange={(e) => {
+                          const newFaqs = [...formData.faqs];
+                          newFaqs[index].question = e.target.value;
+                          setFormData({ ...formData, faqs: newFaqs });
+                        }}
+                        className="w-full p-2 border rounded"
+                      />
+                      <textarea
+                        placeholder="Answer"
+                        value={faq.answer}
+                        onChange={(e) => {
+                          const newFaqs = [...formData.faqs];
+                          newFaqs[index].answer = e.target.value;
+                          setFormData({ ...formData, faqs: newFaqs });
+                        }}
+                        className="w-full p-2 border rounded"
+                        rows="2"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newFaqs = formData.faqs.filter((_, i) => i !== index);
+                        setFormData({ ...formData, faqs: newFaqs });
+                      }}
+                      className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 h-fit mt-1"
+                    >
+                      ✖
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, faqs: [...formData.faqs, { question: "", answer: "" }] })}
+                  className="mt-2 px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
+                >
+                  + Add FAQ
+                </button>
               </div>
 
               <div className="col-span-1 md:col-span-2 flex justify-end gap-2 mt-4">

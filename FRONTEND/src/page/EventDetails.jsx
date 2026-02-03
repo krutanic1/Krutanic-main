@@ -152,23 +152,37 @@ const EventDetails = () => {
                             )}
 
                             {/* FAQ Section */}
-                            <section>
-                                <h2 className="text-2xl font-bold text-gray-900 mb-4 border-l-4 border-orange-500 pl-3">Frequently Asked Questions</h2>
-                                <div className="space-y-4">
-                                    <div className="bg-gray-50 p-4 rounded-xl">
-                                        <h3 className="font-bold text-gray-900">Is this event free?</h3>
-                                        <p className="text-gray-600 text-sm mt-1">{event.isFree ? "Yes, this event is completely free to join." : "No, there is a registration fee for this event."}</p>
+                            {(event.faqs && event.faqs.length > 0) ? (
+                                <section>
+                                    <h2 className="text-2xl font-bold text-gray-900 mb-4 border-l-4 border-orange-500 pl-3">Frequently Asked Questions</h2>
+                                    <div className="space-y-4">
+                                        {event.faqs.map((faq, index) => (
+                                            <div key={index} className="bg-gray-50 p-4 rounded-xl">
+                                                <h3 className="font-bold text-gray-900">{faq.question}</h3>
+                                                <p className="text-gray-600 text-sm mt-1">{faq.answer}</p>
+                                            </div>
+                                        ))}
                                     </div>
-                                    <div className="bg-gray-50 p-4 rounded-xl">
-                                        <h3 className="font-bold text-gray-900">Who can participate?</h3>
-                                        <p className="text-gray-600 text-sm mt-1">{event.eligibility || "This event is open to students and recent graduates looking to upgrade their skills."}</p>
+                                </section>
+                            ) : (
+                                <section>
+                                    <h2 className="text-2xl font-bold text-gray-900 mb-4 border-l-4 border-orange-500 pl-3">Frequently Asked Questions</h2>
+                                    <div className="space-y-4">
+                                        <div className="bg-gray-50 p-4 rounded-xl">
+                                            <h3 className="font-bold text-gray-900">Is this event free?</h3>
+                                            <p className="text-gray-600 text-sm mt-1">{event.isFree ? "Yes, this event is completely free to join." : "No, there is a registration fee for this event."}</p>
+                                        </div>
+                                        <div className="bg-gray-50 p-4 rounded-xl">
+                                            <h3 className="font-bold text-gray-900">Who can participate?</h3>
+                                            <p className="text-gray-600 text-sm mt-1">{event.eligibility || "This event is open to students and recent graduates looking to upgrade their skills."}</p>
+                                        </div>
+                                        <div className="bg-gray-50 p-4 rounded-xl">
+                                            <h3 className="font-bold text-gray-900">Will I get a certificate?</h3>
+                                            <p className="text-gray-600 text-sm mt-1">Yes, all active participants will receive a certificate of participation.</p>
+                                        </div>
                                     </div>
-                                    <div className="bg-gray-50 p-4 rounded-xl">
-                                        <h3 className="font-bold text-gray-900">Will I get a certificate?</h3>
-                                        <p className="text-gray-600 text-sm mt-1">Yes, all active participants will receive a certificate of participation.</p>
-                                    </div>
-                                </div>
-                            </section>
+                                </section>
+                            )}
                         </div>
 
                         {/* Sidebar / CTA */}

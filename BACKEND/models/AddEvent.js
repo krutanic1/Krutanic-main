@@ -146,6 +146,13 @@ const AddEventSchema = new mongoose.Schema(
 
     prizeMoney: { type: String }, // e.g., "₹50,000" or "Win MacBook"
 
+    faqs: [
+      {
+        question: { type: String },
+        answer: { type: String }
+      }
+    ],
+
     /* ================= MCQ QUESTIONS ================= */
 
     questions: [QuestionSchema],
