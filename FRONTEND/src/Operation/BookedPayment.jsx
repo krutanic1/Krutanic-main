@@ -908,6 +908,9 @@ const BookedAmount = () => {
               <th>Remaining Amount</th>
               <th>Month Opted</th>
               <th>Clear Month</th>
+              <th>BDA</th>
+              <th>Team</th>
+              <th>Manager</th>
               <th>Actions</th>
               <th>Login Credentials</th>
               <th>Create User account</th>
@@ -931,7 +934,13 @@ const BookedAmount = () => {
                       {date}
                     </td>
                   </tr>
-                  {groupedData[date].map((item, index) => (
+                  {groupedData[date].map((item, index) => {
+                    const bdaObj = bda.find(b => b.fullname === item.counselor);
+                    const teamName = bdaObj?.team || '';
+                    const managers = bda.filter(b => b.designation && b.designation.toLowerCase() === 'manager');
+                    const managerObj = managers.find(mgr => Array.isArray(mgr.teams) && mgr.teams.includes(teamName));
+                    const managerName = managerObj?.fullname || '';
+                    return (
                     <tr
                       key={item._id}
                       className={`${item.remark[item.remark.length - 1]}`}
@@ -946,6 +955,9 @@ const BookedAmount = () => {
                       <td className="whitespace-nowrap">
                         {item.clearPaymentMonth}
                       </td>
+                      <td>{item.counselor}</td>
+                      <td>{teamName}</td>
+                      <td>{managerName}</td>
                       <td>
                         <button onClick={() => handleEdit(item._id)}>
                           Edit
@@ -1116,7 +1128,8 @@ Team Krutanic`
                         </select>
                       </td>
                     </tr>
-                  ))}
+                  );
+                  })}
                 </React.Fragment>
               ))
             ) : (
