@@ -5,11 +5,11 @@ import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
 import { FaWhatsapp } from "react-icons/fa";
 
-const Dialog = ({ isOpen, onClose, fullname, errorMessage, email, counselor, domain }) => {
+const Dialog = ({ isOpen, onClose, fullname, errorMessage, email, counselor, domain, monthOpted }) => {
   if (!isOpen) return null;
 
   // Create WhatsApp message with user details
-  const whatsappMessage = `Hello,\n I am ${fullname}.\n Email: ${email}.\n Counselor: ${counselor}.\n Domain: ${domain}.\n Kindly confirm my details`;
+  const whatsappMessage = `Hello,\n I am ${fullname}.\n Email: ${email}.\n Domain: ${domain}.\n Opted Month: ${monthOpted}.\n Kindly confirm my details`;
   const whatsappLink = `https://wa.me/917022936875?text=${encodeURIComponent(whatsappMessage)}`;
 
   return (
@@ -727,6 +727,7 @@ const DashboardAccessForm = () => {
           email={email}
           counselor={counselor}
           domain={domain}
+          monthOpted={monthOpted}
           errorMessage={errorMessage}
         />
       </div>
