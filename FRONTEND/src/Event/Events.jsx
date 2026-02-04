@@ -120,9 +120,9 @@ const Events = () => {
             })}
           </p>
           <div className="mt-4 flex justify-between items-center">
-            <p className="text-gray-300 text-sm">
-              {appliedCount > 0 ? `${appliedCount} registered` : "0 registered"}
-            </p>
+          {/* <p className="text-gray-300 text-sm">
+            {appliedCount > 0 ? `${appliedCount} registered` : "0 registered"}
+          </p> */}
             {status === "Completed" ? (
               <p className="text-sm text-red-500">Quiz has been ended</p>
             ) : isAlreadyApplied ? (

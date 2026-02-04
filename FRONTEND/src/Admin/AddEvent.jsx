@@ -11,6 +11,10 @@ const AddEvent = () => {
   const [selectedEvent, setSetectedEvent] = useState(null);
   const [showAppliedDetails, setShowAppliedDetails] = useState(null)
 
+  // Bulk Upload State
+  const [isBulkUploadVisible, setIsBulkUploadVisible] = useState(false);
+  const [bulkJson, setBulkJson] = useState("");
+
 
   const [form, setForm] = useState({
     question: "",
@@ -94,6 +98,8 @@ const AddEvent = () => {
     setEditId(null);
     setisFormVisible(false);
     setisQuestionFormVisible(false);
+    setIsBulkUploadVisible(false);
+    setBulkJson("");
   };
 
   const handleChange = (event) => {
@@ -295,6 +301,40 @@ const AddEvent = () => {
       fetchEvent();
     } catch (error) {
       console.error("Error updating status:", error.response?.data?.message || error.message);
+    }
+  };
+
+
+  const handleBulkSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const parsedQuestions = JSON.parse(bulkJson);
+      if (!Array.isArray(parsedQuestions)) {
+        toast.error("Invalid format: Root must be an array []");
+        return;
+      }
+
+      // Basic validation
+      const isValid = parsedQuestions.every(q =>
+        q.question && q.option1 && q.option2 && q.option3 && q.option4 && q.answer
+      );
+
+      if (!isValid) {
+        toast.error("Invalid data: Each question must have question, 4 options, and an answer.");
+        return;
+      }
+
+      await axios.put(`${API}/addquestions/${selectedEvent._id}/bulk`, { questions: parsedQuestions });
+      toast.success(`${parsedQuestions.length} Questions added successfully`);
+      fetchEvent();
+      resetForm();
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        toast.error("Invalid JSON syntax. Please check your input.");
+      } else {
+        toast.error("Error adding bulk questions.");
+        console.error("Bulk upload error", error);
+      }
     }
   };
 
@@ -770,6 +810,46 @@ const AddEvent = () => {
         </div>
       )}
 
+      {/* Bulk Upload Modal */}
+      {isBulkUploadVisible && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg w-full max-w-2xl max-h-[90vh] flex flex-col">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Bulk Upload Questions (JSON)</h2>
+              <span onClick={resetForm} className="cursor-pointer text-xl font-bold">✖</span>
+            </div>
+            <p className="text-sm text-gray-500 mb-2">
+              Paste a JSON array of questions. Correct format:
+              <pre className="bg-gray-100 p-2 rounded mt-1 text-xs overflow-auto max-h-24">
+                {`[
+  {
+    "question": "Q1 text",
+    "option1": "Op1",
+    "option2": "Op2",
+    "option3": "Op3",
+    "option4": "Op4",
+    "answer": "Op3",
+    "coin": 5
+  }
+]`}
+              </pre>
+            </p>
+            <form onSubmit={handleBulkSubmit} className="flex flex-col gap-3 flex-1 overflow-hidden">
+              <textarea
+                value={bulkJson}
+                onChange={(e) => setBulkJson(e.target.value)}
+                placeholder="Paste JSON here..."
+                className="p-2 border rounded font-mono text-sm w-full h-64 resize-none"
+                required
+              ></textarea>
+              <button type="submit" className="bg-purple-600 text-white p-2 rounded hover:bg-purple-700 mt-2">
+                Upload Questions
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Applied Details Modal */}
       {showAppliedDetails && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 overflow-y-auto">
@@ -914,6 +994,12 @@ const AddEvent = () => {
               className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
             >
               + Add Question
+            </button>
+            <button
+              onClick={() => setIsBulkUploadVisible(true)}
+              className="ml-2 px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 text-sm"
+            >
+              + Bulk Upload JSON
             </button>
           </div>
 

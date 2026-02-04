@@ -104,10 +104,57 @@ router.put("/addquestions/:id", async (req, res) => {
       };
       event.questions.push(newQuestion);
     }
+
+    // Fix invalid status if present (legacy data issue)
+    if (event.status === 'Upcoming Events') {
+      event.status = 'upcoming';
+    }
+
     const updatedEvent = await event.save();
     res.status(200).json(updatedEvent);
   } catch (error) {
     console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// push bulk questions to event
+router.put("/addquestions/:id/bulk", async (req, res) => {
+  try {
+    const event = await AddEvent.findById(req.params.id);
+    if (!event) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    const questions = req.body.questions;
+    if (!Array.isArray(questions)) {
+      return res.status(400).json({ error: "Questions must be an array" });
+    }
+
+    const newQuestions = questions.map(q => ({
+      question: q.question,
+      option1: q.option1,
+      option2: q.option2,
+      option3: q.option3,
+      option4: q.option4,
+      answer: q.answer,
+      coin: q.coin || 1 // Default coin if not provided
+    }));
+
+    // Filter out potential invalid entries if necessary, or let mongoose validation handle it
+    // For now, we trust the mapping or let mongoose throw specific validation errors
+
+    event.questions.push(...newQuestions);
+
+    // Fix invalid status if present (legacy data issue)
+    if (event.status === 'Upcoming Events') {
+      event.status = 'upcoming';
+    }
+
+    const updatedEvent = await event.save();
+    res.status(200).json(updatedEvent);
+  } catch (error) {
+    console.error("Bulk upload error:", error);
     res.status(500).json({ error: error.message });
   }
 });
