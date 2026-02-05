@@ -667,7 +667,7 @@ const BookedAmount = () => {
   }
 
   return (
-    <div id="OperationEnroll" className="ml-[265px]">
+    <div id="OperationEnroll">
       <Toaster position="top-center" reverseOrder={false} />
       {offerData && (
         <div className="form">
@@ -908,15 +908,13 @@ const BookedAmount = () => {
               <th>Remaining Amount</th>
               <th>Month Opted</th>
               <th>Clear Month</th>
-              <th>BDA</th>
-              <th>Team</th>
-              <th>Manager</th>
+              <th>Hierarchy</th>
               <th>Actions</th>
               <th>Login Credentials</th>
               <th>Create User account</th>
               <th>Send Onboarding Details</th>
               <th>send offer letter</th>
-              <th>Whatsapp</th>
+              {/* <th>Whatsapp</th> */}
               <th>More Details</th>
               <th>Last Remark</th>
               <th>Remark</th>
@@ -941,99 +939,103 @@ const BookedAmount = () => {
                     const managerObj = managers.find(mgr => Array.isArray(mgr.teams) && mgr.teams.includes(teamName));
                     const managerName = managerObj?.fullname || '';
                     return (
-                    <tr
-                      key={item._id}
-                      className={`${item.remark[item.remark.length - 1]}`}
-                    >
-                      <td>{index + 1}</td>
-                      <td className="capitalize">{item.fullname}</td>
-                      <td>{item.whatsAppNumber}</td>
-                      <td>{item.programPrice}</td>
-                      <td>{item.paidAmount}</td>
-                      <td>{item.programPrice - item.paidAmount}</td>
-                      <td className="capitalize">{item.monthOpted}</td>
-                      <td className="whitespace-nowrap">
-                        {item.clearPaymentMonth}
-                      </td>
-                      <td>{item.counselor}</td>
-                      <td>{teamName}</td>
-                      <td>{managerName}</td>
-                      <td>
-                        <button onClick={() => handleEdit(item._id)}>
-                          Edit
-                        </button>
-                      </td>
-                      <td>
-                        <div
-                          className=" cursor-pointer"
-                          onClick={
-                            !item.mailSended
-                              ? () => handleSendEmail(item)
-                              : null
-                          }
-                          disabled={item.mailSended}
-                        >
-                          {item.mailSended ? (
-                            <div className="flex items-center justify-center w-full">
-                              <PiLockKeyOpenFill />
-                              <i className="fa fa-send-o text-green-600"></i>
-                            </div>
-                          ) : (
-                            <div className="flex items-center justify-center w-full">
-                              <PiLockKeyFill />{" "}
-                              <i className="fa fa-send-o text-red-600"></i>
-                            </div>
-                          )}
-                        </div>
-                      </td>
-                      <td>
-                        <div
-                          className="cursor-pointer"
-                          onClick={() => createAccount(item)}
-                        >
-                          {item.userCreated ? (
-                            <div className="flex items-center justify-center text-green-600 font-bold flex-col">
-                              <FaUserCheck />
-                              UserCreated
-                            </div>
-                          ) : (
-                            <div className="flex items-center justify-center text-red-600 font-bold flex-col">
-                              <FaUserTimes className="text-lg" />
-                              NotCreated
-                            </div>
-                          )}
-                        </div>
-                      </td>
-                      <td>
-                        <div
-                          className="flex item-center justify-center cursor-pointer"
-                          onClick={() => handleSendOnboardingDetails(item)}
-                        >
-                          {item.onboardingSended ? (
-                            <div className="flex items-center justify-center w-full">
-                              {" "}
-                              <RiMailSendFill />
-                              <i className="fa fa-send-o text-green-600"></i>
-                            </div>
-                          ) : (
-                            <div className="flex items-center justify-center w-full">
-                              <RiMailSendFill />{" "}
-                              <i className="fa fa-send-o text-red-600"></i>
-                            </div>
-                          )}
-                        </div>
-                      </td>
-                      <td
-                        onClick={() => setOfferData(item)}
-                        style={{ cursor: "pointer", color: "blue" }}
+                      <tr
+                        key={item._id}
+                        className={`${item.remark[item.remark.length - 1]}`}
                       >
-                        {item.offerlettersended ? (
-                          <i className="fa fa-send">sended</i>
-                        ) : (
-                          <i className="fa fa-send"></i>
-                        )}
-                      </td>
-                      <td>
+                        <td>{index + 1}</td>
+                        <td className="capitalize">{item.fullname}</td>
+                        <td>{item.whatsAppNumber}</td>
+                        <td>{item.programPrice}</td>
+                        <td>{item.paidAmount}</td>
+                        <td>{item.programPrice - item.paidAmount}</td>
+                        <td className="capitalize">{item.monthOpted}</td>
+                        <td className="whitespace-nowrap">
+                          {item.clearPaymentMonth}
+                        </td>
+                        <td>
+                          <div className="flex flex-col text-sm text-left px-2">
+                            <span className="font-bold text-gray-700">{managerName} <span className="text-xs font-normal text-gray-500">(Mgr)</span></span>
+                            <span className="text-gray-600 font-semibold">{teamName}</span>
+                            <span className="text-gray-500 text-xs">{item.counselor} <span className="text-[10px]">(BDA)</span></span>
+                          </div>
+                        </td>
+                        <td>
+                          <button onClick={() => handleEdit(item._id)}>
+                            Edit
+                          </button>
+                        </td>
+                        <td>
+                          <div
+                            className=" cursor-pointer"
+                            onClick={
+                              !item.mailSended
+                                ? () => handleSendEmail(item)
+                                : null
+                            }
+                            disabled={item.mailSended}
+                          >
+                            {item.mailSended ? (
+                              <div className="flex items-center justify-center w-full">
+                                <PiLockKeyOpenFill />
+                                <i className="fa fa-send-o text-green-600"></i>
+                              </div>
+                            ) : (
+                              <div className="flex items-center justify-center w-full">
+                                <PiLockKeyFill />{" "}
+                                <i className="fa fa-send-o text-red-600"></i>
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                        <td>
+                          <div
+                            className="cursor-pointer"
+                            onClick={() => createAccount(item)}
+                          >
+                            {item.userCreated ? (
+                              <div className="flex items-center justify-center text-green-600 font-bold flex-col">
+                                <FaUserCheck />
+                                UC
+                              </div>
+                            ) : (
+                              <div className="flex items-center justify-center text-red-600 font-bold flex-col">
+                                <FaUserTimes className="text-lg" />
+                                NotCreated
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                        <td>
+                          <div
+                            className="flex item-center justify-center cursor-pointer"
+                            onClick={() => handleSendOnboardingDetails(item)}
+                          >
+                            {item.onboardingSended ? (
+                              <div className="flex items-center justify-center w-full">
+                                {" "}
+                                <RiMailSendFill />
+                                <i className="fa fa-send-o text-green-600"></i>
+                              </div>
+                            ) : (
+                              <div className="flex items-center justify-center w-full">
+                                <RiMailSendFill />{" "}
+                                <i className="fa fa-send-o text-red-600"></i>
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                        <td
+                          onClick={() => setOfferData(item)}
+                          style={{ cursor: "pointer", color: "blue" }}
+                        >
+                          {item.offerlettersended ? (
+                            <i className="fa fa-send">sended</i>
+                          ) : (
+                            <i className="fa fa-send"></i>
+                          )}
+                        </td>
+                        {/* <td>
                         {" "}
                         <a
                           href={`https://web.whatsapp.com/send?phone=${item.whatsAppNumber
@@ -1072,63 +1074,63 @@ Team Krutanic`
                         >
                           <i className="fa fa-whatsapp text-green-700 text-2xl cursor-pointer"></i>
                         </a>
-                      </td>
-                      <td>
-                        <i
-                          className="fa fa-info-circle text-2xl cursor-pointer"
-                          onClick={() => handleDialogOpen(item)}
-                        ></i>
-                      </td>
-                      <td>{item.remark[item.remark.length - 1]}</td>
-                      <td>
-                        <select
-                          className="border rounded-full w-40 border-black"
-                          onChange={(e) => handleRemarkChange(e, item._id)}
-                          defaultValue="Select Remark"
-                        >
-                          <option disabled value="Select Remark">
-                            {" "}
-                            Select Remark
-                          </option>
-                          <option value="Reminder Issued">
-                            {" "}
-                            Reminder Issued
-                          </option>
-                          <option value="DNP">DNP</option>
-                          <option value="NATC">NATC</option>
-                          <option value="Not Interested">Not Interested</option>
-                          <option value="Cut Call">Cut Call</option>
-                          <option value="Default">Default</option>
-                          <option value="Cleared">Cleared</option>
-                          <option value="Half_Cleared">Half_Cleared</option>
-                          <option value="Switch Off">Switch Off</option>
-                          <option value="Call Back later">
-                            {" "}
-                            Call Back later
-                          </option>
-                          <option value="Busy">Busy</option>
-                          <option value="Declined">Declined</option>
-                          <option value="Need More Time">Need More Time</option>
-                          <option value="Reviews are not good">
-                            Reviews are not good
-                          </option>
-                          <option value="When Batch Starts">
-                            When Batch Starts
-                          </option>
-                          <option value="No response">No response</option>
-                          <option value="False pitch so not intrested">
-                            False pitch so not intrested
-                          </option>
-                          <option value="Offer letter issues">
-                            Offer letter issues
-                          </option>
-                          <option value="Counselor Told To Pay Before Class Start">
-                            Counselor Told To Pay Before Class Start
-                          </option>
-                        </select>
-                      </td>
-                    </tr>
-                  );
+                      </td> */}
+                        <td>
+                          <i
+                            className="fa fa-info-circle text-2xl cursor-pointer"
+                            onClick={() => handleDialogOpen(item)}
+                          ></i>
+                        </td>
+                        <td>{item.remark[item.remark.length - 1]}</td>
+                        <td>
+                          <select
+                            className="border rounded-full w-40 border-black"
+                            onChange={(e) => handleRemarkChange(e, item._id)}
+                            defaultValue="Select Remark"
+                          >
+                            <option disabled value="Select Remark">
+                              {" "}
+                              Select Remark
+                            </option>
+                            <option value="Reminder Issued">
+                              {" "}
+                              Reminder Issued
+                            </option>
+                            <option value="DNP">DNP</option>
+                            <option value="NATC">NATC</option>
+                            <option value="Not Interested">Not Interested</option>
+                            <option value="Cut Call">Cut Call</option>
+                            <option value="Default">Default</option>
+                            <option value="Cleared">Cleared</option>
+                            <option value="Half_Cleared">Half_Cleared</option>
+                            <option value="Switch Off">Switch Off</option>
+                            <option value="Call Back later">
+                              {" "}
+                              Call Back later
+                            </option>
+                            <option value="Busy">Busy</option>
+                            <option value="Declined">Declined</option>
+                            <option value="Need More Time">Need More Time</option>
+                            <option value="Reviews are not good">
+                              Reviews are not good
+                            </option>
+                            <option value="When Batch Starts">
+                              When Batch Starts
+                            </option>
+                            <option value="No response">No response</option>
+                            <option value="False pitch so not intrested">
+                              False pitch so not intrested
+                            </option>
+                            <option value="Offer letter issues">
+                              Offer letter issues
+                            </option>
+                            <option value="Counselor Told To Pay Before Class Start">
+                              Counselor Told To Pay Before Class Start
+                            </option>
+                          </select>
+                        </td>
+                      </tr>
+                    );
                   })}
                 </React.Fragment>
               ))

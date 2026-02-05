@@ -199,7 +199,7 @@ const Events = () => {
         </div>
 
         {/* Leaderboard */}
-        <div className=" shadow-black pereventheigth rounded-lg p-4 shadow-lg">
+        {/* <div className=" shadow-black pereventheigth rounded-lg p-4 shadow-lg">
           <h2 className="text-2xl font-semibold text-center mb-4 bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">
             Leaderboard Top 3
           </h2>
@@ -267,7 +267,7 @@ const Events = () => {
               </div>
             </span>
           </div>
-        </div>
+        </div> */}
       </div>
 
       <style jsx>{`

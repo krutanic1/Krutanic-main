@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate  } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import API from "../API";
 import axios from "axios";
 import logo from "../assets/LOGO3.png";
-import toast ,{Toaster} from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 
 const OperationHeader = () => {
   const [isMobileVisible, setisMobileVisible] = useState(true);
@@ -32,12 +32,12 @@ const OperationHeader = () => {
   const handleLogout = () => {
     toast.success('Logout successful!!!');
     setTimeout(() => {
-    localStorage.removeItem("operationId");
-    localStorage.removeItem("operationName");
-    localStorage.removeItem("operationToken");
-    localStorage.removeItem("sessionStartTime");
-    navigate("/OperationLogin");
-  }, 1500);
+      localStorage.removeItem("operationId");
+      localStorage.removeItem("operationName");
+      localStorage.removeItem("operationToken");
+      localStorage.removeItem("sessionStartTime");
+      navigate("/OperationLogin");
+    }, 1500);
   };
 
   const checkSession = () => {
@@ -48,8 +48,8 @@ const OperationHeader = () => {
       if (currentTime - sessionStartTime > expirationTime) {
         toast.error("Session Time Out");
         localStorage.removeItem("operationId");
-    localStorage.removeItem("operationName");
-    localStorage.removeItem("operationToken");
+        localStorage.removeItem("operationName");
+        localStorage.removeItem("operationToken");
         localStorage.removeItem("sessionStartTime");
         navigate("/OperationLogin");
       }
@@ -82,8 +82,8 @@ const OperationHeader = () => {
 
 
   return (
-    <div id="AdminHeader">
-       <Toaster position="top-center" reverseOrder={false}/>
+    <div id="OperationHeader">
+      <Toaster position="top-center" reverseOrder={false} />
       <div className="navbar">
         <div>
           <Link to="/">
