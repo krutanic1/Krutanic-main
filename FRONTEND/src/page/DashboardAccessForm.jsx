@@ -59,7 +59,7 @@ const Dialog = ({ isOpen, onClose, fullname, errorMessage, email, counselor, dom
       </div>
     </div>
   );
-};
+}
 
 const DashboardAccessForm = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

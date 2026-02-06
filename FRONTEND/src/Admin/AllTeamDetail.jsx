@@ -18,8 +18,10 @@ const AllTeamDetail = () => {
   const fetchAllData = async () => {
     try {
       const response = await axios.get(`${API}/bda-with-enrolls`);
-      setAllData(response.data);
-      // console.log(response.data);
+      // Filter to show only active BDAs (exclude only those explicitly marked as inactive)
+      const activeBDAs = response.data.filter(bda => bda.active !== false);
+      setAllData(activeBDAs);
+      console.log("Active BDAs:", activeBDAs);
     } catch (error) {
       console.error("There was an error fetching all Data:", error);
     }
@@ -248,6 +250,7 @@ const AllTeamDetail = () => {
   const getTop3Teams = () => {
     const teamRevenue = {};
 
+    // Only use active BDAs (already filtered in allData)
     allData.forEach((bda) => {
       const teamName = bda.team || "Unknown";
       const monthEnrollments = bda.enrollments.filter(
@@ -293,6 +296,7 @@ const AllTeamDetail = () => {
 
   // Utility: Get Top 3 Leaders by Revenue (Current Month)
   const getTop3Leaders = () => {
+    // Only use active BDAs (already filtered in allData)
     const leaderRevenue = allData.map((bda) => {
       const monthEnrollments = bda.enrollments.filter(
         (item) =>
