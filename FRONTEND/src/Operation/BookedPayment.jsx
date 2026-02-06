@@ -957,7 +957,7 @@ const BookedAmount = () => {
                           <div className="flex flex-col text-sm text-left px-2">
                             <span className="font-bold text-gray-700">{managerName} <span className="text-xs font-normal text-gray-500">(Mgr)</span></span>
                             <span className="text-gray-600 font-semibold">{teamName}</span>
-                            <span className="text-gray-500 text-xs">{item.counselor} <span className="text-[10px]">(BDA)</span></span>
+                            {/* <span className="text-gray-500 text-xs">{item.counselor} <span className="text-[10px]">(BDA)</span></span> */}
                           </div>
                         </td>
                         <td>

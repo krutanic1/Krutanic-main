@@ -17,8 +17,106 @@ const Playground = () => {
     applied: [],
     quizEndedDueToTabSwitch: false,
     showInstructions: false,
+    hasCameraPermission: false,
+    showAudioWarning: false,
   });
   const scoreRef = useRef(0);
+  const videoRef = useRef(null);
+  const audioContextRef = useRef(null);
+  const analyserRef = useRef(null);
+  const sourceRef = useRef(null);
+  const [retryCamera, setRetryCamera] = useState(0);
+
+  // Fake Proctoring: Request Camera & Audio Access
+  useEffect(() => {
+    let stream;
+    let animationFrameId;
+
+    const startProctoring = async () => {
+      if (state.isDialogOpen && !state.quizCompleted) {
+        try {
+          // Request both video and audio
+          stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+
+          // Setup Video
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+
+          // Setup Audio Analysis
+          const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          if (audioContext.state === 'suspended') {
+            await audioContext.resume();
+          }
+          audioContextRef.current = audioContext;
+          const analyser = audioContext.createAnalyser();
+          analyserRef.current = analyser;
+          analyser.fftSize = 256;
+
+          const source = audioContext.createMediaStreamSource(stream);
+          sourceRef.current = source;
+          source.connect(analyser);
+
+          const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+          const checkVolume = () => {
+            analyser.getByteFrequencyData(dataArray);
+            const sum = dataArray.reduce((a, b) => a + b, 0);
+            const average = sum / dataArray.length;
+
+            // Threshold for "Sound Spike" (adjust as needed, e.g., 30)
+            if (average > 60) {
+              setState(prev => {
+                if (!prev.showAudioWarning) {
+                  return { ...prev, showAudioWarning: true };
+                }
+                return prev;
+              });
+
+              // Hide warning after 2 seconds
+              setTimeout(() => {
+                setState(prev => ({ ...prev, showAudioWarning: false }));
+              }, 2000);
+            }
+
+            animationFrameId = requestAnimationFrame(checkVolume);
+          };
+
+          checkVolume();
+
+          setState(prev => ({ ...prev, hasCameraPermission: true }));
+        } catch (err) {
+          console.error("Access denied or error:", err);
+          setState(prev => ({ ...prev, hasCameraPermission: false }));
+        }
+      }
+    };
+
+    const stopProctoring = () => {
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
+      }
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
+    };
+
+    if (state.isDialogOpen && !state.quizCompleted) {
+      startProctoring();
+    } else {
+      stopProctoring();
+    }
+
+    return () => {
+      stopProctoring();
+    };
+  }, [state.isDialogOpen, state.quizCompleted, retryCamera]);
 
   const fetchData = async (endpoint, setter) => {
     try {
@@ -65,13 +163,34 @@ const Playground = () => {
 
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.hidden && state.isDialogOpen && !state.quizCompleted) {
+      // Only punish if camera permission is ALREADY granted (quiz is active)
+      if (document.hidden && state.isDialogOpen && !state.quizCompleted && state.hasCameraPermission) {
         storeScore(scoreRef.current);
       }
     };
+
+    const handleFullscreenChange = () => {
+      // Only punish if camera permission is ALREADY granted AND fullscreen is actually supported
+      const isFullscreenSupported = document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen;
+
+      // Check both standard and vendor-prefixed fullscreen properties
+      const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+
+      if (isFullscreenSupported && !isFullscreen && state.isDialogOpen && !state.quizCompleted && state.hasCameraPermission) {
+        storeScore(scoreRef.current);
+      }
+    };
+
     document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
-  }, [state.isDialogOpen, state.quizCompleted]);
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange); // For Safari
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
+    };
+  }, [state.isDialogOpen, state.quizCompleted, state.hasCameraPermission]);
 
   const startQuiz = (quiz) => {
     setState((prev) => ({
@@ -81,7 +200,24 @@ const Playground = () => {
     }));
   };
 
-  const beginQuiz = () =>
+  const beginQuiz = async () => {
+    try {
+      if (document.documentElement.requestFullscreen) {
+        await document.documentElement.requestFullscreen();
+      } else if (document.documentElement.mozRequestFullScreen) { // Firefox
+        await document.documentElement.mozRequestFullScreen();
+      } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari and Opera
+        await document.documentElement.webkitRequestFullscreen();
+      } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
+        await document.documentElement.msRequestFullscreen();
+      } else {
+        console.warn("Fullscreen API not supported on this device (likely iOS). Proceeding without fullscreen.");
+      }
+    } catch (err) {
+      console.error("Error attempting to enable full-screen mode:", err);
+      // Proceed anyway - don't block user if fullscreen fails
+    }
+
     setState((prev) => ({
       ...prev,
       showInstructions: false,
@@ -92,6 +228,7 @@ const Playground = () => {
       quizCompleted: false,
       timeLeft: 60,
     }));
+  };
 
   const reset = () =>
     setState((prev) => ({
@@ -203,9 +340,9 @@ const Playground = () => {
       {quizEndedDueToTabSwitch && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-70 flex items-center justify-center">
           <div className="bg-red-700 p-6 rounded-lg w-full max-w-md text-center shadow-lg">
-            <h2 className="text-xl font-bold mb-4 text-white">Quiz Ended</h2>
+            <h2 className="text-xl font-bold mb-4 text-white">Quiz Terminated</h2>
             <p className="text-white mb-4">
-              You switched tabs. Your score has been saved.
+              You exited fullscreen or switched tabs. Your score has been submitted as-is.
             </p>
             <button
               onClick={reset}
@@ -219,34 +356,57 @@ const Playground = () => {
 
       {showInstructions && (
         <div className="fixed inset-0 z-10 bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
-          <div className="p-6 rounded-lg w-full max-w-md shadow-2xl text-center">
-            <h2 className="text-2xl font-bold mb-4">Instructions</h2>
-            <p className="text-sm mb-4">
-              Don't switch tabs or leave the page. Your quiz will be
-              auto-submitted if you do.
+          <div className="p-8 rounded-lg w-full max-w-lg shadow-2xl bg-white text-black text-center relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-red-500 to-yellow-500 animate-pulse"></div>
+            <h2 className="text-3xl font-bold mb-6 text-gray-800">⚠️ Quiz Rules & Terms</h2>
+
+            <div className="text-left space-y-4 mb-8 text-sm text-gray-700 bg-gray-100 p-4 rounded-md border border-gray-200">
+              <p className="flex items-center gap-2">
+                <span className="text-xl">📷</span>
+                <span><strong>Camera & Microphone Required:</strong> You must allow access. You will be monitored.</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <span className="text-xl">🖥️</span>
+                <span><strong>Fullscreen Mode:</strong> The quiz will force fullscreen. Exiting it will terminate the quiz.</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <span className="text-xl">🚫</span>
+                <span><strong>No Tab Switching:</strong> Switching tabs or windows will auto-submit your score immediately.</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <span className="text-xl">🤫</span>
+                <span><strong>Stay Silent:</strong> Loud noises may trigger warnings.</span>
+              </p>
+            </div>
+
+            <p className="text-xs text-gray-500 mb-6">
+              By clicking "Start Quiz", you agree to these terms and conditions.
             </p>
-            <button
-              onClick={beginQuiz}
-              className="px-6 py-2 bg-blue-600 rounded-md hover:bg-blue-700 transition"
-            >
-              Start Quiz
-            </button>
-            <button
-              onClick={reset}
-              className="px-6 py-2 bg-red-600 rounded-md hover:bg-red-700 transition ml-2"
-            >
-              Cancel
-            </button>
+
+            <div className="flex gap-4 justify-center">
+              <button
+                onClick={beginQuiz}
+                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-lg hover:shadow-lg hover:scale-105 transition transform"
+              >
+                I Agree & Start Quiz
+              </button>
+              <button
+                onClick={reset}
+                className="px-8 py-3 bg-gray-200 text-gray-700 font-bold rounded-lg hover:bg-gray-300 transition"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       <div className="h-full backdrop-blur-xl  p-1">
         <div className="grid gap-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-center">
-          {appliedUsers.filter((quiz) => quiz.status === "Ongoing").length >
+          {appliedUsers.filter((quiz) => quiz.status === "ongoing").length >
             0 ? (
             appliedUsers
-              .filter((quiz) => quiz.status === "Ongoing")
+              .filter((quiz) => quiz.status === "ongoing")
               .map((quiz, index) => {
                 const appliedQuiz = applied.find(
                   (item) =>
@@ -302,92 +462,132 @@ const Playground = () => {
 
       {isDialogOpen && currentQuiz?.questions?.length > 0 && !quizCompleted && (
         <div className="fixed inset-0 z-[99] bg-black">
+          {/* FAKE PROCTORING WEBCAM */}
+          <div className="absolute top-4 right-4 z-[100] w-48 rounded-lg overflow-hidden border-2 border-red-600 shadow-xl bg-black">
+            <div className="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 flex items-center gap-1 animate-pulse">
+              <span className="w-2 h-2 rounded-full bg-white"></span>
+              REC
+            </div>
+            {state.showAudioWarning && (
+              <div className="absolute inset-0 z-10 bg-red-600 bg-opacity-90 flex flex-col items-center justify-center text-white text-center p-2 animate-bounce">
+                <span className="text-2xl">🤫</span>
+                <span className="text-xs font-bold uppercase">Stay Silent!</span>
+                <span className="text-[10px]">Noise Detected</span>
+              </div>
+            )}
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className="w-full h-32 object-cover transform scale-x-[-1]" // Mirror effect
+            />
+          </div>
+
           <div className="bg-[#000000] p-6 rounded-lg w-full absolute top-[40%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <div className="flex justify-between rounded-full items-center py-5 px-12">
-              <div className="text-center font-bold text-white">
-                Question {currentQuestionIndex + 1} of{" "}
-                {currentQuiz.questions.length}
-              </div>
-              <div className="text-lg text-center  p-3 whitespace-nowrap  text-red-700 font-bold tracking-wide  drop-shadow-lg">
-                <span className="animate-pulse">⏳</span> Time Left: {timeLeft}s
-              </div>
-              <div>{currentQuiz.title}</div>
-            </div>
-            <div className="relative flex justify-between items-center text-center my-4 gap-3 p-[3px] rounded-full">
-              <div className="absolute inset-0 rounded-full p-[2px] bg-gradient-to-r animate-pulse from-blue-500 to-purple-500"></div>
-              <div className="relative bg-[#000000] w-full text-lg rounded-full p-10 text-white">
-                {currentQuiz.questions[currentQuestionIndex].question}{" "} <span className="text-blue-600"> ( {currentQuiz.questions[currentQuestionIndex].coin} coins )</span>
-              </div>
-            </div>
-            <div className="grid lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-4">
-              {[1, 2, 3, 4].map((opt) => (
-                <label
-                  key={opt}
-                  className={`relative flex items-center p-[3px] rounded-full cursor-pointer transition-colors duration-200 ${selectedOption ===
-                    currentQuiz.questions[currentQuestionIndex][`option${opt}`]
-                    ? "border-transparent"
-                    : "border border-[#eeeeee2d]"
-                    }`}
+            {!state.hasCameraPermission ? (
+              <div className="text-center text-white py-10">
+                <h2 className="text-2xl font-bold mb-4 text-red-500">Camera Access Required</h2>
+                <p className="mb-6">You must allow camera access to take this quiz. We use it for proctoring.</p>
+                <button
+                  onClick={() => setRetryCamera(prev => prev + 1)}
+                  className="px-6 py-2 bg-blue-600 rounded-md hover:bg-blue-700 transition animate-pulse"
                 >
-                  <span className="absolute inset-0 rounded-full animate-pulse bg-gradient-to-r from-blue-500 to-purple-500"></span>
-                  <span className="relative flex items-center bg-[#000000] w-full h-full  rounded-full p-5 text-white">
-                    <input
-                      type="radio"
-                      name="option"
-                      checked={
-                        selectedOption ===
-                        currentQuiz.questions[currentQuestionIndex][
-                        `option${opt}`
-                        ]
-                      }
-                      onChange={() =>
-                        setState((prev) => ({
-                          ...prev,
-                          selectedOption:
+                  Enable Camera & Retry
+                </button>
+                <p className="mt-4 text-xs text-gray-400">
+                  (If blocked, please click the lock icon in your address bar and reset permissions)
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="flex justify-between rounded-full items-center py-5 px-12">
+                  <div className="text-center font-bold text-white">
+                    Question {currentQuestionIndex + 1} of{" "}
+                    {currentQuiz.questions.length}
+                  </div>
+                  <div className="text-lg text-center  p-3 whitespace-nowrap  text-red-700 font-bold tracking-wide  drop-shadow-lg">
+                    <span className="animate-pulse">⏳</span> Time Left: {timeLeft}s
+                  </div>
+                  <div>{currentQuiz.title}</div>
+                </div>
+                <div className="relative flex justify-between items-center text-center my-4 gap-3 p-[3px] rounded-full">
+                  <div className="absolute inset-0 rounded-full p-[2px] bg-gradient-to-r animate-pulse from-blue-500 to-purple-500"></div>
+                  <div className="relative bg-[#000000] w-full text-lg rounded-full p-10 text-white">
+                    {currentQuiz.questions[currentQuestionIndex].question}{" "} <span className="text-blue-600"> ( {currentQuiz.questions[currentQuestionIndex].coin} coins )</span>
+                  </div>
+                </div>
+                <div className="grid lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-4">
+                  {[1, 2, 3, 4].map((opt) => (
+                    <label
+                      key={opt}
+                      className={`relative flex items-center p-[3px] rounded-full cursor-pointer transition-colors duration-200 ${selectedOption ===
+                        currentQuiz.questions[currentQuestionIndex][`option${opt}`]
+                        ? "border-transparent"
+                        : "border border-[#eeeeee2d]"
+                        }`}
+                    >
+                      <span className="absolute inset-0 rounded-full animate-pulse bg-gradient-to-r from-blue-500 to-purple-500"></span>
+                      <span className="relative flex items-center bg-[#000000] w-full h-full  rounded-full p-5 text-white">
+                        <input
+                          type="radio"
+                          name="option"
+                          checked={
+                            selectedOption ===
                             currentQuiz.questions[currentQuestionIndex][
                             `option${opt}`
-                            ],
-                        }))
-                      }
-                      className={`mr-2 ${selectedOption ===
-                        currentQuiz.questions[currentQuestionIndex][
-                        `option${opt}`
-                        ]
-                        ? "animate-ping"
-                        : ""
-                        }`}
-                    />
-                    {
-                      currentQuiz.questions[currentQuestionIndex][
-                      `option${opt}`
-                      ]
-                    }
-                  </span>
-                </label>
-              ))}
-            </div>
-            <div className="mt-4 space-y-2">
-              <button
-                onClick={quitQuiz}
-                className="relative p-[3px] rounded-full w-full text-white bg-black"
-              >
-                <span className="absolute inset-0 bg-gradient-to-r animate-pulse from-blue-500 to-purple-500 rounded-full p-[2px] mask mask-out"></span>
-                <span className="relative block font-bold bg-black rounded-full px-4 py-3">
-                  Quit
-                </span>
-              </button>
-              <button
-                onClick={nextQuestion}
-                className="relative p-[3px] rounded-full w-full  text-white bg-black"
-              >
-                <span className="absolute inset-0 bg-gradient-to-r animate-pulse   from-blue-500 to-purple-500 rounded-full p-[2px] mask mask-out"></span>
-                <span className="relative block active:animate-ping font-bold  bg-black rounded-full px-4 py-3">
-                  {currentQuestionIndex + 1 === currentQuiz.questions.length
-                    ? "Submit"
-                    : "Next"}
-                </span>
-              </button>
-            </div>
+                            ]
+                          }
+                          onChange={() =>
+                            setState((prev) => ({
+                              ...prev,
+                              selectedOption:
+                                currentQuiz.questions[currentQuestionIndex][
+                                `option${opt}`
+                                ],
+                            }))
+                          }
+                          className={`mr-2 ${selectedOption ===
+                            currentQuiz.questions[currentQuestionIndex][
+                            `option${opt}`
+                            ]
+                            ? "animate-ping"
+                            : ""
+                            }`}
+                        />
+                        {
+                          currentQuiz.questions[currentQuestionIndex][
+                          `option${opt}`
+                          ]
+                        }
+                      </span>
+                    </label>
+                  ))}
+                </div>
+                <div className="mt-4 space-y-2">
+                  <button
+                    onClick={quitQuiz}
+                    className="relative p-[3px] rounded-full w-full text-white bg-black"
+                  >
+                    <span className="absolute inset-0 bg-gradient-to-r animate-pulse from-blue-500 to-purple-500 rounded-full p-[2px] mask mask-out"></span>
+                    <span className="relative block font-bold bg-black rounded-full px-4 py-3">
+                      Quit
+                    </span>
+                  </button>
+                  <button
+                    onClick={nextQuestion}
+                    className="relative p-[3px] rounded-full w-full  text-white bg-black"
+                  >
+                    <span className="absolute inset-0 bg-gradient-to-r animate-pulse   from-blue-500 to-purple-500 rounded-full p-[2px] mask mask-out"></span>
+                    <span className="relative block active:animate-ping font-bold  bg-black rounded-full px-4 py-3">
+                      {currentQuestionIndex + 1 === currentQuiz.questions.length
+                        ? "Submit"
+                        : "Next"}
+                    </span>
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
