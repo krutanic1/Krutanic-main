@@ -238,7 +238,7 @@ const sendPaymentReminders = async () => {
     // Only send emails in production environment
     if (process.env.NODE_ENV !== 'production') {
       console.log(`[${new Date().toLocaleString()}] Payment reminders skipped - Not in production environment (NODE_ENV: ${process.env.NODE_ENV || 'not set'})`);
-      return { success: false, message: 'Reminders only sent in production environment' };
+      return { success: false, message: 'Reminders  only sent in production environment' };
     }
 
     console.log(`[${new Date().toLocaleString()}] Starting payment reminder process...`);
