@@ -235,6 +235,12 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
  */
 const sendPaymentReminders = async () => {
   try {
+    // Only send emails in production environment
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[${new Date().toLocaleString()}] Payment reminders skipped - Not in production environment (NODE_ENV: ${process.env.NODE_ENV || 'not set'})`);
+      return { success: false, message: 'Reminders only sent in production environment' };
+    }
+
     console.log(`[${new Date().toLocaleString()}] Starting payment reminder process...`);
 
     // Calculate date 4 months ago (120 days)
@@ -312,6 +318,14 @@ const sendPaymentReminders = async () => {
  * Initialize scheduled payment reminder jobs
  */
 const initializePaymentReminderScheduler = () => {
+  // Only initialize scheduler in production environment
+  if (process.env.NODE_ENV !== 'production') {
+    console.log("⚠️  Payment Reminder Scheduler NOT initialized - Not in production environment");
+    console.log(`   Current NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
+    console.log("   Payment reminders will only be sent in production environment");
+    return;
+  }
+
   console.log("🚀 Initializing Payment Reminder Scheduler...");
   console.log("⏰ Timezone: Asia/Kolkata (IST - Indian Standard Time)");
 
