@@ -193,6 +193,15 @@ const Playground = () => {
   }, [state.isDialogOpen, state.quizCompleted, state.hasCameraPermission]);
 
   const startQuiz = (quiz) => {
+    // Block mobile users (screen width < 768px)
+    if (window.innerWidth < 768) {
+      toast.error("This quiz is only available on Desktop or Laptop devices for proctoring integrity.", {
+        duration: 4000,
+        icon: "💻",
+      });
+      return;
+    }
+
     setState((prev) => ({
       ...prev,
       currentQuiz: quiz,
@@ -463,16 +472,16 @@ const Playground = () => {
       {isDialogOpen && currentQuiz?.questions?.length > 0 && !quizCompleted && (
         <div className="fixed inset-0 z-[99] bg-black">
           {/* FAKE PROCTORING WEBCAM */}
-          <div className="absolute top-4 right-4 z-[100] w-48 rounded-lg overflow-hidden border-2 border-red-600 shadow-xl bg-black">
-            <div className="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 flex items-center gap-1 animate-pulse">
-              <span className="w-2 h-2 rounded-full bg-white"></span>
+          <div className="absolute top-2 right-2 md:top-4 md:right-4 z-[100] w-24 md:w-48 rounded-lg overflow-hidden border-2 border-red-600 shadow-xl bg-black transition-all duration-300">
+            <div className="bg-red-600 text-white text-[8px] md:text-[10px] font-bold px-2 py-0.5 flex items-center gap-1 animate-pulse">
+              <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-white"></span>
               REC
             </div>
             {state.showAudioWarning && (
               <div className="absolute inset-0 z-10 bg-red-600 bg-opacity-90 flex flex-col items-center justify-center text-white text-center p-2 animate-bounce">
-                <span className="text-2xl">🤫</span>
-                <span className="text-xs font-bold uppercase">Stay Silent!</span>
-                <span className="text-[10px]">Noise Detected</span>
+                <span className="text-xl md:text-2xl">🤫</span>
+                <span className="text-[10px] md:text-xs font-bold uppercase">Stay Silent!</span>
+                <span className="text-[8px] md:text-[10px]">Noise Detected</span>
               </div>
             )}
             <video
@@ -480,11 +489,11 @@ const Playground = () => {
               autoPlay
               playsInline
               muted
-              className="w-full h-32 object-cover transform scale-x-[-1]" // Mirror effect
+              className="w-full h-16 md:h-32 object-cover transform scale-x-[-1]" // Mirror effect
             />
           </div>
 
-          <div className="bg-[#000000] p-6 rounded-lg w-full absolute top-[40%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <div className="bg-[#000000] p-6 rounded-lg w-full absolute top-[55%] md:top-[40%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300">
             {!state.hasCameraPermission ? (
               <div className="text-center text-white py-10">
                 <h2 className="text-2xl font-bold mb-4 text-red-500">Camera Access Required</h2>
