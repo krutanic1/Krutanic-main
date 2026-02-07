@@ -326,17 +326,24 @@ router.get("/getmarketingcurrentleads", async (req, res) => {
     console.log('Decoded JWT _id:', decoded._id);
     console.log('Type of decoded._id:', typeof decoded._id);
 
+    const offset = parseInt(req.query.monthOffset) || 0;
     const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth() - offset, 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() - offset + 1, 0, 23, 59, 59, 999);
+
+    console.log('--- DEBUG: getmarketingcurrentleads ---');
+    console.log('Query monthOffset:', req.query.monthOffset);
+    console.log('Parsed Offset:', offset);
+    console.log('Start Date:', startOfMonth.toISOString());
+    console.log('End Date:', endOfMonth.toISOString());
 
     const allpayments = await NewEnrollStudent.find({ executiveId: decoded._id, createdAt: { $gte: startOfMonth, $lte: endOfMonth }, });
 
-    console.log('Query executiveId:', decoded._id);
-    console.log('Found students:', allpayments.length);
-    if (allpayments.length > 0) {
-      console.log('Sample student executiveId:', allpayments[0].executiveId, 'Type:', typeof allpayments[0].executiveId);
-    }
+    // console.log('Query executiveId:', decoded._id);
+    // console.log('Found students:', allpayments.length);
+    // if (allpayments.length > 0) {
+    //   console.log('Sample student executiveId:', allpayments[0].executiveId, 'Type:', typeof allpayments[0].executiveId);
+    // }
 
     res.status(200).json(allpayments);
   } catch (error) {

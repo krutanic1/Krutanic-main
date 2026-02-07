@@ -16,43 +16,43 @@ import digitalmarketing from "../../assets/mentorshipcourses/digital marketing.p
 import finance from "../../assets/mentorshipcourses/finance.png";
 import hr from "../../assets/mentorshipcourses/HR.png";
 import stockmarketing from "../../assets/mentorshipcourses/stock market.png";
-import supplychainmanagement from "../../assets/mentorshipcourses/supply.png";
-import psycho from "../../assets/mentorshipcourses/psyc.png";
-import fintech from "../../assets/mentorshipcourses/fintech.png";
+ //import supplychainmanagement from "../../assets/mentorshipcourses/supply.png";
+// import psycho from "../../assets/mentorshipcourses/psyc.png";
+// import fintech from "../../assets/mentorshipcourses/fintech.png";
 // import nano from "../../assets/mentorshipcourses/genetic.png";
 import dataanalytics from "../../assets/mentorshipcourses/DA.jpg";
 import devops from "../../assets/mentorshipcourses/DEVOPS.jpg";
-import automationtesting from "../../assets/mentorshipcourses/automatingtestingmin.avif";
+// import automationtesting from "../../assets/mentorshipcourses/automatingtestingmin.avif";
 import { RiCustomerService2Fill } from "react-icons/ri";
 import pdf1 from "../../../krutanic/Android Development.pdf";
 import pdf2 from "../../../krutanic/Artificial Intelligence.pdf";
 import pdf3 from "../../../krutanic/AutoCad Brochure.pdf";
 import pdf4 from "../../../krutanic/Business Analytics.pdf";
 import pdf5 from "../../../krutanic/Cloud Computing.pdf";
-import pdf6 from "../../../krutanic/Cyber Security.pdf";
+ import pdf6 from "../../../krutanic/Cyber Security.pdf";
 import pdf7 from "../../../krutanic/Data Analytics.pdf";
 import pdf8 from "../../../krutanic/Data Science.pdf";
-import pdf9 from "../../../krutanic/Dev ops.pdf";
+ import pdf9 from "../../../krutanic/Dev ops.pdf";
 import pdf10 from "../../../krutanic/Digital Marketing.pdf";
 import pdf11 from "../../../krutanic/Embedded System.pdf";
 import pdf12 from "../../../krutanic/Finance.pdf";
-import pdf13 from "../../../krutanic/FinTech.pdf";
+// import pdf13 from "../../../krutanic/FinTech.pdf";
 import pdf14 from "../../../krutanic/Full Stack Development.pdf";
 import pdf15 from "../../../krutanic/Graphic Design.pdf";
 import pdf16 from "../../../krutanic/Human Resource.pdf";
 import pdf17 from "../../../krutanic/IOT and Robotics.pdf";
 import pdf18 from "../../../krutanic/Machine Learning.pdf";
-import pdf19 from "../../../krutanic/Automation Testing.pdf";
-import pdf20 from "../../../krutanic/Psychology.pdf";
+// import pdf19 from "../../../krutanic/Automation Testing.pdf";
+// import pdf20 from "../../../krutanic/Psychology.pdf";
 import pdf21 from "../../../krutanic/Stock Market.pdf";
-import pdf22 from "../../../krutanic/Supply Chain Management.pdf";
+// import pdf22 from "../../../krutanic/Supply Chain Management.pdf";
 import pdf23 from "../../../krutanic/UI  UX-min.pdf";
 
 import axios from "axios";
 import API from "../../API";
 import toast, { Toaster } from "react-hot-toast";
 
-const CourseMentor = ({}) => {
+const CourseMentor = ({ }) => {
   const [showForm, setShowForm] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [formData, setFormData] = useState({
@@ -164,15 +164,15 @@ const CourseMentor = ({}) => {
         rating: 4.8,
         studentsTaken: 1899,
       },
-      {
-        id: 21,
-        title: "Automation Testing",
-        image: `${automationtesting}`,
-        pdf: `${pdf19}`,
-        description: "Speed, Accuracy, Efficiency—Redefining Quality",
-        rating: 4.5,
-        studentsTaken: 1275,
-      },
+      // {
+      //   id: 21,
+      //   title: "Automation Testing",
+      //   image: `${automationtesting}`,
+      //   pdf: `${pdf19}`,
+      //   description: "Speed, Accuracy, Efficiency—Redefining Quality",
+      //   rating: 4.5,
+      //   studentsTaken: 1275,
+      // },
     ],
     Management: [
       {
@@ -224,16 +224,16 @@ const CourseMentor = ({}) => {
         rating: 4.8,
         studentsTaken: 980,
       },
-      {
-        id: 15,
-        title: "Supply Chain Management",
-        image: `${supplychainmanagement}`,
-        pdf: `${pdf22}`,
-        description:
-          "Managing the production, distribution, and delivery of products.",
-        rating: 4.7,
-        studentsTaken: 1069,
-      },
+      // {
+      //   id: 15,
+      //   title: "Supply Chain Management",
+      //   image: `${supplychainmanagement}`,
+      //   pdf: `${pdf22}`,
+      //   description:
+      //     "Managing the production, distribution, and delivery of products.",
+      //   rating: 4.7,
+      //   studentsTaken: 1069,
+      // },
       {
         id: 16,
         title: "Graphics Design",
@@ -243,16 +243,16 @@ const CourseMentor = ({}) => {
         rating: 4.9,
         studentsTaken: 2669,
       },
-      {
-        id: 17,
-        title: "Fintech",
-        image: `${fintech}`,
-        pdf: `${pdf13}`,
-        description:
-          "Technology to improve financial services like banking, payments, and investments.",
-        rating: 4.8,
-        studentsTaken: 1250,
-      },
+      // {
+      //   id: 17,
+      //   title: "Fintech",
+      //   image: `${fintech}`,
+      //   pdf: `${pdf13}`,
+      //   description:
+      //     "Technology to improve financial services like banking, payments, and investments.",
+      //   rating: 4.8,
+      //   studentsTaken: 1250,
+      // },
     ],
     "Electronics/Electrical": [
       {
@@ -297,16 +297,16 @@ const CourseMentor = ({}) => {
       //   rating: 4.9,
       //   studentsTaken: 890,
       // },
-      {
-        id: 22,
-        title: "Psychology",
-        image: `${psycho}`,
-        pdf: `${pdf20}`,
-        description:
-          "Studying mental processes and behavior to understand and address human conditions.",
-        rating: 4.8,
-        studentsTaken: 709,
-      },
+      // {
+      //   id: 22,
+      //   title: "Psychology",
+      //   image: `${psycho}`,
+      //   pdf: `${pdf20}`,
+      //   description:
+      //     "Studying mental processes and behavior to understand and address human conditions.",
+      //   rating: 4.8,
+      //   studentsTaken: 709,
+      // },
     ],
     Mechanical: [
       {
@@ -393,41 +393,41 @@ const CourseMentor = ({}) => {
     });
   };
 
-//   const [otpSent, setOtpSent] = useState(false);
-// const [otp, setOtp] = useState("");
-// const [emailVerified, setEmailVerified] = useState(false);
+  //   const [otpSent, setOtpSent] = useState(false);
+  // const [otp, setOtp] = useState("");
+  // const [emailVerified, setEmailVerified] = useState(false);
 
-//   const sendOTP = async () => {
-//     if (!formData.email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/)) {
-//       toast.error("Please enter a valid email address.");
-//       return;
-//     }
-  
-//     try {
-//       const response = await axios.post(`${API}/mentorship-send-otp`, { email: formData.email });
-//       toast.success("OTP sent to your email!");
-//       setOtpSent(true);
-//     } catch (error) {
-//       toast.error("Failed to send OTP. Try again.");
-//     }
-//   };
-  
-//   const verifyOTP = async () => {
-//     try {
-//       const response = await axios.post(`${API}/mentorship-verify-otp`, { email: formData.email, otp });
-//       if (response.data.success) {
-//         toast.success("Email verified successfully!");
-//         setEmailVerified(true);
-//         setOtp("");
-//         setOtpSent(false)
-//       } else {
-//         toast.error("Invalid OTP. Try again.");
-//       }
-//     } catch (error) {
-//       toast.error("Verification failed.");
-//     }
-//   };
-  
+  //   const sendOTP = async () => {
+  //     if (!formData.email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/)) {
+  //       toast.error("Please enter a valid email address.");
+  //       return;
+  //     }
+
+  //     try {
+  //       const response = await axios.post(`${API}/mentorship-send-otp`, { email: formData.email });
+  //       toast.success("OTP sent to your email!");
+  //       setOtpSent(true);
+  //     } catch (error) {
+  //       toast.error("Failed to send OTP. Try again.");
+  //     }
+  //   };
+
+  //   const verifyOTP = async () => {
+  //     try {
+  //       const response = await axios.post(`${API}/mentorship-verify-otp`, { email: formData.email, otp });
+  //       if (response.data.success) {
+  //         toast.success("Email verified successfully!");
+  //         setEmailVerified(true);
+  //         setOtp("");
+  //         setOtpSent(false)
+  //       } else {
+  //         toast.error("Invalid OTP. Try again.");
+  //       }
+  //     } catch (error) {
+  //       toast.error("Verification failed.");
+  //     }
+  //   };
+
 
   return (
     <div>
@@ -440,11 +440,10 @@ const CourseMentor = ({}) => {
           {categories.map((category) => (
             <button
               key={category}
-              className={`px-4 py-2 rounded-md border-b transition ${
-                category === selectedCategory
+              className={`px-4 py-2 rounded-md border-b transition ${category === selectedCategory
                   ? "bg-[#f15b29] text-white"
                   : "bg-[#080810] text-white hover:bg-orange-700"
-              }`}
+                }`}
               onClick={() => setSelectedCategory(category)}
             >
               {category}
@@ -618,20 +617,20 @@ const CourseMentor = ({}) => {
                   "Data Analytics",
                   "UI/UX Design",
                   "DevOps",
-                  "Automation Testing",
+                  // "Automation Testing",
                   "Business Analytics",
                   "Finance",
                   "Human Resource",
                   "Digital Marketing",
                   "Stock Marketing",
-                  "Supply Chain Management",
-                  "Fintech",
+                  // "Supply Chain Management",
+                  // "Fintech",
                   "Graphics Design",
                   "Embedded System",
                   "Cloud Computing",
                   "IOT & Robotics",
-                  "Nano Technology & Genetic Engineering",
-                  "Psychology",
+                  // "Nano Technology & Genetic Engineering",
+                  // "Psychology",
                   "Auto Cad",
                 ].map((domain, index) => (
                   <option key={index} value={domain}>

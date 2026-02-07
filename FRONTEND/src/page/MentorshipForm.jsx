@@ -5,78 +5,78 @@ import toast, { Toaster } from "react-hot-toast";
 
 const MentorshipForm = () => {
   const [showForm, setShowForm] = useState(false);
-   const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    collegeEmail: "",
+    number: "",
+    collegeName: "",
+    domain: "",
+    passingyear: "",
+  });
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const handleFormSubmit = async (e) => {
+    setIsSubmitting(true);
+    e.preventDefault();
+    const phoneRegex = /^[0-9]{10}$/;
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
+    if (!phoneRegex.test(formData.number)) {
+      toast.error("Please enter a valid phone number.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!emailRegex.test(formData.email)) {
+      toast.error("Please enter a valid email address.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      await axios.post(`${API}/mentorship/register`, {
+        name: formData.name,
+        email: formData.email,
+        collegeEmail: formData.collegeEmail,
+        phone: formData.number,
+        collegeName: formData.collegeName,
+        domain: formData.domain,
+        passingyear: formData.passingyear,
+      });
+      toast.success("Registration successful!");
+      setIsSubmitting(false);
+      setTimeout(() => {
+        window.open(selectedCourse.pdf, "_blank");
+        ClearForm();
+      }, 1500);
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+      setIsSubmitting(false);
+      console.error(error.response?.data?.error);
+    }
+  };
+
+  const ClearForm = () => {
+    setShowForm(false);
+    setFormData({
       name: "",
       email: "",
-      collegeEmail:"",
+      collegeEmail: "",
       number: "",
       collegeName: "",
       domain: "",
       passingyear: "",
     });
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-      };
-    
-       const [isSubmitting, setIsSubmitting] = useState(false);
-      const handleFormSubmit = async (e) => {
-        setIsSubmitting(true);
-        e.preventDefault();
-        const phoneRegex = /^[0-9]{10}$/;
-        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-      
-        if (!phoneRegex.test(formData.number)) {
-          toast.error("Please enter a valid phone number.");
-          setIsSubmitting(false);
-          return;
-        }
-      
-        if (!emailRegex.test(formData.email)) {
-          toast.error("Please enter a valid email address.");
-          setIsSubmitting(false);
-          return;
-        }
-        
-        try {
-          await axios.post(`${API}/mentorship/register`, {
-            name: formData.name,
-            email: formData.email,
-            collegeEmail:formData.collegeEmail,
-            phone: formData.number,
-            collegeName: formData.collegeName,
-            domain: formData.domain,
-            passingyear: formData.passingyear,
-          });
-          toast.success("Registration successful!");
-          setIsSubmitting(false);
-          setTimeout(() => {
-            window.open(selectedCourse.pdf, "_blank");
-            ClearForm();
-          }, 1500);
-        } catch (error) {
-          toast.error("Something went wrong. Please try again.");
-          setIsSubmitting(false);
-          console.error(error.response?.data?.error);
-        }
-      };
-    
-      const ClearForm = () => {
-        setShowForm(false);
-        setFormData({
-          name: "",
-          email: "",
-          collegeEmail: "",
-          number: "",
-          collegeName: "",
-          domain: "",
-          passingyear: "",
-        });
-      };
-    
+  };
+
   return (
     <div>
-          <Toaster position="top-center" reverseOrder={false} />
+      <Toaster position="top-center" reverseOrder={false} />
       <button
         className="px-4 py-2 border border-black text-[black] flex items-center justify-center font-semibold rounded transition"
         onClick={() => setShowForm(true)}
@@ -94,7 +94,7 @@ const MentorshipForm = () => {
               X
             </span>
             <h2 className="text-lg text-center font-semibold mb-4">
-             Apply Now
+              Apply Now
             </h2>
             <form onSubmit={handleFormSubmit}>
               <input
@@ -187,14 +187,14 @@ const MentorshipForm = () => {
                   "Human Resource",
                   "Digital Marketing",
                   "Stock Marketing",
-                  "Supply Chain Management",
-                  "Fintech",
+                  // "Supply Chain Management",
+                  // "Fintech",
                   "Graphics Design",
                   "Embedded System",
                   "Cloud Computing",
                   "IOT & Robotics",
-                  "Nano Technology & Genetic Engineering",
-                  "Psychology",
+                  // "Nano Technology & Genetic Engineering",
+                  // "Psychology",
                   "Auto Cad",
                 ].map((domain, index) => (
                   <option key={index} value={domain}>

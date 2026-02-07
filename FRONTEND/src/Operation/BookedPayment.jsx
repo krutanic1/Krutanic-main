@@ -671,8 +671,13 @@ const BookedAmount = () => {
       <Toaster position="top-center" reverseOrder={false} />
       {offerData && (
         <div className="form">
-          <form onSubmit={sendOfferleter}>
-            <span onClick={resetOfferLeter}>✖</span>
+          <form onSubmit={sendOfferleter} className="relative">
+            <div
+              onClick={resetOfferLeter}
+              className="absolute top-2 right-2 text-gray-600 hover:text-red-500 cursor-pointer text-xl font-bold p-2"
+            >
+              ✖
+            </div>
             <h2>Send Offer Letter</h2>
             <p>
               Name: <strong>{offerData?.fullname}</strong>
@@ -726,16 +731,25 @@ const BookedAmount = () => {
               <option value="Online">Online</option>
               <option value="Offline">Offline</option>
             </select>
-            <input
-              type="submit"
-              value={
-                isOfferLetterSending
-                  ? "Sending Pls Wait..."
-                  : "Send Offer Letter"
-              }
-              className="cursor-pointer"
-              disabled={isOfferLetterSending}
-            />
+            <div className="flex gap-4 mt-4">
+              <button
+                type="button"
+                onClick={resetOfferLeter}
+                className="w-full bg-gray-500 text-white p-2 rounded hover:bg-gray-600 transition"
+              >
+                Cancel
+              </button>
+              <input
+                type="submit"
+                value={
+                  isOfferLetterSending
+                    ? "Sending..."
+                    : "Send Letter"
+                }
+                className="w-full bg-[#1e40af] text-white p-2 rounded cursor-pointer hover:bg-[#1e3a8a] transition"
+                disabled={isOfferLetterSending}
+              />
+            </div>
           </form>
         </div>
       )}

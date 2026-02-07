@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 const AdvanceCounses = () => {
   const courses = [
     {
-      title: "MERN Stack Devlopment",
+      title: "MERN Stack Development",
       description:
         "Building web apps using MongoDB, Express.js, React, and Node.js",
       icon: <i className="fa fa-code" aria-hidden="true"></i>,
@@ -155,14 +155,14 @@ const AdvanceCounses = () => {
       icon: "🌐",
     },
   ];
-  
-  
-  
+
+
+
 
   return (
     <section>
       <div className="rounded-xl py-1 bg-center bg-cover bg-[url('https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=1639&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')]">
-       <h1 data-aos="zoom-in">| Our advanced program</h1>
+        <h1 data-aos="zoom-in">| Our advanced program</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {courses.map((course, index) => (
             <div
@@ -184,11 +184,11 @@ const AdvanceCounses = () => {
         </div>
         <div className="my-10 text-center">
           <button className="border group px-3 py-1.5 rounded-full">
-            <Link to="/advance"> View All Advanced Courses <i className="fa fa-arrow-right ml-2 border  rounded-full p-2 group-hover:translate-x-1 ease-linear duration-300 " aria-hidden="true"></i></Link> 
+            <Link to="/advance"> View All Advanced Courses <i className="fa fa-arrow-right ml-2 border  rounded-full p-2 group-hover:translate-x-1 ease-linear duration-300 " aria-hidden="true"></i></Link>
           </button>
         </div>
       </div>
-       
+
       {/* <div className="mt-8">
         <h1 className="text-2xl font-bold my-6">
          | Why Choose Our Advanced Courses?
@@ -232,27 +232,27 @@ const AdvanceCounses = () => {
           </li>
         </ul>
       </div> */}
-       <div>
-       <h1 className="text-2xl font-bold my-10">
-         | Why Choose Our Advanced Courses?
+      <div>
+        <h1 className="text-2xl font-bold my-10">
+          | Why Choose Our Advanced Courses?
         </h1>
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-center">
-              {Difference.map((Difference, index) => (
-                <div
-                  key={index}
-                  className="provide1 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition"
-                >
-                  <div className="text-[#f15b29] text-4xl mb-4">
-                    {Difference.icon}
-                  </div>
-                  <h3 className="text-lg text-[#f15b29] font-bold  mb-3">
-                    {Difference.title}
-                  </h3>
-                  <p className="text-white  ">{Difference.description}</p>
-                </div>
-              ))}
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-center">
+          {Difference.map((Difference, index) => (
+            <div
+              key={index}
+              className="provide1 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition"
+            >
+              <div className="text-[#f15b29] text-4xl mb-4">
+                {Difference.icon}
+              </div>
+              <h3 className="text-lg text-[#f15b29] font-bold  mb-3">
+                {Difference.title}
+              </h3>
+              <p className="text-white  ">{Difference.description}</p>
             </div>
-    </div>
+          ))}
+        </div>
+      </div>
     </section>
   );
 };

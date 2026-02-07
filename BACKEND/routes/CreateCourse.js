@@ -1,4 +1,4 @@
-  const express = require("express");
+const express = require("express");
 const CreateCourse = require("../models/CreateCourse");
 const { cachedQuery, invalidateCache } = require("../utils/cache");
 const router = express.Router();
@@ -38,6 +38,18 @@ router.get("/getcourses", async (req, res) => {
         300,  // 5 minutes TTL
         'static'
       );
+
+      // Filter out commented out courses
+      if (Array.isArray(courses)) {
+        const coursesToExclude = [
+          "Automation Testing",
+          "Supply Chain Management",
+          "Fintech",
+          "Psychology",
+          "Nano Technology & Genetic Engineering"
+        ];
+        courses = courses.filter(course => !coursesToExclude.includes(course.title));
+      }
 
       // Add HTTP cache header for browser caching
       res.set('Cache-Control', 'public, max-age=300');

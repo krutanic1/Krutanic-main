@@ -399,19 +399,19 @@ const AddEvent = () => {
                   <option value="Data Analytics">Data Analytics</option>
                   <option value="UI/UX Design">UI/UX Design</option>
                   <option value="DevOps">DevOps</option>
-                  <option value="Automation Testing">Automation Testing</option>
+                  {/* <option value="Automation Testing">Automation Testing</option> */}
                   <option value="Finance">Finance</option>
                   <option value="Human Resource">Human Resource</option>
                   <option value="Digital Marketing">Digital Marketing</option>
                   <option value="Stock Marketing">Stock Marketing</option>
-                  <option value="Supply Chain Management">Supply Chain Management</option>
-                  <option value="Fintech">Fintech</option>
+                  {/* <option value="Supply Chain Management">Supply Chain Management</option> */}
+                  {/* <option value="Fintech">Fintech</option> */}
                   <option value="Graphics Design">Graphics Design</option>
                   <option value="Embedded System">Embedded System</option>
                   <option value="Cloud Computing">Cloud Computing</option>
                   <option value="IOT & Robotics">IOT & Robotics</option>
-                  <option value="Nano Technology & Genetic Engineering">Nano Technology & Genetic Engineering</option>
-                  <option value="Psychology">Psychology</option>
+                  {/* <option value="Nano Technology & Genetic Engineering">Nano Technology & Genetic Engineering</option> */}
+                  {/* <option value="Psychology">Psychology</option> */}
                   <option value="Auto Cad">Auto Cad</option>
                 </select>
               </div>
