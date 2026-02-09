@@ -13,7 +13,7 @@ const Playground = () => {
     score: 0,
     quizCompleted: false,
     appliedUsers: [],
-    timeLeft: 60,
+    timeLeft: 30,
     applied: [],
     quizEndedDueToTabSwitch: false,
     showInstructions: false,
@@ -235,7 +235,7 @@ const Playground = () => {
       score: 0,
       selectedOption: null,
       quizCompleted: false,
-      timeLeft: 60,
+      timeLeft: 30,
     }));
   };
 
@@ -311,7 +311,7 @@ const Playground = () => {
         ? {
           ...prev,
           currentQuestionIndex: nextIndex,
-          timeLeft: 60,
+          timeLeft: 30,
           selectedOption: null,
         }
         : { ...prev, quizCompleted: true, selectedOption: null }
