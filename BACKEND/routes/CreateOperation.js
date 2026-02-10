@@ -247,7 +247,7 @@ router.post("/send-email", async (req, res) => {
         <p style="font-size: 14px; color: #333;">Team Krutanic</p>
       </div>
       <div style="text-align: center; font-size: 12px; color: #888; padding: 10px 0; border-top: 1px solid #ddd;">
-        <p>&copy; 2024 Krutanic. All Rights Reserved.</p>
+        <p>&copy; 2026 Krutanic. All Rights Reserved.</p>
       </div>
     </div>
   `;

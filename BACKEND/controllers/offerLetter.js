@@ -10,8 +10,8 @@ let transporter = nodemailer.createTransport({
     port: process.env.SMTP_PORT,
     secure: false,
     auth: {
-        user: process.env.SMTP_OFFFERMAIL,
-        pass: process.env.SMTP_OFFERPASSWORD,
+        user: process.env.SMTP_MAIL2,
+        pass: process.env.SMTP_PASSWORD2,
     },
     tls: {
         rejectUnauthorized: false,
@@ -168,7 +168,7 @@ DATE:
     const pdfBuffer = await createOfferLetterPDF(pdfword1, pdfword2);
 
     const mailOptions = {
-        from: process.env.SMTP_OFFERMAIL,
+        from: process.env.SMTP_MAIL2,
         to: email,
         cc: ["bhumika@krutanic.org", "shrikant@krutanic.org"],
         subject,
