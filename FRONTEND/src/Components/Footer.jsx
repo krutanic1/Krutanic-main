@@ -157,7 +157,7 @@ const Footer = () => {
         </div>
 
         <div className="footerbottom">
-          <p>Copyright 2024 KRUTANIC. All rights reserved.</p>
+          <p>Copyright 2026 KRUTANIC. All rights reserved.</p>
         </div>
       </footer>
       <div className="pay">
