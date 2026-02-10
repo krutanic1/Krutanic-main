@@ -272,7 +272,7 @@ router.post("/eventsendotp", async (req, res) => {
   try {
     const eventuser = await EventRegistration.findOne({ email });
     if (!eventuser) {
-      return res.status(404).json({ message: "User not found enter a valid email" });
+      return res.status(404).json({ message: "User not exist. Create a new account." });
     }
     const otp = crypto.randomInt(100000, 1000000);
     const otpExpires = Date.now() + 10 * 60 * 1000; // 10 mins expiration
@@ -366,6 +366,21 @@ router.post("/eventapplications", async (req, res) => {
     res.status(201).json({ message: "Job Applied successfully", application: newEventApplication });
   } catch (error) {
     console.error("Error creating job application:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Check if user has applied for an event
+router.get("/check-event-application/:userId/:eventId", async (req, res) => {
+  try {
+    const { userId, eventId } = req.params;
+    const application = await EventApplication.findOne({ userId, eventId });
+    if (application) {
+      return res.status(200).json({ applied: true, application });
+    }
+    res.status(200).json({ applied: false });
+  } catch (error) {
+    console.error("Error checking event application:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });

@@ -13,11 +13,26 @@ const EventDetails = () => {
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const [isRegistered, setIsRegistered] = useState(false);
+    const userId = localStorage.getItem("eventuserId");
+
     useEffect(() => {
         const fetchEventCallback = async () => {
             try {
                 const response = await axios.get(`${API}/event-by-slug/${slug}`);
                 setEvent(response.data);
+
+                // Check registration status if user is logged in and event is loaded
+                if (userId && response.data) {
+                    try {
+                        const regResponse = await axios.get(`${API}/check-event-application/${userId}/${response.data._id}`);
+                        if (regResponse.data.applied) {
+                            setIsRegistered(true);
+                        }
+                    } catch (err) {
+                        console.error("Error checking registration:", err);
+                    }
+                }
             } catch (error) {
                 console.error("Error fetching event details:", error);
                 toast.error("Failed to load event details.");
@@ -27,19 +42,47 @@ const EventDetails = () => {
         };
 
         fetchEventCallback();
-    }, [slug]);
+    }, [slug, userId]);
 
-    const handleJoinNow = () => {
+    const handleJoinNow = async () => {
         const token = localStorage.getItem("eventToken");
-        if (token) {
-            navigate("/EventDashboard");
-        } else {
+        if (!token) {
             navigate("/EventLogin", {
                 state: {
                     message: "Please login to join this event",
                     from: { pathname: "/EventDashboard" }
                 }
             });
+            return;
+        }
+
+        if (isRegistered) {
+            navigate("/EventDashboard");
+            return;
+        }
+
+        // Register the user for this event
+        try {
+            const response = await axios.post(`${API}/eventapplications`, {
+                userId: userId,
+                eventId: event._id,
+                remarks: "Joined via Event Details Page" // Optional remark
+            });
+
+            if (response.status === 201) {
+                toast.success("Successfully registered for the event!");
+                setIsRegistered(true);
+                setTimeout(() => {
+                    navigate("/EventDashboard");
+                }, 1500);
+            }
+        } catch (error) {
+            console.error("Error registering for event:", error);
+            if (error.response && error.response.data && error.response.data.error) {
+                toast.error(error.response.data.error);
+            } else {
+                toast.error("Failed to register. Please try again.");
+            }
         }
     };
 
@@ -206,7 +249,7 @@ const EventDetails = () => {
                                     onClick={handleJoinNow}
                                     className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transform transition hover:-translate-y-1 hover:shadow-2xl mb-4 text-lg"
                                 >
-                                    Register Now
+                                    {isRegistered ? "Go to Dashboard" : "Register Now"}
                                 </button>
 
                                 {event.maxParticipants && (

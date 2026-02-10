@@ -28,7 +28,7 @@ const EventLogin = () => {
                 setShowOtp(true);
             }
         } catch (error) {
-            toast.error(error.response?.data?.message || "Error sending OTP. User not found?");
+            toast.error(error.response?.data?.message || "User not found? Create new account");
         } finally {
             setLoading(false);
         }
