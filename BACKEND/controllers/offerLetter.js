@@ -171,7 +171,7 @@ DATE:
         from: `"Krutanic HR Team" <${process.env.SMTP_MAIL2}>`,
         replyTo: process.env.SMTP_MAIL2,
         to: email,
-        cc: ["bhumika@krutanic.org", "shrikant@krutanic.org"],
+        cc: ["bhumika@krutanic.org", "shrikant@krutanic.org","tejo.raditya@krutanic.org"],
         subject,
         html: body,
         priority: "normal", // Change from "high" to "normal" - high priority can trigger spam filters
