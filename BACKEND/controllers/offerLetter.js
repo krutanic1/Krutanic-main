@@ -168,12 +168,18 @@ DATE:
     const pdfBuffer = await createOfferLetterPDF(pdfword1, pdfword2);
 
     const mailOptions = {
-        from: process.env.SMTP_MAIL2,
+        from: `"Krutanic HR Team" <${process.env.SMTP_MAIL2}>`,
+        replyTo: process.env.SMTP_MAIL2,
         to: email,
-        cc: ["bhumika@krutanic.org", "shrikant@krutanic.org"],
+        cc: ["bhumika@krutanic.org", "shrikant@krutanic.org","tejo.raditya@krutanic.org"],
         subject,
         html: body,
-        priority: "high",
+        priority: "normal", // Change from "high" to "normal" - high priority can trigger spam filters
+        headers: {
+            'X-Mailer': 'Krutanic',
+            'X-Priority': '3',
+            'Importance': 'Normal'
+        },
         attachments: [
             {
                 filename: "Offer_Letter.pdf",

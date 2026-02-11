@@ -73,6 +73,7 @@ const BookedAmount = () => {
         day: "numeric",
       }),
       location: offerLocation,
+      smtpConfig: 'SMTP_MAIL2',
     };
     // console.log("Sending Offer Letter:", offerLetterDetails);
     try {
