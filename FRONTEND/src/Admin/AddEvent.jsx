@@ -339,7 +339,7 @@ const AddEvent = () => {
   };
 
   return (
-    <div id="Event" className="ml-[270px] p-4">
+    <div id="Event" className="ml-[270px] p-4 max-w-[calc(100vw-280px)] overflow-x-hidden">
       <Toaster position="top-center" reverseOrder={false} />
 
       {/* Event Form Modal */}
@@ -852,47 +852,49 @@ const AddEvent = () => {
 
       {/* Applied Details Modal */}
       {showAppliedDetails && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 overflow-y-auto">
-          <div className="bg-white p-6 rounded-lg w-full max-w-4xl m-4">
-            <div className="flex justify-between items-center mb-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-lg w-full max-w-4xl m-4 max-h-[80vh] flex flex-col relative">
+            <div className="flex justify-between items-center p-6 border-b shrink-0">
               <h2 className="text-2xl font-bold">Applied Users</h2>
-              <span onClick={() => setShowAppliedDetails(null)} className="cursor-pointer text-xl font-bold">✖</span>
+              <span onClick={() => setShowAppliedDetails(null)} className="cursor-pointer text-xl font-bold hover:text-red-800">✖</span>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="p-3 border">Sl</th>
-                    <th className="p-3 border">Name</th>
-                    <th className="p-3 border">Email</th>
-                    <th className="p-3 border">Phone</th>
-                    <th className="p-3 border">College Email</th>
-                    <th className="p-3 border">College Name</th>
-                    <th className="p-3 border">Coins</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {showAppliedDetails?.userDetails?.map((user, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="p-3 border">{index + 1}</td>
-                      <td className="p-3 border">{user.name}</td>
-                      <td className="p-3 border">{user.email}</td>
-                      <td className="p-3 border">{user.phone}</td>
-                      <td className="p-3 border">{user.collegeEmailId}</td>
-                      <td className="p-3 border">{user.collegeName}</td>
-                      {showAppliedDetails?.enrollments?.map((item) => (
-                        item.userId === user._id && <td key={item.userId} className="p-3 border">{item.coin || 0}</td>
-                      ))}
+            <div className="overflow-y-auto p-6">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-gray-100">
+                      <th className="p-3 border">Sl</th>
+                      <th className="p-3 border">Name</th>
+                      <th className="p-3 border">Email</th>
+                      <th className="p-3 border">Phone</th>
+                      <th className="p-3 border">College Email</th>
+                      <th className="p-3 border">College Name</th>
+                      <th className="p-3 border">Coins</th>
                     </tr>
-                  ))}
-                  {(!showAppliedDetails?.userDetails || showAppliedDetails.userDetails.length === 0) && (
-                    <tr>
-                      <td colSpan="7" className="p-4 text-center text-gray-500">No users applied yet.</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {showAppliedDetails?.userDetails?.map((user, index) => (
+                      <tr key={index} className="hover:bg-gray-50">
+                        <td className="p-3 border">{index + 1}</td>
+                        <td className="p-3 border">{user.name}</td>
+                        <td className="p-3 border">{user.email}</td>
+                        <td className="p-3 border">{user.phone}</td>
+                        <td className="p-3 border">{user.collegeEmailId}</td>
+                        <td className="p-3 border">{user.collegeName}</td>
+                        {showAppliedDetails?.enrollments?.map((item) => (
+                          item.userId === user._id && <td key={item.userId} className="p-3 border">{item.coin || 0}</td>
+                        ))}
+                      </tr>
+                    ))}
+                    {(!showAppliedDetails?.userDetails || showAppliedDetails.userDetails.length === 0) && (
+                      <tr>
+                        <td colSpan="7" className="p-4 text-center text-gray-500">No users applied yet.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
@@ -917,37 +919,37 @@ const AddEvent = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-100 text-gray-700">
-                <th className="p-3 border">Sl No.</th>
-                <th className="p-3 border">Title</th>
-                <th className="p-3 border">Questions</th>
-                <th className="p-3 border">Start Date</th>
-                <th className="p-3 border">Status</th>
-                <th className="p-3 border">Applied</th>
-                <th className="p-3 border">Visibility</th>
-                <th className="p-3 border">Change Status</th>
-                <th className="p-3 border">Action</th>
+                <th className="p-2 border">Sl No.</th>
+                <th className="p-2 border">Title</th>
+                <th className="p-2 border">Questions</th>
+                <th className="p-2 border">Start Date</th>
+                <th className="p-2 border">Status</th>
+                <th className="p-2 border">Applied</th>
+                <th className="p-2 border">Visibility</th>
+                <th className="p-2 border">Change Status</th>
+                <th className="p-2 border">Action</th>
               </tr>
             </thead>
             <tbody>
               {allEvents?.map((events, index) => {
                 return (
                   <tr key={index} className="hover:bg-gray-50">
-                    <td className="p-3 border">{index + 1}</td>
-                    <td className="p-3 border cursor-pointer font-medium text-blue-600 hover:underline" onClick={() => setSetectedEvent(events)}>{events.title}</td>
-                    <td className="p-3 border text-center">{events.questions?.length || 0}</td>
-                    <td className="p-3 border">
+                    <td className="p-2 border">{index + 1}</td>
+                    <td className="p-2 border cursor-pointer font-medium text-blue-600 hover:underline truncate max-w-[150px]" title={events.title} onClick={() => setSetectedEvent(events)}>{events.title}</td>
+                    <td className="p-2 border text-center">{events.questions?.length || 0}</td>
+                    <td className="p-2 border">
                       {events.startDate ? new Date(events.startDate).toLocaleDateString() : 'N/A'}
                     </td>
-                    <td className="p-3 border capitalize">{events.status}</td>
-                    <td className="p-3 border text-center cursor-pointer text-red-600 font-bold hover:underline" onClick={() => handleShowAppliedDetails(events._id)}>
+                    <td className="p-2 border capitalize">{events.status}</td>
+                    <td className="p-2 border text-center cursor-pointer text-red-600 font-bold hover:underline" onClick={() => handleShowAppliedDetails(events._id)}>
                       {events.enrollments?.length || 0}
                     </td>
-                    <td className="p-3 border text-center">
+                    <td className="p-2 border text-center">
                       {events.isPublished ? <span className="text-green-600 font-bold">Published</span> : <span className="text-gray-500">Draft</span>}
                     </td>
-                    <td className="p-3 border">
+                    <td className="p-2 border">
                       <select
-                        className="p-1 border rounded"
+                        className="p-1 border rounded text-sm w-full"
                         value={events.status}
                         onChange={(e) => handleStatusChange(e, events._id)}
                       >
@@ -956,8 +958,8 @@ const AddEvent = () => {
                         <option value="completed">Completed</option>
                       </select>
                     </td>
-                    <td className="p-3 border">
-                      <div className="flex gap-2">
+                    <td className="p-2 border">
+                      <div className="flex gap-2 justify-center">
                         <button className="text-blue-500 hover:text-blue-700" onClick={() => handleEdit(events)}>
                           <i className="fa fa-edit"></i> Edit
                         </button>
