@@ -23,9 +23,9 @@ const AdvanceSchema = new mongoose.Schema({
     required: true,
     enum: ["0 year", "1-2 years", "3-5 years", "5+ years"],
   },
-  interestedDomain:{
-     type:String,
-     enum: ["Data Science", "Digital Marketing", "Investment Banking", "MERN Stack Devlopment", "Product Management", "Performance Marketing", "Prompt Engineering in Generative AI" , "Automation Testing" ],
+  interestedDomain: {
+    type: String,
+    enum: ["Data Science", "Digital Marketing", "Investment Banking", "MERN Stack Development", "Product Management", "Performance Marketing", "Prompt Engineering in Generative AI", "Automation Testing"],
   },
   goal: {
     type: String,
@@ -49,12 +49,12 @@ const AdvanceSchema = new mongoose.Schema({
       return this.domain === "Other";
     },
   },
-  reason:{
-    type:String,
+  reason: {
+    type: String,
   },
-  action:{
-    type:String,
-    default:"Unseen"
+  action: {
+    type: String,
+    default: "Unseen"
   },
   createdAt: {
     type: Date,

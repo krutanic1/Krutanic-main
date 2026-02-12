@@ -30,6 +30,26 @@ router.get("/allevents", async (req, res) => {
   }
 });
 
+// Get events summary (optimized payload)
+router.get("/events/summary", async (req, res) => {
+  try {
+    const events = await AddEvent.find({}, {
+      title: 1,
+      slug: 1,
+      type: 1,
+      startDate: 1,
+      endDate: 1,
+      image: 1,
+      shortDescription: 1,
+      isFree: 1,
+      _id: 1
+    }).sort({ _id: -1 });
+    res.status(200).json(events);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Get single event by ID
 router.get("/allevents/:id", async (req, res) => {
   try {

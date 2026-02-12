@@ -41,7 +41,7 @@ const TalentHunt = () => {
 
   const fetchEvents = async () => {
     try {
-      const response = await axios.get(`${API}/allevents`);
+      const response = await axios.get(`${API}/events/summary`);
       setEvents(response.data);
     } catch (error) {
       console.error("Error fetching events:", error);
