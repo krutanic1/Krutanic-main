@@ -57,7 +57,7 @@ const RevenueSheet = () => {
   const fetchDailyData = async () => {
     try {
       setLoadingDaily(true);
-      let params = { all: true };
+      let params = {};
 
       if (viewMode === "custom") {
         if (!startDate || !endDate) {
@@ -65,15 +65,15 @@ const RevenueSheet = () => {
           setLoadingDaily(false);
           return;
         }
-        params = { ...params, startDate, endDate };
+        params = { startDate, endDate };
       } else {
         // Monthly Mode
         if (!selectedMonth) return;
         const [month, year] = selectedMonth.split(" ");
-        params = { ...params, month, year };
+        params = { month, year };
       }
 
-      const response = await axios.get(`${API}/getnewstudentenroll`, { params });
+      const response = await axios.get(`${API}/getdailyrevenue`, { params });
       setDailyData(response.data);
     } catch (error) {
       console.error("Error fetching daily data:", error);
@@ -98,55 +98,9 @@ const RevenueSheet = () => {
   }, [selectedMonth, viewMode, startDate, endDate]);
 
 
-  // Helper: Extract unique leads from the currently fetched daily data for the dropdown
-  // Use a predefined list or merge with fetched data if needed. 
-  // For consistency, we can collect all leads from monthlyStats (all time) or just dailyData.
-  // Using dailyData ensures the dropdown filters what's visible.
-  const uniqueLeads = ["All", ...new Set(dailyData.map(student => student.lead).filter(Boolean))].sort();
-
-  // --- Calculations for Daily Table (Client-side aggregation of the *fetched subset*) ---
-
-  // Group dailyData by Date for the "Daily Revenue" table display
-  const revenueByDay = {};
-
-  // Filter by selected lead (Client-side filter of the fetched subset)
-  const filteredDailyTransactions = selectedLead === "All"
-    ? dailyData
-    : dailyData.filter(student => student.lead === selectedLead);
-
-  filteredDailyTransactions.forEach(student => {
-    const date = new Date(student.createdAt).toLocaleDateString("en-GB");
-    const revenue = student.programPrice || 0;
-    const booked = student.paidAmount || 0;
-
-    // Credited logic match original: fullPaid or remark 'Half_Cleared'
-    const credited = student.status === "fullPaid" || (Array.isArray(student.remark) && student.remark[student.remark.length - 1] === "Half_Cleared") ? student.paidAmount || 0 : 0;
-    const pending = revenue - credited;
-
-    if (!revenueByDay[date]) {
-      revenueByDay[date] = {
-        date,
-        total: 0,
-        booked: 0,
-        credited: 0,
-        pending: 0,
-        payments: 0,
-        paymentsByLead: {}
-      };
-    }
-
-    revenueByDay[date].total += revenue;
-    revenueByDay[date].booked += booked;
-    revenueByDay[date].credited += credited;
-    revenueByDay[date].pending += pending;
-    revenueByDay[date].payments += 1;
-
-    if (student.lead) {
-      revenueByDay[date].paymentsByLead[student.lead] = (revenueByDay[date].paymentsByLead[student.lead] || 0) + 1;
-    }
-  });
-
-  const dailyRows = Object.values(revenueByDay).sort((a, b) => new Date(b.date.split('/').reverse().join('-')) - new Date(a.date.split('/').reverse().join('-')));
+  // --- Calculations for Daily Table (Backend aggregation) ---
+  // The backend now returns pre-aggregated data for the daily table.
+  const dailyRows = dailyData;
 
 
   return (
@@ -229,18 +183,7 @@ const RevenueSheet = () => {
           )}
 
           {/* Lead Filter */}
-          <div>
-            <label className="block text-sm font-semibold mb-1">Filter by Payment Type</label>
-            <select
-              className="border p-2 rounded w-[200px]"
-              value={selectedLead}
-              onChange={(e) => setSelectedLead(e.target.value)}
-            >
-              {uniqueLeads.map(lead => (
-                <option key={lead} value={lead}>{lead}</option>
-              ))}
-            </select>
-          </div>
+          {/* Lead Filter Removed as daily data is pre-aggregated */}
 
         </div>
       </section>

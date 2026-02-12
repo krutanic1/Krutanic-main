@@ -46,12 +46,21 @@ const CreateBDA = () => {
           newBda
         );
         toast.success("BDA updated successfully!");
+        // Update local state immediately with returned data
+        setBda((prevBda) =>
+          prevBda.map((item) => item._id === editingBdaId ? response.data : item)
+        );
       } else {
         const response = await axios.post(`${API}/createbda`, newBda);
         toast.success("BDA created successfully!");
+        // Append new BDA to local state immediately
+        // Ensure status is Active as backend doesn't return it explicitly in all cases but defaults usually
+        // If backend schema defaults status to 'Active', response.data will have it if it returns the saved object.
+        // Backend code: res.status(201).json(newbda); -> newbda is the mongoose doc, so it has defaults.
+        setBda((prevBda) => [response.data, ...prevBda]);
       }
       resetForm();
-      fetchBda();
+      // fetchBda(); // Removed to prevent flickering/delay. We rely on optimistic/response update.
     } catch (error) {
       const errorMessage = error.response?.data?.message || "There was an error while creating or updating the bda";
       toast.error(errorMessage);
@@ -125,19 +134,20 @@ const CreateBDA = () => {
     }));
   };
 
-  const handleDelete = (_id) => {
+  const handleDelete = async (_id) => {
     const isConfirmed = window.confirm(
       "Are you sure you want to delete the BDA account?"
     );
     if (isConfirmed) {
-      axios
-        .delete(`${API}/deletebda/${_id}`)
-        .then((response) => {
-          fetchBda();
-        })
-        .catch((error) => {
-          console.error("There was an error deleting the bda:", error);
-        });
+      try {
+        await axios.delete(`${API}/deletebda/${_id}`);
+        setBda((prevBda) => prevBda.filter((item) => item._id !== _id));
+        toast.success("BDA deleted successfully!");
+      } catch (error) {
+        console.error("There was an error deleting the bda:", error);
+        toast.error("Failed to delete BDA.");
+        fetchBda(); // Revert on error
+      }
     }
   };
   const handleEdit = (bdaId) => {
@@ -199,7 +209,11 @@ const CreateBDA = () => {
         const response = await axios.put(`${API}/updatestatus/${bdaId}`, { status });
         if (response.status === 200) {
           toast.success(`Account ${status} successfully!`);
-          fetchBda();
+          if (status === "Inactive") {
+            setBda((prevBda) => prevBda.filter((item) => item._id !== bdaId));
+          } else {
+            fetchBda();
+          }
         } else {
           toast.error("Failed to update account status.");
         }
@@ -252,24 +266,29 @@ const CreateBDA = () => {
     }
   };
 
-  const handleChangeAccess = async (id) => {
+  const handleChangeAccess = async (id, currentAccess) => {
     const isConfirmed = window.confirm(
       `Are you sure you want to change the access of this account?`
     );
     if (isConfirmed) {
       try {
-        const response = await axios.put(`${API}/updateaccess/${id}`, { Access: false });
+        const newAccess = !currentAccess;
+        const response = await axios.put(`${API}/updateaccess/${id}`, { Access: newAccess });
         if (response.status === 200) {
-          toast.success(`Account inactive successfully!`);
-          fetchBda();
+          toast.success(`Account access changed successfully!`);
+          setBda((prevBda) =>
+            prevBda.map((item) =>
+              item._id === id ? { ...item, Access: newAccess } : item
+            )
+          );
         } else {
           toast.error("Failed to update account");
         }
       } catch (error) {
         toast.error("An error occurred while updating the account");
+        fetchBda(); // Revert on error
       }
     }
-
   }
 
   return (
@@ -430,9 +449,9 @@ const CreateBDA = () => {
                   <td>
                     <div className="cursor-pointer">
                       {bda.Access === true ? (
-                        <i onClick={() => handleChangeAccess(bda._id)} title="Access given" className="fa fa-check text-green-900"></i>
+                        <i onClick={() => handleChangeAccess(bda._id, bda.Access)} title="Access given" className="fa fa-check text-green-900"></i>
                       ) : (
-                        <i onClick={() => handleChangeAccess(bda._id)} title="Access not given" className="fa fa-times text-red-600"></i>
+                        <i onClick={() => handleChangeAccess(bda._id, bda.Access)} title="Access not given" className="fa fa-times text-red-600"></i>
                       )}
                     </div>
                   </td>
