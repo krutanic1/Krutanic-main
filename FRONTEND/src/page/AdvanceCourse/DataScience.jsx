@@ -1074,7 +1074,7 @@ Learn to use marketing automation tools to streamline campaigns, nurture leads, 
             }`}
           >
             <p className="text-lg font-semibold text-black">
-              Program fees 61,999/-
+              Program fees 40,000/-
             </p>
             <div className=" relative flex space-x-4">
               <button className="flex items-center px-3 py-2 border rounded-md text-white bg-black  hover:text-[#f15b29]">

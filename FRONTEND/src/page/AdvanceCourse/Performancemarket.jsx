@@ -1116,7 +1116,7 @@ const [actionType, setActionType] = useState();
           >
             <p className="text-xl font-semibold text-black">
               {" "}
-              Program fees 60,999/-
+              Program fees 40,000/-
             </p>
             <button className="flex items-center justify-center px-3 py-2 border rounded-md text-white bg-black  hover:text-[#f15b29]">
               <a

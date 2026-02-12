@@ -1101,7 +1101,7 @@ const [actionType, setActionType] = useState();
             }`}
           >
             <p className="text-lg font-semibold text-black">
-              Program fees 71,999/-
+              Program fees 60,000/-
             </p>
             <div className="flex space-x-4">
               <button className="flex items-center px-3 py-2 border rounded-md text-white bg-black  hover:text-[#f15b29]">
