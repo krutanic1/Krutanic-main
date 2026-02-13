@@ -9,7 +9,8 @@ const AddEvent = () => {
   const [editId, setEditId] = useState(null);
   const [allEvents, setAllEvents] = useState([]);
   const [selectedEvent, setSetectedEvent] = useState(null);
-  const [showAppliedDetails, setShowAppliedDetails] = useState(null)
+  const [showAppliedDetails, setShowAppliedDetails] = useState(null);
+  const [sendingReminder, setSendingReminder] = useState(null);
 
   // Bulk Upload State
   const [isBulkUploadVisible, setIsBulkUploadVisible] = useState(false);
@@ -301,6 +302,25 @@ const AddEvent = () => {
       fetchEvent();
     } catch (error) {
       console.error("Error updating status:", error.response?.data?.message || error.message);
+    }
+  };
+
+  const handleSendReminder = async (eventId, eventTitle) => {
+    const isConfirmed = window.confirm(
+      `Are you sure you want to send reminder emails to all students enrolled in "${eventTitle}"?`
+    );
+    if (!isConfirmed) return;
+
+    setSendingReminder(eventId);
+    try {
+      const response = await axios.post(`${API}/send-event-reminder/${eventId}`);
+      toast.success(`Reminder emails sent to ${response.data.recipientCount} students!`);
+    } catch (error) {
+      const errorMsg = error.response?.data?.error || "Failed to send reminder emails";
+      toast.error(errorMsg);
+      console.error("Error sending reminder:", error);
+    } finally {
+      setSendingReminder(null);
     }
   };
 
@@ -927,6 +947,7 @@ const AddEvent = () => {
                 <th className="p-2 border">Applied</th>
                 <th className="p-2 border">Visibility</th>
                 <th className="p-2 border">Change Status</th>
+                <th className="p-2 border">Send Reminder</th>
                 <th className="p-2 border">Action</th>
               </tr>
             </thead>
@@ -958,6 +979,28 @@ const AddEvent = () => {
                         <option value="completed">Completed</option>
                       </select>
                     </td>
+                    <td className="p-2 border text-center">
+                      <button
+                        className={`px-3 py-1 rounded text-sm transition ${
+                          sendingReminder === events._id
+                            ? "bg-gray-400 text-white cursor-not-allowed"
+                            : "bg-orange-500 text-white hover:bg-orange-600"
+                        }`}
+                        onClick={() => handleSendReminder(events._id, events.title)}
+                        disabled={sendingReminder === events._id || (events.enrollments?.length || 0) === 0}
+                        title={(events.enrollments?.length || 0) === 0 ? "No students enrolled" : "Send reminder email"}
+                      >
+                        {sendingReminder === events._id ? (
+                          <>
+                            <i className="fa fa-spinner fa-spin"></i> Sending...
+                          </>
+                        ) : (
+                          <>
+                            <i className="fa fa-envelope"></i> Send
+                          </>
+                        )}
+                      </button>
+                    </td>
                     <td className="p-2 border">
                       <div className="flex gap-2 justify-center">
                         <button className="text-blue-500 hover:text-blue-700" onClick={() => handleEdit(events)}>
@@ -973,7 +1016,7 @@ const AddEvent = () => {
               })}
               {allEvents.length === 0 && (
                 <tr>
-                  <td colSpan="9" className="p-4 text-center text-gray-500">No events found.</td>
+                  <td colSpan="10" className="p-4 text-center text-gray-500">No events found.</td>
                 </tr>
               )}
             </tbody>

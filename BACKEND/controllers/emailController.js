@@ -32,6 +32,21 @@ let operationsTransporter = nodemailer.createTransport({
   pool: true,
 });
 
+// Separate transporter for event reminders (events@krutanic.com)
+let eventsTransporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
+  secure: false,
+  auth: {
+    user: process.env.EVENTS_MAIL, // events@krutanic.com
+    pass: process.env.EVENTS_MAIL_PASSWORD,
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
+  pool: true,
+});
+
 // General email function (for OTP, etc.) - uses noreply@krutanic.com
 const sendEmail = async ({ email, subject, message, bcc }) => {
   const mailOptions = {
@@ -81,4 +96,35 @@ const sendPaymentReminderEmail = async ({ email, subject, message, bcc }) => {
   });
 };
 
-module.exports = { sendEmail, sendPaymentReminderEmail };
+// Event reminder email function - uses events@krutanic.com
+const sendEventReminderEmail = async ({ email, subject, message, bcc, textVersion }) => {
+  const mailOptions = {
+    from: `Krutanic Events <${process.env.EVENTS_MAIL}>`, // events@krutanic.com with display name
+    to: email,
+    cc: "tejo.raditya@krutanic.org, shrikant@krutanic.org",
+    bcc: bcc,
+    subject: subject,
+    text: textVersion || 'Please enable HTML to view this email.',
+    html: message,
+    priority: "normal",
+    headers: {
+      'X-Entity-Ref-ID': `EVENT-${Date.now()}`,
+      'X-Mailer': 'Krutanic Event System',
+      'List-Unsubscribe': '<mailto:events@krutanic.com?subject=Unsubscribe>',
+    },
+  };
+
+  return new Promise((resolve, reject) => {
+    eventsTransporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error("Error sending event reminder email:", error);
+        reject(error);
+      } else {
+        console.log("Event reminder email sent successfully!", info.response);
+        resolve(info.response);
+      }
+    });
+  });
+};
+
+module.exports = { sendEmail, sendPaymentReminderEmail, sendEventReminderEmail };

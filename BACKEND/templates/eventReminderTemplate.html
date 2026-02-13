@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Reminder - Krutanic</title>
+  <style>
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6; 
+      color: #333; 
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    .container { 
+      max-width: 600px; 
+      margin: 20px auto; 
+      padding: 0;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+    .header { 
+      background: linear-gradient(135deg, #f15b29 0%, #ff8c5a 100%);
+      color: white; 
+      padding: 30px; 
+      text-align: center; 
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+    .content { 
+      padding: 30px; 
+    }
+    .content h2 {
+      color: #333;
+      margin-top: 0;
+      font-size: 24px;
+    }
+    .event-details { 
+      background: #f8f9fa; 
+      padding: 20px; 
+      margin: 20px 0; 
+      border-left: 4px solid #f15b29;
+      border-radius: 5px;
+    }
+    .event-details h3 {
+      color: #f15b29; 
+      margin-top: 0;
+      font-size: 22px;
+      margin-bottom: 15px;
+    }
+    .event-details p {
+      margin: 10px 0;
+      font-size: 15px;
+    }
+    .important-note {
+      color: #d63384;
+      font-weight: 600;
+      margin: 20px 0;
+      padding: 15px;
+      background: #fff0f6;
+      border-radius: 5px;
+      text-align: center;
+    }
+    .footer { 
+      text-align: center; 
+      padding: 20px; 
+      font-size: 14px; 
+      color: #666;
+      background: #f8f9fa;
+    }
+    .button { 
+      display: inline-block; 
+      padding: 15px 40px; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white !important; 
+      text-decoration: none; 
+      border-radius: 25px; 
+      margin: 20px 0;
+      font-weight: 600;
+      font-size: 16px;
+      transition: transform 0.3s;
+    }
+    .button:hover {
+      transform: translateY(-2px);
+    }
+    .contact-info {
+      margin: 20px 0;
+      padding: 15px;
+      background: #e7f3ff;
+      border-radius: 5px;
+      font-size: 15px;
+    }
+    .signature {
+      margin-top: 25px;
+      font-size: 15px;
+    }
+    @media only screen and (max-width: 600px) {
+      .container {
+        margin: 0;
+        width: 100% !important;
+      }
+      .header h1 {
+        font-size: 24px;
+      }
+      .event-details h3 {
+        font-size: 18px;
+      }
+      .content {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="https://lh3.googleusercontent.com/d/1rmHu8ecr-JC3kzrM3Q5QALubDAXwVmx6" alt="Krutanic"
+        style="max-width: 250px; margin-bottom: 15px; height: auto; display: block; margin-left: auto; margin-right: auto;" />
+      <h1> Event Reminder</h1>
+    </div>
+    
+    <div class="content">
+      <h2>Hello ${studentName},</h2>
+      <p>We hope you are doing well and excited for your learning journey with us at <strong>Krutanic</strong>.</p>
+      
+      <p>This is a friendly reminder for the upcoming event you've registered for:</p>
+      
+      <div class="event-details">
+        <h3>${eventTitle}</h3>
+        <p><strong>Date:</strong> ${eventDate}</p>
+        <p><strong>Time:</strong> ${eventTime}</p>
+        <p><strong>Mode:</strong> ${eventMode}</p>
+        <p><strong>Location:</strong> Online</p>
+        <p><strong>About:</strong> ${eventDescription}</p>
+      </div>
+
+      <div class="important-note">
+        ⚠️ Important: Please make sure you're prepared and join on time!
+      </div>
+
+      <center>
+        <a href="https://www.krutanic.com/events" class="button">View Event Details</a>
+      </center>
+
+      <div class="contact-info">
+        <strong>Need Help?</strong><br>
+        If you have any questions or need assistance, feel free to reach out to us:<br><br>
+        <strong>Event Support:</strong><br>
+        Email: events@krutanic.com<br>
+        Phone/WhatsApp: +91 7022936875<br>
+        Website: www.krutanic.com
+      </div>
+      
+      <div class="signature">
+        <p style="margin-top: 20px;">Thank you for being a part of Krutanic's learning and talent acquisition community!</p>
+        <p style="margin-top: 15px;">
+          <strong>Best Regards,</strong><br>
+          Team Krutanic<br>
+          <em>A Ladder for Brighter Future</em>
+        </p>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p><strong>Krutanic</strong></p>
+      <p style="margin: 5px 0;">Regd. Office: Bangalore, Karnataka, India</p>
+      <p style="margin: 5px 0;">This is an automated reminder. Please do not reply to this email.</p>
+      <p style="margin: 5px 0;">&copy; ${new Date().getFullYear()} Krutanic. All rights reserved.</p>
+      <p style="margin-top: 10px;">
+        <a href="https://www.krutanic.com" style="color: #f15b29; text-decoration: none; margin-right: 15px;">Visit our website</a> |
+        <a href="mailto:events@krutanic.com?subject=Unsubscribe" style="color: #666; text-decoration: none; margin-left: 15px;">Unsubscribe</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

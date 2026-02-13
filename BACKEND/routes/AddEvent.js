@@ -5,8 +5,10 @@ const EventApplication = require("../models/EventApplication");
 const router = express.Router();
 const crypto = require('crypto');
 const jwt = require("jsonwebtoken");
+const fs = require('fs');
+const path = require('path');
 require("dotenv").config();
-const { sendEmail } = require("../controllers/emailController");
+const { sendEmail, sendEventReminderEmail } = require("../controllers/emailController");
 const cloudinary = require("../middleware/cloudinary.js")
 
 // add a new event
@@ -588,6 +590,129 @@ router.post("/upload-profile-photo/:id", async (req, res) => {
     res.json({ message: "Profile photo uploaded", user });
   } catch (error) {
     res.status(500).json({ message: "Error uploading image", error });
+  }
+});
+
+
+// Send event reminder email to all enrolled students
+router.post("/send-event-reminder/:eventId", async (req, res) => {
+  try {
+    const { eventId } = req.params;
+
+    // Find the event
+    const event = await AddEvent.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    // Find all applications for this event
+    const applications = await EventApplication.find({ eventId }).populate("userId");
+    
+    if (applications.length === 0) {
+      return res.status(404).json({ error: "No students enrolled for this event" });
+    }
+
+    // Filter valid applications with email
+    const validApplications = applications.filter(app => app.userId && app.userId.email);
+
+    if (validApplications.length === 0) {
+      return res.status(404).json({ error: "No valid email addresses found" });
+    }
+
+    // Format event date and time
+    const startDate = event.startDate ? new Date(event.startDate).toLocaleDateString('en-IN', { 
+      day: 'numeric', 
+      month: 'long', 
+      year: 'numeric' 
+    }) : 'TBA';
+    
+    const startTime = event.startTime || 'TBA';
+
+    // Read the HTML template file
+    const templatePath = path.join(__dirname, '../templates/eventReminderTemplate.html');
+    const templateBase = fs.readFileSync(templatePath, 'utf-8');
+
+    const subject = `Reminder: ${event.title} - Don't Miss Out!`;
+    let successCount = 0;
+    let failCount = 0;
+
+    // Send personalized email to each student
+    for (const application of validApplications) {
+      try {
+        const studentName = application.userId.name || 'Student';
+        const studentEmail = application.userId.email;
+
+        // Replace template variables with actual data for each student
+        let emailTemplate = templateBase
+          .replace(/\${studentName}/g, studentName)
+          .replace(/\${eventTitle}/g, event.title)
+          .replace(/\${eventDate}/g, startDate)
+          .replace(/\${eventTime}/g, startTime)
+          .replace(/\${eventMode}/g, event.mode || 'Online')
+          .replace(/\${eventDescription}/g, event.shortDescription || 'Details will be shared soon');
+
+        // Create plain text version to reduce spam risk
+        const textVersion = `
+Hello ${studentName},
+
+This is a reminder for the upcoming event you've registered for:
+
+Event: ${event.title}
+Date: ${startDate}
+Time: ${startTime}
+Mode: ${event.mode || 'Online'}
+Location: Online
+${event.shortDescription ? `\nAbout: ${event.shortDescription}` : ''}
+
+Event Link: https://www.krutanic.com/events
+
+Important: Please make sure you're prepared and join on time!
+
+Need Help?
+Email: events@krutanic.com
+Phone/WhatsApp: +91 7022936875
+Website: www.krutanic.com
+
+Thank you for being a part of Krutanic's learning community!
+
+Best Regards,
+Team Krutanic
+A Ladder for Brighter Future
+
+---
+Krutanic Solutions
+This is an automated reminder.
+© ${new Date().getFullYear()} Krutanic. All rights reserved.
+        `;
+
+        await sendEventReminderEmail({
+          email: studentEmail,
+          subject: subject,
+          message: emailTemplate,
+          textVersion: textVersion,
+          bcc: '' // No BCC for individual emails
+        });
+        
+        successCount++;
+      } catch (emailError) {
+        console.error(`Failed to send email to ${application.userId.email}:`, emailError);
+        failCount++;
+      }
+    }
+
+    res.status(200).json({ 
+      message: "Event reminder emails sent successfully", 
+      recipientCount: successCount,
+      successCount: successCount,
+      failCount: failCount
+    });
+
+  } catch (error) {
+    console.error("Error sending event reminder emails:", error);
+    res.status(500).json({ 
+      error: "Failed to send event reminder emails", 
+      message: error.message 
+    });
   }
 });
 
