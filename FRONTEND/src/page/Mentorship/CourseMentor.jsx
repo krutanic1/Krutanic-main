@@ -47,6 +47,7 @@ import pdf18 from "../../../krutanic/Machine Learning.pdf";
 import pdf21 from "../../../krutanic/Stock Market.pdf";
 // import pdf22 from "../../../krutanic/Supply Chain Management.pdf";
 import pdf23 from "../../../krutanic/UI  UX-min.pdf";
+import pdf24 from "../../../krutanic/VLSI Design.pdf";
 
 import axios from "axios";
 import API from "../../API";
@@ -70,7 +71,6 @@ const CourseMentor = ({ }) => {
     "Computer science",
     "Management",
     "Electronics/Electrical",
-    "Medical",
     "Mechanical",
   ];
   const coursesData = {
@@ -284,6 +284,16 @@ const CourseMentor = ({ }) => {
           "Developing robots and devices that communicate over the internet to perform tasks.",
         rating: 4.7,
         studentsTaken: 1260,
+      },
+      {
+        id: 24,
+        title: "VLSI Design",
+        image: `${embeddedsystem}`,
+        pdf: `${pdf24}`,
+        description:
+          "Designing integrated circuits and semiconductor chips for electronic devices.",
+        rating: 4.8,
+        studentsTaken: 1450,
       },
     ],
     Medical: [
@@ -629,6 +639,7 @@ const CourseMentor = ({ }) => {
                   "Embedded System",
                   "Cloud Computing",
                   "IOT & Robotics",
+                  "VLSI Design",
                   // "Nano Technology & Genetic Engineering",
                   // "Psychology",
                   "Auto Cad",
