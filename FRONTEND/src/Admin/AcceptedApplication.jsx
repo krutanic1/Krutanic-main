@@ -42,24 +42,16 @@ const AcceptedApplication = () => {
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
-      const [usersResponse, componentsResponse] =
-        await Promise.all([
-          axios.get(`${API}/users`, {
-            params: {
-              page: currentPage,
-              limit: ITEMS_PER_PAGE,
-              status: "active",
-              search: debouncedSearchQuery,
-              program: programFilter,
-              isFullyPaid: showFullyPaidOnly,
-            },
-          }),
-          axios.get(`${API}/all-user-components`),
-        ]);
-
-      const componentsMap = new Map(
-        componentsResponse.data.map((c) => [c.userId, c.components])
-      );
+      const usersResponse = await axios.get(`${API}/users`, {
+        params: {
+          page: currentPage,
+          limit: ITEMS_PER_PAGE,
+          status: "active",
+          search: debouncedSearchQuery,
+          program: programFilter,
+          isFullyPaid: showFullyPaidOnly,
+        },
+      });
 
       // Handle paginated response
       const usersData = usersResponse.data.data || usersResponse.data;
@@ -72,7 +64,8 @@ const AcceptedApplication = () => {
       const enrichedUsers = usersData.map((user) => {
         return {
           ...user,
-          components: componentsMap.get(user._id) || {},
+          // components are now provided by the backend directly in the user object
+          components: user.components || {},
           isLoadingComponent: false,
         };
       });

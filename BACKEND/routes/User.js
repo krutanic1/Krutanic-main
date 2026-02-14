@@ -148,9 +148,23 @@ router.get("/users", async (req, res) => {
             { $skip: skip },
             { $limit: limitNum },
             {
+              $addFields: {
+                components: {
+                  atschecker: "$atschecker",
+                  jobboard: "$jobboard",
+                  myjob: "$myjob",
+                  mockinterview: "$mockinterview",
+                  exercise: "$exercise"
+                }
+              }
+            },
+            {
               $project: {
-                enrollmentData: 0, // Remove large joined array
-                enrollment: 0 // Remove flattened enrollment object if not needed, but we used its fields
+                enrollmentData: 0,
+                enrollment: 0,
+                password: 0,
+                otp: 0,
+                otpExpires: 0
               }
             }
           ]
