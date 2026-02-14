@@ -439,7 +439,7 @@ router.get("/getmonthlyrevenue", async (req, res) => {
 
 // GET request to retrieve all new student enroll
 router.get("/getnewstudentenroll", async (req, res) => {
-  const { studentenrollid, month, year, startDate, endDate, all } = req.query;
+  const { studentenrollid, month, year, startDate, endDate, all, page, limit, status, search, counselor, operationName } = req.query;
   try {
     let StudentEnroll;
     if (studentenrollid) {
@@ -450,8 +450,58 @@ router.get("/getnewstudentenroll", async (req, res) => {
           .status(404)
           .json({ message: "Student Eroll not found for the given userId" });
       }
+      return res.status(200).json(StudentEnroll);
     } else {
       let query = {};
+
+      // Filter by Unassigned Operation (New Onboarding Users)
+      if (req.query.unassigned === 'true') {
+        query.$or = [
+          { operationName: null },
+          { operationName: { $exists: false } },
+          { operationName: "" }
+        ];
+      }
+
+      // Filter by Status
+      if (status) {
+        query.status = status;
+      }
+
+      // Filter by Counselor
+      if (counselor) {
+        query.counselor = counselor;
+      }
+
+      // Filter by Operation Name
+      if (operationName) {
+        query.operationName = operationName;
+      }
+
+      // Filter by Search Query (Case-insensitive regex)
+      if (search) {
+        const searchRegex = { $regex: search, $options: "i" };
+        query.$or = [
+          { email: searchRegex },
+          { phone: searchRegex },
+          { fullname: searchRegex },
+          { counselor: searchRegex },
+          { operationName: searchRegex },
+          { collegeName: searchRegex },
+          { branch: searchRegex },
+          { transactionId: searchRegex }
+        ];
+      }
+
+      // Filter by Remark (last element of remark array)
+      if (req.query.remark) {
+        query.$expr = {
+          $eq: [
+            { $arrayElemAt: ["$remark", -1] },
+            req.query.remark
+          ]
+        };
+      }
 
       // Filter by Date Range (Custom or Monthly)
       if (startDate && endDate) {
@@ -489,11 +539,36 @@ router.get("/getnewstudentenroll", async (req, res) => {
         }
       }
 
+      // Pagination Logic
+      // If 'all' is true, return everything (no pagination)
+      if (all === "true") {
+        StudentEnroll = await NewEnrollStudent.find(query).sort({ createdAt: -1 }).lean();
+        return res.status(200).json(StudentEnroll);
+      } else {
+        const pageNum = parseInt(page) || 1;
+        const limitNum = parseInt(limit) || 10;
+        const skip = (pageNum - 1) * limitNum;
 
-      StudentEnroll = await NewEnrollStudent.find(query).sort({ createdAt: -1 }).lean();
+        const totalItems = await NewEnrollStudent.countDocuments(query);
+        const totalPages = Math.ceil(totalItems / limitNum);
 
+        StudentEnroll = await NewEnrollStudent.find(query)
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(limitNum)
+          .lean();
+
+        return res.status(200).json({
+          data: StudentEnroll,
+          pagination: {
+            totalItems,
+            totalPages,
+            currentPage: pageNum,
+            itemsPerPage: limitNum
+          }
+        });
+      }
     }
-    res.status(200).json(StudentEnroll);
   } catch (error) {
     console.error("Error in /getnewstudentenroll:", error);
     res.status(500).json({

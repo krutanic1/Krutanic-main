@@ -22,6 +22,7 @@ const AcceptedApplication = () => {
   const [programFilter, setProgramFilter] = useState("");
   const [showFullyPaidOnly, setShowFullyPaidOnly] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [formData, setFormData] = useState(null);
 
   const debouncedSetSearchQuery = useMemo(
@@ -41,42 +42,43 @@ const AcceptedApplication = () => {
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
-      const [usersResponse, enrollmentsResponse, componentsResponse] =
+      const [usersResponse, componentsResponse] =
         await Promise.all([
-          axios.get(`${API}/users`),
-          axios.get(`${API}/getnewstudentenroll`),
+          axios.get(`${API}/users`, {
+            params: {
+              page: currentPage,
+              limit: ITEMS_PER_PAGE,
+              status: "active",
+              search: debouncedSearchQuery,
+              program: programFilter,
+              isFullyPaid: showFullyPaidOnly,
+            },
+          }),
           axios.get(`${API}/all-user-components`),
         ]);
-
-      const enrollmentsMap = new Map(
-        enrollmentsResponse.data.map((e) => [
-          e.email,
-          {
-            program: e.program,
-            isFullyPaid: e.paidAmount === e.programPrice,
-          },
-        ])
-      );
 
       const componentsMap = new Map(
         componentsResponse.data.map((c) => [c.userId, c.components])
       );
 
-      const activeUsers = usersResponse.data
-        .filter((user) => user.status === "active")
-        .map((user) => {
-          const enrollment = enrollmentsMap.get(user.email);
-          return {
-            ...user,
-            program: enrollment?.program || "Self-guided",
-            isFullyPaid: enrollment?.isFullyPaid || false,
-            components: componentsMap.get(user._id) || {},
-            isLoadingComponent: false,
-          };
-        });
+      // Handle paginated response
+      const usersData = usersResponse.data.data || usersResponse.data;
+      const paginationData = usersResponse.data.pagination;
 
-      setUsers(activeUsers);
-      if (activeUsers.length === 0) {
+      if (paginationData) {
+        setTotalPages(paginationData.totalPages);
+      }
+
+      const enrichedUsers = usersData.map((user) => {
+        return {
+          ...user,
+          components: componentsMap.get(user._id) || {},
+          isLoadingComponent: false,
+        };
+      });
+
+      setUsers(enrichedUsers);
+      if (enrichedUsers.length === 0) {
         toast.info("No active users found.", {
           position: "top-center",
           autoClose: 3000,
@@ -88,7 +90,7 @@ const AcceptedApplication = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [currentPage, debouncedSearchQuery, programFilter, showFullyPaidOnly]);
 
   const handleToggleComponent = useCallback(
     async (userId, component, status) => {
@@ -125,8 +127,7 @@ const AcceptedApplication = () => {
                     )
                   );
                   toast.success(
-                    `${component} component ${
-                      status ? "enabled" : "disabled"
+                    `${component} component ${status ? "enabled" : "disabled"
                     } successfully`,
                     {
                       position: "top-center",
@@ -183,15 +184,15 @@ const AcceptedApplication = () => {
                   )
                 );
                 try {
-                  const updatePromises = components.map(component => 
+                  const updatePromises = components.map(component =>
                     axios.put(`${API}/user-components/${userId}`, {
                       component,
                       status: enableAll,
                     })
                   );
-                  
+
                   await Promise.all(updatePromises);
-                  
+
                   const response = await axios.get(`${API}/user-components`, {
                     params: { userId },
                   });
@@ -242,27 +243,8 @@ const AcceptedApplication = () => {
     []
   );
 
-  const filteredUsers = useMemo(() => {
-    return users.filter((user) => {
-      const matchesSearch =
-        !debouncedSearchQuery ||
-        (user.fullname
-          .toLowerCase()
-          .includes(debouncedSearchQuery.toLowerCase()) ||
-          user.email
-            .toLowerCase()
-            .includes(debouncedSearchQuery.toLowerCase()) ||
-          user.phone.toLowerCase().includes(debouncedSearchQuery.toLowerCase()));
-      const matchesProgram = !programFilter || user.program === programFilter;
-      const matchesPayment = !showFullyPaidOnly || user.isFullyPaid;
-      return matchesSearch && matchesProgram && matchesPayment;
-    });
-  }, [users, debouncedSearchQuery, programFilter, showFullyPaidOnly]);
-
-  const paginatedUsers = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredUsers.slice(start, start + ITEMS_PER_PAGE);
-  }, [filteredUsers, currentPage]);
+  // Server-side filtering is now implemented
+  const filteredUsers = users;
 
   const handleEdit = useCallback((user) => {
     if (window.confirm("Are you sure you want to edit the user details?")) {
@@ -310,11 +292,11 @@ const AcceptedApplication = () => {
   }, [fetchUsers]);
 
   const RenderRow = React.memo(({ user, index }) => {
-    const allComponentsEnabled = user.components && 
-      user.components.atschecker && 
-      user.components.jobboard && 
-      user.components.myjob && 
-      user.components.mockinterview && 
+    const allComponentsEnabled = user.components &&
+      user.components.atschecker &&
+      user.components.jobboard &&
+      user.components.myjob &&
+      user.components.mockinterview &&
       user.components.exercise;
 
     return (
@@ -328,26 +310,22 @@ const AcceptedApplication = () => {
           {user.components ? (
             <>
               <button
-                className={`px-2 py-1 rounded mr-1 ${
-                  allComponentsEnabled
-                    ? "bg-green-500 text-white"
-                    : "bg-gray-300"
-                } ${
-                  user.isLoadingComponent ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className={`px-2 py-1 rounded mr-1 ${allComponentsEnabled
+                  ? "bg-green-500 text-white"
+                  : "bg-gray-300"
+                  } ${user.isLoadingComponent ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                 onClick={() => handleToggleProAccess(user._id, true)}
                 disabled={user.isLoadingComponent}
               >
                 {user.isLoadingComponent ? "Loading..." : "Enable"}
               </button>
               <button
-                className={`px-2 py-1 rounded ${
-                  !allComponentsEnabled
-                    ? "bg-red-500 text-white"
-                    : "bg-gray-300"
-                } ${
-                  user.isLoadingComponent ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className={`px-2 py-1 rounded ${!allComponentsEnabled
+                  ? "bg-red-500 text-white"
+                  : "bg-gray-300"
+                  } ${user.isLoadingComponent ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                 onClick={() => handleToggleProAccess(user._id, false)}
                 disabled={user.isLoadingComponent}
               >
@@ -467,11 +445,10 @@ const AcceptedApplication = () => {
                 <i className="fa fa-info-circle text-lg cursor-pointer text-gray-500"></i>
                 <div className="absolute left-1/2 -translate-x-1/2 bottom-full z-[9999] mb-2 hidden w-max bg-gray-800 text-white text-sm rounded-md py-2 px-3 group-hover:block">
                   {programFilter
-                    ? `Searching within ${
-                        PROGRAM_OPTIONS.find(
-                          (opt) => opt.value === programFilter
-                        )?.label
-                      } program`
+                    ? `Searching within ${PROGRAM_OPTIONS.find(
+                      (opt) => opt.value === programFilter
+                    )?.label
+                    } program`
                     : "Search by Name, Email, or Contact No across all programs"}
                   <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-t-8 border-gray-800 border-x-8 border-x-transparent"></div>
                 </div>
@@ -481,11 +458,10 @@ const AcceptedApplication = () => {
                   type="text"
                   placeholder={
                     programFilter
-                      ? `Search within ${
-                          PROGRAM_OPTIONS.find(
-                            (opt) => opt.value === programFilter
-                          )?.label
-                        }...`
+                      ? `Search within ${PROGRAM_OPTIONS.find(
+                        (opt) => opt.value === programFilter
+                      )?.label
+                      }...`
                       : "Search by name, email, or contact..."
                   }
                   value={searchQuery}
@@ -550,8 +526,8 @@ const AcceptedApplication = () => {
               </tr>
             </thead>
             <tbody>
-              {paginatedUsers.length > 0 ? (
-                paginatedUsers.map((user, index) => (
+              {filteredUsers.length > 0 ? (
+                filteredUsers.map((user, index) => (
                   <RenderRow key={user._id} user={user} index={index} />
                 ))
               ) : (
@@ -560,17 +536,16 @@ const AcceptedApplication = () => {
                     No active users found
                     {showFullyPaidOnly && " with full payment"}
                     {programFilter &&
-                      ` in ${
-                        PROGRAM_OPTIONS.find(
-                          (opt) => opt.value === programFilter
-                        )?.label
+                      ` in ${PROGRAM_OPTIONS.find(
+                        (opt) => opt.value === programFilter
+                      )?.label
                       }`}
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
-          {filteredUsers.length > ITEMS_PER_PAGE && (
+          {totalPages > 1 && (
             <section className="flex items-center justify-center gap-5 mt-2">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -580,21 +555,11 @@ const AcceptedApplication = () => {
                 Previous
               </button>
               <span>
-                Page {currentPage} of{" "}
-                {Math.ceil(filteredUsers.length / ITEMS_PER_PAGE)}
+                Page {currentPage} of {totalPages}
               </span>
               <button
-                onClick={() =>
-                  setCurrentPage((prev) =>
-                    prev < Math.ceil(filteredUsers.length / ITEMS_PER_PAGE)
-                      ? prev + 1
-                      : prev
-                  )
-                }
-                disabled={
-                  currentPage >=
-                  Math.ceil(filteredUsers.length / ITEMS_PER_PAGE)
-                }
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage >= totalPages}
                 className="border border-gray-700 px-2 py-1 rounded-lg active:bg-[#f15b29] disabled:opacity-50"
               >
                 Next

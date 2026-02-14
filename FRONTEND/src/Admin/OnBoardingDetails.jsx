@@ -13,15 +13,13 @@ const OnBoardingDetails = () => {
   const fetchNewStudent = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API}/getnewstudentenroll`);
-      const studentsData = response.data.filter(
-        (item) => item.operationName === null || item.operationName === null 
-      );
+      const response = await axios.get(`${API}/getnewstudentenroll?all=true&unassigned=true`);
+      const studentsData = response.data;
       setNewStudent(studentsData);
       setFilteredStudents(studentsData);
     } catch (error) {
       console.error("There was an error fetching new student:", error);
-    }finally{
+    } finally {
       setLoading(false);
     }
   };
@@ -91,90 +89,90 @@ const OnBoardingDetails = () => {
     setDialogData(null);
   };
 
-const [operation, setOperation] = useState(null);
-const fetchOperation = async () => {
-  try {
-    const response = await axios.get(`${API}/getoperation`);
-    setOperation(response.data);
-  } catch (error) {
-    console.error("There was an error fetching operation:", error);
-  }
-};
-
-useEffect(() => {
-  fetchOperation();
-}, []);
-
-const [selectedOperation, setSelectedOperation] = useState(null);
-const handleOperationChange = async (e, rowId) => {
-  const selectedOption = operation.find(item => item.fullname === e.target.value);
-  setSelectedOperation(selectedOption);
-  if (selectedOption) {
-    const { fullname, _id } = selectedOption;
+  const [operation, setOperation] = useState(null);
+  const fetchOperation = async () => {
     try {
-      const response = await axios.post(`${API}/update-operation/${rowId}`, {
-        operationName: fullname,
-        operationId: _id,
-      });
-      if (response.status === 200) {
-        toast.success('Operation saved to the database');
-      } else {
-        toast.error('Failed to save the operation');
-      }
+      const response = await axios.get(`${API}/getoperation`);
+      setOperation(response.data);
     } catch (error) {
-      console.error('Error:', error);
-      toast.error('An error occurred while saving the operation');
-    }finally{
-      fetchNewStudent();
+      console.error("There was an error fetching operation:", error);
     }
-  }
-};
+  };
 
-const convertToIST = (utcDate) => {
-  const date = new Date(utcDate);
-  date.setHours(date.getHours() + 0);
-  date.setMinutes(date.getMinutes() + 0);
-  return date.toLocaleTimeString('en-IN', {
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: true,
-  });
-};
+  useEffect(() => {
+    fetchOperation();
+  }, []);
+
+  const [selectedOperation, setSelectedOperation] = useState(null);
+  const handleOperationChange = async (e, rowId) => {
+    const selectedOption = operation.find(item => item.fullname === e.target.value);
+    setSelectedOperation(selectedOption);
+    if (selectedOption) {
+      const { fullname, _id } = selectedOption;
+      try {
+        const response = await axios.post(`${API}/update-operation/${rowId}`, {
+          operationName: fullname,
+          operationId: _id,
+        });
+        if (response.status === 200) {
+          toast.success('Operation saved to the database');
+        } else {
+          toast.error('Failed to save the operation');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        toast.error('An error occurred while saving the operation');
+      } finally {
+        fetchNewStudent();
+      }
+    }
+  };
+
+  const convertToIST = (utcDate) => {
+    const date = new Date(utcDate);
+    date.setHours(date.getHours() + 0);
+    date.setMinutes(date.getMinutes() + 0);
+    return date.toLocaleTimeString('en-IN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true,
+    });
+  };
 
   return (
     <div id="AdminAddCourse">
       <Toaster position="top-center" reverseOrder={false} />
       {loading ? (
-          <div id="loader">
-            <div className="three-body">
-              <div className="three-body__dot"></div>
-              <div className="three-body__dot"></div>
-              <div className="three-body__dot"></div>
-            </div>
+        <div id="loader">
+          <div className="three-body">
+            <div className="three-body__dot"></div>
+            <div className="three-body__dot"></div>
+            <div className="three-body__dot"></div>
           </div>
-        ) : (
-      <div className="coursetable">
-        <div className="mb-2">
-          <h2>OnBoarding List:</h2>
-          <section className="flex items-center  gap-1">
-            <div className="relative group inline-block">
-              <i className="fa fa-info-circle text-lg cursor-pointer text-gray-500"></i>
-              <div className="absolute left-1/2 -translate-x-1/2 bottom-full z-[9999] mb-2 hidden w-max bg-gray-800 text-white text-sm rounded-md py-2 px-3 group-hover:block">
-                Name, Email, Contact ,Counselor Name, Operation Name
-                <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-t-8 border-gray-800 border-x-8 border-x-transparent"></div>
+        </div>
+      ) : (
+        <div className="coursetable">
+          <div className="mb-2">
+            <h2>OnBoarding List:</h2>
+            <section className="flex items-center  gap-1">
+              <div className="relative group inline-block">
+                <i className="fa fa-info-circle text-lg cursor-pointer text-gray-500"></i>
+                <div className="absolute left-1/2 -translate-x-1/2 bottom-full z-[9999] mb-2 hidden w-max bg-gray-800 text-white text-sm rounded-md py-2 px-3 group-hover:block">
+                  Name, Email, Contact ,Counselor Name, Operation Name
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-t-8 border-gray-800 border-x-8 border-x-transparent"></div>
+                </div>
               </div>
-            </div>
-            <input
+              <input
                 type="text"
                 placeholder="Search here by"
                 value={searchQuery}
                 onChange={handleSearchChange}
                 className="border border-black px-2 py-1 rounded-lg"
               />
-          </section>
-        </div>
-        
+            </section>
+          </div>
+
           <table>
             <thead>
               <tr>
@@ -227,14 +225,14 @@ const convertToIST = (utcDate) => {
                         <td className=" whitespace-nowrap">{item.clearPaymentMonth}</td>
                         <td>
                           <button
-                          className="button"
+                            className="button"
                             onClick={() =>
                               handleStatusChange(item._id, "fullPaid")
                             }
                           >
-                     
-                      <div className="relative group inline-block">
-                      <i className="fa fa-money" aria-hidden="true"></i>
+
+                            <div className="relative group inline-block">
+                              <i className="fa fa-money" aria-hidden="true"></i>
                               <div className="absolute left-1/2 -translate-x-1/2 bottom-full z-[9999] mb-2 hidden w-max bg-gray-800 text-white text-sm rounded-md py-2 px-3 group-hover:block">
                                 FullPaid
                                 <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-t-8 border-gray-800 border-x-8 border-x-transparent"></div>
@@ -242,14 +240,14 @@ const convertToIST = (utcDate) => {
                             </div>
                           </button>
                           <button
-                          className="button"
+                            className="button"
                             onClick={() =>
                               handleStatusChange(item._id, "default")
                             }
                           >
-                           
+
                             <div className="relative group inline-block">
-                            <i className="fa fa-ban"></i>
+                              <i className="fa fa-ban"></i>
                               <div className="absolute left-1/2 -translate-x-1/2 bottom-full z-[9999] mb-2 hidden w-max bg-gray-800 text-white text-sm rounded-md py-2 px-3 group-hover:block">
                                 Default
                                 <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-t-8 border-gray-800 border-x-8 border-x-transparent"></div>
@@ -264,7 +262,7 @@ const convertToIST = (utcDate) => {
                           ></i>
                         </td>
                         <td>
-                         {
+                          {
                             operation && operation.length > 0 && (
                               <select className="border rounded-full border-black " onChange={(e) => handleOperationChange(e, item._id)} defaultValue="Select Operation">
                                 <option value="Select Operation" disabled>
@@ -275,10 +273,10 @@ const convertToIST = (utcDate) => {
                                 ))}
                               </select>
                             )
-                         }
+                          }
                         </td>
                         <td>
-                        {convertToIST(item.createdAt)}
+                          {convertToIST(item.createdAt)}
                         </td>
                       </tr>
                     ))}
@@ -291,49 +289,49 @@ const convertToIST = (utcDate) => {
               )}
             </tbody>
           </table>
-        
-        {dialogVisible && dialogData && (
-          <div className="fixed flex flex-col rounded-md top-[30%] left-[50%] shadow-black shadow-sm transform translate-x-[-50%] transalate-y-[-50%] bg-white p-[20px] z-[1000]">
-            <h2>Details</h2>
-            <div className="space-y-2">
-              <p>
-                <strong>Year of Study:</strong> {dialogData.yearOfStudy}
-              </p>
-              <p>
-                <strong>Phone:</strong> {dialogData.phone}
-              </p>
-              <p >
-                <strong>Program:</strong> {dialogData.program}
-              </p>
-              <p className="text-red-600 font-bold">
-                <strong>Pending:</strong> {dialogData.programPrice - dialogData.paidAmount}
-              </p>
 
-              <p>
-                <strong>Transaction Id:</strong> {dialogData.transactionId}
-              </p>
-              <p>
-                <strong> Alternative Email:</strong> {dialogData.alternativeEmail}
-              </p>
+          {dialogVisible && dialogData && (
+            <div className="fixed flex flex-col rounded-md top-[30%] left-[50%] shadow-black shadow-sm transform translate-x-[-50%] transalate-y-[-50%] bg-white p-[20px] z-[1000]">
+              <h2>Details</h2>
+              <div className="space-y-2">
+                <p>
+                  <strong>Year of Study:</strong> {dialogData.yearOfStudy}
+                </p>
+                <p>
+                  <strong>Phone:</strong> {dialogData.phone}
+                </p>
+                <p >
+                  <strong>Program:</strong> {dialogData.program}
+                </p>
+                <p className="text-red-600 font-bold">
+                  <strong>Pending:</strong> {dialogData.programPrice - dialogData.paidAmount}
+                </p>
+
+                <p>
+                  <strong>Transaction Id:</strong> {dialogData.transactionId}
+                </p>
+                <p>
+                  <strong> Alternative Email:</strong> {dialogData.alternativeEmail}
+                </p>
+              </div>
+              <button className="bg-black px-4 py-1 text-white rounded-md mt-2" onClick={handleDialogClose}>Close</button>
             </div>
-            <button className="bg-black px-4 py-1 text-white rounded-md mt-2" onClick={handleDialogClose}>Close</button>
-          </div>
-        )}
-        {dialogVisible && (
-          <div
-            onClick={handleDialogClose}
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-              zIndex: 999,
-            }}
-          ></div>
-        )}
-      </div>
+          )}
+          {dialogVisible && (
+            <div
+              onClick={handleDialogClose}
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                zIndex: 999,
+              }}
+            ></div>
+          )}
+        </div>
       )}
     </div>
   );

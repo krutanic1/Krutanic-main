@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const authMiddleware = require("../middleware/UserAuth");
 const { sendEmail } = require("../controllers/emailController");
-const crypto = require('crypto'); 
+const crypto = require('crypto');
 
 // create user
 router.post("/users", async (req, res) => {
@@ -32,7 +32,7 @@ router.post("/users", async (req, res) => {
 
 // fetch user
 router.get("/users", async (req, res) => {
-  const { userId, limit, all } = req.query;
+  const { userId, limit, all, page, status, search } = req.query;
   try {
     let users;
     if (userId) {
@@ -45,21 +45,135 @@ router.get("/users", async (req, res) => {
       }
     } else {
       // If all=true or limit=0, fetch all records (for dashboard)
-      const queryLimit = all === 'true' || limit === '0' ? 0 : (parseInt(limit) || 0);
-      
-      if (queryLimit > 0) {
-        users = await User.find()
-          .sort({ _id: -1 })
-          .limit(queryLimit)
-          .lean();
-      } else {
-        // No limit - fetch all for dashboard
-        users = await User.find()
-          .sort({ _id: -1 })
-          .lean();
+      if (all === 'true' || limit === '0') {
+        const queryLimit = all === 'true' || limit === '0' ? 0 : (parseInt(limit) || 0);
+
+        if (queryLimit > 0) {
+          users = await User.find()
+            .sort({ _id: -1 })
+            .limit(queryLimit)
+            .lean();
+        } else {
+          // No limit - fetch all for dashboard
+          users = await User.find()
+            .sort({ _id: -1 })
+            .lean();
+        }
+        return res.status(200).json(users);
       }
+
+      // SERVER-SIDE PAGINATION AND SEARCH WITH AGGREGATION
+      const pageNum = parseInt(page) || 1;
+      const limitNum = parseInt(limit) || 30;
+      const skip = (pageNum - 1) * limitNum;
+
+      const { program, isFullyPaid } = req.query;
+
+      const pipeline = [];
+
+      // 1. Match User Fields (Status & Search)
+      const matchStage = {};
+      if (status) {
+        matchStage.status = status;
+      }
+      if (search) {
+        matchStage.$or = [
+          { fullname: { $regex: search, $options: 'i' } },
+          { email: { $regex: search, $options: 'i' } },
+          { phone: { $regex: search, $options: 'i' } }
+        ];
+      }
+      if (Object.keys(matchStage).length > 0) {
+        pipeline.push({ $match: matchStage });
+      }
+
+      // 2. Lookup Enrollment Data (Join on email)
+      pipeline.push({
+        $lookup: {
+          from: "newenrolls",
+          localField: "email",
+          foreignField: "email",
+          as: "enrollmentData"
+        }
+      });
+
+      // 3. Add Computed Fields & Flatten
+      pipeline.push({
+        $addFields: {
+          enrollment: { $arrayElemAt: ["$enrollmentData", 0] }
+        }
+      });
+
+      pipeline.push({
+        $addFields: {
+          program: { $ifNull: ["$enrollment.program", "Self-guided"] },
+          // Check if paidAmount equals programPrice (and programPrice exists/is not 0)
+          isFullyPaid: {
+            $cond: {
+              if: {
+                $and: [
+                  { $ifNull: ["$enrollment.programPrice", false] },
+                  { $eq: ["$enrollment.programPrice", "$enrollment.paidAmount"] }
+                ]
+              },
+              then: true,
+              else: false
+            }
+          }
+        }
+      });
+
+      // 4. Filter by Computed Fields (Program & Payment Status)
+      const secondaryMatch = {};
+      if (program) {
+        secondaryMatch.program = program;
+      }
+      if (isFullyPaid === 'true') {
+        secondaryMatch.isFullyPaid = true;
+      } else if (isFullyPaid === 'false') {
+        // Optional: if we ever need to filter by NOT fully paid
+        secondaryMatch.isFullyPaid = false;
+      }
+
+      if (Object.keys(secondaryMatch).length > 0) {
+        pipeline.push({ $match: secondaryMatch });
+      }
+
+      // 5. Facet for Pagination (Count & Data)
+      pipeline.push({
+        $facet: {
+          metadata: [{ $count: "total" }],
+          data: [
+            { $sort: { _id: -1 } },
+            { $skip: skip },
+            { $limit: limitNum },
+            {
+              $project: {
+                enrollmentData: 0, // Remove large joined array
+                enrollment: 0 // Remove flattened enrollment object if not needed, but we used its fields
+              }
+            }
+          ]
+        }
+      });
+
+      const result = await User.aggregate(pipeline);
+
+      const metadata = result[0].metadata[0] || { total: 0 };
+      const usersData = result[0].data;
+      const totalItems = metadata.total;
+      const totalPages = Math.ceil(totalItems / limitNum);
+
+      return res.status(200).json({
+        data: usersData,
+        pagination: {
+          totalItems,
+          totalPages,
+          currentPage: pageNum,
+          itemsPerPage: limitNum
+        }
+      });
     }
-    res.status(200).json(users);
   } catch (error) {
     res.status(500).json({
       message: "An error occurred while fetching data",
@@ -96,11 +210,11 @@ router.post("/checkuserauth", async (req, res) => {
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
-      if (user.status === "inactive") {
-        return res
-          .status(403)
-          .json({ message: "Your account is inactive. Please contact support." });
-      }
+    if (user.status === "inactive") {
+      return res
+        .status(403)
+        .json({ message: "Your account is inactive. Please contact support." });
+    }
     if (password !== user.password) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
@@ -122,27 +236,27 @@ router.get("/dashboard", authMiddleware, (req, res) => {
 
 // Verify token validity (for frontend auth checks)
 router.get("/verify-token", authMiddleware, (req, res) => {
-  res.status(200).json({ 
-    valid: true, 
-    user: { 
-      id: req.user.id, 
-      email: req.user.email 
-    } 
+  res.status(200).json({
+    valid: true,
+    user: {
+      id: req.user.id,
+      email: req.user.email
+    }
   });
 });
 
 
 // send otp route
-router.post("/send-otp",async (req, res) => {
+router.post("/send-otp", async (req, res) => {
   const { email } = req.body;
   try {
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found enter a valid email" });
     }
-     const otp = crypto.randomInt(100000, 1000000);
+    const otp = crypto.randomInt(100000, 1000000);
     const otpExpires = Date.now() + 10 * 60 * 1000; // 10 mins expiration
-       const  EmailMessage = `
+    const EmailMessage = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
         <div style="background-color: #F15B29; color: #fff; text-align: center; padding: 20px;">
             <h1>Krutanic</h1>
@@ -163,7 +277,7 @@ router.post("/send-otp",async (req, res) => {
     user.otpExpires = otpExpires;
     await Promise.all([
       user.save(),
-      sendEmail({email ,  subject: "Your OTP for Login", message: EmailMessage}),
+      sendEmail({ email, subject: "Your OTP for Login", message: EmailMessage }),
     ]);
     res.status(200).json({ message: "OTP sent successfully" });
   } catch (err) {
@@ -180,9 +294,9 @@ router.post("/verify-otp", async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-      if (user.status === "inactive") {
-        return res.status(403).json({ message: "Your account is inactive. Please contact support." });
-      }
+    if (user.status === "inactive") {
+      return res.status(403).json({ message: "Your account is inactive. Please contact support." });
+    }
 
     if (!user.otp || user.otpExpires < Date.now()) {
       return res
@@ -214,7 +328,7 @@ router.post("/verify-otp", async (req, res) => {
 router.put("/updatepassword", async (req, res) => {
   try {
     const { email, newPassword } = req.body;
-    console.log(email , newPassword);
+    console.log(email, newPassword);
 
     if (!email || !newPassword) {
       return res
