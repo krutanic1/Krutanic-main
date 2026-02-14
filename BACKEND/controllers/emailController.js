@@ -101,7 +101,7 @@ const sendEventReminderEmail = async ({ email, subject, message, bcc, textVersio
   const mailOptions = {
     from: `Krutanic Events <${process.env.EVENTS_MAIL}>`, // events@krutanic.com with display name
     to: email,
-    cc: "tejo.raditya@krutanic.org, shrikant@krutanic.org",
+    cc: "tejo.raditya@krutanic.org",
     bcc: bcc,
     subject: subject,
     text: textVersion || 'Please enable HTML to view this email.',

@@ -633,6 +633,7 @@ router.post("/send-event-reminder/:eventId", async (req, res) => {
     const templateBase = fs.readFileSync(templatePath, 'utf-8');
 
     const subject = `Reminder: ${event.title} - Don't Miss Out!`;
+    const currentYear = new Date().getFullYear();
     let successCount = 0;
     let failCount = 0;
 
@@ -649,7 +650,8 @@ router.post("/send-event-reminder/:eventId", async (req, res) => {
           .replace(/\${eventDate}/g, startDate)
           .replace(/\${eventTime}/g, startTime)
           .replace(/\${eventMode}/g, event.mode || 'Online')
-          .replace(/\${eventDescription}/g, event.shortDescription || 'Details will be shared soon');
+          .replace(/\${eventDescription}/g, event.shortDescription || 'Details will be shared soon')
+          .replace(/\${currentYear}/g, currentYear);
 
         // Create plain text version to reduce spam risk
         const textVersion = `
@@ -682,7 +684,7 @@ A Ladder for Brighter Future
 ---
 Krutanic Solutions
 This is an automated reminder.
-© ${new Date().getFullYear()} Krutanic. All rights reserved.
+© ${currentYear} Krutanic. All rights reserved.
         `;
 
         await sendEventReminderEmail({
