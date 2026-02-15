@@ -79,6 +79,17 @@ const EventDashBoard = () => {
 
             {/* User Actions */}
             <div className="flex items-center space-x-3">
+              {/* WhatsApp Support Button */}
+              <a
+                href="https://wa.me/7204964747?text=I%20am%20here%20from%20events%20dashboard"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-2 px-4 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-all font-medium"
+              >
+                <i className="fa fa-whatsapp text-xl"></i>
+                <span className="hidden lg:block">Support</span>
+              </a>
+
               {/* User Profile Button */}
               <button
                 onClick={() => setActivePage("profile")}
