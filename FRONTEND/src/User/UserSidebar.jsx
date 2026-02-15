@@ -10,12 +10,19 @@ const UserSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const userId = localStorage.getItem("userId");
   const [userData, setUserData] = useState(null);
   const hasFetched = useRef(false);
-  const [componentsAccess, setComponentsAccess] = useState(null);
+  const [componentsAccess, setComponentsAccess] = useState({
+    atschecker: false,
+    jobboard: false,
+    myjob: false,
+    mockinterview: false,
+    exercise: false
+  });
 
   const [courseName, setCourseName] = useState("");
   const [userProgram, setUserProgram] = useState("");
   const [enrollmentDate, setEnrollmentDate] = useState(null);
   const [paymentStatus, setPaymentStatus] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const fetchUserData = async () => {
     if (!userId) return;
@@ -23,7 +30,7 @@ const UserSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
       const response = await axios.get(`${API}/users`, { params: { userId } });
       setUserData(response.data);
     } catch (err) {
-      console.log("Failed to fetch user data");
+      console.error("Failed to fetch user data:", err);
     }
   };
 
@@ -50,7 +57,9 @@ const UserSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
       const response = await axios.get(`${API}/user-components`, {
         params: { userId },
       });
-      setComponentsAccess(response.data.components);
+      if (response.data && response.data.components) {
+        setComponentsAccess(response.data.components);
+      }
     } catch (err) {
       console.error("Failed to fetch components access:", err);
     }
@@ -92,9 +101,34 @@ const UserSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    fetchUserData();
-    fetchComponentsAccess();
-    fetchEnrollmentData();
+
+    let isCancelled = false;
+    setLoading(true);
+
+    // Fallback timeout to ensure loading state is cleared after 8 seconds
+    const fallbackTimeout = setTimeout(() => {
+      if (!isCancelled) {
+        setLoading(false);
+      }
+    }, 8000);
+
+    Promise.all([fetchUserData(), fetchComponentsAccess(), fetchEnrollmentData()])
+      .catch((err) => {
+        if (!isCancelled) {
+          console.error("Error fetching sidebar data:", err);
+        }
+      })
+      .finally(() => {
+        if (!isCancelled) {
+          clearTimeout(fallbackTimeout);
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      isCancelled = true;
+      clearTimeout(fallbackTimeout);
+    };
   }, []);
 
   const menuItems = [
@@ -112,8 +146,8 @@ const UserSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     <>
       {/* Sidebar */}
       <aside className={`w-64 bg-white border-r border-gray-100 ${isSidebarOpen ? 'flex' : 'hidden'} lg:flex flex-col shrink-0 overflow-y-auto fixed lg:relative inset-y-0 left-0 z-30 lg:z-auto pt-16 lg:pt-0`}>
-        {(!userData || !componentsAccess) ? (
-          /* Skeleton Loader */
+        {loading && !userData ? (
+          /* Skeleton Loader - Only show if absolutely no data and loading */
           <div className="p-6 h-full flex flex-col">
             <div className="flex items-center gap-3 mb-6 p-3 bg-gray-50 rounded-xl animate-pulse">
               <div className="bg-gray-200 rounded-full size-12 shrink-0"></div>

@@ -43,6 +43,8 @@ router.get("/users", async (req, res) => {
           .status(404)
           .json({ message: "user not found for the given userId" });
       }
+      // CRITICAL FIX: Send the user data back to the client!
+      return res.status(200).json(users);
     } else {
       // If all=true or limit=0, fetch all records (for dashboard)
       if (all === 'true' || limit === '0') {
