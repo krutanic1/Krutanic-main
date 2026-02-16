@@ -411,8 +411,8 @@ router.get("/check-event-application/:userId/:eventId", async (req, res) => {
 router.get("/eventapplications", async (req, res) => {
   try {
     const appliedEvent = await EventApplication.find()
-      .populate('userId', 'id')
-      .populate('eventId', 'id');
+      .populate('userId', 'name profilePhoto')
+      .populate('eventId', 'title');
 
     const response = appliedEvent.map(event => {
       const { createdAt, updatedAt, ...rest } = event.toObject();

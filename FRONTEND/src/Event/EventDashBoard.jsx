@@ -6,7 +6,7 @@ import Events from "./Events";
 import toast, { Toaster } from "react-hot-toast";
 import Playground from "./Playground";
 
-const EventDashBoard = () => {
+const hBoard = () => {
   const [activePage, setActivePage] = useState("events");
   const [information, setInformation] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -270,4 +270,4 @@ const EventDashBoard = () => {
   );
 };
 
-export default EventDashBoard;
+export default hBoard;

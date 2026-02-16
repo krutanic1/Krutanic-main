@@ -10,6 +10,7 @@ const Events = () => {
   const [completed, setCompleted] = useState([]);
   const [appliedUsers, setAppliedUsers] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
+  const [eventLeaderboards, setEventLeaderboards] = useState({});
   const userId = localStorage.getItem("eventuserId");
   const userName = localStorage.getItem("eventUserName");
 
@@ -24,6 +25,46 @@ const Events = () => {
       setLeaderboard(sortedUsers);
     } catch (error) {
       console.error("There was an error fetching the event users", error);
+    }
+  };
+
+  const fetchEventLeaderboards = async () => {
+    try {
+      const response = await axios.get(`${API}/eventapplications`);
+      const applications = response.data;
+      console.log("Event applications data:", applications);
+      
+      // Group applications by eventId and get top 3 for each
+      const leaderboards = {};
+      applications.forEach((app) => {
+        if (app.eventId && app.userId && app.coin != null && app.coin > 0) {
+          const eventId = typeof app.eventId === 'object' ? app.eventId._id : app.eventId;
+          const userName = typeof app.userId === 'object' ? app.userId.name : null;
+          const userPhoto = typeof app.userId === 'object' ? app.userId.profilePhoto : null;
+          
+          if (!leaderboards[eventId]) {
+            leaderboards[eventId] = [];
+          }
+          leaderboards[eventId].push({
+            name: userName || 'Unknown',
+            profilePhoto: userPhoto,
+            coin: app.coin,
+            eventTitle: app.remarks
+          });
+        }
+      });
+      
+      // Sort and keep only top 3 for each event
+      Object.keys(leaderboards).forEach((eventId) => {
+        leaderboards[eventId] = leaderboards[eventId]
+          .sort((a, b) => b.coin - a.coin)
+          .slice(0, 3);
+      });
+      
+      console.log("Processed leaderboards:", leaderboards);
+      setEventLeaderboards(leaderboards);
+    } catch (error) {
+      console.error("Error fetching event leaderboards:", error);
     }
   };
 
@@ -75,6 +116,7 @@ const Events = () => {
     fetchEvent();
     fetchAppliedUsers();
     fetchEventUsers();
+    fetchEventLeaderboards();
   }, []);
 
   useEffect(() => {
@@ -143,12 +185,18 @@ const Events = () => {
     );
   };
   const filteredLeaderboard = leaderboard.filter((user) => user.totalCoins > 0);
+  
+  // Check if there are any completed events with leaderboard data
+  const hasCompletedEventsWithLeaderboards = completed.some(
+    (event) => eventLeaderboards[event._id] && eventLeaderboards[event._id].length > 0
+  );
+
   return (
     <div className="eventheight  text-white">
       <Toaster position="top-center" reverseOrder={false} />
-      <div className="grid lg:grid-cols-4  scrollbar-hidden gap-1 py-1 backdrop-blur-xl bg-[#e7dfdf1e] h-full">
+      <div className={`grid ${hasCompletedEventsWithLeaderboards ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} scrollbar-hidden gap-1 py-1 backdrop-blur-xl bg-[#e7dfdf1e] h-full`}>
         {/* Events Sections */}
-        <div className="lg:col-span-3 grid lg:grid-cols-3 gap-1">
+        <div className={`${hasCompletedEventsWithLeaderboards ? 'lg:col-span-3' : 'lg:col-span-3'} grid lg:grid-cols-3 gap-1`}>
           {/* Upcoming Events */}
           <div className=" shadow-black  pereventheigth rounded-lg p-4 shadow-lg">
             <h2 className="text-2xl font-semibold text-center mb-4 bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">
@@ -198,76 +246,51 @@ const Events = () => {
           </div>
         </div>
 
-        {/* Leaderboard */}
-        {/* <div className=" shadow-black pereventheigth rounded-lg p-4 shadow-lg">
-          <h2 className="text-2xl font-semibold text-center mb-4 bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">
-            Leaderboard Top 3
-          </h2>
-          <div className="space-y-4">
-            {filteredLeaderboard.length > 0 ? (
-              filteredLeaderboard.slice(0, 3).map((user, index) => {
+        {/* Top 3 Students for Completed Events */}
+        {hasCompletedEventsWithLeaderboards && (
+          <div className="shadow-black pereventheigth rounded-lg p-4 shadow-lg overflow-y-auto scrollbar-hidden">
+            <h2 className="text-2xl font-semibold text-center mb-4 bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">
+              Top 3 Students
+            </h2>
+            <div className="space-y-6">
+              {completed.map((event) => {
+                const topStudents = eventLeaderboards[event._id];
+                if (!topStudents || topStudents.length === 0) return null;
+                
                 const medals = ["🥇", "🥈", "🥉"];
                 return (
-                  <div
-                    key={index}
-                    className="relative p-[3px] drop-shadow-sm shadow-black shadow-lg bg-[#080808] rounded-full"
-                  >
-                    <span className="absolute inset-0 bg-gradient-to-r animate-pulse from-blue-500 to-purple-500 rounded-full p-[2px] mask mask-out"></span>
-                    <span className="relative block bg-black w-full rounded-full px-2 py-2">
-                      <div className="flex items-center justify-between">
-                        <div className="text-md font-medium flex items-center gap-2 justify-center">
-                          <img
-                            src={user.profilePhoto || "default-avatar.png"}
-                            className="h-11 w-11 rounded-full"
-                            alt="User Avatar"
-                          />
-                          <span>
-                            {medals[index]}
-                            {user.name}
+                  <div key={event._id} className="mb-4">
+                    <h3 className="text-sm font-semibold text-gray-300 mb-3 text-center">
+                      {event.title}
+                    </h3>
+                    <div className="space-y-3">
+                      {topStudents.map((student, index) => (
+                        <div
+                          key={index}
+                          className="relative p-[3px] drop-shadow-sm shadow-black shadow-lg bg-[#080808] rounded-full"
+                        >
+                          <span className="absolute inset-0 bg-gradient-to-r animate-pulse from-blue-500 to-purple-500 rounded-full p-[2px] mask mask-out"></span>
+                          <span className="relative block bg-black w-full rounded-full px-4 py-3">
+                            <div className="flex items-center justify-between">
+                              <div className="text-base font-medium flex items-center gap-2 justify-center">
+                                <span className="truncate">
+                                  <span className="text-2xl">{medals[index]}</span> {student.name}
+                                </span>
+                              </div>
+                              <span className="text-base text-yellow-400 mr-2 font-semibold">
+                                {student.coin}
+                              </span>
+                            </div>
                           </span>
                         </div>
-                        <span className="text-md text-yellow-400 mr-2">
-                          Score: {user.totalCoins}
-                        </span>
-                      </div>
-                    </span>
+                      ))}
+                    </div>
                   </div>
                 );
-              })
-            ) : (
-              <div className="text-center text-black">
-                <p>Leaderboard is empty. Be the first to score!</p>
-              </div>
-            )}
+              })}
+            </div>
           </div>
-          <div className="relative p-[3px] mt-5 drop-shadow-sm shadow-black shadow-lg  bg-[#080808] rounded-full">
-            <span className="absolute inset-0 bg-gradient-to-r animate-pulse from-blue-500 to-purple-500 rounded-full p-[2px] mask mask-out"></span>
-            <span className="relative block bg-black w-full rounded-full px-2 py-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1 justify-center">
-                  {leaderboard
-                    .filter((user) => user.name === userName)
-                    .map((user) => (
-                      <img
-                        src={user.profilePhoto}
-                        className={`h-12 w-12 ${!user.profilePhoto
-                            ? "bg-gradient-to-r animate-pulse from-blue-500 to-purple-500"
-                            : ""
-                          } rounded-full`}
-                        alt=""
-                      />
-                    ))}
-                  <span className="text-md"> Your Score : </span>
-                </div>
-                <span className="text-md text-yellow-400 mr-2">
-                  {leaderboard
-                    .filter((user) => user.name === userName)
-                    .map((user) => user.totalCoins)}
-                </span>
-              </div>
-            </span>
-          </div>
-        </div> */}
+        )}
       </div>
 
       <style jsx>{`
