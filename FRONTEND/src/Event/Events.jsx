@@ -259,11 +259,13 @@ const Events = () => {
                 
                 const medals = ["🥇", "🥈", "🥉"];
                 return (
-                  <div key={event._id} className="mb-4">
-                    <h3 className="text-sm font-semibold text-gray-300 mb-3 text-center">
-                      {event.title}
-                    </h3>
-                    <div className="space-y-3">
+                  <div key={event._id} className="relative p-[3px] rounded-lg shadow-black shadow-md bg-[#080808] mb-6">
+                    <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg p-[2px]"></span>
+                    <div className="relative bg-black rounded-lg p-4">
+                      <h3 className="text-base font-semibold text-white mb-4 text-center border-b border-gray-700 pb-2">
+                        {event.title}
+                      </h3>
+                      <div className="space-y-3">
                       {topStudents.map((student, index) => (
                         <div
                           key={index}
@@ -284,6 +286,7 @@ const Events = () => {
                           </span>
                         </div>
                       ))}
+                    </div>
                     </div>
                   </div>
                 );
