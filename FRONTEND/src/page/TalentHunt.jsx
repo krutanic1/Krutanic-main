@@ -194,23 +194,23 @@ const TalentHunt = () => {
 
       {/* Top Winners Section */}
       {topEarners.length > 0 && (
-        <div className="bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 py-16">
-          <div className="max-w-7xl mx-auto px-6">
+        <div className="bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 py-8 md:py-16">
+          <div className="max-w-7xl mx-auto px-4 md:px-6">
             {/* Section Header */}
-            <div className="text-center mb-12">
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-3">
+            <div className="text-center mb-8 md:mb-12">
+              <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-2 md:mb-3">
                 🏆 Previous Top Winners
               </h2>
-              <p className="text-purple-200 text-lg">Champions who won prizes across all events</p>
+              <p className="text-purple-200 text-sm md:text-lg">Champions who won prizes across all events</p>
 
               {/* Total Distributed Prizes Banner */}
-              <div className="mt-6 inline-block">
-                <div className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 px-8 py-4 rounded-full shadow-2xl border-4 border-green-300 transform hover:scale-105 transition-all duration-300">
-                  <div className="flex items-center gap-3">
-                    <span className="text-3xl">💰</span>
+              <div className="mt-4 md:mt-6 inline-block">
+                <div className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 px-4 py-2 md:px-8 md:py-4 rounded-full shadow-2xl border-2 md:border-4 border-green-300 transform hover:scale-105 transition-all duration-300">
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <span className="text-xl md:text-3xl">💰</span>
                     <div className="text-left">
                       <p className="text-white/80 text-xs font-semibold uppercase tracking-wide">Distributed Prizes Till Now</p>
-                      <p className="text-white font-bold text-2xl md:text-3xl">₹30,000</p>
+                      <p className="text-white font-bold text-xl md:text-2xl lg:text-3xl">₹30,000</p>
                     </div>
                   </div>
                 </div>
@@ -218,29 +218,29 @@ const TalentHunt = () => {
             </div>
 
             {/* Podium Display */}
-            <div className="flex justify-center items-end gap-4 md:gap-8 max-w-4xl mx-auto">
+            <div className="flex justify-center items-end gap-2 md:gap-4 lg:gap-8 max-w-4xl mx-auto">
               {/* Second Place */}
               {topEarners[1] && (
                 <div className="flex flex-col items-center" data-aos="fade-up" data-aos-delay="100">
-                  <div className="relative mb-4">
-                    <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center border-4 border-gray-400 shadow-2xl">
+                  <div className="relative mb-2 md:mb-4">
+                    <div className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center border-2 md:border-4 border-gray-400 shadow-2xl">
                       {topEarners[1].profilePhoto ? (
                         <img src={topEarners[1].profilePhoto} alt={topEarners[1].name} className="w-full h-full rounded-full object-cover" />
                       ) : (
-                        <span className="text-3xl md:text-4xl font-bold text-white">2</span>
+                        <span className="text-2xl md:text-3xl lg:text-4xl font-bold text-white">2</span>
                       )}
                     </div>
-                    <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-br from-gray-200 to-gray-400 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
-                      <span className="text-xl font-bold text-gray-700">2</span>
+                    <div className="absolute -top-1 -right-1 md:-top-2 md:-right-2 w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-gray-200 to-gray-400 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+                      <span className="text-sm md:text-xl font-bold text-gray-700">2</span>
                     </div>
                   </div>
-                  <div className="bg-gradient-to-br from-gray-400 to-gray-600 rounded-t-2xl px-6 py-8 md:py-12 w-40 md:w-48 text-center shadow-2xl transform hover:scale-105 transition-all duration-300">
-                    <p className="text-white font-bold text-base md:text-lg mb-2 line-clamp-1">{topEarners[1].name || 'Gaurav Singh'}</p>
-                    <div className="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 mb-2">
-                      <p className="text-yellow-300 font-bold text-xl md:text-2xl">₹{topEarners[1].totalPrizeMoney || 0}</p>
-                      <p className="text-gray-200 text-xs">Total Prize Won</p>
+                  <div className="bg-gradient-to-br from-gray-400 to-gray-600 rounded-t-2xl px-3 py-4 md:px-6 md:py-8 lg:py-12 w-28 md:w-40 lg:w-48 text-center shadow-2xl transform hover:scale-105 transition-all duration-300">
+                    <p className="text-white font-bold text-xs md:text-base lg:text-lg mb-1 md:mb-2 line-clamp-1">{topEarners[1].name || 'Gaurav Singh'}</p>
+                    <div className="bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 md:px-3 md:py-2 mb-1 md:mb-2">
+                      <p className="text-yellow-300 font-bold text-base md:text-xl lg:text-2xl">₹{topEarners[1].totalPrizeMoney || 0}</p>
+                      <p className="text-gray-200 text-xs hidden md:block">Total Prize Won</p>
                     </div>
-                    <p className="text-gray-200 text-xs">🪙 {topEarners[1].totalCoins || 0} coins • {topEarners[1].eventsWon || 0} events</p>
+                    <p className="text-gray-200 text-xs hidden md:block">🪙 {topEarners[1].totalCoins || 0} coins • {topEarners[1].eventsWon || 0} events</p>
                   </div>
                 </div>
               )}
@@ -248,28 +248,28 @@ const TalentHunt = () => {
               {/* First Place */}
               {topEarners[0] && (
                 <div className="flex flex-col items-center" data-aos="fade-up">
-                  <div className="relative mb-4">
-                    <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-600 flex items-center justify-center border-4 border-yellow-500 shadow-2xl animate-pulse">
+                  <div className="relative mb-2 md:mb-4">
+                    <div className="w-20 h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 rounded-full bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-600 flex items-center justify-center border-2 md:border-4 border-yellow-500 shadow-2xl animate-pulse">
                       {topEarners[0].profilePhoto ? (
                         <img src={topEarners[0].profilePhoto} alt={topEarners[0].name} className="w-full h-full rounded-full object-cover" />
                       ) : (
-                        <span className="text-4xl md:text-5xl font-bold text-white">1</span>
+                        <span className="text-3xl md:text-4xl lg:text-5xl font-bold text-white">1</span>
                       )}
                     </div>
-                    <div className="absolute -top-3 -right-3 w-12 h-12 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
-                      <span className="text-2xl font-bold text-yellow-900">👑</span>
+                    <div className="absolute -top-2 -right-2 md:-top-3 md:-right-3 w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+                      <span className="text-xl md:text-2xl font-bold text-yellow-900">👑</span>
                     </div>
                   </div>
-                  <div className="bg-gradient-to-br from-yellow-500 via-yellow-600 to-orange-600 rounded-t-2xl px-6 py-12 md:py-16 w-48 md:w-56 text-center shadow-2xl transform hover:scale-105 transition-all duration-300 relative">
-                    <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-yellow-900 px-4 py-1 rounded-full text-xs font-bold shadow-lg">
+                  <div className="bg-gradient-to-br from-yellow-500 via-yellow-600 to-orange-600 rounded-t-2xl px-3 py-6 md:px-6 md:py-12 lg:py-16 w-32 md:w-48 lg:w-56 text-center shadow-2xl transform hover:scale-105 transition-all duration-300 relative">
+                    <div className="absolute -top-4 md:-top-6 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-yellow-900 px-2 py-0.5 md:px-4 md:py-1 rounded-full text-xs font-bold shadow-lg">
                       CHAMPION
                     </div>
-                    <p className="text-white font-bold text-lg md:text-xl mb-3 line-clamp-1">{topEarners[0].name || 'Preeti Shinde'}</p>
-                    <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 mb-2">
-                      <p className="text-yellow-100 font-bold text-2xl md:text-3xl">₹{topEarners[0].totalPrizeMoney || 0}</p>
-                      <p className="text-yellow-200 text-xs">Total Prize Won</p>
+                    <p className="text-white font-bold text-sm md:text-lg lg:text-xl mb-2 md:mb-3 line-clamp-1">{topEarners[0].name || 'Preeti Shinde'}</p>
+                    <div className="bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 md:px-4 md:py-2 mb-1 md:mb-2">
+                      <p className="text-yellow-100 font-bold text-lg md:text-2xl lg:text-3xl">₹{topEarners[0].totalPrizeMoney || 0}</p>
+                      <p className="text-yellow-200 text-xs hidden md:block">Total Prize Won</p>
                     </div>
-                    <p className="text-yellow-100 text-xs">🪙 {topEarners[0].totalCoins || 0} coins • {topEarners[0].eventsWon || 0} events</p>
+                    <p className="text-yellow-100 text-xs hidden md:block">🪙 {topEarners[0].totalCoins || 0} coins • {topEarners[0].eventsWon || 0} events</p>
                   </div>
                 </div>
               )}
@@ -277,25 +277,25 @@ const TalentHunt = () => {
               {/* Third Place */}
               {topEarners[2] && (
                 <div className="flex flex-col items-center" data-aos="fade-up" data-aos-delay="200">
-                  <div className="relative mb-4">
-                    <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-orange-300 to-orange-600 flex items-center justify-center border-4 border-orange-500 shadow-2xl">
+                  <div className="relative mb-2 md:mb-4">
+                    <div className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full bg-gradient-to-br from-orange-300 to-orange-600 flex items-center justify-center border-2 md:border-4 border-orange-500 shadow-2xl">
                       {topEarners[2].profilePhoto ? (
                         <img src={topEarners[2].profilePhoto} alt={topEarners[2].name} className="w-full h-full rounded-full object-cover" />
                       ) : (
-                        <span className="text-3xl md:text-4xl font-bold text-white">3</span>
+                        <span className="text-2xl md:text-3xl lg:text-4xl font-bold text-white">3</span>
                       )}
                     </div>
-                    <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-br from-orange-300 to-orange-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
-                      <span className="text-xl font-bold text-orange-900">3</span>
+                    <div className="absolute -top-1 -right-1 md:-top-2 md:-right-2 w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-orange-300 to-orange-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+                      <span className="text-sm md:text-xl font-bold text-orange-900">3</span>
                     </div>
                   </div>
-                  <div className="bg-gradient-to-br from-orange-400 to-orange-600 rounded-t-2xl px-6 py-8 md:py-12 w-40 md:w-48 text-center shadow-2xl transform hover:scale-105 transition-all duration-300">
-                    <p className="text-white font-bold text-base md:text-lg mb-2 line-clamp-1">{topEarners[2].name || 'Saloni Pal'}</p>
-                    <div className="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 mb-2">
-                      <p className="text-yellow-300 font-bold text-xl md:text-2xl">₹{topEarners[2].totalPrizeMoney || 0}</p>
-                      <p className="text-orange-100 text-xs">Total Prize Won</p>
+                  <div className="bg-gradient-to-br from-orange-400 to-orange-600 rounded-t-2xl px-3 py-4 md:px-6 md:py-8 lg:py-12 w-28 md:w-40 lg:w-48 text-center shadow-2xl transform hover:scale-105 transition-all duration-300">
+                    <p className="text-white font-bold text-xs md:text-base lg:text-lg mb-1 md:mb-2 line-clamp-1">{topEarners[2].name || 'Saloni Pal'}</p>
+                    <div className="bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 md:px-3 md:py-2 mb-1 md:mb-2">
+                      <p className="text-yellow-300 font-bold text-base md:text-xl lg:text-2xl">₹{topEarners[2].totalPrizeMoney || 0}</p>
+                      <p className="text-orange-100 text-xs hidden md:block">Total Prize Won</p>
                     </div>
-                    <p className="text-orange-100 text-xs">🪙 {topEarners[2].totalCoins || 0} coins • {topEarners[2].eventsWon || 0} events</p>
+                    <p className="text-orange-100 text-xs hidden md:block">🪙 {topEarners[2].totalCoins || 0} coins • {topEarners[2].eventsWon || 0} events</p>
                   </div>
                 </div>
               )}
