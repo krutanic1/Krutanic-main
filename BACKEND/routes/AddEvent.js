@@ -35,7 +35,7 @@ router.get("/allevents", async (req, res) => {
 // Get events summary (optimized payload)
 router.get("/events/summary", async (req, res) => {
   try {
-    const events = await AddEvent.find({}, {
+    const events = await AddEvent.find({ status: { $ne: "completed" } }, {
       title: 1,
       slug: 1,
       type: 1,
@@ -607,7 +607,7 @@ router.post("/send-event-reminder/:eventId", async (req, res) => {
 
     // Find all applications for this event
     const applications = await EventApplication.find({ eventId }).populate("userId");
-    
+
     if (applications.length === 0) {
       return res.status(404).json({ error: "No students enrolled for this event" });
     }
@@ -620,12 +620,12 @@ router.post("/send-event-reminder/:eventId", async (req, res) => {
     }
 
     // Format event date and time
-    const startDate = event.startDate ? new Date(event.startDate).toLocaleDateString('en-IN', { 
-      day: 'numeric', 
-      month: 'long', 
-      year: 'numeric' 
+    const startDate = event.startDate ? new Date(event.startDate).toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
     }) : 'TBA';
-    
+
     const startTime = event.startTime || 'TBA';
 
     // Read the HTML template file
@@ -694,7 +694,7 @@ This is an automated reminder.
           textVersion: textVersion,
           bcc: '' // No BCC for individual emails
         });
-        
+
         successCount++;
       } catch (emailError) {
         console.error(`Failed to send email to ${application.userId.email}:`, emailError);
@@ -702,8 +702,8 @@ This is an automated reminder.
       }
     }
 
-    res.status(200).json({ 
-      message: "Event reminder emails sent successfully", 
+    res.status(200).json({
+      message: "Event reminder emails sent successfully",
       recipientCount: successCount,
       successCount: successCount,
       failCount: failCount
@@ -711,10 +711,98 @@ This is an automated reminder.
 
   } catch (error) {
     console.error("Error sending event reminder emails:", error);
-    res.status(500).json({ 
-      error: "Failed to send event reminder emails", 
-      message: error.message 
+    res.status(500).json({
+      error: "Failed to send event reminder emails",
+      message: error.message
     });
+  }
+});
+
+
+// Get top 3 coin earners across all events with prize money calculation
+router.get("/top-earners", async (req, res) => {
+  try {
+    // Step 1: Get top 3 winners per event with their rankings
+    const eventWinners = await EventApplication.aggregate([
+      {
+        $match: {
+          coin: { $gt: 0 } // Only consider users with coins
+        }
+      },
+      {
+        $sort: { coin: -1 } // Sort by coins descending within each group
+      },
+      {
+        $group: {
+          _id: "$eventId",
+          winners: {
+            $push: {
+              userId: "$userId",
+              coins: "$coin"
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          eventId: "$_id",
+          // Get only top 3 winners per event
+          top3: { $slice: ["$winners", 3] }
+        }
+      }
+    ]);
+
+    // Step 2: Calculate prize money for each winner
+    const userPrizes = {};
+    const prizeStructure = [1000, 500, 200]; // 1st, 2nd, 3rd place prizes
+
+    eventWinners.forEach(event => {
+      event.top3.forEach((winner, index) => {
+        const userId = winner.userId.toString();
+        const prizeMoney = prizeStructure[index] || 0;
+
+        if (!userPrizes[userId]) {
+          userPrizes[userId] = {
+            userId: winner.userId,
+            totalPrizeMoney: 0,
+            totalCoins: 0,
+            eventsWon: 0
+          };
+        }
+
+        userPrizes[userId].totalPrizeMoney += prizeMoney;
+        userPrizes[userId].totalCoins += winner.coins;
+        userPrizes[userId].eventsWon += 1;
+      });
+    });
+
+    // Step 3: Convert to array and sort by total prize money
+    const sortedUsers = Object.values(userPrizes)
+      .sort((a, b) => b.totalPrizeMoney - a.totalPrizeMoney)
+      .slice(0, 3); // Get top 3 overall winners
+
+    // Step 4: Fetch user details
+    const userIds = sortedUsers.map(u => u.userId);
+    const userDetails = await EventRegistration.find({ _id: { $in: userIds } });
+
+    // Step 5: Map user details to prize data
+    const topEarners = sortedUsers.map(prize => {
+      const user = userDetails.find(u => u._id.toString() === prize.userId.toString());
+      return {
+        _id: prize.userId,
+        totalPrizeMoney: prize.totalPrizeMoney,
+        totalCoins: prize.totalCoins,
+        eventsWon: prize.eventsWon,
+        name: user?.name || 'Unknown',
+        profilePhoto: user?.profilePhoto || null,
+        email: user?.email || null
+      };
+    });
+
+    res.status(200).json(topEarners);
+  } catch (error) {
+    console.error("Error fetching top earners:", error);
+    res.status(500).json({ error: error.message });
   }
 });
 
