@@ -49,6 +49,9 @@ const AdvanceSchema = new mongoose.Schema({
       return this.domain === "Other";
     },
   },
+  passedOutYear: {
+    type: String,
+  },
   reason: {
     type: String,
   },

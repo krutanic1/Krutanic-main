@@ -71,7 +71,7 @@ const AdvanceQueries = () => {
 
   return (
     <div id="AdminAddCourse">
-       <Toaster position="top-center" reverseOrder={false} />
+      <Toaster position="top-center" reverseOrder={false} />
       <h2>Advance Course Queries</h2>
       <div className="coursetable">
         <table>
@@ -82,6 +82,7 @@ const AdvanceQueries = () => {
               <th>Phone</th>
               <th>Current Role</th>
               <th>Experiece</th>
+              <th>Passed Out Year</th>
               <th>Interested Domain</th>
               <th>Goal</th>
               <th>Domain</th>
@@ -96,7 +97,7 @@ const AdvanceQueries = () => {
                 <React.Fragment key={dateIndex}>
                   <tr>
                     <td
-                      colSpan="11"
+                      colSpan="12"
                       style={{
                         fontWeight: "bold",
                         backgroundColor: "#f0f0f0",
@@ -122,6 +123,7 @@ const AdvanceQueries = () => {
                         <td>{query.phone}</td>
                         <td className=" capitalize">{query.currentRole}</td>
                         <td>{query.experience}</td>
+                        <td>{query.passedOutYear || "—"}</td>
                         <td className=" capitalize">{query.interestedDomain}</td>
                         <td className=" capitalize">
                           {query.goal === "Other"
@@ -136,27 +138,27 @@ const AdvanceQueries = () => {
                         <td>{query.reason}</td>
                         <td className=" uppercase">{time}</td>
                         <td>
-                      <select
-                        value={query.action}
-                        onChange={(event) =>
-                          handleSelectChange(event, query._id)
-                        }
-                        className={`text-white rounded-full border ${getBackgroundColor(
-                          query.action || "Unseen"
-                        )}`}
-                      >
-                        <option value="Unseen">Unseen</option>
-                        <option className="bg-blue-600" value="Shared">
-                          Shared
-                        </option>
-                        <option className="bg-red-600" value="Not Interested">
-                          Not Interested
-                        </option>
-                        <option className="bg-green-600" value="Already Paid">
-                          Already Paid
-                        </option>
-                      </select>
-                    </td>
+                          <select
+                            value={query.action}
+                            onChange={(event) =>
+                              handleSelectChange(event, query._id)
+                            }
+                            className={`text-white rounded-full border ${getBackgroundColor(
+                              query.action || "Unseen"
+                            )}`}
+                          >
+                            <option value="Unseen">Unseen</option>
+                            <option className="bg-blue-600" value="Shared">
+                              Shared
+                            </option>
+                            <option className="bg-red-600" value="Not Interested">
+                              Not Interested
+                            </option>
+                            <option className="bg-green-600" value="Already Paid">
+                              Already Paid
+                            </option>
+                          </select>
+                        </td>
                       </tr>
                     );
                   })}
@@ -164,7 +166,7 @@ const AdvanceQueries = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="11">No Queries Found</td>
+                <td colSpan="12">No Queries Found</td>
               </tr>
             )}
           </tbody>

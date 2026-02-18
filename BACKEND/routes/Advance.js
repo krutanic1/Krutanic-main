@@ -8,7 +8,7 @@ router.get("/advancequeries", async (req, res) => {
   try {
     // If all=true or limit=0, fetch all records (for dashboard)
     const queryLimit = all === 'true' || limit === '0' ? 0 : (parseInt(limit) || 0);
-    
+
     let queries;
     if (queryLimit > 0) {
       queries = await Advance.find()
@@ -28,7 +28,7 @@ router.get("/advancequeries", async (req, res) => {
 });
 
 router.post("/advance/register", async (req, res) => {
-  const { name, email, phone, currentRole, experience, goal, goalOther, domain, domainOther ,interestedDomain ,reason } = req.body;
+  const { name, email, phone, currentRole, experience, goal, goalOther, domain, domainOther, interestedDomain, reason, passedOutYear } = req.body;
   // console.log(req.body);
   try {
     const newRegistration = new Advance({
@@ -41,8 +41,9 @@ router.post("/advance/register", async (req, res) => {
       goalOther: goal === "Other" ? goalOther : undefined,
       domain,
       domainOther: domain === "Other" ? domainOther : undefined,
-      interestedDomain : interestedDomain,
-      reason:reason
+      interestedDomain: interestedDomain,
+      passedOutYear: passedOutYear || undefined,
+      reason: reason
     });
     await newRegistration.save();
     res.status(201).json({ message: "Registration successfull!" });
@@ -75,7 +76,7 @@ router.put("/advancequery/:id", async (req, res) => {
       await query.save();
 
       res.status(200).json({ message: "Query updated successfully" });
-      } else {
+    } else {
       res.status(404).json({ message: "Query not found" });
     }
   } catch (error) {

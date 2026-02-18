@@ -1,5 +1,5 @@
-import {Helmet} from 'react-helmet';
-import React, {useEffect, useRef } from "react";
+import { Helmet } from 'react-helmet';
+import React, { useEffect, useRef } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import "slick-carousel/slick/slick.css";
@@ -11,11 +11,11 @@ import adobe from "../assets/certificates/c/internship.jpg"
 import Testimonial from "../Components/testimonial";
 import FAQMentor from "./Mentorship/FAQMentor";
 import EnrollMentor from "./Mentorship/EnrollMentor";
-import PopularCourse from "./Mentorship/PopularCourse"; 
+import PopularCourse from "./Mentorship/PopularCourse";
 import CourseMentor from "./Mentorship/CourseMentor";
 import Getintouch from "../Components/Getintouch";
 import { useNavigate } from "react-router-dom";
-import HomePopup from "../Components/HomePopup";
+import AdvancedApplyPopup from "../Components/AdvancedApplyPopup";
 import { useState } from "react";
 import MentorShipMentors from "../Components/MentorShipMentors";
 import MentorshipForm from "./MentorshipForm";
@@ -54,34 +54,34 @@ const Mentorship = () => {
 
   return (
     <div id="mentorship" className="text-white bg-black">
-      {showPopup && <HomePopup onClose={() => setShowPopup(false)} />}
-    <Helmet>
+      {showPopup && <AdvancedApplyPopup onClose={() => setShowPopup(false)} />}
+      <Helmet>
         <title>Krutanic Mentorship Program - Data Science, AI, Full Stack, Digital Marketing  </title>
-        <meta name="keywords" content="Top E-learning, mentorship, tech mentorship, data science, coding, online learning, career growth"/>
-        <meta name="description" content="Krutanic offers a career-driven Mentorship Program with expert guidance, hands-on training, and 100+ internship opportunities in Data Science, Artificial Intelligence, Machine Learning, Cyber Security, Full Stack Web Development, Cloud Computing, and Digital Marketing"/>
-        <meta property="og:title" content="Top E-Learning Mentorship Programs | Krutanic"/>
-        <meta property="og:url" content="https://www.krutanic.com/Mentorship"/>
-        <meta property="og:image" content="https://www.krutanic.com/assets/LOGO3-Do06qODb.png"/>
-        <meta property="og:description" content="Join Krutanic’s top e-learning mentorship to grow your tech, coding, and data skills with expert guidance."/>
-        <meta property="og:type" content="website"/>
-        <meta name="twitter:card" content="summary"/>
-        <meta property="twitter:title" content="Top E-Learning Mentorship Programs | Krutanic"/>
-        <meta name="twitter:image" content="https://www.krutanic.com/assets/LOGO3-Do06qODb.png"/>
-        <meta property="twitter:description" content="Join Krutanic’s top e-learning mentorship to grow your tech, coding, and data skills with expert guidance."/>
-        <link rel="canonical" href="https://www.krutanic.com/Mentorship"/>
-    </Helmet>
+        <meta name="keywords" content="Top E-learning, mentorship, tech mentorship, data science, coding, online learning, career growth" />
+        <meta name="description" content="Krutanic offers a career-driven Mentorship Program with expert guidance, hands-on training, and 100+ internship opportunities in Data Science, Artificial Intelligence, Machine Learning, Cyber Security, Full Stack Web Development, Cloud Computing, and Digital Marketing" />
+        <meta property="og:title" content="Top E-Learning Mentorship Programs | Krutanic" />
+        <meta property="og:url" content="https://www.krutanic.com/Mentorship" />
+        <meta property="og:image" content="https://www.krutanic.com/assets/LOGO3-Do06qODb.png" />
+        <meta property="og:description" content="Join Krutanic’s top e-learning mentorship to grow your tech, coding, and data skills with expert guidance." />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary" />
+        <meta property="twitter:title" content="Top E-Learning Mentorship Programs | Krutanic" />
+        <meta name="twitter:image" content="https://www.krutanic.com/assets/LOGO3-Do06qODb.png" />
+        <meta property="twitter:description" content="Join Krutanic’s top e-learning mentorship to grow your tech, coding, and data skills with expert guidance." />
+        <link rel="canonical" href="https://www.krutanic.com/Mentorship" />
+      </Helmet>
 
       {/* Hero Section */}
       <section id="mentorshipbg" className="h-[650px] shadow-lg shadow-[#f15b29]  flex  items-center justify-center py-[60px] px-[10px] overflow-hidden">
         <div className="container mx-auto">
-        <div data-aos="fade-up" className="rounded-lg backdrop-blur-xl text-center py-2 bg-[#ffffff46]">      
+          <div data-aos="fade-up" className="rounded-lg backdrop-blur-xl text-center py-2 bg-[#ffffff46]">
             <div className="flex flex-col  items-center justify-center lg:py-[20px]">
               <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-black mb-6">
                 Discover  a Smarter Way to Learn with Krutanic's {" "}
                 <span className="text-[#f15b29]">MENTORSHIP PROGRAM.</span>
               </h1>
               <p className="text-lg text-black mb-6">
-                Gain personalized career guidance, hands-on training, and expert mentorship to achieve your professional and personal goals. Whether you want to build new skills, advance in your career, or explore fresh opportunities, our mentorship program provides the support you need to succeed. 
+                Gain personalized career guidance, hands-on training, and expert mentorship to achieve your professional and personal goals. Whether you want to build new skills, advance in your career, or explore fresh opportunities, our mentorship program provides the support you need to succeed.
               </p>
               <button
                 onClick={scrollToCourse}
@@ -91,26 +91,26 @@ const Mentorship = () => {
               </button>
             </div>
             <div className=" flex items-center justify-center">
-             <MentorshipForm/>
+              <MentorshipForm />
             </div>
+          </div>
         </div>
-        </div>
-      
+
       </section>
-      
-      <hr className=" opacity-10"/>
+
+      <hr className=" opacity-10" />
 
       <section ref={courseSectionRef} className="py-[60px] px-[10px]">
         <CourseMentor />
       </section>
-       <hr className=" opacity-10"/>
+      <hr className=" opacity-10" />
 
       <section className="py-[60px] px-[10px]">
         <PopularCourse />
       </section>
-       <hr className=" opacity-10"/>
+      <hr className=" opacity-10" />
 
-       {/* <section className="py-[60px] px-[10px]">
+      {/* <section className="py-[60px] px-[10px]">
         <div className="container mx-auto flex items-center justify-center">
             <img src={accreditedby} alt="accreditedby" className="rounded-xl w-[900px]" />
         </div>
@@ -118,7 +118,7 @@ const Mentorship = () => {
        <hr className=" opacity-10"/> */}
 
       {/* certification section */}
-      <section className="py-[60px] px-[10px]"> 
+      <section className="py-[60px] px-[10px]">
         <div className="container mx-auto">
           <h1
             className=" font-bold text-[#f15b29] mb-2 text-center justify-center"
@@ -155,7 +155,7 @@ const Mentorship = () => {
                         </svg>
                       </div>
                       <p className="text-white">
-                        Created for business leaders, advisors and innovators 
+                        Created for business leaders, advisors and innovators
                       </p>
                     </div>
 
@@ -176,7 +176,7 @@ const Mentorship = () => {
                         </svg>
                       </div>
                       <p className="text-white">
-                        Builds skills and creativity for career growth 
+                        Builds skills and creativity for career growth
                       </p>
                     </div>
 
@@ -196,7 +196,7 @@ const Mentorship = () => {
                           />
                         </svg>
                       </div>
-                        <p className="text-white"> 100+ Internship Partners</p>
+                      <p className="text-white"> 100+ Internship Partners</p>
                     </div>
 
                     <div className="flex items-center gap-4 lg:w-1/2 md:w-1/2">
@@ -215,46 +215,46 @@ const Mentorship = () => {
                           />
                         </svg>
                       </div>
-                        <p className="text-white"> Approved by leading industry experts </p>
+                      <p className="text-white"> Approved by leading industry experts </p>
                     </div>
                   </div>
                 </div>
 
               </div>
-                <div className="w-full mt-5">
-                    <div className="lg:grid lg:grid-cols-2 lg:gap-2 md:grid md:grid-cols-2 md:gap-3 ">               
-                        <div className="px-2 mb-5 lg:mb-0">
-                          <img
-                           src={adobe}
-                            alt="Program Image 1"
-                            className="w-full object-cover rounded-lg"
-                          />
-                        </div>
-                        <div className="px-2">
-                          <img
-                            src={certificate3}
-                            alt="Program Image 3"
-                            className="w-full object-cover rounded-lg"
-                          />
-                        </div>                    
-                    </div>   
+              <div className="w-full mt-5">
+                <div className="lg:grid lg:grid-cols-2 lg:gap-2 md:grid md:grid-cols-2 md:gap-3 ">
+                  <div className="px-2 mb-5 lg:mb-0">
+                    <img
+                      src={adobe}
+                      alt="Program Image 1"
+                      className="w-full object-cover rounded-lg"
+                    />
+                  </div>
+                  <div className="px-2">
+                    <img
+                      src={certificate3}
+                      alt="Program Image 3"
+                      className="w-full object-cover rounded-lg"
+                    />
+                  </div>
+                </div>
 
-                    {/* <div className="flex items-center justify-center mt-5">
+                {/* <div className="flex items-center justify-center mt-5">
                       <img src={adobe} alt="adobe certificate" className=' object-cover rounded-lg w-[800px]' />  
                     </div>         */}
-                </div>
-     
+              </div>
+
             </div>
           </div>
         </div>
       </section>
-       <hr className=" opacity-10"/>
+      <hr className=" opacity-10" />
 
       {/* Testimonials Section */}
       <section id="advancesection" className="py-[60px] px-[10px]">
 
-         <h1 data-aos='fade-up' className="text-center text-[#f15b29]"> | What Our Mentees Are Saying</h1>
-       
+        <h1 data-aos='fade-up' className="text-center text-[#f15b29]"> | What Our Mentees Are Saying</h1>
+
         <div data-aos='fade-up' className="testimonial">
           <Testimonial />
           <LinkedIn />
@@ -269,7 +269,7 @@ const Mentorship = () => {
               Want to Know the Fee Structure?
             </h1>
             <p className="text-white mb-6">
-            Find detailed information about our mentorship program and fees on the subsequent page.
+              Find detailed information about our mentorship program and fees on the subsequent page.
             </p>
             <button
               onClick={handleNavigate}
@@ -280,13 +280,13 @@ const Mentorship = () => {
           </div>
         </div>
       </section>
-       <hr className=" opacity-10"/>
+      <hr className=" opacity-10" />
 
 
-        {/* mentors section */}
+      {/* mentors section */}
       <section className="py-[60px] px-[10px]">
         <div>
-          <MentorShipMentors/>
+          <MentorShipMentors />
         </div>
       </section>
 
@@ -299,12 +299,12 @@ const Mentorship = () => {
       <section className="py-[60px] px-[10px]">
         <EnrollMentor />
       </section>
- 
-       <section>
-        <Getintouch/>
-       </section>
 
-       <div className="fixed bottom-8 bg-green-800 animate-bounce right-7 z-50 px-3 py-2 rounded-full">
+      <section>
+        <Getintouch />
+      </section>
+
+      <div className="fixed bottom-8 bg-green-800 animate-bounce right-7 z-50 px-3 py-2 rounded-full">
         <a
           href="https://api.whatsapp.com/send?phone=919380736449&text=Hello%20Krutanic%20Team,%0A%0AI%20have%20some%20queries%20regarding%20my%20course.%0A%0AThank%20you!"
           target="_blank"
@@ -313,8 +313,8 @@ const Mentorship = () => {
           <i className="fa fa-whatsapp rounded-full text-[3rem]"></i>
         </a>
       </div>
-  
-         
+
+
     </div>
   );
 };

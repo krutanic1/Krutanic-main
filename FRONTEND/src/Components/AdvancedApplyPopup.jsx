@@ -15,7 +15,8 @@ const AdvancedApplyPopup = ({ onClose }) => {
         goalOther: "",
         domain: "",
         domainOther: "",
-        interestedDomain: ""
+        interestedDomain: "",
+        passedOutYear: ""
     });
 
     const handleInputChange = (e) => {
@@ -52,6 +53,7 @@ const AdvancedApplyPopup = ({ onClose }) => {
                 domainOther:
                     formData.domain === "Other" ? formData.domainOther : undefined,
                 interestedDomain: formData.interestedDomain,
+                passedOutYear: formData.passedOutYear || undefined,
                 reason: "Requested To Call Back",
             });
             toast.success(`You have successfully applied, Our counselor will connect with you shortly.`);
@@ -65,7 +67,7 @@ const AdvancedApplyPopup = ({ onClose }) => {
 
     return (
         <div className="fixed inset-0 lg:top-10 left-0 top-[20%] bg-gray-700 bg-opacity-50 z-[999] lg:flex justify-center items-center px-[20px]">
-            <div className="bg-white overflow-hidden lg:w-[800px] lg:flex md:flex rounded-lg">
+            <div className="bg-white overflow-hidden lg:w-[800px] lg:flex md:flex rounded-lg max-h-[90vh]">
                 <div
                     id="hidden"
                     className="lg:w-1/2 md:w-1/2 relative text-black rounded-lg"
@@ -95,7 +97,7 @@ const AdvancedApplyPopup = ({ onClose }) => {
                         />
                     </div>
                 </div>
-                <div className="rounded-lg lg:w-1/2 md:w-1/2 text-black p-3">
+                <div className="rounded-lg lg:w-1/2 md:w-1/2 text-black p-3 overflow-y-auto max-h-[90vh]">
                     <h3 className="text-md text-center font-semibold mb-2">
                         Apply Now
                     </h3>
@@ -224,6 +226,15 @@ const AdvancedApplyPopup = ({ onClose }) => {
                                 required
                             />
                         )}
+                        <input
+                            type="text"
+                            id="passedOutYear"
+                            name="passedOutYear"
+                            placeholder="Passed Out Year (e.g. 2023)"
+                            value={formData.passedOutYear}
+                            onChange={handleInputChange}
+                            className="w-full border border-gray-300 p-1.5 rounded-md"
+                        />
                         <select
                             id="interestedDomain"
                             name="interestedDomain"
