@@ -1104,7 +1104,7 @@ const PromptEngineering = () => {
             }`}
           >
             <p className="text-lg font-semibold text-black">
-              Program fees 60,000/- Including GST
+              Program fees 60,000/- + 18% GST
             </p>
             <div className=" relative flex space-x-4">
               <button className="flex items-center px-3 py-2 border rounded-md text-white bg-black  hover:text-[#f15b29]">
