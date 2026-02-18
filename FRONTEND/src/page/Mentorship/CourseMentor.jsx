@@ -64,6 +64,7 @@ const CourseMentor = ({ }) => {
     collegeName: "",
     domain: "",
     passingyear: "",
+    reason: "",
   });
   const [selectedCategory, setSelectedCategory] = useState("Computer science");
 
@@ -344,12 +345,18 @@ const CourseMentor = ({ }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [actionType, setActionType] = useState();
 
-  const handleFormSubmit = async (e, actionType) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     if (!emailVerified) {
       toast.error("Please verify your email before submitting.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.reason || formData.reason === "") {
+      toast.error("Please select a reason.");
       setIsSubmitting(false);
       return;
     }
@@ -376,7 +383,7 @@ const CourseMentor = ({ }) => {
         collegeName: formData.collegeName,
         domain: formData.domain,
         passingyear: formData.passingyear,
-        reason: actionType,
+        reason: formData.reason,
       });
       toast.success("Registration successful! Opening the brochure...");
       setIsSubmitting(false);
@@ -400,8 +407,8 @@ const CourseMentor = ({ }) => {
       number: "",
       collegeName: "",
       domain: "",
-      domain: "",
       passingyear: "",
+      reason: "",
     });
     setOtpSent(false);
     setOtp("");
@@ -519,7 +526,7 @@ const CourseMentor = ({ }) => {
             <h2 className="text-lg text-center font-semibold mb-4">
               Register to Access Brochure
             </h2>
-            <form onSubmit={(e) => handleFormSubmit(e, actionType)}>
+            <form onSubmit={(e) => handleFormSubmit(e)}>
               <input
                 type="text"
                 name="name"
@@ -621,7 +628,7 @@ const CourseMentor = ({ }) => {
                 name="domain"
                 value={formData.domain}
                 onChange={handleInputChange}
-                className="mb-4 p-2 w-full border rounded"
+                className="mb-3 p-2 w-full border rounded"
                 required
               >
                 <option disabled value="">
@@ -660,23 +667,28 @@ const CourseMentor = ({ }) => {
                 ))}
               </select>
 
+              <select
+                name="reason"
+                value={formData.reason}
+                onChange={handleInputChange}
+                className="mb-4 p-2 w-full border rounded"
+                required
+              >
+                <option disabled value="">
+                  What is the reason?
+                </option>
+                <option value="Enrollment Enquiry">Enrollment Enquiry</option>
+                <option value="Already Enrolled">Already Enrolled</option>
+                <option value="Download Brochure">Download Brochure</option>
+              </select>
+
               <div className="flex gap-2 justify-center items-center">
                 <button
                   type="submit"
-                  disabled={isSubmitting}
-                  onClick={(e) => setActionType("Only Download Brochure")}
-                  className="px-4 py-2 w-full bg-[#f15b29] text-white rounded-md"
+                  disabled={isSubmitting || !emailVerified}
+                  className="px-4 py-2 w-full bg-[#f15b29] text-white rounded-md hover:bg-[#d14820] transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <i className="fa fa-download"></i>
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  onClick={(e) => setActionType("Requested To Call Back")}
-                  className="px-4 py-2 w-full bg-[#f15b29] flex items-center justify-center gap-1 text-white rounded-md"
-                >
-                  <i className="fa fa-download"></i> + <RiCustomerService2Fill /> +{" "}
-                  <span className="fa fa-graduation-cap"></span>
+                  {isSubmitting ? "Submitting..." : "Submit"}
                 </button>
               </div>
             </form>
