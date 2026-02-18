@@ -130,6 +130,7 @@ import MarketingLeads from "./Marketing/MarketingLeads";
 import MarketingAddExecutive from "./Marketing/MarketingAddExecutive";
 import BDAAgainLogin from "./BDA/BDAAgainLogin";
 import EventDetails from "./page/EventDetails";
+import NewDashboard from "./new_user/new-dashboad";
 
 const App = () => {
   return (
@@ -406,6 +407,8 @@ const AppContent = () => {
         <Route path="/EventLogin" element={<EventLogin />} />
         <Route path="/EventDashboard" element={isAuthenticatedEventUser() ? <EventDashBoard /> : <Navigate to="/events" />} />
         <Route path="/register/:slug" element={<EventDetails />} />
+        {/* user new dashboard */}
+        <Route path="/advancedashboard" element={<NewDashboard />} />
 
       </Routes>
 
