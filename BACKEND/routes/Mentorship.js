@@ -2,10 +2,10 @@ const express = require("express");
 const router = express.Router();
 const Mentorship = require("../models/Mentorship");
 const { sendEmail } = require("../controllers/emailController");
-const crypto = require('crypto'); 
+const crypto = require('crypto');
 // post request to add new mentorship enqueries
 router.post("/mentorship/register", async (req, res) => {
-  const { name, email,collegeEmail, phone , collegeName, domain , passingyear , reason } = req.body;
+  const { name, email, collegeEmail, phone, collegeName, domain, passingyear, reason } = req.body;
   try {
     const existingUser = await Mentorship.findOne({ email });
     if (existingUser) {
@@ -16,7 +16,7 @@ router.post("/mentorship/register", async (req, res) => {
     const newRegistration = new Mentorship({
       name,
       email,
-      collegeEmail ,
+      collegeEmail,
       phone,
       collegeName,
       domain,
@@ -35,7 +35,7 @@ router.post("/mentorship/register", async (req, res) => {
 //get request to retrieve all the mentorship data in admin 
 router.get("/mentorqueries", async (req, res) => {
   try {
-      queries = await Mentorship.find().sort({ _id: -1 });
+    queries = await Mentorship.find().sort({ _id: -1 });
     res.status(200).json(queries);
   } catch (error) {
     res.status(500).json({ message: "An error occurred while fetching data", error: error.message });
@@ -64,7 +64,7 @@ router.put("/queriesaction/:id", async (req, res) => {
       await query.save();
 
       res.status(200).json({ message: "Query updated successfully" });
-      } else {
+    } else {
       res.status(404).json({ message: "Query not found" });
     }
   } catch (error) {
@@ -76,14 +76,14 @@ router.put("/queriesaction/:id", async (req, res) => {
 router.put("/bdaasign/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    const { bda , action } = req.body;
+    const { bda, action } = req.body;
     const query = await Mentorship.findById(id);
-       query.bda = bda;
-       query.action = action;
-      await query.save();
+    query.bda = bda;
+    query.action = action;
+    await query.save();
 
-      res.status(200).json({ message: "Query updated successfully" });
-      console.log("done")
+    res.status(200).json({ message: "Query updated successfully" });
+    console.log("done")
   } catch (error) {
     res.status(500).json({ message: "An error occurred while updating data", error: error.message });
   }
@@ -158,10 +158,7 @@ router.post("/mentorship-verify-otp", (req, res) => {
   // 3️⃣ OTP Verified, Delete from Store
   delete otpStore[email];
 
-  // 4️⃣ Send PDF Download Link
-  const pdfDownloadLink = "https://example.com/mentorship-brochure.pdf"; // Replace with actual PDF link
-
-  res.status(200).json({ success: true, message: "OTP verified successfully!", pdfLink: pdfDownloadLink });
+  res.status(200).json({ success: true, message: "OTP verified successfully!" });
 });
 
 module.exports = router;

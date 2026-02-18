@@ -16,7 +16,7 @@ import digitalmarketing from "../../assets/mentorshipcourses/digital marketing.p
 import finance from "../../assets/mentorshipcourses/finance.png";
 import hr from "../../assets/mentorshipcourses/HR.png";
 import stockmarketing from "../../assets/mentorshipcourses/stock market.png";
- //import supplychainmanagement from "../../assets/mentorshipcourses/supply.png";
+//import supplychainmanagement from "../../assets/mentorshipcourses/supply.png";
 // import psycho from "../../assets/mentorshipcourses/psyc.png";
 // import fintech from "../../assets/mentorshipcourses/fintech.png";
 // import nano from "../../assets/mentorshipcourses/genetic.png";
@@ -29,10 +29,10 @@ import pdf2 from "../../../krutanic/Artificial Intelligence.pdf";
 import pdf3 from "../../../krutanic/AutoCad Brochure.pdf";
 import pdf4 from "../../../krutanic/Business Analytics.pdf";
 import pdf5 from "../../../krutanic/Cloud Computing.pdf";
- import pdf6 from "../../../krutanic/Cyber Security.pdf";
+import pdf6 from "../../../krutanic/Cyber Security.pdf";
 import pdf7 from "../../../krutanic/Data Analytics.pdf";
 import pdf8 from "../../../krutanic/Data Science.pdf";
- import pdf9 from "../../../krutanic/Dev ops.pdf";
+import pdf9 from "../../../krutanic/Dev ops.pdf";
 import pdf10 from "../../../krutanic/Digital Marketing.pdf";
 import pdf11 from "../../../krutanic/Embedded System.pdf";
 import pdf12 from "../../../krutanic/Finance.pdf";
@@ -348,10 +348,11 @@ const CourseMentor = ({ }) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // if (!emailVerified) {
-    //   toast.error("Please verify your email before submitting.");
-    //   return;
-    // }
+    if (!emailVerified) {
+      toast.error("Please verify your email before submitting.");
+      setIsSubmitting(false);
+      return;
+    }
 
     const phoneRegex = /^[0-9]{10}$/;
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
@@ -399,44 +400,48 @@ const CourseMentor = ({ }) => {
       number: "",
       collegeName: "",
       domain: "",
+      domain: "",
       passingyear: "",
     });
+    setOtpSent(false);
+    setOtp("");
+    setEmailVerified(false);
   };
 
-  //   const [otpSent, setOtpSent] = useState(false);
-  // const [otp, setOtp] = useState("");
-  // const [emailVerified, setEmailVerified] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [emailVerified, setEmailVerified] = useState(false);
 
-  //   const sendOTP = async () => {
-  //     if (!formData.email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/)) {
-  //       toast.error("Please enter a valid email address.");
-  //       return;
-  //     }
+  const sendOTP = async () => {
+    if (!formData.email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
 
-  //     try {
-  //       const response = await axios.post(`${API}/mentorship-send-otp`, { email: formData.email });
-  //       toast.success("OTP sent to your email!");
-  //       setOtpSent(true);
-  //     } catch (error) {
-  //       toast.error("Failed to send OTP. Try again.");
-  //     }
-  //   };
+    try {
+      const response = await axios.post(`${API}/mentorship-send-otp`, { email: formData.email });
+      toast.success("OTP sent to your email!");
+      setOtpSent(true);
+    } catch (error) {
+      toast.error("Failed to send OTP. Try again.");
+    }
+  };
 
-  //   const verifyOTP = async () => {
-  //     try {
-  //       const response = await axios.post(`${API}/mentorship-verify-otp`, { email: formData.email, otp });
-  //       if (response.data.success) {
-  //         toast.success("Email verified successfully!");
-  //         setEmailVerified(true);
-  //         setOtp("");
-  //         setOtpSent(false)
-  //       } else {
-  //         toast.error("Invalid OTP. Try again.");
-  //       }
-  //     } catch (error) {
-  //       toast.error("Verification failed.");
-  //     }
-  //   };
+  const verifyOTP = async () => {
+    try {
+      const response = await axios.post(`${API}/mentorship-verify-otp`, { email: formData.email, otp });
+      if (response.data.success) {
+        toast.success("Email verified successfully!");
+        setEmailVerified(true);
+        setOtp("");
+        setOtpSent(false)
+      } else {
+        toast.error("Invalid OTP. Try again.");
+      }
+    } catch (error) {
+      toast.error("Verification failed or Invalid OTP.");
+    }
+  };
 
 
   return (
@@ -451,8 +456,8 @@ const CourseMentor = ({ }) => {
             <button
               key={category}
               className={`px-4 py-2 rounded-md border-b transition ${category === selectedCategory
-                  ? "bg-[#f15b29] text-white"
-                  : "bg-[#080810] text-white hover:bg-orange-700"
+                ? "bg-[#f15b29] text-white"
+                : "bg-[#080810] text-white hover:bg-orange-700"
                 }`}
               onClick={() => setSelectedCategory(category)}
             >
@@ -533,33 +538,38 @@ const CourseMentor = ({ }) => {
                 className="mb-3 p-2 w-full border rounded"
                 required
               />
-              {/* {!otpSent ? (
-                <button
-                  type="button"
-                  onClick={sendOTP}
-                  className="bg-blue-500 text-white px-4 py-2 mb-3 rounded"
-                >
-                  Get OTP
-                </button>
-              ) : (
-                <>
-                  <input
-                    type="text"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    placeholder="Enter OTP"
-                    className="mb-3 p-2 w-full border rounded"
-                    required
-                  />
+              {!emailVerified ? (
+                !otpSent ? (
                   <button
                     type="button"
-                    onClick={verifyOTP}
-                    className="bg-green-500 text-white px-4 py-2 mb-3 rounded"
+                    onClick={sendOTP}
+                    className="bg-[#f15b29] text-white px-4 py-2 mb-3 rounded w-full hover:bg-orange-600 transition"
                   >
-                    Verify OTP
+                    Get OTP
                   </button>
-                </>
-              )} */}
+                ) : (
+                  <div className="flex gap-2 mb-3">
+                    <input
+                      type="text"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      placeholder="Enter OTP"
+                      className="p-2 w-full border rounded"
+                    />
+                    <button
+                      type="button"
+                      onClick={verifyOTP}
+                      className="bg-green-600 text-white px-4 py-2 rounded whitespace-nowrap hover:bg-green-700 transition"
+                    >
+                      Verify OTP
+                    </button>
+                  </div>
+                )
+              ) : (
+                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-3 text-center">
+                  ✅ Email Verified
+                </div>
+              )}
               <input
                 type="email"
                 name="collegeEmail"
