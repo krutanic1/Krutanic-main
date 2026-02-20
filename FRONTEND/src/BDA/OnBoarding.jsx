@@ -55,7 +55,7 @@ const OnBoarding = () => {
     setLoading(true);
     const bdaName = localStorage.getItem("bdaName");
     try {
-      const response = await axios.get(`${API}/getnewstudentenroll`);
+      const response = await axios.get(`${API}/getnewstudentenroll?all=true`);
       const studentsData = response.data.filter(
         (item) => item.status === "booked" && item.counselor === bdaName
       );
@@ -177,7 +177,7 @@ const OnBoarding = () => {
   }, []);
 
   return (
-    <div id="OperationEnroll">
+    <>
       <Toaster position="top-center" reverseOrder={false} />
       {iscourseFormVisible && (
         <div className="form z-[999] absolute top-[60%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#ffffff] p-10 rounded-lg shadow-lg">
@@ -403,7 +403,7 @@ const OnBoarding = () => {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 };
 

@@ -36,6 +36,7 @@ const PromptEngineering = () => {
     experience: "",
     goal: "",
     goalOther: "",
+    reason: "",
     domain: "",
     domainOther: "",
   });
@@ -377,6 +378,7 @@ const PromptEngineering = () => {
       goalOther: "",
       domain: "",
       domainOther: "",
+      reason: "",
     });
   };
 
@@ -396,7 +398,7 @@ const PromptEngineering = () => {
         domainOther:
           formData.domain === "Other" ? formData.domainOther : undefined,
         interestedDomain: "Prompt Engineering in Generative AI",
-        reason: actionType,
+        reason: formData.reason,
       });
       toast.success("Registration successful! Opening the brochure...");
       setTimeout(() => {
@@ -862,6 +864,33 @@ const PromptEngineering = () => {
                     id="goal"
                     name="goal"
                     value={formData.goal}
+                    onChange={handleInputChange}
+                    className="w-full border border-gray-300 p-1.5 rounded-md"
+                    required
+                  >
+                    <option disabled value="">
+                      Goal of taking this program
+                    </option>
+                    <option value="Career Transition">Career Transition</option>
+                    <option value="Kickstart Career">Kickstart Career</option>
+                    <option value="Upskilling">Upskilling</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  {formData.goal === "Other" && (
+                    <input
+                      type="text"
+                      name="goalOther"
+                      value={formData.goalOther}
+                      onChange={handleInputChange}
+                      placeholder="Please specify your goal"
+                      className="w-full border border-gray-300 p-1.5 rounded-md mt-2"
+                      required
+                    />
+                  )}
+                  <select
+                    id="reason"
+                    name="reason"
+                    value={formData.reason}
                     onChange={handleInputChange}
                     className="w-full border border-gray-300 p-1.5 rounded-md"
                     required

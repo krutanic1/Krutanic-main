@@ -54,6 +54,13 @@ const AdvanceSchema = new mongoose.Schema({
   },
   reason: {
     type: String,
+    required: true,
+    enum: [
+      "I Want to Know More About the Program",
+      "I've Reviewed the Program – Need Career Guidance",
+      "I'm Ready to Enroll",
+      "I'm Already Enrolled – Need Support"
+    ],
   },
   action: {
     type: String,

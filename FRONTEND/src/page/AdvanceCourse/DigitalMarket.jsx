@@ -40,6 +40,7 @@ const DigitalMarket = () => {
     domain: "",
     domainOther: "",
     interestedDomain: "",
+    reason: "",
   });
 
   const toggleExpand = () => {
@@ -379,7 +380,7 @@ const DigitalMarket = () => {
         domainOther:
           formData.domain === "Other" ? formData.domainOther : undefined,
         interestedDomain: "Digital Marketing",
-        reason: actionType,
+        reason: formData.reason,
       });
       toast.success("Registration successful! Opening the brochure...");
       setTimeout(() => {
@@ -402,6 +403,7 @@ const DigitalMarket = () => {
       domain: "",
       domainOther: "",
       interestedDomain: "",
+      reason: "",
     });
   };
   const OffForm = () => {
@@ -416,6 +418,8 @@ const DigitalMarket = () => {
       goalOther: "",
       domain: "",
       domainOther: "",
+      interestedDomain: "",
+      reason: "",
     });
   };
 
@@ -867,6 +871,33 @@ const DigitalMarket = () => {
                     id="goal"
                     name="goal"
                     value={formData.goal}
+                    onChange={handleInputChange}
+                    className="w-full border border-gray-300 p-1.5 rounded-md"
+                    required
+                  >
+                    <option disabled value="">
+                      Goal of taking this program
+                    </option>
+                    <option value="Career Transition">Career Transition</option>
+                    <option value="Kickstart Career">Kickstart Career</option>
+                    <option value="Upskilling">Upskilling</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  {formData.goal === "Other" && (
+                    <input
+                      type="text"
+                      name="goalOther"
+                      value={formData.goalOther}
+                      onChange={handleInputChange}
+                      placeholder="Please specify your goal"
+                      className="w-full border border-gray-300 p-1.5 rounded-md mt-2"
+                      required
+                    />
+                  )}
+                  <select
+                    id="reason"
+                    name="reason"
+                    value={formData.reason}
                     onChange={handleInputChange}
                     className="w-full border border-gray-300 p-1.5 rounded-md"
                     required

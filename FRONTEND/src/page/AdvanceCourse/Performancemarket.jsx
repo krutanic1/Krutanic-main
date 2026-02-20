@@ -39,6 +39,7 @@ const Performancemarket = () => {
     domain: "",
     domainOther: "",
     interestedDomain: "",
+    reason: "",
   });
 
 
@@ -383,7 +384,7 @@ const [actionType, setActionType] = useState();
         domain: formData.domain,
         domainOther: formData.domain === "Other" ? formData.domainOther : undefined,
         interestedDomain:"Performance Marketing",
-        reason: actionType,
+        reason: formData.reason,
       });
       toast.success("Registration successful! Opening the brochure...");
       setTimeout(() => {
@@ -406,6 +407,7 @@ const [actionType, setActionType] = useState();
       domain: "",
       domainOther: "",
       interestedDomain: "",
+      reason: "",
     });
   };
   const OffForm = () =>{
@@ -420,6 +422,8 @@ const [actionType, setActionType] = useState();
       goalOther: "",
       domain: "",
       domainOther: "",
+      interestedDomain: "",
+      reason: "",
     });
   }
    const [activeModule, setActiveModule] = useState(null);
@@ -866,6 +870,31 @@ const [actionType, setActionType] = useState();
                               id="goal"
                               name="goal"
                               value={formData.goal}
+                              onChange={handleInputChange}
+                              className="w-full border border-gray-300 p-1.5 rounded-md"
+                              required
+                            >
+                              <option disabled value="">Goal of taking this program</option>
+                              <option value="Career Transition">Career Transition</option>
+                              <option value="Kickstart Career">Kickstart Career</option>
+                              <option value="Upskilling">Upskilling</option>
+                              <option value="Other">Other</option>
+                            </select>
+                            {formData.goal === "Other" && (
+                              <input
+                                type="text"
+                                name="goalOther"
+                                value={formData.goalOther}
+                                onChange={handleInputChange}
+                                placeholder="Please specify your goal"
+                                className="w-full border border-gray-300 p-1.5 rounded-md mt-2"
+                                required
+                              />
+                            )}
+                            <select
+                              id="reason"
+                              name="reason"
+                              value={formData.reason}
                               onChange={handleInputChange}
                               className="w-full border border-gray-300 p-1.5 rounded-md"
                               required

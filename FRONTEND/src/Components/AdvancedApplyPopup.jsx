@@ -13,6 +13,7 @@ const AdvancedApplyPopup = ({ onClose }) => {
         experience: "",
         goal: "",
         goalOther: "",
+        reason: "",
         domain: "",
         domainOther: "",
         interestedDomain: "",
@@ -49,6 +50,7 @@ const AdvancedApplyPopup = ({ onClose }) => {
                 experience: formData.experience,
                 goal: formData.goal,
                 goalOther: formData.goal === "Other" ? formData.goalOther : undefined,
+                reason: formData.reason,
                 domain: formData.domain,
                 domainOther:
                     formData.domain === "Other" ? formData.domainOther : undefined,
@@ -176,7 +178,34 @@ const AdvancedApplyPopup = ({ onClose }) => {
                             required
                         >
                             <option disabled value="">
-                                Reason for taking this program
+                                Goal of taking this program
+                            </option>
+                            <option value="Career Transition">Career Transition</option>
+                            <option value="Kickstart Career">Kickstart Career</option>
+                            <option value="Upskilling">Upskilling</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        {formData.goal === "Other" && (
+                            <input
+                                type="text"
+                                name="goalOther"
+                                value={formData.goalOther}
+                                onChange={handleInputChange}
+                                placeholder="Please specify your goal"
+                                className="w-full border border-gray-300 p-1.5 rounded-md mt-2"
+                                required
+                            />
+                        )}
+                        <select
+                            id="reason"
+                            name="reason"
+                            value={formData.reason}
+                            onChange={handleInputChange}
+                            className="w-full border border-gray-300 p-1.5 rounded-md"
+                            required
+                        >
+                            <option disabled value="">
+                                Reason to take this program
                             </option>
                             <option value="I Want to Know More About the Program">I Want to Know More About the Program</option>
                             <option value="I've Reviewed the Program – Need Career Guidance">I've Reviewed the Program – Need Career Guidance</option>
