@@ -237,18 +237,27 @@ const TopNav = ({ userData, enrollData, onLogout }) => {
 /* ─────────────────────────────────────────────
    STAT CARD
 ───────────────────────────────────────────── */
-const StatCard = ({ icon, label, value, color, sub }) => (
-    <div className="nd-stat-card">
-        <div className={`nd-stat-icon-wrap nd-stat-${color}`}>
-            <span className="material-symbols-outlined nd-stat-icon">{icon}</span>
+const StatCard = ({ icon, label, value, status, statusText }) => {
+    // Determine color based on status: green = good, yellow = attention, red = action required
+    const statusColors = {
+        green: 'nd-stat-green',
+        yellow: 'nd-stat-yellow',
+        red: 'nd-stat-red'
+    };
+    
+    return (
+        <div className={`nd-stat-card ${statusColors[status]}`}>
+            <div className="nd-stat-icon-wrap">
+                <span className="material-symbols-outlined nd-stat-icon">{icon}</span>
+            </div>
+            <div className="nd-stat-body">
+                <p className="nd-stat-label">{label}</p>
+                <p className="nd-stat-value">{value}</p>
+                <p className="nd-stat-status">{statusText}</p>
+            </div>
         </div>
-        <div className="nd-stat-body">
-            <p className="nd-stat-label">{label}</p>
-            <p className="nd-stat-value">{value}</p>
-            {sub && <p className="nd-stat-sub">{sub}</p>}
-        </div>
-    </div>
-);
+    );
+};
 
 /* ─────────────────────────────────────────────
    MAIN PAGE
@@ -305,6 +314,31 @@ const NewDashboard = () => {
     const paymentStatus = enrollment?.status || "—";
     const isFullyPaid = paymentStatus === "fullPaid";
 
+    // Calculate metrics with status colors
+    // Program Completion
+    const programCompletion = progressPct;
+    const completionStatus = programCompletion >= 75 ? 'green' : programCompletion >= 50 ? 'yellow' : 'red';
+    const completionText = programCompletion >= 75 ? 'Good Progress' : programCompletion >= 50 ? 'Needs Attention' : 'Action Required';
+
+    // Assignment Score (mock data - replace with real data from API)
+    const assignmentScore = 78; // Replace with actual assignment score
+    const assignmentStatus = assignmentScore >= 80 ? 'green' : assignmentScore >= 60 ? 'yellow' : 'red';
+    const assignmentText = assignmentScore >= 80 ? 'Great Work' : assignmentScore >= 60 ? 'Can Improve' : 'Needs Focus';
+
+    // Internship Status (mock data - replace with real data from API)
+    const internshipStage = 'In Progress'; // Options: 'Completed', 'In Progress', 'Not Started'
+    const internshipStatus = internshipStage === 'Completed' ? 'green' : internshipStage === 'In Progress' ? 'yellow' : 'red';
+    const internshipText = internshipStage === 'Completed' ? 'Completed' : internshipStage === 'In Progress' ? 'Ongoing' : 'Not Started';
+
+    // Placement Readiness Score (mock data - replace with real data from API)
+    const readinessScore = 72; // Replace with actual readiness score
+    const readinessStatus = readinessScore >= 75 ? 'green' : readinessScore >= 50 ? 'yellow' : 'red';
+    const readinessText = readinessScore >= 75 ? 'Ready' : readinessScore >= 50 ? 'Prepare More' : 'Not Ready';
+
+    // Payment Status
+    const paymentStatusColor = isFullyPaid ? 'green' : 'red';
+    const paymentStatusText = isFullyPaid ? 'Paid in Full' : 'Payment Due';
+
     return (
         <div className="nd-root">
             <Toaster position="top-center" reverseOrder={false} />
@@ -329,37 +363,55 @@ const NewDashboard = () => {
                         <div className="nd-welcome-banner">
                             <div className="nd-welcome-text">
                                 <p className="nd-welcome-greeting">
-                                    Welcome back, <span className="nd-welcome-name">{userData?.fullname?.split(" ")[0] || "Student"}</span> 👋
+                                    Welcome back, <span className="nd-welcome-name">{userData?.fullname?.split(" ")[0] || "Student"}</span> 
                                 </p>
                                 <p className="nd-welcome-sub">Here's what's happening with your learning journey today.</p>
-                            </div>
-                            <div className="nd-welcome-badge">
-                                <span className="material-symbols-outlined nd-welcome-badge-icon">emoji_events</span>
-                                <div>
-                                    <p className="nd-welcome-badge-label">Current Streak</p>
-                                    <p className="nd-welcome-badge-value">7 Days 🔥</p>
-                                </div>
                             </div>
                         </div>
 
                         {/* Stat Cards */}
                         {loading ? (
                             <div className="nd-stats-grid">
-                                {[1, 2, 3, 4].map((i) => (
+                                {[1, 2, 3, 4, 5].map((i) => (
                                     <div key={i} className="nd-stat-card nd-skeleton" />
                                 ))}
                             </div>
                         ) : (
                             <div className="nd-stats-grid">
-                                <StatCard icon="menu_book" label="Enrolled Courses" value={enrollData.length} color="blue" sub="Active programs" />
-                                <StatCard icon="play_circle" label="Sessions Completed" value={watchedSessions} color="orange" sub={`of ${totalSessions} total`} />
-                                <StatCard icon="trending_up" label="Overall Progress" value={`${progressPct}%`} color="green" sub="Keep it up!" />
-                                <StatCard
-                                    icon="payments"
-                                    label="Payment Status"
-                                    value={isFullyPaid ? "Full Paid" : "Pending"}
-                                    color={isFullyPaid ? "green" : "red"}
-                                    sub={isFullyPaid ? "All clear ✓" : "Action needed"}
+                                <StatCard 
+                                    icon="school" 
+                                    label="Program Completion" 
+                                    value={`${programCompletion}%`} 
+                                    status={completionStatus}
+                                    statusText={completionText}
+                                />
+                                <StatCard 
+                                    icon="assignment" 
+                                    label="Assignment Score" 
+                                    value={`${assignmentScore}%`} 
+                                    status={assignmentStatus}
+                                    statusText={assignmentText}
+                                />
+                                <StatCard 
+                                    icon="work" 
+                                    label="Internship Status" 
+                                    value={internshipStage} 
+                                    status={internshipStatus}
+                                    statusText={internshipText}
+                                />
+                                <StatCard 
+                                    icon="trending_up" 
+                                    label="Placement Readiness" 
+                                    value={`${readinessScore}%`} 
+                                    status={readinessStatus}
+                                    statusText={readinessText}
+                                />
+                                <StatCard 
+                                    icon="payments" 
+                                    label="Payment Status" 
+                                    value={isFullyPaid ? "Paid" : "Pending"} 
+                                    status={paymentStatusColor}
+                                    statusText={paymentStatusText}
                                 />
                             </div>
                         )}
@@ -429,33 +481,6 @@ const NewDashboard = () => {
                                     <p>No enrollment found. Contact support to get started.</p>
                                 </div>
                             )}
-                        </section>
-
-                        {/* Quick Actions */}
-                        <section className="nd-section">
-                            <div className="nd-section-header">
-                                <h2 className="nd-section-title">
-                                    <span className="material-symbols-outlined nd-section-icon">bolt</span>
-                                    Quick Actions
-                                </h2>
-                            </div>
-                            <div className="nd-quick-grid">
-                                {[
-                                    { icon: "play_circle", label: "Continue Learning", path: "/Learning", color: "orange" },
-                                    { icon: "menu_book", label: "My Courses", path: "/EnrolledCourses", color: "blue" },
-                                    { icon: "person", label: "My Jobs", path: "/MyJob", color: "purple" },
-                                    { icon: "assignment", label: "Mock Prep", path: "/MockInterview", color: "teal" },
-                                    { icon: "edit_note", label: "Exercises", path: "/Exercise", color: "pink" },
-                                    { icon: "fact_check", label: "ATS Checker", path: "/ResumeATS", color: "green" },
-                                    { icon: "celebration", label: "Events", path: "/events", color: "yellow" },
-                                    { icon: "settings", label: "Settings", path: "/Setting", color: "gray" },
-                                ].map((item) => (
-                                    <Link key={item.path} to={item.path} className={`nd-quick-card nd-quick-${item.color}`}>
-                                        <span className="material-symbols-outlined nd-quick-icon">{item.icon}</span>
-                                        <span className="nd-quick-label">{item.label}</span>
-                                    </Link>
-                                ))}
-                            </div>
                         </section>
 
                         {/* Footer */}

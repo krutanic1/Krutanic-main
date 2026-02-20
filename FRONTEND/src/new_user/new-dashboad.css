@@ -559,9 +559,7 @@
   border-right: 1px solid rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
-  position: sticky;
-  top: 64px;
-  height: calc(100vh - 64px);
+  min-height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
   transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
@@ -815,14 +813,30 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 2px solid rgba(0, 0, 0, 0.05);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.3s;
 }
 
 .nd-stat-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Status-based card styling */
+.nd-stat-card.nd-stat-green {
+  border-color: #22c55e;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+}
+
+.nd-stat-card.nd-stat-yellow {
+  border-color: #eab308;
+  background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
+}
+
+.nd-stat-card.nd-stat-red {
+  border-color: #ef4444;
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
 }
 
 .nd-stat-icon-wrap {
@@ -839,33 +853,25 @@
   font-size: 24px !important;
 }
 
-.nd-stat-blue {
-  background: #eff6ff;
-  color: #3b82f6;
+/* Icon colors based on card status */
+.nd-stat-green .nd-stat-icon-wrap {
+  background: #dcfce7;
+  color: #16a34a;
 }
 
-.nd-stat-orange {
-  background: #fff5f0;
-  color: #f15b29;
+.nd-stat-yellow .nd-stat-icon-wrap {
+  background: #fef9c3;
+  color: #ca8a04;
 }
 
-.nd-stat-green {
-  background: #f0fdf4;
-  color: #22c55e;
-}
-
-.nd-stat-red {
-  background: #fef2f2;
-  color: #ef4444;
-}
-
-.nd-stat-purple {
-  background: #f5f3ff;
-  color: #8b5cf6;
+.nd-stat-red .nd-stat-icon-wrap {
+  background: #fee2e2;
+  color: #dc2626;
 }
 
 .nd-stat-body {
   min-width: 0;
+  flex: 1;
 }
 
 .nd-stat-label {
@@ -882,13 +888,31 @@
   font-weight: 800;
   color: #111827;
   line-height: 1;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 
-.nd-stat-sub {
-  font-size: 11px;
-  color: #d1d5db;
-  font-weight: 500;
+.nd-stat-status {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  display: inline-block;
+  margin-top: 2px;
+}
+
+.nd-stat-green .nd-stat-status {
+  background: #16a34a;
+  color: white;
+}
+
+.nd-stat-yellow .nd-stat-status {
+  background: #ca8a04;
+  color: white;
+}
+
+.nd-stat-red .nd-stat-status {
+  background: #dc2626;
+  color: white;
 }
 
 /* ── Sections ── */

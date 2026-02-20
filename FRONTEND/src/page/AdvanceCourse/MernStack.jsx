@@ -860,23 +860,12 @@ const [actionType, setActionType] = useState();
                              className="w-full border border-gray-300 p-1.5 rounded-md"
                              required
                            >
-                             <option disabled value="">Goal of taking this program</option>
-                             <option value="Career Transition">Career Transition</option>
-                             <option value="Kickstart Career">Kickstart Career</option>
-                             <option value="Upskilling">Upskilling</option>
-                             <option value="Other">Other</option>
+                             <option disabled value="">Reason for taking this program</option>
+                             <option value="I Want to Know More About the Program">I Want to Know More About the Program</option>
+                             <option value="I've Reviewed the Program – Need Career Guidance">I've Reviewed the Program – Need Career Guidance</option>
+                             <option value="I'm Ready to Enroll">I'm Ready to Enroll</option>
+                             <option value="I'm Already Enrolled – Need Support">I'm Already Enrolled – Need Support</option>
                            </select>
-                           {formData.goal === "Other" && (
-                             <input
-                               type="text"
-                               name="goalOther"
-                               value={formData.goalOther}
-                               onChange={handleInputChange}
-                               placeholder="Please specify your goal"
-                               className="w-full border border-gray-300 p-1.5 rounded-md mt-2"
-                               required
-                             />
-                           )}
                            <select
                              id="domain"
                              name="domain"
