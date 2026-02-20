@@ -39,6 +39,8 @@ const MasterClass = () => {
   const [isRegisterForm, setisRegisterForm] = useState(false);
   const [isDownloadForm, setisDownloadForm] = useState(false);
   const [allMasterClass, setallMasterClass] = useState([]);
+  const [upcomingMasterClass, setUpcomingMasterClass] = useState([]);
+  const [ongoingMasterClass, setOngoingMasterClass] = useState([]);
   const [completedMasterClass, setCompletedMasterClass] = useState([]);
   const [selectedMasterClass, setSelectedMasterClass] = useState(null);
   const [formData, setFormData] = useState({
@@ -119,6 +121,12 @@ const MasterClass = () => {
         response.data.filter(
           (item) => item.status === "upcoming" || item.status === "ongoing"
         )
+      );
+      setUpcomingMasterClass(
+        response.data.filter((item) => item.status === "upcoming")
+      );
+      setOngoingMasterClass(
+        response.data.filter((item) => item.status === "ongoing")
       );
       setCompletedMasterClass(
         response.data.filter((item) => item.status === "completed")
@@ -253,6 +261,25 @@ const MasterClass = () => {
       <Toaster position="top-center" reverseOrder={false} />
       <div className="masterclassherosection">
         <img src={imghero} alt="" />
+      </div>
+
+      {/* Three Sections: Upcoming, Ongoing, Completed */}
+      <div className="masterclass-categories">
+        <div className="category-section">
+          <h2 className="category-title">Upcoming Masterclasses</h2>
+          <div className="category-count">{upcomingMasterClass.length}</div>
+          <p className="category-description">Register for upcoming sessions and get ahead in your learning journey</p>
+        </div>
+        <div className="category-section">
+          <h2 className="category-title">Ongoing Masterclasses</h2>
+          <div className="category-count">{ongoingMasterClass.length}</div>
+          <p className="category-description">Join live sessions in progress and learn from industry experts</p>
+        </div>
+        <div className="category-section">
+          <h2 className="category-title">Completed Masterclasses</h2>
+          <div className="category-count">{completedMasterClass.length}</div>
+          <p className="category-description">Access certificates from masterclasses you've attended</p>
+        </div>
       </div>
 
       {/* <div className="masterclasshero">

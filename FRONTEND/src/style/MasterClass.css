@@ -11,6 +11,57 @@
     }
   }
 
+  .masterclass-categories {
+    max-width: 1500px;
+    margin: 50px auto;
+    padding: 0 10px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+
+    .category-section {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      padding: 30px 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(244, 68, 20, 0.3);
+        border-color: #f44414;
+      }
+
+      .category-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #f44414;
+        margin-bottom: 15px;
+      }
+
+      .category-count {
+        font-size: 48px;
+        font-weight: 700;
+        color: white;
+        margin: 20px 0;
+      }
+
+      .category-description {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.7);
+        line-height: 1.5;
+      }
+    }
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 20px;
+      margin: 30px auto;
+    }
+  }
+
   /* .masterclasshero {
     max-width: 1500px;
     display: flex;
