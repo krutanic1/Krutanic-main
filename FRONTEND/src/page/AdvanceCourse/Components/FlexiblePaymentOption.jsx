@@ -4,34 +4,40 @@ const FlexiblePaymentOption = () => {
   return (
     <div>
        <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto">
-            <h1  className="text-center font-extrabold text-[#f15b29] mb-8" >  | Flexible Payment Options </h1>
-             <div className="flex flex-col justify-center items-center mb-8">
-             <p className="mb-2 text-[#f15b29]">| Our Financial Partner</p>
-              <img src={Flashaidlogo} alt="emi" className="h-[100px]"/>
-             </div>
-            <div  className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2">
-                <div className="bg-[#ffffff11] drop-shadow-md overflow-hidden shadow-lg rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-2xl" >
-                  <div className="px-4 py-5 sm:p-6">
-                    <h3 className="text-2xl font-bold text-[#eee]">
-                    Installments
-                    </h3>
-                    <p className="mt-2 text-sm text-[#eee]">
-                    Learning is now more accessible than ever. With our flexible EMI options, you can break down the cost of your course into manageable payments. Choose a plan that fits your budget and schedule, and focus on mastering new skills without worrying about the financial burden.
-                    </p>
-                   
-                  </div>
+          <div className="container mx-auto max-w-4xl">
+            <h1 className="text-center font-extrabold text-[#f15b29] mb-12 text-3xl md:text-4xl">
+              Our Flexible Payment Options
+            </h1>
+            
+            {/* Payment Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+              {/* Left: Total Fee Box */}
+              <div className="bg-gradient-to-br from-[#f15b29] to-[#b5401f] rounded-l-[80px] rounded-r-lg p-8 md:p-12 flex flex-col justify-center items-center shadow-2xl">
+                <p className="text-white text-lg md:text-xl mb-4 font-medium">Total program fee</p>
+                <p className="text-white text-5xl md:text-6xl font-bold">₹89,000</p>
+              </div>
+              
+              {/* Right: Payment Breakdown */}
+              <div className="flex flex-col justify-center space-y-4">
+                <div className="flex justify-between items-center py-3 border-b border-gray-600">
+                  <span className="text-[#eee] text-lg">Registration</span>
+                  <span className="text-[#eee] text-lg font-semibold">₹10,000</span>
                 </div>
-                <div className="bg-[#ffffff11] drop-shadow-md overflow-hidden shadow-lg rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-2xl" >
-                  <div className="px-4 py-5 sm:p-6">
-                    <h3 className="text-2xl font-bold text-[#eee]">
-                    Full Payment
-                    </h3>
-                    <p className="mt-2 text-sm text-[#eee]">
-                    Invest in your future with a one-time payment that grants you lifetime access to all course materials. No recurring fees or hidden costs—just seamless, uninterrupted learning. Plus, enjoy additional savings with this all-inclusive option, ensuring you get the most value for your education.
-                    </p>
-                  </div>
+                <div className="flex justify-between items-center py-3 border-b border-gray-600">
+                  <span className="text-[#eee] text-lg">Installment 1</span>
+                  <span className="text-[#eee] text-lg font-semibold">₹40,000</span>
                 </div>
+                <div className="flex justify-between items-center py-3 border-b border-gray-600">
+                  <span className="text-[#eee] text-lg">Installment 2</span>
+                  <span className="text-[#eee] text-lg font-semibold">₹39,000</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Financial Partner */}
+            <div className="flex flex-col justify-center items-center mt-12">
+              <p className="mb-2 text-[#f15b29]">| Our Financial Partner</p>
+              <img src={Flashaidlogo} alt="Financial Partner" className="h-[80px]"/>
             </div>
           </div>
           
