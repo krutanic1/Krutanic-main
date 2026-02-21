@@ -1085,12 +1085,7 @@ const [actionType, setActionType] = useState();
               </div>
             </div>
             
-            {/* Payment Warning */}
-            <div className="mt-6 p-4 bg-red-900/20 border border-red-500/30 rounded-lg">
-              <p className="text-[#ff6b6b] text-sm text-center">
-                <span className="font-semibold">⚠ Important:</span> In case of failure of payment, all LMS access will be revoked.
-              </p>
-            </div>
+           
             
             {/* Financial Partner */}
             <div className="flex flex-col justify-center items-center mt-12">

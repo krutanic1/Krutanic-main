@@ -1085,12 +1085,7 @@ const PromptEngineering = () => {
               </div>
             </div>
 
-            {/* Warning Note */}
-            <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4 mb-8">
-              <p className="text-red-400 text-sm">
-                <strong>Note:</strong> In case of failure of payment, all the LMS access will be revoked.
-              </p>
-            </div>
+           
             
             {/* Financial Partner */}
             <div className="flex flex-col justify-center items-center mt-12">
