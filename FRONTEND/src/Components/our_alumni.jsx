@@ -60,92 +60,92 @@ const ClientsCarousel = () => {
     <div className="workatslider">
       <div className="clients">
         <Slider {...settings}>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c1} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c2} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c3} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c4} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c5} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c6} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c7} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c8} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c9} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c10} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c11} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c12} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c13} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c14} />
           </div>
         </Slider>
       </div>
-      <div className="clients">
+      <div className="clients" style={{ marginTop: '40px' }}>
         <Slider {...settings1}>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c15} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c16} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c17} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c18} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c19} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c20} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c21} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c22} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c23} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c24} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c25} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c26} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c27} />
           </div>
-          <div className="box">
+          <div className="box" style={{ padding: '0 50px' }}>
             <img alt="client logo" className="client-img" src={c28} />
           </div>
         </Slider>

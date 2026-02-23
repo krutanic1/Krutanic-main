@@ -9,7 +9,7 @@ import axios from "axios";
 import { RiCustomerService2Fill } from "react-icons/ri";
 
 import BenefitsofLearning from "./Components/BenefitsofLearning";
-
+import ClientsCarousel from "../../Components/our_alumni";
 import StoreSection from "./Components/StoreSection";
 import Certification from "./Components/Certification";
 import MERN from "../../assets/Advanced Course Images/Mern Stack Development/mern.png";
@@ -977,6 +977,21 @@ const [actionType, setActionType] = useState();
             And more
           </div>
         </section>
+        <hr className=" opacity-10" />
+
+        {/* Clients Carousel */}
+        <div className="workat">
+          <div className="alumni">
+            <h1 className="text-[#f15b29] font-bold mb-6 text-center">
+              | Our alumni at top Brands
+            </h1>
+            <p className="text-gray-400 mb-12 text-center">
+              Their success stories inspire current students to aim for global
+              excellence in their careers.
+            </p>
+            <ClientsCarousel />
+          </div>
+        </div>
         <hr className=" opacity-10" />
 
         {/* 12 key highlight section */}

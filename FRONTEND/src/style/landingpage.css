@@ -240,7 +240,7 @@
     padding: 70px 10px;
 
     .alumni {
-      max-width: 1500px;
+      max-width: 1800px;
       margin: auto;
       text-align: center;
 
@@ -252,8 +252,8 @@
       }
 
       .clients {
-        max-width: 1500px;
-        min-width: 1500px;
+        max-width: 1800px;
+        min-width: 1800px;
 
         .box {
           cursor: grab;

@@ -10,7 +10,7 @@ import "aos/dist/aos.css";
 import toast, { Toaster } from "react-hot-toast";
 // import { FaEye, FaEyeSlash } from "react-icons/fa";
 import img from "../assets/masterclasscertificate.jpg";
-import imghero from "../assets/masterhero.jpg";
+import imghero from "../assets/masterclass.jpeg";
 import imgmentor from "../assets/Advanced Course Images/Product management/pm.jpg";
 import imgadvance from "../assets/courses/feesimg.jpeg";
 import imgalt from "../assets/defaultmasterclass.jpg";
