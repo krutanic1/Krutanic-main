@@ -57,63 +57,146 @@ const DataScience = () => {
 
   const modules = [
     {
+      week: "Weeks 1-2",
       title: "Advanced Machine Learning Techniques",
       objectives:
-        "Learn advanced algorithms for solving complex problems using machine learning models.",
+        "Students will learn advanced supervised and unsupervised machine learning algorithms, ensemble methods, model evaluation, & hyperparameter tuning, then explore Convolutional Neural Networks (CNNs) and Recurrent Neural Networks (RNNs), along with optimizations such as dropout and learning rate schedules.",
       topics: [
         "Supervised and Unsupervised Learning",
-        "Ensemble Methods",
-        "Model Evaluation",
-        "Cross-Validation",
-        "Hyperparameter Tuning",
+        "Ensemble Methods (Random Forest, XGBoost, etc.)",
+        "Model Evaluation and Metrics",
+        "Cross-Validation Techniques",
+        "Hyperparameter Tuning and Optimization",
       ],
     },
     {
+      week: "Weeks 3-4",
       title: "Deep Learning with TensorFlow and Keras",
       objectives:
-        "Master deep learning techniques for image recognition, NLP, and more.",
+        "Train neural networks with many layers to recognize patterns in large datasets for image, speech, and text recognition using TensorFlow—a popular open-source library for building and deploying deep learning models.",
       topics: [
         "Neural Networks Fundamentals",
         "Convolutional Neural Networks (CNNs)",
-        "Recurrent Neural Networks (RNNs)",
-        "TensorFlow and Keras Basics",
-        "Model Optimization",
+        "Recurrent Neural Networks (RNNs) and LSTM",
+        "TensorFlow & Keras Basics",
+        "Model Optimization and Fine-Tuning",
       ],
     },
     {
+      week: "Week 5",
       title: "Big Data Analytics",
       objectives:
-        "Work with tools like Hadoop and Spark to manage and analyze large datasets.",
+        "Students will work with tools like Hadoop and Spark to process and analyze large-scale data, gaining expertise in distributed computing and real-time data analysis.",
       topics: [
-        "Hadoop Ecosystem",
-        "Spark for Data Processing",
-        "NoSQL Databases",
-        "Data Pipeline Construction",
-        "Real-Time Data Processing",
+        "Hadoop Ecosystem Overview",
+        "Apache Spark for Big Data Processing",
+        "NoSQL Databases (MongoDB, Cassandra)",
+        "Building Data Pipelines",
+        "Real-Time Data Processing with Kafka & Spark",
       ],
     },
     {
+      week: "Week 6-7",
       title: "Feature Engineering and Model Optimization",
       objectives:
-        "Enhance your models with effective feature engineering and optimization techniques.",
+        "Create new, relevant features from raw data to improve the model's predictive power, and focus on fine-tuning model parameters, adjusting learning rates, choosing the best algorithm, and using techniques like cross-validation to reduce overfitting and improve accuracy.",
       topics: [
-        "Feature Extraction",
-        "Feature Selection",
-        "Dimensionality Reduction",
-        "Regularization",
-        "Model Tuning",
+        "Feature Extraction and Transformation",
+        "Feature Selection Algorithms",
+        "Dimensionality Reduction (PCA, t-SNE)",
+        "Regularization Techniques (L1, L2, ElasticNet)",
+        "Model Tuning with Grid Search and Random Search",
       ],
     },
     {
-      title: " AI Applications and Real-World Case Studies",
+      week: "Week 8",
+      title: "AI Applications and Real-World Case Studies",
       objectives:
-        "Apply AI and data science techniques to real-world problems across industries.",
+        "Students will apply AI to solve real-world business problems like fraud detection and predictive analytics, gaining insights into industries like healthcare and finance.",
       topics: [
-        "AI in Healthcare, Finance, and Retail",
-        "Fraud Detection Models",
-        "Predictive Analytics",
-        "Case Study Projects",
-        "Deployment Strategies",
+        "AI in Healthcare, Finance, Retail, and More",
+        "Fraud Detection and Anomaly Detection Models",
+        "Predictive Analytics for Business Intelligence",
+        "Industry-Specific Case Studies",
+        "Deployment Strategies for AI Models",
+      ],
+    },
+    {
+      week: "Week 9-10",
+      title: "Natural Language Processing",
+      objectives:
+        "Students will master NLP techniques such as sentiment analysis, named entity recognition, and the use of transformer models like BERT for language understanding.",
+      topics: [
+        "Text Preprocessing (Tokenization, Lemmatization)",
+        "Sentiment Analysis and Text Classification",
+        "Named Entity Recognition (NER)",
+        "Word Embeddings (Word2Vec, GloVe, FastText)",
+        "Transformer Models (BERT, GPT)",
+      ],
+    },
+    {
+      week: "Week 11-12",
+      title: "Data Visualization and Communication",
+      objectives:
+        "Students will learn how to visualize data and communicate insights effectively using tools like Tableau and Python libraries, enhancing their ability to present data to stakeholders.",
+      topics: [
+        "Advanced Visualization Tools (Matplotlib, Seaborn)",
+        "Interactive Dashboards with Plotly/Dash",
+        "Building Business Dashboards (PowerBI, Tableau)",
+        "Data Storytelling and Reporting",
+        "Presenting Results to Stakeholders",
+      ],
+    },
+    {
+      week: "Week 13-14",
+      title: "Cloud Computing for Data Science",
+      objectives:
+        "Students will learn how to deploy data science models on cloud platforms, utilizing services like AWS, Azure, and Google Cloud for scalable and efficient data processing.",
+      topics: [
+        "Introduction to Cloud Computing (AWS, Azure, GCP)",
+        "Deploying Models on Cloud Platforms",
+        "Scalable Data Processing with Cloud Services",
+        "Managing Data Storage in the Cloud",
+        "Monitoring and Optimizing Cloud-Based Models",
+      ],
+    },
+    {
+      week: "Week 15-16",
+      title: "Ethical AI and Responsible Data Science",
+      objectives:
+        "Students will explore ethical challenges in AI, including bias, fairness, privacy, and transparency, learning to build responsible AI solutions that consider societal impact.",
+      topics: [
+        "Bias in Machine Learning Models",
+        "Ethical Implications and Fairness in AI",
+        "Privacy and Data Protection (GDPR, CCPA)",
+        "AI Transparency and Accountability",
+        "Building Responsible AI Solutions",
+      ],
+    },
+    {
+      week: "Week 17-20",
+      title: "Capstone Project and Career Preparation",
+      objectives:
+        "Students will develop fraud detection models using anomaly detection methods, and apply everything learned to a Capstone Project, showcasing their expertise.",
+      topics: [
+        "Capstone Project: Fraud Detection in Financial Transactions",
+        "Applying Advanced ML and AI Techniques",
+        "End-to-End Project Development",
+        "Documentation and Presentation Skills",
+        "Industry-Level Project Portfolio Building",
+      ],
+    },
+    {
+      week: "Week 21-24",
+      title: "Placement Preparation",
+      objectives:
+        "Prepare for a successful job search and interviews with a professional portfolio and job-ready skills.",
+      topics: [
+        "Building a Strong Data Science Portfolio",
+        "ATS friendly Resume Building for Data Science Roles",
+        "Personality Development",
+        "Mock Interviews and Feedback Sessions",
+        "Placement Assistance and Job Search Strategies",
       ],
     },
   ];
@@ -539,7 +622,7 @@ const [actionType , setActionType] = useState();
                         onClick={() => toggleModule(index)}
                       >
                         <h3 className="text-xl font-semibold">
-                          Module {index + 1}: {module.title}
+                          {module.week}: {module.title}
                         </h3>
                         <p className="text-sm text-gray-400">
                           {module.objectives}
@@ -559,14 +642,10 @@ const [actionType , setActionType] = useState();
                     </div>
                   ))}
                 </div>
-                <span>and more..</span>
               </div>
 
-              <div className="lg:w-1/2 w-full lg:h-[450px] rounded-lg overflow-hidden mb-5 lg:mb-0 ">
-                 <div className="">
-              <ApplyForm />
-            </div>
-
+              <div className="lg:w-1/2 w-full rounded-lg overflow-hidden mb-5 lg:mb-0">
+                <ApplyForm />
               </div>
             </div>
           </div>
@@ -600,9 +679,6 @@ const [actionType , setActionType] = useState();
                 </div>
               ))}
             </div>
-          </div>
-          <div data-aos="fade-up" className="mt-[20px] text-center">
-            And more
           </div>
         </section>
         <hr className=" opacity-10" />
@@ -950,9 +1026,6 @@ Learn to use marketing automation tools to streamline campaigns, nurture leads, 
                 </div>
               ))}
             </div>
-          </div>
-          <div data-aos="fade-up" className="mt-[20px] text-center">
-            And more
           </div>
         </section>
         <hr className=" opacity-10" />

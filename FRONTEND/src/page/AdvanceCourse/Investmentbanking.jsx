@@ -59,62 +59,147 @@ const Investmentbanking = () => {
 
   const modules = [
     {
-      title: "Advanced Corporate Finance and Valuation",
+      week: "Weeks 1-2",
+      title: "Introduction to Investment Banking",
       objectives:
-        "Understand corporate finance and company valuation methods for investment decisions.",
+        "Understand the structure and function of investment banks within the global financial system. Gain insight into the services provided by investment banks and the regulatory environment they operate in.",
       topics: [
-        "Company Valuation Techniques (DCF, Comparable Company Analysis)",
-        "Capital Budgeting and Investment Decisions",
-        "Financial Performance Metrics (ROE, ROIC, etc.)",
-        "Risk and Return Analysis",
-        "topMarket Analysis and Competitor Benchmarking",
+        "Overview of the global financial market and the investment banking ecosystem",
+        "Key functions of investment banks (M&A, underwriting, capital raising)",
+        "Roles of investment bankers: analysts, sales, trading, and research",
+        "Introduction to the regulatory framework (SEC, FINRA, Basel III)",
       ],
     },
     {
-      title: "Investment Banking Models and Financial Statements",
+      week: "Weeks 3-4",
+      title: "Financial Analysis and Valuation Techniques",
       objectives:
-        "Learn financial modeling and statement analysis for investment assessment.",
+        "Proficiency in performing DCF and CCA to value companies and assets. Apply valuation techniques in real-world scenarios to assess business value and investment opportunities.",
       topics: [
-        "Financial Statement Analysis (Income Statement, Balance Sheet, Cash Flow)",
-        "Financial Modeling Techniques (DCF, LBO, M&A Models)",
-        "Profitability and Liquidity Ratios",
-        "Forecasting Revenue and Expenses",
-        "Adjustments for Non-Recurring Items in Financial Statements",
+        "Financial statement analysis (income statements, balance sheets, cash flow statements)",
+        "Ratio analysis (ROE, ROA, P/E ratios)",
+        "Discounted Cash Flow (DCF) and comparable company analysis (CCA)",
+        "Mergers and Acquisitions (M&A) valuation methods",
       ],
     },
     {
-      title: "Mergers & Acquisitions (M&A) Advisory",
-      objectives: "Master the M&A process, deal structuring, and integration.",
+      week: "Week 5-6",
+      title: "Capital Markets and Underwriting",
+      objectives:
+        "Understand the processes involved in capital raising and the role of underwriters. Gain practical knowledge of how to price and manage risks in capital market transactions.",
       topics: [
-        "M&A Deal Structuring and Valuation",
-        "Due Diligence Process and Risk Assessment",
-        "Financing M&A Transactions (Debt vs. Equity)",
-        "Post-Merger Integration Strategies",
-        "Regulatory Framework and Compliance",
+        "Capital raising strategies: IPOs, follow-on offerings, private placements",
+        "The underwriting process: roles of underwriters, bookbuilding, pricing strategies",
+        "Secondary markets and liquidity considerations",
+        "Risk management in capital market transactions",
       ],
     },
     {
+      week: "Week 7",
+      title: "Mergers and Acquisitions",
+      objectives:
+        "Ability to conduct due diligence and assess the financial and strategic aspects of M&A transactions. Proficiency in using financial models for transaction analysis and valuation.",
+      topics: [
+        "Types of M&A transactions (mergers, acquisitions, divestitures, spin-offs)",
+        "Due diligence process: financial, legal, and operational aspects",
+        "Negotiation strategies and integration planning",
+        "Regulatory considerations in M&A (antitrust, competition laws)",
+      ],
+    },
+    {
+      week: "Week 8-9",
+      title: "Financial Modeling and Forecasting",
+      objectives:
+        "Ability to perform sensitivity analysis to understand the impact of changes in variables on financial outcomes. Apply these skills in real-world financial planning and budgeting.",
+      topics: [
+        "Building financial models: income statements, balance sheets, cash flow statements",
+        "Sensitivity analysis and scenario planning",
+        "Projected financials and budget forecasting",
+        "Stress testing financial models under different economic scenarios",
+      ],
+    },
+    {
+      week: "Week 10",
+      title: "Corporate Governance and Ethical Considerations",
+      objectives:
+        "Develop awareness of ethical practices and the importance of integrity in investment banking. Learn from case studies to avoid common pitfalls in governance and decision-making.",
+      topics: [
+        "Corporate governance frameworks and practices",
+        "Ethical considerations in investment banking (conflicts of interest, insider trading)",
+        "Role of boards and committees in financial oversight",
+        "Case studies on corporate governance failures and lessons learned",
+      ],
+    },
+    {
+      week: "Week 11-12",
+      title: "Investment Strategies and Portfolio Management",
+      objectives:
+        "Understand portfolio performance metrics and how to assess investment success. Proficiency in constructing diversified portfolios using different investment strategies.",
+      topics: [
+        "Asset allocation and risk management strategies",
+        "Portfolio construction techniques (active vs. passive management)",
+        "Performance measurement and attribution",
+        "Sectoral and thematic investment strategies",
+      ],
+    },
+    {
+      week: "Week 13-14",
+      title: "Derivatives and Risk Management",
+      objectives:
+        "Ability to apply arbitrage strategies and understand the implications of market volatility. Knowledge of how derivatives can be used to protect against financial risks in real-world scenarios.",
+      topics: [
+        "Understanding derivatives (futures, options, swaps)",
+        "Risk management strategies using derivatives",
+        "Hedging techniques and arbitrage strategies",
+        "Case studies on financial crises and risk management failures",
+      ],
+    },
+    {
+      week: "Week 14-15",
+      title: "International Finance and Global Market Trends",
+      objectives:
+        "Understanding the global economic indicators and their impact on investment decisions. Skills for handling cross-border transactions and adapting to international financial markets.",
+      topics: [
+        "Foreign exchange markets and currency risk management",
+        "Global economic indicators and their impact on markets",
+        "Cross-border M&A and international capital raising",
+        "Regulatory and political risks in international finance",
+      ],
+    },
+    {
+      week: "Week 16",
       title: "Private Equity and Venture Capital",
       objectives:
-        "Explore funding strategies and investment lifecycle in private equity and venture capital.",
+        "Gain insight into the investment processes of private equity and venture capital firms.",
       topics: [
-        "Understanding Private Equity and Venture Capital Models",
-        "Deal Sourcing and Due Diligence",
-        "Valuation of Startups and Growth Companies",
-        "Investment Structuring (Equity, Debt, Mezzanine Financing)",
-        "Exit Strategies (IPO, M&A, Secondary Sales)",
+        "Fundraising and Fund Structure",
+        "Deal Sourcing and Screening",
+        "Valuation in Private Equity Deals",
+        "Exit Strategies: IPOs, M&A",
       ],
     },
     {
-      title: "Risk Management and Ethical Banking Practices",
+      week: "Week 17-20",
+      title: "Capstone Project",
       objectives:
-        "Learn risk management and ethical standards in investment banking.",
+        "Students will demonstrate their understanding of investment banking through a comprehensive project. They will create a strong portfolio, showcasing their ability to conduct research, perform analysis, and present findings effectively to industry experts.",
       topics: [
-        "Risk Identification and Risk Mitigation Techniques",
-        "Credit and Market Risk Management",
-        "Regulatory Compliance and Reporting",
-        "Ethical Standards in Investment Banking",
-        "Stress Testing and Scenario Analysis",
+        "Practical application of skills in a real-world investment banking scenario",
+        "Research and analysis of a live market case",
+        "Portfolio management and investment strategy development",
+        "Final project presentation and portfolio evaluation",
+      ],
+    },
+    {
+      week: "Week 21-24",
+      title: "Placement Preparation",
+      objectives:
+        "Students will be well-prepared for the job market with a professional portfolio, strong resume, and interview skills. They will understand how to effectively present their capstone project and network with industry professionals.",
+      topics: [
+        "Resume Building and LinkedIn Optimization",
+        "Interview Tips and Mock Interviews with industry professionals",
+        "Job Search Strategies, Networking, and Building a Professional Portfolio",
+        "Presentation skills for job interviews and client pitches",
       ],
     },
   ];
@@ -559,7 +644,7 @@ const [actionType, setActionType] = useState();
                         onClick={() => toggleModule(index)}
                       >
                         <h3 className="text-xl font-semibold">
-                          Module {index + 1}: {module.title}
+                          {module.week}: {module.title}
                         </h3>
                         <p className="text-sm text-gray-400">
                           {module.objectives}
@@ -579,12 +664,9 @@ const [actionType, setActionType] = useState();
                     </div>
                   ))}
                 </div>
-                <span>and more..</span>
               </div>
-              <div className="lg:w-1/2 w-full lg:h-[450px] rounded-lg overflow-hidden mb-5 lg:mb-0 ">
-                <div className="">
-                  <ApplyForm courseValue="Data Science" />
-                </div>
+              <div className="lg:w-1/2 w-full rounded-lg overflow-hidden mb-5 lg:mb-0">
+                <ApplyForm courseValue="Data Science" />
               </div>
             </div>
           </div>
@@ -620,9 +702,6 @@ const [actionType, setActionType] = useState();
                 </div>
               ))}
             </div>
-          </div>
-          <div data-aos="fade-up" className="mt-[20px] text-center">
-            And more
           </div>
         </section>
         <hr className=" opacity-10" />
@@ -988,9 +1067,6 @@ const [actionType, setActionType] = useState();
                 </div>
               ))}
             </div>
-          </div>
-          <div data-aos="fade-up" className="mt-[20px] text-center">
-            And more
           </div>
         </section>
         <hr className=" opacity-10" />

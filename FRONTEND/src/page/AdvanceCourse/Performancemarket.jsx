@@ -59,63 +59,157 @@ const Performancemarket = () => {
 
   const modules = [
     {
-      title: "Advanced Paid Media Campaign Strategies",
+      week: "Weeks 1-2",
+      title: "Advanced SEO and SEM Techniques",
       objectives:
-        "Learn advanced techniques for running highly targeted paid media campaigns on platforms like Google Ads and Facebook.",
+        "Master off-page SEO techniques including link building, backlinks, and external citations. Analyze and track SEO performance using tools like Google Analytics and keyword ranking trackers.",
       topics: [
-        "Google Ads Campaigns",
-        "Facebook and Instagram Ads",
-        "Bing Ads and Retargeting",
-        "toBudget Allocation and Bidding Strategies",
-        "Campaign Reporting and Analytics",
+        "On-Page and Off-Page SEO",
+        "Keyword Research and Analysis",
+        "SEO Tools (SEMrush, Ahrefs)",
+        "Google Ads and Bing Ads Campaigns",
+        "Landing Page Optimization",
       ],
     },
     {
+      week: "Weeks 3-4",
+      title: "Campaign Planning and Strategy",
+      objectives:
+        "Understand the fundamentals of performance marketing. Identify key metrics and their significance. Analyze conversion funnels and optimize user journeys.",
+      topics: [
+        "Setting Campaign Objectives",
+        "Audience Targeting and Segmentation",
+        "Budget Allocation Strategies",
+        "Defining Key Performance Indicators (KPIs)",
+        "Competitive Research and Benchmarking",
+      ],
+    },
+    {
+      week: "Week 5",
+      title: "Google Ads and Search Engine Marketing (SEM)",
+      objectives:
+        "Set up and manage high-performing Google Ads campaigns. Develop effective keyword strategies and compelling ad copy. Use A/B testing to refine and improve campaign outcomes.",
+      topics: [
+        "Google Ads Account Setup and Management",
+        "Keyword Research and Bidding Strategies",
+        "Ad Copywriting Best Practices",
+        "Quality Score Optimization",
+        "A/B Testing in Search Campaigns",
+      ],
+    },
+    {
+      week: "Week 6-7",
+      title: "Social Media Advertising",
+      objectives:
+        "Create and manage engaging social media content tailored to each platform's audience and algorithms. Utilize analytics tools to track engagement, reach, and conversions, adjusting strategies based on data insights. Build and maintain relationships with followers through interaction, feedback, and community management.",
+      topics: [
+        "Facebook Ads Manager Setup",
+        "Instagram and LinkedIn Ads",
+        "Retargeting and Lookalike Audiences",
+        "Ad Creative Design and Copy",
+        "Social Media Analytics and Insights",
+      ],
+    },
+    {
+      week: "Week 8",
+      title: "Display Advertising and Retargeting",
+      objectives:
+        "Design effective banner ads for display networks. Implement dynamic retargeting strategies. Optimize display campaigns for better reach and engagement.",
+      topics: [
+        "Google Display Network (GDN) Overview",
+        "Designing Effective Banner Ads",
+        "Dynamic Retargeting Campaigns",
+        "Targeting Techniques: Behavioral, Contextual",
+        "Tools for Display Ad Optimization",
+      ],
+    },
+    {
+      week: "Week 9-10",
       title: "Conversion Rate Optimization (CRO)",
       objectives:
-        "Master the strategies and tools for optimizing landing pages and websites to increase conversions.",
+        "Design optimized landing pages for higher conversions. Use heatmaps to analyze user behavior and identify areas of improvement. Conduct A/B testing to refine campaigns effectively.",
       topics: [
-        "Landing Page Optimization",
-        "Heatmaps and User Behavior Analysis",
+        "Landing Page Design Best Practices",
+        "User Behavior Analysis (Heatmaps, Clickmaps)",
         "A/B Testing and Multivariate Testing",
         "Funnel Analysis and Optimization",
-        "Tools for CRO (Optimizely, Unbounce)",
+        "Tools for CRO (Optimizely, Google Optimize)",
       ],
     },
     {
-      title: "Data-Driven Marketing Analytics",
+      week: "Week 11",
+      title: "Email Marketing for Performance",
       objectives:
-        "Understand how to leverage data to optimize campaigns and measure ROI effectively.",
+        "Create effective and personalized email campaigns. Use automation tools to streamline workflows. Measure and improve email campaign metrics.",
       topics: [
-        "Google Analytics for Campaigns",
-        "Metrics and KPIs for Performance Marketing",
-        "Attribution Models",
-        "Audience Segmentation and Targeting",
-        "Data Visualization and Reporting",
+        "Email Campaign Strategy Segmentation and Personalization",
+        "Email Automation Tools (Mailchimp, HubSpot)",
+        "Tracking Open Rates, CTR, and Conversions",
+        "Building Effective Email Sequences",
       ],
     },
     {
-      title: "Social Media Ads and PPC Management",
+      week: "Week 12",
+      title: "Data-Driven Marketing and Analytics with AI",
       objectives:
-        "Learn to design and manage successful PPC and social media ad campaigns to boost traffic and engagement.",
+        "Track the percentage of users who take a desired action. Measure the cost of acquiring a new customer through marketing efforts. Estimate the total revenue a customer will generate over the lifetime of their relationship with a brand.",
       topics: [
-        "Facebook Ads Manager",
-        "Instagram and LinkedIn Ads",
-        "Google Display Network",
-        "Paid Search Campaigns",
-        "Social Media Strategy and Budgeting",
+        "Google Analytics for Campaign Tracking",
+        "Performance Metrics and Reporting",
+        "Attribution Models for Conversions",
+        "Tools for Data Visualization (Tableau, Power BI)",
+        "Generating Actionable Insights",
       ],
     },
     {
-      title: "A/B Testing and Campaign Optimization",
+      week: "Week 13-14",
+      title: "Affiliate and Influencer Marketing for Performance",
       objectives:
-        "Apply A/B testing strategies to optimize ad creatives, landing pages, and campaigns for better performance.",
+        "Focus on performance-based marketing where affiliates earn commissions for driving traffic or sales through their promotions. Key metrics include conversion rate, click-through rate, and average order value. Collaborate with influencers who have a dedicated and engaged audience to promote products or services. Metrics include engagement rate, reach, and overall return on investment (ROI) from influencer campaigns.",
       topics: [
-        "Testing Ad Copy and Creatives",
-        "Measuring and Analyzing Test Results",
-        "Continuous Campaign Optimization",
-        "Best Practices for A/B Testing",
-        "Tools for A/B Testing (VWO, Google Optimize)",
+        "Affiliate Program Setup and Management",
+        "Finding and Collaborating with Influencers",
+        "Tracking Affiliate and Influencer ROI",
+        "Creating Engaging Campaigns",
+        "Compliance and Disclosure Best Practices",
+      ],
+    },
+    {
+      week: "Week 15-16",
+      title: "Advanced Campaign Optimization",
+      objectives:
+        "Track and optimize the ROI of partnerships. Reallocate budgets to maximize ROI. Analyze and present campaign performance with comprehensive reports.",
+      topics: [
+        "Scaling Campaigns Effectively",
+        "AI and Automation in Performance Marketing",
+        "Budget Reallocation for High-Performing Channels",
+        "Testing New Platforms and Formats",
+        "Building a Comprehensive Campaign Report",
+      ],
+    },
+    {
+      week: "Week 17-20",
+      title: "Capstone Project",
+      objectives:
+        "Showcase a complete marketing project, from strategy to execution, as part of your portfolio.",
+      topics: [
+        "Designing a Full-Funnel Marketing Campaign",
+        "Setting Campaign Objectives and KPIs",
+        "Budget Allocation and Target Audience Selection",
+        "Creating Ad Creatives and Copy for Multiple Channels",
+        "Analyzing the Campaign Performance and Generating Reports",
+      ],
+    },
+    {
+      week: "Week 21-24",
+      title: "Placement Preparation",
+      objectives:
+        "Prepare for a successful job search and interviews with a professional portfolio and job-ready skills.",
+      topics: [
+        "Resume Building and LinkedIn Optimization",
+        "Interview Tips and Mock Interviews with industry professionals",
+        "Job Search Strategies, Networking, and Building a Professional Portfolio",
+        "Presentation skills for job interviews and client pitches",
       ],
     },
   ];
@@ -557,7 +651,7 @@ const [actionType, setActionType] = useState();
                         onClick={() => toggleModule(index)}
                       >
                         <h3 className="text-xl font-semibold">
-                          Module {index + 1}: {module.title}
+                          {module.week}: {module.title}
                         </h3>
                         <p className="text-sm text-gray-400">
                           {module.objectives}
@@ -577,13 +671,9 @@ const [actionType, setActionType] = useState();
                     </div>
                   ))}
                 </div>
-                <span>and more..</span>
               </div>
-              <div className="lg:w-1/2 w-full lg:h-[450px] rounded-lg overflow-hidden mb-5 lg:mb-0 ">
-                
-                <div className="">
-              <ApplyForm courseValue="Data Science"/>
-            </div>
+              <div className="lg:w-1/2 w-full rounded-lg overflow-hidden mb-5 lg:mb-0">
+                <ApplyForm courseValue="Performance Marketing" />
               </div>
             </div>
           </div>
@@ -624,9 +714,6 @@ const [actionType, setActionType] = useState();
                 </div>
               ))}
             </div>
-          </div>
-          <div data-aos="fade-up" className="mt-[20px] text-center">
-            And more
           </div>
         </section>
         <hr className=" opacity-10" />
@@ -984,9 +1071,6 @@ const [actionType, setActionType] = useState();
                 </div>
               ))}
             </div>
-          </div>
-          <div data-aos="fade-up" className="mt-[20px] text-center">
-            And more
           </div>
         </section>
         <hr className=" opacity-10" />

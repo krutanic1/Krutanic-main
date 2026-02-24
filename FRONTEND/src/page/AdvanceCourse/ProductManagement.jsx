@@ -58,63 +58,147 @@ const ProductManagement = () => {
 
   const modules = [
     {
-      title: "Product Development and Roadmap Creation",
+      week: "Weeks 1-2",
+      title: "Introduction to Product Management",
       objectives:
-        "Learn how to create effective product roadmaps and develop products from concept to delivery.",
+        "Develop a strong foundation in product management concepts, understanding the product lifecycle, and identifying customer pain points.",
       topics: [
-        "Product Vision and Strategy",
-        "Roadmap Planning and Prioritization",
-        "Cross-functional Collaboration",
-        "User Stories and Requirements Gathering",
+        "Role and Responsibilities of a Product Manager",
         "Product Lifecycle Management",
+        "Understanding Customer Needs and Market Research",
+        "Key Metrics in Product Management",
       ],
     },
     {
-      title: "Agile and Lean Product Management",
-      objectives:
-        "Master Agile and Lean methodologies to streamline product development and create value-driven products.",
-      topics: [
-        "Agile and Scrum Frameworks",
-        "Product Backlogs and Sprint Planning",
-        "Iterative Development Process",
-        "Lean Product Development",
-        "Continuous Improvement",
-      ],
-    },
-    {
-      title: "User-Centered Design and UX/UI Principles",
-      objectives:
-        "Focus on creating products that meet user needs by applying UX/UI principles and user-centered design methods.",
-      topics: [
-        "UX Research and User Testing",
-        "Wireframing and Prototyping",
-        "Usability Testing",
-        "Designing for User Experience",
-        "UI Design Fundamentals",
-      ],
-    },
-    {
+      week: "Weeks 3-4",
       title: "Market Research and Competitive Analysis",
       objectives:
-        "Learn how to conduct thorough market research and analyze competitors to shape product strategies.",
+        "Gain expertise in conducting market research and competitive analysis to support informed product decisions.",
       topics: [
-        "Market Research Methods",
-        "Identifying Customer Needs and Pain Points",
-        "Competitor Analysis",
-        "topiProduct Positioning and Differentiationcs",
-        "SWOT Analysis",
+        "Conducting Market Research",
+        "Analyzing Competitive Landscapes",
+        "Identifying Market Trends and Opportunities",
+        "SWOT Analysis for Product Strategy",
       ],
     },
     {
-      title: "Product Marketing and Launch Strategies",
+      week: "Week 5-6",
+      title: "Product Vision and Strategy",
       objectives:
-        "Gain the skills to market and launch products effectively, ensuring they meet market demands and drive user engagement.",
+        "Create a product vision and strategy that aligns with organizational objectives and customer needs.",
       topics: [
-        "Go-to-Market Strategies",
-        "Product Launch Planning",
+        "Defining Product Vision",
+        "Strategic Frameworks (OKRs, Vision Boards)",
+        "Aligning Product Strategy with Business Goals",
+        "Roadmap Planning",
+      ],
+    },
+    {
+      week: "Week 7-8",
+      title: "Agile Methodologies for Product Development",
+      objectives:
+        "Implement Agile methodologies to manage product development efficiently and deliver customer-centric solutions.",
+      topics: [
+        "Agile Principles and Practices",
+        "Scrum and Kanban Frameworks",
+        "Writing User Stories and Backlog Grooming",
+        "Sprint Planning and Retrospectives",
+      ],
+    },
+    {
+      week: "Week 9-10",
+      title: "Product Design and User Experience",
+      objectives:
+        "Design products that provide an exceptional user experience, integrating feedback from usability testing.",
+      topics: [
+        "Design Thinking Process",
+        "Wireframing and Prototyping",
+        "User Research and Usability Testing",
+        "UX Metrics and Feedback Loops",
+      ],
+    },
+    {
+      week: "Week 11-12",
+      title: "Data-Driven Decision Making",
+      objectives:
+        "Use data effectively to make informed product decisions, measure performance, and validate hypotheses.",
+      topics: [
+        "Product Analytics Tools (Google Analytics, Mixpanel)",
+        "Key Performance Indicators (KPIs)",
+        "A/B Testing and Experimentation",
+        "Data Visualization for Insights",
+      ],
+    },
+    {
+      week: "Week 13-14",
+      title: "Pricing and Monetization Strategies",
+      objectives:
+        "Develop effective pricing and monetization strategies to achieve financial objectives for your product.",
+      topics: [
+        "Pricing Strategies: Freemium, Subscription, Tiered Pricing",
+        "Revenue Models: SaaS, Pay-Per-Use, Licensing",
+        "Price Sensitivity and Elasticity Analysis",
+        "Monetization Metrics and Goals",
+      ],
+    },
+    {
+      week: "Week 15-16",
+      title: "Stakeholder Management and Communication",
+      objectives:
+        "Build strong relationships with stakeholders and facilitate clear, effective communication to drive product success.",
+      topics: [
+        "Stakeholder Identification and Mapping",
+        "Effective Communication Strategies",
+        "Conflict Resolution Techniques",
+        "Building Consensus Across Teams",
+      ],
+    },
+    {
+      week: "Week 17-18",
+      title: "Product Launch and Go-to-Market Strategies",
+      objectives:
+        "Successfully plan and execute product launches with impactful go-to-market strategies.",
+      topics: [
+        "Launch Planning and Execution",
+        "Positioning and Messaging",
         "Marketing Channels and Campaigns",
-        "Customer Acquisition and Retention",
-        "Metrics and KPIs for Product Success",
+        "Measuring Launch Success",
+      ],
+    },
+    {
+      week: "Week 19-20",
+      title: "Scaling Products",
+      objectives:
+        "Manage and scale products effectively, balancing growth with sustainability and technical excellence.",
+      topics: [
+        "Scaling Product Operations",
+        "Managing Product Portfolios",
+        "Continuous Improvement Practices",
+        "Dealing with Technical Debt",
+      ],
+    },
+    {
+      week: "Week 21-22",
+      title: "Emerging Trends in Product Management",
+      objectives:
+        "Stay updated with emerging trends and integrate innovative practices into your product management toolkit.",
+      topics: [
+        "AI and Machine Learning in Product Management",
+        "Product-Led Growth Strategies",
+        "Sustainability and ESG in Product Development",
+        "No-Code/Low-Code Product Tools",
+      ],
+    },
+    {
+      week: "Week 23-24",
+      title: "Capstone Project and Placement Preparation",
+      objectives:
+        "Complete a comprehensive project to showcase your skills and prepare for career success in product management.",
+      topics: [
+        "Capstone Project: End-to-End Product Management Case",
+        "Resume Building and Portfolio Development",
+        "Mock Interviews and Networking Tips",
+        "Job Search and Career Guidance",
       ],
     },
   ];
@@ -556,7 +640,7 @@ const [actionType, setActionType] = useState();
                         onClick={() => toggleModule(index)}
                       >
                         <h3 className="text-xl font-semibold">
-                          Module {index + 1}: {module.title}
+                          {module.week}: {module.title}
                         </h3>
                         <p className="text-sm text-gray-400">
                           {module.objectives}
@@ -576,12 +660,9 @@ const [actionType, setActionType] = useState();
                     </div>
                   ))}
                 </div>
-                <span>and more..</span>
               </div>
-              <div className="lg:w-1/2 w-full lg:h-[450px] rounded-lg overflow-hidden mb-5 lg:mb-0 ">
-                 <div className="">
-              <ApplyForm courseValue="Data Science"/>
-            </div>
+              <div className="lg:w-1/2 w-full rounded-lg overflow-hidden mb-5 lg:mb-0">
+                <ApplyForm courseValue="Product Management" />
               </div>
             </div>
           </div>
@@ -617,9 +698,6 @@ const [actionType, setActionType] = useState();
                 </div>
               ))}
             </div>
-          </div>
-          <div data-aos="fade-up" className="mt-[20px] text-center">
-            And more
           </div>
         </section>
         <hr className=" opacity-10" />
@@ -970,9 +1048,6 @@ const [actionType, setActionType] = useState();
                 </div>
               ))}
             </div>
-          </div>
-          <div data-aos="fade-up" className="mt-[20px] text-center">
-            And more
           </div>
         </section>
         <hr className=" opacity-10" />

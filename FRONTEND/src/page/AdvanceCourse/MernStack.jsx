@@ -59,63 +59,150 @@ const MernStack = () => {
 
   const modules = [
     {
-      title: "MongoDB and Database Management",
+      week: "Weeks 1-2",
+      title: "Introduction to MERN Stack Development",
       objectives:
-        "Learn to set up and manage databases using MongoDB for storing and retrieving application data.",
+        "Students will understand the MERN stack architecture and its individual components, enabling them to start building web applications.",
       topics: [
-        "MongoDB Basics",
-        "Database Design and Schemas",
-        "CRUD Operations",
-        "Aggregation Framework",
-        "Data Modeling and Indexing",
+        "Overview of the MERN stack components (MongoDB, Express.js, React, Node.js)",
+        "Setting up Node.js and MongoDB development environments",
+        "JavaScript ES6+ for asynchronous programming",
+        "Introduction to MongoDB databases",
       ],
     },
     {
-      title: "Express.js and Backend Development",
+      week: "Weeks 3-4",
+      title: "MongoDB and Express.js Fundamentals",
       objectives:
-        "Master backend development using Express.js to create robust APIs and server-side logic.",
+        "They will gain hands-on experience in using Express.js for building RESTful APIs, handling routing, and effectively using middleware for request handling.",
       topics: [
-        "Setting Up Express Server",
-        "Middleware Functions",
-        "RESTful API Design",
-        "Routing and Request Handling",
-        "Error Handling and Validation",
+        "MongoDB schema design",
+        "CRUD operations in MongoDB",
+        "RESTful APIs with Express.js",
+        "Routing and middleware in Express",
       ],
     },
     {
-      title: "React.js and Frontend Development",
+      week: "Week 5-6",
+      title: "Front-End Development with React",
       objectives:
-        "Understand the core concepts of React.js for building dynamic user interfaces.",
+        "Students will build interactive and dynamic user interfaces using React. They will be able to manage state effectively using React hooks and understand component lifecycle methods, allowing for the creation of reusable components and efficient routing within React applications.",
       topics: [
-        "React Components and JSX",
-        "State and Props Management",
-        "Event Handling",
-        "React Hooks (useState, useEffect)",
-        "React Router for Navigation",
+        "React component lifecycle",
+        "State management with React hooks",
+        "Building UI components and React Router for navigation",
+        "Using React libraries for animation and transitions",
       ],
     },
     {
-      title: "Node.js and Backend Framework",
+      week: "Week 7",
+      title: "Advanced Database Management with MongoDB",
       objectives:
-        "Learn how to create scalable server-side applications using Node.js and integrate it with databases and APIs.",
+        "They will understand how to secure databases and ensure performance tuning for complex applications, providing expertise in handling real-time data updates and backups.",
       topics: [
-        "Node.js Basics and Setup",
-        "Handling Requests and Responses",
-        "Asynchronous Programming (Promises, Async/Await)",
-        "Server-Side Rendering",
-        "Building RESTful Services",
+        "Advanced MongoDB query techniques (aggregation, indexing, sharding)",
+        "Data modeling and performance tuning",
+        "Real-time data processing with MongoDB change streams",
+        "Backup and restore strategies",
+        "Database security practices",
       ],
     },
     {
-      title: "Full-Stack Application Development and Deployment",
+      week: "Week 8-9",
+      title: "Node.js and Express for Backend Development",
       objectives:
-        "Combine all technologies to develop and deploy a complete web application.",
+        "Students will master setting up and managing a Node.js server and understand asynchronous programming. They will be skilled in building robust RESTful APIs using Express.js and managing user sessions through authentication and cookies, ensuring secure data transmission.",
       topics: [
-        "Building Full-Stack Applications",
-        "Frontend-Backend Integration",
-        "Authentication and Authorization (JWT)",
-        "Deployment on Heroku and AWS",
-        "Testing and Debugging",
+        "Asynchronous programming in Node.js",
+        "Creating APIs in Express.js",
+        "Error handling and file management",
+        "Using middleware effectively",
+        "Implementing sessions and cookies",
+      ],
+    },
+    {
+      week: "Week 10",
+      title: "Building a Full-Stack Application",
+      objectives:
+        "Students will be capable of building and integrating full-stack applications, handling API calls, and setting up deployments on cloud platforms. They will understand data flow between front-end and back-end components and implement strategies for scaling and monitoring applications in production.",
+      topics: [
+        "Connecting React with Express",
+        "API integration and data flow management",
+        "Deployment strategies (Heroku, AWS)",
+        "Using axios for HTTP requests",
+      ],
+    },
+    {
+      week: "Week 11-12",
+      title: "Advanced React",
+      objectives:
+        "Students will gain expertise in using React hooks and context API, allowing for better state management and building more complex applications. They will optimize React components for performance, understanding best practices for handling state across different components.",
+      topics: [
+        "Use of React hooks and context API",
+        "Custom hooks for data fetching",
+        "Component composition and performance optimization",
+        "Handling complex state management",
+      ],
+    },
+    {
+      week: "Week 13-14",
+      title: "Building RESTful APIs and Authentication",
+      objectives:
+        "Students will be proficient in building secure APIs using RESTful methods and implementing JWT for authentication. They will understand OAuth integration and secure data handling, allowing for the development of safe and effective web applications.",
+      topics: [
+        "Secure RESTful API building",
+        "Implementing JWT for authentication",
+        "OAuth integration",
+        "API security best practices",
+      ],
+    },
+    {
+      week: "Week 14-15",
+      title: "Performance Optimization and Debugging",
+      objectives:
+        "Students will be able to use profiling tools to optimize the performance of their applications and effectively debug front-end and back-end issues. They will develop skills for resolving performance bottlenecks and ensuring efficient, smooth-running applications.",
+      topics: [
+        "Profiling tools (Chrome DevTools, React DevTools)",
+        "Identifying and resolving performance bottlenecks",
+        "Debugging Node.js and React applications",
+        "Best practices for optimization",
+      ],
+    },
+    {
+      week: "Week 16",
+      title: "Deployment and Scaling",
+      objectives:
+        "Students will gain experience in deploying MERN applications using CI/CD pipelines, containerization, and cloud platforms. They will understand scaling strategies, ensuring their applications can handle larger user bases and performance demands.",
+      topics: [
+        "CI/CD with GitHub Actions or Jenkins",
+        "Containerization with Docker",
+        "Deploying to cloud platforms (AWS, Heroku, Firebase)",
+        "Scaling strategies and monitoring",
+      ],
+    },
+    {
+      week: "Week 17-20",
+      title: "Capstone Project",
+      objectives:
+        "Students will complete a comprehensive project that demonstrates their MERN stack development skills, creating a strong portfolio for job applications.",
+      topics: [
+        "Capstone project development",
+        "Portfolio building and resume preparation",
+        "Mock interviews and job search strategies",
+        "Networking with industry professionals",
+      ],
+    },
+    {
+      week: "Week 21-24",
+      title: "Placement Preparation",
+      objectives:
+        "Prepare for a successful job search and interviews with a professional portfolio and job-ready skills. They will be prepared for full-stack developer roles, equipped with interview skills, resume-building techniques, and strategies for job placement.",
+      topics: [
+        "Resume Building and LinkedIn Optimization",
+        "Interview Tips and Mock Interviews",
+        "Job Search Strategies and Networking",
+        "How to Present Your Capstone Project",
+        "Building a Professional Portfolio",
       ],
     },
   ];
@@ -556,7 +643,7 @@ const [actionType, setActionType] = useState();
                         onClick={() => toggleModule(index)}
                       >
                         <h3 className="text-xl font-semibold">
-                          Module {index + 1}: {module.title}
+                          {module.week}: {module.title}
                         </h3>
                         <p className="text-sm text-gray-400">
                           {module.objectives}
@@ -576,13 +663,9 @@ const [actionType, setActionType] = useState();
                     </div>
                   ))}
                 </div>
-                <span>and more..</span>
               </div>
-              <div className="lg:w-1/2 w-full lg:h-[450px] rounded-lg overflow-hidden mb-5 lg:mb-0 ">
-               
-                <div className="">
-              <ApplyForm courseValue="Data Science"/>
-            </div>
+              <div className="lg:w-1/2 w-full rounded-lg overflow-hidden mb-5 lg:mb-0">
+                <ApplyForm courseValue="Data Science"/>
               </div>
             </div>
           </div>
@@ -618,9 +701,6 @@ const [actionType, setActionType] = useState();
                 </div>
               ))}
             </div>
-          </div>
-          <div data-aos="fade-up" className="mt-[20px] text-center">
-            And more
           </div>
         </section>
         <hr className=" opacity-10" />
@@ -972,9 +1052,6 @@ const [actionType, setActionType] = useState();
                 </div>
               ))}
             </div>
-          </div>
-          <div data-aos="fade-up" className="mt-[20px] text-center">
-            And more
           </div>
         </section>
         <hr className=" opacity-10" />

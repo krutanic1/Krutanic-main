@@ -62,63 +62,158 @@ const DigitalMarket = () => {
 
   const modules = [
     {
-      title: "Advanced SEO and SEM Technique",
+      week: "Weeks 1-2",
+      title: "Introduction to Digital Marketing",
       objectives:
-        "Learn advanced SEO strategies and manage SEM campaigns to drive organic and paid traffic.",
+        "Understand core digital marketing concepts and how they integrate into a comprehensive strategy. Identify key metrics and their significance. Analyze conversion funnels and optimize user journeys.",
       topics: [
-        "On-Page and Off-Page SEO",
-        "Keyword Research and Analysis",
-        "Link Building Strategies",
-        "SEO Tools (SEMrush, Ahrefs)",
-        "Google Ads Campaigns",
+        "Digital Marketing Basics",
+        "Channels: SEO, PPC, Social Media, Email",
+        "Creating a Digital Marketing Strategy",
+        "Understanding Conversion Funnels",
+        "The Role of Analytics in Digital Marketing",
       ],
     },
     {
-      title: "Social Media Marketing Mastery",
+      week: "Weeks 3-4",
+      title: "Advanced Search Engine Optimization (SEO)",
       objectives:
-        "Develop strategies to grow brand presence on social media platforms.",
+        "Develop strategies to enhance website ranking using advanced SEO techniques. Master on-page SEO optimization, technical SEO, and link building strategies.",
       topics: [
-        "Facebook, Instagram, and LinkedIn Ads",
-        "Content Creation for Social Media",
-        "Influencer Marketing",
-        "Engagement and Community Building",
+        "On-Page SEO Optimization",
+        "Technical SEO",
+        "Keyword Research and Tools (SEMrush, Ahrefs)",
+        "Link Building Strategies",
+        "SEO Analytics and Reporting",
+      ],
+    },
+    {
+      week: "Week 5",
+      title: "Paid Search Advertising (PPC)",
+      objectives:
+        "Master Google Ads and Bing Ads to run effective paid search campaigns. Create and manage high-performing paid search campaigns across various platforms.",
+      topics: [
+        "Setting Up Google Ads Campaigns",
+        "Bidding and Budgeting Strategies",
+        "Ad Creation and Optimization",
+        "Measuring PPC Campaign Effectiveness",
+        "A/B Testing for PPC",
+      ],
+    },
+    {
+      week: "Week 6-7",
+      title: "Social Media Marketing (SMM)",
+      objectives:
+        "Learn to create and optimize social media campaigns across platforms like Facebook, Instagram, and LinkedIn. Develop a content plan tailored to each social media platform's audience, focusing on engaging posts, visual content, and consistency.",
+      topics: [
+        "Social Media Strategies and Tools",
+        "Running Ads on Social Media Platforms",
+        "Engagement and Content Creation",
         "Social Media Analytics",
       ],
     },
     {
-      title: "Data-Driven Marketing Analytics",
+      week: "Week 8-9",
+      title: "Conversion Rate Optimization (CRO)",
       objectives:
-        "Analyze and optimize marketing performance using analytics tools.",
+        "Learn strategies to improve website conversion rates and overall marketing effectiveness. Focus on improving site navigation, layout, and content to make it easier for users to find what they need and convert.",
       topics: [
-        "toGoogle Analytics",
-        "Conversion Rate Optimization",
-        "A/B Testing",
-        "Campaign Performance Metrics",
-        "Social Media Insights( Social blade )",
+        "Landing Page Optimization",
+        "A/B and Multivariate Testing",
+        "User Behavior Analysis (Heatmaps, Clickmaps)",
+        "CRO Tools (Optimizely, Google Optimize)",
+        "Funnel Analysis and Improvement",
       ],
     },
     {
+      week: "Week 10",
       title: "Email Marketing and Automation",
       objectives:
-        "Create effective email campaigns and automate customer engagement.",
+        "Create automated and personalized email marketing campaigns that increase conversions. Conduct A/B testing to refine emails effectively.",
       topics: [
-        "Email Campaign Design",
-        "Personalization and Segmentation",
-        "Email Automation Tools (Mailchimp, HubSpot)",
-        "Email List Management",
-        "Analyzing Email Campaigns",
+        "Email Campaign Creation",
+        "List Segmentation and Personalization",
+        "Automation Tools (Mailchimp, HubSpot)",
+        "Analyzing Campaign Metrics",
+        "Building Email Funnels",
       ],
     },
     {
-      title: "Content Marketing Strategy",
+      week: "Week 11-12",
+      title: "Data Analytics and Marketing Metrics",
       objectives:
-        "Learn to create and distribute content that engages audiences and drives conversions.",
+        "Understand how to track, analyze, and use data to improve marketing performance. Use analytics tools to track, measure, and optimize marketing campaigns.",
       topics: [
-        "Content Creation and Blogging",
-        "Content Calendar Planning",
-        "Video Marketing",
-        "Content Distribution Channels",
-        "Content Performance Metrics",
+        "Google Analytics and Tracking Setup",
+        "Defining KPIs and Metrics",
+        "Campaign Performance Reporting",
+        "Attribution Models",
+        "Data Visualization Tools (Tableau, Power BI)",
+      ],
+    },
+    {
+      week: "Week 13-14",
+      title: "Display Advertising and Retargeting",
+      objectives:
+        "Execute effective display ad campaigns and leverage retargeting for increased engagement. Use analytics tools to track, measure, and optimize marketing campaigns.",
+      topics: [
+        "Google Analytics for Campaign Tracking",
+        "Performance Metrics and Reporting",
+        "Attribution Models for Conversions",
+        "Tools for Data Visualization (Tableau, Power BI)",
+        "Generating Actionable Insights",
+      ],
+    },
+    {
+      week: "Week 14-15",
+      title: "Affiliate and Influencer Marketing",
+      objectives:
+        "Explore affiliate and influencer marketing strategies to expand brand reach. Master performance-based marketing where affiliates earn commissions for driving traffic or sales through their promotions.",
+      topics: [
+        "Setting Up Affiliate Programs",
+        "Finding and Collaborating with Influencers",
+        "Tracking ROI on Affiliate Campaigns",
+        "Creating Engaging Affiliate Campaigns",
+        "Influencer Outreach and Negotiation",
+      ],
+    },
+    {
+      week: "Week 16",
+      title: "E-Commerce Marketing",
+      objectives:
+        "Implement effective e-commerce marketing strategies to drive traffic and sales. Build and manage affiliate and influencer marketing programs to drive conversions.",
+      topics: [
+        "E-Commerce SEO and Product Listings",
+        "PPC for E-Commerce",
+        "Cart Abandonment Recovery",
+        "Retargeting for E-Commerce",
+        "Analytics for E-Commerce",
+      ],
+    },
+    {
+      week: "Week 17-20",
+      title: "Capstone Project and Career Preparation",
+      objectives:
+        "Showcase a complete marketing project, from strategy to execution, as part of your portfolio.",
+      topics: [
+        "Creating a Full-Funnel Marketing Campaign",
+        "Campaign Design and Strategy",
+        "Setting Objectives and KPIs",
+        "Ad Creative Design and Optimization",
+        "Performance Tracking and Reporting",
+      ],
+    },
+    {
+      week: "Week 21-24",
+      title: "Placement Preparation",
+      objectives:
+        "Prepare for a successful job search and interviews with a professional portfolio and job-ready skills.",
+      topics: [
+        "Resume Building and LinkedIn Optimization",
+        "Interview Tips and Mock Interviews",
+        "Job Search Strategies and Networking",
+        "How to Present Your Capstone Project",
+        "Building a Professional Portfolio",
       ],
     },
   ];
@@ -563,7 +658,7 @@ const DigitalMarket = () => {
                         onClick={() => toggleModule(index)}
                       >
                         <h3 className="text-xl font-semibold">
-                          Module {index + 1}: {module.title}
+                          {module.week}: {module.title}
                         </h3>
                         <p className="text-sm text-gray-400">
                           {module.objectives}
@@ -583,12 +678,9 @@ const DigitalMarket = () => {
                     </div>
                   ))}
                 </div>
-                <span>and more..</span>
               </div>
-              <div className="lg:w-1/2 w-full lg:h-[450px] rounded-lg overflow-hidden mb-5 lg:mb-0 ">
-                <div className="">
-                  <ApplyForm courseValue="Data Science" />
-                </div>
+              <div className="lg:w-1/2 w-full rounded-lg overflow-hidden mb-5 lg:mb-0">
+                <ApplyForm courseValue="Data Science" />
               </div>
             </div>
           </div>
@@ -624,9 +716,6 @@ const DigitalMarket = () => {
                 </div>
               ))}
             </div>
-          </div>
-          <div data-aos="fade-up" className="mt-[20px] text-center">
-            And more
           </div>
         </section>
         <hr className=" opacity-10" />
@@ -990,9 +1079,6 @@ const DigitalMarket = () => {
                 </div>
               ))}
             </div>
-          </div>
-          <div data-aos="fade-up" className="mt-[20px] text-center">
-            And more
           </div>
         </section>
         <hr className=" opacity-10" />
