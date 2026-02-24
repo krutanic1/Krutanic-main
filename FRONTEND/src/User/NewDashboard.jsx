@@ -14,6 +14,7 @@ const NewDashboard = () => {
   const navigate = useNavigate();
   const [certificate, setCertificate] = useState("");
   const [selectedCertificate, setSelectedCertificate] = useState(null);
+  const [showTraining, setShowTraining] = useState(false);
   const [userData, setUserData] = useState(null);
   const hasFetched = useRef(false);
   const [componentsAccess, setComponentsAccess] = useState({
@@ -264,11 +265,35 @@ const NewDashboard = () => {
               </button>
             </div>
 
+            {/* Toggle: Internship / Training */}
+            <div className="flex justify-center py-4 bg-gray-50 border-b border-gray-100">
+              <div className="flex items-center gap-0 bg-gray-200 rounded-full p-1">
+                <button
+                  onClick={() => setShowTraining(false)}
+                  className={`px-5 py-1.5 rounded-full text-sm font-semibold transition-all duration-300 ${!showTraining
+                    ? 'bg-white text-orange-600 shadow'
+                    : 'text-gray-500 hover:text-gray-700'
+                    }`}
+                >
+                  🎓 Internship
+                </button>
+                <button
+                  onClick={() => setShowTraining(true)}
+                  className={`px-5 py-1.5 rounded-full text-sm font-semibold transition-all duration-300 ${showTraining
+                    ? 'bg-white text-orange-600 shadow'
+                    : 'text-gray-500 hover:text-gray-700'
+                    }`}
+                >
+                  📘 Training
+                </button>
+              </div>
+            </div>
+
             {/* Certificate Image */}
             <div className="p-6 bg-gray-50">
               <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
                 <img
-                  src={selectedCertificate.url}
+                  src={showTraining ? getTrainingCertUrl() : selectedCertificate.url}
                   alt="Certificate"
                   className="w-full object-contain"
                 />
@@ -286,7 +311,7 @@ const NewDashboard = () => {
                   </div>
                   <a
                     className="text-primary hover:text-orange-600 flex items-center gap-1 font-medium transition-colors"
-                    href={selectedCertificate.url}
+                    href={showTraining ? getTrainingCertUrl() : selectedCertificate.url}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -299,16 +324,25 @@ const NewDashboard = () => {
                 <div className="flex flex-wrap items-center gap-3">
                   <button
                     className="bg-[#0077B5] hover:bg-[#006097] text-white px-5 py-2.5 rounded-lg flex items-center gap-2 font-medium transition-colors shadow-sm"
-                    onClick={() => addLinkedin(selectedCertificate, true)}
+                    onClick={() => addLinkedin(selectedCertificate, showTraining)}
                   >
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                     </svg>
-                    Add Training to LinkedIn
+                    {showTraining ? 'Add Training to LinkedIn' : 'Add Internship to LinkedIn'}
                   </button>
                   <button
                     className="bg-primary hover:bg-orange-600 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 font-medium transition-colors shadow-sm"
-                    onClick={downloadInternshipCertificate}
+                    onClick={() => {
+                      if (showTraining) {
+                        const trainingUrl = getTrainingCertUrl();
+                        const proxyUrl = `${API}/download-proxy?url=${encodeURIComponent(trainingUrl)}`;
+                        window.open(proxyUrl, '_self');
+                        toast.success('Download started...');
+                      } else {
+                        downloadInternshipCertificate();
+                      }
+                    }}
                   >
                     <span className="material-symbols-outlined text-lg">download</span>
                     Download Certificate
@@ -515,7 +549,7 @@ const NewDashboard = () => {
                           <td className="p-4 text-right">
                             {certificate.delivered ? (
                               <button
-                                onClick={() => setSelectedCertificate(certificate)}
+                                onClick={() => { setShowTraining(false); setSelectedCertificate(certificate); }}
                                 className="text-primary hover:text-orange-700 font-medium inline-flex items-center gap-1"
                               >
                                 View
