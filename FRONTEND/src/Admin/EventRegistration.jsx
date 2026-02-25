@@ -14,7 +14,7 @@ const EventRegistration = () => {
     setLoading(true);
     try {
       const response = await axios.get(`${API}/alleventregistrations`);
-      // console.log("event registration", response.data);
+      console.log("event registration", response.data);
       setEventRegistration(response.data);
     } catch (error) {
       console.error("There was an error fetching event registration data:", error);
@@ -164,6 +164,7 @@ const EventRegistration = () => {
                 <th>Email Id</th>
                 <th>Student College Mail Id</th>
                 <th>Year of Study</th>
+                <th>Event Name</th>
                 <th>College Name</th>
                 <th>Total Coins</th>
                 <th>Action</th>
@@ -178,6 +179,16 @@ const EventRegistration = () => {
                   <td>{register.email}</td>
                   <td>{register.collegeEmailId}</td>
                   <td>{register.yearofstudy}</td>
+                  <td>
+                    {register.eventData && register.eventData.length > 0
+                      ? register.eventData.map((event, idx) => (
+                          <div key={idx}>
+                            {event.title}
+                            {idx < register.eventData.length - 1 && <br />}
+                          </div>
+                        ))
+                      : 'No Events'}
+                  </td>
                   <td>{register.collegeName}</td>
                   <td className='cursor-pointer' onClick={()=>handleDetails(register)}>{register.totalCoins}</td>
                   <td onClick={() => handleRedeemCoins(register._id)} className='cursor-pointer font-bold text-blue-700'> Redeem Coins</td>
