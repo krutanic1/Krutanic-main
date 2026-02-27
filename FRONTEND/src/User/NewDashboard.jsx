@@ -155,9 +155,25 @@ const NewDashboard = () => {
     }, 1500);
   };
 
-  const handleStartLearning = (title, sessionlist, thumbnail) => {
+  /* Read watched count from localStorage for a given enrollment, merging with backend progress */
+  const getWatchedCount = (enrollmentId, sessionlist, dbWatchedSessions = []) => {
+    try {
+      const key = `krutanic_progress_${enrollmentId}`;
+      const raw = localStorage.getItem(key);
+      const localWatched = raw ? JSON.parse(raw) : [];
+
+      // Combine unique keys from both sources
+      const combined = new Set([...localWatched, ...(dbWatchedSessions || [])]);
+      const sessionKeys = sessionlist ? Object.keys(sessionlist) : [];
+      return sessionKeys.filter((k) => combined.has(k)).length;
+    } catch {
+      return 0;
+    }
+  };
+
+  const handleStartLearning = (id, title, sessionlist, thumbnail, dbWatchedSessions = []) => {
     navigate("/Learning", {
-      state: { courseTitle: title, sessions: sessionlist, thumbnail },
+      state: { courseTitle: title, sessions: sessionlist, thumbnail, enrollmentId: id, watchedSessionsFromDB: dbWatchedSessions },
     });
   };
 
@@ -452,15 +468,35 @@ const NewDashboard = () => {
                                 <span>{Object.keys(item.domain?.session || {}).length} Sessions</span>
                               </div>
                             </div>
+                            {/* Progress bar */}
+                            {isFullyPaid && (() => {
+                              const total = Object.keys(item.domain?.session || {}).length;
+                              const watched = getWatchedCount(item._id, item.domain?.session, item.watchedSessions);
+                              const pct = total > 0 ? Math.round((watched / total) * 100) : 0;
+                              return (
+                                <div className="mb-4">
+                                  <div className="flex justify-between text-xs text-gray-500 mb-1">
+                                    <span>{watched}/{total} sessions watched</span>
+                                    <span className="font-semibold text-primary">{pct}% complete</span>
+                                  </div>
+                                  <div className="bg-gray-100 rounded-full h-2 overflow-hidden">
+                                    <div
+                                      className="h-2 rounded-full bg-primary transition-all duration-500"
+                                      style={{ width: `${pct}%` }}
+                                    />
+                                  </div>
+                                </div>
+                              );
+                            })()}
 
                             {isFullyPaid ? (
                               <div className="mt-auto flex flex-wrap gap-3">
                                 <button
-                                  onClick={() => handleStartLearning(item.domain.title, item.domain.session, getThumbnail(item.domain?.title) || item.domain.thumbnail)}
+                                  onClick={() => handleStartLearning(item._id, item.domain.title, item.domain.session, getThumbnail(item.domain?.title) || item.domain.thumbnail, item.watchedSessions)}
                                   className="flex-1 min-w-[140px] bg-primary hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
                                 >
                                   <span className="material-symbols-outlined text-[20px]">play_circle</span>
-                                  Start Learning
+                                  {getWatchedCount(item._id, item.domain?.session, item.watchedSessions) > 0 ? 'Continue Learning' : 'Start Learning'}
                                 </button>
                                 <button
                                   onClick={() => handleSubmit(item)}

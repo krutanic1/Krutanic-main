@@ -6,6 +6,22 @@ import toast, { Toaster } from "react-hot-toast";
 import logo from "../assets/LOGO3.png";
 import "./new-dashboad.css";
 
+/* ─── localStorage progress helper ─── */
+const getWatchedFromStorage = (enrollmentId, sessionObj, dbWatchedSessions = []) => {
+    try {
+        const key = `krutanic_progress_${enrollmentId}`;
+        const raw = localStorage.getItem(key);
+        const localWatched = raw ? JSON.parse(raw) : [];
+
+        // Combine unique keys from both sources
+        const combined = new Set([...localWatched, ...(dbWatchedSessions || [])]);
+        const keys = sessionObj ? Object.keys(sessionObj) : [];
+        return keys.filter((k) => combined.has(k)).length;
+    } catch {
+        return 0;
+    }
+};
+
 /* ─────────────────────────────────────────────
    SIDEBAR NAV
 ───────────────────────────────────────────── */
@@ -17,10 +33,9 @@ const sidebarItems = [
     { id: "placement", emoji: "🚀", icon: "rocket_launch", label: "Placement" },
     { id: "performance", emoji: "📊", icon: "bar_chart", label: "Performance" },
     { id: "payments", emoji: "💳", icon: "payments", label: "Payments" },
-    { id: "calendar", emoji: "📅", icon: "calendar_month", label: "Calendar" },
 ];
 
-const Sidebar = ({ collapsed, setCollapsed, activeSection, setActiveSection }) => {
+const Sidebar = ({ collapsed, setCollapsed, activeSection, setActiveSection, onLogout }) => {
     return (
         <aside className={`nd-sidebar ${collapsed ? "nd-sidebar-collapsed" : ""}`}>
             {/* Collapse Toggle */}
@@ -57,6 +72,15 @@ const Sidebar = ({ collapsed, setCollapsed, activeSection, setActiveSection }) =
                         </button>
                     );
                 })}
+                <div className="nd-sidebar-divider" />
+                <button
+                    className="nd-sidebar-item nd-sidebar-logout"
+                    onClick={onLogout}
+                    title={collapsed ? "Logout" : ""}
+                >
+                    <span className="material-symbols-outlined nd-sidebar-item-icon">logout</span>
+                    {!collapsed && <span className="nd-sidebar-item-label">Logout</span>}
+                </button>
             </nav>
 
             {/* Bottom: collapse hint */}
@@ -72,7 +96,7 @@ const Sidebar = ({ collapsed, setCollapsed, activeSection, setActiveSection }) =
 /* ─────────────────────────────────────────────
    TOP NAV BAR
 ───────────────────────────────────────────── */
-const TopNav = ({ userData, enrollData, onLogout }) => {
+export const TopNav = ({ userData, enrollData, userProfile, onLogout, onHamburger, mobileSidebarOpen }) => {
     const navigate = useNavigate();
     const [profileOpen, setProfileOpen] = useState(false);
     const [notifOpen, setNotifOpen] = useState(false);
@@ -92,7 +116,7 @@ const TopNav = ({ userData, enrollData, onLogout }) => {
     // Compute progress
     const enrollment = enrollData?.[0];
     const totalSessions = enrollment?.domain?.session ? Object.keys(enrollment.domain.session).length : 0;
-    const watchedSessions = enrollment?.watchedSessions ?? Math.floor(totalSessions * 0.4); // fallback demo
+    const watchedSessions = enrollment ? getWatchedFromStorage(enrollment._id, enrollment.domain?.session, enrollment.watchedSessions) : 0;
     const progressPct = totalSessions > 0 ? Math.round((watchedSessions / totalSessions) * 100) : 0;
     const programName = enrollment?.domain?.title || enrollment?.program || "Your Program";
 
@@ -112,8 +136,18 @@ const TopNav = ({ userData, enrollData, onLogout }) => {
 
     return (
         <header className="nd-header">
-            {/* ── LEFT: Logo + Program Name ── */}
+            {/* ── LEFT: Hamburger (mobile) + Logo + Program Name ── */}
             <div className="nd-header-left">
+                {/* Hamburger — visible only on mobile (block md:hidden) */}
+                <button
+                    className="nd-hamburger block md:hidden"
+                    onClick={onHamburger}
+                    aria-label="Toggle navigation menu"
+                >
+                    <span className="material-symbols-outlined">
+                        {mobileSidebarOpen ? "close" : "menu"}
+                    </span>
+                </button>
                 <img src={logo} alt="Krutanic" className="nd-logo" />
                 <div className="nd-program-pill">
                     <span className="material-symbols-outlined nd-program-icon">school</span>
@@ -142,44 +176,6 @@ const TopNav = ({ userData, enrollData, onLogout }) => {
             {/* ── RIGHT: Actions ── */}
             <div className="nd-header-right">
 
-                {/* Notification Bell */}
-                <div className="nd-icon-btn-wrap" ref={notifRef}>
-                    <button
-                        className="nd-icon-btn"
-                        onClick={() => { setNotifOpen((p) => !p); setProfileOpen(false); }}
-                        title="Notifications"
-                    >
-                        <span className="material-symbols-outlined">notifications</span>
-                        {unreadCount > 0 && <span className="nd-badge">{unreadCount}</span>}
-                    </button>
-
-                    {notifOpen && (
-                        <div className="nd-dropdown nd-notif-dropdown">
-                            <div className="nd-dropdown-header">
-                                <span>Notifications</span>
-                                <span className="nd-badge-inline">{unreadCount} new</span>
-                            </div>
-                            <div className="nd-notif-list">
-                                {notifications.map((n) => (
-                                    <div key={n.id} className={`nd-notif-item ${n.unread ? "nd-notif-unread" : ""}`}>
-                                        <div className="nd-notif-icon-wrap">
-                                            <span className="material-symbols-outlined nd-notif-icon">{n.icon}</span>
-                                        </div>
-                                        <div className="nd-notif-body">
-                                            <p className="nd-notif-text">{n.text}</p>
-                                            <p className="nd-notif-time">{n.time}</p>
-                                        </div>
-                                        {n.unread && <div className="nd-notif-dot" />}
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="nd-dropdown-footer">
-                                <button className="nd-dropdown-footer-btn">Mark all as read</button>
-                            </div>
-                        </div>
-                    )}
-                </div>
-
                 {/* Mentor Contact */}
                 <button className="nd-mentor-btn" onClick={handleMentorContact} title="Contact Mentor">
                     <svg className="nd-wa-icon" viewBox="0 0 24 24" fill="currentColor">
@@ -195,17 +191,25 @@ const TopNav = ({ userData, enrollData, onLogout }) => {
                         onClick={() => { setProfileOpen((p) => !p); setNotifOpen(false); }}
                         title="Profile"
                     >
-                        <span className="nd-avatar-letter">
-                            {userData?.fullname?.charAt(0)?.toUpperCase() || "U"}
-                        </span>
+                        {userProfile?.personal?.avatar ? (
+                            <img src={userProfile.personal.avatar} alt="Avatar" className="w-full h-full object-cover rounded-full bg-gray-50" />
+                        ) : (
+                            <span className="nd-avatar-letter">
+                                {userData?.fullname?.charAt(0)?.toUpperCase() || "U"}
+                            </span>
+                        )}
                         <div className="nd-avatar-status" />
                     </button>
 
                     {profileOpen && (
                         <div className="nd-dropdown nd-profile-dropdown">
-                            <div className="nd-profile-header">
+                            <div className="nd-profile-header hover:bg-gray-50 cursor-pointer transition-colors" onClick={() => { navigate("/advancedashboard/profile"); setProfileOpen(false); }}>
                                 <div className="nd-profile-avatar-lg">
-                                    {userData?.fullname?.charAt(0)?.toUpperCase() || "U"}
+                                    {userProfile?.personal?.avatar ? (
+                                        <img src={userProfile.personal.avatar} alt="Avatar" className="w-full h-full object-cover rounded-full bg-gray-50 bg-white shadow-sm" />
+                                    ) : (
+                                        userData?.fullname?.charAt(0)?.toUpperCase() || "U"
+                                    )}
                                 </div>
                                 <div>
                                     <p className="nd-profile-name">{userData?.fullname || "Student"}</p>
@@ -213,14 +217,11 @@ const TopNav = ({ userData, enrollData, onLogout }) => {
                                 </div>
                             </div>
                             <div className="nd-dropdown-divider" />
-                            <Link to="/Setting" className="nd-dropdown-item" onClick={() => setProfileOpen(false)}>
+                            <Link to="/advancedashboard/setting" className="nd-dropdown-item" onClick={() => setProfileOpen(false)}>
                                 <span className="material-symbols-outlined nd-dropdown-item-icon">settings</span>
                                 Settings
                             </Link>
-                            <Link to="/Dashboard" className="nd-dropdown-item" onClick={() => setProfileOpen(false)}>
-                                <span className="material-symbols-outlined nd-dropdown-item-icon">dashboard</span>
-                                Old Dashboard
-                            </Link>
+
                             <div className="nd-dropdown-divider" />
                             <button className="nd-dropdown-item nd-logout-item" onClick={onLogout}>
                                 <span className="material-symbols-outlined nd-dropdown-item-icon">logout</span>
@@ -237,7 +238,7 @@ const TopNav = ({ userData, enrollData, onLogout }) => {
 /* ─────────────────────────────────────────────
    STAT CARD
 ───────────────────────────────────────────── */
-const StatCard = ({ icon, label, value, status, statusText }) => {
+export const StatCard = ({ icon, label, value, status, statusText }) => {
     const statusColors = {
         green: 'nd-stat-green',
         yellow: 'nd-stat-yellow',
@@ -260,7 +261,7 @@ const StatCard = ({ icon, label, value, status, statusText }) => {
 /* ─────────────────────────────────────────────
    SECTION HEADER (reusable)
 ───────────────────────────────────────────── */
-const SectionHeader = ({ icon, title, subtitle }) => (
+export const SectionHeader = ({ icon, title, subtitle }) => (
     <div className="nd-section-hero">
         <div className="nd-section-hero-icon">
             <span className="material-symbols-outlined">{icon}</span>
@@ -278,7 +279,7 @@ const SectionHeader = ({ icon, title, subtitle }) => (
 const TrainingSection = ({ enrollment, navigate }) => {
     const sessions = enrollment?.domain?.session ? Object.entries(enrollment.domain.session) : [];
     const totalSessions = sessions.length;
-    const watchedSessions = enrollment?.watchedSessions ?? Math.floor(totalSessions * 0.4);
+    const watchedSessions = enrollment ? getWatchedFromStorage(enrollment._id, enrollment.domain?.session) : 0;
 
     if (!enrollment) {
         return (
@@ -323,7 +324,7 @@ const TrainingSection = ({ enrollment, navigate }) => {
                                         <button
                                             className="nd-session-play-btn nd-session-play-active"
                                             onClick={() => navigate("/Learning", {
-                                                state: { courseTitle: enrollment?.domain?.title, sessions: enrollment?.domain?.session }
+                                                state: { courseTitle: enrollment?.domain?.title, sessions: enrollment?.domain?.session, enrollmentId: enrollment?._id, watchedSessionsFromDB: enrollment?.watchedSessions }
                                             })}
                                         >
                                             <span className="material-symbols-outlined">play_arrow</span>
@@ -333,7 +334,7 @@ const TrainingSection = ({ enrollment, navigate }) => {
                                         <button
                                             className="nd-session-play-btn nd-session-play-done"
                                             onClick={() => navigate("/Learning", {
-                                                state: { courseTitle: enrollment?.domain?.title, sessions: enrollment?.domain?.session }
+                                                state: { courseTitle: enrollment?.domain?.title, sessions: enrollment?.domain?.session, enrollmentId: enrollment?._id, watchedSessionsFromDB: enrollment?.watchedSessions }
                                             })}
                                         >
                                             <span className="material-symbols-outlined">replay</span>
@@ -591,7 +592,7 @@ const PlacementSection = ({ navigate }) => {
 ───────────────────────────────────────────── */
 const PerformanceSection = ({ enrollment }) => {
     const totalSessions = enrollment?.domain?.session ? Object.keys(enrollment.domain.session).length : 0;
-    const watchedSessions = enrollment?.watchedSessions ?? Math.floor(totalSessions * 0.4);
+    const watchedSessions = enrollment ? getWatchedFromStorage(enrollment._id, enrollment.domain?.session, enrollment.watchedSessions) : 0;
     const trainingPct = totalSessions > 0 ? Math.round((watchedSessions / totalSessions) * 100) : 0;
 
     const metrics = [
@@ -939,6 +940,8 @@ const OverviewSection = ({ enrollment, loading, progressPct, watchedSessions, to
                                 state: {
                                     courseTitle: enrollment?.domain?.title,
                                     sessions: enrollment?.domain?.session,
+                                    enrollmentId: enrollment?._id,
+                                    watchedSessionsFromDB: enrollment?.watchedSessions
                                 }
                             })}
                         >
@@ -975,9 +978,12 @@ const NewDashboard = () => {
     const fetchAll = async () => {
         setLoading(true);
         try {
+            const token = localStorage.getItem("token");
+            const headers = { Authorization: `Bearer ${token}` };
+
             const [userRes, enrollRes] = await Promise.all([
-                userId ? axios.get(`${API}/users`, { params: { userId } }) : Promise.resolve({ data: null }),
-                userEmail ? axios.get(`${API}/enrollments`, { params: { userEmail } }) : Promise.resolve({ data: [] }),
+                userId ? axios.get(`${API}/users`, { params: { userId }, headers }) : Promise.resolve({ data: null }),
+                userEmail ? axios.get(`${API}/enrollments`, { params: { userEmail }, headers }) : Promise.resolve({ data: [] }),
             ]);
             setUserData(userRes.data);
             setEnrollData(Array.isArray(enrollRes.data) ? enrollRes.data : []);
@@ -1006,7 +1012,7 @@ const NewDashboard = () => {
 
     const enrollment = enrollData?.[0];
     const totalSessions = enrollment?.domain?.session ? Object.keys(enrollment.domain.session).length : 0;
-    const watchedSessions = enrollment?.watchedSessions ?? Math.floor(totalSessions * 0.4);
+    const watchedSessions = enrollment ? getWatchedFromStorage(enrollment._id, enrollment.domain?.session, enrollment.watchedSessions) : 0;
     const progressPct = totalSessions > 0 ? Math.round((watchedSessions / totalSessions) * 100) : 0;
     const programName = enrollment?.domain?.title || enrollment?.program || "—";
     const paymentStatus = enrollment?.status || "—";
@@ -1098,6 +1104,7 @@ const NewDashboard = () => {
                     setCollapsed={setSidebarCollapsed}
                     activeSection={activeSection}
                     setActiveSection={setActiveSection}
+                    onLogout={handleLogout}
                 />
 
                 {/* ── MAIN SCROLLABLE CONTENT ── */}

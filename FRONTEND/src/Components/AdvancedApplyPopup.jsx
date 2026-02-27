@@ -56,7 +56,7 @@ const AdvancedApplyPopup = ({ onClose }) => {
                     formData.domain === "Other" ? formData.domainOther : undefined,
                 interestedDomain: formData.interestedDomain,
                 passedOutYear: formData.passedOutYear || undefined,
-                
+
             });
             toast.success(`You have successfully applied, Our counselor will connect with you shortly.`);
             onClose();

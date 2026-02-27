@@ -132,12 +132,15 @@ const Exercise = () => {
     setLoading(true);
     try {
       const email = localStorage.getItem("userEmail");
+      const userId = localStorage.getItem("userId"); // needed to update Assignment Matrix
       const answersArray = questions.map((_, i) => answers[i] || null);
 
       const res = await axios.post(`${API}/exercise/evaluate`, {
         questions,
         answers: answersArray,
-        email
+        email,
+        userId,           // ← links result to assignment matrix
+        difficulty: selectedDifficulty  // ← Beginner / Intermediate / Advanced
       });
 
       setResult(res.data);

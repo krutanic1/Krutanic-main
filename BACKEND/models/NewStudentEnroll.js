@@ -81,6 +81,9 @@ const newStudentEnrollSchema = new Schema(
     executiveId: { type: String },
     executive: { type: String },
     languages: [{ type: String }],
+    watchedSessions: [{ type: String }],
+    selectedProject: { type: String, default: null },
+    projectProgress: { type: Map, of: Object, default: {} },
   },
   {
     timestamps: true,

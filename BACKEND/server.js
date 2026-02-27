@@ -27,6 +27,7 @@ const Excercise = require("./routes/excercise");
 const ResumeATS = require("./routes/resumeats");
 
 const User = require("./routes/User");
+const ProfileRoute = require("./routes/Profile");
 const admin = require("./routes/AdminLogin")
 const bodyParser = require("body-parser");
 
@@ -51,10 +52,11 @@ const allowedOrigins = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split
 // Handle preflight requests first
 app.options('*', (req, res) => {
   const origin = req.headers.origin;
-  if (!origin || allowedOrigins.includes(origin)) {
+  const isAllowed = !origin || allowedOrigins.some(o => origin.startsWith(o));
+  if (isAllowed) {
     res.header('Access-Control-Allow-Origin', origin);
     res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   }
   res.sendStatus(204);
@@ -62,7 +64,9 @@ app.options('*', (req, res) => {
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Check if origin loosely matches any allowed origin (handles trailing slashes)
+    const isAllowed = !origin || allowedOrigins.some(o => origin.startsWith(o));
+    if (isAllowed) {
       callback(null, true);
     } else {
       console.log('CORS blocked origin:', origin, 'Allowed:', allowedOrigins);
@@ -70,7 +74,7 @@ app.use(cors({
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
@@ -95,6 +99,8 @@ app.use("/", Advance);
 app.use("/", NewStudentEnroll);
 //user
 app.use("/", User);
+// profile
+app.use("/", ProfileRoute);
 // admin
 app.use("/", admin);
 
@@ -127,9 +133,17 @@ app.use("/", ResumeATS);
 
 const InterviewerRoutes = require("./routes/Interviewer");
 const InterviewRoutes = require("./routes/Interview");
+const DashboardMetrics = require("./routes/DashboardMetrics");
+const AssignmentsRoute = require("./routes/Assignments");
+const PracticalsRoute = require("./routes/Practicals");
+const ProjectRoutes = require("./routes/ProjectRoutes");
 
 app.use("/api/interviewer", InterviewerRoutes);
 app.use("/api/interview", InterviewRoutes);
+app.use("/api/dashboard", DashboardMetrics);
+app.use("/api/assignments", AssignmentsRoute);
+app.use("/api/practicals", PracticalsRoute);
+app.use("/", ProjectRoutes);
 
 // Vercel Cron Route
 app.use("/", CronRoutes);

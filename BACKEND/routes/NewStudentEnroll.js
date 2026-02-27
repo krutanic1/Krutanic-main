@@ -6,6 +6,7 @@ const CreateCourse = require("../models/CreateCourse");
 const TransactionId = require("../models/AddTransactionId");
 const CreateOperation = require("../models/CreateOperation");
 const mongoose = require("mongoose");
+const authMiddleware = require("../middleware/UserAuth");
 
 router.post("/newstudentenroll", async (req, res) => {
   try {
@@ -751,6 +752,75 @@ router.get("/enrollments", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to fetch enrollments", error });
+  }
+});
+
+router.post("/updateprogress", async (req, res) => {
+  const { enrollmentId, watchedSessions } = req.body;
+  try {
+    const student = await NewEnrollStudent.findByIdAndUpdate(
+      enrollmentId,
+      { watchedSessions: watchedSessions },
+      { new: true }
+    );
+    if (!student) {
+      return res.status(404).json({ message: "Enrollment not found" });
+    }
+    res.status(200).json({ message: "Progress updated", watchedSessions: student.watchedSessions });
+  } catch (error) {
+    console.error("Error updating progress:", error);
+    res.status(500).json({ message: "Failed to update progress", error });
+  }
+});
+
+// Lock a project for the practical section (cannot be changed once set)
+router.post("/select-project", authMiddleware, async (req, res) => {
+  const { enrollmentId, projectTitle } = req.body;
+  try {
+    if (!enrollmentId || !projectTitle) {
+      return res.status(400).json({ message: "enrollmentId and projectTitle are required" });
+    }
+    const student = await NewEnrollStudent.findById(enrollmentId);
+    if (!student) {
+      return res.status(404).json({ message: "Enrollment not found" });
+    }
+    if (student.email !== req.user.email) {
+      return res.status(403).json({ message: "Not authorized to modify this enrollment" });
+    }
+    // Prevent changing once set
+    if (student.selectedProject) {
+      return res.status(400).json({ message: "Project already selected. Cannot change.", selectedProject: student.selectedProject });
+    }
+    student.selectedProject = projectTitle;
+    await student.save();
+    res.status(200).json({ message: "Project locked successfully", selectedProject: student.selectedProject });
+  } catch (error) {
+    console.error("Error selecting project:", error);
+    res.status(500).json({ message: "Failed to select project", error: error.message });
+  }
+});
+
+// Update day log for the practical project roadmap
+router.post("/update-project-progress", authMiddleware, async (req, res) => {
+  const { enrollmentId, dayKey, dayData } = req.body;
+  try {
+    if (!enrollmentId || !dayKey) {
+      return res.status(400).json({ message: "enrollmentId and dayKey are required" });
+    }
+    const update = { [`projectProgress.${dayKey}`]: dayData };
+
+    const student = await NewEnrollStudent.findOneAndUpdate(
+      { _id: enrollmentId, email: req.user.email },
+      { $set: update },
+      { new: true }
+    );
+    if (!student) {
+      return res.status(404).json({ message: "Enrollment not found or unauthorized to modify it" });
+    }
+    res.status(200).json({ message: "Progress updated", projectProgress: Object.fromEntries(student.projectProgress || new Map()) });
+  } catch (error) {
+    console.error("Error updating project progress:", error);
+    res.status(500).json({ message: "Failed to update project progress", error: error.message });
   }
 });
 

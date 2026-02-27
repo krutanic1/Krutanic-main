@@ -10,7 +10,7 @@ const ResumeATS = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
-  const fileInputRef = useRef(null);     
+  const fileInputRef = useRef(null);
   const userId = localStorage.getItem("userId");
 
   useEffect(() => {
@@ -23,7 +23,10 @@ const ResumeATS = () => {
 
   const fetchUserData = async () => {
     try {
-      const res = await axios.get(`${API}/users`, { params: { userId } });
+      const res = await axios.get(`${API}/users`, {
+        params: { userId },
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+      });
       setResumeUrl(res.data.pdfUrl || "");
     } catch (err) {
       toast.error("Failed to load user data.", { id: "fetch-error" });
@@ -64,7 +67,10 @@ const ResumeATS = () => {
     formData.append("userId", userId);
     try {
       const uploadRes = await axios.post(`${API}/resume-upload`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        },
       });
       setResumeUrl(uploadRes.data.pdfUrl);
       setFile(null);
@@ -90,7 +96,9 @@ const ResumeATS = () => {
     setIsAnalyzing(true);
     // toast.loading("Analyzing resume...", { id: "toast-loading" });
     try {
-      const res = await axios.post(`${API}/score-uploaded-resume`, { userId });
+      const res = await axios.post(`${API}/score-uploaded-resume`, { userId }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+      });
       setAtsResult(res.data);
       toast.success("Resume analyzed successfully!", { id: "toast-success" });
     } catch (err) {
@@ -120,7 +128,7 @@ const ResumeATS = () => {
             <li>Review the detailed analysis and improvement tips</li>
           </ol>
           <p className="text-sm italic">
-           <span className="text-orange-600"> Note:</span> Only PDF files up to 1MB are accepted. Please login to use all features.
+            <span className="text-orange-600"> Note:</span> Only PDF files up to 1MB are accepted. Please login to use all features.
           </p>
         </div>
       </div>
@@ -177,7 +185,7 @@ const ResumeATS = () => {
           {file && (
             <p className="text-sm text-gray-600">
               Selected file: {file.name} ({(file.size / 1024).toFixed(2)} KB)
-            </p> 
+            </p>
           )}
           {file && (
             <button
@@ -216,13 +224,13 @@ const ResumeATS = () => {
               <h3 className="text-2xl font-semibold text-gray-800">
                 ATS Analysis Result
               </h3>
-                 <span className="font-bold cursor-pointer bg-black px-3 py-1 text-white rounded-full" onClick={() => setAtsResult(null)}>X</span>
+              <span className="font-bold cursor-pointer bg-black px-3 py-1 text-white rounded-full" onClick={() => setAtsResult(null)}>X</span>
             </div>
             <div className="bg-indigo-50 p-5 rounded-xl border border-indigo-200">
               <h3 className="text-xl font-semibold text-black mb-4 flex items-center gap-2">
                 <FaChartBar /> ATS Score Overview
               </h3>
-         
+
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-4xl font-bold text-orange-600">

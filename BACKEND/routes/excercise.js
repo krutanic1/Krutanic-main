@@ -2,8 +2,11 @@ const express = require("express");
 const router = express.Router();
 const path = require("path");
 const fs = require("fs");
+const mongoose = require("mongoose");
 const Question = require("../models/Question");
-const Result = require("../models/result"); // Make sure this matches the filename case
+const Result = require("../models/result");
+const AssignmentAttempt = require("../models/AssignmentAttempt");
+const { AssignmentStats } = require("../models/DashboardMetrics");
 
 const exerciseFilePath = path.join(__dirname, "../config/exercise.json");
 
@@ -198,12 +201,66 @@ router.post("/exercise/evaluate", async (req, res) => {
       correct: correctCount,
       incorrect: total - correctCount,
       total: total,
-      isImproved: correctCount > (total * 0.7), // Logic for 'improvement' flag
+      isImproved: correctCount > (total * 0.7),
       message: correctCount > (total * 0.7) ? "Great job! You passed." : "Keep practicing!",
     };
 
-    // Simplified: Results are no longer stored in the database as per user request.
-    // if (email) { ... } -> Removed
+    // ── Auto-save to Assignment Score Matrix ──
+    // Requires: userId and difficulty (level) to be sent in the request body
+    const { userId: userIdStr, difficulty } = req.body;
+    if (userIdStr && difficulty) {
+      try {
+        // Convert string userId from localStorage to ObjectId to match schema
+        const userId = mongoose.Types.ObjectId.isValid(userIdStr)
+          ? new mongoose.Types.ObjectId(userIdStr)
+          : null;
+        if (!userId) throw new Error('Invalid userId');
+
+        const percentage = Math.round((correctCount / total) * 100);
+
+        // 1. Save the individual attempt record
+        await new AssignmentAttempt({
+          userId,
+          level: difficulty,
+          score: correctCount,
+          maxScore: total,
+          percentage,
+        }).save();
+
+        // 2. Upsert AssignmentStats doc first (ensures doc exists)
+        await AssignmentStats.findOneAndUpdate(
+          { userId },
+          { $setOnInsert: { userId } },
+          { upsert: true, new: true }
+        );
+
+        // 3. Fetch current bestScore to compute new best
+        const current = await AssignmentStats.findOne({ userId });
+        const currentBest = current?.levels?.[difficulty]?.bestScore || 0;
+        const newBest = percentage > currentBest ? percentage : currentBest;
+        const newStatus = newBest >= 80 ? 'Completed' : newBest > 0 ? 'In Progress' : 'Not Started';
+
+        // 4. Atomic update with dot-notation paths
+        const updatedStats = await AssignmentStats.findOneAndUpdate(
+          { userId },
+          {
+            $inc: { [`levels.${difficulty}.attemptsCount`]: 1 },
+            $set: {
+              [`levels.${difficulty}.latestScore`]: percentage,
+              [`levels.${difficulty}.bestScore`]: newBest,
+              [`levels.${difficulty}.status`]: newStatus,
+            },
+          },
+          { new: true }
+        );
+
+        console.log(`✅ Matrix updated for user ${userIdStr} | Level: ${difficulty} | Score: ${percentage}%`);
+        resultData.matrixUpdated = true;
+        resultData.levelStats = updatedStats?.levels?.[difficulty];
+      } catch (matrixErr) {
+        console.error('Matrix update error (non-fatal):', matrixErr.message);
+      }
+    }
 
     res.json(resultData);
 

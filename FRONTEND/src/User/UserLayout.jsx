@@ -9,6 +9,7 @@ import API from "../API";
 const UserLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
   const userId = localStorage.getItem("userId");
   const navigate = useNavigate();
 
@@ -16,8 +17,15 @@ const UserLayout = () => {
     const fetchUserData = async () => {
       if (!userId) return;
       try {
-        const response = await axios.get(`${API}/users`, { params: { userId } });
-        setUserData(response.data);
+        const token = localStorage.getItem("token");
+        const headers = { Authorization: `Bearer ${token}` };
+
+        const [userRes, profileRes] = await Promise.all([
+          axios.get(`${API}/users`, { params: { userId }, headers }),
+          axios.get(`${API}/profile`, { params: { userId }, headers }).catch(() => ({ data: null }))
+        ]);
+        setUserData(userRes.data);
+        setUserProfile(profileRes.data);
       } catch (err) {
         console.log("Failed to fetch user data");
       }
@@ -70,9 +78,13 @@ const UserLayout = () => {
             <span className="truncate">Change Password</span>
           </Link>
           <div className="relative group cursor-pointer">
-            <div className="bg-primary/20 rounded-full size-10 flex items-center justify-center text-primary font-bold text-lg border-2 border-primary/20">
-              {userData?.fullname?.charAt(0)?.toUpperCase() || "U"}
-            </div>
+            {userProfile?.personal?.avatar ? (
+              <img src={userProfile.personal.avatar} alt="Avatar" className="w-10 h-10 object-cover rounded-full bg-primary/10 border-2 border-primary/20 shadow-sm" />
+            ) : (
+              <div className="bg-primary/20 rounded-full size-10 flex items-center justify-center text-primary font-bold text-lg border-2 border-primary/20">
+                {userData?.fullname?.charAt(0)?.toUpperCase() || "U"}
+              </div>
+            )}
             <div className="absolute bottom-0 right-0 size-3 bg-green-500 rounded-full border-2 border-white"></div>
           </div>
         </div>

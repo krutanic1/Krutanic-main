@@ -5,40 +5,41 @@ const pdfParse = require("pdf-parse");
 const User = require("../models/User");
 const cloudinary = require("../middleware/cloudinary");
 const axios = require("axios");
+const { authMiddleware } = require("../middleware/UserAuth");
 
 
 // ATS Class
 class ATS {
-  constructor() { 
+  constructor() {
     this.professionalKeywords = {
       highPriority: [
         // IT: Programming Languages & Frameworks
         "javascript", "react", "node.js", "python", "java", "typescript", "c#", "c++", "ruby", "php",
         "kotlin", "swift", "go", "rust", "scala", "angular", "vue.js", "django", "flask", "spring",
         "laravel", "express.js", "asp.net",
-    
+
         // IT: Cloud & Infrastructure
         "aws", "azure", "google cloud", "docker", "kubernetes", "terraform", "ansible", "jenkins",
         "microservices", "serverless",
-    
+
         // IT: Databases & Data Science
         "sql", "mongodb", "postgresql", "mysql", "nosql", "machine learning", "tensorflow", "pytorch",
         "pandas", "numpy", "big data", "hadoop", "spark",
-    
+
         // Mechanical Engineering
         "cad", "solidworks", "autocad", "catia", "ansys", "matlab", "finite element analysis", "fea",
         "cfd", "computational fluid dynamics", "thermodynamics", "mechanical design", "manufacturing",
         "robotics", "3d modeling", "prototyping", "materials science", "mechatronics", "plc",
         "cnc", "hvacc", "stress analysis", "machine design", "automotive engineering",
-    
+
         // Non-IT: Finance & Business
         "financial modeling", "accounting", "excel", "quickbooks", "sap", "erp", "budgeting",
         "forecasting", "cpa", "taxation", "risk management", "investment analysis",
-    
+
         // Non-IT: Marketing
         "seo", "sem", "digital marketing", "content marketing", "google analytics", "social media",
         "branding", "ppc", "campaign management", "market research",
-    
+
         // Non-IT: HR
         "recruitment", "talent acquisition", "onboarding", "payroll", "hris", "employee relations",
         "performance management", "training development"
@@ -68,7 +69,7 @@ class ATS {
         "team", "collaboration", "communication", "problem-solving", "leadership", "management",
         "project", "development", "strategy", "planning", "execution", "critical thinking",
         "adaptability", "time management", "innovation", "research", "documentation",
-    
+
         // IT/Mechanical/Non-IT Shared Technical Terms
         "design", "optimization", "performance", "scalability", "reliability", "automation",
         "monitoring", "troubleshooting", "quality assurance", "qa", "safety", "training",
@@ -76,11 +77,11 @@ class ATS {
       ]
     };
     this.minLength = 500;
-    this.maxLength = 4000; 
+    this.maxLength = 4000;
     this.optimalDensity = { min: 0.05, max: 0.15 };
   }
 
-  extractKeywords(text) { 
+  extractKeywords(text) {
     return text
       .toLowerCase()
       .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, " ")
@@ -179,7 +180,7 @@ class ATS {
     const density = words.length / textLength;
     let score = 10;
     const feedback = [];
-    
+
     if (textLength < this.minLength) {
       score -= 5;
       feedback.push("Resume is too short; add more details.");
@@ -214,12 +215,15 @@ class ATS {
   }
 }
 
-router.post("/resume-upload", (req, res) => {
+router.post("/resume-upload", authMiddleware, (req, res) => {
   const bb = busboy({ headers: req.headers });
-  let userId;
-  bb.on("field", (name, val) => (name === "userId" ? (userId = val) : null));
+  const userId = req.user.id;
+  let fileFound = false;
+
   bb.on("file", (fieldname, file, info) => {
+    fileFound = true;
     if (info.mimeType !== "application/pdf") {
+      file.resume(); // Drain stream to avoid stalling
       return res.status(400).json({ error: "Only PDFs are allowed" });
     }
     const uploadStream = cloudinary.uploader.upload_stream(
@@ -237,19 +241,22 @@ router.post("/resume-upload", (req, res) => {
         } catch (dbError) {
           res.status(500).json({ error: "Database error", details: dbError.message });
         }
-      } 
+      }
     );
     file.pipe(uploadStream);
   });
-  bb.on("finish", () => !userId && res.status(400).json({ error: "No file uploaded" }));
+  bb.on("finish", () => {
+    if (!fileFound) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+  });
   req.pipe(bb);
 });
 
 // Analyze Resume Route
-router.post("/score-uploaded-resume", async (req, res) => {
+router.post("/score-uploaded-resume", authMiddleware, async (req, res) => {
   try {
-    const { userId } = req.body;
-    if (!userId) return res.status(400).json({ error: "User ID required" });
+    const userId = req.user.id;
 
     const user = await User.findById(userId);
     if (!user || !user.pdfUrl) return res.status(404).json({ error: "User or resume not found" });

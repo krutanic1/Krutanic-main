@@ -109,15 +109,15 @@ const AddModule = () => {
     setisModuleFormVisible(false);
   };
 
-  if(!selectedCourse){
+  if (!selectedCourse) {
     return <div id="loader">
-    <div className="three-body">
-  <div className="three-body__dot"></div>
-  <div className="three-body__dot"></div>
-  <div className="three-body__dot"></div>
-  </div>
-  </div>;
- }
+      <div className="three-body">
+        <div className="three-body__dot"></div>
+        <div className="three-body__dot"></div>
+        <div className="three-body__dot"></div>
+      </div>
+    </div>;
+  }
   return (
     <div id="addmodule" >
       {isLeftSidebar && (
@@ -145,9 +145,9 @@ const AddModule = () => {
             {isModuleFormVisible && (
               <div className="moduleform">
                 <form onSubmit={handleModuleSubmit}>
-                    <h2>
-                      {editingModule ? "Update Session" : "Add New Session"}{" "}
-                    </h2>
+                  <h2>
+                    {editingModule ? "Update Session" : "Add New Session"}{" "}
+                  </h2>
                   <strong>
                     <span onClick={resetForm}>✖</span>
                   </strong>
@@ -208,7 +208,7 @@ const AddModule = () => {
                       <td>
                         {" "}
                         <button onClick={() => handleEditModule(key)}>
-                         <i className="fa fa-edit"></i>
+                          <i className="fa fa-edit"></i>
                         </button>
                         <button onClick={() => handleDeleteModule(key)}>
                           <i className="fa fa-trash-o text-red-600"></i>

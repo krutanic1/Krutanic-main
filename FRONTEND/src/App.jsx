@@ -33,6 +33,7 @@ import Alumni from "./page/Alumni";
 import AdminHeader from "./Admin/AdminHeader";
 import AddCourse from "./Admin/AddCourse";
 import AddModule from "./Admin/AddModule";
+import AdminProjectPage from "./Admin/AdminProjectPage";
 import PendingApplication from "./Admin/PendingApplication";
 import AcceptedApplication from "./Admin/AcceptedApplication";
 import CreateOperation from "./Admin/CreateOperation";
@@ -130,7 +131,17 @@ import MarketingLeads from "./Marketing/MarketingLeads";
 import MarketingAddExecutive from "./Marketing/MarketingAddExecutive";
 import BDAAgainLogin from "./BDA/BDAAgainLogin";
 import EventDetails from "./page/EventDetails";
-import NewDashboard from "./new_user/new-dashboad";
+import AdvanceDashboardLayout from "./new_user/AdvanceDashboardLayout";
+import OverviewPage from "./new_user/pages/OverviewPage";
+import TrainingPage from "./new_user/pages/TrainingPage";
+import PracticalPage from "./new_user/pages/PracticalPage";
+import InternshipPage from "./new_user/pages/InternshipPage";
+import PlacementPage from "./new_user/pages/PlacementPage";
+import PaymentsPage from "./new_user/pages/PaymentsPage";
+import CalendarPage from "./new_user/pages/CalendarPage";
+import AdvanceLearningPage from "./new_user/AdvanceLearningPage";
+import ResumeBuilderPage from "./new_user/pages/ResumeBuilderPage";
+import ProfilePage from "./new_user/pages/ProfilePage";
 
 const App = () => {
   return (
@@ -209,8 +220,8 @@ const AppContent = () => {
     "/referandearnresponse",
     "/createmarketingteam",
     "/createinterviewer",
-    "/createinterview"
-
+    "/createinterview",
+    "/adminprojectpage"
   ];
 
   const operationheaderPaths = [
@@ -311,6 +322,7 @@ const AppContent = () => {
         <Route path="/AdminDashboard" element={isAuthenticatedAdmin() ? <AdminDashboard /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AddCourse" element={isAuthenticatedAdmin() ? <AddCourse /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AddModule" element={isAuthenticatedAdmin() ? <AddModule /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/AdminProjectPage" element={isAuthenticatedAdmin() ? <AdminProjectPage /> : <Navigate to="/AdminLogin" />} />
         <Route path="/CreateOperation" element={isAuthenticatedAdmin() ? <CreateOperation /> : <Navigate to="/AdminLogin" />} />
         <Route path="/CreateBDA" element={isAuthenticatedAdmin() ? <CreateBDA /> : <Navigate to="/AdminLogin" />} />
         <Route path="/PendingApplication" element={isAuthenticatedAdmin() ? <PendingApplication /> : <Navigate to="/AdminLogin" />} />
@@ -388,8 +400,8 @@ const AppContent = () => {
           <Route path="/JobBoard" element={isAuthenticated() ? <JobBoardPage /> : <Navigate to="/login" />} />
           <Route path="/MyJob" element={isAuthenticated() ? <MyJobPage /> : <Navigate to="/login" />} />
           <Route path="/MockInterview" element={isAuthenticated() ? <MockInterviewPage /> : <Navigate to="/login" />} />
-          <Route path="/Exercise" element={isAuthenticated() ? <ExercisePage /> : <Navigate to="/login" />} />
           <Route path="/ResumeATS" element={isAuthenticated() ? <ResumeATSPage /> : <Navigate to="/login" />} />
+          <Route path="/Exercise" element={isAuthenticated() ? <ExercisePage /> : <Navigate to="/login" />} />
         </Route>
         {/* User Panel End */}
 
@@ -407,8 +419,25 @@ const AppContent = () => {
         <Route path="/EventLogin" element={<EventLogin />} />
         <Route path="/EventDashboard" element={isAuthenticatedEventUser() ? <EventDashBoard /> : <Navigate to="/events" />} />
         <Route path="/register/:slug" element={<EventDetails />} />
-        {/* user new dashboard */}
-        <Route path="/advancedashboard" element={<NewDashboard />} />
+        <Route path="/advancedashboard" element={<AdvanceDashboardLayout />}>
+          <Route index element={<OverviewPage />} />
+          <Route path="setting" element={<Setting />} />
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="training" element={<TrainingPage />} />
+          <Route path="practical" element={<PracticalPage />} />
+          <Route path="internship" element={<InternshipPage />} />
+          <Route path="placement" element={<PlacementPage />} />
+          <Route path="payments" element={<PaymentsPage />} />
+          <Route path="calendar" element={<CalendarPage />} />
+          <Route path="jobs" element={<JobBoardPage />} />
+          <Route path="my-job" element={<MyJobPage />} />
+          <Route path="mock-interview" element={<MockInterviewPage />} />
+          <Route path="resume-ats" element={<ResumeATSPage />} />
+          <Route path="exercise" element={<ExercisePage />} />
+          <Route path="resume-builder" element={<ResumeBuilderPage />} />
+        </Route>
+        {/* Advanced dashboard video player — standalone, no old sidebar */}
+        <Route path="/advancedashboard/learning" element={<AdvanceLearningPage />} />
 
       </Routes>
 

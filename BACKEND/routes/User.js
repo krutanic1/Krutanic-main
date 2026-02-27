@@ -237,7 +237,7 @@ router.post("/checkuserauth", async (req, res) => {
     const token = jwt.sign(
       { id: user._id, email: user.email },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "6h" }
     );
     res.status(200).json({ token, _id: user._id, email: user.email });
   } catch (err) {
@@ -330,7 +330,7 @@ router.post("/verify-otp", async (req, res) => {
     const token = jwt.sign(
       { id: user._id, email: user.email },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "6h" }
     );
 
     res.status(200).json({ token, _id: user._id, email: user.email });
