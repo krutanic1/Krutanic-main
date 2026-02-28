@@ -742,16 +742,61 @@ router.get("/enrollments", async (req, res) => {
           const course = await CreateCourse.findById(
             enrollment.domainId
           ).lean();
+
+          // Optimization: Calculate Progress on Backend to avoid heavy payload
+          let totalSessionsCount = 0;
+          let watchedSessionsCount = 0;
+          let progressPct = 0;
+
+          if (course && course.session) {
+            const sessionKeys = Object.keys(course.session);
+            totalSessionsCount = sessionKeys.length;
+
+            if (enrollment.watchedSessions && Array.isArray(enrollment.watchedSessions)) {
+              const combined = new Set(enrollment.watchedSessions);
+              watchedSessionsCount = sessionKeys.filter((k) => combined.has(k)).length;
+            }
+            if (totalSessionsCount > 0) {
+              progressPct = Math.round((watchedSessionsCount / totalSessionsCount) * 100);
+            }
+
+            // Exclude massive session data from this general fetch
+            delete course.session;
+          }
+
           enrollment.domain = course || null; // Replace domainId with course data
+          enrollment.progressStats = {
+            totalSessionsCount,
+            watchedSessionsCount,
+            progressPct
+          };
         }
         return enrollment;
       })
     );
-    // res.status(200).json(enrollments);
     res.status(200).json(updatedEnrollments);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to fetch enrollments", error });
+  }
+});
+
+// GET request to just load the massive session mapping for a specific enrollment
+router.get("/enrollments/:id/sessions", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const enrollment = await NewEnrollStudent.findById(id).lean();
+    if (!enrollment || !enrollment.domainId) {
+      return res.status(404).json({ message: "Enrollment or domain not found" });
+    }
+    const course = await CreateCourse.findById(enrollment.domainId).lean();
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+    res.status(200).json({ session: course.session || {} });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch sessions", error: error.message });
   }
 });
 

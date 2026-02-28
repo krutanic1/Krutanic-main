@@ -239,7 +239,7 @@ router.post("/checkuserauth", async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "6h" }
     );
-    res.status(200).json({ token, _id: user._id, email: user.email });
+    res.status(200).json({ token, _id: user._id, email: user.email, advance: user.advance });
   } catch (err) {
     console.error("Error during login", err);
     res.status(500).json({ message: "Server error" });
@@ -333,7 +333,7 @@ router.post("/verify-otp", async (req, res) => {
       { expiresIn: "6h" }
     );
 
-    res.status(200).json({ token, _id: user._id, email: user.email });
+    res.status(200).json({ token, _id: user._id, email: user.email, advance: user.advance });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error verifying OTP" });

@@ -1,17 +1,17 @@
 
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import API from '../API';
-import toast ,{Toaster} from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 
 const LoginWithOtp = () => {
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [showOtp, setShowOtp] = useState(false);
   const navigate = useNavigate();
-   const [loading, setLoading] = useState(false);
-  
+  const [loading, setLoading] = useState(false);
+
   const handleSendOtp = async () => {
     setLoading(true);
     try {
@@ -22,7 +22,7 @@ const LoginWithOtp = () => {
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Error sending OTP');
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -34,11 +34,15 @@ const LoginWithOtp = () => {
       toast.success('login successful!!!');
       if (response.status === 200) {
         setTimeout(() => {
-        localStorage.setItem('userId', response.data._id);
-        localStorage.setItem('userEmail', response.data.email);
-        localStorage.setItem('token', response.data.token);
-        navigate('/Dashboard');
-      }, 2000); 
+          localStorage.setItem('userId', response.data._id);
+          localStorage.setItem('userEmail', response.data.email);
+          localStorage.setItem('token', response.data.token);
+          if (response.data.advance) {
+            navigate('/advancedashboard');
+          } else {
+            navigate('/Dashboard');
+          }
+        }, 2000);
       }
     } catch (error) {
       if (error.response?.status === 403) {
@@ -68,11 +72,11 @@ const LoginWithOtp = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-             <label>Email</label>
+            <label>Email</label>
           </div>
           {!showOtp ? (
             <button disabled={loading} type="button" onClick={handleSendOtp}>
-            { loading ? "Sending..." : "Send OTP"}
+              {loading ? "Sending..." : "Send OTP"}
             </button>
           ) : (
             <>
@@ -89,8 +93,8 @@ const LoginWithOtp = () => {
             </>
           )}
         </form>
-          <p>--------------------or--------------------</p>
-          <div className='loginwith'><Link to="/Login">Login with password</Link></div>
+        <p>--------------------or--------------------</p>
+        <div className='loginwith'><Link to="/Login">Login with password</Link></div>
       </div>
     </div>
   );

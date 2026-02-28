@@ -127,7 +127,7 @@ const OverviewPage = () => {
                                 onClick={() => navigate("/advancedashboard/learning", {
                                     state: {
                                         courseTitle: enrollment?.domain?.title,
-                                        sessions: enrollment?.domain?.session,
+                                        sessions: null, // Let NewLearning fetch them dynamically
                                         enrollmentId: enrollment?._id,
                                         watchedSessionsFromDB: enrollment?.watchedSessions,
                                         thumbnail: getThumbnail(enrollment?.domain?.title || ""),

@@ -70,12 +70,12 @@ const userSchema = new mongoose.Schema({
     type: Date,
   },
   pdfUrl: {
-    type: String, 
+    type: String,
   },
   jobResume: {
     type: String,
   },
-// components 
+  // components 
   atschecker: {
     type: Boolean,
     default: false,
@@ -95,9 +95,13 @@ const userSchema = new mongoose.Schema({
   exercise: {
     type: Boolean,
     default: false,
+  },
+  advance: {
+    type: Boolean,
+    default: false,
   }
 },
-{ timestamps: true }
+  { timestamps: true }
 );
 
 // ✅ FIX #2: Add Database Indexes for faster queries

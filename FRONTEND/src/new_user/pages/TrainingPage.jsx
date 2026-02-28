@@ -1,17 +1,36 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDashboard, getWatchedFromStorage, getThumbnail } from "../DashboardContext";
+import { useDashboard, getThumbnail } from "../DashboardContext";
 import { SectionHeader } from "../new-dashboad";
+import API from "../../API";
+import axios from "axios";
 
 const TrainingPage = () => {
     const navigate = useNavigate();
-    const { enrollment, loading } = useDashboard();
+    const { enrollment, loading: contextLoading } = useDashboard();
 
-    const sessions = enrollment?.domain?.session ? Object.entries(enrollment.domain.session) : [];
-    const totalSessions = sessions.length;
-    const watchedSessions = enrollment
-        ? getWatchedFromStorage(enrollment._id, enrollment.domain?.session, enrollment.watchedSessions)
-        : 0;
+    const [sessionsData, setSessionsData] = useState({});
+    const [sessions, setSessions] = useState([]);
+    const [loadingSessions, setLoadingSessions] = useState(false);
+
+    const totalSessions = enrollment?.progressStats?.totalSessionsCount || 0;
+    const watchedSessions = enrollment?.progressStats?.watchedSessionsCount || 0;
+
+    useEffect(() => {
+        if (enrollment?._id) {
+            setLoadingSessions(true);
+            axios.get(`${API}/enrollments/${enrollment._id}/sessions`)
+                .then(res => {
+                    const sess = res.data?.session || {};
+                    setSessionsData(sess);
+                    setSessions(Object.entries(sess));
+                })
+                .catch(err => console.error("Error fetching sessions:", err))
+                .finally(() => setLoadingSessions(false));
+        }
+    }, [enrollment?._id]);
+
+    const loading = contextLoading || loadingSessions;
 
     if (loading) {
         return (
@@ -67,7 +86,7 @@ const TrainingPage = () => {
                                         <button
                                             className="nd-session-play-btn nd-session-play-active"
                                             onClick={() => navigate("/advancedashboard/learning", {
-                                                state: { courseTitle: enrollment?.domain?.title, sessions: enrollment?.domain?.session, enrollmentId: enrollment?._id, watchedSessionsFromDB: enrollment?.watchedSessions, thumbnail: getThumbnail(enrollment?.domain?.title) }
+                                                state: { courseTitle: enrollment?.domain?.title, sessions: sessionsData, enrollmentId: enrollment?._id, watchedSessionsFromDB: enrollment?.watchedSessions, thumbnail: getThumbnail(enrollment?.domain?.title) }
                                             })}
                                         >
                                             <span className="material-symbols-outlined">play_arrow</span>
@@ -77,7 +96,7 @@ const TrainingPage = () => {
                                         <button
                                             className="nd-session-play-btn nd-session-play-done"
                                             onClick={() => navigate("/advancedashboard/learning", {
-                                                state: { courseTitle: enrollment?.domain?.title, sessions: enrollment?.domain?.session, enrollmentId: enrollment?._id, watchedSessionsFromDB: enrollment?.watchedSessions, thumbnail: getThumbnail(enrollment?.domain?.title) }
+                                                state: { courseTitle: enrollment?.domain?.title, sessions: sessionsData, enrollmentId: enrollment?._id, watchedSessionsFromDB: enrollment?.watchedSessions, thumbnail: getThumbnail(enrollment?.domain?.title) }
                                             })}
                                         >
                                             <span className="material-symbols-outlined">replay</span>

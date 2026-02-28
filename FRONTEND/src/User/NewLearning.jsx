@@ -29,7 +29,23 @@ const NewLearning = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { courseTitle, sessions, startIndex = 0, thumbnail, enrollmentId } = location.state || {};
+  const { courseTitle, sessions: initialSessions, startIndex = 0, thumbnail, enrollmentId } = location.state || {};
+
+  // Support lazy loading if location.state didn't provide sessions
+  const [sessions, setSessions] = useState(initialSessions || null);
+
+  useEffect(() => {
+    if (!sessions && enrollmentId) {
+      fetch(`${API}/enrollments/${enrollmentId}/sessions`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.session) {
+            setSessions(data.session);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [sessions, enrollmentId]);
 
   const sessionKeys = sessions ? Object.keys(sessions) : [];
   const totalSessions = sessionKeys.length;

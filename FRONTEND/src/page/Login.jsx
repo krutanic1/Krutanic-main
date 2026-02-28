@@ -27,7 +27,11 @@ const Login = () => {
           localStorage.setItem("userId", response.data._id);
           localStorage.setItem("userEmail", response.data.email);
           localStorage.setItem("token", response.data.token);
-          navigate("/Dashboard");
+          if (response.data.advance) {
+            navigate("/advancedashboard");
+          } else {
+            navigate("/Dashboard");
+          }
         }, 1500);
       }
     } catch (error) {
@@ -38,7 +42,7 @@ const Login = () => {
       } else {
         toast.error(
           error.response?.data?.message ||
-            "An error occurred while logging in. Please try again."
+          "An error occurred while logging in. Please try again."
         );
       }
     }
@@ -59,7 +63,7 @@ const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-             <label htmlFor="email">Email Id</label>
+            <label htmlFor="email">Email Id</label>
           </div>
           <div className="input-field">
             <input

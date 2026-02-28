@@ -122,11 +122,9 @@ export const DashboardProvider = ({ children }) => {
 
     // Derived values used across pages
     const enrollment = enrollData?.[0];
-    const totalSessions = enrollment?.domain?.session ? Object.keys(enrollment.domain.session).length : 0;
-    const watchedSessions = enrollment
-        ? getWatchedFromStorage(enrollment._id, enrollment.domain?.session, enrollment.watchedSessions)
-        : 0;
-    const progressPct = totalSessions > 0 ? Math.round((watchedSessions / totalSessions) * 100) : 0;
+    const totalSessions = enrollment?.progressStats?.totalSessionsCount || 0;
+    const watchedSessions = enrollment?.progressStats?.watchedSessionsCount || 0;
+    const progressPct = enrollment?.progressStats?.progressPct || 0;
     const programName = enrollment?.domain?.title || enrollment?.program || "—";
     const isFullyPaid = (enrollment?.status || "") === "fullPaid";
 
