@@ -110,6 +110,36 @@ router.delete("/deleteadvoperation/:id", async (req, res) => {
   }
 });
 
+// Direct Login for Admin Panel Bypass
+router.post("/checkadvoperation", async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const operation = await CreateAdvOperation.findOne({ email });
+    if (!operation) {
+      return res.status(404).json({ message: "ADV Operation user not found" });
+    }
+    if (operation.password !== password) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+    const token = jwt.sign(
+      { _id: operation._id, email: operation.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+    res.status(200).json({
+      token,
+      _id: operation._id,
+      operationName: operation.fullname,
+      message: "Login successful!",
+    });
+  } catch (error) {
+    console.error("Failed to login directly:", error);
+    res
+      .status(500)
+      .json({ message: "Failed to login directly", error: error.message });
+  }
+});
+
 // Send OTP for ADV operation login
 router.post("/advoperationsendotp", async (req, res) => {
   const { email } = req.body;

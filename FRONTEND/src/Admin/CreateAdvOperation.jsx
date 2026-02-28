@@ -218,7 +218,7 @@ const CreateAdvOperation = () => {
     };
     try {
       const response = await axios.post(`${API}/sendmailtoadvoperation`, emailData);
-      
+
       if (response.status === 200) {
         toast.success("Email sent successfully!");
       } else {
@@ -232,24 +232,17 @@ const CreateAdvOperation = () => {
 
   const handleloginteam = async (email, password) => {
     try {
-      const response = await axios.post(`${API}/advoperationsendotp`, { email });
+      const response = await axios.post(`${API}/checkadvoperation`, { email, password });
       if (response.status === 200) {
-        toast.success("OTP sent to email! Please check your inbox.");
-        const otp = prompt("Enter the OTP sent to your email:");
-        if (otp) {
-          const verifyResponse = await axios.post(`${API}/advoperationverifyotp`, { email, otp });
-          if (verifyResponse.status === 200) {
-            toast.success("Login successful!");
-            const loginTime = new Date().getTime();
-            setTimeout(() => {
-              localStorage.setItem("advOperationId", verifyResponse.data._id);
-              localStorage.setItem("advOperationName", verifyResponse.data.operationName);
-              localStorage.setItem("advOperationToken", verifyResponse.data.token);
-              localStorage.setItem("advOperationSessionStartTime", loginTime);
-              window.open("/advoperationdashboard", "_blank");
-            }, 500);
-          }
-        }
+        toast.success("Login successful!");
+        const loginTime = new Date().getTime();
+        setTimeout(() => {
+          localStorage.setItem("advOperationId", response.data._id);
+          localStorage.setItem("advOperationName", response.data.operationName);
+          localStorage.setItem("advOperationToken", response.data.token);
+          localStorage.setItem("sessionStartTime", loginTime);
+          window.open("/advoperationdashboard", "_blank");
+        }, 500);
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to login!");
@@ -389,8 +382,8 @@ const CreateAdvOperation = () => {
                 </td>
                 <td>{operation.email}</td>
                 <td>{operation.password}</td>
-                <td 
-                  className="cursor-pointer font-semibold" 
+                <td
+                  className="cursor-pointer font-semibold"
                   onClick={() => handleloginteam(operation.email, operation.password)}
                 >
                   Login <i className="fa fa-sign-in"></i>
@@ -398,16 +391,14 @@ const CreateAdvOperation = () => {
                 <td className="text-center">
                   <div
                     onClick={() => handleToggleStatus(operation._id)}
-                    className={`inline-flex items-center px-2 py-1 rounded-full cursor-pointer ${
-                      operation.isOnline
-                        ? "bg-green-100 text-green-800"
-                        : "bg-red-100 text-red-800"
-                    }`}
+                    className={`inline-flex items-center px-2 py-1 rounded-full cursor-pointer ${operation.isOnline
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
+                      }`}
                   >
                     <span
-                      className={`h-2 w-2 rounded-full mr-2 ${
-                        operation.isOnline ? "bg-green-500" : "bg-red-500"
-                      }`}
+                      className={`h-2 w-2 rounded-full mr-2 ${operation.isOnline ? "bg-green-500" : "bg-red-500"
+                        }`}
                     ></span>
                     {operation.isOnline ? "Online" : "Offline"}
                   </div>

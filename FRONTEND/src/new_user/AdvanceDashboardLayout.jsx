@@ -15,6 +15,7 @@ const sidebarItems = [
     { id: "internship", path: "/advancedashboard/internship", emoji: "💼", icon: "work", label: "Internship" },
     { id: "exercise", path: "/advancedashboard/exercise", emoji: "🏋️", icon: "fitness_center", label: "Exercise" },
     { id: "placement", path: "/advancedashboard/placement", emoji: "🚀", icon: "rocket_launch", label: "Placement" },
+    { id: "certificates", path: "/advancedashboard/certificates", emoji: "🎖️", icon: "workspace_premium", label: "Certificates" },
     { id: "resume-builder", path: "/advancedashboard/resume-builder", emoji: "📄", icon: "edit_document", label: "Resume Builder" },
     { id: "profile", path: "/advancedashboard/profile", emoji: "🧑", icon: "account_circle", label: "Profile" },
     { id: "payments", path: "/advancedashboard/payments", emoji: "💳", icon: "payments", label: "Payments" },
@@ -129,7 +130,7 @@ const Sidebar = ({ collapsed, setCollapsed, onLogout, mobileOpen, setMobileOpen 
 const sectionTitles = {
     overview: "Overview", training: "Training", practical: "Practical",
     internship: "Internship", placement: "Placement",
-    payments: "Payments",
+    payments: "Payments", certificates: "Certificates",
     jobs: "Browse Jobs", "my-job": "Job Search", "mock-interview": "Mock Interview", "resume-ats": "Resume ATS",
     "resume-builder": "Resume Builder",
     "profile": "Profile",

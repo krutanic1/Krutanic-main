@@ -161,6 +161,7 @@ const TrainingPage = lazy(() => import("./new_user/pages/TrainingPage"));
 const PracticalPage = lazy(() => import("./new_user/pages/PracticalPage"));
 const InternshipPage = lazy(() => import("./new_user/pages/InternshipPage"));
 const PlacementPage = lazy(() => import("./new_user/pages/PlacementPage"));
+const CertificatePage = lazy(() => import("./new_user/pages/CertificatePage"));
 const PaymentsPage = lazy(() => import("./new_user/pages/PaymentsPage"));
 const CalendarPage = lazy(() => import("./new_user/pages/CalendarPage"));
 const AdvanceLearningPage = lazy(() => import("./new_user/AdvanceLearningPage"));
@@ -507,6 +508,7 @@ const AppContent = () => {
           <Route path="practical" element={<PracticalPage />} />
           <Route path="internship" element={<InternshipPage />} />
           <Route path="placement" element={<PlacementPage />} />
+          <Route path="certificates" element={<CertificatePage />} />
           <Route path="payments" element={<PaymentsPage />} />
           <Route path="calendar" element={<CalendarPage />} />
           <Route path="jobs" element={<JobBoardPage />} />
