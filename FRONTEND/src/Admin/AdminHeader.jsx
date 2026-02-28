@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/LOGO3.png";
 import toast, { Toaster } from "react-hot-toast";
 
 const AdminHeader = () => {
   const navigate = useNavigate();
+  const [isAdvToggleOn, setIsAdvToggleOn] = useState(false);
+
   const handleLogout = () => {
     toast.success("Logout successful!!!");
     setTimeout(() => {
@@ -15,119 +17,150 @@ const AdminHeader = () => {
   return (
     <div id="AdminHeader">
       <Toaster position="top-center" reverseOrder={false} />
-      <div className="navbar">
+      <div className="navbar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px' }}>
         <div>
           <Link to="/">
             <img src={logo} alt="Logo" />
           </Link>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <span style={{ marginRight: '10px', color: 'white', fontWeight: 'bold' }}>
+            {isAdvToggleOn ? "Advance" : "Mentorship"}
+          </span>
+          <label style={{ position: 'relative', display: 'inline-block', width: '50px', height: '24px' }}>
+            <input
+              type="checkbox"
+              checked={isAdvToggleOn}
+              onChange={() => setIsAdvToggleOn(!isAdvToggleOn)}
+              style={{ opacity: 0, width: 0, height: 0 }}
+            />
+            <span style={{
+              position: 'absolute', cursor: 'pointer', top: 0, left: 0, right: 0, bottom: 0,
+              backgroundColor: isAdvToggleOn ? '#4CAF50' : '#ccc', transition: '.4s', borderRadius: '24px'
+            }}>
+              <span style={{
+                position: 'absolute', content: '""', height: '18px', width: '18px',
+                left: isAdvToggleOn ? '28px' : '3px', bottom: '3px', backgroundColor: 'white',
+                transition: '.4s', borderRadius: '50%'
+              }} />
+            </span>
+          </label>
         </div>
       </div>
       <div className="sidebar">
         <Link to="/AdminDashboard">
           <i className="fa fa-home"></i> Home
         </Link>
-        <Link to="/AddCourse">
-          <i className="fa fa-plus-circle mr-2"></i>Create Course
-        </Link>
-        <Link to="/AddAdvCourse">
-          <i className="fa fa-plus-circle mr-2"></i>Create Adv Course
-        </Link>
-        <Link to="/AddModule">
-          <i className="fa fa-list mr-2"></i>Course List
-        </Link>
-        <Link to="/AdminProjectPage">
-          <i className="fa fa-tasks mr-2"></i>Project Management
-        </Link>
-        <Link to="/CreateOperation">
-          <i className="fa fa-briefcase mr-2"></i>Create Operation
-        </Link>
-        <Link to="/CreateAdvOperation">
-          <i className="fa fa-briefcase mr-2"></i>Create ADV Operation
-        </Link>
-        <Link to="/Target">
-          <i className="fa fa-bullseye mr-2"></i>Target Assign
-        </Link>
-        <Link to="/CreateBDA">
-          <i className="fa fa-users mr-2"></i>Create Team A/c
-        </Link>
-        <Link to="/CreateMarketingTeam">
-          <i className="fa fa-users mr-2"></i>Create Marketing
-        </Link>
-        <Link to="/CreateAdvTeam">
-          <i className="fa fa-users mr-2"></i>Create Adv Team
-        </Link>
-        <Link to="/InactiveBda">
-          <i className="fa fa-users mr-2"></i>Inactive Bda A/C
-        </Link>
-        <Link to="/CreatePlacementCoordinator">
-          <i className="fa fa-user mr-2"></i>Create PC A/c
-        </Link>
-        <Link to="/CreateInterviewer">
-          <i className="fa fa-user-plus mr-2"></i>Create Interviewer
-        </Link>
-        <Link to="/CreateInterview">
-          <i className="fa fa-calendar-plus-o mr-2"></i>Create Mock Interview
-        </Link>
-        <Link to="/AcceptedApplication">
-          <i className="fa fa-check-circle mr-2"></i>Active Users
-        </Link>
-        <Link to="/PendingApplication">
-          <i className="fa fa-times-circle mr-2"></i>Inactive Users
-        </Link>
-        <Link to="/OnBoardingDetails">
-          <i className="fa fa-info-circle mr-2"></i>OnBoarding Details
-        </Link>
-        <Link to="/AdvOnBoardingDetails">
-          <i className="fa fa-graduation-cap mr-2"></i>ADV Onboarding
-        </Link>
-        <Link to="/AdvBooked">
-          <i className="fa fa-bookmark mr-2"></i>ADV Booked
-        </Link>
-        <Link to="/AdvFullPaid">
-          <i className="fa fa-check-square mr-2"></i>ADV FullPaid
-        </Link>
-        <Link to="/AdvDefault">
-          <i className="fa fa-times-circle mr-2"></i>ADV Default
-        </Link>
-        <Link to="/BookedList">
-          <i className="fa fa-book mr-2"></i>Booked Amount
-        </Link>
-        <Link to="/HalfPayment">
-          <i className="fa fa-money mr-2"></i>Half Amount
-        </Link>
-        <Link to="/DefaultList">
-          <i className="fa fa-exclamation-circle mr-2"></i>Default Amount
-        </Link>
-        <Link to="/FullPaidList">
-          <i className="fa fa-check mr-2"></i>Full Paid Amount
-        </Link>
-        <Link to="/AdvanceQueries">
-          <i className="fa fa-question-circle mr-2"></i>Adv Course Queries
-        </Link>
-        <Link to="/MentorQueries">
-          <i className="fa fa-question-circle mr-2"></i>Mentor's Queries
-        </Link>
-        <Link to="/MasterClasses">
-          <i className="fa fa-graduation-cap mr-2"></i>Master Class
-        </Link>
-        <Link to="/AddEvent">
-          <i className="fa fa-calendar-plus-o mr-2"></i>Add Event
-        </Link>
-        <Link to="/EventRegistration">
-          <i className="fa fa-calendar-check-o mr-2"></i>Event Registrations
-        </Link>
-        <Link to="/AlumniData">
-          <i className="fa fa-lightbulb-o mr-2"></i>Alumni Review
-        </Link>
-        <Link to="/ReferAndEarnResponse">
-          <i className="fa fa-bell mr-2"></i>Refer & Earn
-        </Link>
-        <Link to="/AllTeamDetail">
-          <i className="fa fa-users mr-2"></i>Team Detail
-        </Link>
-        <Link to="/RevenueSheet">
-          <i className="fa fa-line-chart mr-2"></i>Revenue Sheet
-        </Link>
+        {!isAdvToggleOn && (
+          <>
+            <Link to="/AddCourse">
+              <i className="fa fa-plus-circle mr-2"></i>Create Course
+            </Link>
+            <Link to="/AddModule">
+              <i className="fa fa-list mr-2"></i>Course List
+            </Link>
+            <Link to="/AdminProjectPage">
+              <i className="fa fa-tasks mr-2"></i>Project Management
+            </Link>
+            <Link to="/CreateOperation">
+              <i className="fa fa-briefcase mr-2"></i>Create Operation
+            </Link>
+            <Link to="/Target">
+              <i className="fa fa-bullseye mr-2"></i>Target Assign
+            </Link>
+            <Link to="/CreateBDA">
+              <i className="fa fa-users mr-2"></i>Create Team A/c
+            </Link>
+            <Link to="/CreateMarketingTeam">
+              <i className="fa fa-users mr-2"></i>Create Marketing
+            </Link>
+            <Link to="/InactiveBda">
+              <i className="fa fa-users mr-2"></i>Inactive Bda A/C
+            </Link>
+            <Link to="/CreatePlacementCoordinator">
+              <i className="fa fa-user mr-2"></i>Create PC A/c
+            </Link>
+            <Link to="/CreateInterviewer">
+              <i className="fa fa-user-plus mr-2"></i>Create Interviewer
+            </Link>
+            <Link to="/CreateInterview">
+              <i className="fa fa-calendar-plus-o mr-2"></i>Create Mock Interview
+            </Link>
+            <Link to="/AcceptedApplication">
+              <i className="fa fa-check-circle mr-2"></i>Active Users
+            </Link>
+            <Link to="/PendingApplication">
+              <i className="fa fa-times-circle mr-2"></i>Inactive Users
+            </Link>
+            <Link to="/OnBoardingDetails">
+              <i className="fa fa-info-circle mr-2"></i>OnBoarding Details
+            </Link>
+            <Link to="/BookedList">
+              <i className="fa fa-book mr-2"></i>Booked Amount
+            </Link>
+            <Link to="/HalfPayment">
+              <i className="fa fa-money mr-2"></i>Half Amount
+            </Link>
+            <Link to="/DefaultList">
+              <i className="fa fa-exclamation-circle mr-2"></i>Default Amount
+            </Link>
+            <Link to="/FullPaidList">
+              <i className="fa fa-check mr-2"></i>Full Paid Amount
+            </Link>
+            <Link to="/MentorQueries">
+              <i className="fa fa-question-circle mr-2"></i>Mentor's Queries
+            </Link>
+            <Link to="/MasterClasses">
+              <i className="fa fa-graduation-cap mr-2"></i>Master Class
+            </Link>
+            <Link to="/AddEvent">
+              <i className="fa fa-calendar-plus-o mr-2"></i>Add Event
+            </Link>
+            <Link to="/EventRegistration">
+              <i className="fa fa-calendar-check-o mr-2"></i>Event Registrations
+            </Link>
+            <Link to="/AlumniData">
+              <i className="fa fa-lightbulb-o mr-2"></i>Alumni Review
+            </Link>
+            <Link to="/ReferAndEarnResponse">
+              <i className="fa fa-bell mr-2"></i>Refer & Earn
+            </Link>
+            <Link to="/AllTeamDetail">
+              <i className="fa fa-users mr-2"></i>Team Detail
+            </Link>
+            <Link to="/RevenueSheet">
+              <i className="fa fa-line-chart mr-2"></i>Revenue Sheet
+            </Link>
+          </>
+        )}
+        {isAdvToggleOn && (
+          <>
+            <Link to="/AddAdvCourse">
+              <i className="fa fa-plus-circle mr-2"></i>Create Adv Course
+            </Link>
+            <Link to="/CreateAdvOperation">
+              <i className="fa fa-briefcase mr-2"></i>Create ADV Operation
+            </Link>
+            <Link to="/CreateAdvTeam">
+              <i className="fa fa-users mr-2"></i>Create Adv Team
+            </Link>
+            <Link to="/AdvOnBoardingDetails">
+              <i className="fa fa-graduation-cap mr-2"></i>ADV Onboarding
+            </Link>
+            <Link to="/AdvBooked">
+              <i className="fa fa-bookmark mr-2"></i>ADV Booked
+            </Link>
+            <Link to="/AdvFullPaid">
+              <i className="fa fa-check-square mr-2"></i>ADV FullPaid
+            </Link>
+            <Link to="/AdvDefault">
+              <i className="fa fa-times-circle mr-2"></i>ADV Default
+            </Link>
+            <Link to="/AdvanceQueries">
+              <i className="fa fa-question-circle mr-2"></i>Adv Course Queries
+            </Link>
+          </>
+        )}
         <button onClick={handleLogout}>
           <i className="fa fa-sign-out"></i> Logout
         </button>

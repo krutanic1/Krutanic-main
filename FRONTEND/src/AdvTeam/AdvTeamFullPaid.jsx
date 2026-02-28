@@ -13,13 +13,13 @@ const AdvTeamFullPaid = () => {
       setLoading(true);
       const response = await axios.get(`${API}/getadvenrolls`);
       const enrollments = response.data.data || response.data;
-      
+
       const filtered = enrollments.filter(
-        (item) => 
-          item.status === "fullPaid" && 
+        (item) =>
+          item.status === "fullPaid" &&
           item.counselor === advTeamName
       );
-      
+
       setFullPaidEnrollments(filtered);
     } catch (error) {
       console.error("Error fetching full paid enrollments:", error);
@@ -44,20 +44,21 @@ const AdvTeamFullPaid = () => {
   }
 
   return (
-    <div id="BdaPanel">
+    <div id="AdminAddCourse">
       <Toaster position="top-center" reverseOrder={false} />
-      <div className="welcome-message">
-        <h2>Full Paid Advance Program Enrollments</h2>
-        <p>Total Full Paid: {fullPaidEnrollments.length}</p>
-      </div>
 
-      <div className="table-container">
+      <div className="coursetable">
+        <div className="flex justify-between items-center mb-4">
+          <h2>Full Paid Advance Program Enrollments</h2>
+          <span className="bg-[#f15b29] text-white px-3 py-1 rounded-full text-sm font-semibold">Total Full Paid: {fullPaidEnrollments.length}</span>
+        </div>
+
         {fullPaidEnrollments.length === 0 ? (
-          <div className="no-data">
+          <div className="text-center py-6 text-gray-500">
             <p>No full paid enrollments found</p>
           </div>
         ) : (
-          <table className="data-table">
+          <table>
             <thead>
               <tr>
                 <th>S.No</th>
@@ -81,11 +82,11 @@ const AdvTeamFullPaid = () => {
                   <td>{enrollment.phone}</td>
                   <td>{enrollment.domain}</td>
                   <td>{enrollment.program}</td>
-                  <td>₹{enrollment.programPrice?.toLocaleString()}</td>
+                  <td className="text-green-600 font-bold">₹{enrollment.programPrice?.toLocaleString()}</td>
                   <td>₹{enrollment.paidAmount?.toLocaleString()}</td>
-                  <td>{enrollment.monthOpted}</td>
+                  <td className="whitespace-nowrap">{enrollment.monthOpted}</td>
                   <td>
-                    <span className="status-badge status-fullpaid">
+                    <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded border border-green-400">
                       {enrollment.status}
                     </span>
                   </td>
