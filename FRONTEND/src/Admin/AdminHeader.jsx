@@ -77,6 +77,18 @@ const AdminHeader = () => {
         <Link to="/OnBoardingDetails">
           <i className="fa fa-info-circle mr-2"></i>OnBoarding Details
         </Link>
+        <Link to="/AdvOnBoardingDetails">
+          <i className="fa fa-graduation-cap mr-2"></i>ADV Onboarding
+        </Link>
+        <Link to="/AdvBooked">
+          <i className="fa fa-bookmark mr-2"></i>ADV Booked
+        </Link>
+        <Link to="/AdvFullPaid">
+          <i className="fa fa-check-square mr-2"></i>ADV FullPaid
+        </Link>
+        <Link to="/AdvDefault">
+          <i className="fa fa-times-circle mr-2"></i>ADV Default
+        </Link>
         <Link to="/BookedList">
           <i className="fa fa-book mr-2"></i>Booked Amount
         </Link>

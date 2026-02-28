@@ -196,7 +196,15 @@ router.post("/advenroll", async (req, res) => {
 // Get all advance enrollments
 router.get("/getadvenrolls", async (req, res) => {
   try {
-    const { limit = 0, skip = 0 } = req.query;
+    const { limit = 0, skip = 0, all } = req.query;
+    
+    // If 'all' is true, return everything without pagination
+    if (all === "true") {
+      const advEnrolls = await AdvEnroll.find()
+        .sort({ createdAt: -1 })
+        .lean();
+      return res.status(200).json(advEnrolls);
+    }
     
     const advEnrolls = await AdvEnroll.find()
       .sort({ createdAt: -1 })
@@ -253,6 +261,38 @@ router.post("/updateadvenrollstatus", async (req, res) => {
   } catch (error) {
     console.error('[AdvEnroll] Update status error:', error);
     res.status(500).json({ error: "Server error" });
+  }
+});
+
+// Update advance enrollment operation assignment
+router.post("/update-adv-operation/:id", async (req, res) => {
+  try {
+    const { operationName, operationId } = req.body;
+    const { id } = req.params;
+    
+    const updatedItem = await AdvEnroll.findByIdAndUpdate(
+      id,
+      {
+        operationName: operationName,
+        operationId: operationId,
+      },
+      { new: true }
+    );
+    
+    if (updatedItem) {
+      res.status(200).json({ 
+        message: "ADV Operation updated successfully",
+        data: updatedItem 
+      });
+    } else {
+      res.status(404).json({ message: "Item not found" });
+    }
+  } catch (error) {
+    console.error("Error updating ADV operation:", error);
+    res.status(500).json({ 
+      message: "Error updating ADV operation", 
+      error: error.message 
+    });
   }
 });
 

@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import API from "../API";
-import { Pie, Line } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
-  ArcElement,
   Tooltip,
   Legend,
   CategoryScale,
@@ -14,7 +13,6 @@ import {
 } from "chart.js";
 
 ChartJS.register(
-  ArcElement,
   Tooltip,
   Legend,
   CategoryScale,
@@ -148,94 +146,80 @@ const AdvOperationDashboard = () => {
   const lastTwoMonths = sortedMonths.slice(-2);
   const revenueData = lastTwoMonths.map((month) => ({
     month,
-    ...revenueByMonth[month],
+    revenue: revenueByMonth[month]?.totalRevenue || 0,
   }));
 
-  const pieData = {
-    labels: ["Booked", "Full Paid", "Default"],
+  const lineChartData = {
+    labels: revenueData.map((data) => data.month),
     datasets: [
       {
-        label: "Student Status",
-        data: [bookedCount, fullPaidCount, defaultCount],
-        backgroundColor: ["#36A2EB", "#4BC0C0", "#FF6384"],
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  const lineData = {
-    labels: revenueData.map((item) => item.month),
-    datasets: [
-      {
-        label: "Revenue",
-        data: revenueData.map((item) => item.totalRevenue),
-        backgroundColor: "rgba(75, 192, 192, 0.2)",
-        borderColor: "rgba(75, 192, 192, 1)",
-        borderWidth: 2,
+        label: "Revenue Growth (₹)",
+        data: revenueData.map((data) => data.revenue),
+        borderColor: "#4CAF50",
+        backgroundColor: "rgba(76, 175, 80, 0.2)",
+        fill: true,
+        tension: 0.4,
       },
     ],
   };
 
   return (
-    <div id="OperationDashboard">
-      <div className="operation-dashboard-container">
-        <h1 className="dashboard-title">
-          Welcome, <span className="highlight">{operationName}</span>!
-        </h1>
+    <div id="AdminDashboard">
+      <h2 className="text-center font-semibold mb-4">Operation Dashboard</h2>
 
-        <div className="dashboard-grid">
-          <div className="dashboard-card">
-            <h3>Current Month Revenue</h3>
-            <p className="revenue-amount">₹ {totalRevenue.toLocaleString()}</p>
-          </div>
+      <div className="numberdiv">
+        <div>
+          <i className="text-yellow-500 fa fa-calendar"></i>
+          <h2>Booked</h2>
+          <span>{bookedCount}</span>
+        </div>
+        <div>
+          <i className="text-green-700 fa fa-money"></i>
+          <h2>Full PAID</h2>
+          <span>{fullPaidCount}</span>
+        </div>
+        <div>
+          <i className="text-red-700 fa fa-times-circle"></i>
+          <h2>Default</h2>
+          <span>{defaultCount}</span>
+        </div>
+      </div>
 
-          <div className="dashboard-card">
-            <h3>Booked Revenue</h3>
-            <p className="revenue-amount">₹ {bookedRevenue.toLocaleString()}</p>
-          </div>
+      <div className="revenue">
+        <div className="revenue-card">
+          <h2 className="text-lg font-semibold">Revenue Details (Current Month)</h2>
+          <p>Total Revenue: {totalRevenue}/-</p>
+          <p>Credited Revenue: {creditedRevenue}/-</p>
+          <p>Pending Revenue: {pendingRevenue}/-</p>
+        </div>
 
-          <div className="dashboard-card">
-            <h3>Credited Revenue</h3>
-            <p className="revenue-amount">₹ {creditedRevenue.toLocaleString()}</p>
-          </div>
-
-          <div className="dashboard-card">
-            <h3>Pending Revenue</h3>
-            <p className="revenue-amount">₹ {pendingRevenue.toLocaleString()}</p>
+        <div className="revenue-growth">
+          <h2 className="text-lg font-semibold mb-4">Revenue Growth</h2>
+          <div>
+            <Line data={lineChartData} />
           </div>
         </div>
 
-        <div className="charts-container">
-          <div className="chart-card">
-            <h3>Student Status Distribution</h3>
-            <Pie data={pieData} />
-          </div>
+        <div className="revenue-card">
+          <h2 className="text-lg font-bold mb-4">Your Target</h2>
+          <div>
+            {operation.map((item, index) => {
+              if (item.target && item.target.length > 0) {
+                const lastTarget = item.target[item.target.length - 1];
 
-          <div className="chart-card">
-            <h3>Revenue Trend</h3>
-            <Line data={lineData} />
-          </div>
-        </div>
-
-        <div className="stats-grid">
-          <div className="stat-card booked">
-            <h4>Booked Students</h4>
-            <p className="stat-number">{bookedCount}</p>
-          </div>
-
-          <div className="stat-card fullpaid">
-            <h4>Full Paid Students</h4>
-            <p className="stat-number">{fullPaidCount}</p>
-          </div>
-
-          <div className="stat-card default">
-            <h4>Default Students</h4>
-            <p className="stat-number">{defaultCount}</p>
-          </div>
-
-          <div className="stat-card total">
-            <h4>Total Students</h4>
-            <p className="stat-number">{operationData.length}</p>
+                if (lastTarget.currentMonth === currentMonthWithDate && lastTarget.percentage) {
+                  return (
+                    <div key={index}>
+                      <p>📅 Payment Percentage: {lastTarget.percentage}</p>
+                    </div>
+                  );
+                } else {
+                  return <p key={index}>No target assigned for this month.</p>;
+                }
+              } else {
+                return <p key={index}>No target assigned.</p>;
+              }
+            })}
           </div>
         </div>
       </div>

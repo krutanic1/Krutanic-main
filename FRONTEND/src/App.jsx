@@ -56,6 +56,10 @@ import AllTeamDetail from "./Admin/AllTeamDetail";
 import AddEvent from "./Admin/AddEvent";
 import EventRegistration from "./Admin/EventRegistration";
 import OnBoardingDetails from "./Admin/OnBoardingDetails";
+import AdvOnBoardingDetails from "./Admin/AdvOnBoardingDetails";
+import AdvBooked from "./Admin/AdvBooked";
+import AdvFullPaid from "./Admin/AdvFullPaid";
+import AdvDefault from "./Admin/AdvDefault";
 import HalfPayment from "./Admin/HalfPayment";
 import Target from "./Admin/Target";
 import AlumniData from "./Admin/AlumniData";
@@ -247,6 +251,10 @@ const AppContent = () => {
     "/revenuesheet",
     "/createplacementcoordinator",
     "/onboardingdetails",
+    "/advonboardingdetails",
+    "/advbooked",
+    "/advfullpaid",
+    "/advdefault",
     "/allteamdetail",
     "/masterclasses",
     "/addevent",
@@ -401,6 +409,10 @@ const AppContent = () => {
         <Route path="/CreateManager" element={isAuthenticatedAdmin() ? <Createmanager /> : <Navigate to="/AdminLogin" />} />
         <Route path="/RevenueSheet" element={isAuthenticatedAdmin() ? <RevenueSheet /> : <Navigate to="/AdminLogin" />} />
         <Route path="/OnBoardingDetails" element={isAuthenticatedAdmin() ? <OnBoardingDetails /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/AdvOnBoardingDetails" element={isAuthenticatedAdmin() ? <AdvOnBoardingDetails /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/AdvBooked" element={isAuthenticatedAdmin() ? <AdvBooked /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/AdvFullPaid" element={isAuthenticatedAdmin() ? <AdvFullPaid /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/AdvDefault" element={isAuthenticatedAdmin() ? <AdvDefault /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AllTeamDetail" element={isAuthenticatedAdmin() ? <AllTeamDetail /> : <Navigate to="/AdminLogin" />} />
         <Route path="/CreatePlacementCoordinator" element={isAuthenticatedAdmin() ? (<CreatePlacementCoordinator />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/MasterClasses" element={isAuthenticatedAdmin() ? (<MasterClasses />) : (<Navigate to="/AdminLogin" />)} />
