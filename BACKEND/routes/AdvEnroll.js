@@ -1,0 +1,259 @@
+const express = require("express");
+const router = express.Router();
+const CreateBDA = require("../models/CreateBDA");
+const AdvEnroll = require("../models/AdvEnroll");
+const CreateCourse = require("../models/CreateCourse");
+const CreateAdvCourse = require("../models/CreateAdvCourse");
+const TransactionId = require("../models/AddTransactionId");
+const CreateOperation = require("../models/CreateOperation");
+const mongoose = require("mongoose");
+
+router.post("/advenroll", async (req, res) => {
+  try {
+    const {
+      fullname,
+      email,
+      phone,
+      counselor,
+      lead,
+      domain,
+      programPrice,
+      paidAmount,
+      monthOpted,
+      clearPaymentMonth,
+      operationName,
+      operationId,
+      transactionId,
+      alternativeEmail,
+      modeofpayment,
+      whatsAppNumber,
+      remainingAmount,
+      collegeName,
+      branch,
+      aadharNumber,
+      referFriend,
+      internshipstartsmonth,
+      internshipendsmonth,
+      yearOfStudy,
+      languages,
+      companyName,
+      role
+    } = req.body;
+    
+    const course = await CreateAdvCourse.findOne({ title: domain });
+
+    const existingUser = await AdvEnroll.findOne({
+      email: req.body.email,
+    });
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ message: "You have already submitted your details." });
+    }
+
+    // Lookup executive assignment from AddTransactionId table
+    const transactionRecord = await TransactionId.findOne({ transactionId: email });
+    let executiveId = null;
+    let executive = null;
+
+    console.log('=== ADVANCE ENROLL - EXECUTIVE ASSIGNMENT DEBUG ===');
+    console.log('Looking up transaction for email:', email);
+    console.log('Transaction record found:', transactionRecord);
+
+    if (transactionRecord) {
+      executiveId = transactionRecord.executiveId;
+      executive = transactionRecord.executive;
+      console.log('Executive ID:', executiveId);
+      console.log('Executive Name:', executive);
+    } else {
+      console.log('NO TRANSACTION RECORD FOUND FOR EMAIL:', email);
+    }
+
+    // --- Auto-Assignment Logic for Operation Executive ---
+    let assignedOperationId = operationId;
+    let assignedOperationName = operationName;
+
+    const currentHour = new Date().getHours();
+    // Execute only between 10 PM (22) and 11:59 PM (23)
+    if (!assignedOperationId && currentHour >= 22 && currentHour <= 23) {
+      try {
+        // 1. Fetch all active Operation Executives (Online only)
+        const allOps = await CreateOperation.find({ isOnline: { $ne: false } });
+
+        if (allOps.length > 0) {
+          // 2. Get today's counts for each executive
+          const startOfDay = new Date();
+          startOfDay.setHours(0, 0, 0, 0);
+
+          const counts = await AdvEnroll.aggregate([
+            { $match: { createdAt: { $gte: startOfDay } } },
+            { $group: { _id: "$operationId", count: { $sum: 1 } } }
+          ]);
+
+          const countMap = {};
+          counts.forEach(c => {
+            if (c._id) countMap[c._id.toString()] = c.count;
+          });
+
+          // Helper to get count (default 0)
+          const getCount = (opId) => countMap[opId.toString()] || 0;
+
+          // 3. Filter for capacity (< 15)
+          const MAX_DAILY_CAPACITY = 15;
+
+          // Enhance ops with current count
+          const opsWithCount = allOps.map(op => ({
+            doc: op,
+            count: getCount(op._id),
+            hasLanguage: (languages && Array.isArray(languages) && op.languages && Array.isArray(op.languages))
+              ? languages.some(l => op.languages.includes(l))
+              : false
+          }));
+
+          // Strategy A: Find Language Match AND Under Capacity
+          let candidates = opsWithCount.filter(item => item.hasLanguage && item.count < MAX_DAILY_CAPACITY);
+
+          if (candidates.length > 0) {
+            // Sort by count ascending (load balancing)
+            candidates.sort((a, b) => a.count - b.count);
+            assignedOperationId = candidates[0].doc._id;
+            assignedOperationName = candidates[0].doc.fullname;
+            console.log(`[AdvEnroll] Assigned to Language Match (Count: ${candidates[0].count}): ${assignedOperationName}`);
+          } else {
+            // Strategy B: Fallback - Any Under Capacity (Least Loaded)
+            candidates = opsWithCount.filter(item => item.count < MAX_DAILY_CAPACITY);
+
+            if (candidates.length > 0) {
+              candidates.sort((a, b) => a.count - b.count);
+              assignedOperationId = candidates[0].doc._id;
+              assignedOperationName = candidates[0].doc.fullname;
+              console.log(`[AdvEnroll] Assigned to Fallback Capacity (Count: ${candidates[0].count}): ${assignedOperationName}`);
+            } else {
+              // Strategy C: Absolute Fallback - Least Loaded Overall (even if full)
+              opsWithCount.sort((a, b) => a.count - b.count);
+              assignedOperationId = opsWithCount[0].doc._id;
+              assignedOperationName = opsWithCount[0].doc.fullname;
+              console.log(`[AdvEnroll] Assigned to Global Fallback (Count: ${opsWithCount[0].count}): ${assignedOperationName}`);
+            }
+          }
+        }
+      } catch (assErr) {
+        console.error("[AdvEnroll] Error in auto-assignment logic:", assErr);
+        // Proceed with default/null if error
+      }
+    } else {
+      console.log('[AdvEnroll] Auto-assignment skipped (outside 10 PM - 12 AM window)');
+    }
+    // -----------------------------------------------------
+
+    const newAdvStudent = new AdvEnroll({
+      fullname,
+      email,
+      alternativeEmail,
+      phone,
+      counselor,
+      lead,
+      domain,
+      programPrice,
+      paidAmount,
+      monthOpted,
+      clearPaymentMonth,
+      operationName: assignedOperationName,
+      modeofpayment,
+      transactionId,
+      operationId: assignedOperationId,
+      status: "booked",
+      domainId: course ? course._id : null,
+      whatsAppNumber,
+      remainingAmount,
+      collegeName,
+      branch,
+      aadharNumber,
+      referFriend,
+      internshipstartsmonth,
+      internshipendsmonth,
+      yearOfStudy,
+      executiveId: executiveId,
+      executive: executive,
+      languages,
+      companyName,
+      role
+    });
+
+    console.log('[AdvEnroll] Creating new advance student with executiveId:', newAdvStudent.executiveId);
+    console.log('[AdvEnroll] Creating new advance student with executive:', newAdvStudent.executive);
+
+    await newAdvStudent.save();
+    console.log('[AdvEnroll] Advance student saved successfully');
+    res.status(201).json({ message: "Advance Program Registration successful!" });
+
+  } catch (error) {
+    console.error('[AdvEnroll] Error:', error);
+    res.status(500).json({ error: "Server error. Please try again later." });
+  }
+});
+
+// Get all advance enrollments
+router.get("/getadvenrolls", async (req, res) => {
+  try {
+    const { limit = 0, skip = 0 } = req.query;
+    
+    const advEnrolls = await AdvEnroll.find()
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .skip(parseInt(skip))
+      .lean();
+    
+    const total = await AdvEnroll.countDocuments();
+    
+    res.status(200).json({
+      data: advEnrolls,
+      total,
+      success: true
+    });
+  } catch (error) {
+    console.error('[AdvEnroll] Get error:', error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// Get single advance enrollment by ID
+router.get("/getadvenroll/:id", async (req, res) => {
+  try {
+    const advEnroll = await AdvEnroll.findById(req.params.id);
+    if (!advEnroll) {
+      return res.status(404).json({ message: "Record not found" });
+    }
+    res.status(200).json(advEnroll);
+  } catch (error) {
+    console.error('[AdvEnroll] Get by ID error:', error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// Update advance enrollment status
+router.post("/updateadvenrollstatus", async (req, res) => {
+  try {
+    const { id, status } = req.body;
+    
+    const updatedEnroll = await AdvEnroll.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    );
+    
+    if (!updatedEnroll) {
+      return res.status(404).json({ message: "Record not found" });
+    }
+    
+    res.status(200).json({ 
+      message: "Status updated successfully",
+      data: updatedEnroll 
+    });
+  } catch (error) {
+    console.error('[AdvEnroll] Update status error:', error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+module.exports = router;

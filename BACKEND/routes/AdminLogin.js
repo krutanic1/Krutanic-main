@@ -3,6 +3,7 @@ const router = express.Router();
 const adminMail = require("../models/AdminMail");
 const Operation = require("../models/CreateOperation");
 const bda = require("../models/CreateBDA");
+const advTeam = require("../models/CreateAdvTeam");
 const expressAsyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
@@ -44,7 +45,7 @@ router.post("/otpsend", expressAsyncHandler(async (req, res) => {
       return res.status(500).json({ error: "Admin email not found" });
     }
 
-    if (email !== admin.email) {
+    if (email !== admin.email) { 
       return res.status(401).json({ error: "You are not authorized as admin" });
     }
 
@@ -262,6 +263,64 @@ router.put('/mailsendedbda/:id', async (req, res) => {
   } catch (error) {
     console.error('Error updating  Bda data record:', error);
     res.status(500).send({ message: 'Failed to update updating  Bda record.' });
+  }
+});
+
+// -------------------------Advanced Team
+//send login details to advanced team
+router.post('/sendmailtoadvteam', async (req, res) => {
+  const { fullname, email } = req.body;
+  const emailMessage = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+      <div style="background-color: #F15B29; color: #fff; text-align: center; padding: 20px;">
+        <h1>Welcome to Krutanic!</h1>
+      </div>
+      <div style="padding: 20px;">
+        <p style="font-size: 16px; text-transform: capitalize; color: #333;">Dear ${fullname},</p>
+        <p style="font-size: 14px; color: #555;">Welcome to the Advanced Team at Krutanic!</p>
+        <p style="font-size: 14px; color: #555;">Here are your login details:</p>
+        <p style="font-size: 14px; color: #333;"> Use your official company email (<strong>${email}</strong>) along with the OTP provided to log in.</strong>)</p>
+        <p style="font-size: 14px; color: #555;">
+          <a href="https://www.krutanic.com/teamlogin" target="_blank" style="color: #F15B29; text-decoration: none;">Click here to log in</a>. 
+        </p>
+        <p style="font-size: 14px; color: #555;">If you need further assistance, feel free to reach out to the IT team.</p>
+        <p style="font-size: 14px; color: #333;">Best regards,</p>
+        <p style="font-size: 14px; color: #333;">Team Krutanic</p>
+      </div>
+      <div style="text-align: center; font-size: 12px; color: #888; padding: 10px 0; border-top: 1px solid #ddd;">
+        <p>&copy; 2024 Krutanic. All Rights Reserved.</p>
+      </div>
+    </div>
+  `;
+  try {
+    await sendEmail({
+      email,
+      subject: 'Welcome to Krutanic - Advanced Team Login',
+      message: emailMessage,
+    });
+    res.status(200).json({ message: 'Email sent successfully!' });
+  } catch (error) {
+    console.error('Error sending email:', error);
+    res.status(500).json({ message: 'Error sending email.', error: error.message });
+  }
+});
+
+// store a value after sending a login details to advanced team 
+router.put('/mailsendedadvteam/:id', async (req, res) => {
+  const { id } = req.params;
+  const { mailSended } = req.body;
+  const objectId = new mongoose.Types.ObjectId(id);
+  try {
+    const advTeamData = await advTeam.findById({ _id: objectId });
+    if (!advTeamData) {
+      return res.status(404).send({ message: 'Adv Team member not found.' });
+    }
+    advTeamData.mailSended = mailSended;
+    await advTeamData.save();
+    res.status(200).send({ message: 'Adv Team record updated successfully!', advTeamData });
+  } catch (error) {
+    console.error('Error updating Adv Team data record:', error);
+    res.status(500).send({ message: 'Failed to update Adv Team record.' });
   }
 });
 

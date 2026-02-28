@@ -3,12 +3,13 @@ import axios from "axios";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
 
-const CreateBDA = () => {
+const CreateAdvTeam = () => {
   const [iscourseFormVisible, setiscourseFormVisible] = useState(false);
   const [teamName, setTeamName] = useState("");
   const [bda, setBda] = useState([]);
   const [getteamName, setGetTeamName] = useState([]);
   const [teams, setTeams] = useState([{ id: 1, name: "" }]);
+  const [selectedTeamFilter, setSelectedTeamFilter] = useState("");
   const [formData, setFormData] = useState({
     fullname: "",
     email: "",
@@ -26,8 +27,11 @@ const CreateBDA = () => {
 
   const handleSumbit = async (e) => {
     e.preventDefault();
-    // For MANAGER, join all team names; for others, use single team
-    const teamValue = formData.designation === "MANAGER"
+    console.log("Submitting form with data:", formData);
+    console.log("Editing ID:", editingBdaId);
+    
+    // For ADV Manager, join all team names; for others, use single team
+    const teamValue = formData.designation === "ADV Manager"
       ? teams.map(t => t.name.trim()).filter(name => name !== "").join(", ")
       : formData.team.trim();
     const newBda = {
@@ -36,23 +40,26 @@ const CreateBDA = () => {
       password: formData.password.trim(),
       team: teamValue,
       designation: formData.designation.trim(),
-      teams: formData.designation === "MANAGER" ? teams.map(t => t.name.trim()).filter(name => name !== "") : [],
-      appendTeams: editingBdaId ? true : false, // Append teams when editing
+      teams: formData.designation === "ADV Manager" ? teams.map(t => t.name.trim()).filter(name => name !== "") : [],
     };
+    
+    console.log("Payload being sent:", newBda);
     try {
       if (editingBdaId) {
         const response = await axios.put(
-          `${API}/updatebda/${editingBdaId}`,
+          `${API}/updateadvteam/${editingBdaId}`,
           newBda
         );
-        toast.success("BDA updated successfully!");
+        toast.success("Adv Team member updated successfully!");
         // Update local state immediately with returned data
         setBda((prevBda) =>
           prevBda.map((item) => item._id === editingBdaId ? response.data : item)
         );
+        // Fetch fresh data to ensure consistency
+        fetchBda();
       } else {
-        const response = await axios.post(`${API}/createbda`, newBda);
-        toast.success("BDA created successfully!");
+        const response = await axios.post(`${API}/createadvteam`, newBda);
+        toast.success("Adv Team member created successfully!");
         // Append new BDA to local state immediately
         // Ensure status is Active as backend doesn't return it explicitly in all cases but defaults usually
         // If backend schema defaults status to 'Active', response.data will have it if it returns the saved object.
@@ -71,8 +78,8 @@ const CreateBDA = () => {
   const fetchBda = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API}/getbda`);
-      setBda(response.data.filter((item) => item && item.status === "Active" && item.designation && !item.designation.includes("ADV")));
+      const response = await axios.get(`${API}/getadvteam`);
+      setBda(response.data.filter((item) => item && item.status === "Active"));
     } catch (error) {
       console.error("There was an error fetching bda:", error);
     } finally {
@@ -83,7 +90,7 @@ const CreateBDA = () => {
   const fetchTeamname = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API}/getteamname`);
+      const response = await axios.get(`${API}/getadvteamname`);
       setGetTeamName(response.data);
     } catch (error) {
       console.error("There was an error fetching teamname:", error);
@@ -136,31 +143,32 @@ const CreateBDA = () => {
 
   const handleDelete = async (_id) => {
     const isConfirmed = window.confirm(
-      "Are you sure you want to delete the BDA account?"
+      "Are you sure you want to delete the Adv Team member?"
     );
     if (isConfirmed) {
       try {
-        await axios.delete(`${API}/deletebda/${_id}`);
+        await axios.delete(`${API}/deleteadvteam/${_id}`);
         setBda((prevBda) => prevBda.filter((item) => item._id !== _id));
-        toast.success("BDA deleted successfully!");
+        toast.success("Adv Team member deleted successfully!");
       } catch (error) {
-        console.error("There was an error deleting the bda:", error);
-        toast.error("Failed to delete BDA.");
+        console.error("There was an error deleting the adv team member:", error);
+        toast.error("Failed to delete Adv Team member.");
         fetchBda(); // Revert on error
       }
     }
   };
   const handleEdit = (bdaId) => {
+    console.log("Editing member:", bdaId);
     setFormData({
       fullname: bdaId.fullname,
       email: bdaId.email,
-      password: bdaId.password,
-      team: bdaId.team,
+      password: bdaId.password || '',
+      team: bdaId.team || '',
       designation: bdaId.designation,
     });
 
-    // If the person is a MANAGER and has existing teams, load them
-    if (bdaId.designation === "MANAGER" && bdaId.teams && bdaId.teams.length > 0) {
+    // If the person is a ADV Manager and has existing teams, load them
+    if (bdaId.designation === "ADV Manager" && bdaId.teams && bdaId.teams.length > 0) {
       setTeams(bdaId.teams.map((teamName, index) => ({ id: index + 1, name: teamName })));
     } else {
       setTeams([{ id: 1, name: "" }]);
@@ -176,20 +184,20 @@ const CreateBDA = () => {
       email: value.email,
     };
     try {
-      const response = await axios.post(`${API}/sendmailtobda`, emailData);
+      const response = await axios.post(`${API}/sendmailtoadvteam`, emailData);
       if (response.status === 200) {
         toast.success("Email sent successfully!");
         const bdaData = {
           mailSended: true,
         };
         const updateResponse = await axios.put(
-          `${API}/mailsendedbda/${value._id}`,
+          `${API}/mailsendedadvteam/${value._id}`,
           bdaData
         );
         if (updateResponse.status === 200) {
-          toast.success("BDA record updated successfully!");
+          toast.success("Adv Team record updated successfully!");
         } else {
-          toast.error("Failed to update Bda record.");
+          toast.error("Failed to update Adv Team record.");
         }
       } else {
         toast.error("Failed to send email.");
@@ -206,7 +214,7 @@ const CreateBDA = () => {
     );
     if (isConfirmed) {
       try {
-        const response = await axios.put(`${API}/updatestatus/${bdaId}`, { status });
+        const response = await axios.put(`${API}/updateadvteamstatus/${bdaId}`, { status });
         if (response.status === 200) {
           toast.success(`Account ${status} successfully!`);
           if (status === "Inactive") {
@@ -230,7 +238,7 @@ const CreateBDA = () => {
       teamname: teamName.trim(),
     };
     // console.log("teamData", teamData);
-    axios.post(`${API}/addteamname`, teamData)
+    axios.post(`${API}/addadvteamname`, teamData)
       .then((response) => {
         if (response.status === 200) {
           toast.success("Team added successfully!");
@@ -249,16 +257,16 @@ const CreateBDA = () => {
 
   const handleloginteam = async (email, password) => {
     try {
-      const response = await axios.post(`${API}/checkbdaauth`, { email, password });
+      const response = await axios.post(`${API}/checkadvteamauth`, { email, password });
       if (response.status === 200) {
         toast.success("Login successful!");
         const loginTime = new Date().getTime();
         setTimeout(() => {
-          localStorage.setItem("bdaId", response.data.bdaId);
-          localStorage.setItem("bdaName", response.data.bdaName);
-          localStorage.setItem("bdaToken", response.data.token);
-          localStorage.setItem("sessionStartTime", loginTime);
-          window.open("/Home", "_blank");
+          localStorage.setItem("advTeamId", response.data.bdaId);
+          localStorage.setItem("advTeamName", response.data.bdaName);
+          localStorage.setItem("advTeamToken", response.data.token);
+          localStorage.setItem("advTeamSessionStartTime", loginTime);
+          window.open("/advteam/home", "_blank");
         }, 500);
       }
     } catch (error) {
@@ -273,7 +281,7 @@ const CreateBDA = () => {
     if (isConfirmed) {
       try {
         const newAccess = !currentAccess;
-        const response = await axios.put(`${API}/updateaccess/${id}`, { Access: newAccess });
+        const response = await axios.put(`${API}/updateadvteamaccess/${id}`, { Access: newAccess });
         if (response.status === 200) {
           toast.success(`Account access changed successfully!`);
           setBda((prevBda) =>
@@ -298,7 +306,7 @@ const CreateBDA = () => {
         <div className="form">
           <form onSubmit={handleSumbit}>
             <span onClick={resetForm}>✖</span>
-            <h2>{editingBdaId ? "Edit BDA Account" : "Create BDA Account"}</h2>
+            <h2>{editingBdaId ? "Edit Adv Team Member" : "Create Adv Team Member"}</h2>
             <input
               value={formData.fullname}
               onChange={handleChange}
@@ -319,21 +327,22 @@ const CreateBDA = () => {
             />
             <select name="designation" id="designation" value={formData.designation} onChange={handleChange} required>
               <option disabled value="">Select Designation</option>
-              <option value="MANAGER">MANAGER</option>
-              <option value="LEADER">LEADER</option>
-              <option value="BDA">BDA</option>
+              <option value="ADV Manager">ADV Manager</option>
+              <option value="ADV Leader">ADV Leader</option>
+              <option value="Inside Sales Specialist">Inside Sales Specialist</option>
+              <option value="SR Inside Sales Specialist">SR Inside Sales Specialist</option>
             </select>
 
-            {/* Show single team select for BDA and LEADER */}
-            {(formData.designation === "BDA" || formData.designation === "LEADER" || formData.designation === "") && (
-              <select name="team" id="team" value={formData.team} onChange={handleChange} required={formData.designation !== "MANAGER"}>
+            {/* Show single team select for Inside Sales Specialist, SR Inside Sales Specialist, and ADV Leader */}
+            {(formData.designation === "Inside Sales Specialist" || formData.designation === "SR Inside Sales Specialist" || formData.designation === "ADV Leader") && (
+              <select name="team" id="team" value={formData.team} onChange={handleChange} required>
                 <option disabled value="">Select Team</option>
                 {getteamName.map((team, index) => { return (<option key={index} value={team.teamname}>{team.teamname}</option>) })}
               </select>
             )}
 
-            {/* Show dynamic teams section for MANAGER */}
-            {formData.designation === "MANAGER" && (
+            {/* Show dynamic teams section for ADV Manager */}
+            {formData.designation === "ADV Manager" && (
               <div className="teams-section" style={{ width: '100%' }}>
                 <label style={{ fontWeight: 'bold', marginBottom: '8px', display: 'block' }}>Manage Teams:</label>
                 {teams.map((team, index) => (
@@ -390,7 +399,7 @@ const CreateBDA = () => {
       )}
       <div className="coursetable">
         <div>
-          <h2>Team Lists</h2>
+          <h2>ADV Team Lists</h2>
           <span onClick={toggleVisibility}>+ Add New Member</span>
         </div>
         <div>
@@ -399,8 +408,13 @@ const CreateBDA = () => {
             <input type="submit" value="Add Team" className="bg-blue-500 px-2 py-1 border rounded-md" />
           </form>
           <div className="flex gap-2 items-center">
-            <h2>Total Teams</h2>
-            <select className="px-2 py-1 border rounded-md">
+            <h2>Filter by Team: ({getteamName.length} teams)</h2>
+            <select 
+              className="px-2 py-1 border rounded-md" 
+              value={selectedTeamFilter} 
+              onChange={(e) => setSelectedTeamFilter(e.target.value)}
+            >
+              <option value="">All Teams</option>
               {getteamName.map((team, index) => { return (<option key={index} value={team.teamname}>{team.teamname}</option>) })}
             </select>
           </div>
@@ -431,7 +445,16 @@ const CreateBDA = () => {
               </tr>
             </thead>
             <tbody>
-              {bda.map((bda, index) => (
+              {bda
+                .filter((member) => {
+                  // Filter by selected team if a team is selected
+                  if (selectedTeamFilter && selectedTeamFilter !== "") {
+                    // Check if member's team includes the selected team (for managers with multiple teams)
+                    return member.team && member.team.includes(selectedTeamFilter);
+                  }
+                  return true; // Show all if no team filter selected
+                })
+                .map((bda, index) => (
                 <tr key={index} className={`${bda.designation}`}>
                   <td>{index + 1}</td>
                   <td>{bda.fullname}</td>
@@ -478,4 +501,4 @@ const CreateBDA = () => {
   );
 };
 
-export default CreateBDA;
+export default CreateAdvTeam;

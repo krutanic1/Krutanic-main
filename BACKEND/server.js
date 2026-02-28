@@ -11,11 +11,15 @@ const connectDB = require("./config/db");
 const { requestTimeout, dbErrorHandler, globalErrorHandler } = require("./middleware/errorHandler");
 
 const createcourse = require("./routes/CreateCourse");
+const createadvcourse = require("./routes/CreateAdvCourse");
 const createoperation = require("./routes/CreateOperation");
+const createadvoperation = require("./routes/CreateAdvOperation");
 const createbda = require("./routes/CreateBDA");
+const createadvteam = require("./routes/CreateAdvTeam");
 const Mentorship = require("./routes/Mentorship");
 const Advance = require("./routes/Advance");
 const NewStudentEnroll = require("./routes/NewStudentEnroll");
+const AdvEnroll = require("./routes/AdvEnroll");
 const CreateMarketing = require("./routes/CreateMarketing");
 const sendMailWithAttchement = require("./routes/SendMailWithAttechment");
 const CronRoutes = require("./routes/CronRoutes"); // Vercel Cron Routes
@@ -86,17 +90,25 @@ app.use(express.json());
 
 //create course
 app.use("/", createcourse);
+//create advance course
+app.use("/", createadvcourse);
 //create operation
 app.use("/", createoperation);
+//create adv operation
+app.use("/", createadvoperation);
 app.use("/", CreateMarketing);
 //create bda
 app.use("/", createbda);
+//create adv team
+app.use("/", createadvteam);
 // mentorship
 app.use("/", Mentorship);
 //advance
 app.use("/", Advance);
 //create new student enroll
 app.use("/", NewStudentEnroll);
+//create advance enroll
+app.use("/", AdvEnroll);
 //user
 app.use("/", User);
 // profile

@@ -27,17 +27,21 @@ import MasterClass from "./page/MasterClass";
 import AutomationTesting from "./page/AdvanceCourse/AutomationTesting";
 import PromptEngineering from "./page/AdvanceCourse/PromptEngineering";
 import DashboardAccessForm from "./page/DashboardAccessForm";
+import AdvanceDashboardAccess from "./page/AdvanceDashboardAccess";
 import Alumni from "./page/Alumni";
 
 // Admin
 import AdminHeader from "./Admin/AdminHeader";
 import AddCourse from "./Admin/AddCourse";
+import AddAdvCourse from "./Admin/AddAdvCourse";
 import AddModule from "./Admin/AddModule";
 import AdminProjectPage from "./Admin/AdminProjectPage";
 import PendingApplication from "./Admin/PendingApplication";
 import AcceptedApplication from "./Admin/AcceptedApplication";
 import CreateOperation from "./Admin/CreateOperation";
+import CreateAdvOperation from "./Admin/CreateAdvOperation";
 import CreateBDA from "./Admin/CreateBDA";
+import CreateAdvTeam from "./Admin/CreateAdvTeam";
 import BookedList from "./Admin/BookedList";
 import DefaultList from "./Admin/DefaultList";
 import FullPaidList from "./Admin/FullPaidList";
@@ -65,6 +69,11 @@ import BookedPayment from "./Operation/BookedPayment";
 import FullPayment from "./Operation/FullPayment";
 import DefaultPayment from "./Operation/DefaultPayment";
 import OperationRevenueSheets from "./Operation/OperationRevenueSheets";
+
+// ADV Operation Team
+import AdvOperationLogin from "./AdvOperation/AdvOperationLogin";
+import AdvOperationHeader from "./AdvOperation/AdvOperationHeader";
+import AdvOperationDashboard from "./AdvOperation/AdvOperationDashboard";
 
 // BDA Team
 import TeamLogin from "./BDA/TeamLogin";
@@ -121,6 +130,17 @@ import Verified from "./Components/Verified";
 import ReferAndEarn from "./page/ReferAndEarn";
 import LeaderBoard from "./BDA/LeaderBoard";
 
+// Advance Team
+import AdvTeamLogin from "./AdvTeam/AdvTeamLogin";
+import AdvTeamHeader from "./AdvTeam/AdvTeamHeader";
+import AdvTeamHome from "./AdvTeam/AdvTeamHome";
+import AdvTeamBooked from "./AdvTeam/AdvTeamBooked";
+import AdvTeamFullPaid from "./AdvTeam/AdvTeamFullPaid";
+import AdvTeamDefault from "./AdvTeam/AdvTeamDefault";
+import AdvAddUser from "./AdvTeam/AdvAddUser";
+import AdvTeamOnBoarding from "./AdvTeam/AdvTeamOnBoarding";
+import AdvTeamRevenue from "./AdvTeam/AdvTeamRevenue";
+
 // MarketingLogind
 
 import MarketingHeader from "./Marketing/MarketingHeader";
@@ -175,12 +195,15 @@ const AppContent = () => {
     "/automationtesting",
     "/promptengineering",
     "/operationlogin",
+    "/advoperationlogin",
     "/teamlogin",
     "/adminlogin",
     "/managerlogin",
     "/loginadmin",
     "/pclogin",
+    "/advteamlogin",
     "/dashboardaccessform",
+    "/advancedashboardaccess",
     "/masterclass",
     "/alumni",
     "/verify",
@@ -194,6 +217,7 @@ const AppContent = () => {
   const adminheaderPaths = [
     "/admindashboard",
     "/addcourse",
+    "/addadvcourse",
     "/addmodule",
     "/pendingapplication",
     "/acceptedapplication",
@@ -202,7 +226,9 @@ const AppContent = () => {
     "/defaultlist",
     "/fullpaidlist",
     "/createoperation",
+    "/createadvoperation",
     "/createbda",
+    "/createadvteam",
     "/createmanager",
     "/mentorqueries",
     "/advancequeries",
@@ -232,6 +258,14 @@ const AppContent = () => {
     "/operationrevenuesheet"
   ];
 
+  const advoperationheaderPaths = [
+    "/advoperationdashboard",
+    "/advfullpayment",
+    "/advbookedpayment",
+    "/advdefaultpayment",
+    "/advoperationrevenuesheet"
+  ];
+
   const marketingheaderPaths = [
     "/marketing/home",
     "/marketing/previous",
@@ -255,6 +289,16 @@ const AppContent = () => {
     "/leaderboard"
   ];
 
+  const advteamheaderPaths = [
+    "/advteam/home",
+    "/advteam/onboarding",
+    "/advteam/revenue",
+    "/advteam/booked",
+    "/advteam/fullpaid",
+    "/advteam/default",
+    "/advteam/adduser"
+  ];
+
   const userheaderPaths = [
   ];
 
@@ -269,7 +313,9 @@ const AppContent = () => {
   const isAuthenticated = () => !!localStorage.getItem("token");
   const isAuthenticatedBda = () => !!localStorage.getItem("bdaToken");
   const isAuthenticatedOperation = () => !!localStorage.getItem("operationToken");
+  const isAuthenticatedAdvOperation = () => !!localStorage.getItem("advOperationToken");
   const isAuthenticatedAdmin = () => !!localStorage.getItem("adminToken");
+  const isAuthenticatedAdvTeam = () => !!localStorage.getItem("advTeamToken");
 
   const isAuthenticatedPC = () => !!localStorage.getItem("pctoken");
   const isAuthenticatedEventUser = () => !!localStorage.getItem("eventToken");
@@ -282,8 +328,10 @@ const AppContent = () => {
       {headerPaths.includes(location.pathname.toLowerCase()) && <Header />}
       {adminheaderPaths.includes(location.pathname.toLowerCase()) && (<AdminHeader />)}
       {operationheaderPaths.includes(location.pathname.toLowerCase()) && (<OperationHeader />)}
+      {advoperationheaderPaths.includes(location.pathname.toLowerCase()) && (<AdvOperationHeader />)}
       {marketingheaderPaths.includes(location.pathname.toLowerCase()) && (<MarketingHeader />)}
       {bdaheaderPaths.includes(location.pathname.toLowerCase()) && (<BDAHeader />)}
+      {advteamheaderPaths.includes(location.pathname.toLowerCase()) && (<AdvTeamHeader />)}
       {userheaderPaths.includes(location.pathname.toLowerCase()) && (<UserHeader />)}
       {placementcoodinatorHeaderPaths.includes(location.pathname.toLowerCase()) && <PCHeader />}
 
@@ -311,6 +359,7 @@ const AppContent = () => {
         <Route path="/AutomationTesting" element={<AutomationTesting />} />
         <Route path="/PromptEngineering" element={<PromptEngineering />} />
         <Route path="/DashboardAccessForm" element={<DashboardAccessForm />} />
+        <Route path="/AdvanceDashboardAccess" element={<AdvanceDashboardAccess />} />
         <Route path="/MasterClass" element={<MasterClass />} />
         <Route path="/Alumni" element={<Alumni />} />
         <Route path="/Verify" element={<Verified />} />
@@ -321,10 +370,13 @@ const AppContent = () => {
         <Route path="/LoginAdmin" element={<LoginAdmin />} />
         <Route path="/AdminDashboard" element={isAuthenticatedAdmin() ? <AdminDashboard /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AddCourse" element={isAuthenticatedAdmin() ? <AddCourse /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/AddAdvCourse" element={isAuthenticatedAdmin() ? <AddAdvCourse /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AddModule" element={isAuthenticatedAdmin() ? <AddModule /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AdminProjectPage" element={isAuthenticatedAdmin() ? <AdminProjectPage /> : <Navigate to="/AdminLogin" />} />
         <Route path="/CreateOperation" element={isAuthenticatedAdmin() ? <CreateOperation /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/CreateAdvOperation" element={isAuthenticatedAdmin() ? <CreateAdvOperation /> : <Navigate to="/AdminLogin" />} />
         <Route path="/CreateBDA" element={isAuthenticatedAdmin() ? <CreateBDA /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/CreateAdvTeam" element={isAuthenticatedAdmin() ? <CreateAdvTeam /> : <Navigate to="/AdminLogin" />} />
         <Route path="/PendingApplication" element={isAuthenticatedAdmin() ? <PendingApplication /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AcceptedApplication" element={isAuthenticatedAdmin() ? <AcceptedApplication /> : <Navigate to="/AdminLogin" />} />
         <Route path="/BookedList" element={isAuthenticatedAdmin() ? <BookedList /> : <Navigate to="/AdminLogin" />} />
@@ -362,6 +414,11 @@ const AppContent = () => {
         <Route path="/OperationLogin" element={<OperationLogin />} />
         {/* Operation Panel End */}
 
+        {/* ADV Operation Panel Start */}
+        <Route path="/AdvOperationLogin" element={<AdvOperationLogin />} />
+        <Route path="/AdvOperationDashboard" element={isAuthenticatedAdvOperation() ? <AdvOperationDashboard /> : <Navigate to="/AdvOperationLogin" />} />
+        {/* ADV Operation Panel End */}
+
 
         {/* Marketing Panel */}
         <Route path="/marketing/login" element={<MarketingLogin />} />
@@ -390,6 +447,17 @@ const AppContent = () => {
 
 
         {/* bda panel ends */}
+
+        {/* Advance Team Panel Start */}
+        <Route path="/AdvTeamLogin" element={<AdvTeamLogin />} />
+        <Route path="/advteam/home" element={isAuthenticatedAdvTeam() ? <AdvTeamHome /> : <Navigate to="/AdvTeamLogin" />} />
+        <Route path="/advteam/onboarding" element={isAuthenticatedAdvTeam() ? <AdvTeamOnBoarding /> : <Navigate to="/AdvTeamLogin" />} />
+        <Route path="/advteam/revenue" element={isAuthenticatedAdvTeam() ? <AdvTeamRevenue /> : <Navigate to="/AdvTeamLogin" />} />
+        <Route path="/advteam/booked" element={isAuthenticatedAdvTeam() ? <AdvTeamBooked /> : <Navigate to="/AdvTeamLogin" />} />
+        <Route path="/advteam/fullpaid" element={isAuthenticatedAdvTeam() ? <AdvTeamFullPaid /> : <Navigate to="/AdvTeamLogin" />} />
+        <Route path="/advteam/default" element={isAuthenticatedAdvTeam() ? <AdvTeamDefault /> : <Navigate to="/AdvTeamLogin" />} />
+        <Route path="/advteam/adduser" element={isAuthenticatedAdvTeam() ? <AdvAddUser /> : <Navigate to="/AdvTeamLogin" />} />
+        {/* Advance Team Panel End */}
 
         {/* User Panel */}
         <Route element={<UserLayout />}>

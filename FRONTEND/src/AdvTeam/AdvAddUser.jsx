@@ -1,0 +1,167 @@
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import API from '../API';
+import toast, { Toaster } from 'react-hot-toast';
+
+const AdvAddUser = () => {
+  const [fullname, setFullname] = useState('');
+  const [transactionId, setTransactionId] = useState('');
+  const [option, setOption] = useState('');
+  const advTeamName = localStorage.getItem('advTeamName');
+  
+  const handleFullnameChange = (e) => {
+    setFullname(e.target.value);
+  };
+
+  const handleTransactionIdChange = (e) => {
+    setTransactionId(e.target.value);
+  };
+
+  const [getTransactionId, setGetTransactionId] = useState([]);
+  const [executives, setExecutives] = useState([]);
+
+  const getTransactionIdList = async () => {
+    try {
+      const response = await axios.get(`${API}/gettransactionid`);
+      setGetTransactionId(response.data.filter((item) => item.counselor === advTeamName));
+    }
+    catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchExecutives = async () => {
+    try {
+      const response = await axios.get(`${API}/getmarketing`);
+      setExecutives(response.data);
+    } catch (error) {
+      console.error('Error fetching executives:', error);
+      toast.error('Failed to load executives');
+    }
+  };
+
+  useEffect(() => {
+    getTransactionIdList();
+    fetchExecutives();
+  }, []);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
+    // Check if SGFL or CGFL lead is selected
+    const isLeadOption = option === 'SGFL' || option === 'CGFL';
+
+    // Find the selected executive to get their ID (if not a lead option)
+    const selectedExecutive = !isLeadOption ? executives.find(exec => exec.fullname === option) : null;
+
+    const data = {
+      fullname,
+      transactionId,
+      counselor: advTeamName,
+      // If SGFL/CGFL selected, store in lead field instead of executive
+      lead: isLeadOption ? option : undefined,
+      executiveId: selectedExecutive?._id,
+      executiveName: selectedExecutive?.fullname
+    };
+    try {
+      const response = await axios.post(`${API}/addtransactionid`, data);
+      toast.success('Details added successfully');
+      setFullname('');
+      setTransactionId('');
+      setOption('');
+      getTransactionIdList();
+    } catch (error) {
+      toast.error('Error adding Details or user already exists');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div id="AdminAddCourse">
+      <Toaster position="top-center" reverseOrder={false} />
+      <div className='adduser'>
+        <h2>Hi <span className='text-red-600 font-bold' >{localStorage.getItem('advTeamName')}</span> kindly add Email ID below before sharing the onboarding link !!</h2>
+
+        <form onSubmit={handleSubmit}>
+          <div>
+            <input
+              type="text"
+              id="fullname"
+              value={fullname}
+              placeholder='Enter candidate name'
+              onChange={handleFullnameChange}
+              required
+            />
+          </div>
+          <div>
+            <input
+              type="email"
+              id="transactionId"
+              value={transactionId}
+              placeholder='Candidate email id'
+              onChange={handleTransactionIdChange}
+              required
+            />
+          </div>
+          <div>
+            <select
+              id="option"
+              name="option"
+              value={option}
+              onChange={(e) => setOption(e.target.value)}
+              required
+            >
+              <option value="" disabled>Select Lead Source or Executive</option>
+              <option value="SGFL">SGFL (Self Generated)</option>
+              <option value="CGFL">CGFL (Company Generated)</option>
+              <option disabled>──────────</option>
+              {executives.map((executive) => (
+                <option key={executive._id} value={executive.fullname}>
+                  {executive.fullname}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <button disabled={isSubmitting} type="submit">Submit</button>
+          </div>
+        </form>
+      </div>
+
+      <div className='coursetable'>
+        <table>
+          <thead>
+            <tr>
+              <th>Sl.No</th>
+              <th>Full Name</th>
+              <th>Email Id</th>
+              <th>Counselor Name</th>
+              <th>Assigned Executive</th>
+              <th>Add Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {getTransactionId.map((transactionId, index) => (
+              <tr key={transactionId._id}>
+                <td>{index + 1}</td>
+                <td>{transactionId.fullname}</td>
+                <td>{transactionId.transactionId}</td>
+                <td>{transactionId.counselor}</td>
+                <td>{transactionId.executive || transactionId.lead || 'Not Assigned'}</td>
+                <td>{transactionId.createdAt ? new Date(transactionId.createdAt).toLocaleDateString('en-GB') : 'N/A'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default AdvAddUser;

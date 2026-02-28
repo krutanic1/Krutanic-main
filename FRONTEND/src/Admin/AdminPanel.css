@@ -50,7 +50,18 @@
       padding: 05px 10px;
       width: 100%;
       border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+      color: black;
+      text-decoration: none;
     }
+    
+    a:hover {
+      color: black;
+    }
+    
+    a i {
+      color: black;
+    }
+    
     button {
       background-color: black;
       margin: 10px;

@@ -11,6 +11,7 @@ const AdminDashboard = () => {
   const nextMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1).toLocaleString("default", { month: "long", year: "numeric" });
 
   const [Operation, setOperation] = useState([]);
+  const [AdvOperation, setAdvOperation] = useState([]);
   const [bda, setBda] = useState([]);
   const [payment, setPayment] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,6 +35,16 @@ const AdminDashboard = () => {
       console.error("There was an error fetching operation:", error);
     }
   };
+
+  const fetchAdvOperation = async () => {
+    try {
+      const response = await axios.get(`${API}/getadvoperation`);
+      setAdvOperation(response.data);
+    } catch (error) {
+      console.error("There was an error fetching ADV operation:", error);
+    }
+  };
+
   const fetchBda = async () => {
     try {
       const response = await axios.get(`${API}/getbda`);
@@ -67,6 +78,7 @@ const AdminDashboard = () => {
         // Priority 2: Batch non-critical metadata (max 2 parallel)
         await Promise.all([
           fetchOperation(),
+          fetchAdvOperation(),
           fetchBda()
         ]);
 
@@ -137,6 +149,11 @@ const AdminDashboard = () => {
           <i className="fa fa-user-secret"></i>
           <h2>OPERATION</h2>
           <span>{Operation.length}</span>
+        </div>
+        <div>
+          <i className="fa fa-user-secret text-purple-600"></i>
+          <h2>ADV OPERATION</h2>
+          <span>{AdvOperation.length}</span>
         </div>
         <div>
           <i className="fa fa-users"></i>

@@ -29,6 +29,9 @@ const AdminHeader = () => {
         <Link to="/AddCourse">
           <i className="fa fa-plus-circle mr-2"></i>Create Course
         </Link>
+        <Link to="/AddAdvCourse">
+          <i className="fa fa-plus-circle mr-2"></i>Create Adv Course
+        </Link>
         <Link to="/AddModule">
           <i className="fa fa-list mr-2"></i>Course List
         </Link>
@@ -37,6 +40,9 @@ const AdminHeader = () => {
         </Link>
         <Link to="/CreateOperation">
           <i className="fa fa-briefcase mr-2"></i>Create Operation
+        </Link>
+        <Link to="/CreateAdvOperation">
+          <i className="fa fa-briefcase mr-2"></i>Create ADV Operation
         </Link>
         <Link to="/Target">
           <i className="fa fa-bullseye mr-2"></i>Target Assign
@@ -47,13 +53,15 @@ const AdminHeader = () => {
         <Link to="/CreateMarketingTeam">
           <i className="fa fa-users mr-2"></i>Create Marketing
         </Link>
+        <Link to="/CreateAdvTeam">
+          <i className="fa fa-users mr-2"></i>Create Adv Team
+        </Link>
         <Link to="/InactiveBda">
           <i className="fa fa-users mr-2"></i>Inactive Bda A/C
         </Link>
         <Link to="/CreatePlacementCoordinator">
           <i className="fa fa-user mr-2"></i>Create PC A/c
         </Link>
-        {/* NEW INTERVIEWER LINKS */}
         <Link to="/CreateInterviewer">
           <i className="fa fa-user-plus mr-2"></i>Create Interviewer
         </Link>
