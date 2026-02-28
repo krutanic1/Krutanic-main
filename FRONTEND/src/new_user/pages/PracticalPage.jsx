@@ -239,14 +239,13 @@ const PracticalPage = () => {
 
     const domainId = typeof enrollment?.domainId === 'object' ? enrollment.domainId._id : enrollment?.domainId;
 
-    // Fetch projects for the user's course using React Query
     const { data: projects = [], isLoading: projectsLoading } = useQuery({
         queryKey: ["projects", domainId],
         queryFn: async () => {
             const response = await axios.get(`${API}/api/projects/course/${domainId}`);
             return response.data;
         },
-        enabled: !!domainId && !enrollment?.selectedProject, // Only fetch if we need the catalog
+        enabled: !!domainId, // Always fetch to get the roadmap data for the locked project
         staleTime: 1000 * 60 * 60, // 1 hour
     });
 

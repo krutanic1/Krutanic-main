@@ -200,12 +200,23 @@ const NewLearning = () => {
         {/* Video Player Section */}
         <div className="w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-lg relative group mb-8">
           {isPlaying && selectedSession.description ? (
-            <iframe
-              src={`https://drive.google.com/file/d/${selectedSession.description}/preview`}
-              allow="autoplay"
-              allowFullScreen
-              className="w-full h-full"
-            ></iframe>
+            <div className="relative w-full h-full group/frame">
+              <iframe
+                src={`https://drive.google.com/file/d/${selectedSession.description}/preview`}
+                allow="autoplay; fullscreen"
+                allowFullScreen
+                className="w-full h-full border-none"
+              />
+              <a
+                href={`https://drive.google.com/file/d/${selectedSession.description}/view`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="absolute top-4 right-4 bg-black/70 hover:bg-black text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 backdrop-blur-sm opacity-0 group-hover/frame:opacity-100 transition-opacity duration-300 shadow-xl"
+              >
+                <span className="material-symbols-outlined text-[18px]">open_in_new</span>
+                Video not loading? Open in new tab
+              </a>
+            </div>
           ) : (
             <>
               {/* Thumbnail/Logo Overlay */}
