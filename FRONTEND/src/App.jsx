@@ -163,6 +163,8 @@ import AdvanceLearningPage from "./new_user/AdvanceLearningPage";
 import ResumeBuilderPage from "./new_user/pages/ResumeBuilderPage";
 import ProfilePage from "./new_user/pages/ProfilePage";
 
+import ForgotPassword from "./page/ForgotPassword";
+
 const App = () => {
   return (
     <BrowserRouter>
@@ -177,6 +179,7 @@ const AppContent = () => {
     "/",
     "/login",
     "/loginwithotp",
+    "/forgotpassword",
     "/contactus",
     "/aboutus",
     "/career",
@@ -340,6 +343,7 @@ const AppContent = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/LoginWithOtp" element={<LoginWithOtp />} />
+        <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/ContactUs" element={<ContactUs />} />
         <Route path="/AboutUs" element={<AboutUs />} />
         <Route path="/Career" element={<Career />} />

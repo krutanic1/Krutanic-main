@@ -64,9 +64,28 @@ router.get('/:userId', async (req, res) => {
 
         // Build 24-week data
         const allWeeks = await WeeklyPractical.find({ userId });
+
+        // Find the maximum week number that has been submitted or approved
+        let maxCompletedWeek = 0;
+        allWeeks.forEach(w => {
+            if (w.status === 'Submitted' || w.status === 'Approved') {
+                if (w.weekNumber > maxCompletedWeek) {
+                    maxCompletedWeek = w.weekNumber;
+                }
+            }
+        });
+
         const weeklyProgress = Array.from({ length: 24 }, (_, i) => {
-            const week = allWeeks.find(w => w.weekNumber === i + 1);
-            return { week: i + 1, status: week?.status || 'Pending' };
+            const weekNum = i + 1;
+            const week = allWeeks.find(w => w.weekNumber === weekNum);
+            let status = week?.status || 'Pending';
+
+            // Feature: If a later week is submitted/approved, mark earlier pending ones as submitted
+            if (status === 'Pending' && weekNum <= maxCompletedWeek) {
+                status = 'Submitted';
+            }
+
+            return { week: weekNum, status };
         });
 
         const completedWeeks = readiness?.totalCompletedWeeks || 0;

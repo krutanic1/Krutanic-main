@@ -83,6 +83,10 @@ const Login = () => {
             </span>
           </div>
 
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '15px' }}>
+            <Link to="/forgotpassword" style={{ fontSize: '13px', color: '#F15B29', textDecoration: 'none' }}>Forgot Password?</Link>
+          </div>
+
           <div>
             <button type="submit">Login</button>
           </div>
