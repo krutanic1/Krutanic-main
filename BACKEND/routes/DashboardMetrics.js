@@ -33,11 +33,12 @@ router.get('/:userId', async (req, res) => {
         }
 
         // Fetch enrollment and other metrics
-        const [enrollment, stats, readiness, placement] = await Promise.all([
-            NewEnrollStudent.findOne({ email: user.email }).populate('domainId'),
-            AssignmentStats.findOne({ userId }),
-            InternshipReadiness.findOne({ userId }),
-            PlacementReadiness.findOne({ userId }),
+        const [enrollment, stats, readiness, placement, allWeeks] = await Promise.all([
+            NewEnrollStudent.findOne({ email: user.email }).populate('domainId').lean(),
+            AssignmentStats.findOne({ userId }).lean(),
+            InternshipReadiness.findOne({ userId }).lean(),
+            PlacementReadiness.findOne({ userId }).lean(),
+            WeeklyPractical.find({ userId }).select('weekNumber status').lean()
         ]);
 
         // Calculate program completion from watchedSessions
@@ -52,9 +53,7 @@ router.get('/:userId', async (req, res) => {
         // Default level object
         const defaultLevel = { bestScore: 0, latestScore: 0, attemptsCount: 0, status: 'Not Started' };
 
-        // Convert to plain JS first — spreading Mongoose subdocuments returns empty objects
-        const statsObj = stats ? stats.toObject() : null;
-        const levels = statsObj?.levels || {};
+        const levels = stats?.levels || {};
         const assignmentMatrix = [
             { levelName: 'Beginner', ...defaultLevel, ...(levels.Beginner || {}) },
             { levelName: 'Intermediate', ...defaultLevel, ...(levels.Intermediate || {}) },
@@ -63,7 +62,6 @@ router.get('/:userId', async (req, res) => {
         console.log(`[Dashboard] userId=${userIdStr} | enrollment found=${!!enrollment} | completedSessions=${programCompletion.completedSessions}/${programCompletion.totalSessions}`);
 
         // Build 24-week data
-        const allWeeks = await WeeklyPractical.find({ userId });
 
         // Find the maximum week number that has been submitted or approved
         let maxCompletedWeek = 0;

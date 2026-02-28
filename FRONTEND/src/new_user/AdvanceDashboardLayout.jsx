@@ -209,7 +209,15 @@ const LayoutInner = () => {
                         <Breadcrumb />
 
                         {/* Each page renders inside Outlet */}
-                        <Outlet />
+                        <React.Suspense fallback={
+                            <div className="nd-stats-grid">
+                                {[1, 2, 3, 4].map((i) => (
+                                    <div key={i} className="nd-stat-card nd-skeleton" />
+                                ))}
+                            </div>
+                        }>
+                            <Outlet />
+                        </React.Suspense>
 
                         <footer className="nd-footer">
                             © 2026 All Rights Reserved. Powered by <strong>Krutanic</strong>.

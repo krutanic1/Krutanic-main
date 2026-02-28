@@ -1,8 +1,9 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from "react";
+import React, { createContext, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import API from "../API";
 import toast from "react-hot-toast";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 /* ─── localStorage progress helper ─── */
 export const getWatchedFromStorage = (enrollmentId, sessionObj, dbWatchedSessions = []) => {
@@ -69,46 +70,50 @@ export const getThumbnail = (title) => {
     return "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400";
 };
 
-
 const DashboardContext = createContext(null);
 
 export const DashboardProvider = ({ children }) => {
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const userEmail = localStorage.getItem("userEmail");
     const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
 
-    const [userData, setUserData] = useState(null);
-    const [enrollData, setEnrollData] = useState([]);
-    const [userProfile, setUserProfile] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const hasFetched = useRef(false);
+    const authHeaders = { Authorization: `Bearer ${token}` };
 
-    const fetchAll = async () => {
-        setLoading(true);
-        try {
-            const token = localStorage.getItem("token");
-            const headers = { Authorization: `Bearer ${token}` };
+    const { data: userData, isLoading: isUserLoading } = useQuery({
+        queryKey: ['users', userId],
+        queryFn: async () => {
+            const res = await axios.get(`${API}/users`, { params: { userId }, headers: authHeaders });
+            return res.data;
+        },
+        enabled: !!userId && !!token,
+        staleTime: 1000 * 60 * 5, // Cache for 5 mins
+    });
 
-            const [userRes, enrollRes, profileRes] = await Promise.all([
-                userId ? axios.get(`${API}/users`, { params: { userId }, headers }) : Promise.resolve({ data: null }),
-                userEmail ? axios.get(`${API}/enrollments`, { params: { userEmail }, headers }) : Promise.resolve({ data: [] }),
-                userId ? axios.get(`${API}/profile`, { params: { userId }, headers }).catch(() => ({ data: null })) : Promise.resolve({ data: null }),
-            ]);
-            setUserData(userRes.data);
-            setEnrollData(Array.isArray(enrollRes.data) ? enrollRes.data : []);
-            setUserProfile(profileRes.data);
-        } catch (err) {
-            console.error("Failed to fetch dashboard data:", err);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { data: enrollRes, isLoading: isEnrollLoading } = useQuery({
+        queryKey: ['enrollments', userEmail],
+        queryFn: async () => {
+            const res = await axios.get(`${API}/enrollments`, { params: { userEmail }, headers: authHeaders });
+            return res.data;
+        },
+        enabled: !!userEmail && !!token,
+        staleTime: 1000 * 60 * 5,
+    });
 
-    useEffect(() => {
-        if (hasFetched.current) return;
-        hasFetched.current = true;
-        fetchAll();
-    }, []);
+    const { data: userProfile, isLoading: isProfileLoading } = useQuery({
+        queryKey: ['profile', userId],
+        queryFn: async () => {
+            const res = await axios.get(`${API}/profile`, { params: { userId }, headers: authHeaders });
+            return res.data;
+        },
+        enabled: !!userId && !!token,
+        staleTime: 1000 * 60 * 5,
+        retry: 1, // Don't retry infinitely if profile doesn't exist
+    });
+
+    const loading = isUserLoading || isEnrollLoading || isProfileLoading;
+    const enrollData = Array.isArray(enrollRes) ? enrollRes : [];
 
     const handleLogout = () => {
         toast.success("Logged out successfully!");
@@ -116,6 +121,7 @@ export const DashboardProvider = ({ children }) => {
             localStorage.removeItem("userId");
             localStorage.removeItem("token");
             localStorage.removeItem("userEmail");
+            queryClient.clear();
             navigate("/Login");
         }, 1500);
     };
@@ -145,7 +151,7 @@ export const DashboardProvider = ({ children }) => {
             }}
         >
             {children}
-        </DashboardContext.Provider >
+        </DashboardContext.Provider>
     );
 };
 

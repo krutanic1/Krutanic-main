@@ -22,17 +22,14 @@ const Login = () => {
       });
       toast.success("Login successful!!!");
       if (response.status === 200) {
-        setTimeout(() => {
-          // console.log(response.data);
-          localStorage.setItem("userId", response.data._id);
-          localStorage.setItem("userEmail", response.data.email);
-          localStorage.setItem("token", response.data.token);
-          if (response.data.advance) {
-            navigate("/advancedashboard");
-          } else {
-            navigate("/Dashboard");
-          }
-        }, 1500);
+        localStorage.setItem("userId", response.data._id);
+        localStorage.setItem("userEmail", response.data.email);
+        localStorage.setItem("token", response.data.token);
+        if (response.data.advance) {
+          navigate("/advancedashboard");
+        } else {
+          navigate("/Dashboard");
+        }
       }
     } catch (error) {
       if (error.response?.status === 403) {

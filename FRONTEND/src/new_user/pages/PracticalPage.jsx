@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { useDashboard } from "../DashboardContext";
 import { SectionHeader } from "../new-dashboad";
 import API from "../../API";
+import { useQuery } from "@tanstack/react-query";
 
 /* ══════════════════════════════════════════════════════
    COURSE → PROJECT CATALOGUE
@@ -147,12 +148,88 @@ const DayDetailModal = ({ week, dayIdx, taskTitle, phase, dayData, onSave, onClo
 };
 
 /* ══════════════════════════════════════════════════════
+   COMPONENT: Week Accordion Row
+   ══════════════════════════════════════════════════════ */
+const WeekAccordion = React.memo(({ wn, wp, isActive, isDone, weekData, setActiveWeek, progress, setSelectedDayModal }) => {
+    return (
+        <div key={wn} className={`border rounded-xl overflow-hidden transition-all bg-white ${isActive ? 'ring-2 ring-primary border-primary' : 'border-gray-200 hover:border-gray-300'}`}>
+            <button
+                className="w-full flex items-center justify-between p-4 bg-white hover:bg-orange-50/50 transition-colors"
+                onClick={() => setActiveWeek(isActive ? null : wn)}
+            >
+                <div className="flex items-center gap-4">
+                    <div className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center font-bold ${isDone ? 'bg-green-100 text-green-600' : isActive ? 'bg-[#f15b29] text-white' : 'bg-gray-100 text-gray-500'}`}>
+                        {isDone ? <span className="material-symbols-outlined text-lg">check</span> : wn}
+                    </div>
+                    <div className="text-left">
+                        <p className={`font-bold ${isActive ? 'text-[#f15b29]' : 'text-gray-900'}`}>Week {wn}</p>
+                        <p className="text-xs mt-1 flex gap-1">
+                            {[0, 1, 2, 3, 4].map((d) => {
+                                const val = (progress || {})[`w${wn}d${d}`];
+                                const isTaskDone = typeof val === "boolean" ? val : !!val?.completed;
+                                return (
+                                    <span key={d} className={`w-2 h-2 rounded-full ${isTaskDone ? "bg-green-500" : "bg-gray-200"}`} />
+                                )
+                            })}
+                        </p>
+                    </div>
+                </div>
+                <span className={`material-symbols-outlined transition-transform ${isActive ? "text-[#f15b29] rotate-180" : "text-gray-400"}`}>
+                    expand_more
+                </span>
+            </button>
+
+            {isActive && (
+                <div className="p-4 border-t border-gray-100 bg-gray-50/50">
+                    {weekData ? (
+                        <>
+                            <div className="nd-phase-label" style={{ marginBottom: "16px" }}>
+                                <span className="material-symbols-outlined" style={{ fontSize: 16, color: "#f15b29" }}>flag</span>
+                                Phase: {weekData.phase}
+                            </div>
+
+                            <div className="nd-day-tasks">
+                                {weekData.tasks.map((task, dayIdx) => {
+                                    const key = `w${wn}d${dayIdx}`;
+                                    const val = (progress || {})[key];
+                                    const isTaskDone = typeof val === "boolean" ? val : !!val?.completed;
+
+                                    return (
+                                        <button
+                                            key={dayIdx}
+                                            className={`nd-day-task ${isTaskDone ? "nd-day-done" : ""}`}
+                                            onClick={() => setSelectedDayModal({ weekNum: wn, dayIdx, task })}
+                                            aria-label={`${dayNames[dayIdx]}: ${task}`}
+                                        >
+                                            <span className="material-symbols-outlined nd-day-check">
+                                                {isTaskDone ? "check_circle" : "radio_button_unchecked"}
+                                            </span>
+                                            <div className="nd-day-body">
+                                                <span className="nd-day-name">{dayNames[dayIdx]}</span>
+                                                <span className="nd-day-label">{task}</span>
+                                            </div>
+                                            <span className="material-symbols-outlined nd-day-open-icon">open_in_new</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </>
+                    ) : (
+                        <div className="text-center py-8 text-gray-500 text-sm">
+                            Roadmap data not available for this week.
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+});
+
+/* ══════════════════════════════════════════════════════
    MAIN COMPONENT
    ══════════════════════════════════════════════════════ */
 const PracticalPage = () => {
     const { enrollment, loading: enrollmentLoading } = useDashboard();
-    const [projects, setProjects] = useState([]);
-    const [projectsLoading, setProjectsLoading] = useState(true);
     const [confirmProject, setConfirmProject] = useState(null);
     const [lockedProject, setLockedProject] = useState(null);
     const [progress, setProgress] = useState({});
@@ -160,25 +237,18 @@ const PracticalPage = () => {
     const [locking, setLocking] = useState(false);
     const [selectedDayModal, setSelectedDayModal] = useState(null);
 
-    // Fetch projects for the user's course
-    useEffect(() => {
-        if (enrollment?.domainId) {
-            const fetchProjects = async () => {
-                setProjectsLoading(true);
-                try {
-                    const domainId = typeof enrollment.domainId === 'object' ? enrollment.domainId._id : enrollment.domainId;
-                    const response = await axios.get(`${API}/api/projects/course/${domainId}`);
-                    setProjects(response.data);
-                } catch (error) {
-                    console.error("Error fetching projects:", error);
-                    toast.error("Failed to load projects");
-                } finally {
-                    setProjectsLoading(false);
-                }
-            };
-            fetchProjects();
-        }
-    }, [enrollment]);
+    const domainId = typeof enrollment?.domainId === 'object' ? enrollment.domainId._id : enrollment?.domainId;
+
+    // Fetch projects for the user's course using React Query
+    const { data: projects = [], isLoading: projectsLoading } = useQuery({
+        queryKey: ["projects", domainId],
+        queryFn: async () => {
+            const response = await axios.get(`${API}/api/projects/course/${domainId}`);
+            return response.data;
+        },
+        enabled: !!domainId && !enrollment?.selectedProject, // Only fetch if we need the catalog
+        staleTime: 1000 * 60 * 60, // 1 hour
+    });
 
     // Initialize from enrollment data
     useEffect(() => {
@@ -191,27 +261,6 @@ const PracticalPage = () => {
                     ? Object.fromEntries(enrollment.projectProgress)
                     : (typeof enrollment.projectProgress === 'object' && enrollment.projectProgress !== null ? enrollment.projectProgress : {});
                 setProgress(pg);
-
-                const userId = localStorage.getItem("userId");
-                if (userId) {
-                    const isValCompleted = (val) => {
-                        if (!val) return false;
-                        if (typeof val === "boolean") return val;
-                        return !!val.completed;
-                    };
-                    for (let wn = 1; wn <= 24; wn++) {
-                        const allDone = [0, 1, 2, 3, 4].every((d) => isValCompleted(pg[`w${wn}d${d}`]));
-                        if (allDone) {
-                            axios.post(`${API}/api/practicals/submit`, {
-                                userId,
-                                weekNumber: wn,
-                                submissionData: `Week ${wn} completed via project roadmap diary.`,
-                            }, {
-                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-                            }).catch(() => { });
-                        }
-                    }
-                }
             }
         }
     }, [enrollment]);
@@ -238,9 +287,11 @@ const PracticalPage = () => {
             }, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
             });
+            // Update local state and trigger a refresh of the dashboard context
             setLockedProject(confirmProject.title);
             setConfirmProject(null);
             toast.success("Project locked successfully!");
+            setTimeout(() => window.location.reload(), 1000); // Simple reload to resync context
         } catch (err) {
             const msg = err.response?.data?.message || "Failed to lock project";
             toast.error(msg);
@@ -300,22 +351,27 @@ const PracticalPage = () => {
         }
     };
 
-    const isDayCompleted = (key) => {
-        const val = (progress || {})[key];
-        if (!val) return false;
-        if (typeof val === "boolean") return val;
-        return !!val.completed;
-    };
+    const progressMetrics = useMemo(() => {
+        let completedDays = 0;
+        const totalDays = 24 * 5;
+        const weekStatus = {};
 
-    const totalDays = 24 * 5;
-    const completedDays = Object.keys(progress || {}).filter(key => isDayCompleted(key)).length;
-    const overallPct = Math.round((completedDays / totalDays) * 100);
+        for (const [key, val] of Object.entries(progress || {})) {
+            const isDone = typeof val === "boolean" ? val : !!val?.completed;
+            if (isDone) {
+                completedDays++;
+                const wn = parseInt(key.match(/w(\d+)d/)[1]);
+                weekStatus[wn] = (weekStatus[wn] || 0) + 1;
+            }
+        }
 
-    const weekProgress = (wn) => {
-        let done = 0;
-        for (let d = 0; d < 5; d++) if (isDayCompleted(`w${wn}d${d}`)) done++;
-        return done;
-    };
+        return {
+            completedDays,
+            totalDays,
+            overallPct: Math.round((completedDays / totalDays) * 100) || 0,
+            weekStatus
+        };
+    }, [progress]);
 
     if (enrollmentLoading || (lockedProject && projectsLoading)) {
         return (
@@ -395,85 +451,32 @@ const PracticalPage = () => {
                 <span className="material-symbols-outlined nd-locked-banner-icon">lock</span>
                 <div>
                     <p className="nd-locked-banner-title">{lockedProject}</p>
-                    <p className="nd-locked-banner-sub">{overallPct}% complete · {completedDays}/{totalDays} tasks done</p>
+                    <p className="nd-locked-banner-sub">{progressMetrics.overallPct}% complete · {progressMetrics.completedDays}/{progressMetrics.totalDays} tasks done</p>
                 </div>
                 <div className="nd-locked-banner-progress">
-                    <div className="nd-locked-banner-fill" style={{ width: `${overallPct}%` }} />
+                    <div className="nd-locked-banner-fill" style={{ width: `${progressMetrics.overallPct}%` }} />
                 </div>
             </div>
 
             <div className="flex flex-col gap-4 mt-6">
                 {Array.from({ length: 24 }, (_, i) => i + 1).map((wn) => {
-                    const wp = weekProgress(wn);
+                    const wp = progressMetrics.weekStatus[wn] || 0;
                     const isActive = activeWeek === wn;
                     const isDone = wp === 5;
                     const weekData = roadmap ? roadmap[wn] : null;
 
                     return (
-                        <div key={wn} className={`border rounded-xl overflow-hidden transition-all bg-white ${isActive ? 'ring-2 ring-primary border-primary' : 'border-gray-200 hover:border-gray-300'}`}>
-                            <button
-                                className="w-full flex items-center justify-between p-4 bg-white hover:bg-orange-50/50 transition-colors"
-                                onClick={() => setActiveWeek(isActive ? null : wn)}
-                            >
-                                <div className="flex items-center gap-4">
-                                    <div className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center font-bold ${isDone ? 'bg-green-100 text-green-600' : isActive ? 'bg-[#f15b29] text-white' : 'bg-gray-100 text-gray-500'}`}>
-                                        {isDone ? <span className="material-symbols-outlined text-lg">check</span> : wn}
-                                    </div>
-                                    <div className="text-left">
-                                        <p className={`font-bold ${isActive ? 'text-[#f15b29]' : 'text-gray-900'}`}>Week {wn}</p>
-                                        <p className="text-xs mt-1 flex gap-1">
-                                            {[0, 1, 2, 3, 4].map((d) => (
-                                                <span key={d} className={`w-2 h-2 rounded-full ${isDayCompleted(`w${wn}d${d}`) ? "bg-green-500" : "bg-gray-200"}`} />
-                                            ))}
-                                        </p>
-                                    </div>
-                                </div>
-                                <span className={`material-symbols-outlined transition-transform ${isActive ? "text-[#f15b29] rotate-180" : "text-gray-400"}`}>
-                                    expand_more
-                                </span>
-                            </button>
-
-                            {isActive && (
-                                <div className="p-4 border-t border-gray-100 bg-gray-50/50">
-                                    {weekData ? (
-                                        <>
-                                            <div className="nd-phase-label" style={{ marginBottom: "16px" }}>
-                                                <span className="material-symbols-outlined" style={{ fontSize: 16, color: "#f15b29" }}>flag</span>
-                                                Phase: {weekData.phase}
-                                            </div>
-
-                                            <div className="nd-day-tasks">
-                                                {weekData.tasks.map((task, dayIdx) => {
-                                                    const key = `w${wn}d${dayIdx}`;
-                                                    const isTaskDone = isDayCompleted(key);
-                                                    return (
-                                                        <button
-                                                            key={dayIdx}
-                                                            className={`nd-day-task ${isTaskDone ? "nd-day-done" : ""}`}
-                                                            onClick={() => setSelectedDayModal({ weekNum: wn, dayIdx, task })}
-                                                            aria-label={`${dayNames[dayIdx]}: ${task}`}
-                                                        >
-                                                            <span className="material-symbols-outlined nd-day-check">
-                                                                {isTaskDone ? "check_circle" : "radio_button_unchecked"}
-                                                            </span>
-                                                            <div className="nd-day-body">
-                                                                <span className="nd-day-name">{dayNames[dayIdx]}</span>
-                                                                <span className="nd-day-label">{task}</span>
-                                                            </div>
-                                                            <span className="material-symbols-outlined nd-day-open-icon">open_in_new</span>
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <div className="text-center py-8 text-gray-500 text-sm">
-                                            Roadmap data not available for this week.
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
+                        <WeekAccordion
+                            key={wn}
+                            wn={wn}
+                            wp={wp}
+                            isActive={isActive}
+                            isDone={isDone}
+                            weekData={weekData}
+                            setActiveWeek={setActiveWeek}
+                            progress={progress}
+                            setSelectedDayModal={setSelectedDayModal}
+                        />
                     );
                 })}
             </div>

@@ -4,31 +4,27 @@ import { useDashboard, getThumbnail } from "../DashboardContext";
 import { SectionHeader } from "../new-dashboad";
 import API from "../../API";
 import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 
 const TrainingPage = () => {
     const navigate = useNavigate();
     const { enrollment, loading: contextLoading } = useDashboard();
 
-    const [sessionsData, setSessionsData] = useState({});
-    const [sessions, setSessions] = useState([]);
-    const [loadingSessions, setLoadingSessions] = useState(false);
+    const { data: sessionsDataRes, isLoading: loadingSessions } = useQuery({
+        queryKey: ["sessions", enrollment?._id],
+        queryFn: async () => {
+            const res = await axios.get(`${API}/enrollments/${enrollment._id}/sessions`);
+            return res.data?.session || {};
+        },
+        enabled: !!enrollment?._id,
+        staleTime: 1000 * 60 * 10,
+    });
+
+    const sessionsData = sessionsDataRes || {};
+    const sessions = Object.entries(sessionsData);
 
     const totalSessions = enrollment?.progressStats?.totalSessionsCount || 0;
     const watchedSessions = enrollment?.progressStats?.watchedSessionsCount || 0;
-
-    useEffect(() => {
-        if (enrollment?._id) {
-            setLoadingSessions(true);
-            axios.get(`${API}/enrollments/${enrollment._id}/sessions`)
-                .then(res => {
-                    const sess = res.data?.session || {};
-                    setSessionsData(sess);
-                    setSessions(Object.entries(sess));
-                })
-                .catch(err => console.error("Error fetching sessions:", err))
-                .finally(() => setLoadingSessions(false));
-        }
-    }, [enrollment?._id]);
 
     const loading = contextLoading || loadingSessions;
 

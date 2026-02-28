@@ -15,7 +15,7 @@ router.get("/api/projects", async (req, res) => {
 // GET projects for a specific course (User)
 router.get("/api/projects/course/:courseId", async (req, res) => {
     try {
-        const projects = await Project.find({ courseId: req.params.courseId });
+        const projects = await Project.find({ courseId: req.params.courseId }).lean();
         res.json(projects);
     } catch (error) {
         res.status(500).json({ message: "Error fetching projects for course", error: error.message });

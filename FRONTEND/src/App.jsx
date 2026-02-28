@@ -1,4 +1,6 @@
+import React, { lazy } from "react";
 import { Routes, Route, BrowserRouter, useLocation, Navigate } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Header from "./Components/Header";
 import HomePage from "./page/landing";
 import ContactUs from "./page/ContactUs";
@@ -152,24 +154,30 @@ import MarketingAddExecutive from "./Marketing/MarketingAddExecutive";
 import BDAAgainLogin from "./BDA/BDAAgainLogin";
 import EventDetails from "./page/EventDetails";
 import AdvanceDashboardLayout from "./new_user/AdvanceDashboardLayout";
-import OverviewPage from "./new_user/pages/OverviewPage";
-import TrainingPage from "./new_user/pages/TrainingPage";
-import PracticalPage from "./new_user/pages/PracticalPage";
-import InternshipPage from "./new_user/pages/InternshipPage";
-import PlacementPage from "./new_user/pages/PlacementPage";
-import PaymentsPage from "./new_user/pages/PaymentsPage";
-import CalendarPage from "./new_user/pages/CalendarPage";
-import AdvanceLearningPage from "./new_user/AdvanceLearningPage";
-import ResumeBuilderPage from "./new_user/pages/ResumeBuilderPage";
-import ProfilePage from "./new_user/pages/ProfilePage";
 
-import ForgotPassword from "./page/ForgotPassword";
+// Lazily load Advanced Dashboard Pages
+const OverviewPage = lazy(() => import("./new_user/pages/OverviewPage"));
+const TrainingPage = lazy(() => import("./new_user/pages/TrainingPage"));
+const PracticalPage = lazy(() => import("./new_user/pages/PracticalPage"));
+const InternshipPage = lazy(() => import("./new_user/pages/InternshipPage"));
+const PlacementPage = lazy(() => import("./new_user/pages/PlacementPage"));
+const PaymentsPage = lazy(() => import("./new_user/pages/PaymentsPage"));
+const CalendarPage = lazy(() => import("./new_user/pages/CalendarPage"));
+const AdvanceLearningPage = lazy(() => import("./new_user/AdvanceLearningPage"));
+const ResumeBuilderPage = lazy(() => import("./new_user/pages/ResumeBuilderPage"));
+const ProfilePage = lazy(() => import("./new_user/pages/ProfilePage"));
+
+import ForgotPassword from "./page/ForgotPassword.jsx";
+
+const queryClient = new QueryClient();
 
 const App = () => {
   return (
-    <BrowserRouter>
-      <AppContent />
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 };
 
