@@ -5,7 +5,7 @@ const pdfParse = require("pdf-parse");
 const User = require("../models/User");
 const cloudinary = require("../middleware/cloudinary");
 const axios = require("axios");
-const { authMiddleware } = require("../middleware/UserAuth");
+const authMiddleware = require("../middleware/UserAuth");
 
 
 // ATS Class

@@ -39,9 +39,9 @@ const NewEnrolledCourses = () => {
     }
   };
 
-  const handleStartLearning = (title, sessionlist, startIndex = 0) => {
+  const handleStartLearning = (title, sessionlist, enrollmentId, startIndex = 0) => {
     navigate("/Learning", {
-      state: { courseTitle: title, sessions: sessionlist, startIndex, thumbnail: getThumbnail(title) || selectedCourse?.thumbnail },
+      state: { courseTitle: title, sessions: sessionlist, startIndex, thumbnail: getThumbnail(title) || selectedCourse?.thumbnail, enrollmentId },
     });
   };
 
@@ -183,7 +183,7 @@ const NewEnrolledCourses = () => {
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
                     <button
-                      onClick={() => handleStartLearning(selectedCourse.title, selectedCourse.session)}
+                      onClick={() => handleStartLearning(selectedCourse.title, selectedCourse.session, selectedCourse._id)}
                       className="bg-primary hover:bg-orange-600 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm shadow-primary/30 transition-all flex items-center gap-2"
                     >
                       <span className="material-symbols-outlined">play_arrow</span> DEMO
@@ -250,7 +250,7 @@ const NewEnrolledCourses = () => {
                             <div className="col-span-4 md:col-span-3 flex justify-end">
                               <button
                                 onClick={() =>
-                                  handleStartLearning(selectedCourse.title, selectedCourse.session, index)
+                                  handleStartLearning(selectedCourse.title, selectedCourse.session, selectedCourse._id, index)
                                 }
                                 className={`transition-transform hover:scale-110 ${isFirst ? "text-primary" : "text-primary/70 hover:text-primary"
                                   }`}

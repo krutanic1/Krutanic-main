@@ -52,41 +52,37 @@ const NewLearning = () => {
   const markWatched = async (key) => {
     if (!enrollmentId) return;
 
-    let shouldFetch = false;
-    let newSetArray = [];
+    // Avoid redundant updates if already watched
+    if (watchedKeys.has(key)) return;
 
-    // Update local state first for instant UI feedback
-    setWatchedKeys((prev) => {
-      if (prev.has(key)) return prev; // Avoid redundant updates
-      shouldFetch = true;
-      const next = new Set(prev);
-      next.add(key);
-      newSetArray = [...next];
-      saveWatchedSet(enrollmentId, next);
-      return next;
-    });
+    // 1. Calculate next state synchronously
+    const nextWatched = new Set(watchedKeys);
+    nextWatched.add(key);
+    const newSetArray = [...nextWatched];
 
-    if (shouldFetch) {
-      // Update backend in background
-      fetch(`${API}/updateprogress`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          enrollmentId,
-          watchedSessions: newSetArray
-        })
+    // 2. Update local state for instant UI feedback
+    setWatchedKeys(nextWatched);
+    saveWatchedSet(enrollmentId, nextWatched);
+
+    // 3. Update backend database in background
+    fetch(`${API}/updateprogress`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        enrollmentId,
+        watchedSessions: newSetArray
       })
-        .then(res => {
-          if (!res.ok) throw new Error(`API error: ${res.status}`);
-          return res.json();
-        })
-        .then(data => {
-          console.log("Watched sessions synced to DB:", data);
-        })
-        .catch(err => {
-          console.error("Failed to sync watched sessions to DB:", err);
-        });
-    }
+    })
+      .then(res => {
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        console.log("Watched sessions synced to DB:", data);
+      })
+      .catch(err => {
+        console.error("Failed to sync watched sessions to DB:", err);
+      });
   };
 
   const watchedCount = sessionKeys.filter((k) => watchedKeys.has(k)).length;
