@@ -84,7 +84,7 @@ const OverviewPage = () => {
                         <span className="material-symbols-outlined nd-section-icon">school</span>
                         Program Overview
                     </h2>
-                    <Link to="/EnrolledCourses" className="nd-section-link">View All →</Link>
+                    <Link to="/advancedashboard/training" className="nd-section-link">View All →</Link>
                 </div>
 
                 {loading ? (
