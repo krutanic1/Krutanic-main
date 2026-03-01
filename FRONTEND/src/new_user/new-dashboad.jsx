@@ -96,7 +96,17 @@ const Sidebar = ({ collapsed, setCollapsed, activeSection, setActiveSection, onL
 /* ─────────────────────────────────────────────
    TOP NAV BAR
 ───────────────────────────────────────────── */
-export const TopNav = ({ userData, enrollData, userProfile, onLogout, onHamburger, mobileSidebarOpen }) => {
+export const TopNav = ({
+    userData,
+    enrollData,
+    userProfile,
+    onLogout,
+    onHamburger,
+    mobileSidebarOpen,
+    extTotalSessions,
+    extWatchedSessions,
+    extProgressPct
+}) => {
     const navigate = useNavigate();
     const [profileOpen, setProfileOpen] = useState(false);
     const [notifOpen, setNotifOpen] = useState(false);
@@ -115,9 +125,14 @@ export const TopNav = ({ userData, enrollData, userProfile, onLogout, onHamburge
 
     // Compute progress
     const enrollment = enrollData?.[0];
-    const totalSessions = enrollment?.domain?.session ? Object.keys(enrollment.domain.session).length : 0;
-    const watchedSessions = enrollment ? getWatchedFromStorage(enrollment._id, enrollment.domain?.session, enrollment.watchedSessions) : 0;
-    const progressPct = totalSessions > 0 ? Math.round((watchedSessions / totalSessions) * 100) : 0;
+    const calcTotal = enrollment?.domain?.session ? Object.keys(enrollment.domain.session).length : 0;
+    const calcWatched = enrollment ? getWatchedFromStorage(enrollment._id, enrollment.domain?.session, enrollment.watchedSessions) : 0;
+    const calcPct = calcTotal > 0 ? Math.round((calcWatched / calcTotal) * 100) : 0;
+
+    const totalSessions = extTotalSessions !== undefined ? extTotalSessions : calcTotal;
+    const watchedSessions = extWatchedSessions !== undefined ? extWatchedSessions : calcWatched;
+    const progressPct = extProgressPct !== undefined ? extProgressPct : calcPct;
+
     const programName = enrollment?.domain?.title || enrollment?.program || "Your Program";
 
     const handleMentorContact = () => {

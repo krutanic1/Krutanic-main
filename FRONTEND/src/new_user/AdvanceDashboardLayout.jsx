@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { DashboardProvider, useDashboard } from "./DashboardContext";
+import { useDashboardMetrics } from "./hooks/useDashboardMetrics";
 import { TopNav } from "./new-dashboad";
 import "./new-dashboad.css";
 
@@ -164,6 +165,7 @@ const Breadcrumb = () => {
 ───────────────────────────────────────────── */
 const LayoutInner = () => {
     const { userData, enrollData, userProfile, handleLogout } = useDashboard();
+    const { metrics } = useDashboardMetrics();
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
     const location = useLocation();
@@ -172,6 +174,10 @@ const LayoutInner = () => {
     useEffect(() => {
         setMobileSidebarOpen(false);
     }, [location.pathname]);
+
+    const extProgressPct = metrics?.programCompletion?.percentage || 0;
+    const extTotalSessions = metrics?.programCompletion?.totalSessions || 0;
+    const extWatchedSessions = metrics?.programCompletion?.completedSessions || 0;
 
     return (
         <div className="nd-root">
@@ -184,6 +190,9 @@ const LayoutInner = () => {
                 onLogout={handleLogout}
                 onHamburger={() => setMobileSidebarOpen((p) => !p)}
                 mobileSidebarOpen={mobileSidebarOpen}
+                extProgressPct={extProgressPct}
+                extTotalSessions={extTotalSessions}
+                extWatchedSessions={extWatchedSessions}
             />
 
             {/* Body */}
