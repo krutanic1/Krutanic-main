@@ -96,28 +96,15 @@ const Sidebar = ({ collapsed, setCollapsed, activeSection, setActiveSection, onL
 /* ─────────────────────────────────────────────
    TOP NAV BAR
 ───────────────────────────────────────────── */
-export const TopNav = ({
-    userData,
-    enrollData,
-    userProfile,
-    onLogout,
-    onHamburger,
-    mobileSidebarOpen,
-    extTotalSessions,
-    extWatchedSessions,
-    extProgressPct
-}) => {
+export const TopNav = ({ userData, enrollData, onLogout, onHamburger, mobileSidebarOpen }) => {
     const navigate = useNavigate();
     const [profileOpen, setProfileOpen] = useState(false);
-    const [notifOpen, setNotifOpen] = useState(false);
     const profileRef = useRef(null);
-    const notifRef = useRef(null);
 
     // Close dropdowns on outside click
     useEffect(() => {
         const handler = (e) => {
             if (profileRef.current && !profileRef.current.contains(e.target)) setProfileOpen(false);
-            if (notifRef.current && !notifRef.current.contains(e.target)) setNotifOpen(false);
         };
         document.addEventListener("mousedown", handler);
         return () => document.removeEventListener("mousedown", handler);
@@ -125,14 +112,19 @@ export const TopNav = ({
 
     // Compute progress
     const enrollment = enrollData?.[0];
-    const calcTotal = enrollment?.domain?.session ? Object.keys(enrollment.domain.session).length : 0;
-    const calcWatched = enrollment ? getWatchedFromStorage(enrollment._id, enrollment.domain?.session, enrollment.watchedSessions) : 0;
-    const calcPct = calcTotal > 0 ? Math.round((calcWatched / calcTotal) * 100) : 0;
+    const totalSessions = enrollment?.progressStats?.totalSessionsCount || 0;
 
-    const totalSessions = extTotalSessions !== undefined ? extTotalSessions : calcTotal;
-    const watchedSessions = extWatchedSessions !== undefined ? extWatchedSessions : calcWatched;
-    const progressPct = extProgressPct !== undefined ? extProgressPct : calcPct;
-
+    // Merge DB watched sessions with localStorage for real-time accuracy
+    const dbWatched = new Set(enrollment?.watchedSessions || []);
+    const localWatched = (() => {
+        try {
+            const raw = localStorage.getItem(`krutanic_progress_${enrollment?._id}`);
+            return raw ? new Set(JSON.parse(raw)) : new Set();
+        } catch { return new Set(); }
+    })();
+    const combinedWatched = new Set([...dbWatched, ...localWatched]);
+    const watchedSessions = Math.min(combinedWatched.size, totalSessions);
+    const progressPct = totalSessions > 0 ? Math.round((watchedSessions / totalSessions) * 100) : 0;
     const programName = enrollment?.domain?.title || enrollment?.program || "Your Program";
 
     const handleMentorContact = () => {
@@ -142,12 +134,6 @@ export const TopNav = ({
         window.open(`https://wa.me/917022936875?text=${encodeURIComponent(msg)}`, "_blank");
     };
 
-    const notifications = [
-        { id: 1, icon: "school", text: "New session added to your course", time: "2h ago", unread: true },
-        { id: 2, icon: "workspace_premium", text: "Certificate eligibility coming soon", time: "1d ago", unread: true },
-        { id: 3, icon: "celebration", text: "New event: Talent Hunt 2026", time: "2d ago", unread: false },
-    ];
-    const unreadCount = notifications.filter((n) => n.unread).length;
 
     return (
         <header className="nd-header">
@@ -191,6 +177,7 @@ export const TopNav = ({
             {/* ── RIGHT: Actions ── */}
             <div className="nd-header-right">
 
+
                 {/* Mentor Contact */}
                 <button className="nd-mentor-btn" onClick={handleMentorContact} title="Contact Mentor">
                     <svg className="nd-wa-icon" viewBox="0 0 24 24" fill="currentColor">
@@ -206,25 +193,17 @@ export const TopNav = ({
                         onClick={() => { setProfileOpen((p) => !p); setNotifOpen(false); }}
                         title="Profile"
                     >
-                        {userProfile?.personal?.avatar ? (
-                            <img src={userProfile.personal.avatar} alt="Avatar" className="w-full h-full object-cover rounded-full bg-gray-50" />
-                        ) : (
-                            <span className="nd-avatar-letter">
-                                {userData?.fullname?.charAt(0)?.toUpperCase() || "U"}
-                            </span>
-                        )}
+                        <span className="nd-avatar-letter">
+                            {userData?.fullname?.charAt(0)?.toUpperCase() || "U"}
+                        </span>
                         <div className="nd-avatar-status" />
                     </button>
 
                     {profileOpen && (
                         <div className="nd-dropdown nd-profile-dropdown">
-                            <div className="nd-profile-header hover:bg-gray-50 cursor-pointer transition-colors" onClick={() => { navigate("/advancedashboard/profile"); setProfileOpen(false); }}>
+                            <div className="nd-profile-header">
                                 <div className="nd-profile-avatar-lg">
-                                    {userProfile?.personal?.avatar ? (
-                                        <img src={userProfile.personal.avatar} alt="Avatar" className="w-full h-full object-cover rounded-full bg-gray-50 bg-white shadow-sm" />
-                                    ) : (
-                                        userData?.fullname?.charAt(0)?.toUpperCase() || "U"
-                                    )}
+                                    {userData?.fullname?.charAt(0)?.toUpperCase() || "U"}
                                 </div>
                                 <div>
                                     <p className="nd-profile-name">{userData?.fullname || "Student"}</p>
@@ -232,6 +211,10 @@ export const TopNav = ({
                                 </div>
                             </div>
                             <div className="nd-dropdown-divider" />
+                            <Link to="/advancedashboard/profile" className="nd-dropdown-item" onClick={() => setProfileOpen(false)}>
+                                <span className="material-symbols-outlined nd-dropdown-item-icon">account_circle</span>
+                                Profile
+                            </Link>
                             <Link to="/advancedashboard/setting" className="nd-dropdown-item" onClick={() => setProfileOpen(false)}>
                                 <span className="material-symbols-outlined nd-dropdown-item-icon">settings</span>
                                 Settings
@@ -911,7 +894,7 @@ const OverviewSection = ({ enrollment, loading, progressPct, watchedSessions, to
                     <span className="material-symbols-outlined nd-section-icon">school</span>
                     Program Overview
                 </h2>
-                <Link to="/advancedashboard/training" className="nd-section-link">View All →</Link>
+                <Link to="/EnrolledCourses" className="nd-section-link">View All →</Link>
             </div>
 
             {loading ? (
@@ -993,12 +976,9 @@ const NewDashboard = () => {
     const fetchAll = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem("token");
-            const headers = { Authorization: `Bearer ${token}` };
-
             const [userRes, enrollRes] = await Promise.all([
-                userId ? axios.get(`${API}/users`, { params: { userId }, headers }) : Promise.resolve({ data: null }),
-                userEmail ? axios.get(`${API}/enrollments`, { params: { userEmail }, headers }) : Promise.resolve({ data: [] }),
+                userId ? axios.get(`${API}/users`, { params: { userId } }) : Promise.resolve({ data: null }),
+                userEmail ? axios.get(`${API}/enrollments`, { params: { userEmail } }) : Promise.resolve({ data: [] }),
             ]);
             setUserData(userRes.data);
             setEnrollData(Array.isArray(enrollRes.data) ? enrollRes.data : []);

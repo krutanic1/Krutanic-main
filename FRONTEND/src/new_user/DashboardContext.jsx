@@ -92,12 +92,13 @@ export const DashboardProvider = ({ children }) => {
     });
 
     const { data: enrollRes, isLoading: isEnrollLoading } = useQuery({
-        queryKey: ['enrollments', userEmail],
+        queryKey: ['enrollments', userEmail, userData?.advance],
         queryFn: async () => {
-            const res = await axios.get(`${API}/enrollments`, { params: { userEmail }, headers: authHeaders });
+            const endpoint = userData?.advance ? `${API}/advenrollments` : `${API}/enrollments`;
+            const res = await axios.get(endpoint, { params: { userEmail }, headers: authHeaders });
             return res.data;
         },
-        enabled: !!userEmail && !!token,
+        enabled: !!userEmail && !!token && userData !== undefined,
         staleTime: 1000 * 60 * 5,
     });
 

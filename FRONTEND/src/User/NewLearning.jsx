@@ -2,26 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import API from "../API";
+import axios from "axios";
+import { useQueryClient } from "@tanstack/react-query";
 
 import playerlogo from "./playerlogo.jpg";
 
-/* ─── helper: localStorage key for this enrollment ─── */
-const getProgressKey = (enrollmentId) => `krutanic_progress_${enrollmentId}`;
-
-const getWatchedSet = (enrollmentId) => {
-  try {
-    const raw = localStorage.getItem(getProgressKey(enrollmentId));
-    return raw ? new Set(JSON.parse(raw)) : new Set();
-  } catch {
-    return new Set();
-  }
-};
-
-const saveWatchedSet = (enrollmentId, set) => {
-  try {
-    localStorage.setItem(getProgressKey(enrollmentId), JSON.stringify([...set]));
-  } catch { }
-};
+// Progress Tracking Removed
 
 const NewLearning = () => {
   const [selectedSession, setSelectedSession] = useState(null);
@@ -29,87 +15,78 @@ const NewLearning = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { courseTitle, sessions: initialSessions, startIndex = 0, thumbnail, enrollmentId } = location.state || {};
+  const queryClient = useQueryClient();
+  const { courseTitle: stateTitle, sessions: stateSessions, startIndex = 0, thumbnail: stateThumbnail, enrollmentId: stateEnrollmentId } = location.state || {};
 
-  // Support lazy loading if location.state didn't provide sessions
-  const [sessions, setSessions] = useState(initialSessions || null);
+  // Self-fetch state when navigating directly (refresh/direct URL)
+  const [fetchedSessions, setFetchedSessions] = useState(null);
+  const [fetchedTitle, setFetchedTitle] = useState(null);
+  const [fetchedEnrollmentId, setFetchedEnrollmentId] = useState(null);
+  const [fetchedThumbnail, setFetchedThumbnail] = useState(null);
+  const [fetchLoading, setFetchLoading] = useState(false);
 
   useEffect(() => {
-    if (!sessions && enrollmentId) {
-      fetch(`${API}/enrollments/${enrollmentId}/sessions`)
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.session) {
-            setSessions(data.session);
-          }
+    if (!stateSessions) {
+      // Try to self-fetch using the stored advance enrollment
+      const userEmail = localStorage.getItem("userEmail");
+      const token = localStorage.getItem("token");
+      if (!userEmail || !token) return;
+
+      setFetchLoading(true);
+      axios.get(`${API}/advenrollments`, { params: { userEmail }, headers: { Authorization: `Bearer ${token}` } })
+        .then(async (res) => {
+          const enroll = Array.isArray(res.data) ? res.data[0] : null;
+          if (!enroll) return;
+          const sessRes = await axios.get(`${API}/advenrollments/${enroll._id}/sessions`);
+          setFetchedSessions(sessRes.data?.session || {});
+          setFetchedTitle(enroll.domain?.title || enroll.domain || enroll.program || "Course");
+          setFetchedEnrollmentId(enroll._id);
+          setFetchedThumbnail(null);
         })
-        .catch(console.error);
+        .catch((err) => {
+          console.error("Failed to self-fetch sessions:", err);
+        })
+        .finally(() => setFetchLoading(false));
     }
-  }, [sessions, enrollmentId]);
+  }, [stateSessions]);
+
+  const sessions = stateSessions || fetchedSessions;
+  const courseTitle = stateTitle || fetchedTitle;
+  const enrollmentId = stateEnrollmentId || fetchedEnrollmentId;
+  const thumbnail = stateThumbnail || fetchedThumbnail;
 
   const sessionKeys = sessions ? Object.keys(sessions) : [];
   const totalSessions = sessionKeys.length;
 
+
   /* ─── Watched Sessions State ─── */
-  const [watchedKeys, setWatchedKeys] = useState(() => getWatchedSet(enrollmentId));
+  const [watchedSessions, setWatchedSessions] = useState(location.state?.watchedSessionsFromDB || []);
 
-  // Sync with backend if location.state has backend data
-  useEffect(() => {
-    if (enrollmentId && location.state?.watchedSessionsFromDB) {
-      setWatchedKeys(prev => {
-        const next = new Set(prev);
-        location.state.watchedSessionsFromDB.forEach(k => next.add(k));
-        saveWatchedSet(enrollmentId, next);
-        return next;
-      });
-    }
-  }, [enrollmentId, location.state?.watchedSessionsFromDB]);
+  const markWatched = async (sessionKey) => {
+    if (!enrollmentId || watchedSessions.includes(sessionKey)) return;
 
-  const markWatched = async (key) => {
-    if (!enrollmentId) return;
+    const updatedWatched = [...watchedSessions, sessionKey];
+    setWatchedSessions(updatedWatched);
 
-    // Avoid redundant updates if already watched
-    if (watchedKeys.has(key)) return;
-
-    // 1. Calculate next state synchronously
-    const nextWatched = new Set(watchedKeys);
-    nextWatched.add(key);
-    const newSetArray = [...nextWatched];
-
-    // 2. Update local state for instant UI feedback
-    setWatchedKeys(nextWatched);
-    saveWatchedSet(enrollmentId, nextWatched);
-
-    // 3. Update backend database in background
-    fetch(`${API}/updateprogress`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    try {
+      await axios.post(`${API}/updateprogress`, {
         enrollmentId,
-        watchedSessions: newSetArray
-      })
-    })
-      .then(res => {
-        if (!res.ok) throw new Error(`API error: ${res.status}`);
-        return res.json();
-      })
-      .then(data => {
-        console.log("Watched sessions synced to DB:", data);
-      })
-      .catch(err => {
-        console.error("Failed to sync watched sessions to DB:", err);
+        watchedSessions: updatedWatched
       });
+      // Invalidate queries to refresh dashboard/enrolled courses progress
+      queryClient.invalidateQueries({ queryKey: ['enrollments'] });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+    } catch (error) {
+      console.error("Error updating progress:", error);
+    }
   };
 
-  const watchedCount = sessionKeys.filter((k) => watchedKeys.has(k)).length;
-  const progressPct = totalSessions > 0 ? Math.round((watchedCount / totalSessions) * 100) : 0;
-
-  /* ─── Session click: select + mark as watched ─── */
+  /* ─── Session click ─── */
   const handleSessionClick = (key, index) => {
     setSelectedSession({ key, ...sessions[key] });
     setCurrentSessionIndex(index);
     setIsPlaying(true);
-    markWatched(key); // mark immediately when user starts watching
+    markWatched(key);
   };
 
   const handlePrevious = () => {
@@ -119,7 +96,6 @@ const NewLearning = () => {
       setSelectedSession({ key, ...sessions[key] });
       setCurrentSessionIndex(newIndex);
       setIsPlaying(true);
-      markWatched(key);
     }
   };
 
@@ -140,7 +116,6 @@ const NewLearning = () => {
     setSelectedSession({ key, ...sessions[key] });
     setCurrentSessionIndex(index);
     setIsPlaying(true);
-    markWatched(key);
   };
 
   useEffect(() => {
@@ -153,6 +128,33 @@ const NewLearning = () => {
   }, [sessions, startIndex]);
 
   if (!sessions || !selectedSession) {
+    if (fetchLoading) {
+      return (
+        <div className="min-h-screen bg-background-light flex items-center justify-center font-display">
+          <div className="flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+            <p className="text-gray-500 font-medium">Loading sessions...</p>
+          </div>
+        </div>
+      );
+    }
+    if (!fetchLoading && !sessions) {
+      return (
+        <div className="min-h-screen bg-background-light flex items-center justify-center font-display">
+          <div className="flex flex-col items-center gap-6 text-center px-4">
+            <span className="material-symbols-outlined text-6xl text-gray-300">video_library</span>
+            <p className="text-gray-600 font-medium text-lg">No sessions found.</p>
+            <p className="text-gray-400 text-sm">Please navigate here from your Training page.</p>
+            <button
+              onClick={() => navigate("/advancedashboard/training")}
+              className="px-6 py-2 bg-primary text-white rounded-lg font-semibold hover:opacity-90 transition"
+            >
+              Go to Training
+            </button>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="min-h-screen bg-background-light flex items-center justify-center font-display">
         <div className="flex flex-col items-center gap-4">
@@ -167,23 +169,7 @@ const NewLearning = () => {
     <div className="bg-background-light min-h-screen flex flex-col font-display">
       <Toaster position="top-center" reverseOrder={false} />
 
-      {/* ── Progress Banner ── */}
-      <div className="bg-white border-b border-gray-100 px-4 md:px-8 py-3">
-        <div className="max-w-[1440px] mx-auto flex items-center gap-4">
-          <span className="text-sm font-semibold text-gray-700 whitespace-nowrap">
-            {progressPct}% Complete
-          </span>
-          <div className="flex-1 bg-gray-200 rounded-full h-2.5 overflow-hidden">
-            <div
-              className="h-2.5 rounded-full bg-primary transition-all duration-500"
-              style={{ width: `${progressPct}%` }}
-            />
-          </div>
-          <span className="text-xs text-gray-500 whitespace-nowrap">
-            {watchedCount}/{totalSessions} watched
-          </span>
-        </div>
-      </div>
+
 
       <main className="flex-1 w-full max-w-[1440px] mx-auto p-4 md:px-8 md:py-6">
         {/* Breadcrumbs */}
@@ -200,23 +186,12 @@ const NewLearning = () => {
         {/* Video Player Section */}
         <div className="w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-lg relative group mb-8">
           {isPlaying && selectedSession.description ? (
-            <div className="relative w-full h-full group/frame">
-              <iframe
-                src={`https://drive.google.com/file/d/${selectedSession.description}/preview`}
-                allow="autoplay; fullscreen"
-                allowFullScreen
-                className="w-full h-full border-none"
-              />
-              <a
-                href={`https://drive.google.com/file/d/${selectedSession.description}/view`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="absolute top-4 right-4 bg-black/70 hover:bg-black text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 backdrop-blur-sm opacity-0 group-hover/frame:opacity-100 transition-opacity duration-300 shadow-xl"
-              >
-                <span className="material-symbols-outlined text-[18px]">open_in_new</span>
-                Video not loading? Open in new tab
-              </a>
-            </div>
+            <iframe
+              src={`https://drive.google.com/file/d/${selectedSession.description}/preview`}
+              allow="autoplay"
+              allowFullScreen
+              className="w-full h-full"
+            ></iframe>
           ) : (
             <>
               {/* Thumbnail/Logo Overlay */}
@@ -332,21 +307,12 @@ const NewLearning = () => {
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-gray-900 text-lg">All Sessions</h3>
-              <span className="text-sm text-gray-500">{watchedCount}/{totalSessions} done</span>
-            </div>
-
-            {/* Mini progress bar */}
-            <div className="bg-gray-200 rounded-full h-1.5 mb-2">
-              <div
-                className="h-1.5 rounded-full bg-primary transition-all duration-500"
-                style={{ width: `${progressPct}%` }}
-              />
+              <span className="text-sm text-gray-500">{totalSessions} Sessions</span>
             </div>
 
             <div className="flex flex-col gap-2 max-h-[500px] overflow-y-auto pr-1">
               {sessionKeys.map((key, idx) => {
                 const isActive = idx === currentSessionIndex;
-                const isWatched = watchedKeys.has(key);
                 return (
                   <button
                     key={key}
@@ -357,20 +323,18 @@ const NewLearning = () => {
                       }`}
                   >
                     {/* Status icon */}
-                    <div className={`size-8 shrink-0 rounded-full flex items-center justify-center text-sm font-bold ${isWatched ? "bg-green-100 text-green-600" : isActive ? "bg-primary text-white" : "bg-gray-100 text-gray-500"
+                    <div className={`size-8 shrink-0 rounded-full flex items-center justify-center text-sm font-bold ${watchedSessions.includes(key) ? "bg-green-500 text-white" : isActive ? "bg-primary text-white" : "bg-gray-100 text-gray-500"
                       }`}>
-                      {isWatched
-                        ? <span className="material-symbols-outlined text-[16px]">check</span>
-                        : <span>{idx + 1}</span>
-                      }
+                      {watchedSessions.includes(key) ? (
+                        <span className="material-symbols-outlined text-sm">check</span>
+                      ) : (
+                        <span>{idx + 1}</span>
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm font-medium truncate ${isActive ? "text-primary" : "text-gray-800"}`}>
                         {sessions[key]?.title || key}
                       </p>
-                      {isWatched && (
-                        <p className="text-xs text-green-600 font-medium">Watched</p>
-                      )}
                     </div>
                     {isActive && (
                       <span className="material-symbols-outlined text-primary text-[18px]">play_circle</span>

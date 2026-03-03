@@ -8,6 +8,8 @@ const Exercise = () => {
   const [selectedCourse, setSelectedCourse] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState("Beginner");
 
+  console.log("Exercise Component Render - View:", view);
+
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -25,34 +27,66 @@ const Exercise = () => {
         const email = localStorage.getItem("userEmail");
         const courseRes = await axios.get(`${API}/exercise/courses`);
         const availableCourses = courseRes.data || [];
-        setCourses(availableCourses);
-
-        let defaultCourse = availableCourses.length > 0 ? availableCourses[0] : "";
+        let defaultCourse = "";
 
         if (email) {
-
-
           // Fetch user enrollments to auto-select and RESTRICT course
           try {
-            const enrollRes = await axios.get(`${API}/enrollments`, { params: { userEmail: email } });
+            const isAdvance = localStorage.getItem("advance") === "true" || localStorage.getItem("advance") === true;
+            const endpoint = isAdvance ? "/advenrollments" : "/enrollments";
+
+            const enrollRes = await axios.get(`${API}${endpoint}`, { params: { userEmail: email } });
+
+
             if (enrollRes.data && enrollRes.data.length > 0) {
-              // Get all enrolled course titles that exist in available exercise topics
-              // Use Set to strictly avoid duplicates
               const uniqueEnrolledTitles = [...new Set(
-                enrollRes.data
-                  .map(e => e.domain?.title)
-                  .filter(title => title && availableCourses.includes(title))
+                enrollRes.data.map(e => {
+                  let val;
+                  if (isAdvance) {
+                    // Try all possible fields for advance enrollments
+                    val = (typeof e.domain === 'object' ? e.domain?.title : e.domain) || e.program || e.course;
+                  } else {
+                    // Regular enrollments
+                    val = e.domain || e.category || e.program;
+                  }
+
+                  // Ensure we get a string if it's still an object
+                  if (val && typeof val === 'object') {
+                    return val.title || val.name || val.program || val.course || JSON.stringify(val);
+                  }
+                  return val;
+                }).filter(Boolean)
               )];
 
-              if (uniqueEnrolledTitles.length > 0) {
-                // RESTRICT available courses to only what the user is enrolled in
-                setCourses(uniqueEnrolledTitles);
-                defaultCourse = uniqueEnrolledTitles[0];
+              let finalCourses = [];
+              if (isAdvance) {
+                // For advance users, ensure the course actually exists in the exercise bank
+                finalCourses = uniqueEnrolledTitles.filter(title => availableCourses.includes(title));
+              } else {
+                // For regular users, their old questions are loaded universally by domain title
+                // We show their enrolled domains in the dropdown
+                finalCourses = uniqueEnrolledTitles;
               }
+
+              if (finalCourses.length > 0) {
+                setCourses(finalCourses);
+                defaultCourse = finalCourses[0];
+              } else {
+                setCourses(availableCourses);
+                if (availableCourses.length > 0) defaultCourse = availableCourses[0];
+              }
+            } else {
+              setCourses(availableCourses);
+              if (availableCourses.length > 0) defaultCourse = availableCourses[0];
             }
           } catch (enrollErr) {
             console.error("Error fetching enrollments:", enrollErr);
+            setCourses(availableCourses);
           }
+        } else {
+          // Not logged in or no email found
+          setCourses(availableCourses);
+          if (availableCourses.length > 0) defaultCourse = availableCourses[0];
         }
 
         if (defaultCourse) {
@@ -524,7 +558,8 @@ const Exercise = () => {
           {/* Footer */}
           <footer className="mt-16 py-6 text-center text-gray-600 text-sm">
             © 2026 All Rights Reserved. Powered by Krutanic.
-          </footer>        </div>
+          </footer>
+        </div>
       </div>
     );
   }

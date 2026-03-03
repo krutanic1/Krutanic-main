@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { DashboardProvider, useDashboard } from "./DashboardContext";
-import { useDashboardMetrics } from "./hooks/useDashboardMetrics";
 import { TopNav } from "./new-dashboad";
 import "./new-dashboad.css";
 
@@ -16,7 +15,6 @@ const sidebarItems = [
     { id: "internship", path: "/advancedashboard/internship", emoji: "💼", icon: "work", label: "Internship" },
     { id: "exercise", path: "/advancedashboard/exercise", emoji: "🏋️", icon: "fitness_center", label: "Exercise" },
     { id: "placement", path: "/advancedashboard/placement", emoji: "🚀", icon: "rocket_launch", label: "Placement" },
-    { id: "certificates", path: "/advancedashboard/certificates", emoji: "🎖️", icon: "workspace_premium", label: "Certificates" },
     { id: "resume-builder", path: "/advancedashboard/resume-builder", emoji: "📄", icon: "edit_document", label: "Resume Builder" },
     { id: "profile", path: "/advancedashboard/profile", emoji: "🧑", icon: "account_circle", label: "Profile" },
     { id: "payments", path: "/advancedashboard/payments", emoji: "💳", icon: "payments", label: "Payments" },
@@ -131,7 +129,7 @@ const Sidebar = ({ collapsed, setCollapsed, onLogout, mobileOpen, setMobileOpen 
 const sectionTitles = {
     overview: "Overview", training: "Training", practical: "Practical",
     internship: "Internship", placement: "Placement",
-    payments: "Payments", certificates: "Certificates",
+    payments: "Payments",
     jobs: "Browse Jobs", "my-job": "Job Search", "mock-interview": "Mock Interview", "resume-ats": "Resume ATS",
     "resume-builder": "Resume Builder",
     "profile": "Profile",
@@ -164,8 +162,7 @@ const Breadcrumb = () => {
    INNER LAYOUT (consumes context)
 ───────────────────────────────────────────── */
 const LayoutInner = () => {
-    const { userData, enrollData, userProfile, handleLogout } = useDashboard();
-    const { metrics } = useDashboardMetrics();
+    const { userData, enrollData, handleLogout } = useDashboard();
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
     const location = useLocation();
@@ -175,24 +172,17 @@ const LayoutInner = () => {
         setMobileSidebarOpen(false);
     }, [location.pathname]);
 
-    const extProgressPct = metrics?.programCompletion?.percentage || 0;
-    const extTotalSessions = metrics?.programCompletion?.totalSessions || 0;
-    const extWatchedSessions = metrics?.programCompletion?.completedSessions || 0;
-
     return (
         <div className="nd-root">
             <Toaster position="top-center" reverseOrder={false} />
 
+            {/* Fixed Top Nav — passes hamburger toggle */}
             <TopNav
                 userData={userData}
                 enrollData={enrollData}
-                userProfile={userProfile}
                 onLogout={handleLogout}
                 onHamburger={() => setMobileSidebarOpen((p) => !p)}
                 mobileSidebarOpen={mobileSidebarOpen}
-                extProgressPct={extProgressPct}
-                extTotalSessions={extTotalSessions}
-                extWatchedSessions={extWatchedSessions}
             />
 
             {/* Body */}
@@ -219,15 +209,7 @@ const LayoutInner = () => {
                         <Breadcrumb />
 
                         {/* Each page renders inside Outlet */}
-                        <React.Suspense fallback={
-                            <div className="nd-stats-grid">
-                                {[1, 2, 3, 4].map((i) => (
-                                    <div key={i} className="nd-stat-card nd-skeleton" />
-                                ))}
-                            </div>
-                        }>
-                            <Outlet />
-                        </React.Suspense>
+                        <Outlet />
 
                         <footer className="nd-footer">
                             © 2026 All Rights Reserved. Powered by <strong>Krutanic</strong>.

@@ -4,6 +4,7 @@ const authMiddleware = require("../middleware/UserAuth");
 const CreateOperation = require("../models/CreateOperation");
 
 const NewEnrollStudent = require("../models/NewStudentEnroll");
+const AdvEnroll = require("../models/AdvEnroll");
 const { sendEmail } = require("../controllers/emailController");
 const { sendOfferLetter } = require("../controllers/offerLetter")
 const jwt = require("jsonwebtoken");
@@ -273,7 +274,10 @@ router.put("/mailsendedchange/:id", async (req, res) => {
   // console.log("true",userCreated);
   const objectId = new mongoose.Types.ObjectId(id);
   try {
-    const student = await NewEnrollStudent.findById({ _id: objectId });
+    let student = await NewEnrollStudent.findById({ _id: objectId });
+    if (!student) {
+      student = await AdvEnroll.findById({ _id: objectId });
+    }
     // console.log("found", student);
     if (!student) {
       return res.status(404).send({ message: "Student not found." });
@@ -388,7 +392,11 @@ router.post("/sendofferletter", async (req, res) => {
 
     await sendOfferLetter({ email, fullname: formattedName, date, start, end, domain, duration, location });
 
-    const updatedStudent = await NewEnrollStudent.findByIdAndUpdate(id, { offerlettersended: true }, { new: true });
+    let updatedStudent = await NewEnrollStudent.findByIdAndUpdate(id, { offerlettersended: true }, { new: true });
+
+    if (!updatedStudent) {
+      updatedStudent = await AdvEnroll.findByIdAndUpdate(id, { offerlettersended: true }, { new: true });
+    }
 
     if (!updatedStudent) { return res.status(404).json({ error: "Student not found" }); }
 

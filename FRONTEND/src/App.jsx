@@ -37,7 +37,10 @@ import AdminHeader from "./Admin/AdminHeader";
 import AddCourse from "./Admin/AddCourse";
 import AddAdvCourse from "./Admin/AddAdvCourse";
 import AddModule from "./Admin/AddModule";
+import AddAdvModule from "./Admin/AddAdvModule";
 import AdminProjectPage from "./Admin/AdminProjectPage";
+import AdvProjectPage from "./Admin/AdvProjectPage";
+import AdvExercisePage from "./Admin/AdvExercisePage";
 import PendingApplication from "./Admin/PendingApplication";
 import AcceptedApplication from "./Admin/AcceptedApplication";
 import CreateOperation from "./Admin/CreateOperation";
@@ -77,9 +80,14 @@ import DefaultPayment from "./Operation/DefaultPayment";
 import OperationRevenueSheets from "./Operation/OperationRevenueSheets";
 
 // ADV Operation Team
-import AdvOperationLogin from "./AdvOperation/AdvOperationLogin";
-import AdvOperationHeader from "./AdvOperation/AdvOperationHeader";
-import AdvOperationDashboard from "./AdvOperation/AdvOperationDashboard";
+import AdvOperationLogin from "./AdvOperation/OperationLogin";
+import AdvOperationAgainLogin from "./AdvOperation/OperationAgainLogin";
+import AdvOperationHeader from "./AdvOperation/OperationHeader";
+import AdvOperationDashboard from "./AdvOperation/OperationDashboard";
+import AdvBookedPayment from "./AdvOperation/BookedPayment";
+import AdvFullPayment from "./AdvOperation/FullPayment";
+import AdvDefaultPayment from "./AdvOperation/DefaultPayment";
+import AdvOperationRevenueSheets from "./AdvOperation/OperationRevenueSheets";
 
 // BDA Team
 import TeamLogin from "./BDA/TeamLogin";
@@ -169,10 +177,11 @@ const CertificatePage = lazy(() => import("./new_user/pages/CertificatePage"));
 const PaymentsPage = lazy(() => import("./new_user/pages/PaymentsPage"));
 const CalendarPage = lazy(() => import("./new_user/pages/CalendarPage"));
 const AdvanceLearningPage = lazy(() => import("./new_user/AdvanceLearningPage"));
-const ResumeBuilderPage = lazy(() => import("./new_user/pages/ResumeBuilderPage"));
-const ProfilePage = lazy(() => import("./new_user/pages/ProfilePage"));
+import ResumeBuilderPage from "./new_user/pages/ResumeBuilderPage";
+import ProfilePage from "./new_user/pages/ProfilePage";
 
 import ForgotPassword from "./page/ForgotPassword.jsx";
+import Exercise from "./User/Excercise.jsx";
 
 const queryClient = new QueryClient();
 
@@ -235,6 +244,7 @@ const AppContent = () => {
     "/addcourse",
     "/addadvcourse",
     "/addmodule",
+    "/addadvmodule",
     "/pendingapplication",
     "/acceptedapplication",
     "/bookedlist",
@@ -267,7 +277,9 @@ const AppContent = () => {
     "/createmarketingteam",
     "/createinterviewer",
     "/createinterview",
-    "/adminprojectpage"
+    "/adminprojectpage",
+    "/advprojectpage",
+    "/advexercisepage"
   ];
 
   const operationheaderPaths = [
@@ -393,7 +405,9 @@ const AppContent = () => {
         <Route path="/AddCourse" element={isAuthenticatedAdmin() ? <AddCourse /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AddAdvCourse" element={isAuthenticatedAdmin() ? <AddAdvCourse /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AddModule" element={isAuthenticatedAdmin() ? <AddModule /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/AddAdvModule" element={isAuthenticatedAdmin() ? <AddAdvModule /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AdminProjectPage" element={isAuthenticatedAdmin() ? <AdminProjectPage /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/AdvProjectPage" element={isAuthenticatedAdmin() ? <AdvProjectPage /> : <Navigate to="/AdminLogin" />} />
         <Route path="/CreateOperation" element={isAuthenticatedAdmin() ? <CreateOperation /> : <Navigate to="/AdminLogin" />} />
         <Route path="/CreateAdvOperation" element={isAuthenticatedAdmin() ? <CreateAdvOperation /> : <Navigate to="/AdminLogin" />} />
         <Route path="/CreateBDA" element={isAuthenticatedAdmin() ? <CreateBDA /> : <Navigate to="/AdminLogin" />} />
@@ -425,6 +439,7 @@ const AppContent = () => {
         <Route path="/CreateMarketingTeam" element={isAuthenticatedAdmin() ? (<CreateMarketingTeam />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/CreateInterviewer" element={isAuthenticatedAdmin() ? (<CreateInterviewer />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/CreateInterview" element={isAuthenticatedAdmin() ? (<CreateInterview />) : (<Navigate to="/AdminLogin" />)} />
+        <Route path="/AdvExercisePage" element={isAuthenticatedAdmin() ? (<AdvExercisePage />) : (<Navigate to="/AdminLogin" />)} />
 
 
 
@@ -441,7 +456,12 @@ const AppContent = () => {
 
         {/* ADV Operation Panel Start */}
         <Route path="/AdvOperationLogin" element={<AdvOperationLogin />} />
+        <Route path="/AdvOperationAgainLogin" element={<AdvOperationAgainLogin />} />
         <Route path="/AdvOperationDashboard" element={isAuthenticatedAdvOperation() ? <AdvOperationDashboard /> : <Navigate to="/AdvOperationLogin" />} />
+        <Route path="/AdvBookedPayment" element={isAuthenticatedAdvOperation() ? <AdvBookedPayment /> : <Navigate to="/AdvOperationLogin" />} />
+        <Route path="/AdvFullPayment" element={isAuthenticatedAdvOperation() ? <AdvFullPayment /> : <Navigate to="/AdvOperationLogin" />} />
+        <Route path="/AdvDefaultPayment" element={isAuthenticatedAdvOperation() ? <AdvDefaultPayment /> : <Navigate to="/AdvOperationLogin" />} />
+        <Route path="/AdvOperationRevenueSheet" element={isAuthenticatedAdvOperation() ? <AdvOperationRevenueSheets /> : <Navigate to="/AdvOperationLogin" />} />
         {/* ADV Operation Panel End */}
 
 

@@ -34,13 +34,35 @@ router.post("/advenroll", async (req, res) => {
       referFriend,
       internshipstartsmonth,
       internshipendsmonth,
-      yearOfStudy,
-      languages,
+      yearOfPassingOut,
       companyName,
       role
     } = req.body;
-    
-    const course = await CreateAdvCourse.findOne({ title: domain });
+
+    console.log(`[AdvEnroll] POST /advenroll - Looking up domain: "${domain}"`);
+
+    // Resilient domain lookup
+    let course = await CreateAdvCourse.findOne({
+      title: { $regex: new RegExp(`^${domain.trim()}$`, "i") }
+    });
+
+    if (!course) {
+      // Create a flexible regex: "MERN Stack Development Advance Program" -> "MERN.*Stack.*Development.*Advanc.*Program"
+      const flexiblePattern = domain.trim()
+        .split(/\s+/)
+        .map(word => word.replace(/Advanc(e|ed)?/i, "Advanc.*"))
+        .join(".*");
+
+      course = await CreateAdvCourse.findOne({
+        title: { $regex: new RegExp(flexiblePattern, "i") }
+      });
+    }
+
+    if (course) {
+      console.log(`[AdvEnroll] Found domain: ${course.title} (${course._id})`);
+    } else {
+      console.warn(`[AdvEnroll] Domain NOT found: "${domain}"`);
+    }
 
     const existingUser = await AdvEnroll.findOne({
       email: req.body.email,
@@ -154,6 +176,7 @@ router.post("/advenroll", async (req, res) => {
       counselor,
       lead,
       domain,
+      program,
       programPrice,
       paidAmount,
       monthOpted,
@@ -172,7 +195,7 @@ router.post("/advenroll", async (req, res) => {
       referFriend,
       internshipstartsmonth,
       internshipendsmonth,
-      yearOfStudy,
+      yearOfPassingOut,
       executiveId: executiveId,
       executive: executive,
       languages,
@@ -197,7 +220,7 @@ router.post("/advenroll", async (req, res) => {
 router.get("/getadvenrolls", async (req, res) => {
   try {
     const { limit = 0, skip = 0, all } = req.query;
-    
+
     // If 'all' is true, return everything without pagination
     if (all === "true") {
       const advEnrolls = await AdvEnroll.find()
@@ -205,15 +228,15 @@ router.get("/getadvenrolls", async (req, res) => {
         .lean();
       return res.status(200).json(advEnrolls);
     }
-    
+
     const advEnrolls = await AdvEnroll.find()
       .sort({ createdAt: -1 })
       .limit(parseInt(limit))
       .skip(parseInt(skip))
       .lean();
-    
+
     const total = await AdvEnroll.countDocuments();
-    
+
     res.status(200).json({
       data: advEnrolls,
       total,
@@ -243,20 +266,20 @@ router.get("/getadvenroll/:id", async (req, res) => {
 router.post("/updateadvenrollstatus", async (req, res) => {
   try {
     const { id, status } = req.body;
-    
+
     const updatedEnroll = await AdvEnroll.findByIdAndUpdate(
       id,
       { status },
       { new: true }
     );
-    
+
     if (!updatedEnroll) {
       return res.status(404).json({ message: "Record not found" });
     }
-    
-    res.status(200).json({ 
+
+    res.status(200).json({
       message: "Status updated successfully",
-      data: updatedEnroll 
+      data: updatedEnroll
     });
   } catch (error) {
     console.error('[AdvEnroll] Update status error:', error);
@@ -269,7 +292,7 @@ router.post("/update-adv-operation/:id", async (req, res) => {
   try {
     const { operationName, operationId } = req.body;
     const { id } = req.params;
-    
+
     const updatedItem = await AdvEnroll.findByIdAndUpdate(
       id,
       {
@@ -278,21 +301,216 @@ router.post("/update-adv-operation/:id", async (req, res) => {
       },
       { new: true }
     );
-    
+
     if (updatedItem) {
-      res.status(200).json({ 
+      res.status(200).json({
         message: "ADV Operation updated successfully",
-        data: updatedItem 
+        data: updatedItem
       });
     } else {
       res.status(404).json({ message: "Item not found" });
     }
   } catch (error) {
     console.error("Error updating ADV operation:", error);
-    res.status(500).json({ 
-      message: "Error updating ADV operation", 
-      error: error.message 
+    res.status(500).json({
+      message: "Error updating ADV operation",
+      error: error.message
     });
+  }
+});
+
+// Handle PUT request to update advance student details
+router.put("/editadvstudentdetails/:_id", async (req, res) => {
+  const { _id } = req.params;
+  console.log(`[AdvEnroll] Attempting to update student ${_id} with data:`, req.body);
+  const {
+    fullname,
+    email,
+    alternativeEmail,
+    phone,
+    program,
+    counselor,
+    domain,
+    programPrice,
+    paidAmount,
+    monthOpted,
+    clearPaymentMonth,
+    operationName,
+    operationId,
+    whatsAppNumber,
+    remainingAmount,
+    collegeName,
+    branch,
+    aadharNumber,
+    referFriend,
+    lead,
+    languages,
+    modeofpayment,
+    transactionId,
+    companyName,
+    role,
+    internshipstartsmonth,
+    internshipendsmonth,
+    yearOfPassingOut
+  } = req.body;
+  try {
+    // Check if domain has changed
+    let domainId = null;
+    if (domain) {
+      console.log(`[AdvEnroll] PUT /editadvstudentdetails - Looking up domain: "${domain}"`);
+
+      // Resilient domain lookup for Edit
+      let foundDomain = await CreateAdvCourse.findOne({
+        title: { $regex: new RegExp(`^${domain.trim()}$`, "i") }
+      });
+
+      if (!foundDomain) {
+        // Create a flexible regex for fuzzy matching
+        const flexiblePattern = domain.trim()
+          .split(/\s+/)
+          .map(word => word.replace(/Advanc(e|ed)?/i, "Advanc.*"))
+          .join(".*");
+
+        foundDomain = await CreateAdvCourse.findOne({
+          title: { $regex: new RegExp(flexiblePattern, "i") }
+        });
+      }
+
+      if (foundDomain) {
+        domainId = foundDomain._id;
+        console.log(`[AdvEnroll] Found domain during edit: ${foundDomain.title} (${foundDomain._id})`);
+      } else {
+        console.error(`[AdvEnroll] Domain NOT found during edit: "${domain}"`);
+        // Log all available courses to help debug
+        const allCourses = await CreateAdvCourse.find({}, 'title');
+        console.log('[AdvEnroll] Available courses in DB:', allCourses.map(c => `"${c.title}"`).join(', '));
+
+        return res.status(404).json({
+          message: `Domain not found: "${domain}". Please ensure it exists in Advanced Courses.`,
+          availableDomains: allCourses.map(c => c.title)
+        });
+      }
+    }
+
+    // Update the student details including domainId
+    const studentData = await AdvEnroll.findByIdAndUpdate(
+      _id,
+      {
+        fullname,
+        email,
+        alternativeEmail,
+        phone,
+        counselor,
+        domain,
+        domainId,
+        programPrice,
+        paidAmount,
+        monthOpted,
+        clearPaymentMonth,
+        operationName,
+        operationId,
+        whatsAppNumber,
+        remainingAmount,
+        collegeName,
+        branch,
+        aadharNumber,
+        referFriend,
+        lead,
+        languages,
+        modeofpayment,
+        transactionId,
+        companyName,
+        role,
+        internshipstartsmonth,
+        internshipendsmonth,
+        yearOfPassingOut
+      },
+      { new: true }
+    );
+
+    if (!studentData) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    res.status(200).json(studentData);
+  } catch (error) {
+    console.error("[AdvEnroll] Update error:", error);
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// GET request to retrieve all enroll data for advance course
+router.get("/advenrollments", async (req, res) => {
+  const { userEmail } = req.query;
+  try {
+    // Fetch all advance enrollments
+    const enrollments = await AdvEnroll.find({
+      email: userEmail,
+    }).lean();
+
+    // Iterate over enrollments and replace domainId with course data
+    const updatedEnrollments = await Promise.all(
+      enrollments.map(async (enrollment) => {
+        if (enrollment.domainId) {
+          const course = await CreateAdvCourse.findById(
+            enrollment.domainId
+          ).lean();
+
+          // Optimization: Calculate Progress on Backend to avoid heavy payload
+          let totalSessionsCount = 0;
+          let watchedSessionsCount = 0;
+          let progressPct = 0;
+
+          if (course && course.session && typeof course.session === 'object') {
+            totalSessionsCount = Object.keys(course.session).length;
+
+            if (enrollment.watchedSessions && Array.isArray(enrollment.watchedSessions)) {
+              const combined = new Set(enrollment.watchedSessions);
+              watchedSessionsCount = Object.keys(course.session).filter(k => combined.has(k)).length;
+            }
+            if (totalSessionsCount > 0) {
+              progressPct = Math.round((watchedSessionsCount / totalSessionsCount) * 100);
+            }
+
+            // Exclude session data from this general fetch
+            delete course.session;
+            delete course.sessions;
+            delete course.modules;
+          }
+
+          enrollment.domain = course || null; // Replace domainId with course data
+          enrollment.progressStats = {
+            totalSessionsCount,
+            watchedSessionsCount,
+            progressPct
+          };
+        }
+        return enrollment;
+      })
+    );
+    res.status(200).json(updatedEnrollments);
+  } catch (error) {
+    console.error("[AdvEnroll] enrollments error:", error);
+    res.status(500).json({ message: "Failed to fetch advance enrollments", error });
+  }
+});
+
+// GET request to just load the massive session mapping for a specific advance enrollment
+router.get("/advenrollments/:id/sessions", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const enrollment = await AdvEnroll.findById(id).lean();
+    if (!enrollment || !enrollment.domainId) {
+      return res.status(404).json({ message: "Enrollment or domain not found" });
+    }
+    const course = await CreateAdvCourse.findById(enrollment.domainId).lean();
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+    res.status(200).json({ session: course.session || {} });
+  } catch (error) {
+    console.error("[AdvEnroll] sessions error:", error);
+    res.status(500).json({ message: "Failed to fetch advance sessions", error });
   }
 });
 

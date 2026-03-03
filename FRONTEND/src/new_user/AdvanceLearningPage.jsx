@@ -7,7 +7,7 @@
  */
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import NewLearning from "../User/NewLearning";
+import AdvanceLearning from "../User/AdvanceLearning";
 import logo from "../assets/LOGO3.png";
 
 const AdvanceLearningPage = () => {
@@ -53,7 +53,7 @@ const AdvanceLearningPage = () => {
             </div>
 
             {/* Full learning component */}
-            <NewLearning />
+            <AdvanceLearning />
         </div>
     );
 };

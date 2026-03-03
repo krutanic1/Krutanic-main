@@ -8,6 +8,7 @@ import toast, { Toaster } from "react-hot-toast";
 const NewEnrolledCourses = () => {
   const userEmail = localStorage.getItem("userEmail");
   const userId = localStorage.getItem("userId");
+  const isAdvance = localStorage.getItem("advance") === "true";
   const [enrollData, setEnrollData] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [userData, setUserData] = useState(null);
@@ -28,9 +29,22 @@ const NewEnrolledCourses = () => {
     setLoading(true);
     try {
       const response = await axios.get(`${API}/enrollments`, { params: { userEmail } });
-      setEnrollData(response.data);
-      if (response.data && response.data.length > 0) {
-        setSelectedCourse(response.data[0].domain);
+      const mapped = response.data.map(e => ({
+        ...e,
+        domain: { ...e.domain, progressStats: e.progressStats, _enrollmentId: e._id }
+      }));
+      setEnrollData(mapped);
+      if (mapped && mapped.length > 0) {
+        const first = mapped[0].domain;
+        if (!first.session || Object.keys(first.session).length === 0) {
+          try {
+            const sessionRes = await axios.get(`${API}/enrollments/${first._enrollmentId}/sessions`);
+            first.session = sessionRes.data.session;
+          } catch (err) {
+            console.warn("Could not fetch sessions for initial course", err);
+          }
+        }
+        setSelectedCourse({ ...first });
       }
     } catch (error) {
       console.error("There was an error fetching enrolledData:", error);
@@ -41,12 +55,21 @@ const NewEnrolledCourses = () => {
 
   const handleStartLearning = (title, sessionlist, enrollmentId, startIndex = 0) => {
     navigate("/Learning", {
+      replace: true,
       state: { courseTitle: title, sessions: sessionlist, startIndex, thumbnail: getThumbnail(title) || selectedCourse?.thumbnail, enrollmentId },
     });
   };
 
-  const handleCourseClick = (course) => {
-    setSelectedCourse(course);
+  const handleCourseClick = async (course) => {
+    if (!course.session || Object.keys(course.session).length === 0) {
+      try {
+        const sessionRes = await axios.get(`${API}/enrollments/${course._enrollmentId}/sessions`);
+        course.session = sessionRes.data.session;
+      } catch (err) {
+        console.warn("Could not fetch sessions for selected course", err);
+      }
+    }
+    setSelectedCourse({ ...course });
     // Close sidebar on mobile after selection
     if (window.innerWidth < 1024) {
       setIsSidebarOpen(false);
@@ -183,7 +206,7 @@ const NewEnrolledCourses = () => {
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
                     <button
-                      onClick={() => handleStartLearning(selectedCourse.title, selectedCourse.session, selectedCourse._id)}
+                      onClick={() => handleStartLearning(selectedCourse.title, selectedCourse.session, selectedCourse._enrollmentId)}
                       className="bg-primary hover:bg-orange-600 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm shadow-primary/30 transition-all flex items-center gap-2"
                     >
                       <span className="material-symbols-outlined">play_arrow</span> DEMO
@@ -250,7 +273,7 @@ const NewEnrolledCourses = () => {
                             <div className="col-span-4 md:col-span-3 flex justify-end">
                               <button
                                 onClick={() =>
-                                  handleStartLearning(selectedCourse.title, selectedCourse.session, selectedCourse._id, index)
+                                  handleStartLearning(selectedCourse.title, selectedCourse.session, selectedCourse._enrollmentId, index)
                                 }
                                 className={`transition-transform hover:scale-110 ${isFirst ? "text-primary" : "text-primary/70 hover:text-primary"
                                   }`}

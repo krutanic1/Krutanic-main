@@ -1,128 +1,124 @@
 const express = require("express");
 const router = express.Router();
-const path = require("path");
-const fs = require("fs");
 const mongoose = require("mongoose");
 const Question = require("../models/Question");
-const Result = require("../models/result");
 const AssignmentAttempt = require("../models/AssignmentAttempt");
 const { AssignmentStats } = require("../models/DashboardMetrics");
 
-const exerciseFilePath = path.join(__dirname, "../config/exercise.json");
+// Increase JSON limit specifically for the upload route
+const uploadParser = express.json({ limit: "10mb" });
 
-// Helper: Shuffle array
-const shuffleArray = (array) => {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-};
-
-// Seed Questions Logic
-const seedQuestions = async (force = false) => {
+// ==========================================================
+// 1. POST /exercise/upload - Upload New Questions
+// ==========================================================
+router.post("/exercise/upload", uploadParser, async (req, res) => {
   try {
-    const count = await Question.countDocuments();
-    console.log(`Current Question count: ${count}`);
-    if (count > 0 && !force) {
-      console.log("Questions already seeded.");
-      return;
+    const { course, replaceExisting, questions } = req.body;
+
+    if (!course || !Array.isArray(questions) || questions.length === 0) {
+      return res.status(400).json({ error: "Missing required fields: course, or questions array." });
     }
 
-    if (force) {
-      console.log("Forcing re-seed: Clearing existing questions...");
-      await Question.deleteMany({});
-    }
-
-    console.log("Seeding questions from exercise.json...");
-    console.log("Exercise file path:", exerciseFilePath);
-
-    if (!fs.existsSync(exerciseFilePath)) {
-      console.error("exercise.json not found!");
-      return;
-    }
-
-    const rawData = fs.readFileSync(exerciseFilePath, "utf-8");
-    const allQuestions = JSON.parse(rawData);
-    console.log(`Found ${allQuestions.length} questions in JSON.`);
-
-    // Group by category
-    const questionsByCategory = {};
-    allQuestions.forEach(q => {
-      if (!questionsByCategory[q.category]) {
-        questionsByCategory[q.category] = [];
-      }
-      questionsByCategory[q.category].push(q);
-    });
-
+    const validDifficulties = ["Beginner", "Intermediate", "Advanced"];
     const newQuestions = [];
 
-    // Distribute Difficulty
-    // Target: 20 Beginner, 15 Intermediate, 10 Advanced => Total 45 per category
-    const TARGET_BEG = 20;
-    const TARGET_INT = 15;
-    const TARGET_ADV = 10;
-    const TOTAL_NEEDED = TARGET_BEG + TARGET_INT + TARGET_ADV;
+    // Validation Pass
+    for (let i = 0; i < questions.length; i++) {
+      const q = questions[i];
 
-    Object.keys(questionsByCategory).forEach(category => {
-      let qs = shuffleArray(questionsByCategory[category]);
-
-      // If we don't have enough questions, duplicate them to meet the requirement
-      if (qs.length < TOTAL_NEEDED) {
-        console.log(`Category ${category} has only ${qs.length} questions. Duplicating to reach ${TOTAL_NEEDED}...`);
-        while (qs.length < TOTAL_NEEDED) {
-          qs = [...qs, ...qs]; // Double the array
-        }
-        // Trim to exact size or just keep them all? 
-        // Let's just take the first TOTAL_NEEDED after shuffling again
-        qs = shuffleArray(qs);
+      if (!validDifficulties.includes(q.difficulty)) {
+        return res.status(400).json({ error: `Row ${i + 1}: Invalid difficulty "${q.difficulty}". Must be Beginner, Intermediate, or Advanced.` });
+      }
+      if (!q.question || typeof q.question !== "string") {
+        return res.status(400).json({ error: `Row ${i + 1}: Missing or invalid question text.` });
+      }
+      if (!Array.isArray(q.options) || q.options.length !== 4) {
+        return res.status(400).json({ error: `Row ${i + 1}: Must have exactly 4 options.` });
+      }
+      if (!q.correctAnswer || !q.options.includes(q.correctAnswer)) {
+        return res.status(400).json({ error: `Row ${i + 1}: correctAnswer must exactly match one of the 4 options.` });
       }
 
-      // Now assign difficulties
-      qs.forEach((q, index) => {
-        let difficulty = "Beginner";
-        // Assign first batch to Beginner
-        if (index < TARGET_BEG) {
-          difficulty = "Beginner";
-        }
-        // Next batch to Intermediate
-        else if (index < (TARGET_BEG + TARGET_INT)) {
-          difficulty = "Intermediate";
-        }
-        // Rest to Advanced
-        else {
-          difficulty = "Advanced";
-        }
-
-        // Stop adding if we exceed our needed amount (to avoid massive database bloat if we doubled too much)
-        // Actually, let's just cap it at TOTAL_NEEDED to be precise
-        if (index < TOTAL_NEEDED) {
-          newQuestions.push({
-            course: category,
-            difficulty: difficulty,
-            question: q.question,
-            options: q.options,
-            correctAnswer: q.correctAnswer
-          });
-        }
+      newQuestions.push({
+        course,
+        difficulty: q.difficulty,
+        question: q.question,
+        options: q.options,
+        correctAnswer: q.correctAnswer,
+        explanation: q.explanation || "",
+        topic: q.topic || "",
+        isActive: true
       });
+    }
+
+    // Logic Pass
+    let currentVersion = 1;
+
+    if (replaceExisting) {
+      // Soft-delete: Mark all active questions in this course as inactive
+      await Question.updateMany({ course, isActive: true }, { $set: { isActive: false } });
+    } else {
+      // Append: Find max version for this course and increment by 1
+      const highestVersionQ = await Question.findOne({ course }).sort({ version: -1 }).select("version");
+      if (highestVersionQ) {
+        currentVersion = highestVersionQ.version + 1;
+      }
+    }
+
+    // Apply version
+    newQuestions.forEach(q => q.version = currentVersion);
+
+    // Batch Insert
+    const inserted = await Question.insertMany(newQuestions);
+
+    res.status(201).json({
+      message: `Successfully uploaded ${inserted.length} questions for ${course}`,
+      insertedCount: inserted.length,
+      version: currentVersion,
+      replaceExisting
     });
 
-    await Question.insertMany(newQuestions);
-    console.log(`Seeded ${newQuestions.length} questions.`);
-    return newQuestions.length;
-
   } catch (error) {
-    console.error("Error seeding questions:", error);
+    console.error("Upload Error:", error);
+    res.status(500).json({ error: "Internal server error during upload." });
   }
-};
+});
 
-// GET /exercise/force-seed route removed to prevent concurrency issues
+// ==========================================================
+// 2. GET /exercise/stats - Get stats for an active course
+// ==========================================================
+router.get("/exercise/stats", async (req, res) => {
+  try {
+    const { course } = req.query;
+    if (!course) return res.status(400).json({ error: "Course query param required" });
 
-// GET /exercise/courses - Get list of available courses
+    const stats = await Question.aggregate([
+      { $match: { course, isActive: true } },
+      { $group: { _id: "$difficulty", count: { $sum: 1 } } }
+    ]);
+
+    const result = { Beginner: 0, Intermediate: 0, Advanced: 0, Total: 0 };
+    stats.forEach(s => {
+      if (result[s._id] !== undefined) {
+        result[s._id] = s.count;
+        result.Total += s.count;
+      }
+    });
+
+    res.json(result);
+  } catch (error) {
+    console.error("Stats Error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==========================================================
+// 3. GET /exercise/courses - Get list of available courses
+// ==========================================================
 router.get("/exercise/courses", async (req, res) => {
   try {
-    const courses = await Question.distinct("course");
+    // Only return courses that have ACTIVE questions
+    const courses = await Question.distinct("course", { isActive: true });
     res.json(courses);
   } catch (error) {
     console.error("Error fetching courses:", error);
@@ -130,30 +126,31 @@ router.get("/exercise/courses", async (req, res) => {
   }
 });
 
-// GET /exercise/questions - Get questions based on course and difficulty
+// ==========================================================
+// 4. GET /exercise/questions - Get questions securely
+// ==========================================================
 router.get("/exercise/questions", async (req, res) => {
   try {
-    const { course, difficulty, email } = req.query;
+    const { course, difficulty } = req.query;
 
     if (!course || !difficulty) {
       return res.status(400).json({ error: "Course and difficulty are required" });
     }
 
-    // Determine limit based on difficulty
-    let limit = 10; // Default
-    if (difficulty === "Beginner") limit = 20;
-    else if (difficulty === "Intermediate") limit = 15;
-    else if (difficulty === "Advanced") limit = 10;
+    const limits = { Beginner: 20, Intermediate: 15, Advanced: 10 };
+    const limit = limits[difficulty];
+    if (!limit) {
+      return res.status(400).json({ error: "Invalid difficulty" });
+    }
 
-    // Fetch random questions match criteria
     const questions = await Question.aggregate([
-      { $match: { course: course, difficulty: difficulty } },
-      { $sample: { size: limit } }, // Random selection
-      { $project: { correctAnswer: 0 } } // Exclude answer key
+      { $match: { course, difficulty, isActive: true } },
+      { $sample: { size: limit } }, // Random pull
+      { $project: { correctAnswer: 0 } } // STRICT SECURITY: Exclude correct answers
     ]);
 
     if (!questions || questions.length === 0) {
-      return res.status(404).json({ message: "No questions found for this selection." });
+      return res.status(404).json({ message: "No active questions found for this selection." });
     }
 
     res.json(questions);
@@ -163,26 +160,30 @@ router.get("/exercise/questions", async (req, res) => {
   }
 });
 
-// POST /exercise/evaluate - Evaluate user answers
+// ==========================================================
+// 5. POST /exercise/evaluate - Secure Grading & Stats
+// ==========================================================
 router.post("/exercise/evaluate", async (req, res) => {
   try {
-    const { questions, answers, email } = req.body;
+    const { questions, answers, difficulty, userId: userIdStr } = req.body;
 
-    if (!questions || !answers || questions.length !== answers.length) {
-      return res.status(400).json({ error: "Invalid submission data." });
+    if (!questions || !answers || questions.length !== answers.length || !difficulty) {
+      return res.status(400).json({ error: "Invalid submission payload." });
+    }
+
+    if (!["Beginner", "Intermediate", "Advanced"].includes(difficulty)) {
+      return res.status(400).json({ error: "Invalid difficulty level provided." });
     }
 
     let correctCount = 0;
     const total = questions.length;
 
-    // We re-fetch answers to ensure security, or trust the question ID if provided.
-    // Since frontend sends full question objects which might NOT include ID if we projected it out (Wait, we projected out 'correctAnswer' ONLY).
-    // We should rely on _id to look up the correct answers.
-
-    const questionIds = questions.map(q => q._id);
+    // Secure Evaluation by re-fetching questions by _id
+    // NOTE: We do NOT query for isActive: true here. 
+    // This ensures if a test is updated mid-session (soft-deleted), the student can still submit.
+    const questionIds = questions.map(q => q._id).filter(id => !!id);
     const dbQuestions = await Question.find({ _id: { $in: questionIds } });
 
-    // Map for quick lookup
     const correctContext = {};
     dbQuestions.forEach(q => {
       correctContext[q._id.toString()] = q.correctAnswer;
@@ -191,34 +192,29 @@ router.post("/exercise/evaluate", async (req, res) => {
     questions.forEach((q, index) => {
       const userAnswer = answers[index];
       const correct = correctContext[q._id.toString()];
-
       if (userAnswer === correct) {
         correctCount++;
       }
     });
 
+    const passThreshold = total * 0.7; // 70% to pass
+    const isImproved = correctCount > passThreshold;
+
     const resultData = {
       correct: correctCount,
       incorrect: total - correctCount,
-      total: total,
-      isImproved: correctCount > (total * 0.7),
-      message: correctCount > (total * 0.7) ? "Great job! You passed." : "Keep practicing!",
+      total,
+      isImproved,
+      message: isImproved ? "Great job! You passed." : "Keep practicing!",
     };
 
-    // ── Auto-save to Assignment Score Matrix ──
-    // Requires: userId and difficulty (level) to be sent in the request body
-    const { userId: userIdStr, difficulty } = req.body;
-    if (userIdStr && difficulty) {
+    // Update Assignment Matrix (DashboardStats) if userId exists
+    if (userIdStr && mongoose.Types.ObjectId.isValid(userIdStr)) {
       try {
-        // Convert string userId from localStorage to ObjectId to match schema
-        const userId = mongoose.Types.ObjectId.isValid(userIdStr)
-          ? new mongoose.Types.ObjectId(userIdStr)
-          : null;
-        if (!userId) throw new Error('Invalid userId');
-
+        const userId = new mongoose.Types.ObjectId(userIdStr);
         const percentage = Math.round((correctCount / total) * 100);
 
-        // 1. Save the individual attempt record
+        // 1. Save specific attempt
         await new AssignmentAttempt({
           userId,
           level: difficulty,
@@ -227,20 +223,20 @@ router.post("/exercise/evaluate", async (req, res) => {
           percentage,
         }).save();
 
-        // 2. Upsert AssignmentStats doc first (ensures doc exists)
+        // 2. Initial Upsert
         await AssignmentStats.findOneAndUpdate(
           { userId },
           { $setOnInsert: { userId } },
           { upsert: true, new: true }
         );
 
-        // 3. Fetch current bestScore to compute new best
+        // 3. Compare Best Score
         const current = await AssignmentStats.findOne({ userId });
         const currentBest = current?.levels?.[difficulty]?.bestScore || 0;
         const newBest = percentage > currentBest ? percentage : currentBest;
-        const newStatus = newBest >= 80 ? 'Completed' : newBest > 0 ? 'In Progress' : 'Not Started';
+        const newStatus = newBest >= 80 ? 'Completed' : (newBest > 0 ? 'In Progress' : 'Not Started');
 
-        // 4. Atomic update with dot-notation paths
+        // 4. Atomic Update
         const updatedStats = await AssignmentStats.findOneAndUpdate(
           { userId },
           {
@@ -254,22 +250,103 @@ router.post("/exercise/evaluate", async (req, res) => {
           { new: true }
         );
 
-        console.log(`✅ Matrix updated for user ${userIdStr} | Level: ${difficulty} | Score: ${percentage}%`);
         resultData.matrixUpdated = true;
         resultData.levelStats = updatedStats?.levels?.[difficulty];
+        console.log(`✅ Exercise recorded for user ${userIdStr} | Level: ${difficulty} | Score: ${percentage}%`);
+
       } catch (matrixErr) {
-        console.error('Matrix update error (non-fatal):', matrixErr.message);
+        console.error("Matrix Update Error:", matrixErr.message);
+        // Non-fatal error for the user's test flow
       }
     }
 
     res.json(resultData);
 
   } catch (error) {
-    console.error("Error evaluating test:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Evaluate Error:", error);
+    res.status(500).json({ error: "Internal server error during evaluation." });
   }
 });
 
-// Export router AND the seed function
-router.seedQuestions = seedQuestions;
+// Since we removed JSON seeding, we just export an empty hook for backwards compatibility in server.js
+router.seedQuestions = async () => {
+  try {
+    const fs = require("fs");
+    const path = require("path");
+
+    let allSourceQuestions = [];
+
+    // 1. Load Advanced Questions (new_questions.json - UTF-16LE)
+    const advPath = path.join(__dirname, "../new_questions.json");
+    if (fs.existsSync(advPath)) {
+      const rawAdv = fs.readFileSync(advPath, "utf16le");
+      const cleanAdv = rawAdv.replace(/^\uFEFF/, "");
+      const advQuestions = JSON.parse(cleanAdv);
+      allSourceQuestions.push(...advQuestions.map(q => ({
+        ...q,
+        course: q.category || q.course,
+        difficulty: q.difficulty || "Beginner"
+      })));
+    }
+
+    // 2. Load Regular Questions (config/exercise.json - UTF-8)
+    const regPath = path.join(__dirname, "../config/exercise.json");
+    if (fs.existsSync(regPath)) {
+      const regQuestions = JSON.parse(fs.readFileSync(regPath, "utf8"));
+      allSourceQuestions.push(...regQuestions.map(q => ({
+        ...q,
+        course: q.category || q.course,
+        difficulty: q.difficulty || "Beginner"
+      })));
+    }
+
+    if (allSourceQuestions.length === 0) {
+      console.warn("No questions found in any source file for seeding.");
+      return;
+    }
+
+    // 3. Identify which courses are missing ACTIVE questions in DB
+    const existingActiveCourses = await Question.distinct("course", { isActive: true });
+    const categoriesInSources = [...new Set(allSourceQuestions.map(q => q.course))];
+    const missingCategories = categoriesInSources.filter(cat => !existingActiveCourses.includes(cat));
+
+    if (missingCategories.length === 0) {
+      console.log("Database already has active questions for all known courses.");
+      return;
+    }
+
+    console.log(`Found ${missingCategories.length} courses missing active questions. Seeding now...`);
+
+    // 4. Clean up any inactive ones for these categories to avoid versioning conflicts if re-seeding
+    await Question.deleteMany({ course: { $in: missingCategories }, isActive: false });
+
+    // 5. Prepare and Insert
+    const prepared = allSourceQuestions
+      .filter(q => missingCategories.includes(q.course))
+      .map(q => ({
+        course: q.course,
+        difficulty: q.difficulty,
+        question: q.question,
+        options: q.options,
+        correctAnswer: q.correctAnswer,
+        explanation: q.explanation || "",
+        topic: q.topic || "",
+        isActive: true,
+        version: 1
+      }));
+
+    if (prepared.length > 0) {
+      // Chunking if too large (Question model might have many)
+      const batchSize = 500;
+      for (let i = 0; i < prepared.length; i += batchSize) {
+        await Question.insertMany(prepared.slice(i, i + batchSize));
+      }
+      console.log(`✅ Seeded ${prepared.length} questions for courses: ${missingCategories.join(", ")}`);
+    }
+
+  } catch (err) {
+    console.error("Seeding Error:", err.message);
+  }
+};
+
 module.exports = router;

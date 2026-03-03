@@ -26,6 +26,10 @@ const advEnrollSchema = new Schema(
     transactionId: {
       type: String,
       unique: true,
+      sparse: true,
+    },
+    program: {
+      type: String,
     },
     modeofpayment: {
       type: String,
@@ -41,7 +45,7 @@ const advEnrollSchema = new Schema(
     },
     domainId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "CreateCourse",
+      ref: "CreateAdvCourse",
     },
     programPrice: {
       type: Number,

@@ -9,7 +9,7 @@ const crypto = require('crypto');
 
 // create user
 router.post("/users", async (req, res) => {
-  const { fullname, email, phone } = req.body;
+  const { fullname, email, phone, advance } = req.body;
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -19,6 +19,7 @@ router.post("/users", async (req, res) => {
       fullname,
       email,
       phone,
+      advance: advance || false,
     });
     await newUser.save();
     res

@@ -62,6 +62,9 @@ const AdminHeader = () => {
             <Link to="/AdminProjectPage">
               <i className="fa fa-tasks mr-2"></i>Project Management
             </Link>
+            <Link to="/AdvProjectPage">
+              <i className="fa fa-tasks mr-2"></i>Adv Project Mgmt
+            </Link>
             <Link to="/CreateOperation">
               <i className="fa fa-briefcase mr-2"></i>Create Operation
             </Link>
@@ -137,6 +140,12 @@ const AdminHeader = () => {
           <>
             <Link to="/AddAdvCourse">
               <i className="fa fa-plus-circle mr-2"></i>Create Adv Course
+            </Link>
+            <Link to="/AddAdvModule">
+              <i className="fa fa-list mr-2"></i>Adv Course List
+            </Link>
+            <Link to="/AdvExercisePage">
+              <i className="fa fa-code mr-2"></i>Adv Exercise Builder
             </Link>
             <Link to="/CreateAdvOperation">
               <i className="fa fa-briefcase mr-2"></i>Create ADV Operation

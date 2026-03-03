@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import API from "../API";
-import { Line } from "react-chartjs-2";
+import { Pie, Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
+  ArcElement,
   Tooltip,
   Legend,
   CategoryScale,
@@ -13,6 +14,7 @@ import {
 } from "chart.js";
 
 ChartJS.register(
+  ArcElement,
   Tooltip,
   Legend,
   CategoryScale,
@@ -21,9 +23,9 @@ ChartJS.register(
   LineElement
 );
 
-const AdvOperationDashboard = () => {
+const OperationDashboard = () => {
   const [operationData, setOperationData] = useState([]);
-  const [advEnrolls, setAdvEnrolls] = useState([]);
+  const [newStudent, setNewStudent] = useState([]);
   const [operation, setOperation] = useState([]);
   const today = new Date();
   const currentMonthWithDate = today.toISOString().slice(0, 7);
@@ -40,7 +42,7 @@ const AdvOperationDashboard = () => {
         response.data.filter((data) => data.operationName === operationName)
       );
     } catch (err) {
-      console.log("Failed to fetch operation data");
+      console.log("Failed to fetch user data");
     }
   };
 
@@ -49,27 +51,26 @@ const AdvOperationDashboard = () => {
       const response = await axios.get(`${API}/getadvoperation`);
       setOperation(response.data.filter((item) => item.fullname === operationName));
     } catch (error) {
-      console.error("There was an error fetching operation:", error);
+      console.error("There was an error fetching bda:", error);
     }
   };
-
-  const fetchAdvEnrolls = async () => {
+  const fetchNewStudent = async () => {
     try {
       const response = await axios.get(`${API}/getadvenrolls?all=true`);
-      setAdvEnrolls(
+      setNewStudent(
         response.data.filter(
-          (item) => item.operationName === operationName
+          (item) => item.counselor && item.operationName === operationName
         )
       );
     } catch (error) {
-      console.error("There was an error fetching advance enrolls:", error);
+      console.error("There was an error fetching new student:", error);
     }
   };
 
   useEffect(() => {
     fetchOperationData();
     fetchOperation();
-    fetchAdvEnrolls();
+    fetchNewStudent();
   }, []);
 
   if (!operationData) {
@@ -122,6 +123,8 @@ const AdvOperationDashboard = () => {
     return acc;
   }, 0);
 
+
+
   const pendingRevenue = totalRevenue - creditedRevenue;
 
   const revenueByMonth = operationData.reduce((acc, student) => {
@@ -163,6 +166,17 @@ const AdvOperationDashboard = () => {
     ],
   };
 
+  // const data = {
+  //   labels: ["Booked Revenue", "Credited Revenue", "Pending Revenue"],
+  //   datasets: [
+  //     {
+  //       data: [bookedRevenue, creditedRevenue, pendingRevenue],
+  //       backgroundColor: ["#36A2EB", "#4BC0C0", "#FF6384", "#FF9F40"],
+  //       hoverBackgroundColor: ["#36A2EB", "#4BC0C0", "#FF6384", "#FF9F40"],
+  //     },
+  //   ],
+  // };
+
   return (
     <div id="AdminDashboard">
       <h2 className="text-center font-semibold mb-4">Operation Dashboard</h2>
@@ -189,6 +203,7 @@ const AdvOperationDashboard = () => {
         <div className="revenue-card">
           <h2 className="text-lg font-semibold">Revenue Details (Current Month)</h2>
           <p>Total Revenue: {totalRevenue}/-</p>
+          {/* <p>Booked Revenue: {bookedRevenue}/-</p> */}
           <p>Credited Revenue: {creditedRevenue}/-</p>
           <p>Pending Revenue: {pendingRevenue}/-</p>
         </div>
@@ -220,6 +235,7 @@ const AdvOperationDashboard = () => {
                 return <p key={index}>No target assigned.</p>;
               }
             })}
+
           </div>
         </div>
       </div>
@@ -227,4 +243,4 @@ const AdvOperationDashboard = () => {
   );
 };
 
-export default AdvOperationDashboard;
+export default OperationDashboard;

@@ -53,9 +53,7 @@ const NewDashboard = () => {
   const fetchenrollData = debounce(async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API}/enrollments`, {
-        params: { userEmail },
-      });
+      const response = await axios.get(`${API}/enrollments`, { params: { userEmail } });
       setenrollData(response.data);
     } catch (error) {
       console.error("There was an error fetching enrolledData:", error);
@@ -171,10 +169,32 @@ const NewDashboard = () => {
     }
   };
 
-  const handleStartLearning = (id, title, sessionlist, thumbnail, dbWatchedSessions = []) => {
+  const handleStartLearning = (id, title, sessionlist, thumbnail) => {
     navigate("/Learning", {
-      state: { courseTitle: title, sessions: sessionlist, thumbnail, enrollmentId: id, watchedSessionsFromDB: dbWatchedSessions },
+      state: { courseTitle: title, sessions: sessionlist, thumbnail, enrollmentId: id },
     });
+  };
+
+  const handleStartLearningClick = async (item) => {
+    let sessionData = item.domain?.session;
+    try {
+      if (!sessionData || Object.keys(sessionData).length === 0) {
+        setLoading(true);
+        const res = await axios.get(`${API}/enrollments/${item._id}/sessions`);
+        sessionData = res.data.session || {};
+        setLoading(false);
+      }
+    } catch (error) {
+      console.warn("Could not fetch sessions for Start Learning", error);
+      setLoading(false);
+    }
+
+    handleStartLearning(
+      item._id,
+      item.domain?.title,
+      sessionData,
+      getThumbnail(item.domain?.title) || item.domain?.thumbnail || item.domain?.image
+    );
   };
 
   const handleRestrictedClick = (path, hasAccess) => {
@@ -465,38 +485,17 @@ const NewDashboard = () => {
                               </div>
                               <div className="flex items-center gap-1">
                                 <span className="material-symbols-outlined text-[18px]">play_lesson</span>
-                                <span>{Object.keys(item.domain?.session || {}).length} Sessions</span>
+                                <span>{item.progressStats ? item.progressStats.totalSessionsCount : Object.keys(item.domain?.session || {}).length} Sessions</span>
                               </div>
                             </div>
-                            {/* Progress bar */}
-                            {isFullyPaid && (() => {
-                              const total = Object.keys(item.domain?.session || {}).length;
-                              const watched = getWatchedCount(item._id, item.domain?.session, item.watchedSessions);
-                              const pct = total > 0 ? Math.round((watched / total) * 100) : 0;
-                              return (
-                                <div className="mb-4">
-                                  <div className="flex justify-between text-xs text-gray-500 mb-1">
-                                    <span>{watched}/{total} sessions watched</span>
-                                    <span className="font-semibold text-primary">{pct}% complete</span>
-                                  </div>
-                                  <div className="bg-gray-100 rounded-full h-2 overflow-hidden">
-                                    <div
-                                      className="h-2 rounded-full bg-primary transition-all duration-500"
-                                      style={{ width: `${pct}%` }}
-                                    />
-                                  </div>
-                                </div>
-                              );
-                            })()}
-
                             {isFullyPaid ? (
-                              <div className="mt-auto flex flex-wrap gap-3">
+                              <div className="mt-8 flex flex-wrap gap-3">
                                 <button
-                                  onClick={() => handleStartLearning(item._id, item.domain.title, item.domain.session, getThumbnail(item.domain?.title) || item.domain.thumbnail, item.watchedSessions)}
+                                  onClick={() => handleStartLearningClick(item)}
                                   className="flex-1 min-w-[140px] bg-primary hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
                                 >
                                   <span className="material-symbols-outlined text-[20px]">play_circle</span>
-                                  {getWatchedCount(item._id, item.domain?.session, item.watchedSessions) > 0 ? 'Continue Learning' : 'Start Learning'}
+                                  Start Learning
                                 </button>
                                 <button
                                   onClick={() => handleSubmit(item)}

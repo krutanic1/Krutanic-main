@@ -37,6 +37,7 @@ const LoginWithOtp = () => {
           localStorage.setItem('userId', response.data._id);
           localStorage.setItem('userEmail', response.data.email);
           localStorage.setItem('token', response.data.token);
+          localStorage.setItem('advance', response.data.advance);
           if (response.data.advance) {
             navigate('/advancedashboard');
           } else {

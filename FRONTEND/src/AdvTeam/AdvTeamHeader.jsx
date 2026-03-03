@@ -108,9 +108,9 @@ const AdvTeamHeader = () => {
           <Link to="/advteam/home">
             <i className="fa fa-dashboard"></i> Home
           </Link>
-          <Link to="/advteam/leaderboard">
+          {/* <Link to="/advteam/leaderboard">
             <i className="fa fa-trophy"></i> LeaderBoard
-          </Link>
+          </Link> */}
           {["LEADER", "MANAGER"].includes(advTeamData?.designation) && (
             <>
               <Link to="/advteam/assigntarget">
@@ -133,9 +133,9 @@ const AdvTeamHeader = () => {
           <Link to="/advteam/adduser">
             <i className="fa fa-book"></i> Add Name/Email
           </Link>
-          <Link to="/advteam/reference">
+          {/* <Link to="/advteam/reference">
             <i className="fa fa-bell"></i> Your Reference
-          </Link>
+          </Link> */}
           {["LEADER", "MANAGER"].includes(advTeamData?.designation) && (
             <>
               <Link to="/advteam/teamdetail">

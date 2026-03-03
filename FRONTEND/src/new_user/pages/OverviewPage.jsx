@@ -23,8 +23,9 @@ const OverviewPage = () => {
     }, [location.pathname, refetchMetrics]);
 
     // 1. Program Completion
-    // Use metrics if available, fallback to progressPct
-    const programCompletion = metrics?.programCompletion?.percentage || progressPct || 0;
+    // Primary: use progressPct from enrollment context (real-time from AdvEnroll)
+    // Fallback: use DashboardMetrics percentage
+    const programCompletion = progressPct || metrics?.programCompletion?.percentage || 0;
     const completionStatus = programCompletion >= 80 ? "green" : programCompletion >= 50 ? "yellow" : "red";
     const completionText = programCompletion >= 80 ? "Good Progress" : programCompletion >= 50 ? "Can Improve" : "Needs Improvement";
 
@@ -131,6 +132,7 @@ const OverviewPage = () => {
                                         enrollmentId: enrollment?._id,
                                         watchedSessionsFromDB: enrollment?.watchedSessions,
                                         thumbnail: getThumbnail(enrollment?.domain?.title || ""),
+                                        isAdvance: enrollment?.advance || !!enrollment?.domainId?.sessions || !!localStorage.getItem("isAdvance"), // Help the learning page know which API to use
                                     },
                                 })}
                             >

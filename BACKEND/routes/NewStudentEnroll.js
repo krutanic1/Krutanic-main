@@ -3,6 +3,7 @@ const router = express.Router();
 const CreateBDA = require("../models/CreateBDA");
 const NewEnrollStudent = require("../models/NewStudentEnroll");
 const CreateCourse = require("../models/CreateCourse");
+const AdvEnroll = require("../models/AdvEnroll");
 const TransactionId = require("../models/AddTransactionId");
 const CreateOperation = require("../models/CreateOperation");
 const mongoose = require("mongoose");
@@ -583,7 +584,11 @@ router.get("/getnewstudentenroll", async (req, res) => {
 router.post("/updateremark", async (req, res) => {
   const { remark, studentId, referRemark } = req.body;
   try {
-    const existingStudent = await NewEnrollStudent.findById(studentId);
+    let existingStudent = await NewEnrollStudent.findById(studentId);
+    if (!existingStudent) {
+      existingStudent = await AdvEnroll.findById(studentId);
+    }
+
     if (!existingStudent) {
       return res.status(404).json({ error: "Student not found." });
     }
@@ -803,11 +808,22 @@ router.get("/enrollments/:id/sessions", async (req, res) => {
 router.post("/updateprogress", async (req, res) => {
   const { enrollmentId, watchedSessions } = req.body;
   try {
-    const student = await NewEnrollStudent.findByIdAndUpdate(
+    // Try regular enrollment first
+    let student = await NewEnrollStudent.findByIdAndUpdate(
       enrollmentId,
       { watchedSessions: watchedSessions },
       { new: true }
     );
+
+    // If not found, try advance enrollment
+    if (!student) {
+      student = await AdvEnroll.findByIdAndUpdate(
+        enrollmentId,
+        { watchedSessions: watchedSessions },
+        { new: true }
+      );
+    }
+
     if (!student) {
       return res.status(404).json({ message: "Enrollment not found" });
     }
@@ -825,7 +841,11 @@ router.post("/select-project", authMiddleware, async (req, res) => {
     if (!enrollmentId || !projectTitle) {
       return res.status(400).json({ message: "enrollmentId and projectTitle are required" });
     }
-    const student = await NewEnrollStudent.findById(enrollmentId);
+    // Try regular, then advance enrollment
+    let student = await NewEnrollStudent.findById(enrollmentId);
+    if (!student) {
+      student = await AdvEnroll.findById(enrollmentId);
+    }
     if (!student) {
       return res.status(404).json({ message: "Enrollment not found" });
     }
@@ -854,11 +874,19 @@ router.post("/update-project-progress", authMiddleware, async (req, res) => {
     }
     const update = { [`projectProgress.${dayKey}`]: dayData };
 
-    const student = await NewEnrollStudent.findOneAndUpdate(
+    // Try regular enrollment first, then advance
+    let student = await NewEnrollStudent.findOneAndUpdate(
       { _id: enrollmentId, email: req.user.email },
       { $set: update },
       { new: true }
     );
+    if (!student) {
+      student = await AdvEnroll.findOneAndUpdate(
+        { _id: enrollmentId, email: req.user.email },
+        { $set: update },
+        { new: true }
+      );
+    }
     if (!student) {
       return res.status(404).json({ message: "Enrollment not found or unauthorized to modify it" });
     }

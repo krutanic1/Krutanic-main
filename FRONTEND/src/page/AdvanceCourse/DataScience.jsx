@@ -548,14 +548,15 @@ const [actionType , setActionType] = useState();
                   </svg>
                 </div>
                 <p className="mt-4 font-semibold text-lg">Batch Starting</p>
-                <p className="">{displayDate}</p>
+                {/* <p className="">{displayDate}</p> */}
+                <p className="">25 March</p>
 
                 <p className="mt-2 text-md border border-[#f15b29] rounded-lg px-2 py-1">
                   {" "}
                   Available Cohort{" "}
                 </p>
                 <p className="mt-2 text-md"><span className="line-through">60/60</span> Batch Closed </p>
-                <p>40/60</p>
+                <p>55/60</p>
               </div>
               <div
                 data-aos="fade-up"

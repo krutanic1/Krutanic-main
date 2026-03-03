@@ -13,7 +13,7 @@ const TrainingPage = () => {
     const { data: sessionsDataRes, isLoading: loadingSessions } = useQuery({
         queryKey: ["sessions", enrollment?._id],
         queryFn: async () => {
-            const res = await axios.get(`${API}/enrollments/${enrollment._id}/sessions`);
+            const res = await axios.get(`${API}/advenrollments/${enrollment._id}/sessions`);
             return res.data?.session || {};
         },
         enabled: !!enrollment?._id,

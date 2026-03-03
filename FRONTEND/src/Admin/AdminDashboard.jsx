@@ -14,6 +14,7 @@ const AdminDashboard = () => {
   const [AdvOperation, setAdvOperation] = useState([]);
   const [bda, setBda] = useState([]);
   const [payment, setPayment] = useState([]);
+  const [advPayment, setAdvPayment] = useState([]);
   const [loading, setLoading] = useState(true);
   const fetchCourses = async () => {
     setLoading(true);
@@ -24,6 +25,16 @@ const AdminDashboard = () => {
       console.error("There was an error fetching courses:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const [advCourses, setAdvCourses] = useState([]);
+  const fetchAdvCourses = async () => {
+    try {
+      const response = await axios.get(`${API}/getadvcourses`);
+      setAdvCourses(response.data);
+    } catch (error) {
+      console.error("There was an error fetching adv courses:", error);
     }
   };
 
@@ -65,6 +76,15 @@ const AdminDashboard = () => {
     }
   };
 
+  const fetchAdvEnrollments = async () => {
+    try {
+      const response = await axios.get(`${API}/getadvenrolls?all=true`);
+      setAdvPayment(response.data);
+    } catch (error) {
+      console.error("There was an error fetching adv enrollments:", error);
+    }
+  };
+
   useEffect(() => {
     // ✅ OPTIMIZATION: Sequential + batched loading to reduce Vercel instance spawn
     // Old: 4 parallel requests → 4 Vercel instances → 40 connections (with old minPoolSize: 10)
@@ -73,7 +93,7 @@ const AdminDashboard = () => {
       setLoading(true);
       try {
         // Priority 1: Courses (needed for table)
-        await fetchCourses();
+        await Promise.all([fetchCourses(), fetchAdvCourses()]);
 
         // Priority 2: Batch non-critical metadata (max 2 parallel)
         await Promise.all([
@@ -83,7 +103,7 @@ const AdminDashboard = () => {
         ]);
 
         // Priority 3: Heavy query last (full enrollments with limit)
-        await fetchNewStudent();
+        await Promise.all([fetchNewStudent(), fetchAdvEnrollments()]);
       } catch (error) {
         console.error("Error loading dashboard data:", error);
       } finally {
@@ -144,6 +164,11 @@ const AdminDashboard = () => {
           <i className="text-blue-700	fa fa-book"></i>
           <h2>COURSE</h2>
           <span>{courses.length}</span>
+        </div>
+        <div>
+          <i className="fa fa-book text-purple-700"></i>
+          <h2>ADV COURSE</h2>
+          <span>{advCourses.length}</span>
         </div>
         <div>
           <i className="fa fa-user-secret"></i>
@@ -255,6 +280,42 @@ const AdminDashboard = () => {
                   <td>{Object.keys(course.session).length}</td>
                   <td>{payment?.filter((item) => item.domainId === course._id && item.monthOpted === currentMonth).length || 0}</td>
                   <td>{payment?.filter((item) => item.domainId === course._id && item.monthOpted === nextMonth).length || 0}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+      <br />
+      <h3>Added Advance Courses</h3>
+      <div className="courselist">
+        {loading ? (
+          <div id="loader">
+            <div className="three-body">
+              <div className="three-body__dot"></div>
+              <div className="three-body__dot"></div>
+              <div className="three-body__dot"></div>
+            </div>
+          </div>
+        ) : (
+          <table>
+            <thead>
+              <tr>
+                <th>Sl</th>
+                <th>Course</th>
+                <th>Session</th>
+                <th>For {currentMonth} </th>
+                <th>For {nextMonth}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {advCourses.map((course, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>{course.title}</td>
+                  <td>{course.sessions?.length || 0}</td>
+                  <td>{advPayment?.filter((item) => item.domainId === course._id && item.monthOpted === currentMonth).length || 0}</td>
+                  <td>{advPayment?.filter((item) => item.domainId === course._id && item.monthOpted === nextMonth).length || 0}</td>
                 </tr>
               ))}
             </tbody>

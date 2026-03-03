@@ -9,6 +9,9 @@ const {
     PlacementReadiness
 } = require('../models/DashboardMetrics');
 const NewEnrollStudent = require('../models/NewStudentEnroll');
+const AdvEnroll = require('../models/AdvEnroll');
+const CreateAdvCourse = require('../models/CreateAdvCourse');
+const CreateCourse = require('../models/CreateCourse');
 const User = require('../models/User');
 
 /**
@@ -32,28 +35,53 @@ router.get('/:userId', async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // Fetch enrollment and other metrics
-        const [enrollment, stats, readiness, placement, allWeeks] = await Promise.all([
-            NewEnrollStudent.findOne({ email: user.email }).populate('domainId').lean(),
-            AssignmentStats.findOne({ userId }).lean(),
-            InternshipReadiness.findOne({ userId }).lean(),
-            PlacementReadiness.findOne({ userId }).lean(),
-            WeeklyPractical.find({ userId }).select('weekNumber status').lean()
-        ]);
+        // Try regular enrollment first, then advance enrollment
+        let enrollment = await NewEnrollStudent.findOne({ email: user.email }).populate('domainId');
+        let isAdvance = false;
+        if (!enrollment) {
+            // Use case-insensitive search in case email casing differs between User and AdvEnroll
+            enrollment = await AdvEnroll.findOne({
+                email: { $regex: new RegExp(`^${user.email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') }
+            }).lean();
+            console.log(`[Dashboard] AdvEnroll lookup for email="${user.email}" found=${!!enrollment}`);
+            if (enrollment && enrollment.domainId) {
+                enrollment.domainId = await CreateAdvCourse.findById(enrollment.domainId).lean();
+                console.log(`[Dashboard] AdvEnroll course found=${!!enrollment.domainId}, sessions=${enrollment.domainId?.session ? Object.keys(enrollment.domainId.session).length : 0}`);
+            }
+            isAdvance = !!enrollment;
+        }
 
         // Calculate program completion from watchedSessions
         let programCompletion = { completedSessions: 0, totalSessions: 0, percentage: 0 };
-        if (enrollment && enrollment.domainId && enrollment.domainId.session) {
-            const totalSessions = Object.keys(enrollment.domainId.session).length;
+        if (enrollment) {
+            let totalSessions = 0;
+            if (isAdvance) {
+                // Advance: sessions stored as object { session1: {...}, session2: {...} }
+                const sessionObj = enrollment.domainId?.session;
+                totalSessions = sessionObj && typeof sessionObj === 'object' ? Object.keys(sessionObj).length : 0;
+            } else {
+                // Regular: sessions stored as object in course.session
+                const sessionObj = enrollment.domainId?.session;
+                totalSessions = sessionObj ? Object.keys(sessionObj).length : 0;
+            }
             const completedSessions = enrollment.watchedSessions ? enrollment.watchedSessions.length : 0;
             const percentage = totalSessions > 0 ? Math.round((completedSessions / totalSessions) * 100) : 0;
             programCompletion = { completedSessions, totalSessions, percentage };
         }
 
+        // Fetch stats, readiness, and placement in parallel
+        const [stats, readiness, placement] = await Promise.all([
+            AssignmentStats.findOne({ userId }),
+            InternshipReadiness.findOne({ userId }),
+            PlacementReadiness.findOne({ userId }),
+        ]);
+
         // Default level object
         const defaultLevel = { bestScore: 0, latestScore: 0, attemptsCount: 0, status: 'Not Started' };
 
-        const levels = stats?.levels || {};
+        // Convert to plain JS first — spreading Mongoose subdocuments returns empty objects
+        const statsObj = stats ? stats.toObject() : null;
+        const levels = statsObj?.levels || {};
         const assignmentMatrix = [
             { levelName: 'Beginner', ...defaultLevel, ...(levels.Beginner || {}) },
             { levelName: 'Intermediate', ...defaultLevel, ...(levels.Intermediate || {}) },
@@ -62,28 +90,10 @@ router.get('/:userId', async (req, res) => {
         console.log(`[Dashboard] userId=${userIdStr} | enrollment found=${!!enrollment} | completedSessions=${programCompletion.completedSessions}/${programCompletion.totalSessions}`);
 
         // Build 24-week data
-
-        // Find the maximum week number that has been submitted or approved
-        let maxCompletedWeek = 0;
-        allWeeks.forEach(w => {
-            if (w.status === 'Submitted' || w.status === 'Approved') {
-                if (w.weekNumber > maxCompletedWeek) {
-                    maxCompletedWeek = w.weekNumber;
-                }
-            }
-        });
-
+        const allWeeks = await WeeklyPractical.find({ userId });
         const weeklyProgress = Array.from({ length: 24 }, (_, i) => {
-            const weekNum = i + 1;
-            const week = allWeeks.find(w => w.weekNumber === weekNum);
-            let status = week?.status || 'Pending';
-
-            // Feature: If a later week is submitted/approved, mark earlier pending ones as submitted
-            if (status === 'Pending' && weekNum <= maxCompletedWeek) {
-                status = 'Submitted';
-            }
-
-            return { week: weekNum, status };
+            const week = allWeeks.find(w => w.weekNumber === i + 1);
+            return { week: i + 1, status: week?.status || 'Pending' };
         });
 
         const completedWeeks = readiness?.totalCompletedWeeks || 0;

@@ -577,13 +577,14 @@ const [actionType, setActionType] = useState();
                   </div>
 
                   <p className="mt-4 font-semibold text-lg">Batch Starting</p>
-                  <p>{displayDate}</p>
+                  {/* <p>{displayDate}</p> */}
+                  <p>25 March</p>
                   <p className="mt-2 text-md border border-[#f15b29] rounded-lg px-2 py-1">
                     {" "}
                     Available Cohort{" "}
                   </p>
                   <p className="mt-2 text-md"><span className="line-through">60/60</span> Batch Closed </p>
-                  <p>22/60</p>
+                  <p>58/60</p>
                 </div>
                 <div
                   data-aos="fade-up"

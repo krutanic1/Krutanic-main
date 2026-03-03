@@ -2,9 +2,9 @@ import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../API";
 import axios from "axios";
-import toast, { Toaster } from "react-hot-toast";
+import toast, { Toaster } from 'react-hot-toast';
 
-const AdvOperationLogin = () => {
+const OperationLogin = () => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -23,7 +23,7 @@ const AdvOperationLogin = () => {
       const response = await axios.post(`${API}/advoperationsendotp`, { email });
       if (response.status === 200) {
         setOtpSent(true);
-        toast.success("OTP sent to your email!");
+        toast.success('OTP sent to your email!');
       }
     } catch (error) {
       toast.error(
@@ -37,7 +37,7 @@ const AdvOperationLogin = () => {
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     if (!otp) {
-      toast.error("Please enter OTP.");
+      toast.success("Please enter OTP.");
       return;
     }
     try {
@@ -46,14 +46,14 @@ const AdvOperationLogin = () => {
         otp,
       });
       if (response.status === 200) {
-        toast.success("OTP verified successfully!");
+        toast.success('OTP verified successfully!');
         const loginTime = new Date().getTime();
         setTimeout(() => {
           localStorage.setItem("advOperationId", response.data._id);
           localStorage.setItem("advOperationName", response.data.operationName);
           localStorage.setItem("advOperationToken", response.data.token);
           localStorage.setItem("sessionStartTime", loginTime);
-          navigate("/advoperationdashboard");
+          navigate("/AdvOperationDashboard");
         }, 1500);
       }
     } catch (error) {
@@ -79,7 +79,7 @@ const AdvOperationLogin = () => {
     <div id="loginpage">
       <Toaster position="top-center" reverseOrder={false} />
       <div className="loginform">
-        <h2>ADV Operation Login</h2>
+        <h2>Operation Login</h2>
         {!otpSent ? (
           <form onSubmit={handleSendOtp}>
             <label htmlFor="email">Email:</label>
@@ -91,9 +91,7 @@ const AdvOperationLogin = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <button disabled={loading}>
-              {loading ? "Sending..." : "Send OTP"}
-            </button>
+            <button disabled={loading}>{loading ? "Sending..." : "Send OTP"}</button>
           </form>
         ) : (
           <form onSubmit={handleVerifyOtp}>
@@ -109,9 +107,14 @@ const AdvOperationLogin = () => {
             <button type="submit">Verify OTP</button>
           </form>
         )}
+        {/* <p>----------------------------------------</p> */}
+        {/* <div className="loginwith">
+          <Link to="/AdvOperationAgainLogin">Login with password</Link>
+        </div> */}
       </div>
     </div>
   );
 };
 
-export default AdvOperationLogin;
+export default OperationLogin;
+
