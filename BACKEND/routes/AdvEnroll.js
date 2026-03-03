@@ -17,6 +17,7 @@ router.post("/advenroll", async (req, res) => {
       counselor,
       lead,
       domain,
+      program,
       programPrice,
       paidAmount,
       monthOpted,
@@ -36,7 +37,8 @@ router.post("/advenroll", async (req, res) => {
       internshipendsmonth,
       yearOfPassingOut,
       companyName,
-      role
+      role,
+      languages
     } = req.body;
 
     console.log(`[AdvEnroll] POST /advenroll - Looking up domain: "${domain}"`);
@@ -212,7 +214,21 @@ router.post("/advenroll", async (req, res) => {
 
   } catch (error) {
     console.error('[AdvEnroll] Error:', error);
-    res.status(500).json({ error: "Server error. Please try again later." });
+
+    // Handle MongoDB Duplicate Key Error (Code 11000)
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern || {})[0];
+      let message = "This record already exists.";
+      if (field === 'email') message = "You have already submitted your details with this email.";
+      if (field === 'transactionId') message = "This Transaction ID has already been used. Please check and try again.";
+
+      return res.status(400).json({ message });
+    }
+
+    res.status(500).json({
+      message: "Server error while processing enrollment.",
+      error: error.message
+    });
   }
 });
 

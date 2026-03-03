@@ -82,8 +82,8 @@ const AdvanceDashboardAccess = () => {
   const [fullname, setFullname] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [counselor, setCounselor] = useState([]);
-  const [domain, setDomain] = useState([]);
+  const [counselor, setCounselor] = useState("");
+  const [domain, setDomain] = useState("");
   const [programPrice, setProgramPrice] = useState("");
   const [paidAmount, setPaidAmount] = useState("");
   const [monthOpted, setMonthOpted] = useState("");
@@ -246,6 +246,7 @@ const AdvanceDashboardAccess = () => {
       role: role,
       internshipstartsmonth: internshipstartsmonth,
       internshipendsmonth: internshipendsmonth,
+      program: domain.trim(),
     };
 
     if (
@@ -266,16 +267,18 @@ const AdvanceDashboardAccess = () => {
         if (error.response) {
           errMessage =
             error.response.data?.message ||
+            error.response.data?.error ||
             "An error occurred while processing your request.";
         } else if (error.request) {
           errMessage = "No response from the server. Please try again later.";
         }
 
-        if (errMessage.includes("already submitted")) {
+        if (errMessage.toString().toLowerCase().includes("already submitted")) {
           errMessage = "You have already submitted your details.";
         }
         setErrorMessage(errMessage);
         setIsModalOpen(true);
+        setIsSubmitting(false);
       }
     } else {
       toast.error("Enter valid email and try again.");
@@ -445,8 +448,7 @@ const AdvanceDashboardAccess = () => {
               onChange={(e) => setModeOfPayment(e.target.value)}
               required
             >
-              <option value="" selected disabled>
-                {" "}
+              <option value="" disabled>
                 Mode of Payment
               </option>
               <option value="RazorPay">RazorPay</option>
@@ -460,11 +462,11 @@ const AdvanceDashboardAccess = () => {
               onChange={(e) => setDomain(e.target.value)}
               required
             >
-              <option value="" selected disabled>
+              <option value="" disabled>
                 Select Opted Domain
               </option>
               {course.map((item) => (
-                <option value={item.title}>{item.title}</option>
+                <option key={item._id || item.title} value={item.title}>{item.title}</option>
               ))}
             </select>
 
@@ -473,7 +475,7 @@ const AdvanceDashboardAccess = () => {
               onChange={(e) => setMonthOpted(e.target.value)}
               required
             >
-              <option value="" selected disabled>
+              <option value="" disabled>
                 Select Opted Month
               </option>
               {monthsToShow.map((month, index) => (
@@ -627,7 +629,7 @@ const AdvanceDashboardAccess = () => {
               onChange={(e) => setInternshipStartsMonth(e.target.value)}
               required
             >
-              <option value="" selected disabled>
+              <option value="" disabled>
                 Internship Start Month
               </option>
               {monthsToShow.map((month, index) => (
@@ -642,7 +644,7 @@ const AdvanceDashboardAccess = () => {
               onChange={(e) => setInternshipEndsMonth(e.target.value)}
               required
             >
-              <option value="" selected disabled>
+              <option value="" disabled>
                 Internship End Month
               </option>
               {monthsToShow.map((month, index) => (
