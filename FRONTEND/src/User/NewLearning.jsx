@@ -29,7 +29,7 @@ const NewLearning = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { courseTitle, sessions, startIndex = 0, thumbnail, enrollmentId } = location.state || {};
+  const { courseTitle, sessions, startIndex = 0, thumbnail, enrollmentId, isFullyPaid } = location.state || {};
 
   const sessionKeys = sessions ? Object.keys(sessions) : [];
   const totalSessions = sessionKeys.length;
@@ -89,6 +89,10 @@ const NewLearning = () => {
 
   /* ─── Session click: select + mark as watched ─── */
   const handleSessionClick = (key, index) => {
+    if (!isFullyPaid && index !== 0) {
+      toast.error("Full access requires payment. Please clear your pending amount.");
+      return;
+    }
     setSelectedSession({ key, ...sessions[key] });
     setCurrentSessionIndex(index);
     setIsPlaying(true);
@@ -99,6 +103,10 @@ const NewLearning = () => {
     if (currentSessionIndex > 0) {
       const newIndex = currentSessionIndex - 1;
       const key = sessionKeys[newIndex];
+      if (!isFullyPaid && newIndex !== 0) {
+        toast.error("Full access requires payment.");
+        return;
+      }
       setSelectedSession({ key, ...sessions[key] });
       setCurrentSessionIndex(newIndex);
       setIsPlaying(true);
@@ -110,6 +118,10 @@ const NewLearning = () => {
     if (currentSessionIndex < totalSessions - 1) {
       const newIndex = currentSessionIndex + 1;
       const key = sessionKeys[newIndex];
+      if (!isFullyPaid && newIndex !== 0) {
+        toast.error("Full access requires payment.");
+        return;
+      }
       setSelectedSession({ key, ...sessions[key] });
       setCurrentSessionIndex(newIndex);
       setIsPlaying(true);
@@ -120,6 +132,10 @@ const NewLearning = () => {
   const handleSelectChange = (e) => {
     const index = parseInt(e.target.value);
     const key = sessionKeys[index];
+    if (!isFullyPaid && index !== 0) {
+      toast.error("Full access requires payment.");
+      return;
+    }
     setSelectedSession({ key, ...sessions[key] });
     setCurrentSessionIndex(index);
     setIsPlaying(true);
@@ -344,8 +360,11 @@ const NewLearning = () => {
                         <p className="text-xs text-green-600 font-medium">Watched</p>
                       )}
                     </div>
-                    {isActive && (
+                    {isActive && !isWatched && (
                       <span className="material-symbols-outlined text-primary text-[18px]">play_circle</span>
+                    )}
+                    {!isFullyPaid && idx !== 0 && (
+                      <span className="material-symbols-outlined text-gray-400 text-[18px]">lock</span>
                     )}
                   </button>
                 );

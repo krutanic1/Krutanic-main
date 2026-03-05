@@ -169,13 +169,14 @@ const NewDashboard = () => {
     }
   };
 
-  const handleStartLearning = (id, title, sessionlist, thumbnail) => {
+  const handleStartLearning = (id, title, sessionlist, thumbnail, isFullyPaid) => {
     navigate("/Learning", {
-      state: { courseTitle: title, sessions: sessionlist, thumbnail, enrollmentId: id },
+      state: { courseTitle: title, sessions: sessionlist, thumbnail, enrollmentId: id, isFullyPaid },
     });
   };
 
   const handleStartLearningClick = async (item) => {
+    const isFullyPaid = item.status === "fullPaid" || (item.programPrice - item.paidAmount) <= 0;
     let sessionData = item.domain?.session;
     try {
       if (!sessionData || Object.keys(sessionData).length === 0) {
@@ -193,7 +194,8 @@ const NewDashboard = () => {
       item._id,
       item.domain?.title,
       sessionData,
-      getThumbnail(item.domain?.title) || item.domain?.thumbnail || item.domain?.image
+      getThumbnail(item.domain?.title) || item.domain?.thumbnail || item.domain?.image,
+      isFullyPaid
     );
   };
 
@@ -488,15 +490,15 @@ const NewDashboard = () => {
                                 <span>{item.progressStats ? item.progressStats.totalSessionsCount : Object.keys(item.domain?.session || {}).length} Sessions</span>
                               </div>
                             </div>
-                            {isFullyPaid ? (
-                              <div className="mt-8 flex flex-wrap gap-3">
-                                <button
-                                  onClick={() => handleStartLearningClick(item)}
-                                  className="flex-1 min-w-[140px] bg-primary hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
-                                >
-                                  <span className="material-symbols-outlined text-[20px]">play_circle</span>
-                                  Start Learning
-                                </button>
+                            <div className="mt-8 flex flex-wrap gap-3">
+                              <button
+                                onClick={() => handleStartLearningClick(item)}
+                                className="flex-1 min-w-[140px] bg-primary hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                              >
+                                <span className="material-symbols-outlined text-[20px]">play_circle</span>
+                                {isFullyPaid ? "Start Learning" : "Watch Demo"}
+                              </button>
+                              {isFullyPaid && (
                                 <button
                                   onClick={() => handleSubmit(item)}
                                   className="flex-1 min-w-[140px] bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
@@ -504,26 +506,18 @@ const NewDashboard = () => {
                                   <span className="material-symbols-outlined text-[20px]">workspace_premium</span>
                                   Certificate
                                 </button>
-                              </div>
-                            ) : (
-                              <div className="mt-auto">
-                                <div className="flex items-center gap-1 text-red-500 font-medium mb-2">
-                                  <span className="material-symbols-outlined text-[18px]">event_busy</span>
-                                  <span>Due: {item.clearPaymentMonth}</span>
-                                </div>
-                                <div className="flex flex-wrap items-center justify-between gap-3">
-                                  <div className="text-xl font-bold text-gray-900">₹{remaining}</div>
-                                  <a
-                                    href="https://smartpay.easebuzz.in/219610/Krutanic"
-                                    target="_blank"
-                                    className="bg-black hover:bg-gray-800 text-white font-medium py-2 px-6 rounded-lg transition-colors flex items-center gap-2"
-                                  >
-                                    Pay Now
-                                    <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-                                  </a>
-                                </div>
-                              </div>
-                            )}
+                              )}
+                              {!isFullyPaid && (
+                                <a
+                                  href="https://smartpay.easebuzz.in/219610/Krutanic"
+                                  target="_blank"
+                                  className="flex-1 min-w-[140px] bg-black hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                                >
+                                  Pay ₹{remaining}
+                                  <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                                </a>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>

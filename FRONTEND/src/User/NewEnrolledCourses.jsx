@@ -29,10 +29,17 @@ const NewEnrolledCourses = () => {
     setLoading(true);
     try {
       const response = await axios.get(`${API}/enrollments`, { params: { userEmail } });
-      const mapped = response.data.map(e => ({
-        ...e,
-        domain: { ...e.domain, progressStats: e.progressStats, _enrollmentId: e._id }
-      }));
+      const mapped = response.data.map(e => {
+        const price = e.programPrice || 0;
+        const paid = e.paidAmount || 0;
+        const remaining = price - paid;
+        const isFullyPaid = e.status === "fullPaid" || remaining <= 0;
+        return {
+          ...e,
+          isFullyPaid,
+          domain: { ...e.domain, progressStats: e.progressStats, _enrollmentId: e._id }
+        };
+      });
       setEnrollData(mapped);
       if (mapped && mapped.length > 0) {
         const first = mapped[0].domain;
@@ -53,10 +60,10 @@ const NewEnrolledCourses = () => {
     }
   };
 
-  const handleStartLearning = (title, sessionlist, enrollmentId, startIndex = 0) => {
+  const handleStartLearning = (title, sessionlist, enrollmentId, isFullyPaid, startIndex = 0) => {
     navigate("/Learning", {
       replace: true,
-      state: { courseTitle: title, sessions: sessionlist, startIndex, thumbnail: getThumbnail(title) || selectedCourse?.thumbnail, enrollmentId },
+      state: { courseTitle: title, sessions: sessionlist, startIndex, thumbnail: getThumbnail(title) || selectedCourse?.thumbnail, enrollmentId, isFullyPaid },
     });
   };
 
@@ -206,10 +213,10 @@ const NewEnrolledCourses = () => {
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
                     <button
-                      onClick={() => handleStartLearning(selectedCourse.title, selectedCourse.session, selectedCourse._enrollmentId)}
+                      onClick={() => handleStartLearning(selectedCourse.title, selectedCourse.session, selectedCourse._enrollmentId, selectedCourse.isFullyPaid)}
                       className="bg-primary hover:bg-orange-600 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm shadow-primary/30 transition-all flex items-center gap-2"
                     >
-                      <span className="material-symbols-outlined">play_arrow</span> DEMO
+                      <span className="material-symbols-outlined">play_arrow</span> {selectedCourse.isFullyPaid ? "DEMO" : "WATCH DEMO"}
                     </button>
                   </div>
                 </div>
@@ -273,7 +280,7 @@ const NewEnrolledCourses = () => {
                             <div className="col-span-4 md:col-span-3 flex justify-end">
                               <button
                                 onClick={() =>
-                                  handleStartLearning(selectedCourse.title, selectedCourse.session, selectedCourse._enrollmentId, index)
+                                  handleStartLearning(selectedCourse.title, selectedCourse.session, selectedCourse._enrollmentId, selectedCourse.isFullyPaid, index)
                                 }
                                 className={`transition-transform hover:scale-110 ${isFirst ? "text-primary" : "text-primary/70 hover:text-primary"
                                   }`}
