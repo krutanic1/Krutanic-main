@@ -99,12 +99,15 @@ const Sidebar = ({ collapsed, setCollapsed, activeSection, setActiveSection, onL
 export const TopNav = ({ userData, enrollData, onLogout, onHamburger, mobileSidebarOpen }) => {
     const navigate = useNavigate();
     const [profileOpen, setProfileOpen] = useState(false);
+    const [notifOpen, setNotifOpen] = useState(false);
     const profileRef = useRef(null);
+    const notifRef = useRef(null);
 
     // Close dropdowns on outside click
     useEffect(() => {
         const handler = (e) => {
             if (profileRef.current && !profileRef.current.contains(e.target)) setProfileOpen(false);
+            if (notifRef.current && !notifRef.current.contains(e.target)) setNotifOpen(false);
         };
         document.addEventListener("mousedown", handler);
         return () => document.removeEventListener("mousedown", handler);
@@ -112,18 +115,8 @@ export const TopNav = ({ userData, enrollData, onLogout, onHamburger, mobileSide
 
     // Compute progress
     const enrollment = enrollData?.[0];
-    const totalSessions = enrollment?.progressStats?.totalSessionsCount || 0;
-
-    // Merge DB watched sessions with localStorage for real-time accuracy
-    const dbWatched = new Set(enrollment?.watchedSessions || []);
-    const localWatched = (() => {
-        try {
-            const raw = localStorage.getItem(`krutanic_progress_${enrollment?._id}`);
-            return raw ? new Set(JSON.parse(raw)) : new Set();
-        } catch { return new Set(); }
-    })();
-    const combinedWatched = new Set([...dbWatched, ...localWatched]);
-    const watchedSessions = Math.min(combinedWatched.size, totalSessions);
+    const totalSessions = enrollment?.domain?.session ? Object.keys(enrollment.domain.session).length : 0;
+    const watchedSessions = enrollment ? getWatchedFromStorage(enrollment._id, enrollment.domain?.session, enrollment.watchedSessions) : 0;
     const progressPct = totalSessions > 0 ? Math.round((watchedSessions / totalSessions) * 100) : 0;
     const programName = enrollment?.domain?.title || enrollment?.program || "Your Program";
 
@@ -134,6 +127,12 @@ export const TopNav = ({ userData, enrollData, onLogout, onHamburger, mobileSide
         window.open(`https://wa.me/917022936875?text=${encodeURIComponent(msg)}`, "_blank");
     };
 
+    const notifications = [
+        { id: 1, icon: "school", text: "New session added to your course", time: "2h ago", unread: true },
+        { id: 2, icon: "workspace_premium", text: "Certificate eligibility coming soon", time: "1d ago", unread: true },
+        { id: 3, icon: "celebration", text: "New event: Talent Hunt 2026", time: "2d ago", unread: false },
+    ];
+    const unreadCount = notifications.filter((n) => n.unread).length;
 
     return (
         <header className="nd-header">
@@ -177,6 +176,43 @@ export const TopNav = ({ userData, enrollData, onLogout, onHamburger, mobileSide
             {/* ── RIGHT: Actions ── */}
             <div className="nd-header-right">
 
+                {/* Notification Bell */}
+                <div className="nd-icon-btn-wrap" ref={notifRef}>
+                    <button
+                        className="nd-icon-btn"
+                        onClick={() => { setNotifOpen((p) => !p); setProfileOpen(false); }}
+                        title="Notifications"
+                    >
+                        <span className="material-symbols-outlined">notifications</span>
+                        {unreadCount > 0 && <span className="nd-badge">{unreadCount}</span>}
+                    </button>
+
+                    {notifOpen && (
+                        <div className="nd-dropdown nd-notif-dropdown">
+                            <div className="nd-dropdown-header">
+                                <span>Notifications</span>
+                                <span className="nd-badge-inline">{unreadCount} new</span>
+                            </div>
+                            <div className="nd-notif-list">
+                                {notifications.map((n) => (
+                                    <div key={n.id} className={`nd-notif-item ${n.unread ? "nd-notif-unread" : ""}`}>
+                                        <div className="nd-notif-icon-wrap">
+                                            <span className="material-symbols-outlined nd-notif-icon">{n.icon}</span>
+                                        </div>
+                                        <div className="nd-notif-body">
+                                            <p className="nd-notif-text">{n.text}</p>
+                                            <p className="nd-notif-time">{n.time}</p>
+                                        </div>
+                                        {n.unread && <div className="nd-notif-dot" />}
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="nd-dropdown-footer">
+                                <button className="nd-dropdown-footer-btn">Mark all as read</button>
+                            </div>
+                        </div>
+                    )}
+                </div>
 
                 {/* Mentor Contact */}
                 <button className="nd-mentor-btn" onClick={handleMentorContact} title="Contact Mentor">
@@ -211,11 +247,7 @@ export const TopNav = ({ userData, enrollData, onLogout, onHamburger, mobileSide
                                 </div>
                             </div>
                             <div className="nd-dropdown-divider" />
-                            <Link to="/advancedashboard/profile" className="nd-dropdown-item" onClick={() => setProfileOpen(false)}>
-                                <span className="material-symbols-outlined nd-dropdown-item-icon">account_circle</span>
-                                Profile
-                            </Link>
-                            <Link to="/advancedashboard/setting" className="nd-dropdown-item" onClick={() => setProfileOpen(false)}>
+                            <Link to="/Setting" className="nd-dropdown-item" onClick={() => setProfileOpen(false)}>
                                 <span className="material-symbols-outlined nd-dropdown-item-icon">settings</span>
                                 Settings
                             </Link>

@@ -115,6 +115,17 @@ app.use("/", User);
 app.use("/", ProfileRoute);
 // admin
 app.use("/", admin);
+const AdvLeadRoutes = require("./routes/AdvLead");
+const AdvUserRoutes = require("./routes/AdvUser");
+const AdvTeamRoutes = require("./routes/AdvTeam");
+const AdvReportRoutes = require("./routes/AdvReport");
+const AdvNotificationRoutes = require("./routes/AdvNotification");
+
+app.use("/api/adv-leads", AdvLeadRoutes);
+app.use("/api/adv-users", AdvUserRoutes);
+app.use("/api/adv-teams", AdvTeamRoutes);
+app.use("/api/adv-reports", AdvReportRoutes);
+app.use("/api/adv-notifications", AdvNotificationRoutes);
 
 // CREATEJOBS
 app.use("/", CreateJob);

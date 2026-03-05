@@ -9,9 +9,6 @@ const {
     PlacementReadiness
 } = require('../models/DashboardMetrics');
 const NewEnrollStudent = require('../models/NewStudentEnroll');
-const AdvEnroll = require('../models/AdvEnroll');
-const CreateAdvCourse = require('../models/CreateAdvCourse');
-const CreateCourse = require('../models/CreateCourse');
 const User = require('../models/User');
 
 /**
@@ -35,46 +32,22 @@ router.get('/:userId', async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // Try regular enrollment first, then advance enrollment
-        let enrollment = await NewEnrollStudent.findOne({ email: user.email }).populate('domainId');
-        let isAdvance = false;
-        if (!enrollment) {
-            // Use case-insensitive search in case email casing differs between User and AdvEnroll
-            enrollment = await AdvEnroll.findOne({
-                email: { $regex: new RegExp(`^${user.email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') }
-            }).lean();
-            console.log(`[Dashboard] AdvEnroll lookup for email="${user.email}" found=${!!enrollment}`);
-            if (enrollment && enrollment.domainId) {
-                enrollment.domainId = await CreateAdvCourse.findById(enrollment.domainId).lean();
-                console.log(`[Dashboard] AdvEnroll course found=${!!enrollment.domainId}, sessions=${enrollment.domainId?.session ? Object.keys(enrollment.domainId.session).length : 0}`);
-            }
-            isAdvance = !!enrollment;
-        }
-
-        // Calculate program completion from watchedSessions
-        let programCompletion = { completedSessions: 0, totalSessions: 0, percentage: 0 };
-        if (enrollment) {
-            let totalSessions = 0;
-            if (isAdvance) {
-                // Advance: sessions stored as object { session1: {...}, session2: {...} }
-                const sessionObj = enrollment.domainId?.session;
-                totalSessions = sessionObj && typeof sessionObj === 'object' ? Object.keys(sessionObj).length : 0;
-            } else {
-                // Regular: sessions stored as object in course.session
-                const sessionObj = enrollment.domainId?.session;
-                totalSessions = sessionObj ? Object.keys(sessionObj).length : 0;
-            }
-            const completedSessions = enrollment.watchedSessions ? enrollment.watchedSessions.length : 0;
-            const percentage = totalSessions > 0 ? Math.round((completedSessions / totalSessions) * 100) : 0;
-            programCompletion = { completedSessions, totalSessions, percentage };
-        }
-
-        // Fetch stats, readiness, and placement in parallel
-        const [stats, readiness, placement] = await Promise.all([
+        // Fetch enrollment and other metrics
+        const [enrollment, stats, readiness, placement] = await Promise.all([
+            NewEnrollStudent.findOne({ email: user.email }).populate('domainId'),
             AssignmentStats.findOne({ userId }),
             InternshipReadiness.findOne({ userId }),
             PlacementReadiness.findOne({ userId }),
         ]);
+
+        // Calculate program completion from watchedSessions
+        let programCompletion = { completedSessions: 0, totalSessions: 0, percentage: 0 };
+        if (enrollment && enrollment.domainId && enrollment.domainId.session) {
+            const totalSessions = Object.keys(enrollment.domainId.session).length;
+            const completedSessions = enrollment.watchedSessions ? enrollment.watchedSessions.length : 0;
+            const percentage = totalSessions > 0 ? Math.round((completedSessions / totalSessions) * 100) : 0;
+            programCompletion = { completedSessions, totalSessions, percentage };
+        }
 
         // Default level object
         const defaultLevel = { bestScore: 0, latestScore: 0, attemptsCount: 0, status: 'Not Started' };

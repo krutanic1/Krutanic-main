@@ -121,6 +121,10 @@ import AdminDashboard from "./Admin/AdminDashboard";
 import PageNotFound from "./PageNotFound";
 import AdvanceQueries from "./Admin/AdvanceQueries";
 import MentorQueries from "./Admin/MentorQueries";
+import AdvLeadManagement from "./Admin/AdvLeadManagement";
+import AdminAnalytics from "./Admin/AdminAnalytics";
+
+import BulkImport from "./Admin/BulkImport";
 import UserLayout from "./User/UserLayout";
 
 
@@ -154,6 +158,9 @@ import AdvTeamDefault from "./AdvTeam/AdvTeamDefault";
 import AdvAddUser from "./AdvTeam/AdvAddUser";
 import AdvTeamOnBoarding from "./AdvTeam/AdvTeamOnBoarding";
 import AdvTeamRevenue from "./AdvTeam/AdvTeamRevenue";
+import AdvTeamMyLeads from "./AdvTeam/AdvTeamMyLeads";
+import AdvLeadsBook from "./AdvTeam/AdvLeadsBook";
+import AdvTeamRecord from "./AdvTeam/AdvTeamRecord";
 
 // MarketingLogind
 
@@ -279,7 +286,11 @@ const AppContent = () => {
     "/createinterview",
     "/adminprojectpage",
     "/advprojectpage",
-    "/advexercisepage"
+    "/advexercisepage",
+    "/advleadmanagement",
+    "/adminanalytics",
+
+    "/bulkimport"
   ];
 
   const operationheaderPaths = [
@@ -328,7 +339,10 @@ const AppContent = () => {
     "/advteam/booked",
     "/advteam/fullpaid",
     "/advteam/default",
-    "/advteam/adduser"
+    "/advteam/adduser",
+    "/advteam/my-leads",
+    "/advteam/leads-book",
+    "/advteam/record"
   ];
 
   const userheaderPaths = [
@@ -440,6 +454,10 @@ const AppContent = () => {
         <Route path="/CreateInterviewer" element={isAuthenticatedAdmin() ? (<CreateInterviewer />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/CreateInterview" element={isAuthenticatedAdmin() ? (<CreateInterview />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/AdvExercisePage" element={isAuthenticatedAdmin() ? (<AdvExercisePage />) : (<Navigate to="/AdminLogin" />)} />
+        <Route path="/AdvLeadManagement" element={isAuthenticatedAdmin() ? (<AdvLeadManagement />) : (<Navigate to="/AdminLogin" />)} />
+        <Route path="/AdminAnalytics" element={isAuthenticatedAdmin() ? (<AdminAnalytics />) : (<Navigate to="/AdminLogin" />)} />
+
+        <Route path="/BulkImport" element={isAuthenticatedAdmin() ? (<BulkImport />) : (<Navigate to="/AdminLogin" />)} />
 
 
 
@@ -502,6 +520,9 @@ const AppContent = () => {
         <Route path="/advteam/fullpaid" element={isAuthenticatedAdvTeam() ? <AdvTeamFullPaid /> : <Navigate to="/AdvTeamLogin" />} />
         <Route path="/advteam/default" element={isAuthenticatedAdvTeam() ? <AdvTeamDefault /> : <Navigate to="/AdvTeamLogin" />} />
         <Route path="/advteam/adduser" element={isAuthenticatedAdvTeam() ? <AdvAddUser /> : <Navigate to="/AdvTeamLogin" />} />
+        <Route path="/advteam/my-leads" element={isAuthenticatedAdvTeam() ? <AdvTeamMyLeads /> : <Navigate to="/AdvTeamLogin" />} />
+        <Route path="/advteam/leads-book" element={isAuthenticatedAdvTeam() ? <AdvLeadsBook /> : <Navigate to="/AdvTeamLogin" />} />
+        <Route path="/advteam/record" element={isAuthenticatedAdvTeam() ? <AdvTeamRecord /> : <Navigate to="/AdvTeamLogin" />} />
         {/* Advance Team Panel End */}
 
         {/* User Panel */}

@@ -118,6 +118,34 @@ const AdvTeamHeader = () => {
               </Link>
             </>
           )}
+          {(advTeamData?.designation === "ADV Manager" ||
+            advTeamData?.designation === "MANAGER" ||
+            advTeamData?.designation === "ADV Leader" ||
+            advTeamData?.designation === "LEADER" ||
+            advTeamData?.designation === "SR Inside Sales Specialist" ||
+            advTeamData?.designation === "Inside Sales Specialist") && (
+              <Link to="/advteam/my-leads">
+                <i className="fa fa-list-alt"></i> My Leads
+              </Link>
+            )}
+          {(advTeamData?.designation === "ADV Manager" ||
+            advTeamData?.designation === "MANAGER" ||
+            advTeamData?.designation === "ADV Leader" ||
+            advTeamData?.designation === "LEADER" ||
+            advTeamData?.designation === "SR Inside Sales Specialist" ||
+            advTeamData?.designation === "Inside Sales Specialist") && (
+              <Link to="/advteam/leads-book">
+                <i className="fa fa-book"></i> Leads Book
+              </Link>
+            )}
+          {(advTeamData?.designation === "ADV Manager" ||
+            advTeamData?.designation === "MANAGER" ||
+            advTeamData?.designation === "ADV Leader" ||
+            advTeamData?.designation === "LEADER") && (
+              <Link to="/advteam/record">
+                <i className="fa fa-history"></i> Record
+              </Link>
+            )}
           <Link to="/advteam/onboarding">
             <i className="fa fa-edit"></i> OnBoarding Form
           </Link>

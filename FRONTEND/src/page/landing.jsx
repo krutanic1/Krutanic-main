@@ -20,7 +20,7 @@ import comingsoon from "../assets/comingsoon.jpg";
 
 // import roadmap from "../assets/roadmap.png";
 import AdvanceCounses from "../Components/advancecourses";
-import AdvancedApplyPopup from "../Components/AdvancedApplyPopup";
+import MentorshipForm from "./MentorshipForm";
 import { useState } from "react";
 
 const HomePage = () => {
@@ -48,7 +48,7 @@ const HomePage = () => {
 
   return (
     <div id="landingpage">
-      {showPopup && <AdvancedApplyPopup onClose={() => setShowPopup(false)} />}
+      {showPopup && <MentorshipForm isPopup={true} onClose={() => setShowPopup(false)} />}
       {/* section hero */}
       <div className="hero">
         <ShuffleHero />

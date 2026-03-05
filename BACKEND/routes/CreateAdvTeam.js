@@ -308,7 +308,8 @@ router.post("/checkadvteamauth", async (req, res) => {
       console.log(`🔐 [ADMIN IMPERSONATION] Admin logged in as: ${advTeam.email} (${advTeam.fullname})`);
     }
 
-    res.status(200).json({ token, bdaId: advTeam._id, bdaName: advTeam.fullname });
+    res.status(200).json({ token, bdaId: advTeam._id, bdaName: advTeam.fullname, designation: advTeam.designation });
+
   } catch (err) {
     console.error("Error during login", err);
     res.status(500).json({ message: "Server error" });

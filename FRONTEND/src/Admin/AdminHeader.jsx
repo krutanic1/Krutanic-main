@@ -168,6 +168,16 @@ const AdminHeader = () => {
             <Link to="/AdvanceQueries">
               <i className="fa fa-question-circle mr-2"></i>Adv Course Queries
             </Link>
+            <Link to="/AdvLeadManagement">
+              <i className="fa fa-users mr-2"></i>ADV Lead Management
+            </Link>
+            <Link to="/AdminAnalytics">
+              <i className="fa fa-area-chart mr-2"></i>ADV Analytics
+            </Link>
+
+            <Link to="/BulkImport">
+              <i className="fa fa-upload mr-2"></i>Bulk Import Leads
+            </Link>
           </>
         )}
         <button onClick={handleLogout}>

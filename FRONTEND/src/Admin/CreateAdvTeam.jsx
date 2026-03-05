@@ -29,7 +29,7 @@ const CreateAdvTeam = () => {
     e.preventDefault();
     console.log("Submitting form with data:", formData);
     console.log("Editing ID:", editingBdaId);
-    
+
     // For ADV Manager, join all team names; for others, use single team
     const teamValue = formData.designation === "ADV Manager"
       ? teams.map(t => t.name.trim()).filter(name => name !== "").join(", ")
@@ -42,7 +42,7 @@ const CreateAdvTeam = () => {
       designation: formData.designation.trim(),
       teams: formData.designation === "ADV Manager" ? teams.map(t => t.name.trim()).filter(name => name !== "") : [],
     };
-    
+
     console.log("Payload being sent:", newBda);
     try {
       if (editingBdaId) {
@@ -266,6 +266,7 @@ const CreateAdvTeam = () => {
           localStorage.setItem("advTeamName", response.data.bdaName);
           localStorage.setItem("advTeamToken", response.data.token);
           localStorage.setItem("advTeamSessionStartTime", loginTime);
+          localStorage.setItem("advTeamDesignation", response.data.designation || "");
           window.open("/advteam/home", "_blank");
         }, 500);
       }
@@ -409,9 +410,9 @@ const CreateAdvTeam = () => {
           </form>
           <div className="flex gap-2 items-center">
             <h2>Filter by Team: ({getteamName.length} teams)</h2>
-            <select 
-              className="px-2 py-1 border rounded-md" 
-              value={selectedTeamFilter} 
+            <select
+              className="px-2 py-1 border rounded-md"
+              value={selectedTeamFilter}
               onChange={(e) => setSelectedTeamFilter(e.target.value)}
             >
               <option value="">All Teams</option>
@@ -455,44 +456,44 @@ const CreateAdvTeam = () => {
                   return true; // Show all if no team filter selected
                 })
                 .map((bda, index) => (
-                <tr key={index} className={`${bda.designation}`}>
-                  <td>{index + 1}</td>
-                  <td>{bda.fullname}</td>
-                  <td >{bda.email}</td>
-                  <td>{bda.designation}</td>
-                  <td>{bda.team}</td>
-                  <td>{bda.password}</td>
-                  <td className="cursor-pointer font-semibold" onClick={() => handleloginteam(bda.email, bda.password)}>Login <i className="fa fa-sign-in"></i></td>
-                  <td>{bda.status}</td>
-                  <td>
-                    <button title="Edit" onClick={() => handleEdit(bda)}><i className="fa fa-edit"></i></button>
-                    <button title="Delete" onClick={() => handleDelete(bda._id)}><i className="fa fa-trash-o text-red-600"></i></button>
-                    <button title="Inactive BDA" onClick={() => handleChangeStatus(bda._id, "Inactive")}><i className="fa fa-eye-slash"></i></button>
-                  </td>
-                  <td>
-                    <div className="cursor-pointer">
-                      {bda.Access === true ? (
-                        <i onClick={() => handleChangeAccess(bda._id, bda.Access)} title="Access given" className="fa fa-check text-green-900"></i>
-                      ) : (
-                        <i onClick={() => handleChangeAccess(bda._id, bda.Access)} title="Access not given" className="fa fa-times text-red-600"></i>
-                      )}
-                    </div>
-                  </td>
-                  <td>
-                    <div
-                      className=" cursor-pointer"
-                      onClick={() => handleSendEmail(bda)}
-                      disabled={bda.mailSended}
-                    >
-                      {bda.mailSended ? (
-                        <i className="fa fa-send-o text-green-600"></i>
-                      ) : (
-                        <i className="fa fa-send-o text-red-600"></i>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                  <tr key={index} className={`${bda.designation}`}>
+                    <td>{index + 1}</td>
+                    <td>{bda.fullname}</td>
+                    <td >{bda.email}</td>
+                    <td>{bda.designation}</td>
+                    <td>{bda.team}</td>
+                    <td>{bda.password}</td>
+                    <td className="cursor-pointer font-semibold" onClick={() => handleloginteam(bda.email, bda.password)}>Login <i className="fa fa-sign-in"></i></td>
+                    <td>{bda.status}</td>
+                    <td>
+                      <button title="Edit" onClick={() => handleEdit(bda)}><i className="fa fa-edit"></i></button>
+                      <button title="Delete" onClick={() => handleDelete(bda._id)}><i className="fa fa-trash-o text-red-600"></i></button>
+                      <button title="Inactive BDA" onClick={() => handleChangeStatus(bda._id, "Inactive")}><i className="fa fa-eye-slash"></i></button>
+                    </td>
+                    <td>
+                      <div className="cursor-pointer">
+                        {bda.Access === true ? (
+                          <i onClick={() => handleChangeAccess(bda._id, bda.Access)} title="Access given" className="fa fa-check text-green-900"></i>
+                        ) : (
+                          <i onClick={() => handleChangeAccess(bda._id, bda.Access)} title="Access not given" className="fa fa-times text-red-600"></i>
+                        )}
+                      </div>
+                    </td>
+                    <td>
+                      <div
+                        className=" cursor-pointer"
+                        onClick={() => handleSendEmail(bda)}
+                        disabled={bda.mailSended}
+                      >
+                        {bda.mailSended ? (
+                          <i className="fa fa-send-o text-green-600"></i>
+                        ) : (
+                          <i className="fa fa-send-o text-red-600"></i>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         )}

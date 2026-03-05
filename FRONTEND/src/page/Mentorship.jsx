@@ -15,7 +15,7 @@ import PopularCourse from "./Mentorship/PopularCourse";
 import CourseMentor from "./Mentorship/CourseMentor";
 import Getintouch from "../Components/Getintouch";
 import { useNavigate } from "react-router-dom";
-import AdvancedApplyPopup from "../Components/AdvancedApplyPopup";
+
 import { useState } from "react";
 import MentorShipMentors from "../Components/MentorShipMentors";
 import MentorshipForm from "./MentorshipForm";
@@ -54,7 +54,7 @@ const Mentorship = () => {
 
   return (
     <div id="mentorship" className="text-white bg-black">
-      {showPopup && <AdvancedApplyPopup onClose={() => setShowPopup(false)} />}
+      {showPopup && <MentorshipForm isPopup={true} onClose={() => setShowPopup(false)} />}
       <Helmet>
         <title>Krutanic Mentorship Program - Data Science, AI, Full Stack, Digital Marketing  </title>
         <meta name="keywords" content="Top E-learning, mentorship, tech mentorship, data science, coding, online learning, career growth" />
