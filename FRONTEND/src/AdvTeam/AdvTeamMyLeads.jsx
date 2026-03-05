@@ -90,8 +90,16 @@ const AdvTeamMyLeads = () => {
         // For now, I'll use the totalCount if it's accurate for "assignable" leads, 
         // but status filtering is done client-side in the original code.
 
-        const available = leads.filter(l => !["converted", "closed"].includes(l.status)).length;
-        if (num > available) { toast.error(`Only ${available} leads available on this page`); return; }
+        const availableLeads = leads.filter(l => {
+            if (isManager) {
+                return ["fresh", "assigned_to_team", "assigned_to_manager"].includes(l.status);
+            } else if (isLeader) {
+                return l.status === "assigned_to_leader";
+            }
+            return false;
+        });
+        const available = availableLeads.length;
+        if (num > available) { toast.error(`Only ${available} assignable leads available on this page`); return; }
 
         setAssigning(true);
         try {
@@ -129,7 +137,14 @@ const AdvTeamMyLeads = () => {
             (m.designation === "SR Inside Sales Specialist" || m.designation === "Inside Sales Specialist") && m.status === "Active"
         );
 
-    const availableLeadsCount = leads.filter(l => !["converted", "closed"].includes(l.status)).length;
+    const availableLeadsCount = leads.filter(l => {
+        if (isManager) {
+            return ["fresh", "assigned_to_team", "assigned_to_manager"].includes(l.status);
+        } else if (isLeader) {
+            return l.status === "assigned_to_leader";
+        }
+        return false;
+    }).length;
 
     const filteredLeads = leads.filter(l => {
         const matchSearch = (l.full_name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
