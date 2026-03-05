@@ -33,7 +33,7 @@ const NewEnrolledCourses = () => {
         const price = e.programPrice || 0;
         const paid = e.paidAmount || 0;
         const remaining = price - paid;
-        const isFullyPaid = e.status === "fullPaid" || remaining <= 0;
+        const isFullyPaid = remaining <= 0;
         return {
           ...e,
           isFullyPaid,
@@ -42,16 +42,16 @@ const NewEnrolledCourses = () => {
       });
       setEnrollData(mapped);
       if (mapped && mapped.length > 0) {
-        const first = mapped[0].domain;
-        if (!first.session || Object.keys(first.session).length === 0) {
+        const first = mapped[0];
+        if (!first.domain?.session || Object.keys(first.domain.session).length === 0) {
           try {
-            const sessionRes = await axios.get(`${API}/enrollments/${first._enrollmentId}/sessions`);
-            first.session = sessionRes.data.session;
+            const sessionRes = await axios.get(`${API}/enrollments/${first._id}/sessions`);
+            first.domain.session = sessionRes.data.session;
           } catch (err) {
             console.warn("Could not fetch sessions for initial course", err);
           }
         }
-        setSelectedCourse({ ...first });
+        setSelectedCourse({ ...first.domain, isFullyPaid: first.isFullyPaid });
       }
     } catch (error) {
       console.error("There was an error fetching enrolledData:", error);
@@ -67,20 +67,17 @@ const NewEnrolledCourses = () => {
     });
   };
 
-  const handleCourseClick = async (course) => {
+  const handleCourseClick = async (enrollment) => {
+    const course = enrollment.domain;
     if (!course.session || Object.keys(course.session).length === 0) {
       try {
-        const sessionRes = await axios.get(`${API}/enrollments/${course._enrollmentId}/sessions`);
+        const sessionRes = await axios.get(`${API}/enrollments/${enrollment._id}/sessions`);
         course.session = sessionRes.data.session;
       } catch (err) {
         console.warn("Could not fetch sessions for selected course", err);
       }
     }
-    setSelectedCourse({ ...course });
-    // Close sidebar on mobile after selection
-    if (window.innerWidth < 1024) {
-      setIsSidebarOpen(false);
-    }
+    setSelectedCourse({ ...course, isFullyPaid: enrollment.isFullyPaid });
   };
 
   const handleLogout = () => {
@@ -216,7 +213,7 @@ const NewEnrolledCourses = () => {
                       onClick={() => handleStartLearning(selectedCourse.title, selectedCourse.session, selectedCourse._enrollmentId, selectedCourse.isFullyPaid)}
                       className="bg-primary hover:bg-orange-600 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm shadow-primary/30 transition-all flex items-center gap-2"
                     >
-                      <span className="material-symbols-outlined">play_arrow</span> {selectedCourse.isFullyPaid ? "DEMO" : "WATCH DEMO"}
+                      <span className="material-symbols-outlined">play_arrow</span> {selectedCourse.isFullyPaid ? "START LEARNING" : "WATCH DEMO"}
                     </button>
                   </div>
                 </div>
@@ -275,7 +272,7 @@ const NewEnrolledCourses = () => {
                                 : "text-gray-900 group-hover:text-primary transition-colors"
                                 }`}
                             >
-                              {selectedCourse.session[key].title || key}
+                              {!selectedCourse.isFullyPaid && !isFirst ? "Session Locked" : (selectedCourse.session[key].title || key)}
                             </div>
                             <div className="col-span-4 md:col-span-3 flex justify-end">
                               <button

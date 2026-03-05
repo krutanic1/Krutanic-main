@@ -1,7 +1,6 @@
 
-
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 import API from "../API";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
@@ -23,9 +22,10 @@ const UserHeader = ({ onNavigate, resetNavigation }) => {
     mockinterview: false,
     exercise: false,
   });
+  const [isFullyPaid, setIsFullyPaid] = useState(true);
   const [selectedComponent, setSelectedComponent] = useState(null);
   const mobileMenuRef = useRef(null);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const fetchUserData = async () => {
     const userId = localStorage.getItem("userId");
@@ -43,14 +43,23 @@ const UserHeader = ({ onNavigate, resetNavigation }) => {
 
   const fetchComponentsAccess = async () => {
     const userId = localStorage.getItem("userId");
+    const userEmail = localStorage.getItem("userEmail");
     if (!userId) return;
     try {
-      const response = await axios.get(`${API}/user-components`, {
+      const accessRes = await axios.get(`${API}/user-components`, {
         params: { userId },
       });
-      setComponentsAccess(response.data.components);
+      setComponentsAccess(accessRes.data.components);
+
+      if (userEmail) {
+        const enrollRes = await axios.get(`${API}/enrollments`, { params: { userEmail } });
+        const allPaid = enrollRes.data.length > 0
+          ? enrollRes.data.every(e => (e.programPrice - e.paidAmount) <= 0)
+          : true;
+        setIsFullyPaid(allPaid);
+      }
     } catch (err) {
-      console.error("Failed to fetch components access:", err);
+      console.error("Failed to fetch access or enrollments:", err);
     }
   };
 
@@ -81,7 +90,7 @@ const UserHeader = ({ onNavigate, resetNavigation }) => {
   };
 
   const handleLinkClick = (path) => {
-    setSelectedComponent(null); 
+    setSelectedComponent(null);
     navigate(path);
     onNavigate?.();
     setTimeout(() => resetNavigation?.(), 0);
@@ -171,8 +180,18 @@ const UserHeader = ({ onNavigate, resetNavigation }) => {
             <i className="fa fa-home"></i> Home
           </div>
           <div
-            onClick={() => handleLinkClick("/EnrolledCourses")}
-            style={menuItemStyle}
+            onClick={() => {
+              if (isFullyPaid) {
+                handleLinkClick("/EnrolledCourses");
+              } else {
+                toast.error("Complete your payment to access Enrolled Courses");
+              }
+            }}
+            style={{
+              ...menuItemStyle,
+              ...(!isFullyPaid ? { opacity: 0.5 } : {}),
+            }}
+            title={!isFullyPaid ? "Complete your payment to access this feature" : ""}
           >
             <i className="fa fa-book"></i> Enrolled Courses
           </div>
@@ -210,7 +229,7 @@ const UserHeader = ({ onNavigate, resetNavigation }) => {
           >
             <i className="fa fa-suitcase"></i> My Job
           </div>
-     
+
           <div
             onClick={(e) =>
               handleRestrictedClick(

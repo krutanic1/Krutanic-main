@@ -22,6 +22,7 @@ const UserSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const [userProgram, setUserProgram] = useState("");
   const [enrollmentDate, setEnrollmentDate] = useState(null);
   const [paymentStatus, setPaymentStatus] = useState("");
+  const [isFullyPaid, setIsFullyPaid] = useState(true);
   const [loading, setLoading] = useState(true);
 
   const fetchUserData = async () => {
@@ -45,6 +46,10 @@ const UserSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
         setUserProgram(response.data[0].program || "");
         setEnrollmentDate(response.data[0].createdAt);
         setPaymentStatus(response.data[0].status || "");
+
+        // Global payment check
+        const allPaid = response.data.every(e => (e.programPrice - e.paidAmount) <= 0);
+        setIsFullyPaid(allPaid);
       }
     } catch (error) {
       console.error("Error fetching enrollment data for sidebar:", error);
@@ -213,6 +218,22 @@ const UserSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                         {item.icon}
                       </span>
                       <p className={`text-sm leading-normal ${active ? 'font-bold' : 'font-medium'}`}>{item.label}</p>
+                    </button>
+                  );
+                }
+
+                if (item.path === "/EnrolledCourses" && !isFullyPaid) {
+                  return (
+                    <button
+                      key={item.path}
+                      onClick={() => toast.error("Complete your payment to access Enrolled Courses")}
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group w-full text-left hover:bg-gray-50 text-gray-600 opacity-50`}
+                      title="Complete your payment to access this feature"
+                    >
+                      <span className="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">
+                        {item.icon}
+                      </span>
+                      <p className="text-sm leading-normal font-medium">{item.label}</p>
                     </button>
                   );
                 }

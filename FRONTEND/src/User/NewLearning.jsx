@@ -29,7 +29,8 @@ const NewLearning = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { courseTitle, sessions, startIndex = 0, thumbnail, enrollmentId, isFullyPaid } = location.state || {};
+  const { courseTitle, sessions, startIndex = 0, thumbnail, enrollmentId, isFullyPaid: initialIsFullyPaid } = location.state || {};
+  const [isFullyPaid, setIsFullyPaid] = useState(initialIsFullyPaid);
 
   const sessionKeys = sessions ? Object.keys(sessions) : [];
   const totalSessions = sessionKeys.length;
@@ -47,7 +48,29 @@ const NewLearning = () => {
         return next;
       });
     }
-  }, [enrollmentId, location.state?.watchedSessionsFromDB]);
+
+    // Fallback/Verify payment status if not explicitly true
+    const verifyPayment = async () => {
+      if (!enrollmentId) return;
+      try {
+        const res = await fetch(`${API}/enrollments`);
+        const allEnrollments = await res.json();
+        const current = allEnrollments.find(e => e._id === enrollmentId);
+        if (current) {
+          const price = current.programPrice || 0;
+          const paid = current.paidAmount || 0;
+          const verifiedPaid = (price - paid) <= 0;
+          setIsFullyPaid(verifiedPaid);
+        }
+      } catch (err) {
+        console.error("Failed to verify payment status:", err);
+      }
+    };
+
+    if (initialIsFullyPaid !== true) {
+      verifyPayment();
+    }
+  }, [enrollmentId, location.state?.watchedSessionsFromDB, initialIsFullyPaid]);
 
   const markWatched = async (key) => {
     if (!enrollmentId) return;
@@ -232,7 +255,7 @@ const NewLearning = () => {
                 <div className="text-white">
                   <p className="text-sm font-medium opacity-90 mb-1">
                     {currentSessionIndex < totalSessions - 1
-                      ? `Up Next: ${sessions[sessionKeys[currentSessionIndex + 1]]?.title}`
+                      ? `Up Next: ${(!isFullyPaid && (currentSessionIndex + 1) !== 0) ? "Session Locked" : sessions[sessionKeys[currentSessionIndex + 1]]?.title}`
                       : "This is the last session"}
                   </p>
                 </div>
@@ -259,7 +282,9 @@ const NewLearning = () => {
               <div className="flex-1 min-w-0 text-left overflow-hidden">
                 <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Previous</p>
                 <p className={`font-medium truncate ${currentSessionIndex === 0 ? "text-gray-400" : "text-gray-900"}`}>
-                  {currentSessionIndex > 0 ? sessions[sessionKeys[currentSessionIndex - 1]]?.title : "No previous video"}
+                  {currentSessionIndex > 0
+                    ? ((!isFullyPaid && (currentSessionIndex - 1) !== 0) ? "Session Locked" : sessions[sessionKeys[currentSessionIndex - 1]]?.title)
+                    : "No previous video"}
                 </p>
               </div>
             </button>
@@ -276,7 +301,9 @@ const NewLearning = () => {
               <div className="flex-1 min-w-0 text-right overflow-hidden">
                 <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Next</p>
                 <p className={`font-medium truncate ${currentSessionIndex >= totalSessions - 1 ? "text-gray-400" : "text-gray-900"}`}>
-                  {currentSessionIndex < totalSessions - 1 ? sessions[sessionKeys[currentSessionIndex + 1]]?.title : "No next video"}
+                  {currentSessionIndex < totalSessions - 1
+                    ? ((!isFullyPaid && (currentSessionIndex + 1) !== 0) ? "Session Locked" : sessions[sessionKeys[currentSessionIndex + 1]]?.title)
+                    : "No next video"}
                 </p>
               </div>
               <div className={`size-10 shrink-0 rounded-full flex items-center justify-center ${currentSessionIndex >= totalSessions - 1 ? "bg-gray-200" : "bg-primary/10"}`}>
@@ -354,7 +381,7 @@ const NewLearning = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm font-medium truncate ${isActive ? "text-primary" : "text-gray-800"}`}>
-                        {sessions[key]?.title || key}
+                        {(!isFullyPaid && idx !== 0) ? "Session Locked" : (sessions[key]?.title || key)}
                       </p>
                       {isWatched && (
                         <p className="text-xs text-green-600 font-medium">Watched</p>

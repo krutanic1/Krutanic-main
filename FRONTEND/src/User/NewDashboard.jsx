@@ -176,7 +176,7 @@ const NewDashboard = () => {
   };
 
   const handleStartLearningClick = async (item) => {
-    const isFullyPaid = item.status === "fullPaid" || (item.programPrice - item.paidAmount) <= 0;
+    const isFullyPaid = (item.programPrice - item.paidAmount) <= 0;
     let sessionData = item.domain?.session;
     try {
       if (!sessionData || Object.keys(sessionData).length === 0) {
@@ -453,7 +453,7 @@ const NewDashboard = () => {
                     const price = item.programPrice || 0;
                     const paid = item.paidAmount || 0;
                     const remaining = price - paid;
-                    const isFullyPaid = item.status === "fullPaid" || remaining <= 0;
+                    const isFullyPaid = remaining <= 0;
 
                     return (
                       <div key={index} className={`bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow relative ${!isFullyPaid ? '' : ''}`}>
