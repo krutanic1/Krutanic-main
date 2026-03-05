@@ -4,62 +4,61 @@ const Schema = mongoose.Schema;
 const ScrapedJobSchema = new Schema(
   {
     // Core fields from Python scraper
-    jobTitle: { 
-      type: String, 
-      required: true, 
-      index: true 
+    jobTitle: {
+      type: String,
+      required: true,
+      index: true
     },
-    company: { 
-      type: String, 
-      required: true, 
-      index: true 
+    company: {
+      type: String,
+      required: true,
+      index: true
     },
-    platform: { 
-      type: String, 
-      required: true, 
+    platform: {
+      type: String,
+      required: true,
       enum: ['linkedin', 'indeed', 'unstop', 'zip_recruiter'],
-      index: true 
+      index: true
     },
-    jobUrl: { 
-      type: String, 
-      required: true, 
-      unique: true,
-      index: true 
+    jobUrl: {
+      type: String,
+      required: true,
+      unique: true
     },
-    
+
     // Optional fields
     postedDate: { type: String },
     employmentType: { type: String },
     location: { type: String, index: true },
-    remoteStatus: { 
-      type: String, 
+    remoteStatus: {
+      type: String,
       enum: ['Remote', 'Hybrid', 'On-site', null],
-      index: true 
+      index: true
     },
     descriptionSnippet: { type: String },
     salary: { type: String },
-    
+
     // Metadata
-    scrapedAt: { 
-      type: Date, 
-      default: Date.now, 
-      index: true 
+    scrapedAt: {
+      type: Date,
+      default: Date.now,
+      index: true
     },
-    lastSeenAt: { 
-      type: Date, 
-      default: Date.now 
+    lastSeenAt: {
+      type: Date,
+      default: Date.now
     },
-    searchKeyword: { 
-      type: String, 
-      index: true 
+    searchKeyword: {
+      type: String,
+      index: true
     },
-    isActive: { 
-      type: Boolean, 
-      default: true 
+    isActive: {
+      type: Boolean,
+      default: true
     },
-    viewCount: { 
-      type: Number, 
-      default: 0 
+    viewCount: {
+      type: Number,
+      default: 0
     },
   },
   {
@@ -73,7 +72,7 @@ ScrapedJobSchema.index({ jobTitle: 'text', company: 'text', descriptionSnippet: 
 
 // TTL Index - Auto-delete jobs older than 30 days
 ScrapedJobSchema.index(
-  { scrapedAt: 1 }, 
+  { scrapedAt: 1 },
   { expireAfterSeconds: 2592000 }
 );
 

@@ -1,19 +1,18 @@
 const mongoose = require('mongoose');
 
 const jobSearchSchema = new mongoose.Schema({
-  jobId: { 
-    type: String, 
-    required: true, 
-    unique: true, 
-    index: true 
+  jobId: {
+    type: String,
+    required: true,
+    unique: true
   },
-  userId: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'User', 
-    index: true 
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    index: true
   },
-  status: { 
-    type: String, 
+  status: {
+    type: String,
     enum: ['queued', 'processing', 'completed', 'failed', 'partial'],
     default: 'queued',
     index: true
@@ -53,9 +52,9 @@ const jobSearchSchema = new mongoose.Schema({
     failedPlatforms: [String]
   },
   cacheKey: String,
-  createdAt: { 
-    type: Date, 
-    default: Date.now, 
+  createdAt: {
+    type: Date,
+    default: Date.now,
     expires: 86400 // Auto-delete after 24 hours
   },
   completedAt: Date
