@@ -159,4 +159,49 @@ router.get('/api/cron/test-payment-reminders', async (req, res) => {
     }
 });
 
+// Demo Reminder Cron Endpoint (Checks for demos starting in 5 mins)
+router.get('/api/cron/check-demos', async (req, res) => {
+    const timestamp = new Date().toISOString();
+    const istTime = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+    console.log(`⏰ [${istTime} IST] Running Vercel Cron: Demo Reminders`);
+
+    try {
+        const AdvCallActivity = require('../models/AdvCallActivity');
+        const AdvNotification = require('../models/AdvNotification');
+        const now = new Date();
+        const windowEnd = new Date(now.getTime() + 6 * 60 * 1000); // Check within 6 mins
+
+        const upcomingDemos = await AdvCallActivity.find({
+            demoScheduleDate: { $gte: now, $lte: windowEnd },
+            reminderSent: { $ne: true }
+        }).populate("leadId");
+
+        let sentCount = 0;
+        for (const demo of upcomingDemos) {
+            const leadName = demo.leadId?.full_name || "a lead";
+            const notificationParams = {
+                title: "Upcoming Demo Alert ⏰",
+                message: `You have a scheduled demo with ${leadName} in 5 minutes!`,
+                type: "demo_reminder"
+            };
+
+            if (demo.specialistId) {
+                await new AdvNotification({ ...notificationParams, userId: demo.specialistId }).save();
+            }
+            if (demo.leaderId) {
+                await new AdvNotification({ ...notificationParams, userId: demo.leaderId }).save();
+            }
+
+            demo.reminderSent = true;
+            await demo.save();
+            sentCount++;
+        }
+
+        res.status(200).json({ success: true, timestamp, istTime, remindersSent: sentCount });
+    } catch (error) {
+        console.error('❌ Error in Demo Reminder Cron Route:', error);
+        res.status(500).json({ error: 'Internal Server Error', details: error.message, timestamp, istTime });
+    }
+});
+
 module.exports = router;

@@ -696,4 +696,28 @@ router.post("/leader-bulk-assign-specialist", async (req, res) => {
     }
 });
 
+// GET: Fetch unread notifications for a user
+router.get("/get-my-notifications", async (req, res) => {
+    const { userId } = req.query;
+    if (!userId) return res.status(400).json({ message: "userId is required" });
+
+    try {
+        const notifications = await AdvNotification.find({ userId, isRead: false }).sort({ createdAt: -1 });
+        res.status(200).json({ success: true, notifications });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// POST: Mark notification as read
+router.post("/mark-notification-read", async (req, res) => {
+    const { notificationId } = req.body;
+    try {
+        await AdvNotification.findByIdAndUpdate(notificationId, { $set: { isRead: true } });
+        res.status(200).json({ success: true });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
 module.exports = router;

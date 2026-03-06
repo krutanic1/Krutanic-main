@@ -12,6 +12,8 @@ const AdvTeamHeader = () => {
   const advTeamName = localStorage.getItem("advTeamName");
   const advTeamId = localStorage.getItem("advTeamId");
   const [advTeamData, setAdvTeamData] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+  const [activeReminder, setActiveReminder] = useState(null);
 
   const toggleVisibility = () => {
     setisMobileVisible((prevState) => !prevState);
@@ -74,8 +76,38 @@ const AdvTeamHeader = () => {
     }
   };
 
+  const fetchNotifications = async () => {
+    if (!advTeamId) return;
+    try {
+      const res = await axios.get(`${API}/api/adv-leads/get-my-notifications`, { params: { userId: advTeamId } });
+      if (res.data.success && res.data.notifications.length > 0) {
+        setNotifications(res.data.notifications);
+        // Find the most recent demo reminder
+        const demoReminder = res.data.notifications.find(n => n.type === "demo_reminder");
+        if (demoReminder) {
+          setActiveReminder(demoReminder);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch notifications");
+    }
+  };
+
+  const markNotificationRead = async (id) => {
+    try {
+      await axios.post(`${API}/api/adv-leads/mark-notification-read`, { notificationId: id });
+      setNotifications(prev => prev.filter(n => n._id !== id));
+      if (activeReminder?._id === id) setActiveReminder(null);
+    } catch (err) {
+      console.error("Failed to mark notification read");
+    }
+  };
+
   useEffect(() => {
     fetchAdvTeamData();
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 30000); // Poll every 30s
+    return () => clearInterval(interval);
   }, [advTeamId]);
 
   return (
@@ -191,6 +223,41 @@ const AdvTeamHeader = () => {
           <button onClick={handleLogout}>
             <i className="fa fa-sign-out"></i> Logout
           </button>
+        </div>
+      )}
+
+      {/* Demo Reminder Popup */}
+      {activeReminder && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 9999,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px'
+        }}>
+          <div style={{
+            background: '#fff', borderRadius: '16px', padding: '32px', maxWidth: '400px', width: '100%',
+            textAlign: 'center', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', border: '4px solid #F15B29',
+            animation: 'pulser 2s infinite'
+          }}>
+            <div style={{ fontSize: '48px', marginBottom: '16px' }}>⏰</div>
+            <h2 style={{ fontSize: '24px', fontWeight: '800', color: '#1E293B', marginBottom: '12px' }}>{activeReminder.title}</h2>
+            <p style={{ fontSize: '16px', color: '#64748B', lineHeight: '1.6', marginBottom: '24px' }}>{activeReminder.message}</p>
+            <button
+              onClick={() => markNotificationRead(activeReminder._id)}
+              style={{
+                width: '100%', padding: '14px', background: '#F15B29', color: '#fff',
+                border: 'none', borderRadius: '12px', fontWeight: '700', fontSize: '16px',
+                cursor: 'pointer', transition: 'all 0.2s ease'
+              }}
+            >
+              Acknowledged
+            </button>
+          </div>
+          <style>{`
+            @keyframes pulser {
+              0% { transform: scale(1); }
+              50% { transform: scale(1.02); }
+              100% { transform: scale(1); }
+            }
+          `}</style>
         </div>
       )}
     </div>
