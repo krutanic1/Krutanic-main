@@ -24,6 +24,7 @@ const AdvLeadSchema = new mongoose.Schema({
     leader_id: { type: String },
     specialist_id: { type: String },
     status: { type: String, default: "fresh" },
+    last_outcome: { type: String },
     score: { type: Number, default: 0 },
     isLocked: { type: Boolean, default: false },
     lockedBy: { type: mongoose.Schema.Types.ObjectId, ref: "AdvUser" },

@@ -245,22 +245,28 @@ router.post("/bulk-assign-to-specialist", async (req, res) => {
 
 // GET: Fetch leads based on role with team-based isolation
 router.get("/get-adv-leads", async (req, res) => {
-    const { role, userId, page = 1, limit = 25 } = req.query;
+    const { role, userId, page = 1, limit = 25, outcome, strictlyOwned } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
     try {
-        let query = {};
+        let baseQuery = {};
         const roleNorm = (role || "").toLowerCase();
 
         if (roleNorm === "admin") {
             // Admin sees all
+        } else if (strictlyOwned === "true") {
+            // Strictly owned: only leads where user is the direct owner
+            baseQuery = {
+                $or: [
+                    { owner_id: userId },
+                    { current_owner_id: userId }
+                ]
+            };
         } else if (roleNorm.includes("manager")) {
-            // Managers see leads assigned to them or their team
             const teams = await AdvTeam.find({ manager_id: userId });
             const teamIds = teams.map(t => t._id);
             const teamNames = teams.map(t => t.team_name);
-
-            query = {
+            baseQuery = {
                 $or: [
                     { status: "fresh" },
                     { manager_id: userId },
@@ -271,12 +277,10 @@ router.get("/get-adv-leads", async (req, res) => {
                 ]
             };
         } else if (roleNorm.includes("leader")) {
-            // Leaders see leads in teams they lead
             const teams = await AdvTeam.find({ leaders: userId });
             const teamIds = teams.map(t => t._id);
             const teamNames = teams.map(t => t.team_name);
-
-            query = {
+            baseQuery = {
                 $or: [
                     { status: "fresh" },
                     { leader_id: userId },
@@ -287,13 +291,18 @@ router.get("/get-adv-leads", async (req, res) => {
                 ]
             };
         } else {
-            // Specialists see only their own leads
-            query = {
+            baseQuery = {
                 $or: [
                     { owner_id: userId },
                     { current_owner_id: userId }
                 ]
             };
+        }
+
+        // Apply outcome filter if provided
+        let query = baseQuery;
+        if (outcome) {
+            query = { $and: [baseQuery, { last_outcome: outcome }] };
         }
 
         const totalCount = await AdvLead.countDocuments(query);
@@ -558,13 +567,11 @@ router.post("/log-call-activity", async (req, res) => {
             callback_requested: "in_followup",
         };
         const newStatus = statusMap[callOutcome];
-        const updateFields = {};
+        const updateFields = { last_outcome: callOutcome };
         if (newStatus) updateFields.status = newStatus;
         if (demoScheduleDate) updateFields.demo_date = demoScheduleDate;
 
-        if (Object.keys(updateFields).length > 0) {
-            await AdvLead.findByIdAndUpdate(leadId, { $set: updateFields });
-        }
+        await AdvLead.findByIdAndUpdate(leadId, { $set: updateFields });
 
         res.status(201).json({ success: true, activity });
     } catch (error) {

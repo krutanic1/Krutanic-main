@@ -18,6 +18,8 @@ const AdvLeadsBook = () => {
     const [callHistory, setCallHistory] = useState({});
     const [submitting, setSubmitting] = useState(null);
     const [formState, setFormState] = useState({});
+    const [expandedLogId, setExpandedLogId] = useState(null);
+    const [selectedOutcome, setSelectedOutcome] = useState("");
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -33,7 +35,7 @@ const AdvLeadsBook = () => {
         setLoading(true);
         try {
             const res = await axios.get(`${API}/api/adv-leads/get-adv-leads`, {
-                params: { role: designation, userId, page, limit }
+                params: { role: designation, userId, page, limit, outcome: selectedOutcome, strictlyOwned: true }
             });
             if (res.data && res.data.leads) {
                 setLeads(res.data.leads);
@@ -50,7 +52,7 @@ const AdvLeadsBook = () => {
         }
     };
 
-    useEffect(() => { fetchMyLeads(currentPage); }, [currentPage]);
+    useEffect(() => { fetchMyLeads(currentPage); }, [currentPage, selectedOutcome]);
 
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
@@ -249,17 +251,44 @@ const AdvLeadsBook = () => {
                     </div>
                 </div>
 
-                <div style={styles.statsRow}>
-                    <div style={styles.statCard}>
-                        <span style={{ fontSize: '24px', fontWeight: '800', color: '#3B82F6' }}>{totalCount}</span>
-                        <span style={{ fontSize: '12px', fontWeight: '600', color: '#64748B', textTransform: 'uppercase' }}>Total Assigned</span>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', background: '#fff', padding: '4px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                        <button
+                            onClick={() => setSelectedOutcome("")}
+                            style={{
+                                padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer', border: 'none',
+                                background: selectedOutcome === "" ? '#F1F5F9' : 'transparent', color: selectedOutcome === "" ? '#1E293B' : '#64748B'
+                            }}
+                        >
+                            All Leads
+                        </button>
+                        {CALL_OUTCOMES.map(o => (
+                            <button
+                                key={o.value}
+                                onClick={() => setSelectedOutcome(o.value)}
+                                style={{
+                                    padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer', border: 'none',
+                                    background: selectedOutcome === o.value ? `${o.color}15` : 'transparent',
+                                    color: selectedOutcome === o.value ? o.color : '#64748B'
+                                }}
+                            >
+                                {o.label}
+                            </button>
+                        ))}
                     </div>
-                    <button
-                        onClick={() => fetchMyLeads(1)}
-                        style={{ ...styles.statCard, cursor: 'pointer', background: '#F1F5F9', border: 'none' }}
-                    >
-                        <span style={{ fontSize: '18px' }}>🔄</span>
-                    </button>
+
+                    <div style={styles.statsRow}>
+                        <div style={styles.statCard}>
+                            <span style={{ fontSize: '24px', fontWeight: '800', color: '#3B82F6' }}>{totalCount}</span>
+                            <span style={{ fontSize: '12px', fontWeight: '600', color: '#64748B', textTransform: 'uppercase' }}>{selectedOutcome ? `${selectedOutcome.replace('_', ' ')}` : 'Total Assigned'}</span>
+                        </div>
+                        <button
+                            onClick={() => fetchMyLeads(1)}
+                            style={{ ...styles.statCard, cursor: 'pointer', background: '#F1F5F9', border: 'none' }}
+                        >
+                            <span style={{ fontSize: '18px' }}>🔄</span>
+                        </button>
+                    </div>
                 </div>
             </header>
 
@@ -311,7 +340,60 @@ const AdvLeadsBook = () => {
 
                                             <div style={{ flex: 2 }}>
                                                 <div style={{ fontWeight: '700', fontSize: '16px', color: '#1E293B' }}>{lead.full_name}</div>
-                                                <div style={{ fontSize: '13px', color: '#64748B', marginTop: '2px' }}>{lead.phone_number}</div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+                                                    <div style={{ fontSize: '13px', color: '#64748B' }}>{lead.phone_number}</div>
+                                                    <div style={{ display: 'flex', gap: '6px' }}>
+                                                        <a
+                                                            href={`https://wa.me/${lead.phone_number.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${lead.full_name}, this is from Krutanic`)}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            title="Message on WhatsApp"
+                                                            onClick={(e) => e.stopPropagation()}
+                                                            style={{
+                                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                                width: '32px', height: '32px', borderRadius: '50%', background: '#25D366',
+                                                                color: '#fff', fontSize: '18px', textDecoration: 'none', transition: 'transform 0.2s ease',
+                                                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                                            }}
+                                                            onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                                                            onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                                                        >
+                                                            <i className="fa fa-whatsapp"></i>
+                                                        </a>
+                                                        <a
+                                                            href={`mailto:${lead.email}?subject=Regarding Your Inquiry - Krutanic&body=${encodeURIComponent(`Hello ${lead.full_name},\n\nI hope you are doing well.`)}`}
+                                                            title="Send Email"
+                                                            onClick={(e) => e.stopPropagation()}
+                                                            style={{
+                                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                                width: '32px', height: '32px', borderRadius: '50%', background: '#3B82F6',
+                                                                color: '#fff', fontSize: '16px', textDecoration: 'none', transition: 'transform 0.2s ease',
+                                                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                                            }}
+                                                            onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                                                            onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                                                        >
+                                                            <i className="fa fa-envelope"></i>
+                                                        </a>
+                                                        <a
+                                                            href="https://meet.google.com/new"
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            title="Start Google Meet"
+                                                            onClick={(e) => e.stopPropagation()}
+                                                            style={{
+                                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                                width: '32px', height: '32px', borderRadius: '50%', background: '#EA4335',
+                                                                color: '#fff', fontSize: '16px', textDecoration: 'none', transition: 'transform 0.2s ease',
+                                                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                                            }}
+                                                            onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                                                            onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                                                        >
+                                                            <i className="fa fa-video-camera"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
                                             </div>
 
                                             <div style={{ flex: 2, display: 'flex', alignItems: 'center', gap: '30px' }}>
@@ -456,20 +538,55 @@ const AdvLeadsBook = () => {
                                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '420px', overflowY: 'auto', paddingRight: '12px' }}>
                                                             {history.map((act, i) => {
                                                                 const outcome = CALL_OUTCOMES.find(o => o.value === act.callOutcome);
+                                                                const isLogExpanded = expandedLogId === act._id;
                                                                 return (
-                                                                    <div key={i} style={{
-                                                                        padding: '16px', borderRadius: '16px', background: '#F8FAFC',
-                                                                        border: '1px solid #E2E8F0', position: 'relative'
-                                                                    }}>
+                                                                    <div
+                                                                        key={i}
+                                                                        onClick={() => setExpandedLogId(isLogExpanded ? null : act._id)}
+                                                                        style={{
+                                                                            padding: '16px', borderRadius: '16px', background: '#F8FAFC',
+                                                                            border: isLogExpanded ? '1px solid #3B82F6' : '1px solid #E2E8F0',
+                                                                            position: 'relative', cursor: 'pointer',
+                                                                            transition: 'all 0.2s ease',
+                                                                            boxShadow: isLogExpanded ? '0 4px 12px rgba(59, 130, 246, 0.1)' : 'none'
+                                                                        }}
+                                                                    >
                                                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                                                                            <span style={{ fontSize: '12px', fontWeight: '800', color: outcome?.color || '#64748B', textTransform: 'uppercase' }}>
-                                                                                {outcome?.label?.split(' ')[1] || act.callOutcome}
+                                                                            <span style={{ fontSize: '12px', fontWeight: '800', color: outcome?.color || '#64748B', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                                                {outcome?.label || act.callOutcome}
+                                                                                {isLogExpanded ? ' ▲' : ' ▼'}
                                                                             </span>
                                                                             <span style={{ fontSize: '11px', fontWeight: '600', color: '#94A3B8' }}>
                                                                                 {new Date(act.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                                                                             </span>
                                                                         </div>
-                                                                        <p style={{ margin: 0, fontSize: '13px', color: '#334155', lineHeight: '1.5' }}>{act.summary}</p>
+
+                                                                        {act.demoScheduleDate && (
+                                                                            <div style={{ marginBottom: '8px', fontSize: '12px', color: '#3B82F6', fontWeight: '700', padding: '4px 8px', background: '#3B82F610', borderRadius: '6px', display: 'inline-block' }}>
+                                                                                📅 Demo: {new Date(act.demoScheduleDate).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                                                                            </div>
+                                                                        )}
+
+                                                                        <p style={{
+                                                                            margin: 0, fontSize: '13px', color: '#334155', lineHeight: '1.5',
+                                                                            display: '-webkit-box', WebkitLineClamp: isLogExpanded ? 'unset' : '2', WebkitBoxOrient: 'vertical',
+                                                                            overflow: 'hidden'
+                                                                        }}>
+                                                                            <strong>Summary:</strong> {act.summary || 'No summary provided'}
+                                                                        </p>
+
+                                                                        {isLogExpanded && (
+                                                                            <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px dashed #E2E8F0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                                                {act.remark && (
+                                                                                    <div style={{ fontSize: '13px', color: '#475569' }}>
+                                                                                        <strong style={{ color: '#1E293B' }}>Internal Remark:</strong> {act.remark}
+                                                                                    </div>
+                                                                                )}
+                                                                                <div style={{ fontSize: '11px', color: '#94A3B8', fontStyle: 'italic' }}>
+                                                                                    Logged by {act.specialistName || 'Specialist'}
+                                                                                </div>
+                                                                            </div>
+                                                                        )}
                                                                     </div>
                                                                 );
                                                             })}

@@ -39,7 +39,7 @@ const AdvTeamMyLeads = () => {
         setLoading(true);
         try {
             const res = await axios.get(`${API}/api/adv-leads/get-adv-leads`, {
-                params: { role: apiRole, userId, page, limit }
+                params: { role: apiRole, userId, page, limit, strictlyOwned: true }
             });
             if (res.data && res.data.leads) {
                 setLeads(res.data.leads);
