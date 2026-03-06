@@ -142,6 +142,14 @@ const AdvTeamHeader = () => {
             advTeamData?.designation === "MANAGER" ||
             advTeamData?.designation === "ADV Leader" ||
             advTeamData?.designation === "LEADER") && (
+              <Link to="/advteam/lead-management">
+                <i className="fa fa-tasks"></i> Lead Management
+              </Link>
+            )}
+          {(advTeamData?.designation === "ADV Manager" ||
+            advTeamData?.designation === "MANAGER" ||
+            advTeamData?.designation === "ADV Leader" ||
+            advTeamData?.designation === "LEADER") && (
               <Link to="/advteam/record">
                 <i className="fa fa-history"></i> Record
               </Link>

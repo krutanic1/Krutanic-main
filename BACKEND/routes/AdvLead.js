@@ -13,6 +13,7 @@ const AdvFollowup = require("../models/AdvFollowup");
 const AdvTeam = require("../models/AdvTeam");
 const AdvUser = require("../models/AdvUser");
 const AdvNotification = require("../models/AdvNotification");
+const AdvTeamMember = require("../models/CreateAdvTeam");
 
 // POST: Add lead from Google Form with Automation
 router.post("/add-adv-lead", async (req, res) => {
@@ -150,6 +151,11 @@ router.post("/admin-bulk-assign", async (req, res) => {
 
         const leadIds = freshLeads.map(l => l._id);
 
+        // Find if this person belongs to a team to set team_id
+        const team = await AdvTeam.findOne({
+            $or: [{ manager_id: assigneeId }, { leaders: assigneeId }]
+        });
+
         // Map frontend designation to database role/status
         let dbRole = "manager";
         let dbStatus = "assigned_to_manager";
@@ -167,6 +173,7 @@ router.post("/admin-bulk-assign", async (req, res) => {
                     owner_name: assigneeName,
                     current_owner_role: dbRole,
                     status: dbStatus,
+                    team_id: team ? team._id : null,
                     ...(dbRole === "manager" ? { manager_id: assigneeId } : { leader_id: assigneeId })
                 }
             }
@@ -255,10 +262,12 @@ router.get("/get-adv-leads", async (req, res) => {
 
             query = {
                 $or: [
+                    { status: "fresh" },
                     { manager_id: userId },
                     { team_id: { $in: teamIds } },
                     { team_name: { $in: teamNames } },
-                    { owner_id: userId }
+                    { owner_id: userId },
+                    { current_owner_id: userId }
                 ]
             };
         } else if (roleNorm.includes("leader")) {
@@ -269,6 +278,7 @@ router.get("/get-adv-leads", async (req, res) => {
 
             query = {
                 $or: [
+                    { status: "fresh" },
                     { leader_id: userId },
                     { team_id: { $in: teamIds } },
                     { team_name: { $in: teamNames } },
@@ -602,6 +612,77 @@ router.get("/get-adv-record", async (req, res) => {
             totalPages: Math.ceil(totalCount / limit),
             totalCount,
             currentPage: parseInt(page)
+        });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+// GET: Get specialists in the same team as the leader/manager
+router.get("/get-my-team-specialists", async (req, res) => {
+    const { userId } = req.query;
+    try {
+        // Find leader's profile to get their team name
+        const leader = await AdvTeamMember.findById(userId);
+        if (!leader) return res.status(404).json({ message: "Leader not found" });
+
+        let query = {
+            designation: { $regex: /Specialist/i },
+            status: "Active"
+        };
+
+        if (leader.designation === "ADV Manager") {
+            // Managers manage multiple teams
+            query.team = { $in: leader.teams || [] };
+        } else {
+            // Leaders belong to one team
+            query.team = leader.team;
+        }
+
+        const specialists = await AdvTeamMember.find(query);
+        res.status(200).json({ specialists });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+// POST: Leader/Manager assigns fresh leads directly to specialist
+router.post("/leader-bulk-assign-specialist", async (req, res) => {
+    const { leaderId, specialistId, specialistName, count } = req.body;
+    if (!leaderId || !specialistId || !count) {
+        return res.status(400).json({ message: "leaderId, specialistId and count are required" });
+    }
+    try {
+        const freshLeads = await AdvLead.find({ status: "fresh" })
+            .sort({ created_at: 1 })
+            .limit(parseInt(count));
+
+        if (freshLeads.length === 0) {
+            return res.status(404).json({ message: "No fresh leads available" });
+        }
+
+        const leader = await AdvTeamMember.findById(leaderId);
+        const specialist = await AdvTeamMember.findById(specialistId);
+
+        const leadIds = freshLeads.map(l => l._id);
+        await AdvLead.updateMany(
+            { _id: { $in: leadIds } },
+            {
+                $set: {
+                    owner_id: specialistId,
+                    owner_name: specialistName || specialist?.fullname,
+                    specialist_id: specialistId,
+                    leader_id: leaderId,
+                    team_name: specialist?.team || leader?.team,
+                    current_owner_role: "sr_inside_sales_specialist",
+                    status: "assigned_to_specialist"
+                }
+            }
+        );
+
+        res.status(200).json({
+            success: true,
+            message: `${freshLeads.length} leads assigned to ${specialistName || specialist?.fullname}`
         });
     } catch (error) {
         res.status(400).json({ message: error.message });

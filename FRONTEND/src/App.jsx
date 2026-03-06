@@ -160,6 +160,7 @@ import AdvTeamOnBoarding from "./AdvTeam/AdvTeamOnBoarding";
 import AdvTeamRevenue from "./AdvTeam/AdvTeamRevenue";
 import AdvTeamMyLeads from "./AdvTeam/AdvTeamMyLeads";
 import AdvLeadsBook from "./AdvTeam/AdvLeadsBook";
+import AdvTeamLeadManagement from "./AdvTeam/AdvLeadManagement";
 import AdvTeamRecord from "./AdvTeam/AdvTeamRecord";
 
 // MarketingLogind
@@ -342,7 +343,8 @@ const AppContent = () => {
     "/advteam/adduser",
     "/advteam/my-leads",
     "/advteam/leads-book",
-    "/advteam/record"
+    "/advteam/record",
+    "/advteam/lead-management"
   ];
 
   const userheaderPaths = [
@@ -371,15 +373,25 @@ const AppContent = () => {
     <div>
       <SmoothScroll />
       <ScrollToTop />
-      {headerPaths.includes(location.pathname.toLowerCase()) && <Header />}
-      {adminheaderPaths.includes(location.pathname.toLowerCase()) && (<AdminHeader />)}
-      {operationheaderPaths.includes(location.pathname.toLowerCase()) && (<OperationHeader />)}
-      {advoperationheaderPaths.includes(location.pathname.toLowerCase()) && (<AdvOperationHeader />)}
-      {marketingheaderPaths.includes(location.pathname.toLowerCase()) && (<MarketingHeader />)}
-      {bdaheaderPaths.includes(location.pathname.toLowerCase()) && (<BDAHeader />)}
-      {advteamheaderPaths.includes(location.pathname.toLowerCase()) && (<AdvTeamHeader />)}
-      {userheaderPaths.includes(location.pathname.toLowerCase()) && (<UserHeader />)}
-      {placementcoodinatorHeaderPaths.includes(location.pathname.toLowerCase()) && <PCHeader />}
+      {adminheaderPaths.includes(location.pathname.toLowerCase()) && isAuthenticatedAdmin() ? (
+        <AdminHeader />
+      ) : operationheaderPaths.includes(location.pathname.toLowerCase()) && isAuthenticatedOperation() ? (
+        <OperationHeader />
+      ) : advoperationheaderPaths.includes(location.pathname.toLowerCase()) && isAuthenticatedAdvOperation() ? (
+        <AdvOperationHeader />
+      ) : marketingheaderPaths.includes(location.pathname.toLowerCase()) && isAuthenticatedMarketing() ? (
+        <MarketingHeader />
+      ) : bdaheaderPaths.includes(location.pathname.toLowerCase()) && isAuthenticatedBda() ? (
+        <BDAHeader />
+      ) : advteamheaderPaths.includes(location.pathname.toLowerCase()) && isAuthenticatedAdvTeam() ? (
+        <AdvTeamHeader />
+      ) : placementcoodinatorHeaderPaths.includes(location.pathname.toLowerCase()) && isAuthenticatedPC() ? (
+        <PCHeader />
+      ) : userheaderPaths.includes(location.pathname.toLowerCase()) ? (
+        <UserHeader />
+      ) : headerPaths.includes(location.pathname.toLowerCase()) ? (
+        <Header />
+      ) : null}
 
       <Routes>
         <Route path="*" element={<PageNotFound />} />
@@ -454,7 +466,12 @@ const AppContent = () => {
         <Route path="/CreateInterviewer" element={isAuthenticatedAdmin() ? (<CreateInterviewer />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/CreateInterview" element={isAuthenticatedAdmin() ? (<CreateInterview />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/AdvExercisePage" element={isAuthenticatedAdmin() ? (<AdvExercisePage />) : (<Navigate to="/AdminLogin" />)} />
-        <Route path="/AdvLeadManagement" element={isAuthenticatedAdmin() ? (<AdvLeadManagement />) : (<Navigate to="/AdminLogin" />)} />
+        <Route path="/advleadmanagement" element={
+          isAuthenticatedAdmin() ? <AdvLeadManagement /> : <Navigate to="/AdminLogin" />
+        } />
+        <Route path="/advteam/lead-management" element={
+          isAuthenticatedAdvTeam() ? <AdvTeamLeadManagement /> : <Navigate to="/AdminLogin" />
+        } />
         <Route path="/AdminAnalytics" element={isAuthenticatedAdmin() ? (<AdminAnalytics />) : (<Navigate to="/AdminLogin" />)} />
 
         <Route path="/BulkImport" element={isAuthenticatedAdmin() ? (<BulkImport />) : (<Navigate to="/AdminLogin" />)} />
