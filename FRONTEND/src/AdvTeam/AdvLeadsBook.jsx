@@ -341,9 +341,32 @@ const AdvLeadsBook = () => {
                                         {isOpen && (
                                             <div style={{
                                                 padding: '32px', background: '#fff', borderTop: '1px solid #F1F5F9',
-                                                display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '40px'
+                                                display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: '30px'
                                             }}>
-                                                {/* LEFT: Log Form */}
+                                                {/* LEFT 1: Lead Details */}
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', borderRight: '1px solid #F1F5F9', paddingRight: '20px' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                        <div style={{ padding: '8px', background: '#10B98115', borderRadius: '10px', color: '#10B981' }}>👤</div>
+                                                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: '#1E293B' }}>Lead Details</h3>
+                                                    </div>
+
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                                        {[
+                                                            { label: 'Email', value: lead.email },
+                                                            { label: 'Background', value: lead.education_background },
+                                                            { label: 'Current Status', value: lead.current_status },
+                                                            { label: 'Upskilling Ready', value: lead.upskilling_ready },
+                                                            { label: 'Start Timeframe', value: lead.start_timeframe },
+                                                        ].map((item, i) => (
+                                                            <div key={i}>
+                                                                <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '2px' }}>{item.label}</div>
+                                                                <div style={{ fontSize: '13px', fontWeight: '600', color: '#334155', wordBreak: 'break-all' }}>{item.value || 'N/A'}</div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                {/* MIDDLE: Log Form */}
                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                                         <div style={{ padding: '8px', background: '#3B82F615', borderRadius: '10px', color: '#3B82F6' }}>📞</div>

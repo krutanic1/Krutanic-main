@@ -38,6 +38,8 @@ router.post("/add-adv-lead", async (req, res) => {
         if (company_name) score += 10;
         const currentYear = new Date().getFullYear();
         if (parseInt(year_of_passing) >= currentYear - 2) score += 5;
+        if (req.body.upskilling_ready === "Yes") score += 15;
+        if (req.body.start_timeframe === "Immediately") score += 10;
 
         // --- 3. Auto-assignment & Round-robin ---
         let assignedSpecialistId = null;

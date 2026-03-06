@@ -8,6 +8,10 @@ const AdvLeadSchema = new mongoose.Schema({
     year_of_passing: { type: String },
     company_name: { type: String },
     role: { type: String }, // Role from the form submission
+    education_background: { type: String },
+    current_status: { type: String },
+    upskilling_ready: { type: String },
+    start_timeframe: { type: String },
     source: { type: String, default: "google_form" },
     team_id: { type: mongoose.Schema.Types.ObjectId, ref: "AdvTeam" },
     current_owner_id: { type: mongoose.Schema.Types.ObjectId, ref: "AdvUser" },

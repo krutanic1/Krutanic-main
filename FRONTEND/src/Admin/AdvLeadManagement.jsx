@@ -315,10 +315,12 @@ const AdvLeadManagement = () => {
                                     <tr>
                                         <th>#</th>
                                         <th>Name</th>
+                                        <th>Email</th>
                                         <th>Phone</th>
                                         <th>Domain</th>
-                                        <th>Company</th>
-                                        <th>Status</th>
+                                        <th>Education</th>
+                                        <th>Status Info</th>
+                                        <th>Backend Status</th>
                                         <th>Assigned To</th>
                                         <th>Score</th>
                                     </tr>
@@ -330,9 +332,11 @@ const AdvLeadManagement = () => {
                                             <tr key={lead._id}>
                                                 <td style={{ color: '#888', fontSize: '12px' }}>{(currentPage - 1) * limit + idx + 1}</td>
                                                 <td><strong>{lead.full_name}</strong></td>
+                                                <td style={{ fontSize: '12px', color: '#666' }}>{lead.email}</td>
                                                 <td>{lead.phone_number}</td>
-                                                <td>{lead.opted_domain || '—'}</td>
-                                                <td>{lead.company_name || '—'}</td>
+                                                <td style={{ fontSize: '13px' }}>{lead.opted_domain || '—'}</td>
+                                                <td style={{ fontSize: '12px', color: '#555' }}>{lead.education_background || '—'}</td>
+                                                <td style={{ fontSize: '12px', color: '#555' }}>{lead.current_status || '—'}</td>
                                                 <td>
                                                     <span style={{ padding: '3px 10px', borderRadius: '12px', fontSize: '11px', background: sc.bg, border: `1px solid ${sc.border}`, color: sc.color, whiteSpace: 'nowrap' }}>
                                                         {lead.status?.replace(/_/g, ' ')}
