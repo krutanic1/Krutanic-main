@@ -16,11 +16,19 @@ const AdvNotification = require("../models/AdvNotification");
 
 // POST: Add lead from Google Form with Automation
 router.post("/add-adv-lead", async (req, res) => {
-    const { phone_number, opted_domain, company_name, year_of_passing } = req.body;
+    console.log("Receiving Lead Submission:", JSON.stringify(req.body, null, 2));
+    let { phone_number, opted_domain, company_name, year_of_passing } = req.body;
+
+    // Backup for field mapping
+    if (!opted_domain && req.body.domain) opted_domain = req.body.domain;
+    if (!opted_domain && req.body.Domains) opted_domain = req.body.Domains;
+
     try {
         const existingLead = await AdvLead.findOne({ phone_number });
         if (existingLead) {
-            return res.status(200).json({ success: false, message: "Duplicate Lead", lead: existingLead });
+            // Update existing lead with new data if it comes again
+            await AdvLead.findOneAndUpdate({ phone_number }, { $set: req.body });
+            return res.status(200).json({ success: true, message: "Lead Updated", lead: existingLead });
         }
 
         // --- 1. Rule Engine: Map Domain to Team ---
@@ -34,10 +42,13 @@ router.post("/add-adv-lead", async (req, res) => {
 
         // --- 2. Lead Scoring Logic ---
         let score = 0;
-        if (["Data Science", "AI/ML"].includes(opted_domain)) score += 10;
+        const normalizedDomain = (opted_domain || "").toLowerCase().trim();
+        if (normalizedDomain.includes("data science") || normalizedDomain.includes("ai/ml")) score += 10;
+
         if (company_name) score += 10;
         const currentYear = new Date().getFullYear();
         if (parseInt(year_of_passing) >= currentYear - 2) score += 5;
+
         if (req.body.upskilling_ready === "Yes") score += 15;
         if (req.body.start_timeframe === "Immediately") score += 10;
 
@@ -57,6 +68,7 @@ router.post("/add-adv-lead", async (req, res) => {
 
         const newLead = new AdvLead({
             ...req.body,
+            opted_domain: opted_domain, // Ensure the mapped value is used
             source: "google_form",
             status: assignedSpecialistId ? "assigned_to_specialist" : "fresh",
             team_id: team?._id,
