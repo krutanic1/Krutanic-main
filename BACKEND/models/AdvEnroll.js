@@ -90,7 +90,6 @@ const advEnrollSchema = new Schema(
 );
 
 // Database Indexes for faster queries
-advEnrollSchema.index({ email: 1 });
 advEnrollSchema.index({ status: 1 });
 advEnrollSchema.index({ createdAt: -1 });
 advEnrollSchema.index({ operationId: 1 });

@@ -5,7 +5,6 @@ const AdvTeamStructure = require("../models/AdvTeamStructure");
 const AdvLead = require("../models/AdvLead");
 const AdvCallActivity = require("../models/AdvCallActivity");
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
 
 // Middleware to authorize roles
 const authorizeRole = (roles) => {
@@ -53,14 +52,10 @@ router.post("/agents", async (req, res) => {
     try {
         const { name, email, password, role, manager_id, team_id } = req.body;
 
-        // Hash password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
         const newUser = new AdvUser({
             name,
             email,
-            password: hashedPassword,
+            password,
             role,
             manager_id: manager_id || undefined,
             team_id: team_id || undefined
@@ -79,10 +74,7 @@ router.put("/agents/:id", async (req, res) => {
         const { id } = req.params;
         const updates = req.body;
 
-        if (updates.password) {
-            const salt = await bcrypt.genSalt(10);
-            updates.password = await bcrypt.hash(updates.password, salt);
-        }
+        if (updates.password) { }
 
         const updatedUser = await AdvUser.findByIdAndUpdate(id, updates, { new: true });
         res.status(200).json(updatedUser);
