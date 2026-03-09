@@ -13,7 +13,7 @@ const AdvLeadSchema = new mongoose.Schema({
     upskilling_ready: { type: String },
     start_timeframe: { type: String },
     source: { type: String, default: "google_form" },
-    team_id: { type: mongoose.Schema.Types.ObjectId, ref: "AdvTeam" },
+    team_id: { type: mongoose.Schema.Types.ObjectId, ref: "AdvTeamStructure" },
     current_owner_id: { type: mongoose.Schema.Types.ObjectId, ref: "AdvUser" },
     current_owner_role: { type: String },
     // For existing ADV team system (string-based assignment)
@@ -24,6 +24,11 @@ const AdvLeadSchema = new mongoose.Schema({
     leader_id: { type: String },
     specialist_id: { type: String },
     status: { type: String, default: "fresh" },
+    stage: {
+        type: String,
+        enum: ["new", "contacted", "interested", "demo_scheduled", "converted", "lost"],
+        default: "new"
+    },
     last_outcome: { type: String },
     score: { type: Number, default: 0 },
     isLocked: { type: Boolean, default: false },

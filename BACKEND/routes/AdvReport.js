@@ -156,4 +156,130 @@ router.get("/admin-global-stats", async (req, res) => {
     }
 });
 
+// Export Leads (CSV/Excel)
+router.get("/export/leads", async (req, res) => {
+    try {
+        const { startDate, endDate, stage, format } = req.query;
+        let query = {};
+        if (startDate && endDate) query.created_at = { $gte: new Date(startDate), $lte: new Date(endDate) };
+        if (stage && stage !== 'all') query.stage = stage;
+
+        const leads = await AdvLead.find(query).lean();
+
+        if (format === 'csv') {
+            const { Parser } = require('json2csv');
+            const fields = ['full_name', 'email', 'phone_number', 'opted_domain', 'stage', 'owner_name', 'created_at'];
+            const json2csvParser = new Parser({ fields });
+            const csv = json2csvParser.parse(leads);
+            res.header('Content-Type', 'text/csv');
+            res.attachment('leads_report.csv');
+            return res.send(csv);
+        } else {
+            const ExcelJS = require('exceljs');
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Leads');
+            worksheet.columns = [
+                { header: 'Full Name', key: 'full_name', width: 25 },
+                { header: 'Email', key: 'email', width: 25 },
+                { header: 'Phone', key: 'phone_number', width: 15 },
+                { header: 'Domain', key: 'opted_domain', width: 20 },
+                { header: 'Stage', key: 'stage', width: 15 },
+                { header: 'Owner', key: 'owner_name', width: 20 },
+                { header: 'Created At', key: 'created_at', width: 20 }
+            ];
+            worksheet.addRows(leads);
+            res.header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            res.attachment('leads_report.xlsx');
+            await workbook.xlsx.write(res);
+            res.end();
+        }
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+// Export Call Logs
+router.get("/export/calls", async (req, res) => {
+    try {
+        const { startDate, endDate, format } = req.query;
+        let query = {};
+        if (startDate && endDate) query.createdAt = { $gte: new Date(startDate), $lte: new Date(endDate) };
+
+        const calls = await AdvCallActivity.find(query).populate('specialistId', 'name').lean();
+
+        if (format === 'csv') {
+            const { Parser } = require('json2csv');
+            const fields = ['createdAt', 'leadName', 'callOutcome', 'duration', 'specialistId.name'];
+            const json2csvParser = new Parser({ fields });
+            const csv = json2csvParser.parse(calls);
+            res.header('Content-Type', 'text/csv');
+            res.attachment('call_logs.csv');
+            return res.send(csv);
+        } else {
+            const ExcelJS = require('exceljs');
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Call Logs');
+            worksheet.columns = [
+                { header: 'Date', key: 'createdAt', width: 20 },
+                { header: 'Lead', key: 'leadName', width: 20 },
+                { header: 'Outcome', key: 'callOutcome', width: 15 },
+                { header: 'Duration (sec)', key: 'duration', width: 12 },
+                { header: 'Agent', key: 'agentName', width: 20 }
+            ];
+            const rows = calls.map(c => ({
+                ...c,
+                agentName: c.specialistId?.name || 'Unknown'
+            }));
+            worksheet.addRows(rows);
+            res.header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            res.attachment('call_report.xlsx');
+            await workbook.xlsx.write(res);
+            res.end();
+        }
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+// Export Conversions (CSV/PDF)
+router.get("/export/conversions", async (req, res) => {
+    try {
+        const { startDate, endDate, format } = req.query;
+        let query = { stage: 'converted' };
+        if (startDate && endDate) query.created_at = { $gte: new Date(startDate), $lte: new Date(endDate) };
+
+        const leads = await AdvLead.find(query).lean();
+
+        if (format === 'csv') {
+            const { Parser } = require('json2csv');
+            const fields = ['full_name', 'email', 'phone_number', 'opted_domain', 'owner_name', 'created_at'];
+            const json2csvParser = new Parser({ fields });
+            const csv = json2csvParser.parse(leads);
+            res.header('Content-Type', 'text/csv');
+            res.attachment('conversions_report.csv');
+            return res.send(csv);
+        } else {
+            const PDFDocument = require('pdfkit');
+            const doc = new PDFDocument();
+            res.header('Content-Type', 'application/pdf');
+            res.attachment('conversions_report.pdf');
+            doc.pipe(res);
+
+            doc.fontSize(20).text('Conversions Report', { align: 'center' });
+            doc.moveDown();
+            doc.fontSize(12).text(`Generated on: ${new Date().toLocaleString()}`);
+            doc.moveDown();
+
+            leads.forEach((lead, index) => {
+                doc.fontSize(10).text(`${index + 1}. ${lead.full_name} | ${lead.email} | ${lead.opted_domain} | Owner: ${lead.owner_name}`);
+                doc.moveDown(0.5);
+            });
+
+            doc.end();
+        }
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
 module.exports = router;

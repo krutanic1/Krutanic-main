@@ -10,10 +10,14 @@ const upload = multer({ dest: path.join(os.tmpdir(), "uploads") });
 const AdvLead = require("../models/AdvLead");
 const AdvCallActivity = require("../models/AdvCallActivity");
 const AdvFollowup = require("../models/AdvFollowup");
-const AdvTeam = require("../models/AdvTeam");
+const AdvTeamStructure = require("../models/AdvTeamStructure");
 const AdvUser = require("../models/AdvUser");
 const AdvNotification = require("../models/AdvNotification");
 const AdvTeamMember = require("../models/CreateAdvTeam");
+const RemoteDialQueue = require("../models/RemoteDialQueue");
+const cloudinary = require("../middleware/cloudinary");
+
+
 
 // POST: Add lead from Google Form with Automation
 router.post("/add-adv-lead", async (req, res) => {
@@ -39,7 +43,7 @@ router.post("/add-adv-lead", async (req, res) => {
             "AI/ML": "Team Gamma"
         };
         const targetTeamName = domainToTeamMap[opted_domain] || "General Team";
-        const team = await AdvTeam.findOne({ team_name: targetTeamName });
+        const team = await AdvTeamStructure.findOne({ team_name: targetTeamName });
 
         // --- 2. Lead Scoring Logic ---
         let score = 0;
@@ -152,7 +156,7 @@ router.post("/admin-bulk-assign", async (req, res) => {
         const leadIds = freshLeads.map(l => l._id);
 
         // Find if this person belongs to a team to set team_id
-        const team = await AdvTeam.findOne({
+        const team = await AdvTeamStructure.findOne({
             $or: [{ manager_id: assigneeId }, { leaders: assigneeId }]
         });
 
@@ -263,7 +267,7 @@ router.get("/get-adv-leads", async (req, res) => {
                 ]
             };
         } else if (roleNorm.includes("manager")) {
-            const teams = await AdvTeam.find({ manager_id: userId });
+            const teams = await AdvTeamStructure.find({ manager_id: userId });
             const teamIds = teams.map(t => t._id);
             const teamNames = teams.map(t => t.team_name);
             baseQuery = {
@@ -277,7 +281,7 @@ router.get("/get-adv-leads", async (req, res) => {
                 ]
             };
         } else if (roleNorm.includes("leader")) {
-            const teams = await AdvTeam.find({ leaders: userId });
+            const teams = await AdvTeamStructure.find({ leaders: userId });
             const teamIds = teams.map(t => t._id);
             const teamNames = teams.map(t => t.team_name);
             baseQuery = {
@@ -291,12 +295,24 @@ router.get("/get-adv-leads", async (req, res) => {
                 ]
             };
         } else {
-            baseQuery = {
-                $or: [
-                    { owner_id: userId },
-                    { current_owner_id: userId }
-                ]
-            };
+            // Check if userId is a valid ObjectId to avoid CastError
+            const isValidId = mongoose.Types.ObjectId.isValid(userId);
+            if (isValidId) {
+                baseQuery = {
+                    $or: [
+                        { owner_id: userId },
+                        { current_owner_id: userId }
+                    ]
+                };
+            } else {
+                // For admins with email-based IDs, they usually don't "own" leads in the same way
+                // or we search by string fields if they exist. For now, empty or system-wide.
+                if (roleNorm === "admin") {
+                    baseQuery = {};
+                } else {
+                    return res.status(200).json({ leads: [], totalPages: 0, totalCount: 0, currentPage: 1 });
+                }
+            }
         }
 
         // Apply outcome filter if provided
@@ -531,7 +547,10 @@ router.post("/bulk-import", upload.single("file"), async (req, res) => {
 
 // POST: Log a call activity from Leads Book (SR Inside Sales Specialist)
 router.post("/log-call-activity", async (req, res) => {
-    const { leadId, specialistId, specialistName, callOutcome, summary, remark, demoScheduleDate } = req.body;
+    const {
+        leadId, specialistId, specialistName, remark,
+        summary, callOutcome, demoScheduleDate, followUpDate, duration
+    } = req.body;
     if (!leadId || !specialistId || !callOutcome) {
         return res.status(400).json({ message: "leadId, specialistId, and callOutcome are required" });
     }
@@ -540,7 +559,7 @@ router.post("/log-call-activity", async (req, res) => {
         const lead = await AdvLead.findById(leadId);
         if (!lead) return res.status(404).json({ message: "Lead not found" });
 
-        const team = lead.team_id ? await AdvTeam.findById(lead.team_id) : null;
+        const team = await AdvTeamStructure.findOne({ "members.userId": specialistId });
 
         // Save call activity with team/manager context from lead's history
         const activity = new AdvCallActivity({
@@ -554,11 +573,14 @@ router.post("/log-call-activity", async (req, res) => {
             remark,
             summary,
             callOutcome,
+            duration,
             demoScheduleDate: demoScheduleDate || undefined,
+            followUpDate: followUpDate || undefined,
+            followUpStatus: followUpDate ? "pending" : undefined
         });
         await activity.save();
 
-        // Update lead status based on outcome
+        // Update lead status and stage based on outcome
         const statusMap = {
             interested: "in_followup",
             converted: "converted",
@@ -566,14 +588,205 @@ router.post("/log-call-activity", async (req, res) => {
             no_answer: undefined,
             callback_requested: "in_followup",
         };
+
+        const stageMap = {
+            interested: "interested",
+            converted: "converted",
+            not_interested: "lost",
+            callback_requested: "contacted",
+            no_answer: "contacted"
+        };
+
+        // Define funnel hierarchy to prevent moving backward
+        const stageOrder = ["new", "contacted", "interested", "demo_scheduled", "converted"];
+
+        // Special handling for Demo Scheduled (if date provided)
+        let newStage = stageMap[callOutcome];
+        if (demoScheduleDate) newStage = "demo_scheduled";
+
         const newStatus = statusMap[callOutcome];
         const updateFields = { last_outcome: callOutcome };
+
         if (newStatus) updateFields.status = newStatus;
+
+        // Update stage if it's 'lost' or if it's a forward move in the funnel
+        if (newStage) {
+            const currentStageIndex = stageOrder.indexOf(lead.stage || "new");
+            const newStageIndex = stageOrder.indexOf(newStage);
+
+            if (newStage === "lost" || newStageIndex > currentStageIndex) {
+                updateFields.stage = newStage;
+            }
+        }
+
         if (demoScheduleDate) updateFields.demo_date = demoScheduleDate;
 
         await AdvLead.findByIdAndUpdate(leadId, { $set: updateFields });
 
         res.status(201).json({ success: true, activity });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+// POST: Alias for call-log (for mobile app)
+router.post("/call-log", async (req, res, next) => {
+    // Forward to the log-call-activity handler
+    return res.redirect(307, '/api/adv-leads/log-call-activity');
+});
+
+// ==========================================
+// REMOTE DIALER API ENDPOINTS
+// ==========================================
+
+// POST: Web Dashboard requests a remote dial
+router.post("/remote-dial-request", async (req, res) => {
+    const { specialistId, leadId } = req.body;
+    if (!specialistId || !leadId) return res.status(400).json({ message: "specialistId and leadId are required" });
+
+    try {
+        // Clear any existing pending requests for this specialist to avoid conflicts
+        await RemoteDialQueue.deleteMany({ specialistId });
+
+        const request = new RemoteDialQueue({ specialistId, leadId });
+        await request.save();
+        res.status(200).json({ success: true, message: "Dial request queued successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// GET: Mobile App polls for new dial requests
+router.get("/check-remote-dial", async (req, res) => {
+    const { specialistId } = req.query;
+    if (!specialistId) return res.status(400).json({ message: "specialistId is required" });
+
+    try {
+        const pendingRequest = await RemoteDialQueue.findOne({ specialistId, status: "pending" })
+            .populate("leadId", "full_name phone_number opted_domain email")
+            .sort({ createdAt: -1 });
+
+        if (pendingRequest) {
+            // Update status to prevent duplicate triggers
+            pendingRequest.status = "dialing";
+            await pendingRequest.save();
+            return res.status(200).json({
+                hasRequest: true,
+                lead: pendingRequest.leadId
+            });
+        }
+
+        res.status(200).json({ hasRequest: false });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// POST: Mobile App acknowledges and clears the queue
+router.post("/clear-remote-dial", async (req, res) => {
+    const { specialistId } = req.body;
+    if (!specialistId) return res.status(400).json({ message: "specialistId is required" });
+
+    try {
+        await RemoteDialQueue.deleteMany({ specialistId });
+        res.status(200).json({ success: true, message: "Queue cleared" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// ==========================================
+
+// GET: Fetch call history for a lead
+router.get("/call-history/:leadId", async (req, res) => {
+    try {
+        const calls = await AdvCallActivity.find({ leadId: req.params.leadId })
+            .sort({ createdAt: -1 })
+            .limit(20);
+        res.status(200).json({ calls });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+// POST: Upload call recording audio
+router.post("/upload-recording", upload.single("audioFile"), async (req, res) => {
+    try {
+        const { leadId, callActivityId } = req.body;
+        if (!req.file) return res.status(400).json({ message: "No audio file uploaded" });
+
+        // Upload to Cloudinary
+        const result = await cloudinary.uploader.upload(req.file.path, {
+            resource_type: "video", // Cloudinary treats audio as video resource type
+            folder: "krutanic_call_recordings"
+        });
+
+        // Update call activity with recording URL
+        if (callActivityId) {
+            await AdvCallActivity.findByIdAndUpdate(callActivityId, {
+                $set: { recordingUrl: result.secure_url }
+            });
+        }
+
+        // Clean up temp file
+        if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+
+        res.status(200).json({
+            success: true,
+            recordingUrl: result.secure_url
+        });
+    } catch (error) {
+        console.error("Upload Error:", error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// GET: Fetch upcoming follow-ups for an agent
+router.get("/upcoming-followups", async (req, res) => {
+    try {
+        const { specialistId } = req.query;
+        if (!specialistId) return res.status(400).json({ message: "specialistId is required" });
+
+        const now = new Date();
+        const followUps = await AdvCallActivity.find({
+            specialistId: specialistId,
+            callOutcome: "callback_requested",
+            followUpDate: { $gte: now },
+            followUpStatus: "pending"
+        })
+            .populate("leadId", "full_name phone_number opted_domain")
+            .sort({ followUpDate: 1 });
+
+        res.status(200).json({ followUps });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+// GET: Fetch today's follow-up count for an agent (Dashboard)
+router.get("/followups-today-count", async (req, res) => {
+    try {
+        const { specialistId } = req.query;
+        if (!specialistId) return res.status(400).json({ message: "specialistId is required" });
+
+        // If not a valid ObjectId (like admin email), return 0 count safely
+        if (!mongoose.Types.ObjectId.isValid(specialistId)) {
+            return res.status(200).json({ count: 0 });
+        }
+
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const count = await AdvCallActivity.countDocuments({
+            specialistId: specialistId,
+            callOutcome: "callback_requested",
+            followUpDate: { $gte: startOfDay, $lte: endOfDay },
+            followUpStatus: "pending"
+        });
+
+        res.status(200).json({ count });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -717,6 +930,84 @@ router.post("/mark-notification-read", async (req, res) => {
         res.status(200).json({ success: true });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// GET: Alias for my leads (convenience for mobile app)
+router.get("/my-leads", async (req, res, next) => {
+    req.query.strictlyOwned = "true";
+    // We manually trigger the get-adv-leads handler logic
+    // In a real app we'd extract the logic to a controller function
+    next();
+});
+
+// GET: Dialer Queue with Priorities
+router.get("/dialer-queue", async (req, res) => {
+    const { specialistId } = req.query;
+    if (!specialistId) return res.status(400).json({ message: "specialistId is required" });
+
+    try {
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+        const todayEnd = new Date();
+        todayEnd.setHours(23, 59, 59, 999);
+
+        // 1. Get leads with today's follow-ups
+        const followUpActivities = await AdvCallActivity.find({
+            specialistStringId: specialistId,
+            followUpStatus: "pending",
+            followUpDate: { $gte: todayStart, $lte: todayEnd }
+        }).select("leadId");
+
+        const followUpLeadIds = followUpActivities.map(a => a.leadId.toString());
+
+        // 2. Fetch all active leads for this specialist
+        const allLeads = await AdvLead.find({
+            $or: [
+                { current_owner_id: mongoose.Types.ObjectId.isValid(specialistId) ? specialistId : undefined },
+                { specialist_id: specialistId }
+            ],
+            status: { $nin: ["converted", "closed"] }
+        });
+
+        // 3. Sort by Priority: Follow-Ups > In Follow-up > Fresh
+        const sortedLeads = allLeads.sort((a, b) => {
+            const aIsFollowUp = followUpLeadIds.includes(a._id.toString());
+            const bIsFollowUp = followUpLeadIds.includes(b._id.toString());
+
+            if (aIsFollowUp && !bIsFollowUp) return -1;
+            if (!aIsFollowUp && bIsFollowUp) return 1;
+
+            const priority = {
+                "in_followup": 1,
+                "fresh": 2
+            };
+
+            const aPriority = priority[a.status] || 99;
+            const bPriority = priority[b.status] || 99;
+
+            if (aPriority !== bPriority) return aPriority - bPriority;
+
+            // Final sort by creation date (newest first)
+            return new Date(b.created_at) - new Date(a.created_at);
+        });
+
+        res.status(200).json(sortedLeads);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+// GET: Fetch single lead details
+router.get("/:id", async (req, res) => {
+    try {
+        const lead = await AdvLead.findById(req.params.id)
+            .populate("team_id", "team_name")
+            .populate("current_owner_id", "name");
+        if (!lead) return res.status(404).json({ message: "Lead not found" });
+        res.status(200).json(lead);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
     }
 });
 

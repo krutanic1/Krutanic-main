@@ -120,12 +120,14 @@ const AdvUserRoutes = require("./routes/AdvUser");
 const AdvTeamRoutes = require("./routes/AdvTeam");
 const AdvReportRoutes = require("./routes/AdvReport");
 const AdvNotificationRoutes = require("./routes/AdvNotification");
+const AdvAdminRoutes = require("./routes/AdvAdmin");
 
 app.use("/api/adv-leads", AdvLeadRoutes);
 app.use("/api/adv-users", AdvUserRoutes);
 app.use("/api/adv-teams", AdvTeamRoutes);
 app.use("/api/adv-reports", AdvReportRoutes);
 app.use("/api/adv-notifications", AdvNotificationRoutes);
+app.use("/api/admin", AdvAdminRoutes);
 
 // CREATEJOBS
 app.use("/", CreateJob);
@@ -240,7 +242,11 @@ const PORT = process.env.PORT || 5000;
 if (process.env.NODE_ENV !== "production") {
   connectDB().then(() => {
     // Run seeders if needed
-    if (Excercise.seedQuestions) Excercise.seedQuestions();
+    try {
+      if (Excercise.seedQuestions) Excercise.seedQuestions();
+    } catch (seedErr) {
+      console.error("❌ Seeding failed, but continuing startup:", seedErr.message);
+    }
 
     // Initialize Payment Reminder Scheduler (local development only)
     // Note: Production uses Vercel Cron (see vercel.json and CronRoutes.js)

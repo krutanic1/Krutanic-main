@@ -300,22 +300,25 @@ router.seedQuestions = async () => {
       })));
     }
 
+    // Filter out any questions that are still missing a valid course name
+    allSourceQuestions = allSourceQuestions.filter(q => typeof q.course === 'string' && q.course.trim().length > 0);
+
     if (allSourceQuestions.length === 0) {
-      console.warn("No questions found in any source file for seeding.");
+      console.warn("No valid questions found in any source file for seeding.");
       return;
     }
 
     // 3. Identify which courses are missing ACTIVE questions in DB
     const existingActiveCourses = await Question.distinct("course", { isActive: true });
     const categoriesInSources = [...new Set(allSourceQuestions.map(q => q.course))];
-    const missingCategories = categoriesInSources.filter(cat => !existingActiveCourses.includes(cat));
+    const missingCategories = categoriesInSources.filter(cat => cat && !existingActiveCourses.includes(cat));
 
     if (missingCategories.length === 0) {
       console.log("Database already has active questions for all known courses.");
       return;
     }
 
-    console.log(`Found ${missingCategories.length} courses missing active questions. Seeding now...`);
+    console.log(`Found ${missingCategories.length} courses missing active questions: ${missingCategories.join(", ")}. Seeding now...`);
 
     // 4. Clean up any inactive ones for these categories to avoid versioning conflicts if re-seeding
     await Question.deleteMany({ course: { $in: missingCategories }, isActive: false });
@@ -324,8 +327,8 @@ router.seedQuestions = async () => {
     const prepared = allSourceQuestions
       .filter(q => missingCategories.includes(q.course))
       .map(q => ({
-        course: q.course,
-        difficulty: q.difficulty,
+        course: q.course.trim(),
+        difficulty: q.difficulty || "Beginner",
         question: q.question,
         options: q.options,
         correctAnswer: q.correctAnswer,
@@ -336,12 +339,13 @@ router.seedQuestions = async () => {
       }));
 
     if (prepared.length > 0) {
-      // Chunking if too large (Question model might have many)
+      console.log(`Inserting ${prepared.length} questions...`);
+      // Chunking if too large
       const batchSize = 500;
       for (let i = 0; i < prepared.length; i += batchSize) {
         await Question.insertMany(prepared.slice(i, i + batchSize));
       }
-      console.log(`✅ Seeded ${prepared.length} questions for courses: ${missingCategories.join(", ")}`);
+      console.log(`✅ Successfully seeded questions.`);
     }
 
   } catch (err) {

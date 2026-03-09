@@ -11,7 +11,7 @@ const AdvUserSchema = new mongoose.Schema({
         required: true
     },
     manager_id: { type: mongoose.Schema.Types.ObjectId, ref: "AdvUser" },
-    team_id: { type: mongoose.Schema.Types.ObjectId, ref: "AdvTeam" },
+    team_id: { type: mongoose.Schema.Types.ObjectId, ref: "AdvTeamStructure" },
     status: { type: String, default: "Active" },
     createdAt: { type: Date, default: Date.now }
 });

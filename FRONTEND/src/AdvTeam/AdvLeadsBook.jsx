@@ -113,6 +113,45 @@ const AdvLeadsBook = () => {
         }
     };
 
+    const handleRemoteDial = async (leadId) => {
+        try {
+            toast.loading("Sending dial request to your mobile app...", { id: `dial-${leadId}` });
+            await axios.post(`${API}/api/adv-leads/remote-dial-request`, {
+                specialistId: userId,
+                leadId: leadId
+            });
+            toast.success("Dialing started on mobile! Waiting for call log...", { id: `dial-${leadId}` });
+
+            // Poll for new call history every 5 seconds for the next 2 minutes
+            let polls = 0;
+            const pollInterval = setInterval(async () => {
+                polls++;
+                if (polls > 24) { // 2 minutes max
+                    clearInterval(pollInterval);
+                    return;
+                }
+
+                try {
+                    const res = await axios.get(`${API}/api/adv-leads/call-history/${leadId}`);
+                    setCallHistory(prev => {
+                        const prevHistory = prev[leadId] || [];
+                        const newHistory = res.data?.calls || [];
+
+                        // If we got a new call log, stop polling & show success
+                        if (newHistory.length > prevHistory.length) {
+                            clearInterval(pollInterval);
+                            toast.success("Call log synced from mobile!");
+                        }
+                        return { ...prev, [leadId]: newHistory };
+                    });
+                } catch (e) { }
+            }, 5000);
+
+        } catch (err) {
+            toast.error("Failed to trigger remote dial.", { id: `dial-${leadId}` });
+        }
+    };
+
     const StatusBadge = ({ status }) => {
         const getStyles = (s) => {
             const map = {
@@ -375,6 +414,20 @@ const AdvLeadsBook = () => {
                                                         >
                                                             <i className="fa fa-envelope"></i>
                                                         </a>
+                                                        <button
+                                                            title="Dial on Mobile App"
+                                                            onClick={(e) => { e.stopPropagation(); handleRemoteDial(lead._id); }}
+                                                            style={{
+                                                                display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer',
+                                                                width: '32px', height: '32px', borderRadius: '50%', background: '#F59E0B',
+                                                                color: '#fff', fontSize: '15px', textDecoration: 'none', transition: 'transform 0.2s ease',
+                                                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                                            }}
+                                                            onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                                                            onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                                                        >
+                                                            <i className="fa fa-phone"></i>
+                                                        </button>
                                                         <a
                                                             href="https://meet.google.com/new"
                                                             target="_blank"
@@ -575,8 +628,23 @@ const AdvLeadsBook = () => {
                                                                             <strong>Summary:</strong> {act.summary || 'No summary provided'}
                                                                         </p>
 
+                                                                        {act.recordingUrl && (
+                                                                            <div style={{ marginTop: '10px' }}>
+                                                                                <audio controls style={{ width: '100%', height: '30px' }}>
+                                                                                    <source src={act.recordingUrl} type="audio/mp4" />
+                                                                                    Your browser does not support the audio element.
+                                                                                </audio>
+                                                                            </div>
+                                                                        )}
+
                                                                         {isLogExpanded && (
                                                                             <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px dashed #E2E8F0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                                                {act.duration !== undefined && (
+                                                                                    <div style={{ fontSize: '13px', color: '#475569', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                                        <strong style={{ color: '#1E293B' }}>⏱️ Duration:</strong>
+                                                                                        {Math.floor(act.duration / 60)}m {act.duration % 60}s
+                                                                                    </div>
+                                                                                )}
                                                                                 {act.remark && (
                                                                                     <div style={{ fontSize: '13px', color: '#475569' }}>
                                                                                         <strong style={{ color: '#1E293B' }}>Internal Remark:</strong> {act.remark}

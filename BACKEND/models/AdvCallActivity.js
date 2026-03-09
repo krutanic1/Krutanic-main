@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const AdvCallActivitySchema = new mongoose.Schema({
     leadId: { type: mongoose.Schema.Types.ObjectId, ref: "AdvLead", required: true },
-    teamId: { type: mongoose.Schema.Types.ObjectId, ref: "AdvTeam" },
+    teamId: { type: mongoose.Schema.Types.ObjectId, ref: "AdvTeamStructure" },
     managerId: { type: mongoose.Schema.Types.ObjectId, ref: "AdvUser" },
     leaderId: { type: mongoose.Schema.Types.ObjectId, ref: "AdvUser" },
     specialistId: { type: mongoose.Schema.Types.ObjectId, ref: "AdvUser" },
@@ -17,6 +17,14 @@ const AdvCallActivitySchema = new mongoose.Schema({
         enum: ["interested", "not_interested", "no_answer", "callback_requested", "converted"],
         required: true
     },
+    followUpDate: { type: Date },
+    followUpStatus: {
+        type: String,
+        enum: ["pending", "completed", "missed"],
+        default: "pending"
+    },
+    recordingUrl: { type: String },
+    duration: { type: Number }, // Call duration in seconds
     createdAt: { type: Date, default: Date.now }
 });
 

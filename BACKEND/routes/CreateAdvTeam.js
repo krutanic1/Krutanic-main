@@ -270,6 +270,12 @@ router.post("/advteamverifyotp", async (req, res) => {
       bdaId: advTeam._id,
       bdaName: advTeam.fullname,
       message: "Login successful!",
+      user: {
+        id: advTeam._id,
+        name: advTeam.fullname,
+        role: advTeam.designation,
+        team: advTeam.team || (advTeam.teams && advTeam.teams.length > 0 ? advTeam.teams[0] : "")
+      }
     });
   } catch (error) {
     res
@@ -308,7 +314,18 @@ router.post("/checkadvteamauth", async (req, res) => {
       console.log(`🔐 [ADMIN IMPERSONATION] Admin logged in as: ${advTeam.email} (${advTeam.fullname})`);
     }
 
-    res.status(200).json({ token, bdaId: advTeam._id, bdaName: advTeam.fullname, designation: advTeam.designation });
+    res.status(200).json({
+      token,
+      bdaId: advTeam._id,
+      bdaName: advTeam.fullname,
+      designation: advTeam.designation,
+      user: {
+        id: advTeam._id,
+        name: advTeam.fullname,
+        role: advTeam.designation,
+        team: advTeam.team || (advTeam.teams && advTeam.teams.length > 0 ? advTeam.teams[0] : "")
+      }
+    });
 
   } catch (err) {
     console.error("Error during login", err);

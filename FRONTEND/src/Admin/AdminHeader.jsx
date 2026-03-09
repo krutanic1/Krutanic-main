@@ -138,6 +138,24 @@ const AdminHeader = () => {
         )}
         {isAdvToggleOn && (
           <>
+            <div className="sidebar-section-label" style={{ color: '#888', fontSize: '11px', fontWeight: 'bold', padding: '15px 15px 5px', textTransform: 'uppercase' }}>CRM Governance</div>
+            <Link to="/AdvAdminDashboard">
+              <i className="fa fa-dashboard mr-2"></i>Admin Dashboard
+            </Link>
+            <Link to="/Admin/Agents">
+              <i className="fa fa-user-circle mr-2"></i>Manage Agents
+            </Link>
+            <Link to="/Admin/Teams">
+              <i className="fa fa-sitemap mr-2"></i>Team Hierarchy
+            </Link>
+            <Link to="/Admin/LeadAssignments">
+              <i className="fa fa-send mr-2"></i>Bulk Lead Assign
+            </Link>
+            <Link to="/Admin/Reports">
+              <i className="fa fa-file-excel-o mr-2"></i>System Reports
+            </Link>
+
+            <div className="sidebar-section-label" style={{ color: '#888', fontSize: '11px', fontWeight: 'bold', padding: '15px 15px 5px', textTransform: 'uppercase' }}>Course Management</div>
             <Link to="/AddAdvCourse">
               <i className="fa fa-plus-circle mr-2"></i>Create Adv Course
             </Link>

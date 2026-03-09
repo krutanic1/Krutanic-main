@@ -124,6 +124,13 @@ import MentorQueries from "./Admin/MentorQueries";
 import AdvLeadManagement from "./Admin/AdvLeadManagement";
 import AdminAnalytics from "./Admin/AdminAnalytics";
 
+import AdvAdminDashboard from "./Admin/AdvAdminDashboard";
+import AgentsManagement from "./Admin/AgentsManagement";
+import TeamsManagement from "./Admin/TeamsManagement";
+import LeadAssignments from "./Admin/LeadAssignments";
+import AgentActivity from "./Admin/AgentActivity";
+import AdminReports from "./Admin/AdminReports";
+
 import BulkImport from "./Admin/BulkImport";
 import UserLayout from "./User/UserLayout";
 
@@ -290,6 +297,12 @@ const AppContent = () => {
     "/advexercisepage",
     "/advleadmanagement",
     "/adminanalytics",
+    "/advadmindashboard",
+    "/admin/agents",
+    "/admin/teams",
+    "/admin/leadassignments",
+    "/admin/agentactivity",
+    "/admin/reports",
 
     "/bulkimport"
   ];
@@ -473,6 +486,14 @@ const AppContent = () => {
           isAuthenticatedAdvTeam() ? <AdvTeamLeadManagement /> : <Navigate to="/AdminLogin" />
         } />
         <Route path="/AdminAnalytics" element={isAuthenticatedAdmin() ? (<AdminAnalytics />) : (<Navigate to="/AdminLogin" />)} />
+
+        {/* Phase 13 Admin CRM Routes */}
+        <Route path="/AdvAdminDashboard" element={isAuthenticatedAdmin() ? <AdvAdminDashboard /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/Admin/Agents" element={isAuthenticatedAdmin() ? <AgentsManagement /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/Admin/Teams" element={isAuthenticatedAdmin() ? <TeamsManagement /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/Admin/LeadAssignments" element={isAuthenticatedAdmin() ? <LeadAssignments /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/Admin/AgentActivity/:agentId" element={isAuthenticatedAdmin() ? <AgentActivity /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/Admin/Reports" element={isAuthenticatedAdmin() ? <AdminReports /> : <Navigate to="/AdminLogin" />} />
 
         <Route path="/BulkImport" element={isAuthenticatedAdmin() ? (<BulkImport />) : (<Navigate to="/AdminLogin" />)} />
 
