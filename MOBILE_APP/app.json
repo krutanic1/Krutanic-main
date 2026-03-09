@@ -3,6 +3,7 @@
     "name": "MOBILE_APP",
     "slug": "MOBILE_APP",
     "version": "1.0.0",
+    "newArchEnabled": false,
     "orientation": "portrait",
     "icon": "./assets/logo.jpg",
     "userInterfaceStyle": "light",
