@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import API from '../API';
-import AgentTable from './components/AgentTable';
+import AgentTable from './Components/AgentTable';
 import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 

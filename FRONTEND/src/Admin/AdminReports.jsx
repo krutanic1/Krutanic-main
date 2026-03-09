@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import API from '../API';
-import StatCard from './components/StatCard';
+import StatCard from './Components/StatCard';
 import toast, { Toaster } from 'react-hot-toast';
 
 const AdminReports = () => {
