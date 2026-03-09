@@ -131,7 +131,7 @@ const LeadsBookScreen = () => {
             fetchLeads();
             Alert.alert('Success', 'Call log saved successfully');
         } catch (error) {
-            Alert.alert('Error', error || 'Failed to save call log');
+            Alert.alert('Error', String(error?.message || error || 'Failed to save call log'));
             throw error;
         }
     };
