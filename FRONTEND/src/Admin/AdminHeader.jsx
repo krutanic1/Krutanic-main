@@ -134,6 +134,9 @@ const AdminHeader = () => {
             <Link to="/RevenueSheet">
               <i className="fa fa-line-chart mr-2"></i>Revenue Sheet
             </Link>
+            <Link to="/Admin/Mail-Blaster">
+              <i className="fa fa-envelope mr-2"></i>Mail Blaster
+            </Link>
           </>
         )}
         {isAdvToggleOn && (

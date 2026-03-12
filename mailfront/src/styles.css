@@ -1,0 +1,111 @@
+body {
+	margin: 0;
+	font-family: sans-serif;
+	font-size: 14px;
+	background: #f5f7fb;
+	color: #1f2937;
+}
+
+#root {
+	min-height: 100vh;
+}
+
+input, textarea, button, select {
+	font: inherit;
+}
+
+.app-shell {
+	max-width: 1040px;
+	margin: 0 auto;
+	padding: 32px 16px 40px;
+}
+
+.section-card {
+	background: #fff;
+	border: 1px solid #d9e0ea;
+	border-radius: 10px;
+	box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.campaign-section,
+.template-section {
+	margin-top: 20px;
+}
+
+.form-table td {
+	padding-bottom: 10px;
+	vertical-align: top;
+}
+
+.field-note {
+	display: block;
+	margin-top: 6px;
+	color: #5b6472;
+	line-height: 1.4;
+	white-space: normal;
+	word-break: break-word;
+}
+
+.template-preview {
+	margin-top: 8px;
+	padding: 8px 10px;
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+}
+
+.template-preview strong {
+	display: block;
+	color: #0f172a;
+	font-size: 12px;
+	margin-bottom: 4px;
+}
+
+.template-preview p {
+	margin: 0;
+	overflow: hidden;
+	display: -webkit-box;
+	line-clamp: 3;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+}
+
+.action-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.section-subtitle {
+	font-size: 12px;
+	color: #666;
+	margin: 0 0 12px;
+}
+
+.sender-layout {
+	grid-template-columns: 280px minmax(0, 1fr);
+}
+
+.sender-sidebar {
+	position: sticky;
+	top: 12px;
+}
+
+@media (max-width: 800px) {
+	.app-shell {
+		padding: 20px 12px 28px;
+	}
+
+	.sender-layout {
+		grid-template-columns: 1fr;
+	}
+
+	.sender-sidebar {
+		position: static;
+	}
+
+	.action-row {
+		align-items: flex-start;
+	}
+}

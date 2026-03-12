@@ -1,0 +1,689 @@
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import nodemailer from 'nodemailer';
+import mongoose from 'mongoose';
+import { connectDB } from './db.js';
+import { Sender } from './models/Sender.js';
+import { MailTemplate } from './models/MailTemplate.js';
+
+dotenv.config();
+
+const app = express();
+const port = Number(process.env.PORT) || 5001;
+
+app.use(cors());
+app.use(express.json({ limit: '2mb' }));
+
+const defaultSmtp = {
+  host: process.env.DEFAULT_SMTP_HOST || 'smtp.gmail.com',
+  port: Number(process.env.DEFAULT_SMTP_PORT) || 587,
+  secure: String(process.env.DEFAULT_SMTP_SECURE || 'false') === 'true'
+};
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function normalizeEmailList(input) {
+  if (!Array.isArray(input)) return [];
+  return [...new Set(input.map((v) => String(v || '').trim().toLowerCase()).filter(Boolean))];
+}
+
+function buildTransporterConfig({ host, port, secure, user, pass } = {}) {
+  const h = host || defaultSmtp.host;
+  const p = port ?? defaultSmtp.port;
+  const s = secure ?? defaultSmtp.secure;
+  if (!h || !user || !pass) throw new Error('Missing SMTP config: host, user and pass are required.');
+  return {
+    host: h,
+    port: Number(p),
+    secure: typeof s === 'boolean' ? s : String(s) === 'true',
+    auth: { user, pass }
+  };
+}
+
+function pickRandomItem(items) {
+  if (!Array.isArray(items) || !items.length) return null;
+  return items[Math.floor(Math.random() * items.length)];
+}
+
+function normalizeTemplateBody(input) {
+  return String(input || '')
+    .replace(/\\r\\n/g, '\n')
+    .replace(/\\n/g, '\n')
+    .replace(/\\t/g, '  ')
+    .trim();
+}
+
+function escapeHtml(text) {
+  return String(text || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function linkifyEscapedText(text) {
+  return text.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+}
+
+function buildEmailContent(body) {
+  const raw = normalizeTemplateBody(body);
+  if (!raw) return { html: '', text: '' };
+
+  if (/<[a-z][\s\S]*>/i.test(raw)) {
+    return { html: raw, text: raw.replace(/<[^>]+>/g, ' ') };
+  }
+
+  const escaped = escapeHtml(raw);
+  const linked = linkifyEscapedText(escaped);
+  const paragraphs = linked
+    .split(/\n\s*\n/)
+    .map((p) => p.replace(/\n/g, '<br />'))
+    .map((p) => `<p style="margin:0 0 12px;">${p}</p>`)
+    .join('');
+
+  return {
+    html: `<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6;color:#1f2937;">${paragraphs}</div>`,
+    text: raw
+  };
+}
+
+// Randomly compose one subject + body from a template's variation arrays.
+// Falls back to legacy subject/body strings if the arrays are absent.
+function composeFromTemplate(template, fallbackSubject = '', fallbackBody = '') {
+  const pick = (arr, fallback = '') =>
+    Array.isArray(arr) && arr.length ? pickRandomItem(arr) : fallback;
+
+  const subject = (pick(template?.subjects, String(template?.subject || fallbackSubject))).trim();
+  const bodyParagraph = pick(template?.body_paragraphs, String(template?.body || fallbackBody));
+  const greeting  = pick(template?.greetings);
+  const closing   = pick(template?.closings);
+  const signature = pick(template?.signatures);
+
+  const parts = [];
+  if (greeting)  parts.push(greeting);
+  if (bodyParagraph) parts.push(bodyParagraph);
+  const outro = [closing, signature].filter(Boolean).join('\n');
+  if (outro) parts.push(outro);
+
+  return { subject, body: parts.join('\n\n') };
+}
+
+async function incrementSenderBlastCounts(countMap) {
+  if (!(countMap instanceof Map) || countMap.size === 0) return;
+
+  const now = Date.now();
+  const resetBefore = new Date(now - 24 * 60 * 60 * 1000);
+
+  const senderIds = [...countMap.entries()]
+    .filter(([id, count]) => mongoose.Types.ObjectId.isValid(id) && Number(count) > 0)
+    .map(([id]) => id);
+
+  if (senderIds.length) {
+    try {
+      // Restore daily limit window: if updatedAt is older than 24h, reset counter.
+      await Sender.updateMany(
+        {
+          _id: { $in: senderIds },
+          updatedAt: { $lt: resetBefore }
+        },
+        { $set: { blastedCount: 0 } }
+      );
+    } catch (err) {
+      console.error('Failed to restore stale sender counters:', err.message);
+    }
+  }
+
+  const ops = [...countMap.entries()]
+    .filter(([id, count]) => mongoose.Types.ObjectId.isValid(id) && Number(count) > 0)
+    .map(([id, count]) => ({
+      updateOne: {
+        filter: { _id: id },
+        update: { $inc: { blastedCount: Number(count) } }
+      }
+    }));
+
+  if (!ops.length) return;
+
+  try {
+    await Sender.bulkWrite(ops, { ordered: false });
+  } catch (err) {
+    console.error('Failed to update sender blastedCount:', err.message);
+  }
+}
+
+// ── Health ────────────────────────────────────────────────────────────────────
+
+app.get('/api/health', (_req, res) => {
+  res.json({ ok: true, service: 'mailback', timestamp: new Date().toISOString() });
+});
+
+// ── Campaign template (mailtemp) ─────────────────────────────────────────────
+
+app.get('/api/mail-template', async (_req, res) => {
+  try {
+    const template = await MailTemplate.findOne().lean();
+    res.json({ ok: true, template: template || null });
+  } catch (err) {
+    res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
+app.get('/api/mail-templates', async (_req, res) => {
+  try {
+    const template = await MailTemplate.findOne().lean();
+    res.json({ ok: true, templates: template ? [template] : [] });
+  } catch (err) {
+    res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
+app.post('/api/mail-template', async (req, res) => {
+  try {
+    const b = req.body || {};
+
+    const parseLines = (v) =>
+      (Array.isArray(v) ? v : String(v || '').split('\n'))
+        .map((s) => String(s).trim()).filter(Boolean);
+
+    const parseBlocks = (v) =>
+      (Array.isArray(v) ? v : String(v || '').split(/\n---\n/))
+        .map((s) => String(s).trim()).filter(Boolean);
+
+    const subjects        = parseLines(b.subjects);
+    const greetings       = parseLines(b.greetings);
+    const body_paragraphs = parseBlocks(b.body_paragraphs);
+    const closings        = parseLines(b.closings);
+    const signatures      = parseLines(b.signatures);
+
+    const isNewFormat = subjects.length || body_paragraphs.length;
+
+    if (isNewFormat) {
+      if (!subjects.length)        return res.status(400).json({ ok: false, message: 'At least one subject is required.' });
+      if (!body_paragraphs.length) return res.status(400).json({ ok: false, message: 'At least one body paragraph is required.' });
+
+      // Upsert: one document, append new unique items to each array
+      const $addToSet = {};
+      if (subjects.length)        $addToSet.subjects        = { $each: subjects };
+      if (greetings.length)       $addToSet.greetings       = { $each: greetings };
+      if (body_paragraphs.length) $addToSet.body_paragraphs = { $each: body_paragraphs };
+      if (closings.length)        $addToSet.closings        = { $each: closings };
+      if (signatures.length)      $addToSet.signatures      = { $each: signatures };
+
+      const template = await MailTemplate.findOneAndUpdate(
+        {},
+        { $addToSet },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      ).lean();
+      return res.json({ ok: true, template });
+    }
+
+    // legacy plain subject+body — append subject to subjects array, body to body_paragraphs
+    const subject  = String(b.subject  || '').trim();
+    const bodyText = String(b.body     || '').trim();
+    if (!subject)  return res.status(400).json({ ok: false, message: 'Subject is required.' });
+    if (!bodyText) return res.status(400).json({ ok: false, message: 'Body is required.' });
+
+    const template = await MailTemplate.findOneAndUpdate(
+      {},
+      { $addToSet: { subjects: subject, body_paragraphs: bodyText } },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    ).lean();
+    res.json({ ok: true, template });
+  } catch (err) {
+    console.error('Mail template save error:', err);
+    res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
+app.post('/api/mail-template/item/update', async (req, res) => {
+  try {
+    const allowedFields = new Set(['subjects', 'greetings', 'body_paragraphs', 'closings', 'signatures']);
+    const field = String(req.body?.field || '').trim();
+    const index = Number(req.body?.index);
+    const value = String(req.body?.value || '').trim();
+
+    if (!allowedFields.has(field)) {
+      return res.status(400).json({ ok: false, message: 'Invalid template field.' });
+    }
+    if (!Number.isInteger(index) || index < 0) {
+      return res.status(400).json({ ok: false, message: 'Invalid item index.' });
+    }
+    if (!value) {
+      return res.status(400).json({ ok: false, message: 'Updated value is required.' });
+    }
+
+    const template = await MailTemplate.findOne();
+    if (!template) return res.status(404).json({ ok: false, message: 'Template not found.' });
+
+    const items = Array.isArray(template[field]) ? [...template[field]] : [];
+    if (index >= items.length) {
+      return res.status(400).json({ ok: false, message: 'Item index out of range.' });
+    }
+
+    items[index] = value;
+    template[field] = items;
+    await template.save();
+
+    res.json({ ok: true, template: template.toObject ? template.toObject() : template });
+  } catch (err) {
+    res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
+app.post('/api/mail-template/item/delete', async (req, res) => {
+  try {
+    const allowedFields = new Set(['subjects', 'greetings', 'body_paragraphs', 'closings', 'signatures']);
+    const field = String(req.body?.field || '').trim();
+    const index = Number(req.body?.index);
+
+    if (!allowedFields.has(field)) {
+      return res.status(400).json({ ok: false, message: 'Invalid template field.' });
+    }
+    if (!Number.isInteger(index) || index < 0) {
+      return res.status(400).json({ ok: false, message: 'Invalid item index.' });
+    }
+
+    const template = await MailTemplate.findOne();
+    if (!template) return res.status(404).json({ ok: false, message: 'Template not found.' });
+
+    const items = Array.isArray(template[field]) ? [...template[field]] : [];
+    if (index >= items.length) {
+      return res.status(400).json({ ok: false, message: 'Item index out of range.' });
+    }
+
+    items.splice(index, 1);
+    template[field] = items;
+    await template.save();
+
+    res.json({ ok: true, template: template.toObject ? template.toObject() : template });
+  } catch (err) {
+    res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
+// ── Sender CRUD ───────────────────────────────────────────────────────────────
+
+app.get('/api/senders', async (_req, res) => {
+  try {
+    const senders = await Sender.find().sort({ createdAt: 1 }).lean();
+    res.json({ ok: true, senders });
+  } catch (err) {
+    res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
+app.post('/api/senders', async (req, res) => {
+  try {
+    const { user, pass, label } = req.body;
+    if (!user || !pass) return res.status(400).json({ ok: false, message: 'user and pass are required.' });
+    const sender = await Sender.create({ user: user.trim().toLowerCase(), pass, label: label || '' });
+    res.json({ ok: true, sender });
+  } catch (err) {
+    if (err.code === 11000) return res.status(400).json({ ok: false, message: 'This email is already added.' });
+    res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
+app.delete('/api/senders/:id', async (req, res) => {
+  try {
+    await Sender.findByIdAndDelete(req.params.id);
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
+app.put('/api/senders/:id', async (req, res) => {
+  try {
+    const pass = String(req.body?.pass || '').replace(/\s+/g, '').trim();
+    if (!pass) return res.status(400).json({ ok: false, message: 'pass is required.' });
+
+    const sender = await Sender.findByIdAndUpdate(
+      req.params.id,
+      { $set: { pass } },
+      { new: true, runValidators: true }
+    ).lean();
+
+    if (!sender) return res.status(404).json({ ok: false, message: 'Sender not found.' });
+    res.json({ ok: true, sender });
+  } catch (err) {
+    res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
+app.get('/api/senders/:id/limit', async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ ok: false, message: 'Invalid sender id.' });
+    }
+
+    let sender = await Sender.findById(req.params.id).lean();
+    if (!sender) return res.status(404).json({ ok: false, message: 'Sender not found.' });
+
+    const now = Date.now();
+    const resetBefore = new Date(now - 24 * 60 * 60 * 1000);
+    const shouldRestore = sender.updatedAt && new Date(sender.updatedAt).getTime() < resetBefore.getTime();
+
+    if (shouldRestore) {
+      await Sender.updateOne({ _id: sender._id }, { $set: { blastedCount: 0 } });
+      sender = await Sender.findById(req.params.id).lean();
+    }
+
+    const configuredLimit = Number(process.env.SENDER_DAILY_LIMIT || 1900);
+    const limit = Number.isFinite(configuredLimit) && configuredLimit > 0 ? configuredLimit : 1900;
+    const used = Number(sender.blastedCount || 0);
+    const remaining = Math.max(0, limit - used);
+
+    res.json({
+      ok: true,
+      sender: sender.user,
+      used,
+      limit,
+      remaining,
+      updatedAt: sender.updatedAt,
+      restored: !!shouldRestore,
+      note: 'Daily limit is restored when updatedAt is older than 24 hours. Provider-side limits still vary by account.'
+    });
+  } catch (err) {
+    res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
+// ── Validate senders ──────────────────────────────────────────────────────────
+
+app.post('/api/validate-senders', async (req, res) => {
+  try {
+    const senders = await Sender.find().lean();
+    if (!senders.length) return res.status(400).json({ ok: false, message: 'No senders configured.' });
+
+    const smtpBase = req.body.smtp || defaultSmtp;
+    const results = await Promise.allSettled(
+      senders.map(async (s) => {
+        const cfg = buildTransporterConfig({ ...smtpBase, user: s.user, pass: s.pass });
+        const t = nodemailer.createTransport(cfg);
+        await t.verify();
+        return s.user;
+      })
+    );
+
+    const report = results.map((r, i) => ({
+      user: senders[i].user,
+      ok: r.status === 'fulfilled',
+      error: r.status === 'rejected' ? r.reason?.message : null
+    }));
+
+    res.json({ ok: true, report });
+  } catch (err) {
+    res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
+// ── Blast ─────────────────────────────────────────────────────────────────────
+
+app.post('/api/blast', async (req, res) => {
+  const startedAt = Date.now();
+  try {
+    const senderIdsProvided = Array.isArray(req.body.senderIds);
+    const senderIds = senderIdsProvided
+      ? req.body.senderIds.filter((id) => mongoose.Types.ObjectId.isValid(id))
+      : [];
+
+    if (senderIdsProvided && !senderIds.length) {
+      return res.status(400).json({ ok: false, message: 'Select at least one sender account.' });
+    }
+
+    const senders = senderIdsProvided
+      ? await Sender.find({ _id: { $in: senderIds } }).lean()
+      : await Sender.find().lean();
+
+    if (!senders.length) return res.status(400).json({ ok: false, message: 'No sender accounts configured. Add senders first.' });
+
+    const smtpBase = req.body.smtp || defaultSmtp;
+    // Always load the single mailtemp document; no templateId selection needed
+    const template = await MailTemplate.findOne().lean();
+    if (!template) {
+      return res.status(400).json({ ok: false, message: 'No campaign template found. Add one first.' });
+    }
+
+    const recipients = normalizeEmailList(req.body.recipients);
+    if (!recipients.length) return res.status(400).json({ ok: false, message: 'At least one recipient is required.' });
+
+    const singleShotBcc = req.body.singleShotBcc !== false;
+    if (singleShotBcc) {
+      if (!senders.length) return res.status(400).json({ ok: false, message: 'No sender account available.' });
+
+      // Quick sanity check before starting
+      const testCompose = composeFromTemplate(template);
+      if (!testCompose.subject || !testCompose.body) {
+        return res.status(400).json({ ok: false, message: 'Template is missing subjects or body paragraphs.' });
+      }
+
+      // Cache transporters per sender index to avoid recreating on every batch
+      const transporterCache = senders.map((s) =>
+        nodemailer.createTransport(buildTransporterConfig({ ...smtpBase, user: s.user, pass: s.pass }))
+      );
+
+      const bccBatchSize = Math.max(1, Math.min(200, Number(req.body.bccBatchSize) || 90));
+      const bccDelayMs = Math.max(0, Number(req.body.bccDelayMs) || Number(req.body.delayMs) || 400);
+      const success = [];
+      const bounced = [];
+      const inboxFull = [];
+      const failed = [];
+      const transport = [];
+      const sentBySenderId = new Map();
+
+      function isInboxFullError(msg) {
+        const m = String(msg || '').toLowerCase();
+        return (
+          m.includes('552') ||
+          m.includes('over quota') ||
+          m.includes('over the quota') ||
+          m.includes('mailbox full') ||
+          m.includes('mailbox is full') ||
+          m.includes('quota exceeded') ||
+          m.includes('storage limit') ||
+          m.includes('user is over disk quota') ||
+          m.includes('insufficient system storage') ||
+          m.includes('exceeded storage allocation')
+        );
+      }
+
+      try {
+        for (let i = 0; i < recipients.length; i += bccBatchSize) {
+          const batch = recipients.slice(i, i + bccBatchSize);
+          const batchIndex = Math.floor(i / bccBatchSize);
+          const batchSender = senders[batchIndex % senders.length];
+          const batchTransporter = transporterCache[batchIndex % senders.length];
+
+          // Recompose per batch: each batch gets a fresh random subject/greeting/body/closing/signature
+          const composed = composeFromTemplate(template);
+          const content = buildEmailContent(composed.body);
+
+          try {
+            const r = await batchTransporter.sendMail({
+              from: `${batchSender.user} <${batchSender.user}>`,
+              to: 'undisclosed-recipients:;',
+              bcc: batch,
+              subject: composed.subject,
+              html: content.html,
+              text: content.text
+            });
+
+            const acceptedSet = new Set(
+              [...(r.accepted || []), ...(Array.isArray(r.envelope?.to) ? r.envelope.to : [])]
+                .map((v) => String(v).toLowerCase())
+            );
+            const rejectedSet = new Set((r.rejected || []).map((v) => String(v).toLowerCase()));
+            const pendingSet = new Set((r.pending || []).map((v) => String(v).toLowerCase()));
+
+            const rejectedErrorMap = new Map();
+            (r.rejectedErrors || []).forEach((entry) => {
+              const key = String(entry?.recipient || entry?.address || '').toLowerCase();
+              if (!key) return;
+              rejectedErrorMap.set(key, entry?.response || entry?.message || 'Recipient rejected by SMTP server.');
+            });
+
+            batch.forEach((to) => {
+              const normalized = String(to).toLowerCase();
+              if (acceptedSet.has(normalized) && !rejectedSet.has(normalized)) {
+                success.push({
+                  to,
+                  sender: `${batchSender.user} <${batchSender.user}>`,
+                  messageId: r.messageId,
+                  templateId: template?._id?.toString() || null,
+                  subject: composed.subject
+                });
+                const senderId = String(batchSender._id);
+                sentBySenderId.set(senderId, (sentBySenderId.get(senderId) || 0) + 1);
+                return;
+              }
+
+              if (rejectedSet.has(normalized)) {
+                const errMsg = rejectedErrorMap.get(normalized) || 'Recipient rejected by SMTP server.';
+                if (isInboxFullError(errMsg)) {
+                  inboxFull.push({ to, error: errMsg });
+                } else {
+                  bounced.push({ to, error: errMsg });
+                }
+                return;
+              }
+
+              if (pendingSet.has(normalized)) {
+                failed.push({ to, error: 'Recipient delivery is pending.' });
+                return;
+              }
+
+              failed.push({ to, error: 'SMTP server did not confirm acceptance for this recipient.' });
+            });
+
+            transport.push({
+              batch: batchIndex + 1,
+              sender: batchSender.user,
+              accepted: r.accepted || [],
+              rejected: r.rejected || [],
+              pending: r.pending || [],
+              response: r.response || null
+            });
+          } catch (batchErr) {
+            batch.forEach((to) => {
+              failed.push({ to, error: batchErr.message || 'Unknown failure' });
+            });
+          }
+
+          if (i + bccBatchSize < recipients.length && bccDelayMs > 0) await sleep(bccDelayMs);
+        }
+
+        await incrementSenderBlastCounts(sentBySenderId);
+
+        return res.json({
+          ok: true,
+          mode: 'single-bcc',
+          summary: {
+            total: recipients.length,
+            sent: success.length,
+            bounced: bounced.length,
+            inboxFull: inboxFull.length,
+            failed: failed.length,
+            durationMs: Date.now() - startedAt,
+            bccBatchSize,
+            batches: Math.ceil(recipients.length / bccBatchSize)
+          },
+          success,
+          bounced,
+          inboxFull,
+          failed,
+          transport
+        });
+      } catch (err) {
+        return res.status(500).json({
+          ok: false,
+          mode: 'single-bcc',
+          message: err.message,
+          summary: {
+            total: recipients.length,
+            sent: 0,
+            bounced: 0,
+            inboxFull: 0,
+            failed: recipients.length,
+            durationMs: Date.now() - startedAt
+          },
+          success: [],
+          bounced: [],
+          inboxFull: [],
+          failed: recipients.map((to) => ({ to, error: err.message || 'Unknown failure' }))
+        });
+      }
+    }
+
+    const batchSize = Math.max(1, Number(req.body.batchSize) || 20);
+    const delayMs = Math.max(0, Number(req.body.delayMs) || 500);
+    const chunkSize = Math.ceil(recipients.length / senders.length);
+
+    const jobs = senders
+      .map((s, idx) => ({
+        senderId: String(s._id),
+        transporter: nodemailer.createTransport(buildTransporterConfig({ ...smtpBase, user: s.user, pass: s.pass })),
+        from: `${s.user} <${s.user}>`,
+        chunk: recipients.slice(idx * chunkSize, (idx + 1) * chunkSize)
+      }))
+      .filter((j) => j.chunk.length > 0);
+
+    const success = [];
+    const failed = [];
+    const sentBySenderId = new Map();
+
+    for (const job of jobs) {
+      for (let i = 0; i < job.chunk.length; i += batchSize) {
+        const batch = job.chunk.slice(i, i + batchSize);
+        const composed = composeFromTemplate(template);
+        const content = buildEmailContent(composed.body);
+
+        if (!composed.subject || (!content.html && !content.text)) {
+          failed.push(...batch.map((to) => ({ to, error: 'Template subject/body is missing.' })));
+          continue;
+        }
+
+        const results = await Promise.allSettled(
+          batch.map(async (to) => {
+            const r = await job.transporter.sendMail({ from: job.from, to, subject: composed.subject, html: content.html, text: content.text });
+            return { to, sender: job.from, messageId: r.messageId, templateId: template?._id?.toString() || null, subject: composed.subject };
+          })
+        );
+        results.forEach((r, i2) => {
+          if (r.status === 'fulfilled') {
+            success.push(r.value);
+            sentBySenderId.set(job.senderId, (sentBySenderId.get(job.senderId) || 0) + 1);
+          }
+          else failed.push({ to: batch[i2], error: r.reason?.message || 'Unknown failure' });
+        });
+        if (i + batchSize < job.chunk.length && delayMs > 0) await sleep(delayMs);
+      }
+    }
+
+    await incrementSenderBlastCounts(sentBySenderId);
+
+    return res.json({
+      ok: true,
+      summary: { total: recipients.length, sent: success.length, failed: failed.length, durationMs: Date.now() - startedAt },
+      success,
+      failed
+    });
+  } catch (err) {
+    return res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
+// ── Start ─────────────────────────────────────────────────────────────────────
+
+connectDB()
+  .then(() => {
+    app.listen(port, () => console.log(`mailback listening on http://localhost:${port}`));
+  })
+  .catch((err) => {
+    console.error('Failed to connect to MongoDB:', err.message);
+    process.exit(1);
+  });

@@ -130,6 +130,7 @@ import TeamsManagement from "./Admin/TeamsManagement";
 import LeadAssignments from "./Admin/LeadAssignments";
 import AgentActivity from "./Admin/AgentActivity";
 import AdminReports from "./Admin/AdminReports";
+import AdminMailBlaster from "./Admin/AdminMailBlaster";
 
 import BulkImport from "./Admin/BulkImport";
 import UserLayout from "./User/UserLayout";
@@ -303,6 +304,7 @@ const AppContent = () => {
     "/admin/leadassignments",
     "/admin/agentactivity",
     "/admin/reports",
+    "/admin/mail-blaster",
 
     "/bulkimport"
   ];
@@ -494,6 +496,7 @@ const AppContent = () => {
         <Route path="/Admin/LeadAssignments" element={isAuthenticatedAdmin() ? <LeadAssignments /> : <Navigate to="/AdminLogin" />} />
         <Route path="/Admin/AgentActivity/:agentId" element={isAuthenticatedAdmin() ? <AgentActivity /> : <Navigate to="/AdminLogin" />} />
         <Route path="/Admin/Reports" element={isAuthenticatedAdmin() ? <AdminReports /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/Admin/Mail-Blaster" element={isAuthenticatedAdmin() ? <AdminMailBlaster /> : <Navigate to="/AdminLogin" />} />
 
         <Route path="/BulkImport" element={isAuthenticatedAdmin() ? (<BulkImport />) : (<Navigate to="/AdminLogin" />)} />
 
