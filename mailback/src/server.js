@@ -157,6 +157,15 @@ async function incrementSenderBlastCounts(countMap) {
 
 // ── Health ────────────────────────────────────────────────────────────────────
 
+app.get('/', (_req, res) => {
+  res.json({
+    ok: true,
+    service: 'mailback',
+    message: 'Mailback API is running.',
+    health: '/api/health'
+  });
+});
+
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true, service: 'mailback', timestamp: new Date().toISOString() });
 });
