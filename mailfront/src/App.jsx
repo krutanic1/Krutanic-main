@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 const API = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001';
 const W = { width: '100%', padding: 6, boxSizing: 'border-box' };
 const td1 = { padding: '5px 8px 5px 0', width: 110, verticalAlign: 'top' };
+const TEMPLATE_FIELDS = ['subjects', 'greetings', 'body_paragraphs', 'closings', 'signatures'];
 
 function formatAppPassword(value) {
   const raw = String(value || '').replace(/\s+/g, '');
@@ -56,10 +57,14 @@ function App() {
   const [busy, setBusy] = useState('');
   const [templateStatus, setTemplateStatus] = useState('');
   const [templateError, setTemplateError] = useState('');
+  const [editingItem, setEditingItem] = useState(null);
+  const [editingValue, setEditingValue] = useState('');
+  const [editingBusy, setEditingBusy] = useState(false);
+  const [templateSelection, setTemplateSelection] = useState({});
 
   const recipientList = () => [...new Set(recipients.split(/[\n,]/).map(s => s.trim()).filter(Boolean))];
   const recCount = recipientList().length;
-  const selectedSenderIds = senders.filter((s) => selectedById[s._id]).map((s) => s._id);
+  const selectedSenderIds = senders.filter((s) => s.canUse && selectedById[s._id]).map((s) => s._id);
   const activeSenderCount = selectedSenderIds.length;
   const perSender = activeSenderCount ? Math.ceil(recCount / activeSenderCount) : 0;
 
@@ -76,7 +81,7 @@ function App() {
     if (d.ok) {
       setSenders(d.senders);
       setEditPassById(Object.fromEntries(d.senders.map((s) => [s._id, formatAppPassword(s.pass || '')])));
-      setSelectedById((prev) => Object.fromEntries(d.senders.map((s) => [s._id, prev[s._id] ?? true])));
+      setSelectedById((prev) => Object.fromEntries(d.senders.map((s) => [s._id, s.canUse ? (prev[s._id] ?? false) : false])));
     }
   }
 
@@ -88,7 +93,36 @@ function App() {
         if (prev && d.templates.some((template) => template._id === prev)) return prev;
         return d.templates[0]?._id || '';
       });
+      const tpl = d.templates?.[0] || {};
+      setTemplateSelection((prev) => {
+        const next = {};
+        TEMPLATE_FIELDS.forEach((field) => {
+          const items = Array.isArray(tpl[field]) ? tpl[field] : [];
+          next[field] = {};
+          items.forEach((_item, index) => {
+            next[field][index] = prev?.[field]?.[index] ?? true;
+          });
+        });
+        return next;
+      });
     }
+  }
+
+  function selectedIndexList(field, items) {
+    const map = templateSelection?.[field] || {};
+    return items
+      .map((_v, idx) => idx)
+      .filter((idx) => !!map[idx]);
+  }
+
+  function toggleTemplateItem(field, index) {
+    setTemplateSelection((prev) => ({
+      ...prev,
+      [field]: {
+        ...(prev[field] || {}),
+        [index]: !(prev[field] || {})[index]
+      }
+    }));
   }
 
   async function addSender(e) {
@@ -173,7 +207,8 @@ function App() {
 
   async function blast(e) {
     e.preventDefault();
-    setBusy('blast'); setStatus('Sending…'); setResult(null); setValidateReport(null);
+    setBusy('blast'); setStatus('Sending mails...'); setResult(null); setValidateReport(null);
+    const tpl = templates[0] || {};
     const d = await apiFetch('/api/blast', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -181,7 +216,14 @@ function App() {
         recipients: recipientList(),
         senderIds: selectedSenderIds,
         singleShotBcc: true,
-        bccBatchSize: Math.max(1, Number(blastSize) || 90)
+        bccBatchSize: Math.max(1, Number(blastSize) || 90),
+        templateSelection: {
+          subjects: selectedIndexList('subjects', tpl.subjects || []),
+          greetings: selectedIndexList('greetings', tpl.greetings || []),
+          body_paragraphs: selectedIndexList('body_paragraphs', tpl.body_paragraphs || []),
+          closings: selectedIndexList('closings', tpl.closings || []),
+          signatures: selectedIndexList('signatures', tpl.signatures || [])
+        }
       })
     });
     setResult(d); setStatus(''); setBusy('');
@@ -222,15 +264,34 @@ function App() {
     setTimeout(() => setTemplateStatus(''), 3000);
   }
 
-  async function editTemplateItem(field, index, currentValue) {
-    const value = window.prompt(`Edit ${field} item`, currentValue);
-    if (value === null) return;
+  function startEditTemplateItem(field, index, currentValue) {
+    setEditingItem({ field, index });
+    setEditingValue(String(currentValue || ''));
+    setTemplateError('');
+  }
 
+  function cancelEditTemplateItem() {
+    setEditingItem(null);
+    setEditingValue('');
+    setEditingBusy(false);
+  }
+
+  async function saveEditTemplateItem() {
+    if (!editingItem) return;
+
+    const value = String(editingValue || '').trim();
+    if (!value) {
+      setTemplateError('Value cannot be empty.');
+      return;
+    }
+
+    setEditingBusy(true);
     const d = await apiFetch('/api/mail-template/item/update', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ field, index, value })
+      body: JSON.stringify({ field: editingItem.field, index: editingItem.index, value })
     });
+    setEditingBusy(false);
 
     if (!d.ok) {
       setTemplateError(d.message || 'Failed to update template item.');
@@ -239,6 +300,7 @@ function App() {
 
     setTemplateError('');
     setTemplateStatus('✓ Template item updated.');
+    cancelEditTemplateItem();
     await loadTemplates();
     setTimeout(() => setTemplateStatus(''), 2000);
   }
@@ -312,6 +374,7 @@ function App() {
           )}
 
           {senders.length > 0 && (
+            <div style={{ maxHeight: 420, overflowY: 'auto', border: '1px solid #e5e7eb', borderRadius: 8, padding: 8 }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 8 }}>
               <thead>
                 <tr>
@@ -327,18 +390,20 @@ function App() {
               <tbody>
                 {senders.map((s, i) => {
                   const rep = validateReport?.find(r => r.user === s.user);
+                  const limitReached = s.canUse === false;
                   return (
-                    <tr key={s._id}>
+                    <tr key={s._id} style={limitReached ? { opacity: 0.6 } : undefined}>
                       <td style={{ padding: '4px 8px 4px 0', color: '#888', width: 24 }}>{i + 1}</td>
                       <td style={{ padding: '4px 8px 4px 0' }}>
                         <input
                           type="checkbox"
+                          disabled={limitReached}
                           checked={!!selectedById[s._id]}
                           onChange={(e) => setSelectedById((prev) => ({ ...prev, [s._id]: e.target.checked }))}
                         />
                       </td>
                       <td style={{ padding: '4px 8px 4px 0' }}>{s.user}</td>
-                      <td style={{ padding: '4px 8px 4px 0', color: '#374151', fontWeight: 600 }}>{Number(s.blastedCount || 0)}</td>
+                      <td style={{ padding: '4px 8px 4px 0', color: '#374151', fontWeight: 600 }}>{Number(s.used ?? s.blastedCount ?? 0)}</td>
                       <td style={{ padding: '4px 8px 4px 0' }}>
                         <input
                           type="text"
@@ -348,7 +413,9 @@ function App() {
                         />
                       </td>
                       <td style={{ padding: '4px 0', fontSize: 13 }}>
-                        {rep
+                        {limitReached
+                          ? <span style={{ color: '#b91c1c', fontWeight: 600 }}>Limit reached</span>
+                          : rep
                           ? (rep.ok
                             ? <span style={{ color: 'green' }}>OK</span>
                             : <span style={{ color: 'red' }}>{isInvalidAppPasswordError(rep.error) ? 'Invalid' : 'Failed'}</span>)
@@ -368,12 +435,18 @@ function App() {
                             Used {limitById[s._id].used} / {limitById[s._id].limit} • Remaining {limitById[s._id].remaining}
                           </div>
                         )}
+                        {limitReached && !limitById[s._id]?.error && !limitById[s._id]?.limit && (
+                          <div style={{ marginTop: 4, color: '#b91c1c', fontSize: 12 }}>
+                            This sender is disabled until the 24-hour limit window resets.
+                          </div>
+                        )}
                       </td>
                     </tr>
                   );
                 })}
               </tbody>
             </table>
+            </div>
           )}
           {updateError && <p style={{ color: 'red', marginTop: 6 }}>{updateError}</p>}
         </section>
@@ -429,11 +502,33 @@ function App() {
         </table>
         <div className="action-row" style={{ marginTop: 10 }}>
           <button type="submit" disabled={!!busy || !activeSenderCount || !templates.length} style={{ padding: '6px 16px' }}>
-            {busy === 'blast' ? 'Sending…' : `Blast ${recCount} mail${recCount !== 1 ? 's' : ''}`}
+            {busy === 'blast' ? 'Sending mails...' : `Blast ${recCount} mail${recCount !== 1 ? 's' : ''}`}
           </button>
           {!activeSenderCount && <small style={{ marginLeft: 10, color: '#888' }}>Select at least one sender account first.</small>}
           {activeSenderCount > 0 && !templates.length && <small style={{ marginLeft: 10, color: '#888' }}>Add a template below first.</small>}
         </div>
+        {busy === 'blast' && (
+          <>
+            <style>{`@keyframes mailBlasterSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+            <div style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: 10, color: '#374151' }}>
+              <div
+                style={{
+                  width: 18,
+                  height: 18,
+                  borderRadius: '50%',
+                  border: '3px solid #d1d5db',
+                  borderTopColor: '#2563eb',
+                  animation: 'mailBlasterSpin 0.9s linear infinite',
+                  flexShrink: 0
+                }}
+              />
+              <div>
+                <div style={{ fontWeight: 600 }}>Sending mails...</div>
+                <div style={{ fontSize: 12, color: '#6b7280' }}>Please wait while the blast is in progress. Do not refresh the page.</div>
+              </div>
+            </div>
+          </>
+        )}
       </form>
 
       {status && <p>{status}</p>}
@@ -579,11 +674,36 @@ function App() {
                   <ul style={{ margin: '8px 0 0', padding: '0 0 0 18px' }}>
                     {items.map((item, index) => (
                       <li key={`${group.key}-${index}`} style={{ marginBottom: 8 }}>
-                        <div style={{ fontSize: 13, whiteSpace: 'pre-wrap' }}>{item}</div>
-                        <div style={{ marginTop: 4, display: 'flex', gap: 6 }}>
-                          <button type="button" onClick={() => editTemplateItem(group.key, index, item)}>Edit</button>
-                          <button type="button" onClick={() => deleteTemplateItem(group.key, index)}>Delete</button>
-                        </div>
+                        <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 6, fontSize: 12, color: '#4b5563' }}>
+                          <input
+                            type="checkbox"
+                            checked={!!templateSelection?.[group.key]?.[index]}
+                            onChange={() => toggleTemplateItem(group.key, index)}
+                          />
+                          Use in blast
+                        </label>
+                        {editingItem?.field === group.key && editingItem?.index === index ? (
+                          <>
+                            <textarea
+                              rows={group.key === 'body_paragraphs' ? 5 : 2}
+                              value={editingValue}
+                              onChange={(e) => setEditingValue(e.target.value)}
+                              style={{ ...W, fontSize: 13, resize: 'vertical' }}
+                            />
+                            <div style={{ marginTop: 6, display: 'flex', gap: 6 }}>
+                              <button type="button" onClick={saveEditTemplateItem} disabled={editingBusy}>Save</button>
+                              <button type="button" onClick={cancelEditTemplateItem} disabled={editingBusy}>Cancel</button>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div style={{ fontSize: 13, whiteSpace: 'pre-wrap' }}>{item}</div>
+                            <div style={{ marginTop: 4, display: 'flex', gap: 6 }}>
+                              <button type="button" onClick={() => startEditTemplateItem(group.key, index, item)}>Edit</button>
+                              <button type="button" onClick={() => deleteTemplateItem(group.key, index)}>Delete</button>
+                            </div>
+                          </>
+                        )}
                       </li>
                     ))}
                   </ul>

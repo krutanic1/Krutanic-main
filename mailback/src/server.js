@@ -112,6 +112,31 @@ function composeFromTemplate(template, fallbackSubject = '', fallbackBody = '') 
   return { subject, body: parts.join('\n\n') };
 }
 
+function applyTemplateSelection(template, templateSelection = {}) {
+  if (!template || typeof template !== 'object') return template;
+
+  const keys = ['subjects', 'greetings', 'body_paragraphs', 'closings', 'signatures'];
+  const out = { ...template };
+
+  keys.forEach((key) => {
+    const arr = Array.isArray(template[key]) ? template[key] : [];
+    const selected = Array.isArray(templateSelection?.[key])
+      ? templateSelection[key]
+          .map((v) => Number(v))
+          .filter((v) => Number.isInteger(v) && v >= 0 && v < arr.length)
+      : null;
+
+    if (selected === null) {
+      out[key] = arr;
+      return;
+    }
+
+    out[key] = selected.map((idx) => arr[idx]);
+  });
+
+  return out;
+}
+
 async function incrementSenderBlastCounts(countMap) {
   if (!(countMap instanceof Map) || countMap.size === 0) return;
 
@@ -153,6 +178,28 @@ async function incrementSenderBlastCounts(countMap) {
   } catch (err) {
     console.error('Failed to update sender blastedCount:', err.message);
   }
+}
+
+function getConfiguredSenderLimit() {
+  const configuredLimit = Number(process.env.SENDER_DAILY_LIMIT || 1900);
+  return Number.isFinite(configuredLimit) && configuredLimit > 0 ? configuredLimit : 1900;
+}
+
+function getSenderAvailability(sender, now = Date.now()) {
+  const resetBeforeMs = now - 24 * 60 * 60 * 1000;
+  const updatedAtMs = sender?.updatedAt ? new Date(sender.updatedAt).getTime() : NaN;
+  const restored = Number.isFinite(updatedAtMs) && updatedAtMs < resetBeforeMs;
+  const limit = getConfiguredSenderLimit();
+  const used = restored ? 0 : Number(sender?.blastedCount || 0);
+  const remaining = Math.max(0, limit - used);
+
+  return {
+    used,
+    limit,
+    remaining,
+    canUse: remaining > 0,
+    restored
+  };
 }
 
 // ── Health ────────────────────────────────────────────────────────────────────
@@ -319,7 +366,17 @@ app.post('/api/mail-template/item/delete', async (req, res) => {
 app.get('/api/senders', async (_req, res) => {
   try {
     const senders = await Sender.find().sort({ createdAt: 1 }).lean();
-    res.json({ ok: true, senders });
+    res.json({
+      ok: true,
+      senders: senders.map((sender) => {
+        const availability = getSenderAvailability(sender);
+        return {
+          ...sender,
+          ...availability,
+          limitReached: !availability.canUse
+        };
+      })
+    });
   } catch (err) {
     res.status(500).json({ ok: false, message: err.message });
   }
@@ -373,28 +430,24 @@ app.get('/api/senders/:id/limit', async (req, res) => {
     let sender = await Sender.findById(req.params.id).lean();
     if (!sender) return res.status(404).json({ ok: false, message: 'Sender not found.' });
 
-    const now = Date.now();
-    const resetBefore = new Date(now - 24 * 60 * 60 * 1000);
-    const shouldRestore = sender.updatedAt && new Date(sender.updatedAt).getTime() < resetBefore.getTime();
+    const availability = getSenderAvailability(sender);
 
-    if (shouldRestore) {
+    if (availability.restored) {
       await Sender.updateOne({ _id: sender._id }, { $set: { blastedCount: 0 } });
       sender = await Sender.findById(req.params.id).lean();
     }
 
-    const configuredLimit = Number(process.env.SENDER_DAILY_LIMIT || 1900);
-    const limit = Number.isFinite(configuredLimit) && configuredLimit > 0 ? configuredLimit : 1900;
-    const used = Number(sender.blastedCount || 0);
-    const remaining = Math.max(0, limit - used);
+    const currentAvailability = getSenderAvailability(sender);
 
     res.json({
       ok: true,
       sender: sender.user,
-      used,
-      limit,
-      remaining,
+      used: currentAvailability.used,
+      limit: currentAvailability.limit,
+      remaining: currentAvailability.remaining,
+      canUse: currentAvailability.canUse,
       updatedAt: sender.updatedAt,
-      restored: !!shouldRestore,
+      restored: !!availability.restored,
       note: 'Daily limit is restored when updatedAt is older than 24 hours. Provider-side limits still vary by account.'
     });
   } catch (err) {
@@ -451,19 +504,29 @@ app.post('/api/blast', async (req, res) => {
 
     if (!senders.length) return res.status(400).json({ ok: false, message: 'No sender accounts configured. Add senders first.' });
 
+    const availableSenders = senders.filter((sender) => getSenderAvailability(sender).canUse);
+    if (!availableSenders.length) {
+      return res.status(400).json({
+        ok: false,
+        message: `All selected sender accounts have reached the ${getConfiguredSenderLimit()} mail daily limit.`
+      });
+    }
+
     const smtpBase = req.body.smtp || defaultSmtp;
     // Always load the single mailtemp document; no templateId selection needed
-    const template = await MailTemplate.findOne().lean();
-    if (!template) {
+    const baseTemplate = await MailTemplate.findOne().lean();
+    if (!baseTemplate) {
       return res.status(400).json({ ok: false, message: 'No campaign template found. Add one first.' });
     }
+
+    const template = applyTemplateSelection(baseTemplate, req.body.templateSelection || {});
 
     const recipients = normalizeEmailList(req.body.recipients);
     if (!recipients.length) return res.status(400).json({ ok: false, message: 'At least one recipient is required.' });
 
     const singleShotBcc = req.body.singleShotBcc !== false;
     if (singleShotBcc) {
-      if (!senders.length) return res.status(400).json({ ok: false, message: 'No sender account available.' });
+      if (!availableSenders.length) return res.status(400).json({ ok: false, message: 'No sender account available.' });
 
       // Quick sanity check before starting
       const testCompose = composeFromTemplate(template);
@@ -472,7 +535,7 @@ app.post('/api/blast', async (req, res) => {
       }
 
       // Cache transporters per sender index to avoid recreating on every batch
-      const transporterCache = senders.map((s) =>
+      const transporterCache = availableSenders.map((s) =>
         nodemailer.createTransport(buildTransporterConfig({ ...smtpBase, user: s.user, pass: s.pass }))
       );
 
@@ -505,8 +568,8 @@ app.post('/api/blast', async (req, res) => {
         for (let i = 0; i < recipients.length; i += bccBatchSize) {
           const batch = recipients.slice(i, i + bccBatchSize);
           const batchIndex = Math.floor(i / bccBatchSize);
-          const batchSender = senders[batchIndex % senders.length];
-          const batchTransporter = transporterCache[batchIndex % senders.length];
+          const batchSender = availableSenders[batchIndex % availableSenders.length];
+          const batchTransporter = transporterCache[batchIndex % availableSenders.length];
 
           // Recompose per batch: each batch gets a fresh random subject/greeting/body/closing/signature
           const composed = composeFromTemplate(template);
