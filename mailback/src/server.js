@@ -10,7 +10,7 @@ import { Sender } from './models/Sender.js';
 import { MailTemplate } from './models/MailTemplate.js';
 
 dotenv.config();
-
+//sdfghjk
 const app = express();
 const port = Number(process.env.PORT) || 5001;
 
