@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 import mongoose from 'mongoose';
+import net from 'net';
+import { promises as dns } from 'dns';
 import { connectDB } from './db.js';
 import { Sender } from './models/Sender.js';
 import { MailTemplate } from './models/MailTemplate.js';
@@ -21,6 +23,9 @@ const defaultSmtp = {
   secure: String(process.env.DEFAULT_SMTP_SECURE || 'false') === 'true'
 };
 
+const SENDER_RESET_WINDOW_HOURS = 26;
+const SENDER_RESET_WINDOW_MS = SENDER_RESET_WINDOW_HOURS * 60 * 60 * 1000;
+
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -28,6 +33,184 @@ function sleep(ms) {
 function normalizeEmailList(input) {
   if (!Array.isArray(input)) return [];
   return [...new Set(input.map((v) => String(v || '').trim().toLowerCase()).filter(Boolean))];
+}
+
+function normalizeValidationEmailInput(input) {
+  if (Array.isArray(input)) {
+    return [...new Set(input.map((v) => String(v || '').trim().toLowerCase()).filter(Boolean))];
+  }
+
+  if (typeof input === 'string') {
+    return [...new Set(
+      input
+        .split(/[\n,;]+/)
+        .map((v) => String(v || '').trim().toLowerCase())
+        .filter(Boolean)
+    )];
+  }
+
+  return [];
+}
+
+const EMAIL_SYNTAX_REGEX = /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i;
+
+function extractEmailDomain(email) {
+  const parts = String(email || '').toLowerCase().split('@');
+  return parts.length === 2 ? parts[1] : '';
+}
+
+async function hasMxRecord(domain) {
+  try {
+    const records = await dns.resolveMx(domain);
+    return Array.isArray(records) && records.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+async function getMxHosts(domain) {
+  try {
+    const records = await dns.resolveMx(domain);
+    return (records || [])
+      .sort((a, b) => Number(a.priority || 0) - Number(b.priority || 0))
+      .map((r) => String(r.exchange || '').trim())
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
+function smtpErrorToMessage(err) {
+  if (!err) return 'SMTP validation failed.';
+  const code = err.responseCode ? `SMTP ${err.responseCode}: ` : '';
+  return `${code}${err.response || err.message || 'SMTP validation failed.'}`;
+}
+
+async function smtpVerifyMailboxBatch(_smtpConfig, emails) {
+  const resultMap = new Map();
+  if (!emails.length) return resultMap;
+
+  function probeMailboxOnHost(mxHost, email) {
+    return new Promise((resolve) => {
+      let buffer = '';
+      let state = 'greeting';
+      let closed = false;
+
+      const socket = net.createConnection({ host: mxHost, port: 25 });
+      socket.setTimeout(12000);
+
+      const done = (result) => {
+        if (closed) return;
+        closed = true;
+        try {
+          socket.end();
+          socket.destroy();
+        } catch {
+          // noop
+        }
+        resolve(result);
+      };
+
+      const send = (line) => socket.write(`${line}\r\n`);
+
+      const onResponse = (code, text) => {
+        if (state === 'greeting') {
+          if (code !== 220) return done({ ok: false, error: `SMTP greeting failed: ${text}` });
+          state = 'ehlo';
+          send('EHLO validator.local');
+          return;
+        }
+
+        if (state === 'ehlo') {
+          if (code >= 500) return done({ ok: false, error: `EHLO rejected: ${text}` });
+          if (code === 250) {
+            state = 'mailfrom';
+            send('MAIL FROM:<validator@localhost>');
+          }
+          return;
+        }
+
+        if (state === 'mailfrom') {
+          if (code >= 500) return done({ ok: false, error: `MAIL FROM rejected: ${text}` });
+          if (code === 250) {
+            state = 'rcpt';
+            send(`RCPT TO:<${email}>`);
+          }
+          return;
+        }
+
+        if (state === 'rcpt') {
+          send('QUIT');
+          if (code === 250 || code === 251) return done({ ok: true, error: null });
+          if (code >= 500) return done({ ok: false, error: `Mailbox rejected: ${text}` });
+          return done({ ok: false, error: `Temporary SMTP response: ${text}` });
+        }
+      };
+
+      socket.on('data', (chunk) => {
+        buffer += chunk.toString('utf8');
+        const lines = buffer.split(/\r?\n/);
+        buffer = lines.pop() || '';
+
+        lines.forEach((line) => {
+          if (closed) return;
+          const match = line.match(/^(\d{3})([\s-])(.*)$/);
+          if (!match) return;
+          const code = Number(match[1]);
+          const sep = match[2];
+          const text = match[3] || line;
+          if (sep === '-') return;
+          onResponse(code, text);
+        });
+      });
+
+      socket.on('timeout', () => done({ ok: false, error: 'SMTP probe timed out.' }));
+      socket.on('error', (err) => done({ ok: false, error: `SMTP connection error: ${err.message}` }));
+      socket.on('end', () => {
+        if (!closed) done({ ok: false, error: 'SMTP server closed connection before RCPT check.' });
+      });
+    });
+  }
+
+  for (const email of emails) {
+    const domain = extractEmailDomain(email);
+    const hosts = await getMxHosts(domain);
+    if (!hosts.length) {
+      resultMap.set(email, { ok: false, error: `No MX hosts available for ${domain}.` });
+      continue;
+    }
+
+    let finalStatus = { ok: false, error: 'Mailbox verification failed.' };
+    for (const host of hosts.slice(0, 2)) {
+      const status = await probeMailboxOnHost(host, email);
+      finalStatus = status;
+      if (status.ok) break;
+      if (String(status.error || '').toLowerCase().includes('mailbox rejected')) break;
+    }
+    resultMap.set(email, finalStatus);
+  }
+
+  return resultMap;
+}
+
+function buildEmailValidationSmtpConfig({ smtpInput, senderFallback }) {
+  const host = smtpInput?.host || defaultSmtp.host;
+  const port = Number(smtpInput?.port ?? defaultSmtp.port);
+  const secure = typeof smtpInput?.secure === 'boolean'
+    ? smtpInput.secure
+    : (smtpInput?.secure ? String(smtpInput.secure) === 'true' : defaultSmtp.secure);
+  const user = smtpInput?.user || senderFallback?.user || '';
+  const pass = smtpInput?.pass || senderFallback?.pass || '';
+
+  if (!host || !port || !user || !pass) return null;
+
+  return {
+    host,
+    port,
+    secure,
+    user,
+    pass
+  };
 }
 
 function buildTransporterConfig({ host, port, secure, user, pass } = {}) {
@@ -141,7 +324,7 @@ async function incrementSenderBlastCounts(countMap) {
   if (!(countMap instanceof Map) || countMap.size === 0) return;
 
   const now = Date.now();
-  const resetBefore = new Date(now - 24 * 60 * 60 * 1000);
+  const resetBefore = new Date(now - SENDER_RESET_WINDOW_MS);
 
   const senderIds = [...countMap.entries()]
     .filter(([id, count]) => mongoose.Types.ObjectId.isValid(id) && Number(count) > 0)
@@ -149,7 +332,7 @@ async function incrementSenderBlastCounts(countMap) {
 
   if (senderIds.length) {
     try {
-      // Restore daily limit window: if updatedAt is older than 24h, reset counter.
+      // Restore daily limit window: if updatedAt is older than configured reset window, reset counter.
       await Sender.updateMany(
         {
           _id: { $in: senderIds },
@@ -186,19 +369,31 @@ function getConfiguredSenderLimit() {
 }
 
 function getSenderAvailability(sender, now = Date.now()) {
-  const resetBeforeMs = now - 24 * 60 * 60 * 1000;
+  const resetBeforeMs = now - SENDER_RESET_WINDOW_MS;
   const updatedAtMs = sender?.updatedAt ? new Date(sender.updatedAt).getTime() : NaN;
   const restored = Number.isFinite(updatedAtMs) && updatedAtMs < resetBeforeMs;
   const limit = getConfiguredSenderLimit();
   const used = restored ? 0 : Number(sender?.blastedCount || 0);
   const remaining = Math.max(0, limit - used);
+  const canUse = remaining > 0;
+
+  let resetAt = null;
+  let resetMsRemaining = 0;
+  if (!canUse && Number.isFinite(updatedAtMs)) {
+    const resetAtMs = updatedAtMs + SENDER_RESET_WINDOW_MS;
+    resetMsRemaining = Math.max(0, resetAtMs - now);
+    resetAt = new Date(resetAtMs).toISOString();
+  }
 
   return {
     used,
     limit,
     remaining,
-    canUse: remaining > 0,
-    restored
+    canUse,
+    restored,
+    resetAt,
+    resetMsRemaining,
+    resetWindowHours: SENDER_RESET_WINDOW_HOURS
   };
 }
 
@@ -446,9 +641,12 @@ app.get('/api/senders/:id/limit', async (req, res) => {
       limit: currentAvailability.limit,
       remaining: currentAvailability.remaining,
       canUse: currentAvailability.canUse,
+      resetAt: currentAvailability.resetAt,
+      resetMsRemaining: currentAvailability.resetMsRemaining,
+      resetWindowHours: currentAvailability.resetWindowHours,
       updatedAt: sender.updatedAt,
       restored: !!availability.restored,
-      note: 'Daily limit is restored when updatedAt is older than 24 hours. Provider-side limits still vary by account.'
+      note: `Daily limit is restored when updatedAt is older than ${SENDER_RESET_WINDOW_HOURS} hours. Provider-side limits still vary by account.`
     });
   } catch (err) {
     res.status(500).json({ ok: false, message: err.message });
@@ -481,6 +679,109 @@ app.post('/api/validate-senders', async (req, res) => {
     res.json({ ok: true, report });
   } catch (err) {
     res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
+// ── Validate email list ───────────────────────────────────────────────────────
+
+app.post('/api/validate-emails', async (req, res) => {
+  try {
+    const emails = normalizeValidationEmailInput(req.body?.emails);
+    if (!emails.length) {
+      return res.status(400).json({ ok: false, message: 'At least one email is required.' });
+    }
+
+    const report = emails.map((email) => ({
+      email,
+      syntaxValid: EMAIL_SYNTAX_REGEX.test(email),
+      mxValid: false,
+      smtpValid: false,
+      clean: false,
+      rejectionStage: null,
+      reason: null
+    }));
+
+    for (const row of report) {
+      if (!row.syntaxValid) {
+        row.rejectionStage = 'syntax';
+        row.reason = 'Invalid email syntax.';
+      }
+    }
+
+    await Promise.all(
+      report.map(async (row) => {
+        if (!row.syntaxValid) return;
+        const domain = extractEmailDomain(row.email);
+        row.mxValid = await hasMxRecord(domain);
+        if (!row.mxValid) {
+          row.rejectionStage = 'mx';
+          row.reason = `No MX records found for ${domain}.`;
+        }
+      })
+    );
+
+    const smtpCandidates = report
+      .filter((row) => row.syntaxValid && row.mxValid)
+      .map((row) => row.email);
+
+    let smtpChecked = false;
+    let smtpCheckReason = null;
+
+    if (smtpCandidates.length > 0) {
+      smtpChecked = true;
+      const smtpResults = await smtpVerifyMailboxBatch(null, smtpCandidates);
+      report.forEach((row) => {
+        if (!smtpCandidates.includes(row.email)) return;
+        const smtpStatus = smtpResults.get(row.email) || { ok: false, error: 'SMTP mailbox check failed.' };
+        row.smtpValid = !!smtpStatus.ok;
+        if (!row.smtpValid) {
+          row.rejectionStage = 'smtp';
+          row.reason = smtpStatus.error || 'SMTP mailbox was rejected.';
+        }
+      });
+    }
+
+    const cleanEmails = report
+      .filter((row) => row.syntaxValid && row.mxValid && row.smtpValid)
+      .map((row) => row.email);
+
+    cleanEmails.forEach((email) => {
+      const row = report.find((r) => r.email === email);
+      if (row) {
+        row.clean = true;
+        row.reason = null;
+        row.rejectionStage = null;
+      }
+    });
+
+    const rejected = report
+      .filter((row) => !row.clean)
+      .map((row) => ({
+        email: row.email,
+        stage: row.rejectionStage || 'unknown',
+        reason: row.reason || 'Validation failed.'
+      }));
+
+    return res.json({
+      ok: true,
+      summary: {
+        total: report.length,
+        syntaxValid: report.filter((row) => row.syntaxValid).length,
+        mxValid: report.filter((row) => row.mxValid).length,
+        smtpChecked,
+        smtpCandidates: smtpCandidates.length,
+        clean: cleanEmails.length
+      },
+      smtp: {
+        enabled: smtpChecked,
+        reason: smtpCheckReason
+      },
+      cleanEmails,
+      rejected,
+      report
+    });
+  } catch (err) {
+    return res.status(500).json({ ok: false, message: err.message });
   }
 });
 

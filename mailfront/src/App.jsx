@@ -28,6 +28,22 @@ async function apiFetch(path, opts = {}) {
   return r.json();
 }
 
+function formatCountdown(ms) {
+  const totalSec = Math.max(0, Math.floor(Number(ms || 0) / 1000));
+  const hh = Math.floor(totalSec / 3600);
+  const mm = Math.floor((totalSec % 3600) / 60);
+  const ss = totalSec % 60;
+  const pad = (v) => String(v).padStart(2, '0');
+  return `${pad(hh)}:${pad(mm)}:${pad(ss)}`;
+}
+
+function getResetCountdown(sender, nowMs) {
+  const resetAtMs = sender?.resetAt ? new Date(sender.resetAt).getTime() : NaN;
+  const fromResetAt = Number.isFinite(resetAtMs) ? Math.max(0, resetAtMs - nowMs) : NaN;
+  const remainingMs = Number.isFinite(fromResetAt) ? fromResetAt : Number(sender?.resetMsRemaining || 0);
+  return formatCountdown(remainingMs);
+}
+
 function App() {
   // stored senders (from DB)
   const [senders, setSenders] = useState([]);
@@ -35,6 +51,7 @@ function App() {
   const [newPass, setNewPass] = useState('');
   const [addError, setAddError] = useState('');
   const [editPassById, setEditPassById] = useState({});
+  const [editingPassId, setEditingPassId] = useState(null);
   const [selectedById, setSelectedById] = useState({});
   const [updateError, setUpdateError] = useState('');
   const [limitById, setLimitById] = useState({});
@@ -48,11 +65,13 @@ function App() {
   const [templateClosings, setTemplateClosings] = useState('');
   const [templateSignatures, setTemplateSignatures] = useState('');
   const [recipients, setRecipients] = useState('');
+  const [validatorEmails, setValidatorEmails] = useState('');
   const [blastSize, setBlastSize] = useState(90);
 
   // ui
   const [status, setStatus] = useState('');
   const [validateReport, setValidateReport] = useState(null);
+  const [emailValidationResult, setEmailValidationResult] = useState(null);
   const [result, setResult] = useState(null);
   const [busy, setBusy] = useState('');
   const [templateStatus, setTemplateStatus] = useState('');
@@ -61,8 +80,10 @@ function App() {
   const [editingValue, setEditingValue] = useState('');
   const [editingBusy, setEditingBusy] = useState(false);
   const [templateSelection, setTemplateSelection] = useState({});
+  const [countdownNowMs, setCountdownNowMs] = useState(Date.now());
 
   const recipientList = () => [...new Set(recipients.split(/[\n,]/).map(s => s.trim()).filter(Boolean))];
+  const validatorEmailList = () => [...new Set(validatorEmails.split(/[\n,;]+/).map((s) => s.trim()).filter(Boolean))];
   const recCount = recipientList().length;
   const selectedSenderIds = senders.filter((s) => s.canUse && selectedById[s._id]).map((s) => s._id);
   const activeSenderCount = selectedSenderIds.length;
@@ -74,6 +95,11 @@ function App() {
   useEffect(() => {
     loadSenders();
     loadTemplates();
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => setCountdownNowMs(Date.now()), 1000);
+    return () => clearInterval(timer);
   }, []);
 
   async function loadSenders() {
@@ -123,6 +149,22 @@ function App() {
         [index]: !(prev[field] || {})[index]
       }
     }));
+  }
+
+  function selectAllSenders() {
+    setSelectedById((prev) => {
+      const usableSenders = senders.filter((s) => s.canUse !== false);
+      const allUsableSelected = usableSenders.length > 0 && usableSenders.every((s) => !!prev[s._id]);
+      const next = { ...prev };
+      senders.forEach((s) => {
+        if (s.canUse === false) {
+          next[s._id] = false;
+          return;
+        }
+        next[s._id] = !allUsableSelected;
+      });
+      return next;
+    });
   }
 
   async function addSender(e) {
@@ -179,6 +221,7 @@ function App() {
     }
 
     await loadSenders();
+    setEditingPassId(null);
   }
 
   async function checkLimit(id) {
@@ -198,11 +241,57 @@ function App() {
     }));
   }
 
+  async function checkAllLimits() {
+    setBusy('checkLimits');
+    await Promise.all(senders.map((s) => checkLimit(s._id)));
+    setBusy('');
+  }
+
   async function validateAll() {
     setBusy('validate'); setValidateReport(null); setResult(null); setStatus('');
     const d = await apiFetch('/api/validate-senders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
     setValidateReport(d.report || []);
     setBusy('');
+  }
+
+  async function validateRecipients() {
+    const emails = validatorEmailList();
+    if (!emails.length) {
+      setStatus('Add emails in the validator section before validation.');
+      setEmailValidationResult(null);
+      return;
+    }
+
+    setBusy('validateRecipients');
+    setStatus('Validating recipient list...');
+    setEmailValidationResult(null);
+
+    try {
+      const d = await apiFetch('/api/validate-emails', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ emails, senderIds: selectedSenderIds })
+      });
+
+      setEmailValidationResult(d);
+      if (d.ok) {
+        setStatus(`Validation complete: ${d.summary.clean}/${d.summary.total} clean emails.`);
+      } else {
+        setStatus(d.message || 'Validation failed.');
+      }
+    } catch {
+      setStatus('Unable to validate recipients right now.');
+    }
+
+    setBusy('');
+  }
+
+  function useCleanRecipients() {
+    if (!emailValidationResult?.ok || !Array.isArray(emailValidationResult.cleanEmails)) return;
+    const cleanText = emailValidationResult.cleanEmails.join('\n');
+    setValidatorEmails(cleanText);
+    setRecipients(cleanText);
+    setStatus(`Applied clean list: ${emailValidationResult.cleanEmails.length} recipients.`);
   }
 
   async function blast(e) {
@@ -330,36 +419,37 @@ function App() {
     <div className="app-shell">
       <h2>Mail Blaster</h2>
 
-      <div className="sender-layout" style={{ display: 'grid', gap: 20, alignItems: 'start' }}>
-        {/* Left panel: add sender */}
-        <aside className="sender-sidebar section-card" style={{ padding: 12 }}>
-          <h3 style={{ marginTop: 0, marginBottom: 10 }}>Add Sender</h3>
-          <form onSubmit={addSender} style={{ display: 'grid', gap: 8 }}>
+      <div className="sender-layout" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        {/* Add Sender: horizontal bar */}
+        <div className="section-card" style={{ padding: 12 }}>
+          <form onSubmit={addSender} style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
+            <span style={{ fontWeight: 600, fontSize: 14, whiteSpace: 'nowrap' }}>Add Sender</span>
             <input
               value={newUser}
               onChange={e => setNewUser(e.target.value)}
               placeholder="email@gmail.com"
               required
-              style={{ padding: 8 }}
+              style={{ padding: 8, flex: '1 1 200px', minWidth: 160 }}
             />
             <input
               type="text"
               value={newPass}
               onChange={e => setNewPass(formatAppPassword(e.target.value))}
+              placeholder="App Password"
               required
-              style={{ padding: 8 }}
+              style={{ padding: 8, flex: '1 1 200px', minWidth: 160 }}
             />
-            <button type="submit" style={{ padding: '8px 12px' }}>+ Add</button>
+            <button type="submit" style={{ padding: '8px 12px', whiteSpace: 'nowrap' }}>+ Add</button>
             {senders.length > 0 && (
-              <button type="button" onClick={validateAll} disabled={busy === 'validate'} style={{ padding: '8px 12px' }}>
+              <button type="button" onClick={validateAll} disabled={busy === 'validate'} style={{ padding: '8px 12px', whiteSpace: 'nowrap' }}>
                 {busy === 'validate' ? 'Validating…' : 'Validate All'}
               </button>
             )}
           </form>
-          {addError && <p style={{ color: 'red', margin: '8px 0 0' }}>{addError}</p>}
-        </aside>
+          {addError && <p style={{ color: 'red', margin: '6px 0 0' }}>{addError}</p>}
+        </div>
 
-        {/* Right panel: sender emails from DB */}
+        {/* Sender Accounts: full width below */}
         <section className="section-card" style={{ padding: 16 }}>
           <h3>
             Sender Accounts
@@ -368,9 +458,22 @@ function App() {
               {recCount > 0 && activeSenderCount > 0 ? `, ~${perSender} mails each` : ''})
             </span>
           </h3>
+          <div style={{ marginTop: -4, marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <button type="button" onClick={selectAllSenders} disabled={!senders.length}>
+                {(senders.filter((s) => s.canUse !== false).length > 0 && senders.filter((s) => s.canUse !== false).every((s) => !!selectedById[s._id]))
+                  ? 'Deselect All'
+                  : 'Select All'}
+              </button>
+              <small style={{ color: '#6b7280' }}>Accounts at limit are skipped automatically.</small>
+            </div>
+            <button type="button" onClick={checkAllLimits} disabled={!senders.length || busy === 'checkLimits'}>
+              {busy === 'checkLimits' ? 'Checking…' : 'Check All Limits'}
+            </button>
+          </div>
 
           {senders.length === 0 && (
-            <p style={{ marginTop: 0, color: '#666' }}>No sender emails yet. Add one from the left panel.</p>
+            <p style={{ marginTop: 0, color: '#666' }}>No sender emails yet. Use the form above to add one.</p>
           )}
 
           {senders.length > 0 && (
@@ -382,7 +485,6 @@ function App() {
                   <th style={{ textAlign: 'left', fontSize: 12, padding: '3px 8px 3px 0' }}>Use</th>
                   <th style={{ textAlign: 'left', fontSize: 12, padding: '3px 8px 3px 0' }}>Email</th>
                   <th style={{ textAlign: 'left', fontSize: 12, padding: '3px 8px 3px 0' }}>Blasted</th>
-                  <th style={{ textAlign: 'left', fontSize: 12, padding: '3px 8px 3px 0' }}>App Password</th>
                   <th style={{ textAlign: 'left', fontSize: 12, padding: '3px 0' }}>Status</th>
                   <th></th>
                 </tr>
@@ -404,14 +506,6 @@ function App() {
                       </td>
                       <td style={{ padding: '4px 8px 4px 0' }}>{s.user}</td>
                       <td style={{ padding: '4px 8px 4px 0', color: '#374151', fontWeight: 600 }}>{Number(s.used ?? s.blastedCount ?? 0)}</td>
-                      <td style={{ padding: '4px 8px 4px 0' }}>
-                        <input
-                          type="text"
-                          value={editPassById[s._id] || ''}
-                          onChange={(e) => setEditPassById((prev) => ({ ...prev, [s._id]: formatAppPassword(e.target.value) }))}
-                          style={{ padding: 6, width: '100%', boxSizing: 'border-box' }}
-                        />
-                      </td>
                       <td style={{ padding: '4px 0', fontSize: 13 }}>
                         {limitReached
                           ? <span style={{ color: '#b91c1c', fontWeight: 600 }}>Limit reached</span>
@@ -423,10 +517,23 @@ function App() {
                       </td>
                       <td style={{ paddingLeft: 8 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'nowrap', whiteSpace: 'nowrap' }}>
-                          <button type="button" onClick={() => updateSenderPass(s._id)}>Update</button>
-                          <button type="button" onClick={() => checkLimit(s._id)}>Check Limit</button>
+                          <button type="button" onClick={() => setEditingPassId((prev) => prev === s._id ? null : s._id)}>Edit Password</button>
+
                           <button type="button" onClick={() => deleteSender(s._id)}>Delete</button>
                         </div>
+                        {editingPassId === s._id && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
+                            <input
+                              type="text"
+                              value={editPassById[s._id] || ''}
+                              onChange={(e) => setEditPassById((prev) => ({ ...prev, [s._id]: formatAppPassword(e.target.value) }))}
+                              placeholder="App password"
+                              style={{ padding: 6, minWidth: 180, flex: '1 1 180px', boxSizing: 'border-box' }}
+                            />
+                            <button type="button" onClick={() => updateSenderPass(s._id)}>Save</button>
+                            <button type="button" onClick={() => setEditingPassId(null)}>✕</button>
+                          </div>
+                        )}
                         {limitById[s._id]?.error && (
                           <div style={{ marginTop: 4, color: '#b91c1c', fontSize: 12 }}>{limitById[s._id].error}</div>
                         )}
@@ -437,7 +544,7 @@ function App() {
                         )}
                         {limitReached && !limitById[s._id]?.error && !limitById[s._id]?.limit && (
                           <div style={{ marginTop: 4, color: '#b91c1c', fontSize: 12 }}>
-                            This sender is disabled until the 24-hour limit window resets.
+                            Reset in {getResetCountdown(s, countdownNowMs)}
                           </div>
                         )}
                       </td>
@@ -452,84 +559,163 @@ function App() {
         </section>
       </div>
 
-      {/* ── Campaign ── */}
-      <form onSubmit={blast} className="section-card campaign-section" style={{ padding: 16 }}>
-        <h3>Campaign</h3>
-        <table className="form-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <tbody>
-            <tr>
-              <td style={td1}>Template</td>
-              <td>
-                {templates.length === 0
-                  ? <p style={{ margin: 0, color: '#e00', fontSize: 13 }}>No template found — add one below before blasting.</p>
-                  : <div style={{ fontSize: 13, color: '#444' }}>
-                      ✓ Campaign template loaded &nbsp;·&nbsp;
-                      <span>{templates[0]?.subjects?.length || 0} subjects</span> &nbsp;·&nbsp;
-                      <span>{templates[0]?.greetings?.length || 0} greetings</span> &nbsp;·&nbsp;
-                      <span>{templates[0]?.body_paragraphs?.length || 0} paragraphs</span> &nbsp;·&nbsp;
-                      <span>{templates[0]?.closings?.length || 0} closings</span> &nbsp;·&nbsp;
-                      <span>{templates[0]?.signatures?.length || 0} signatures</span>
-                      <div style={{ color: '#888', marginTop: 3 }}>Each batch gets a fresh random combination.</div>
-                    </div>
-                }
-              </td>
-            </tr>
-            <tr>
-              <td style={td1}>Recipients</td>
-              <td>
-                <textarea rows={6} value={recipients} onChange={e => setRecipients(e.target.value)}
-                  placeholder="one per line or comma separated" required style={W} />
-                <small className="field-note">{recCount} recipient{recCount !== 1 ? 's' : ''}{activeSenderCount > 0 ? ` — ${activeSenderCount} sender${activeSenderCount !== 1 ? 's' : ''} — ~${perSender} each` : ''}</small>
-                <br />
-                <small className="field-note">{activeSenderCount} sender{activeSenderCount !== 1 ? 's' : ''} selected for sending</small>
-              </td>
-            </tr>
-            <tr>
-              <td style={td1}>Blast Size</td>
-              <td>
-                <input
-                  type="number"
-                  min={1}
-                  max={200}
-                  value={blastSize}
-                  onChange={e => setBlastSize(e.target.value)}
-                  style={{ ...W, maxWidth: 160 }}
+      <div className="campaign-validator-layout">
+        {/* ── Campaign ── */}
+        <form onSubmit={blast} className="section-card campaign-section" style={{ padding: 16 }}>
+          <h3>Campaign</h3>
+          <table className="form-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <tbody>
+              <tr>
+                <td style={td1}>Template</td>
+                <td>
+                  {templates.length === 0
+                    ? <p style={{ margin: 0, color: '#e00', fontSize: 13 }}>No template found — add one below before blasting.</p>
+                    : <div style={{ fontSize: 13, color: '#444' }}>
+                        ✓ Campaign template loaded &nbsp;·&nbsp;
+                        <span>{templates[0]?.subjects?.length || 0} subjects</span> &nbsp;·&nbsp;
+                        <span>{templates[0]?.greetings?.length || 0} greetings</span> &nbsp;·&nbsp;
+                        <span>{templates[0]?.body_paragraphs?.length || 0} paragraphs</span> &nbsp;·&nbsp;
+                        <span>{templates[0]?.closings?.length || 0} closings</span> &nbsp;·&nbsp;
+                        <span>{templates[0]?.signatures?.length || 0} signatures</span>
+                        <div style={{ color: '#888', marginTop: 3 }}>Each batch gets a fresh random combination.</div>
+                      </div>
+                  }
+                </td>
+              </tr>
+              <tr>
+                <td style={td1}>Recipients</td>
+                <td>
+                  <textarea rows={6} value={recipients} onChange={e => setRecipients(e.target.value)}
+                    placeholder="one per line or comma separated" required style={W} />
+                  <small className="field-note">{recCount} recipient{recCount !== 1 ? 's' : ''}{activeSenderCount > 0 ? ` — ${activeSenderCount} sender${activeSenderCount !== 1 ? 's' : ''} — ~${perSender} each` : ''}</small>
+                  <br />
+                  <small className="field-note">{activeSenderCount} sender{activeSenderCount !== 1 ? 's' : ''} selected for sending</small>
+                </td>
+              </tr>
+              <tr>
+                <td style={td1}>Blast Size</td>
+                <td>
+                  <input
+                    type="number"
+                    min={1}
+                    max={200}
+                    value={blastSize}
+                    onChange={e => setBlastSize(e.target.value)}
+                    style={{ ...W, maxWidth: 160 }}
+                  />
+                  <small className="field-note">Recipients per BCC batch (recommended: 50-100)</small>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div className="action-row" style={{ marginTop: 10 }}>
+            <button type="submit" disabled={!!busy || !activeSenderCount || !templates.length} style={{ padding: '6px 16px' }}>
+              {busy === 'blast' ? 'Sending mails...' : `Blast ${recCount} mail${recCount !== 1 ? 's' : ''}`}
+            </button>
+            {!activeSenderCount && <small style={{ marginLeft: 10, color: '#888' }}>Select at least one sender account first.</small>}
+            {activeSenderCount > 0 && !templates.length && <small style={{ marginLeft: 10, color: '#888' }}>Add a template below first.</small>}
+          </div>
+          {busy === 'blast' && (
+            <>
+              <style>{`@keyframes mailBlasterSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+              <div style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: 10, color: '#374151' }}>
+                <div
+                  style={{
+                    width: 18,
+                    height: 18,
+                    borderRadius: '50%',
+                    border: '3px solid #d1d5db',
+                    borderTopColor: '#2563eb',
+                    animation: 'mailBlasterSpin 0.9s linear infinite',
+                    flexShrink: 0
+                  }}
                 />
-                <small className="field-note">Recipients per BCC batch (recommended: 50-100)</small>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div className="action-row" style={{ marginTop: 10 }}>
-          <button type="submit" disabled={!!busy || !activeSenderCount || !templates.length} style={{ padding: '6px 16px' }}>
-            {busy === 'blast' ? 'Sending mails...' : `Blast ${recCount} mail${recCount !== 1 ? 's' : ''}`}
-          </button>
-          {!activeSenderCount && <small style={{ marginLeft: 10, color: '#888' }}>Select at least one sender account first.</small>}
-          {activeSenderCount > 0 && !templates.length && <small style={{ marginLeft: 10, color: '#888' }}>Add a template below first.</small>}
-        </div>
-        {busy === 'blast' && (
-          <>
-            <style>{`@keyframes mailBlasterSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
-            <div style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: 10, color: '#374151' }}>
-              <div
-                style={{
-                  width: 18,
-                  height: 18,
-                  borderRadius: '50%',
-                  border: '3px solid #d1d5db',
-                  borderTopColor: '#2563eb',
-                  animation: 'mailBlasterSpin 0.9s linear infinite',
-                  flexShrink: 0
-                }}
-              />
-              <div>
-                <div style={{ fontWeight: 600 }}>Sending mails...</div>
-                <div style={{ fontSize: 12, color: '#6b7280' }}>Please wait while the blast is in progress. Do not refresh the page.</div>
+                <div>
+                  <div style={{ fontWeight: 600 }}>Sending mails...</div>
+                  <div style={{ fontSize: 12, color: '#6b7280' }}>Please wait while the blast is in progress. Do not refresh the page.</div>
+                </div>
               </div>
+            </>
+          )}
+        </form>
+
+        <section className="section-card campaign-section" style={{ padding: 16 }}>
+          <h3>Email Validator</h3>
+          <p className="section-subtitle" style={{ marginBottom: 10 }}>
+            Syntax → MX → SMTP mailbox check → Clean list
+          </p>
+          <textarea
+            rows={11}
+            value={validatorEmails}
+            onChange={(e) => setValidatorEmails(e.target.value)}
+            placeholder="Paste emails here, one per line (or comma/semicolon separated)"
+            style={W}
+          />
+          <div className="action-row" style={{ marginTop: 10 }}>
+            <button
+              type="button"
+              onClick={validateRecipients}
+              disabled={busy === 'validateRecipients' || validatorEmailList().length === 0}
+            >
+              {busy === 'validateRecipients' ? 'Validating List...' : 'Validate Mails'}
+            </button>
+            <button
+              type="button"
+              onClick={useCleanRecipients}
+              disabled={!emailValidationResult?.ok || (emailValidationResult.cleanEmails || []).length === 0}
+            >
+              Use Clean List In Campaign
+            </button>
+          </div>
+
+          {emailValidationResult?.ok && (
+            <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid #e5e7eb' }}>
+              <h4 style={{ margin: '0 0 8px' }}>Validation Result</h4>
+              <p style={{ margin: '0 0 8px', color: '#065f46' }}>
+                Clean: {emailValidationResult.summary.clean} / {emailValidationResult.summary.total}
+              </p>
+              <p style={{ margin: '0 0 8px', color: '#4b5563', fontSize: 13 }}>
+                Syntax valid: {emailValidationResult.summary.syntaxValid} · MX valid: {emailValidationResult.summary.mxValid} · SMTP checked: {emailValidationResult.summary.smtpChecked ? 'Yes' : 'No'}
+              </p>
+
+              {emailValidationResult.smtp?.reason && (
+                <p style={{ margin: '0 0 8px', color: '#b45309', fontSize: 13 }}>
+                  SMTP note: {emailValidationResult.smtp.reason}
+                </p>
+              )}
+
+              {(emailValidationResult.cleanEmails || []).length > 0 && (
+                <details style={{ marginBottom: 8 }}>
+                  <summary style={{ cursor: 'pointer', color: '#065f46', fontWeight: 600 }}>
+                    Clean Email List ({emailValidationResult.cleanEmails.length})
+                  </summary>
+                  <ul style={{ margin: '8px 0 0', padding: '0 0 0 18px', fontSize: 13, maxHeight: 140, overflowY: 'auto' }}>
+                    {emailValidationResult.cleanEmails.map((email) => (
+                      <li key={`clean-${email}`}>{email}</li>
+                    ))}
+                  </ul>
+                </details>
+              )}
+
+              {(emailValidationResult.rejected || []).length > 0 && (
+                <details>
+                  <summary style={{ cursor: 'pointer', color: '#b91c1c', fontWeight: 600 }}>
+                    Rejected ({emailValidationResult.rejected.length})
+                  </summary>
+                  <ul style={{ margin: '8px 0 0', padding: '0 0 0 18px', fontSize: 13, maxHeight: 180, overflowY: 'auto' }}>
+                    {emailValidationResult.rejected.map((item) => (
+                      <li key={`rejected-${item.email}`}>
+                        <span style={{ fontFamily: 'monospace' }}>{item.email}</span>
+                        <span style={{ marginLeft: 8, color: '#991b1b' }}>[{item.stage}] {item.reason}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              )}
             </div>
-          </>
-        )}
-      </form>
+          )}
+        </section>
+      </div>
 
       {status && <p>{status}</p>}
 
