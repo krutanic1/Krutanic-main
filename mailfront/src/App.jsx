@@ -134,6 +134,7 @@ function App() {
     }
   }
 
+  //wertyuio
   function selectedIndexList(field, items) {
     const map = templateSelection?.[field] || {};
     return items

@@ -36,9 +36,13 @@ const AdminLogIn = () => {
       setIsOtpSent(true);
       setTimeLeft(120);
       setIsTimerActive(true);
-    } catch (err) {
-      toast.error("You are not Admin");
     }
+   catch (err) {
+  console.error("OTP error:", err.response?.data || err.message);
+  const msg = err.response?.data?.message || "Failed to send OTP. Try again.";
+  toast.error(msg);
+}
+
   };
 
   const handleVerifyOtp = async () => {

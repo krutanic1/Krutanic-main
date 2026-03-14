@@ -26,7 +26,8 @@
         "WAKE_LOCK",
         "READ_PHONE_STATE"
       ],
-      "package": "com.tarunsaikola.MOBILE_APP"
+      "package": "com.tarunsaikola.MOBILE_APP",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -34,6 +35,11 @@
     "plugins": [
       "@react-native-community/datetimepicker",
       "expo-secure-store"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "af501e34-7776-4886-88b9-c4ac78aa7462"
+      }
+    }
   }
 }
