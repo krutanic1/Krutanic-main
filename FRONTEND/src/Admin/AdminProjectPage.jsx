@@ -109,7 +109,7 @@ const AdminProjectPage = () => {
             };
         }
         setJsonRoadmap(JSON.stringify(template, null, 2));
-        toast.success("Template copied to textarea!");
+        toast.success("Template copied to textarea");
     };
 
     const handleSubmit = async (e) => {
