@@ -69,11 +69,17 @@ function App() {
   const [blastSize, setBlastSize] = useState(90);
 
   // ui
-  const [status, setStatus] = useState('');
+  const [blastStatus, setBlastStatus] = useState('');
+  const [validatorStatus, setValidatorStatus] = useState('');
   const [validateReport, setValidateReport] = useState(null);
   const [emailValidationResult, setEmailValidationResult] = useState(null);
   const [result, setResult] = useState(null);
-  const [busy, setBusy] = useState('');
+  const [busyOps, setBusyOps] = useState({
+    validate: false,
+    checkLimits: false,
+    validateRecipients: false,
+    blast: false
+  });
   const [templateStatus, setTemplateStatus] = useState('');
   const [templateError, setTemplateError] = useState('');
   const [editingItem, setEditingItem] = useState(null);
@@ -90,6 +96,7 @@ function App() {
   const perSender = activeSenderCount ? Math.ceil(recCount / activeSenderCount) : 0;
 
   const selectedTemplate = templates.find((template) => template._id === selectedTemplateId) || null;
+  const isBusy = (op) => !!busyOps[op];
 
   // load senders on mount
   useEffect(() => {
@@ -243,28 +250,30 @@ function App() {
   }
 
   async function checkAllLimits() {
-    setBusy('checkLimits');
+    setBusyOps((prev) => ({ ...prev, checkLimits: true }));
     await Promise.all(senders.map((s) => checkLimit(s._id)));
-    setBusy('');
+    setBusyOps((prev) => ({ ...prev, checkLimits: false }));
   }
 
   async function validateAll() {
-    setBusy('validate'); setValidateReport(null); setResult(null); setStatus('');
+    setBusyOps((prev) => ({ ...prev, validate: true }));
+    setValidateReport(null); setResult(null);
     const d = await apiFetch('/api/validate-senders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
     setValidateReport(d.report || []);
-    setBusy('');
+    setBusyOps((prev) => ({ ...prev, validate: false }));
   }
 
   async function validateRecipients() {
-    const emails = validatorEmailList();
+    const typedValidatorEmails = validatorEmailList();
+    const emails = typedValidatorEmails.length ? typedValidatorEmails : recipientList();
     if (!emails.length) {
-      setStatus('Add emails in the validator section before validation.');
+      setValidatorStatus('Add emails in the validator section or campaign recipients before validation.');
       setEmailValidationResult(null);
       return;
     }
 
-    setBusy('validateRecipients');
-    setStatus('Validating recipient list...');
+    setBusyOps((prev) => ({ ...prev, validateRecipients: true }));
+    setValidatorStatus('Validating recipient list...');
     setEmailValidationResult(null);
 
     try {
@@ -276,15 +285,15 @@ function App() {
 
       setEmailValidationResult(d);
       if (d.ok) {
-        setStatus(`Validation complete: ${d.summary.clean}/${d.summary.total} clean emails.`);
+        setValidatorStatus(`Validation complete: ${d.summary.clean}/${d.summary.total} clean emails.`);
       } else {
-        setStatus(d.message || 'Validation failed.');
+        setValidatorStatus(d.message || 'Validation failed.');
       }
     } catch {
-      setStatus('Unable to validate recipients right now.');
+      setValidatorStatus('Unable to validate recipients right now.');
+    } finally {
+      setBusyOps((prev) => ({ ...prev, validateRecipients: false }));
     }
-
-    setBusy('');
   }
 
   function useCleanRecipients() {
@@ -292,31 +301,40 @@ function App() {
     const cleanText = emailValidationResult.cleanEmails.join('\n');
     setValidatorEmails(cleanText);
     setRecipients(cleanText);
-    setStatus(`Applied clean list: ${emailValidationResult.cleanEmails.length} recipients.`);
+    setValidatorStatus(`Applied clean list: ${emailValidationResult.cleanEmails.length} recipients.`);
   }
 
   async function blast(e) {
     e.preventDefault();
-    setBusy('blast'); setStatus('Sending mails...'); setResult(null); setValidateReport(null);
-    const tpl = templates[0] || {};
-    const d = await apiFetch('/api/blast', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        recipients: recipientList(),
-        senderIds: selectedSenderIds,
-        singleShotBcc: true,
-        bccBatchSize: Math.max(1, Number(blastSize) || 90),
-        templateSelection: {
-          subjects: selectedIndexList('subjects', tpl.subjects || []),
-          greetings: selectedIndexList('greetings', tpl.greetings || []),
-          body_paragraphs: selectedIndexList('body_paragraphs', tpl.body_paragraphs || []),
-          closings: selectedIndexList('closings', tpl.closings || []),
-          signatures: selectedIndexList('signatures', tpl.signatures || [])
-        }
-      })
-    });
-    setResult(d); setStatus(''); setBusy('');
+    setBusyOps((prev) => ({ ...prev, blast: true }));
+    setBlastStatus('Sending mails...'); setResult(null); setValidateReport(null);
+    try {
+      const tpl = templates[0] || {};
+      const d = await apiFetch('/api/blast', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          recipients: recipientList(),
+          senderIds: selectedSenderIds,
+          singleShotBcc: true,
+          bccBatchSize: Math.max(1, Number(blastSize) || 90),
+          templateSelection: {
+            subjects: selectedIndexList('subjects', tpl.subjects || []),
+            greetings: selectedIndexList('greetings', tpl.greetings || []),
+            body_paragraphs: selectedIndexList('body_paragraphs', tpl.body_paragraphs || []),
+            closings: selectedIndexList('closings', tpl.closings || []),
+            signatures: selectedIndexList('signatures', tpl.signatures || [])
+          }
+        })
+      });
+      setResult(d);
+      setBlastStatus('');
+    } catch {
+      setResult({ ok: false, message: 'Unable to send mails right now.' });
+      setBlastStatus('');
+    } finally {
+      setBusyOps((prev) => ({ ...prev, blast: false }));
+    }
   }
 
   async function saveCampaignTemplate(e) {
@@ -442,8 +460,8 @@ function App() {
             />
             <button type="submit" style={{ padding: '8px 12px', whiteSpace: 'nowrap' }}>+ Add</button>
             {senders.length > 0 && (
-              <button type="button" onClick={validateAll} disabled={busy === 'validate'} style={{ padding: '8px 12px', whiteSpace: 'nowrap' }}>
-                {busy === 'validate' ? 'Validating…' : 'Validate All'}
+              <button type="button" onClick={validateAll} disabled={isBusy('validate')} style={{ padding: '8px 12px', whiteSpace: 'nowrap' }}>
+                {isBusy('validate') ? 'Validating…' : 'Validate All'}
               </button>
             )}
           </form>
@@ -468,8 +486,8 @@ function App() {
               </button>
               <small style={{ color: '#6b7280' }}>Accounts at limit are skipped automatically.</small>
             </div>
-            <button type="button" onClick={checkAllLimits} disabled={!senders.length || busy === 'checkLimits'}>
-              {busy === 'checkLimits' ? 'Checking…' : 'Check All Limits'}
+            <button type="button" onClick={checkAllLimits} disabled={!senders.length || isBusy('checkLimits')}>
+              {isBusy('checkLimits') ? 'Checking…' : 'Check All Limits'}
             </button>
           </div>
 
@@ -610,13 +628,13 @@ function App() {
             </tbody>
           </table>
           <div className="action-row" style={{ marginTop: 10 }}>
-            <button type="submit" disabled={!!busy || !activeSenderCount || !templates.length} style={{ padding: '6px 16px' }}>
-              {busy === 'blast' ? 'Sending mails...' : `Blast ${recCount} mail${recCount !== 1 ? 's' : ''}`}
+            <button type="submit" disabled={isBusy('blast') || !activeSenderCount || !templates.length} style={{ padding: '6px 16px' }}>
+              {isBusy('blast') ? 'Sending mails...' : `Blast ${recCount} mail${recCount !== 1 ? 's' : ''}`}
             </button>
             {!activeSenderCount && <small style={{ marginLeft: 10, color: '#888' }}>Select at least one sender account first.</small>}
             {activeSenderCount > 0 && !templates.length && <small style={{ marginLeft: 10, color: '#888' }}>Add a template below first.</small>}
           </div>
-          {busy === 'blast' && (
+          {isBusy('blast') && (
             <>
               <style>{`@keyframes mailBlasterSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
               <div style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: 10, color: '#374151' }}>
@@ -656,9 +674,9 @@ function App() {
             <button
               type="button"
               onClick={validateRecipients}
-              disabled={busy === 'validateRecipients' || validatorEmailList().length === 0}
+              disabled={isBusy('validateRecipients') || (validatorEmailList().length === 0 && recipientList().length === 0)}
             >
-              {busy === 'validateRecipients' ? 'Validating List...' : 'Validate Mails'}
+              {isBusy('validateRecipients') ? 'Validating List...' : 'Validate Mails'}
             </button>
             <button
               type="button"
@@ -668,6 +686,9 @@ function App() {
               Use Clean List In Campaign
             </button>
           </div>
+          <small className="field-note" style={{ display: 'block', marginTop: 8 }}>
+            Validates validator emails first. If empty, uses campaign recipients.
+          </small>
 
           {emailValidationResult?.ok && (
             <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid #e5e7eb' }}>
@@ -718,7 +739,8 @@ function App() {
         </section>
       </div>
 
-      {status && <p>{status}</p>}
+      {blastStatus && <p>{blastStatus}</p>}
+      {validatorStatus && <p>{validatorStatus}</p>}
 
       {result && (
         <div className="section-card" style={{ marginTop: 16, padding: 16 }}>
