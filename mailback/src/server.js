@@ -99,13 +99,15 @@ async function hasMxRecord(domain) {
   }
 }
 
+const INVALID_PROBE_HOSTS = new Set(['0.0.0.0', '127.0.0.1', '::1', 'localhost', '.', '::']);
+
 async function getMxHosts(domain) {
   try {
     const records = await dns.resolveMx(domain);
     return (records || [])
       .sort((a, b) => Number(a.priority || 0) - Number(b.priority || 0))
       .map((r) => String(r.exchange || '').trim())
-      .filter(Boolean);
+      .filter((h) => h && !INVALID_PROBE_HOSTS.has(h));
   } catch {
     return [];
   }
@@ -135,6 +137,45 @@ function isRoleBasedEmail(email) {
   return ROLE_LOCAL_PARTS.has(localPart);
 }
 
+const MX_PROVIDER_PATTERNS = [
+  [/google\.com$|googlemail\.com$/, 'Google'],
+  [/protection\.outlook\.com$|outlook\.com$/, 'Microsoft'],
+  [/yahoo\.com$/, 'Yahoo'],
+  [/protonmail\.ch$/, 'ProtonMail'],
+  [/zoho\.com$/, 'Zoho'],
+  [/icloud\.com$/, 'Apple iCloud'],
+  [/sendgrid\.net$/, 'SendGrid'],
+  [/mailgun\.org$/, 'Mailgun'],
+  [/amazonses\.com$/, 'Amazon SES'],
+  [/mimecast\.com$/, 'Mimecast'],
+  [/pphosted\.com$|ppe-hosted\.com$/, 'Proofpoint'],
+  [/messagelabs\.com$/, 'Symantec MessageLabs'],
+  [/barracudanetworks\.com$/, 'Barracuda'],
+];
+
+function getMxProviderName(mxHosts) {
+  for (const host of mxHosts) {
+    const h = String(host || '').toLowerCase();
+    for (const [pattern, name] of MX_PROVIDER_PATTERNS) {
+      if (pattern.test(h)) return name;
+    }
+  }
+  return null;
+}
+
+function isServerSideBlockMsg(text) {
+  const t = String(text || '').toLowerCase();
+  return (
+    t.includes('spamhaus') ||
+    t.includes('tss09') ||
+    t.includes('tss-09') ||
+    t.includes('blacklisted') ||
+    t.includes('blocklist') ||
+    (t.includes('your ip') && (t.includes('block') || t.includes('deni') || t.includes('list'))) ||
+    (t.includes('listed') && t.includes('bl.'))
+  );
+}
+
 function probeMailboxOnHost(mxHost, email) {
   return new Promise((resolve) => {
     let buffer = '';
@@ -160,14 +201,17 @@ function probeMailboxOnHost(mxHost, email) {
 
     const onResponse = (code, text) => {
       if (state === 'greeting') {
-        if (code !== 220) return done({ ok: false, error: `SMTP greeting failed: ${text}` });
+        if (code !== 220) {
+          return done({ ok: false, error: `SMTP greeting failed: ${text}`, serverBlock: isServerSideBlockMsg(text) });
+        }
         state = 'ehlo';
         send('EHLO validator.local');
         return;
       }
 
       if (state === 'ehlo') {
-        if (code >= 500) return done({ ok: false, error: `EHLO rejected: ${text}` });
+        if (code >= 500) return done({ ok: false, error: `EHLO rejected: ${text}`, serverBlock: isServerSideBlockMsg(text) });
+        if (code >= 400) return done({ ok: false, error: `Temporary SMTP failure at EHLO: ${text}`, serverBlock: isServerSideBlockMsg(text) });
         if (code === 250) {
           state = 'mailfrom';
           send('MAIL FROM:<validator@localhost>');
@@ -176,7 +220,8 @@ function probeMailboxOnHost(mxHost, email) {
       }
 
       if (state === 'mailfrom') {
-        if (code >= 500) return done({ ok: false, error: `MAIL FROM rejected: ${text}` });
+        if (code >= 500) return done({ ok: false, error: `MAIL FROM rejected: ${text}`, serverBlock: isServerSideBlockMsg(text) });
+        if (code >= 400) return done({ ok: false, error: `Temporary SMTP failure at MAIL FROM: ${text}`, serverBlock: isServerSideBlockMsg(text) });
         if (code === 250) {
           state = 'rcpt';
           send(`RCPT TO:<${email}>`);
@@ -187,8 +232,8 @@ function probeMailboxOnHost(mxHost, email) {
       if (state === 'rcpt') {
         send('QUIT');
         if (code === 250 || code === 251) return done({ ok: true, error: null });
-        if (code >= 500) return done({ ok: false, error: `Mailbox rejected: ${text}` });
-        return done({ ok: false, error: `Temporary SMTP response: ${text}` });
+        if (code >= 500) return done({ ok: false, error: `Mailbox rejected: ${text}`, serverBlock: isServerSideBlockMsg(text) });
+        return done({ ok: false, error: `Temporary SMTP response: ${text}`, serverBlock: isServerSideBlockMsg(text) });
       }
     };
 
@@ -215,6 +260,34 @@ function probeMailboxOnHost(mxHost, email) {
       if (!closed) done({ ok: false, error: 'SMTP server closed connection before RCPT check.' });
     });
   });
+}
+
+async function detectCatchAllForDomain(domain) {
+  const hosts = await getMxHosts(domain);
+  if (!hosts.length) {
+    return { checked: false, catchAll: false, reason: `No MX hosts available for ${domain}.` };
+  }
+
+  const probeAddress = `krutanic-probe-${Date.now()}-${Math.random().toString(36).slice(2, 10)}@${domain}`;
+  let lastError = null;
+
+  for (const host of hosts.slice(0, 2)) {
+    const status = await probeMailboxOnHost(host, probeAddress);
+    if (status.ok) {
+      return {
+        checked: true,
+        catchAll: true,
+        reason: `Domain accepted random mailbox on ${host}.`
+      };
+    }
+
+    lastError = status.error || 'Catch-all probe failed.';
+    if (String(lastError).toLowerCase().includes('mailbox rejected')) {
+      return { checked: true, catchAll: false, reason: lastError };
+    }
+  }
+
+  return { checked: true, catchAll: false, reason: lastError || 'Catch-all probe failed.' };
 }
 
 function smtpErrorToMessage(err) {
@@ -247,6 +320,7 @@ async function smtpVerifyMailboxBatch(_smtpConfig, emails, options = {}) {
       finalStatus = status;
       if (status.ok) break;
       if (String(status.error || '').toLowerCase().includes('mailbox rejected')) break;
+      if (status.serverBlock) break;
     }
     resultMap.set(email, finalStatus);
   }
@@ -816,7 +890,11 @@ app.post('/api/validate-emails', async (req, res) => {
       mxValid: false,
       disposable: false,
       roleBased: false,
+      catchAll: false,
+      catchAllChecked: false,
       smtpValid: false,
+      likelyValid: false,
+      mxProvider: null,
       clean: false,
       classification: 'undeliverable',
       rejectionStage: null,
@@ -825,6 +903,8 @@ app.post('/api/validate-emails', async (req, res) => {
 
     const domainDnsCache = new Map();
     const domainMxCache = new Map();
+    const domainMxHostsCache = new Map();
+    const domainCatchAllCache = new Map();
 
     setValidationProgress(progressKey, { stage: 'syntax check', current: 0, total: report.length, done: false });
     for (let i = 0; i < report.length; i += 1) {
@@ -857,7 +937,9 @@ app.post('/api/validate-emails', async (req, res) => {
       const row = report[i];
       if (row.syntaxValid && row.dnsValid) {
         if (!domainMxCache.has(row.domain)) {
-          domainMxCache.set(row.domain, await hasMxRecord(row.domain));
+          const mxHosts = await getMxHosts(row.domain);
+          domainMxHostsCache.set(row.domain, mxHosts);
+          domainMxCache.set(row.domain, mxHosts.length > 0);
         }
         row.mxValid = !!domainMxCache.get(row.domain);
         if (!row.mxValid) {
@@ -889,6 +971,38 @@ app.post('/api/validate-emails', async (req, res) => {
       }
       setValidationProgress(progressKey, { stage: 'role email detection', current: i + 1, total: report.length, done: false });
     }
+
+    const catchAllCandidateDomains = [...new Set(
+      report
+        .filter((row) => row.syntaxValid && row.dnsValid && row.mxValid && !row.disposable)
+        .map((row) => row.domain)
+    )];
+
+    setValidationProgress(progressKey, {
+      stage: 'catch-all detection',
+      current: 0,
+      total: catchAllCandidateDomains.length,
+      done: false
+    });
+    for (let i = 0; i < catchAllCandidateDomains.length; i += 1) {
+      const domain = catchAllCandidateDomains[i];
+      if (!domainCatchAllCache.has(domain)) {
+        domainCatchAllCache.set(domain, await detectCatchAllForDomain(domain));
+      }
+      setValidationProgress(progressKey, {
+        stage: 'catch-all detection',
+        current: i + 1,
+        total: catchAllCandidateDomains.length,
+        done: false
+      });
+    }
+
+    report.forEach((row) => {
+      const catchAllStatus = domainCatchAllCache.get(row.domain);
+      if (!catchAllStatus) return;
+      row.catchAllChecked = !!catchAllStatus.checked;
+      row.catchAll = !!catchAllStatus.catchAll;
+    });
 
     const smtpCandidates = report
       .filter((row) => row.syntaxValid && row.dnsValid && row.mxValid && !row.disposable)
@@ -922,8 +1036,19 @@ app.post('/api/validate-emails', async (req, res) => {
         const smtpStatus = smtpResults.get(row.email) || { ok: false, error: 'SMTP mailbox check failed.' };
         row.smtpValid = !!smtpStatus.ok;
         if (!row.smtpValid) {
-          row.rejectionStage = 'smtp';
-          row.reason = smtpStatus.error || 'SMTP mailbox was rejected.';
+          const mxHosts = domainMxHostsCache.get(row.domain) || [];
+          const provider = getMxProviderName(mxHosts);
+          if (provider || smtpStatus.serverBlock) {
+            row.likelyValid = true;
+            row.mxProvider = provider || null;
+            const parts = [];
+            if (smtpStatus.serverBlock) parts.push('probe was server-side blocked');
+            if (provider) parts.push(`MX belongs to ${provider}`);
+            row.reason = `SMTP inconclusive; ${parts.join('; ')}.`;
+          } else {
+            row.rejectionStage = 'smtp';
+            row.reason = smtpStatus.error || 'SMTP mailbox was rejected.';
+          }
         }
       });
     }
@@ -950,19 +1075,26 @@ app.post('/api/validate-emails', async (req, res) => {
         setValidationProgress(progressKey, { stage: 'classification', current: idx + 1, total: report.length, done: false });
         return;
       }
-      if (!row.smtpValid) {
+      if (!row.smtpValid && !row.likelyValid) {
         row.classification = 'undeliverable';
         setValidationProgress(progressKey, { stage: 'classification', current: idx + 1, total: report.length, done: false });
         return;
       }
-      if (row.roleBased) {
+      if (row.roleBased || row.catchAll) {
         row.classification = 'risky';
         if (!row.reason) {
-          row.reason = 'Role-based mailbox detected.';
+          row.reason = row.catchAll
+            ? 'Catch-all domain detected.'
+            : 'Role-based mailbox detected.';
         }
         if (!row.rejectionStage) {
-          row.rejectionStage = 'role';
+          row.rejectionStage = row.catchAll ? 'catch-all' : 'role';
         }
+        setValidationProgress(progressKey, { stage: 'classification', current: idx + 1, total: report.length, done: false });
+        return;
+      }
+      if (!row.smtpValid && row.likelyValid) {
+        row.classification = 'likely_valid';
         setValidationProgress(progressKey, { stage: 'classification', current: idx + 1, total: report.length, done: false });
         return;
       }
@@ -977,8 +1109,12 @@ app.post('/api/validate-emails', async (req, res) => {
       .filter((row) => row.classification === 'deliverable')
       .map((row) => row.email);
 
+    const likelyValidEmails = report
+      .filter((row) => row.classification === 'likely_valid')
+      .map((row) => ({ email: row.email, mxProvider: row.mxProvider, reason: row.reason }));
+
     const rejected = report
-      .filter((row) => row.classification !== 'deliverable')
+      .filter((row) => row.classification !== 'deliverable' && row.classification !== 'likely_valid')
       .map((row) => ({
         email: row.email,
         stage: row.rejectionStage || 'unknown',
@@ -1004,9 +1140,11 @@ app.post('/api/validate-emails', async (req, res) => {
         mxValid: report.filter((row) => row.mxValid).length,
         disposable: report.filter((row) => row.disposable).length,
         roleBased: report.filter((row) => row.roleBased).length,
+        catchAll: report.filter((row) => row.catchAll).length,
         smtpChecked,
         smtpCandidates: smtpCandidates.length,
         smtpValid: report.filter((row) => row.smtpValid).length,
+        likelyValid: likelyValidEmails.length,
         clean: cleanEmails.length,
         deliverable: report.filter((row) => row.classification === 'deliverable').length,
         risky: report.filter((row) => row.classification === 'risky').length,
@@ -1017,6 +1155,7 @@ app.post('/api/validate-emails', async (req, res) => {
         reason: smtpCheckReason
       },
       cleanEmails,
+      likelyValidEmails,
       rejected,
       report
     });

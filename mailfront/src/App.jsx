@@ -359,10 +359,12 @@ function App() {
 
   function useCleanRecipients() {
     if (!emailValidationResult?.ok || !Array.isArray(emailValidationResult.cleanEmails)) return;
-    const cleanText = emailValidationResult.cleanEmails.join('\n');
+    const likelyEmails = (emailValidationResult.likelyValidEmails || []).map((item) => item.email);
+    const allEmails = [...emailValidationResult.cleanEmails, ...likelyEmails];
+    const cleanText = allEmails.join('\n');
     setValidatorEmails(cleanText);
     setRecipients(cleanText);
-    setValidatorStatus(`Applied clean list: ${emailValidationResult.cleanEmails.length} recipients.`);
+    setValidatorStatus(`Applied ${allEmails.length} recipients (${emailValidationResult.cleanEmails.length} clean + ${likelyEmails.length} likely valid).`);
   }
 
   async function blast(e) {
@@ -722,7 +724,7 @@ function App() {
         <section className="section-card campaign-section" style={{ padding: 16 }}>
           <h3>Email Validator</h3>
           <p className="section-subtitle" style={{ marginBottom: 10 }}>
-            Upload list -&gt; Syntax check -&gt; DNS domain check -&gt; MX validation -&gt; Disposable filter -&gt; Role email detection -&gt; SMTP mailbox verification -&gt; Classification
+            Upload list -&gt; Syntax check -&gt; DNS domain check -&gt; MX validation -&gt; Disposable filter -&gt; Role email detection -&gt; Catch-all detection -&gt; SMTP mailbox verification -&gt; Classification
           </p>
           <textarea
             rows={11}
@@ -742,7 +744,7 @@ function App() {
             <button
               type="button"
               onClick={useCleanRecipients}
-              disabled={!emailValidationResult?.ok || (emailValidationResult.cleanEmails || []).length === 0}
+              disabled={!emailValidationResult?.ok || ((emailValidationResult.cleanEmails || []).length === 0 && (emailValidationResult.likelyValidEmails || []).length === 0)}
             >
               Use Clean List In Campaign
             </button>
@@ -777,10 +779,10 @@ function App() {
                 Syntax valid: {emailValidationResult.summary.syntaxValid} · DNS valid: {emailValidationResult.summary.dnsValid ?? 0} · MX valid: {emailValidationResult.summary.mxValid}
               </p>
               <p style={{ margin: '0 0 8px', color: '#4b5563', fontSize: 13 }}>
-                Disposable: {emailValidationResult.summary.disposable ?? 0} · Role-based: {emailValidationResult.summary.roleBased ?? 0}
+                Disposable: {emailValidationResult.summary.disposable ?? 0} · Role-based: {emailValidationResult.summary.roleBased ?? 0} · Catch-all: {emailValidationResult.summary.catchAll ?? 0}
               </p>
               <p style={{ margin: '0 0 8px', color: '#4b5563', fontSize: 13 }}>
-                SMTP checked: {emailValidationResult.summary.smtpChecked ? 'Yes' : 'No'} · SMTP valid: {emailValidationResult.summary.smtpValid ?? 0} · Deliverable: {emailValidationResult.summary.deliverable ?? 0} · Risky: {emailValidationResult.summary.risky ?? 0} · Undeliverable: {emailValidationResult.summary.undeliverable ?? 0}
+                SMTP checked: {emailValidationResult.summary.smtpChecked ? 'Yes' : 'No'} · SMTP valid: {emailValidationResult.summary.smtpValid ?? 0} · Likely valid: {emailValidationResult.summary.likelyValid ?? 0} · Risky: {emailValidationResult.summary.risky ?? 0}
               </p>
 
               {emailValidationResult.smtp?.reason && (
@@ -802,6 +804,22 @@ function App() {
                 </details>
               )}
 
+              {(emailValidationResult.likelyValidEmails || []).length > 0 && (
+                <details style={{ marginBottom: 8 }}>
+                  <summary style={{ cursor: 'pointer', color: '#1d4ed8', fontWeight: 600 }}>
+                    Likely Valid ({emailValidationResult.likelyValidEmails.length})
+                  </summary>
+                  <ul style={{ margin: '8px 0 0', padding: '0 0 0 18px', fontSize: 13, maxHeight: 140, overflowY: 'auto' }}>
+                    {emailValidationResult.likelyValidEmails.map((item) => (
+                      <li key={`lv-${item.email}`}>
+                        <span style={{ fontFamily: 'monospace' }}>{item.email}</span>
+                        <span style={{ marginLeft: 8, color: '#1e40af' }}>{item.reason}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              )}
+
               {(emailValidationResult.rejected || []).length > 0 && (
                 <details>
                   <summary style={{ cursor: 'pointer', color: '#b91c1c', fontWeight: 600 }}>
@@ -811,7 +829,7 @@ function App() {
                     {emailValidationResult.rejected.map((item) => (
                       <li key={`rejected-${item.email}`}>
                         <span style={{ fontFamily: 'monospace' }}>{item.email}</span>
-                        <span style={{ marginLeft: 8, color: '#991b1b' }}>[{item.stage}] ({item.classification || 'unknown'}) {item.reason}</span>
+                        <span style={{ marginLeft: 8, color: '#991b1b' }}>[{item.stage}] {item.reason}</span>
                       </li>
                     ))}
                   </ul>
