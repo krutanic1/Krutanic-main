@@ -1052,11 +1052,16 @@ app.post('/api/blast', async (req, res) => {
 
 // ── Start ─────────────────────────────────────────────────────────────────────
 
-connectDB()
-  .then(() => {
-    app.listen(port, () => console.log(`mailback listening on http://localhost:${port}`));
-  })
-  .catch((err) => {
-    console.error('Failed to connect to MongoDB:', err.message);
-    process.exit(1);
-  });
+// Connect to DB. In serverless environments each cold start reconnects;
+// the connectDB guard (connected flag) prevents duplicate connections on warm invocations.
+connectDB().catch((err) => {
+  console.error('Failed to connect to MongoDB:', err.message);
+  if (process.env.VERCEL !== '1') process.exit(1);
+});
+
+// In non-serverless environments, start the HTTP server.
+if (process.env.VERCEL !== '1') {
+  app.listen(port, () => console.log(`mailback listening on http://localhost:${port}`));
+}
+
+export default app;
