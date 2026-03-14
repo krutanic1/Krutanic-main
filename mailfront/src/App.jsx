@@ -819,6 +819,15 @@ function App() {
               )}
             </div>
           )}
+
+          {emailValidationResult && !emailValidationResult.ok && (
+            <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid #e5e7eb' }}>
+              <h4 style={{ margin: '0 0 8px', color: '#b91c1c' }}>Validation Failed</h4>
+              <p style={{ margin: 0, color: '#991b1b', fontSize: 13 }}>
+                {emailValidationResult.message || 'Validation request failed in production. Check Mailback URL and function logs.'}
+              </p>
+            </div>
+          )}
         </section>
       </div>
 

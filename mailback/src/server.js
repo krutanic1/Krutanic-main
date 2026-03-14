@@ -142,7 +142,7 @@ function probeMailboxOnHost(mxHost, email) {
     let closed = false;
 
     const socket = net.createConnection({ host: mxHost, port: 25 });
-    socket.setTimeout(12000);
+    socket.setTimeout(7000);
 
     const done = (result) => {
       if (closed) return;
@@ -223,16 +223,22 @@ function smtpErrorToMessage(err) {
   return `${code}${err.response || err.message || 'SMTP validation failed.'}`;
 }
 
-async function smtpVerifyMailboxBatch(_smtpConfig, emails) {
+async function smtpVerifyMailboxBatch(_smtpConfig, emails, options = {}) {
   const resultMap = new Map();
   if (!emails.length) return resultMap;
 
-  for (const email of emails) {
+  const concurrency = Math.max(1, Math.min(8, Number(options.concurrency) || 4));
+  const onProgress = typeof options.onProgress === 'function' ? options.onProgress : null;
+
+  let cursor = 0;
+  let completed = 0;
+
+  async function checkOneEmail(email) {
     const domain = extractEmailDomain(email);
     const hosts = await getMxHosts(domain);
     if (!hosts.length) {
       resultMap.set(email, { ok: false, error: `No MX hosts available for ${domain}.` });
-      continue;
+      return;
     }
 
     let finalStatus = { ok: false, error: 'Mailbox verification failed.' };
@@ -245,6 +251,23 @@ async function smtpVerifyMailboxBatch(_smtpConfig, emails) {
     resultMap.set(email, finalStatus);
   }
 
+  async function worker() {
+    while (true) {
+      const index = cursor;
+      cursor += 1;
+      if (index >= emails.length) break;
+
+      const email = emails[index];
+      await checkOneEmail(email);
+      completed += 1;
+      if (onProgress) {
+        onProgress(completed, emails.length);
+      }
+    }
+  }
+
+  const workers = Array.from({ length: Math.min(concurrency, emails.length) }, () => worker());
+  await Promise.all(workers);
   return resultMap;
 }
 
@@ -882,18 +905,17 @@ app.post('/api/validate-emails', async (req, res) => {
     });
     if (smtpCandidates.length > 0) {
       smtpChecked = true;
-      const smtpResults = new Map();
-      for (let i = 0; i < smtpCandidates.length; i += 1) {
-        const email = smtpCandidates[i];
-        const singleResult = await smtpVerifyMailboxBatch(null, [email]);
-        smtpResults.set(email, singleResult.get(email) || { ok: false, error: 'SMTP mailbox check failed.' });
-        setValidationProgress(progressKey, {
-          stage: 'smtp mailbox verification',
-          current: i + 1,
-          total: smtpCandidates.length,
-          done: false
-        });
-      }
+      const smtpResults = await smtpVerifyMailboxBatch(null, smtpCandidates, {
+        concurrency: Number(process.env.VALIDATOR_SMTP_CONCURRENCY || 4),
+        onProgress: (current, total) => {
+          setValidationProgress(progressKey, {
+            stage: 'smtp mailbox verification',
+            current,
+            total,
+            done: false
+          });
+        }
+      });
 
       report.forEach((row) => {
         if (!smtpCandidates.includes(row.email)) return;
