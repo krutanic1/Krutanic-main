@@ -73,6 +73,7 @@ function AdminMailBlaster() {
   const [validatorStatus, setValidatorStatus] = useState('');
   const [validateReport, setValidateReport] = useState(null);
   const [emailValidationResult, setEmailValidationResult] = useState(null);
+  const [validationProgress, setValidationProgress] = useState(null);
   const [result, setResult] = useState(null);
   const [busyOps, setBusyOps] = useState({
     validate: false,
@@ -274,13 +275,41 @@ function AdminMailBlaster() {
     setBusyOps((prev) => ({ ...prev, validateRecipients: true }));
     setValidatorStatus('Validating recipient list...');
     setEmailValidationResult(null);
+    const progressKey = `validator-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    setValidationProgress({ stage: 'upload list', current: 0, total: emails.length, done: false });
+
+    let pollTimer = null;
+    let pollInFlight = false;
+
+    const pollProgress = async () => {
+      if (pollInFlight) return;
+      pollInFlight = true;
+      try {
+        const p = await apiFetch(`/api/validate-emails/progress/${encodeURIComponent(progressKey)}`);
+        if (p?.ok && p.progress) {
+          setValidationProgress(p.progress);
+          if (p.progress.done && pollTimer) {
+            clearInterval(pollTimer);
+            pollTimer = null;
+          }
+        }
+      } catch {
+        // ignore transient poll errors
+      } finally {
+        pollInFlight = false;
+      }
+    };
+
+    pollTimer = setInterval(pollProgress, 700);
 
     try {
       const d = await apiFetch('/api/validate-emails', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ emails, senderIds: selectedSenderIds })
+        body: JSON.stringify({ emails, senderIds: selectedSenderIds, progressKey })
       });
+
+      await pollProgress();
 
       setEmailValidationResult(d);
       if (d.ok) {
@@ -291,6 +320,7 @@ function AdminMailBlaster() {
     } catch {
       setValidatorStatus('Unable to validate recipients right now.');
     } finally {
+      if (pollTimer) clearInterval(pollTimer);
       setBusyOps((prev) => ({ ...prev, validateRecipients: false }));
     }
   }
@@ -717,7 +747,7 @@ function AdminMailBlaster() {
         <section className="section-card campaign-section" style={{ padding: 16 }}>
           <h3>Email Validator</h3>
           <p className="section-subtitle" style={{ marginBottom: 10 }}>
-            Syntax → MX → SMTP mailbox check → Clean list
+            Upload list -&gt; Syntax check -&gt; DNS domain check -&gt; MX validation -&gt; Disposable filter -&gt; Role email detection -&gt; SMTP mailbox verification -&gt; Classification
           </p>
           <textarea
             rows={11}
@@ -746,6 +776,22 @@ function AdminMailBlaster() {
             Validates validator emails first. If empty, uses campaign recipients.
           </small>
 
+          {isBusy('validateRecipients') && validationProgress && (
+            <div style={{ marginTop: 10, padding: 10, border: '1px solid #dbeafe', background: '#f8fbff', borderRadius: 8 }}>
+              <p style={{ margin: '0 0 6px', color: '#1d4ed8', fontWeight: 600 }}>
+                Now validating: {validationProgress.stage || 'processing'}
+              </p>
+              <p style={{ margin: '0 0 6px', color: '#334155', fontSize: 13 }}>
+                Count: {Number(validationProgress.current || 0)} / {Number(validationProgress.total || 0)}
+              </p>
+              <progress
+                value={Number(validationProgress.current || 0)}
+                max={Math.max(1, Number(validationProgress.total || 0))}
+                style={{ width: '100%', height: 10 }}
+              />
+            </div>
+          )}
+
           {emailValidationResult?.ok && (
             <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid #e5e7eb' }}>
               <h4 style={{ margin: '0 0 8px' }}>Validation Result</h4>
@@ -753,7 +799,13 @@ function AdminMailBlaster() {
                 Clean: {emailValidationResult.summary.clean} / {emailValidationResult.summary.total}
               </p>
               <p style={{ margin: '0 0 8px', color: '#4b5563', fontSize: 13 }}>
-                Syntax valid: {emailValidationResult.summary.syntaxValid} · MX valid: {emailValidationResult.summary.mxValid} · SMTP checked: {emailValidationResult.summary.smtpChecked ? 'Yes' : 'No'}
+                Syntax valid: {emailValidationResult.summary.syntaxValid} · DNS valid: {emailValidationResult.summary.dnsValid ?? 0} · MX valid: {emailValidationResult.summary.mxValid}
+              </p>
+              <p style={{ margin: '0 0 8px', color: '#4b5563', fontSize: 13 }}>
+                Disposable: {emailValidationResult.summary.disposable ?? 0} · Role-based: {emailValidationResult.summary.roleBased ?? 0}
+              </p>
+              <p style={{ margin: '0 0 8px', color: '#4b5563', fontSize: 13 }}>
+                SMTP checked: {emailValidationResult.summary.smtpChecked ? 'Yes' : 'No'} · SMTP valid: {emailValidationResult.summary.smtpValid ?? 0} · Deliverable: {emailValidationResult.summary.deliverable ?? 0} · Risky: {emailValidationResult.summary.risky ?? 0} · Undeliverable: {emailValidationResult.summary.undeliverable ?? 0}
               </p>
 
               {emailValidationResult.smtp?.reason && (
@@ -784,7 +836,7 @@ function AdminMailBlaster() {
                     {emailValidationResult.rejected.map((item) => (
                       <li key={`rejected-${item.email}`}>
                         <span style={{ fontFamily: 'monospace' }}>{item.email}</span>
-                        <span style={{ marginLeft: 8, color: '#991b1b' }}>[{item.stage}] {item.reason}</span>
+                        <span style={{ marginLeft: 8, color: '#991b1b' }}>[{item.stage}] ({item.classification || 'unknown'}) {item.reason}</span>
                       </li>
                     ))}
                   </ul>

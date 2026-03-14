@@ -25,9 +25,31 @@ const defaultSmtp = {
 
 const SENDER_RESET_WINDOW_HOURS = 26;
 const SENDER_RESET_WINDOW_MS = SENDER_RESET_WINDOW_HOURS * 60 * 60 * 1000;
+const VALIDATION_PROGRESS_TTL_MS = 10 * 60 * 1000;
+const validationProgressStore = new Map();
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function setValidationProgress(progressKey, patch) {
+  if (!progressKey) return;
+  const prev = validationProgressStore.get(progressKey) || {};
+  validationProgressStore.set(progressKey, {
+    ...prev,
+    ...patch,
+    updatedAt: Date.now()
+  });
+}
+
+function cleanupValidationProgress() {
+  const now = Date.now();
+  for (const [key, value] of validationProgressStore.entries()) {
+    const updatedAt = Number(value?.updatedAt || 0);
+    if (now - updatedAt > VALIDATION_PROGRESS_TTL_MS) {
+      validationProgressStore.delete(key);
+    }
+  }
 }
 
 function normalizeEmailList(input) {
@@ -53,6 +75,15 @@ function normalizeValidationEmailInput(input) {
 }
 
 const EMAIL_SYNTAX_REGEX = /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i;
+const ROLE_LOCAL_PARTS = new Set([
+  'admin', 'administrator', 'support', 'help', 'contact', 'info', 'sales', 'billing',
+  'accounts', 'careers', 'career', 'hr', 'jobs', 'team', 'office', 'hello', 'enquiry',
+  'inquiry', 'noreply', 'no-reply', 'postmaster', 'webmaster', 'security', 'abuse'
+]);
+const DISPOSABLE_DOMAINS = new Set([
+  '10minutemail.com', 'guerrillamail.com', 'mailinator.com', 'tempmail.com', 'yopmail.com',
+  'trashmail.com', 'temp-mail.org', 'dispostable.com', 'getnada.com', 'sharklasers.com'
+]);
 
 function extractEmailDomain(email) {
   const parts = String(email || '').toLowerCase().split('@');
@@ -80,6 +111,112 @@ async function getMxHosts(domain) {
   }
 }
 
+async function hasResolvableDomain(domain) {
+  if (!domain) return false;
+  const checks = await Promise.allSettled([
+    dns.resolve4(domain),
+    dns.resolve6(domain),
+    dns.resolveNs(domain),
+    dns.resolveCname(domain)
+  ]);
+
+  return checks.some((result) => result.status === 'fulfilled' && Array.isArray(result.value) && result.value.length > 0);
+}
+
+function isDisposableDomain(domain) {
+  const d = String(domain || '').toLowerCase();
+  if (!d) return false;
+  if (DISPOSABLE_DOMAINS.has(d)) return true;
+  return d.endsWith('.mailinator.com');
+}
+
+function isRoleBasedEmail(email) {
+  const localPart = String(email || '').split('@')[0]?.toLowerCase() || '';
+  return ROLE_LOCAL_PARTS.has(localPart);
+}
+
+function probeMailboxOnHost(mxHost, email) {
+  return new Promise((resolve) => {
+    let buffer = '';
+    let state = 'greeting';
+    let closed = false;
+
+    const socket = net.createConnection({ host: mxHost, port: 25 });
+    socket.setTimeout(12000);
+
+    const done = (result) => {
+      if (closed) return;
+      closed = true;
+      try {
+        socket.end();
+        socket.destroy();
+      } catch {
+        // noop
+      }
+      resolve(result);
+    };
+
+    const send = (line) => socket.write(`${line}\r\n`);
+
+    const onResponse = (code, text) => {
+      if (state === 'greeting') {
+        if (code !== 220) return done({ ok: false, error: `SMTP greeting failed: ${text}` });
+        state = 'ehlo';
+        send('EHLO validator.local');
+        return;
+      }
+
+      if (state === 'ehlo') {
+        if (code >= 500) return done({ ok: false, error: `EHLO rejected: ${text}` });
+        if (code === 250) {
+          state = 'mailfrom';
+          send('MAIL FROM:<validator@localhost>');
+        }
+        return;
+      }
+
+      if (state === 'mailfrom') {
+        if (code >= 500) return done({ ok: false, error: `MAIL FROM rejected: ${text}` });
+        if (code === 250) {
+          state = 'rcpt';
+          send(`RCPT TO:<${email}>`);
+        }
+        return;
+      }
+
+      if (state === 'rcpt') {
+        send('QUIT');
+        if (code === 250 || code === 251) return done({ ok: true, error: null });
+        if (code >= 500) return done({ ok: false, error: `Mailbox rejected: ${text}` });
+        return done({ ok: false, error: `Temporary SMTP response: ${text}` });
+      }
+    };
+
+    socket.on('data', (chunk) => {
+      buffer += chunk.toString('utf8');
+      const lines = buffer.split(/\r?\n/);
+      buffer = lines.pop() || '';
+
+      lines.forEach((line) => {
+        if (closed) return;
+        const match = line.match(/^(\d{3})([\s-])(.*)$/);
+        if (!match) return;
+        const code = Number(match[1]);
+        const sep = match[2];
+        const text = match[3] || line;
+        if (sep === '-') return;
+        onResponse(code, text);
+      });
+    });
+
+    socket.on('timeout', () => done({ ok: false, error: 'SMTP probe timed out.' }));
+    socket.on('error', (err) => done({ ok: false, error: `SMTP connection error: ${err.message}` }));
+    socket.on('end', () => {
+      if (!closed) done({ ok: false, error: 'SMTP server closed connection before RCPT check.' });
+    });
+  });
+}
+
 function smtpErrorToMessage(err) {
   if (!err) return 'SMTP validation failed.';
   const code = err.responseCode ? `SMTP ${err.responseCode}: ` : '';
@@ -89,88 +226,6 @@ function smtpErrorToMessage(err) {
 async function smtpVerifyMailboxBatch(_smtpConfig, emails) {
   const resultMap = new Map();
   if (!emails.length) return resultMap;
-
-  function probeMailboxOnHost(mxHost, email) {
-    return new Promise((resolve) => {
-      let buffer = '';
-      let state = 'greeting';
-      let closed = false;
-
-      const socket = net.createConnection({ host: mxHost, port: 25 });
-      socket.setTimeout(12000);
-
-      const done = (result) => {
-        if (closed) return;
-        closed = true;
-        try {
-          socket.end();
-          socket.destroy();
-        } catch {
-          // noop
-        }
-        resolve(result);
-      };
-
-      const send = (line) => socket.write(`${line}\r\n`);
-
-      const onResponse = (code, text) => {
-        if (state === 'greeting') {
-          if (code !== 220) return done({ ok: false, error: `SMTP greeting failed: ${text}` });
-          state = 'ehlo';
-          send('EHLO validator.local');
-          return;
-        }
-
-        if (state === 'ehlo') {
-          if (code >= 500) return done({ ok: false, error: `EHLO rejected: ${text}` });
-          if (code === 250) {
-            state = 'mailfrom';
-            send('MAIL FROM:<validator@localhost>');
-          }
-          return;
-        }
-
-        if (state === 'mailfrom') {
-          if (code >= 500) return done({ ok: false, error: `MAIL FROM rejected: ${text}` });
-          if (code === 250) {
-            state = 'rcpt';
-            send(`RCPT TO:<${email}>`);
-          }
-          return;
-        }
-
-        if (state === 'rcpt') {
-          send('QUIT');
-          if (code === 250 || code === 251) return done({ ok: true, error: null });
-          if (code >= 500) return done({ ok: false, error: `Mailbox rejected: ${text}` });
-          return done({ ok: false, error: `Temporary SMTP response: ${text}` });
-        }
-      };
-
-      socket.on('data', (chunk) => {
-        buffer += chunk.toString('utf8');
-        const lines = buffer.split(/\r?\n/);
-        buffer = lines.pop() || '';
-
-        lines.forEach((line) => {
-          if (closed) return;
-          const match = line.match(/^(\d{3})([\s-])(.*)$/);
-          if (!match) return;
-          const code = Number(match[1]);
-          const sep = match[2];
-          const text = match[3] || line;
-          if (sep === '-') return;
-          onResponse(code, text);
-        });
-      });
-
-      socket.on('timeout', () => done({ ok: false, error: 'SMTP probe timed out.' }));
-      socket.on('error', (err) => done({ ok: false, error: `SMTP connection error: ${err.message}` }));
-      socket.on('end', () => {
-        if (!closed) done({ ok: false, error: 'SMTP server closed connection before RCPT check.' });
-      });
-    });
-  }
 
   for (const email of emails) {
     const domain = extractEmailDomain(email);
@@ -410,6 +465,19 @@ app.get('/', (_req, res) => {
 
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true, service: 'mailback', timestamp: new Date().toISOString() });
+});
+
+app.get('/api/validate-emails/progress/:key', (req, res) => {
+  cleanupValidationProgress();
+  const key = String(req.params?.key || '').trim();
+  if (!key) return res.status(400).json({ ok: false, message: 'Progress key is required.' });
+
+  const progress = validationProgressStore.get(key);
+  if (!progress) {
+    return res.status(404).json({ ok: false, message: 'Progress not found or expired.' });
+  }
+
+  return res.json({ ok: true, progress });
 });
 
 // ── Campaign template (mailtemp) ─────────────────────────────────────────────
@@ -687,49 +755,146 @@ app.post('/api/validate-senders', async (req, res) => {
 app.post('/api/validate-emails', async (req, res) => {
   try {
     const emails = normalizeValidationEmailInput(req.body?.emails);
+    const progressKey = String(req.body?.progressKey || '').trim();
+
+    cleanupValidationProgress();
+
     if (!emails.length) {
+      if (progressKey) {
+        setValidationProgress(progressKey, {
+          key: progressKey,
+          stage: 'completed',
+          current: 0,
+          total: 0,
+          done: true,
+          error: 'At least one email is required.'
+        });
+      }
       return res.status(400).json({ ok: false, message: 'At least one email is required.' });
+    }
+
+    if (progressKey) {
+      setValidationProgress(progressKey, {
+        key: progressKey,
+        stage: 'upload list',
+        current: 0,
+        total: emails.length,
+        done: false,
+        error: null,
+        startedAt: Date.now()
+      });
     }
 
     const report = emails.map((email) => ({
       email,
+      domain: extractEmailDomain(email),
       syntaxValid: EMAIL_SYNTAX_REGEX.test(email),
+      dnsValid: false,
       mxValid: false,
+      disposable: false,
+      roleBased: false,
       smtpValid: false,
       clean: false,
+      classification: 'undeliverable',
       rejectionStage: null,
       reason: null
     }));
 
-    for (const row of report) {
+    const domainDnsCache = new Map();
+    const domainMxCache = new Map();
+
+    setValidationProgress(progressKey, { stage: 'syntax check', current: 0, total: report.length, done: false });
+    for (let i = 0; i < report.length; i += 1) {
+      const row = report[i];
       if (!row.syntaxValid) {
         row.rejectionStage = 'syntax';
         row.reason = 'Invalid email syntax.';
       }
+      setValidationProgress(progressKey, { stage: 'syntax check', current: i + 1, total: report.length, done: false });
     }
 
-    await Promise.all(
-      report.map(async (row) => {
-        if (!row.syntaxValid) return;
-        const domain = extractEmailDomain(row.email);
-        row.mxValid = await hasMxRecord(domain);
+    setValidationProgress(progressKey, { stage: 'dns domain check', current: 0, total: report.length, done: false });
+    for (let i = 0; i < report.length; i += 1) {
+      const row = report[i];
+      if (row.syntaxValid) {
+        if (!domainDnsCache.has(row.domain)) {
+          domainDnsCache.set(row.domain, await hasResolvableDomain(row.domain));
+        }
+        row.dnsValid = !!domainDnsCache.get(row.domain);
+        if (!row.dnsValid) {
+          row.rejectionStage = 'dns';
+          row.reason = `DNS lookup failed for ${row.domain}.`;
+        }
+      }
+      setValidationProgress(progressKey, { stage: 'dns domain check', current: i + 1, total: report.length, done: false });
+    }
+
+    setValidationProgress(progressKey, { stage: 'mx validation', current: 0, total: report.length, done: false });
+    for (let i = 0; i < report.length; i += 1) {
+      const row = report[i];
+      if (row.syntaxValid && row.dnsValid) {
+        if (!domainMxCache.has(row.domain)) {
+          domainMxCache.set(row.domain, await hasMxRecord(row.domain));
+        }
+        row.mxValid = !!domainMxCache.get(row.domain);
         if (!row.mxValid) {
           row.rejectionStage = 'mx';
-          row.reason = `No MX records found for ${domain}.`;
+          row.reason = `No MX records found for ${row.domain}.`;
         }
-      })
-    );
+      }
+      setValidationProgress(progressKey, { stage: 'mx validation', current: i + 1, total: report.length, done: false });
+    }
+
+    setValidationProgress(progressKey, { stage: 'disposable filter', current: 0, total: report.length, done: false });
+    for (let i = 0; i < report.length; i += 1) {
+      const row = report[i];
+      if (row.syntaxValid && row.dnsValid && row.mxValid) {
+        row.disposable = isDisposableDomain(row.domain);
+        if (row.disposable) {
+          row.rejectionStage = 'disposable';
+          row.reason = 'Disposable domain detected.';
+        }
+      }
+      setValidationProgress(progressKey, { stage: 'disposable filter', current: i + 1, total: report.length, done: false });
+    }
+
+    setValidationProgress(progressKey, { stage: 'role email detection', current: 0, total: report.length, done: false });
+    for (let i = 0; i < report.length; i += 1) {
+      const row = report[i];
+      if (row.syntaxValid && row.dnsValid && row.mxValid && !row.disposable) {
+        row.roleBased = isRoleBasedEmail(row.email);
+      }
+      setValidationProgress(progressKey, { stage: 'role email detection', current: i + 1, total: report.length, done: false });
+    }
 
     const smtpCandidates = report
-      .filter((row) => row.syntaxValid && row.mxValid)
+      .filter((row) => row.syntaxValid && row.dnsValid && row.mxValid && !row.disposable)
       .map((row) => row.email);
 
     let smtpChecked = false;
     let smtpCheckReason = null;
 
+    setValidationProgress(progressKey, {
+      stage: 'smtp mailbox verification',
+      current: 0,
+      total: smtpCandidates.length,
+      done: false
+    });
     if (smtpCandidates.length > 0) {
       smtpChecked = true;
-      const smtpResults = await smtpVerifyMailboxBatch(null, smtpCandidates);
+      const smtpResults = new Map();
+      for (let i = 0; i < smtpCandidates.length; i += 1) {
+        const email = smtpCandidates[i];
+        const singleResult = await smtpVerifyMailboxBatch(null, [email]);
+        smtpResults.set(email, singleResult.get(email) || { ok: false, error: 'SMTP mailbox check failed.' });
+        setValidationProgress(progressKey, {
+          stage: 'smtp mailbox verification',
+          current: i + 1,
+          total: smtpCandidates.length,
+          done: false
+        });
+      }
+
       report.forEach((row) => {
         if (!smtpCandidates.includes(row.email)) return;
         const smtpStatus = smtpResults.get(row.email) || { ok: false, error: 'SMTP mailbox check failed.' };
@@ -741,36 +906,89 @@ app.post('/api/validate-emails', async (req, res) => {
       });
     }
 
-    const cleanEmails = report
-      .filter((row) => row.syntaxValid && row.mxValid && row.smtpValid)
-      .map((row) => row.email);
-
-    cleanEmails.forEach((email) => {
-      const row = report.find((r) => r.email === email);
-      if (row) {
-        row.clean = true;
-        row.reason = null;
-        row.rejectionStage = null;
+    setValidationProgress(progressKey, { stage: 'classification', current: 0, total: report.length, done: false });
+    report.forEach((row, idx) => {
+      if (!row.syntaxValid) {
+        row.classification = 'undeliverable';
+        setValidationProgress(progressKey, { stage: 'classification', current: idx + 1, total: report.length, done: false });
+        return;
       }
+      if (!row.dnsValid) {
+        row.classification = 'undeliverable';
+        setValidationProgress(progressKey, { stage: 'classification', current: idx + 1, total: report.length, done: false });
+        return;
+      }
+      if (!row.mxValid) {
+        row.classification = 'undeliverable';
+        setValidationProgress(progressKey, { stage: 'classification', current: idx + 1, total: report.length, done: false });
+        return;
+      }
+      if (row.disposable) {
+        row.classification = 'undeliverable';
+        setValidationProgress(progressKey, { stage: 'classification', current: idx + 1, total: report.length, done: false });
+        return;
+      }
+      if (!row.smtpValid) {
+        row.classification = 'undeliverable';
+        setValidationProgress(progressKey, { stage: 'classification', current: idx + 1, total: report.length, done: false });
+        return;
+      }
+      if (row.roleBased) {
+        row.classification = 'risky';
+        if (!row.reason) {
+          row.reason = 'Role-based mailbox detected.';
+        }
+        if (!row.rejectionStage) {
+          row.rejectionStage = 'role';
+        }
+        setValidationProgress(progressKey, { stage: 'classification', current: idx + 1, total: report.length, done: false });
+        return;
+      }
+      row.classification = 'deliverable';
+      row.clean = true;
+      row.reason = null;
+      row.rejectionStage = null;
+      setValidationProgress(progressKey, { stage: 'classification', current: idx + 1, total: report.length, done: false });
     });
 
+    const cleanEmails = report
+      .filter((row) => row.classification === 'deliverable')
+      .map((row) => row.email);
+
     const rejected = report
-      .filter((row) => !row.clean)
+      .filter((row) => row.classification !== 'deliverable')
       .map((row) => ({
         email: row.email,
         stage: row.rejectionStage || 'unknown',
+        classification: row.classification,
         reason: row.reason || 'Validation failed.'
       }));
+
+    setValidationProgress(progressKey, {
+      stage: 'completed',
+      current: report.length,
+      total: report.length,
+      done: true,
+      error: null,
+      completedAt: Date.now()
+    });
 
     return res.json({
       ok: true,
       summary: {
         total: report.length,
         syntaxValid: report.filter((row) => row.syntaxValid).length,
+        dnsValid: report.filter((row) => row.dnsValid).length,
         mxValid: report.filter((row) => row.mxValid).length,
+        disposable: report.filter((row) => row.disposable).length,
+        roleBased: report.filter((row) => row.roleBased).length,
         smtpChecked,
         smtpCandidates: smtpCandidates.length,
-        clean: cleanEmails.length
+        smtpValid: report.filter((row) => row.smtpValid).length,
+        clean: cleanEmails.length,
+        deliverable: report.filter((row) => row.classification === 'deliverable').length,
+        risky: report.filter((row) => row.classification === 'risky').length,
+        undeliverable: report.filter((row) => row.classification === 'undeliverable').length
       },
       smtp: {
         enabled: smtpChecked,
@@ -781,6 +999,13 @@ app.post('/api/validate-emails', async (req, res) => {
       report
     });
   } catch (err) {
+    const progressKey = String(req.body?.progressKey || '').trim();
+    setValidationProgress(progressKey, {
+      stage: 'failed',
+      done: true,
+      error: err.message,
+      completedAt: Date.now()
+    });
     return res.status(500).json({ ok: false, message: err.message });
   }
 });
