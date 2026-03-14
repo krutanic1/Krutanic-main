@@ -188,7 +188,7 @@ const generateReminderEmail = (student) => {
                 <a href="https://smartpay.easebuzz.in/219610/Krutanic" target="_blank" class="cta-button" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); margin-right: 10px;">
                      Click to Pay Now
                 </a>
-                <a href="https://wa.me/917022936875?text=Hi%2C%20I%20need%20help%20with%20payment%20for%20${encodeURIComponent(student.fullname)}" target="_blank" class="cta-button" style="background: linear-gradient(135deg, #f15b29 0%, #ff8c5a 100%);">
+                <a href="https://wa.me/917829102936?text=Hi%2C%20I%20need%20help%20with%20payment%20for%20${encodeURIComponent(student.fullname)}" target="_blank" class="cta-button" style="background: linear-gradient(135deg, #f15b29 0%, #ff8c5a 100%);">
                     Contact Support
                 </a>
             </p>
@@ -196,15 +196,15 @@ const generateReminderEmail = (student) => {
             <div class="contact-info">
                 <strong>Payment Instructions:</strong><br>
                 1️⃣ Click the "Click to Pay Now" button above to make payment<br>
-                2️⃣ After successful payment, share transaction details via WhatsApp/SMS to <strong>+91 7022936875</strong><br>
+                2️⃣ After successful payment, share transaction details via WhatsApp/SMS to <strong>+91 7829102936</strong><br>
                 3️⃣ Include your name and transaction ID for quick verification<br><br>
                 <strong>Payment Support:</strong><br>
                 Email: support@krutanic.com<br>
-                Phone/WhatsApp: +91 7022936875<br>
+                Phone/WhatsApp: +91 7829102936<br>
                 Website: www.krutanic.com
             </div>
             
-            <p style="margin-top: 25px;">If you have already made the payment, please share the transaction details with us at <strong>+91 7022936875</strong>, and kindly ignore this reminder.</p>
+            <p style="margin-top: 25px;">If you have already made the payment, please share the transaction details with us at <strong>+91 7829102936</strong>, and kindly ignore this reminder.</p>
             
             <p style="margin-top: 20px;">Thank you for your cooperation and trust in Krutanic</p>
             
