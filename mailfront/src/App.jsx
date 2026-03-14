@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const API = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001';
+const API = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5001' : '');
 const W = { width: '100%', padding: 6, boxSizing: 'border-box' };
 const td1 = { padding: '5px 8px 5px 0', width: 110, verticalAlign: 'top' };
 const TEMPLATE_FIELDS = ['subjects', 'greetings', 'body_paragraphs', 'closings', 'signatures'];
@@ -24,8 +24,39 @@ function isInvalidAppPasswordError(message) {
 }
 
 async function apiFetch(path, opts = {}) {
-  const r = await fetch(API + path, opts);
-  return r.json();
+  if (!API) {
+    return {
+      ok: false,
+      message: 'Mailback API is not configured. Set VITE_API_BASE_URL in production.'
+    };
+  }
+
+  try {
+    const r = await fetch(API + path, opts);
+    const text = await r.text();
+    let data = {};
+
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch {
+      data = { ok: false, message: text || `Request failed with status ${r.status}` };
+    }
+
+    if (!r.ok) {
+      return {
+        ...data,
+        ok: false,
+        message: data.message || `Request failed with status ${r.status}`
+      };
+    }
+
+    return data;
+  } catch (err) {
+    return {
+      ok: false,
+      message: `Unable to reach mailback API: ${err.message}`
+    };
+  }
 }
 
 function formatCountdown(ms) {
