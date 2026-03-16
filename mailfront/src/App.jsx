@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 const API = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5001' : '');
 const W = { width: '100%', padding: 6, boxSizing: 'border-box' };
 const td1 = { padding: '5px 8px 5px 0', width: 110, verticalAlign: 'top' };
-const TEMPLATE_FIELDS = ['subjects', 'greetings', 'body_paragraphs', 'closings', 'signatures'];
+const TEMPLATE_FIELDS = ['subjects', 'greetings', 'body_paragraphs', 'links', 'closings', 'signatures'];
 
 function formatAppPassword(value) {
   const raw = String(value || '').replace(/\s+/g, '');
@@ -99,6 +99,7 @@ function App() {
   const [templateGreetings, setTemplateGreetings] = useState('');
   const [templateClosings, setTemplateClosings] = useState('');
   const [templateSignatures, setTemplateSignatures] = useState('');
+  const [templateLinks, setTemplateLinks] = useState('');
   const [recipients, setRecipients] = useState('');
   const [validatorEmails, setValidatorEmails] = useState('');
   const [blastSize, setBlastSize] = useState(90);
@@ -453,6 +454,7 @@ function App() {
             subjects: selectedIndexList('subjects', tpl.subjects || []),
             greetings: selectedIndexList('greetings', tpl.greetings || []),
             body_paragraphs: selectedIndexList('body_paragraphs', tpl.body_paragraphs || []),
+            links: selectedIndexList('links', tpl.links || []),
             closings: selectedIndexList('closings', tpl.closings || []),
             signatures: selectedIndexList('signatures', tpl.signatures || [])
           }
@@ -483,6 +485,7 @@ function App() {
         subjects:        parseLines(subject),
         greetings:       parseLines(templateGreetings),
         body_paragraphs: parseBlocks(message),
+        links:           parseLines(templateLinks),
         closings:        parseLines(templateClosings),
         signatures:      parseLines(templateSignatures)
       })
@@ -500,6 +503,7 @@ function App() {
     setTemplateGreetings('');
     setTemplateClosings('');
     setTemplateSignatures('');
+    setTemplateLinks('');
     setTimeout(() => setTemplateStatus(''), 3000);
   }
 
@@ -744,6 +748,7 @@ function App() {
                         <span>{templates[0]?.subjects?.length || 0} subjects</span> &nbsp;·&nbsp;
                         <span>{templates[0]?.greetings?.length || 0} greetings</span> &nbsp;·&nbsp;
                         <span>{templates[0]?.body_paragraphs?.length || 0} paragraphs</span> &nbsp;·&nbsp;
+                        <span>{templates[0]?.links?.length || 0} links</span> &nbsp;·&nbsp;
                         <span>{templates[0]?.closings?.length || 0} closings</span> &nbsp;·&nbsp;
                         <span>{templates[0]?.signatures?.length || 0} signatures</span>
                         <div style={{ color: '#888', marginTop: 3 }}>Each batch gets a fresh random combination.</div>
@@ -1011,13 +1016,13 @@ function App() {
       {/* ── Create Campaign Template ── */}
       <form onSubmit={saveCampaignTemplate} className="section-card template-section" style={{ marginTop: 20, padding: 16 }}>
         <h3 style={{ marginTop: 0 }}>Append to Campaign Template</h3>
-        <p className="section-subtitle">Items are appended to the single mailtemp document. Each field accepts one item per line.</p>
+        <p className="section-subtitle">Items are appended to the single mailtemp document. Each field is optional and accepts one item per line.</p>
         <table className="form-table" style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 12 }}>
           <tbody>
             <tr>
               <td style={td1}>Subjects</td>
               <td>
-                <textarea rows={3} value={subject} onChange={e => setSubject(e.target.value)} required
+                <textarea rows={3} value={subject} onChange={e => setSubject(e.target.value)}
                   placeholder="One subject per line" style={W} />
               </td>
             </tr>
@@ -1031,8 +1036,15 @@ function App() {
             <tr>
               <td style={td1}>Body Paragraphs</td>
               <td>
-                <textarea rows={6} value={message} onChange={e => setMessage(e.target.value)} required
+                <textarea rows={6} value={message} onChange={e => setMessage(e.target.value)}
                   placeholder={"One paragraph per block, separate multiple blocks with a line containing only ---"} style={W} />
+              </td>
+            </tr>
+            <tr>
+              <td style={td1}>Links</td>
+              <td>
+                <textarea rows={3} value={templateLinks} onChange={e => setTemplateLinks(e.target.value)}
+                  placeholder="One link per line, e.g. https://example.com" style={W} />
               </td>
             </tr>
             <tr>
@@ -1065,6 +1077,7 @@ function App() {
             { key: 'subjects', label: 'Subjects' },
             { key: 'greetings', label: 'Greetings' },
             { key: 'body_paragraphs', label: 'Body Paragraphs' },
+            { key: 'links', label: 'Links' },
             { key: 'closings', label: 'Closings' },
             { key: 'signatures', label: 'Signatures' }
           ].map((group) => {

@@ -496,12 +496,14 @@ function composeFromTemplate(template, fallbackSubject = '', fallbackBody = '') 
   const subject = (pick(template?.subjects, String(template?.subject || fallbackSubject))).trim();
   const bodyParagraph = pick(template?.body_paragraphs, String(template?.body || fallbackBody));
   const greeting  = pick(template?.greetings);
+  const link      = pick(template?.links, String(template?.link || ''));
   const closing   = pick(template?.closings);
   const signature = pick(template?.signatures);
 
   const parts = [];
   if (greeting)  parts.push(greeting);
   if (bodyParagraph) parts.push(bodyParagraph);
+  if (link) parts.push(link);
   const outro = [closing, signature].filter(Boolean).join('\n');
   if (outro) parts.push(outro);
 
@@ -511,7 +513,7 @@ function composeFromTemplate(template, fallbackSubject = '', fallbackBody = '') 
 function applyTemplateSelection(template, templateSelection = {}) {
   if (!template || typeof template !== 'object') return template;
 
-  const keys = ['subjects', 'greetings', 'body_paragraphs', 'closings', 'signatures'];
+  const keys = ['subjects', 'greetings', 'body_paragraphs', 'links', 'closings', 'signatures'];
   const out = { ...template };
 
   keys.forEach((key) => {
@@ -701,20 +703,25 @@ app.post('/api/mail-template', async (req, res) => {
     const subjects        = parseLines(b.subjects);
     const greetings       = parseLines(b.greetings);
     const body_paragraphs = parseBlocks(b.body_paragraphs);
+    const links           = parseLines(b.links);
     const closings        = parseLines(b.closings);
     const signatures      = parseLines(b.signatures);
 
-    const isNewFormat = subjects.length || body_paragraphs.length;
+    const hasNewFormatInput =
+      subjects.length ||
+      greetings.length ||
+      body_paragraphs.length ||
+      links.length ||
+      closings.length ||
+      signatures.length;
 
-    if (isNewFormat) {
-      if (!subjects.length)        return res.status(400).json({ ok: false, message: 'At least one subject is required.' });
-      if (!body_paragraphs.length) return res.status(400).json({ ok: false, message: 'At least one body paragraph is required.' });
-
+    if (hasNewFormatInput) {
       // Upsert: one document, append new unique items to each array
       const $addToSet = {};
       if (subjects.length)        $addToSet.subjects        = { $each: subjects };
       if (greetings.length)       $addToSet.greetings       = { $each: greetings };
       if (body_paragraphs.length) $addToSet.body_paragraphs = { $each: body_paragraphs };
+      if (links.length)           $addToSet.links           = { $each: links };
       if (closings.length)        $addToSet.closings        = { $each: closings };
       if (signatures.length)      $addToSet.signatures      = { $each: signatures };
 
@@ -730,12 +737,17 @@ app.post('/api/mail-template', async (req, res) => {
     // legacy plain subject+body — append subject to subjects array, body to body_paragraphs
     const subject  = String(b.subject  || '').trim();
     const bodyText = String(b.body     || '').trim();
-    if (!subject)  return res.status(400).json({ ok: false, message: 'Subject is required.' });
-    if (!bodyText) return res.status(400).json({ ok: false, message: 'Body is required.' });
+    if (!subject && !bodyText) {
+      return res.status(400).json({ ok: false, message: 'Add at least one template item before saving.' });
+    }
+
+    const legacyAddToSet = {};
+    if (subject) legacyAddToSet.subjects = subject;
+    if (bodyText) legacyAddToSet.body_paragraphs = bodyText;
 
     const template = await MailTemplate.findOneAndUpdate(
       {},
-      { $addToSet: { subjects: subject, body_paragraphs: bodyText } },
+      { $addToSet: legacyAddToSet },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     ).lean();
     invalidateReadCache();
@@ -748,7 +760,7 @@ app.post('/api/mail-template', async (req, res) => {
 
 app.post('/api/mail-template/item/update', async (req, res) => {
   try {
-    const allowedFields = new Set(['subjects', 'greetings', 'body_paragraphs', 'closings', 'signatures']);
+    const allowedFields = new Set(['subjects', 'greetings', 'body_paragraphs', 'links', 'closings', 'signatures']);
     const field = String(req.body?.field || '').trim();
     const index = Number(req.body?.index);
     const value = String(req.body?.value || '').trim();
@@ -784,7 +796,7 @@ app.post('/api/mail-template/item/update', async (req, res) => {
 
 app.post('/api/mail-template/item/delete', async (req, res) => {
   try {
-    const allowedFields = new Set(['subjects', 'greetings', 'body_paragraphs', 'closings', 'signatures']);
+    const allowedFields = new Set(['subjects', 'greetings', 'body_paragraphs', 'links', 'closings', 'signatures']);
     const field = String(req.body?.field || '').trim();
     const index = Number(req.body?.index);
 
