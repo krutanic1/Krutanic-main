@@ -132,8 +132,7 @@ function App() {
 
   // load senders on mount
   useEffect(() => {
-    loadSenders();
-    loadTemplates();
+    loadInitialData();
   }, []);
 
   useEffect(() => {
@@ -141,35 +140,60 @@ function App() {
     return () => clearInterval(timer);
   }, []);
 
+  function hydrateSenders(senderList = []) {
+    setSenders(senderList);
+    setEditPassById(Object.fromEntries(senderList.map((s) => [s._id, formatAppPassword(s.pass || '')])));
+    setSelectedById((prev) => Object.fromEntries(senderList.map((s) => [s._id, s.canUse ? (prev[s._id] ?? false) : false])));
+  }
+
+  function hydrateTemplates(templateList = []) {
+    setTemplates(templateList);
+    setSelectedTemplateId((prev) => {
+      if (prev && templateList.some((template) => template._id === prev)) return prev;
+      return templateList[0]?._id || '';
+    });
+    const tpl = templateList[0] || {};
+    setTemplateSelection((prev) => {
+      const next = {};
+      TEMPLATE_FIELDS.forEach((field) => {
+        const items = Array.isArray(tpl[field]) ? tpl[field] : [];
+        next[field] = {};
+        items.forEach((_item, index) => {
+          next[field][index] = prev?.[field]?.[index] ?? true;
+        });
+      });
+      return next;
+    });
+  }
+
+  async function loadInitialData() {
+    const d = await apiFetch('/api/bootstrap');
+    if (d.ok) {
+      hydrateSenders(d.senders || []);
+      hydrateTemplates(d.templates || []);
+      return;
+    }
+
+    const [sendersData, templatesData] = await Promise.all([
+      apiFetch('/api/senders'),
+      apiFetch('/api/mail-templates')
+    ]);
+
+    if (sendersData.ok) hydrateSenders(sendersData.senders || []);
+    if (templatesData.ok) hydrateTemplates(templatesData.templates || []);
+  }
+
   async function loadSenders() {
     const d = await apiFetch('/api/senders');
     if (d.ok) {
-      setSenders(d.senders);
-      setEditPassById(Object.fromEntries(d.senders.map((s) => [s._id, formatAppPassword(s.pass || '')])));
-      setSelectedById((prev) => Object.fromEntries(d.senders.map((s) => [s._id, s.canUse ? (prev[s._id] ?? false) : false])));
+      hydrateSenders(d.senders || []);
     }
   }
 
   async function loadTemplates() {
     const d = await apiFetch('/api/mail-templates');
     if (d.ok) {
-      setTemplates(d.templates || []);
-      setSelectedTemplateId((prev) => {
-        if (prev && d.templates.some((template) => template._id === prev)) return prev;
-        return d.templates[0]?._id || '';
-      });
-      const tpl = d.templates?.[0] || {};
-      setTemplateSelection((prev) => {
-        const next = {};
-        TEMPLATE_FIELDS.forEach((field) => {
-          const items = Array.isArray(tpl[field]) ? tpl[field] : [];
-          next[field] = {};
-          items.forEach((_item, index) => {
-            next[field][index] = prev?.[field]?.[index] ?? true;
-          });
-        });
-        return next;
-      });
+      hydrateTemplates(d.templates || []);
     }
   }
 

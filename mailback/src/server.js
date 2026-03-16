@@ -5,7 +5,7 @@ import nodemailer from 'nodemailer';
 import mongoose from 'mongoose';
 import net from 'net';
 import { promises as dns } from 'dns';
-import { connectDB } from './db.js';
+import { connectDB, isDBConnected } from './db.js';
 import { Sender } from './models/Sender.js';
 import { MailTemplate } from './models/MailTemplate.js';
 
@@ -17,6 +17,20 @@ const port = Number(process.env.PORT) || 5001;
 app.use(cors());
 app.use(express.json({ limit: '2mb' }));
 
+app.use('/api', async (_req, res, next) => {
+  if (isDBConnected()) return next();
+
+  try {
+    await connectDB();
+    return next();
+  } catch (err) {
+    return res.status(503).json({
+      ok: false,
+      message: 'Database connection is not ready. Please retry in a few seconds.'
+    });
+  }
+});
+
 const defaultSmtp = {
   host: process.env.DEFAULT_SMTP_HOST || 'smtp.gmail.com',
   port: Number(process.env.DEFAULT_SMTP_PORT) || 587,
@@ -26,7 +40,54 @@ const defaultSmtp = {
 const SENDER_RESET_WINDOW_HOURS = 26;
 const SENDER_RESET_WINDOW_MS = SENDER_RESET_WINDOW_HOURS * 60 * 60 * 1000;
 const VALIDATION_PROGRESS_TTL_MS = 10 * 60 * 1000;
+const READ_CACHE_TTL_MS = Number(process.env.READ_CACHE_TTL_MS || 30000);
 const validationProgressStore = new Map();
+const readCache = {
+  senders: null,
+  templates: null,
+  bootstrap: null
+};
+
+function getCachedRead(key) {
+  const entry = readCache[key];
+  if (!entry) return null;
+  if (Date.now() - entry.timestamp > READ_CACHE_TTL_MS) return null;
+  return entry.value;
+}
+
+function setCachedRead(key, value) {
+  readCache[key] = {
+    value,
+    timestamp: Date.now()
+  };
+}
+
+function invalidateReadCache() {
+  readCache.senders = null;
+  readCache.templates = null;
+  readCache.bootstrap = null;
+}
+
+async function fetchSendersWithAvailability() {
+  const senders = await Sender.find()
+    .select('user pass label blastedCount createdAt updatedAt')
+    .sort({ createdAt: 1 })
+    .lean();
+
+  return senders.map((sender) => {
+    const availability = getSenderAvailability(sender);
+    return {
+      ...sender,
+      ...availability,
+      limitReached: !availability.canUse
+    };
+  });
+}
+
+async function fetchTemplateArray() {
+  const template = await MailTemplate.findOne().lean();
+  return template ? [template] : [];
+}
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -510,6 +571,7 @@ async function incrementSenderBlastCounts(countMap) {
 
   try {
     await Sender.bulkWrite(ops, { ordered: false });
+    invalidateReadCache();
   } catch (err) {
     console.error('Failed to update sender blastedCount:', err.message);
   }
@@ -581,7 +643,10 @@ app.get('/api/validate-emails/progress/:key', (req, res) => {
 
 app.get('/api/mail-template', async (_req, res) => {
   try {
-    const template = await MailTemplate.findOne().lean();
+    const cached = getCachedRead('templates');
+    const templates = cached || await fetchTemplateArray();
+    if (!cached) setCachedRead('templates', templates);
+    const template = templates[0] || null;
     res.json({ ok: true, template: template || null });
   } catch (err) {
     res.status(500).json({ ok: false, message: err.message });
@@ -590,8 +655,32 @@ app.get('/api/mail-template', async (_req, res) => {
 
 app.get('/api/mail-templates', async (_req, res) => {
   try {
-    const template = await MailTemplate.findOne().lean();
-    res.json({ ok: true, templates: template ? [template] : [] });
+    const cached = getCachedRead('templates');
+    const templates = cached || await fetchTemplateArray();
+    if (!cached) setCachedRead('templates', templates);
+    res.json({ ok: true, templates });
+  } catch (err) {
+    res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
+app.get('/api/bootstrap', async (_req, res) => {
+  try {
+    const cached = getCachedRead('bootstrap');
+    if (cached) {
+      return res.json({ ok: true, ...cached });
+    }
+
+    const [senders, templates] = await Promise.all([
+      fetchSendersWithAvailability(),
+      fetchTemplateArray()
+    ]);
+
+    setCachedRead('senders', senders);
+    setCachedRead('templates', templates);
+    setCachedRead('bootstrap', { senders, templates });
+
+    res.json({ ok: true, senders, templates });
   } catch (err) {
     res.status(500).json({ ok: false, message: err.message });
   }
@@ -634,6 +723,7 @@ app.post('/api/mail-template', async (req, res) => {
         { $addToSet },
         { upsert: true, new: true, setDefaultsOnInsert: true }
       ).lean();
+      invalidateReadCache();
       return res.json({ ok: true, template });
     }
 
@@ -648,6 +738,7 @@ app.post('/api/mail-template', async (req, res) => {
       { $addToSet: { subjects: subject, body_paragraphs: bodyText } },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     ).lean();
+    invalidateReadCache();
     res.json({ ok: true, template });
   } catch (err) {
     console.error('Mail template save error:', err);
@@ -683,6 +774,7 @@ app.post('/api/mail-template/item/update', async (req, res) => {
     items[index] = value;
     template[field] = items;
     await template.save();
+    invalidateReadCache();
 
     res.json({ ok: true, template: template.toObject ? template.toObject() : template });
   } catch (err) {
@@ -714,6 +806,7 @@ app.post('/api/mail-template/item/delete', async (req, res) => {
     items.splice(index, 1);
     template[field] = items;
     await template.save();
+    invalidateReadCache();
 
     res.json({ ok: true, template: template.toObject ? template.toObject() : template });
   } catch (err) {
@@ -725,18 +818,10 @@ app.post('/api/mail-template/item/delete', async (req, res) => {
 
 app.get('/api/senders', async (_req, res) => {
   try {
-    const senders = await Sender.find().sort({ createdAt: 1 }).lean();
-    res.json({
-      ok: true,
-      senders: senders.map((sender) => {
-        const availability = getSenderAvailability(sender);
-        return {
-          ...sender,
-          ...availability,
-          limitReached: !availability.canUse
-        };
-      })
-    });
+    const cached = getCachedRead('senders');
+    const senders = cached || await fetchSendersWithAvailability();
+    if (!cached) setCachedRead('senders', senders);
+    res.json({ ok: true, senders });
   } catch (err) {
     res.status(500).json({ ok: false, message: err.message });
   }
@@ -747,6 +832,7 @@ app.post('/api/senders', async (req, res) => {
     const { user, pass, label } = req.body;
     if (!user || !pass) return res.status(400).json({ ok: false, message: 'user and pass are required.' });
     const sender = await Sender.create({ user: user.trim().toLowerCase(), pass, label: label || '' });
+    invalidateReadCache();
     res.json({ ok: true, sender });
   } catch (err) {
     if (err.code === 11000) return res.status(400).json({ ok: false, message: 'This email is already added.' });
@@ -757,6 +843,7 @@ app.post('/api/senders', async (req, res) => {
 app.delete('/api/senders/:id', async (req, res) => {
   try {
     await Sender.findByIdAndDelete(req.params.id);
+    invalidateReadCache();
     res.json({ ok: true });
   } catch (err) {
     res.status(500).json({ ok: false, message: err.message });
@@ -775,6 +862,7 @@ app.put('/api/senders/:id', async (req, res) => {
     ).lean();
 
     if (!sender) return res.status(404).json({ ok: false, message: 'Sender not found.' });
+    invalidateReadCache();
     res.json({ ok: true, sender });
   } catch (err) {
     res.status(500).json({ ok: false, message: err.message });
@@ -795,6 +883,7 @@ app.get('/api/senders/:id/limit', async (req, res) => {
     if (availability.restored) {
       await Sender.updateOne({ _id: sender._id }, { $set: { blastedCount: 0 } });
       sender = await Sender.findById(req.params.id).lean();
+      invalidateReadCache();
     }
 
     const currentAvailability = getSenderAvailability(sender);
@@ -1439,15 +1528,20 @@ app.post('/api/blast', async (req, res) => {
 // ── Start ─────────────────────────────────────────────────────────────────────
 
 // Connect to DB. In serverless environments each cold start reconnects;
-// the connectDB guard (connected flag) prevents duplicate connections on warm invocations.
-connectDB().catch((err) => {
-  console.error('Failed to connect to MongoDB:', err.message);
-  if (process.env.VERCEL !== '1') process.exit(1);
-});
-
-// In non-serverless environments, start the HTTP server.
-if (process.env.VERCEL !== '1') {
-  app.listen(port, () => console.log(`mailback listening on http://localhost:${port}`));
+// connectDB de-duplicates concurrent attempts using an internal promise.
+if (process.env.VERCEL === '1') {
+  connectDB().catch((err) => {
+    console.error('Failed to connect to MongoDB:', err.message);
+  });
+} else {
+  connectDB()
+    .then(() => {
+      app.listen(port, () => console.log(`mailback listening on http://localhost:${port}`));
+    })
+    .catch((err) => {
+      console.error('Failed to connect to MongoDB:', err.message);
+      process.exit(1);
+    });
 }
 
 export default app;
