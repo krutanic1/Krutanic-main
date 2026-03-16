@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const API = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5001' : '');
 const W = { width: '100%', padding: 6, boxSizing: 'border-box' };
@@ -78,6 +78,10 @@ function getResetCountdown(sender, nowMs) {
 function App() {
   // stored senders (from DB)
   const [senders, setSenders] = useState([]);
+  const dragSenderIdx = useRef(null);
+  const dragOverSenderIdx = useRef(null);
+  const [dragActiveSender, setDragActiveSender] = useState(null);
+  const [dragOverSender, setDragOverSender] = useState(null);
   const [newUser, setNewUser] = useState('');
   const [newPass, setNewPass] = useState('');
   const [addError, setAddError] = useState('');
@@ -247,6 +251,46 @@ function App() {
     } catch {
       setAddError('Unable to connect to server.');
     }
+  }
+
+  function handleSenderDragStart(index) {
+    dragSenderIdx.current = index;
+    setDragActiveSender(index);
+  }
+
+  function handleSenderDragOver(e, index) {
+    e.preventDefault();
+    const rect = e.currentTarget.getBoundingClientRect();
+    const position = e.clientY < rect.top + rect.height / 2 ? 'before' : 'after';
+    dragOverSenderIdx.current = { index, position };
+    setDragOverSender({ index, position });
+  }
+
+  function handleSenderDrop() {
+    const from = dragSenderIdx.current;
+    const over = dragOverSenderIdx.current;
+    dragSenderIdx.current = null;
+    dragOverSenderIdx.current = null;
+    setDragActiveSender(null);
+    setDragOverSender(null);
+    if (from === null || over === null) return;
+    const { index: to, position } = over;
+    let insertAt = position === 'before' ? to : to + 1;
+    if (from < insertAt) insertAt--;
+    if (from === insertAt) return;
+    setSenders((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(from, 1);
+      next.splice(insertAt, 0, moved);
+      return next;
+    });
+  }
+
+  function handleSenderDragEnd() {
+    dragSenderIdx.current = null;
+    dragOverSenderIdx.current = null;
+    setDragActiveSender(null);
+    setDragOverSender(null);
   }
 
   async function deleteSender(id) {
@@ -587,6 +631,7 @@ function App() {
             <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 8 }}>
               <thead>
                 <tr>
+                  <th style={{ width: 20, padding: '3px 6px 3px 0' }}></th>
                   <th style={{ textAlign: 'left', fontSize: 12, padding: '3px 8px 3px 0' }}>#</th>
                   <th style={{ textAlign: 'left', fontSize: 12, padding: '3px 8px 3px 0' }}>Use</th>
                   <th style={{ textAlign: 'left', fontSize: 12, padding: '3px 8px 3px 0' }}>Email</th>
@@ -599,8 +644,26 @@ function App() {
                 {senders.map((s, i) => {
                   const rep = validateReport?.find(r => r.user === s.user);
                   const limitReached = s.canUse === false;
+                  const isDragging = dragActiveSender === i;
+                  const isOverTop = dragOverSender?.index === i && dragOverSender?.position === 'before' && dragActiveSender !== i;
+                  const isOverBottom = dragOverSender?.index === i && dragOverSender?.position === 'after' && dragActiveSender !== i;
                   return (
-                    <tr key={s._id} style={limitReached ? { opacity: 0.6 } : undefined}>
+                    <tr
+                      key={s._id}
+                      draggable
+                      onDragStart={() => handleSenderDragStart(i)}
+                      onDragOver={(e) => handleSenderDragOver(e, i)}
+                      onDrop={handleSenderDrop}
+                      onDragEnd={handleSenderDragEnd}
+                      style={{
+                        opacity: isDragging ? 0.35 : limitReached ? 0.6 : 1,
+                        borderTop: isOverTop ? '2px solid #3b82f6' : '2px solid transparent',
+                        borderBottom: isOverBottom ? '2px solid #3b82f6' : '2px solid transparent',
+                        cursor: 'grab',
+                        transition: 'border-color 0.1s'
+                      }}
+                    >
+                      <td style={{ padding: '4px 6px 4px 0', color: '#9ca3af', width: 20, fontSize: 16, userSelect: 'none', textAlign: 'center' }} title="Drag to reorder">⠿</td>
                       <td style={{ padding: '4px 8px 4px 0', color: '#888', width: 24 }}>{i + 1}</td>
                       <td style={{ padding: '4px 8px 4px 0' }}>
                         <input
