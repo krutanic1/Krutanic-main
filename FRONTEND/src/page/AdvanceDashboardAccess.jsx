@@ -201,22 +201,9 @@ const AdvanceDashboardAccess = () => {
     navigate("/advancedashboardaccess");
   };
 
-  const [getTransactionId, setGetTransactionId] = useState([]);
-  const getTransactionIdList = async () => {
-    try {
-      const response = await axios.get(`${API}/gettransactionwithname`);
-      setGetTransactionId(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    getTransactionIdList();
-  }, []);
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
 
   const handleSubmit = async (event) => {
     setIsSubmitting(true);
@@ -249,10 +236,7 @@ const AdvanceDashboardAccess = () => {
       program: domain.trim(),
     };
 
-    if (
-      getTransactionId.transaction.includes(email) &&
-      getTransactionId.counselor.includes(counselor)
-    ) {
+    if (isEmailVerified) {
       try {
         let response = await axios.post(`${API}/advenroll`, formData);
 
@@ -281,9 +265,7 @@ const AdvanceDashboardAccess = () => {
         setIsSubmitting(false);
       }
     } else {
-      toast.error("Enter valid email and try again.");
-      resetForm();
-      window.location.reload();
+      toast.error("Please enter a valid registered email.");
       setIsSubmitting(false);
     }
   };
@@ -293,40 +275,32 @@ const AdvanceDashboardAccess = () => {
     resetForm();
   };
 
-  // const handleEmailChange = (e) => {
-  //   const enteredEmail = e.target.value.trim();
-  //   setEmail(enteredEmail);
-  //   if (getTransactionId.transaction.includes(enteredEmail)) {
-  //     const matchedCounselor = getTransactionId.counselor.find((counselorItem, index) => getTransactionId.transaction[index] === enteredEmail);
-  //      const matchedLead = getTransactionId.lead.find((counselorItem, index) => getTransactionId.transaction[index] === enteredEmail);
-  //     console.log("Matched Counselor:", matchedCounselor);
-  //     console.log("Counselor lead:", matchedLead);
-  //     if (matchedCounselor) {
-  //       setCounselor(matchedCounselor);
-  //     }
-  //   }
-  // };
 
-  const handleEmailChange = (e) => {
+  const handleEmailChange = async (e) => {
     const enteredEmail = e.target.value.trim();
     setEmail(enteredEmail);
+    setIsEmailVerified(false); // Reset verification on change
 
-    // Defensive nullish checks
-    if (getTransactionId?.transaction?.includes(enteredEmail)) {
-      const index = getTransactionId.transaction.indexOf(enteredEmail);
-
-      const matchedCounselor = getTransactionId.counselor?.[index];
-      const matchedLead = getTransactionId.lead?.[index];
-
-      console.log("Matched Counselor:", matchedCounselor);
-      console.log("Counselor Lead:", matchedLead);
-
-      if (matchedCounselor) {
-        setCounselor(matchedCounselor);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailRegex.test(enteredEmail)) {
+      try {
+        const response = await axios.post(`${API}/verify-transaction-email`, { email: enteredEmail });
+        
+        if (response.data.success) {
+          setCounselor(response.data.counselor || "");
+          setLead(response.data.lead || "");
+          setIsEmailVerified(true);
+          console.log("Email verified successfully");
+        }
+      } catch (error) {
+        console.error("Verification failed:", error.response?.data?.message || error.message);
+        setCounselor("");
+        setLead("");
+        setIsEmailVerified(false);
       }
-      if (matchedLead) {
-        setLead(matchedLead);
-      }
+    } else {
+      setCounselor("");
+      setLead("");
     }
   };
 

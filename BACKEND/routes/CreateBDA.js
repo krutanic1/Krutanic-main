@@ -349,25 +349,32 @@ router.get("/gettransactionid", async (req, res) => {
 }
 );
 
-// GET request to retrieve all transaction ids with name 
-router.get("/gettransactionwithname", async (req, res) => {
+
+// POST request to verify a single transaction email (Secure replacement for gettransactionwithname)
+router.post("/verify-transaction-email", async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
   try {
-    const transactions = await TransactionId.find();
-    const transactionList = transactions.map(item => item.transactionId);
-    const counselorList = transactions.map(item => item.counselor);
-    const lead = transactions.map(item => item.lead);
+    // Search for transaction where the email matches transactionId field (based on frontend usage)
+    const transaction = await TransactionId.findOne({ transactionId: email });
+    
+    if (!transaction) {
+      return res.status(404).json({ message: "Transaction not found for this email" });
+    }
 
     res.status(200).json({
-      transaction: transactionList,
-      counselor: counselorList,
-      lead: lead
+      success: true,
+      counselor: transaction.counselor,
+      lead: transaction.lead
     });
+  } catch (error) {
+    console.error("Error verifying transaction email:", error);
+    res.status(500).json({ message: "Server error during verification" });
   }
-  catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-}
-);
+});
 
 //add team name from create bda page 
 router.post("/addteamname", async (req, res) => {

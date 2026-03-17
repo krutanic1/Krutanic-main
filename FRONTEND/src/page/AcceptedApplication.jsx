@@ -212,19 +212,8 @@ const DashboardAccessForm = () => {
     navigate("/dashboardaccessform");
   };
 
-  const [getTransactionId, setGetTransactionId] = useState([]);
-  const getTransactionIdList = async () => {
-    try {
-      const response = await axios.get(`${API}/gettransactionwithname`);
-      setGetTransactionId(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    getTransactionIdList();
-  }, []);
+  const [getTransactionId, setGetTransactionId] = useState({ transaction: [], counselor: [], lead: [] });
+  // Removed global fetch: const getTransactionIdList = async () => { ... }
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -315,26 +304,34 @@ const DashboardAccessForm = () => {
   //   }
   // };
 
-  const handleEmailChange = (e) => {
+  const handleEmailChange = async (e) => {
   const enteredEmail = e.target.value.trim();
   setEmail(enteredEmail);
 
-  // Defensive nullish checks
-  if (getTransactionId?.transaction?.includes(enteredEmail)) {
-    const index = getTransactionId.transaction.indexOf(enteredEmail);
-
-    const matchedCounselor = getTransactionId.counselor?.[index];
-    const matchedLead = getTransactionId.lead?.[index];
-
-    console.log("Matched Counselor:", matchedCounselor);
-    console.log("Counselor Lead:", matchedLead);
-
-    if (matchedCounselor) {
-      setCounselor(matchedCounselor);
+  // Only verify when a valid-looking email is entered (e.g., contains @ and .)
+  if (enteredEmail.includes("@") && enteredEmail.includes(".")) {
+    try {
+      const response = await axios.post(`${API}/verify-transaction-email`, { email: enteredEmail });
+      if (response.data.found) {
+        setCounselor(response.data.counselor || "");
+        setLead(response.data.lead || "");
+        // Store in a local mock state object to keep compatible with existing handleSubmit logic
+        setGetTransactionId({
+          transaction: [enteredEmail],
+          counselor: [response.data.counselor],
+          lead: [response.data.lead]
+        });
+      }
+    } catch (error) {
+      // Reset counselor/lead if not found or error
+      setCounselor("");
+      setLead("");
+      setGetTransactionId({ transaction: [], counselor: [], lead: [] });
     }
-    if (matchedLead) {
-      setLead(matchedLead);
-    }
+  } else {
+    setCounselor("");
+    setLead("");
+    setGetTransactionId({ transaction: [], counselor: [], lead: [] });
   }
 };
 

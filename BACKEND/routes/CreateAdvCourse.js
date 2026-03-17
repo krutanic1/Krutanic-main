@@ -14,7 +14,7 @@ router.post("/createadvcourse", async (req, res) => {
     await course.save();
 
     // ✅ Invalidate courses cache when new course is created
-    invalidateCache('advcourses:all', 'static');
+    invalidateCache('advcourses:titles', 'static');
 
     res.status(201).json(course);
   } catch (error) {
@@ -31,10 +31,10 @@ router.get("/getadvcourses", async (req, res) => {
       // Don't cache individual course lookups (different every time)
       courses = await CreateAdvCourse.findById(courseId);
     } else {
-      // ✅ CACHE: Courses list (rarely changes, 5 min TTL)
+      // ✅ CACHE: Courses list (titles only, 5 min TTL)
       courses = await cachedQuery(
-        'advcourses:all',
-        () => CreateAdvCourse.find().sort({ _id: -1 }).lean(),
+        'advcourses:titles',
+        () => CreateAdvCourse.find({}, '_id title').sort({ _id: -1 }).lean(),
         300,  // 5 minutes TTL
         'static'
       );
@@ -57,7 +57,7 @@ router.delete("/deleteadvcourse/:_id", async (req, res) => {
     const courses = await CreateAdvCourse.findByIdAndDelete(_id);
 
     // ✅ Invalidate courses cache when course is deleted
-    invalidateCache('advcourses:all', 'static');
+    invalidateCache('advcourses:titles', 'static');
 
     res.status(200).json(courses);
   } catch (error) {
@@ -82,7 +82,7 @@ router.put("/editadvcourse/:_id", async (req, res) => {
     }
 
     // ✅ Invalidate courses cache when course is edited
-    invalidateCache('advcourses:all', 'static');
+    invalidateCache('advcourses:titles', 'static');
 
     res.status(200).json(course);
   } catch (error) {
