@@ -124,6 +124,9 @@ function AdminMailBlaster() {
   const [editingBusy, setEditingBusy] = useState(false);
   const [templateSelection, setTemplateSelection] = useState({});
   const [countdownNowMs, setCountdownNowMs] = useState(Date.now());
+  const [geminiPrompt, setGeminiPrompt] = useState('');
+  const [geminiGenerating, setGeminiGenerating] = useState(false);
+  const [geminiError, setGeminiError] = useState('');
 
   const recipientList = () => [...new Set(recipients.split(/[\n,]/).map(s => s.trim()).filter(Boolean))];
   const validatorEmailList = () => [...new Set(validatorEmails.split(/[\n,;]+/).map((s) => s.trim()).filter(Boolean))];
@@ -542,6 +545,84 @@ function AdminMailBlaster() {
     setTemplateStatus('✓ Template item deleted.');
     await loadTemplates();
     setTimeout(() => setTemplateStatus(''), 2000);
+  }
+
+  async function deleteAllTemplates() {
+    const confirmed = window.confirm('Delete ALL template items? This will clear subjects, greetings, body paragraphs, links, closings, and signatures. This action cannot be undone.');
+    if (!confirmed) return;
+
+    const d = await apiFetch('/api/mail-template/delete-all', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    if (!d.ok) {
+      setTemplateError(d.message || 'Failed to delete all templates.');
+      return;
+    }
+
+    setTemplateError('');
+    setTemplateStatus('✓ All template items deleted.');
+    await loadTemplates();
+    setTimeout(() => setTemplateStatus(''), 3000);
+  }
+
+  async function deleteFieldItems(field, label) {
+    const confirmed = window.confirm(`Delete all ${label}? This action cannot be undone.`);
+    if (!confirmed) return;
+
+    const d = await apiFetch('/api/mail-template/field/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ field })
+    });
+
+    if (!d.ok) {
+      setTemplateError(d.message || `Failed to delete ${label}.`);
+      return;
+    }
+
+    setTemplateError('');
+    setTemplateStatus(`✓ All ${label} deleted.`);
+    await loadTemplates();
+    setTimeout(() => setTemplateStatus(''), 2000);
+  }
+
+  async function generateWithGemini() {
+    if (!geminiPrompt.trim()) {
+      setGeminiError('Please enter a prompt for content generation.');
+      return;
+    }
+
+    setGeminiGenerating(true);
+    setGeminiError('');
+
+    try {
+      const d = await apiFetch('/api/generate-content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: geminiPrompt })
+      });
+
+      if (!d.ok) {
+        setGeminiError(d.message || 'Failed to generate content.');
+        return;
+      }
+
+      if (d.subjects && d.subjects.length > 0) setSubject(d.subjects.join('\n'));
+      if (d.greetings && d.greetings.length > 0) setTemplateGreetings(d.greetings.join('\n'));
+      if (d.body_paragraphs && d.body_paragraphs.length > 0) setMessage(d.body_paragraphs.join('\n---\n'));
+      if (d.links && d.links.length > 0) setTemplateLinks(d.links.join('\n'));
+      if (d.closings && d.closings.length > 0) setTemplateClosings(d.closings.join('\n'));
+      if (d.signatures && d.signatures.length > 0) setTemplateSignatures(d.signatures.join('\n'));
+
+      setTemplateStatus('✓ Content generated! Review and click "Append to Template" to save.');
+      setTimeout(() => setTemplateStatus(''), 5000);
+    } catch (err) {
+      setGeminiError('Unable to connect to content generation service.');
+    } finally {
+      setGeminiGenerating(false);
+    }
   }
 
   return (
@@ -1049,6 +1130,27 @@ function AdminMailBlaster() {
       <form onSubmit={saveCampaignTemplate} className="section-card template-section" style={{ marginTop: 20, padding: 16 }}>
         <h3 style={{ marginTop: 0 }}>Append to Campaign Template</h3>
         <p className="section-subtitle">Items are appended to the single mailtemp document. Each field is optional and accepts one item per line.</p>
+        
+        <div style={{ marginBottom: 16, padding: 12, background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: 8 }}>
+          <h4 style={{ margin: '0 0 8px', fontSize: 14, color: '#0c4a6e' }}>✨ Generate with AI</h4>
+          <textarea
+            rows={3}
+            value={geminiPrompt}
+            onChange={e => setGeminiPrompt(e.target.value)}
+            placeholder="Describe the email campaign you want to create (e.g., 'Create a professional email campaign for a summer internship program in tech companies')"
+            style={{ ...W, marginBottom: 8 }}
+          />
+          <button
+            type="button"
+            onClick={generateWithGemini}
+            disabled={geminiGenerating}
+            style={{ padding: '6px 12px', background: '#0284c7', color: '#fff', border: 'none' }}
+          >
+            {geminiGenerating ? 'Generating...' : '✨ Generate Content'}
+          </button>
+          {geminiError && <p style={{ color: '#b91c1c', margin: '8px 0 0', fontSize: 13 }}>{geminiError}</p>}
+        </div>
+
         <table className="form-table" style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 12 }}>
           <tbody>
             <tr>
@@ -1104,7 +1206,16 @@ function AdminMailBlaster() {
 
       {templates[0] && (
         <section className="section-card" style={{ marginTop: 16, padding: 16 }}>
-          <h3 style={{ marginTop: 0 }}>Existing Template Items</h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <h3 style={{ margin: 0 }}>Existing Template Items</h3>
+            <button 
+              type="button" 
+              onClick={deleteAllTemplates}
+              style={{ padding: '6px 12px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: 6 }}
+            >
+              Delete All Templates
+            </button>
+          </div>
           {[
             { key: 'subjects', label: 'Subjects' },
             { key: 'greetings', label: 'Greetings' },
@@ -1116,8 +1227,28 @@ function AdminMailBlaster() {
             const items = Array.isArray(templates[0][group.key]) ? templates[0][group.key] : [];
             return (
               <details key={group.key} style={{ marginBottom: 10 }}>
-                <summary style={{ cursor: 'pointer', fontWeight: 600 }}>
-                  {group.label} ({items.length})
+                <summary style={{ cursor: 'pointer', fontWeight: 600, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>{group.label} ({items.length})</span>
+                  {items.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteFieldItems(group.key, group.label);
+                      }}
+                      style={{ 
+                        padding: '4px 8px', 
+                        fontSize: 11, 
+                        background: '#ef4444', 
+                        color: '#fff', 
+                        border: 'none', 
+                        borderRadius: 4,
+                        marginLeft: 8
+                      }}
+                    >
+                      Delete All {group.label}
+                    </button>
+                  )}
                 </summary>
                 {items.length === 0 ? (
                   <p style={{ margin: '6px 0 0', color: '#666', fontSize: 13 }}>No items.</p>

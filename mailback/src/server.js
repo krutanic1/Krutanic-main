@@ -5,6 +5,7 @@ import nodemailer from 'nodemailer';
 import mongoose from 'mongoose';
 import net from 'net';
 import { promises as dns } from 'dns';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { connectDB, isDBConnected } from './db.js';
 import { Sender } from './models/Sender.js';
 import { MailTemplate } from './models/MailTemplate.js';
@@ -462,7 +463,13 @@ function escapeHtml(text) {
 }
 
 function linkifyEscapedText(text) {
-  return text.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+  // First, convert URLs with http:// or https://
+  let result = text.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" style="color:#2563eb;text-decoration:underline;" target="_blank" rel="noopener noreferrer">$1</a>');
+  
+  // Then, convert www. URLs without protocol
+  result = result.replace(/(?<!href=")(www\.[^\s<]+)/g, '<a href="http://$1" style="color:#2563eb;text-decoration:underline;" target="_blank" rel="noopener noreferrer">$1</a>');
+  
+  return result;
 }
 
 function buildEmailContent(body) {
@@ -821,6 +828,49 @@ app.post('/api/mail-template/item/delete', async (req, res) => {
     invalidateReadCache();
 
     res.json({ ok: true, template: template.toObject ? template.toObject() : template });
+  } catch (err) {
+    res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
+app.post('/api/mail-template/delete-all', async (req, res) => {
+  try {
+    const template = await MailTemplate.findOne();
+    if (!template) return res.status(404).json({ ok: false, message: 'Template not found.' });
+
+    template.subjects = [];
+    template.greetings = [];
+    template.body_paragraphs = [];
+    template.links = [];
+    template.closings = [];
+    template.signatures = [];
+
+    await template.save();
+    invalidateReadCache();
+
+    res.json({ ok: true, message: 'All template items deleted successfully.' });
+  } catch (err) {
+    res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
+app.post('/api/mail-template/field/delete', async (req, res) => {
+  try {
+    const allowedFields = new Set(['subjects', 'greetings', 'body_paragraphs', 'links', 'closings', 'signatures']);
+    const field = String(req.body?.field || '').trim();
+
+    if (!allowedFields.has(field)) {
+      return res.status(400).json({ ok: false, message: 'Invalid template field.' });
+    }
+
+    const template = await MailTemplate.findOne();
+    if (!template) return res.status(404).json({ ok: false, message: 'Template not found.' });
+
+    template[field] = [];
+    await template.save();
+    invalidateReadCache();
+
+    res.json({ ok: true, message: `All ${field} deleted successfully.` });
   } catch (err) {
     res.status(500).json({ ok: false, message: err.message });
   }
@@ -1269,6 +1319,99 @@ app.post('/api/validate-emails', async (req, res) => {
       completedAt: Date.now()
     });
     return res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
+// ── Generate content with Gemini AI ──────────────────────────────────────────
+
+app.post('/api/generate-content', async (req, res) => {
+  try {
+    const { prompt } = req.body;
+    if (!prompt || !prompt.trim()) {
+      return res.status(400).json({ ok: false, message: 'Prompt is required.' });
+    }
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return res.status(500).json({ 
+        ok: false, 
+        message: 'Gemini API key not configured. Please set GEMINI_API_KEY in environment variables.' 
+      });
+    }
+
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
+
+    const fullPrompt = `You are an expert email campaign content writer. Based on the following request, generate professional email campaign content.And make sure these mails wont be cited as spams.
+    Follow these rules strictly:
+
+Use a natural, human tone (not overly salesy or aggressive).
+
+Avoid spam trigger words such as “free”, “guarantee”, “earn money fast”, “act now”, “limited time”, “winner”, or exaggerated claims.
+
+Do not use ALL CAPS, excessive punctuation (!!!), or symbols like $$$.
+
+Avoid misleading or deceptive language (no fake urgency or false claims).
+
+Keep the subject line clear, relevant, and honest (no clickbait).
+
+Write short, clean sentences with proper grammar.
+
+Personalize the message where possible (e.g., include recipient name or context).
+
+Ensure the email provides genuine value or useful information.
+
+Include a polite closing and professional signature.
+
+Request: ${prompt}
+
+Generate content in the following JSON format with these fields:
+- subjects: Array of exactly 20 different email subject lines
+- greetings: Array of exactly 20 different professional greetings (e.g., "Dear Student,", "Hello,", "Hi there,")
+- body_paragraphs: Array of exactly 20 different body paragraph variations. IMPORTANT: Each body paragraph MUST contain exactly 3 parts/sections separated by double line breaks. Each part should be a complete paragraph that flows naturally into the next.
+- links: Array of exactly 20 relevant call-to-action links or placeholders
+- closings: Array of exactly 20 different professional closings (e.g., "Best regards,", "Sincerely,", "Warm regards,")
+- signatures: Array of exactly 20 different signature variations
+
+Example of a body paragraph with 3 parts:
+"We are excited to announce our summer internship program. This is an excellent opportunity for students to gain hands-on experience in the tech industry.
+
+Our program runs for 12 weeks and includes mentorship from industry experts. You'll work on real projects and develop valuable skills that will boost your career.
+
+Applications are now open and spots are filling up fast. We encourage you to apply early to secure your position in this competitive program."
+
+Return ONLY valid JSON without any markdown formatting or code blocks. Make the content professional, engaging, and suitable for a mail blast campaign. Ensure you generate EXACTLY 20 items for each field.`;
+
+    const result = await model.generateContent(fullPrompt);
+    const response = await result.response;
+    const text = response.text();
+
+    let jsonText = text.trim();
+    if (jsonText.startsWith('```json')) {
+      jsonText = jsonText.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+    } else if (jsonText.startsWith('```')) {
+      jsonText = jsonText.replace(/^```\s*/, '').replace(/\s*```$/, '');
+    }
+
+    const content = JSON.parse(jsonText);
+
+    const response_data = {
+      ok: true,
+      subjects: Array.isArray(content.subjects) ? content.subjects : [],
+      greetings: Array.isArray(content.greetings) ? content.greetings : [],
+      body_paragraphs: Array.isArray(content.body_paragraphs) ? content.body_paragraphs : [],
+      links: Array.isArray(content.links) ? content.links : [],
+      closings: Array.isArray(content.closings) ? content.closings : [],
+      signatures: Array.isArray(content.signatures) ? content.signatures : []
+    };
+
+    res.json(response_data);
+  } catch (err) {
+    console.error('Gemini generation error:', err);
+    res.status(500).json({ 
+      ok: false, 
+      message: `Failed to generate content: ${err.message}` 
+    });
   }
 });
 
