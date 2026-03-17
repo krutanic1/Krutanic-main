@@ -59,7 +59,7 @@ const AddCourse = () => {
     }
   };
   const handleDelete = (_id,selectedCourse) => {
-     if (Object.keys(selectedCourse.session).length > 0) {
+     if (selectedCourse.session && Object.keys(selectedCourse.session).length > 0) {
       alert("You can't delete this course because it has sessions");
       return;
     }

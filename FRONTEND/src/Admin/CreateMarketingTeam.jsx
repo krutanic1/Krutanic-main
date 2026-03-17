@@ -184,21 +184,25 @@ const CreateMarketingTeam = () => {
     fetchOperation();
   };
 
-  const handleloginteam = async (email, password) => {
+  const handleloginteam = async (userId) => {
     try {
-      const response = await axios.post(`${API}/checkmarketingauth`, { email, password });
+      const response = await axios.post(`${API}/api/admin/impersonate`, 
+        { userId, role: "MARKETING" },
+        { withCredentials: true }
+      );
       if (response.status === 200) {
-        toast.success("Login successful!");
+        toast.success("Impersonation successful!");
         const loginTime = new Date().getTime();
         setTimeout(() => {
+          localStorage.setItem("marketingId", response.data.user.id);
+          localStorage.setItem("marketingName", response.data.user.name);
           localStorage.setItem("marketingToken", response.data.token);
-          localStorage.setItem("marketingUser", response.data.marketingName);
           localStorage.setItem("sessionStartTime", loginTime);
           window.open("/marketing/home", "_blank");
         }, 500);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to login!");
+      toast.error(error.response?.data?.message || "Impersonation failed!");
     }
   };
 
@@ -318,7 +322,7 @@ const CreateMarketingTeam = () => {
                  <td>{operation.designation}</td>
                   <td>{operation.team}</td>
                 <td>{operation.password}</td>
-                <td className="cursor-pointer font-semibold" onClick={() => handleloginteam(operation.email, operation.password)}>Login <i className="fa fa-sign-in"></i></td>
+                <td className="cursor-pointer font-semibold" onClick={() => handleloginteam(operation._id)}>Login <i className="fa fa-sign-in"></i></td>
                 <td>
                   <button onClick={() => handleEdit(operation)}>
                     <i className="fa fa-edit"></i>

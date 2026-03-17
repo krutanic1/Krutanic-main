@@ -17,7 +17,7 @@ const verifyAdminCookie = require("../middleware/verifyAdminCookie");
 
 
 // Route to save admin email
-router.post("/admin", expressAsyncHandler(async (req, res) => {
+router.post("/admin", verifyAdminCookie, expressAsyncHandler(async (req, res) => {
   const { email, password, otp, fullname } = req.body;
   if (!email) {
     return res.status(400).json({ error: "Email is required" });
@@ -123,6 +123,7 @@ router.post("/otpverify", expressAsyncHandler(async (req, res) => {
 
 
 
+/*
 //if in case login with password so cheack email and password 
 router.post("/checkadmin", async (req, res) => {
   const { email, password } = req.body;
@@ -150,6 +151,7 @@ router.post("/checkadmin", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+*/
 
 //-------------------------operation
 //send login details to operation team

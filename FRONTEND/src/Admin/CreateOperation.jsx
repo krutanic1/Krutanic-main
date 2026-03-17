@@ -221,11 +221,14 @@ const CreateOperation = () => {
     setIsDialogVisible(false);
   };
 
-  const handleloginteam = async (email, password) => {
+  const handleloginteam = async (userId) => {
     try {
-      const response = await axios.post(`${API}/checkoperation`, { email, password });
+      const response = await axios.post(`${API}/api/admin/impersonate`, 
+        { userId, role: "OPERATION" },
+        { withCredentials: true }
+      );
       if (response.status === 200) {
-        toast.success("Login successful!");
+        toast.success("Impersonation successful!");
         const loginTime = new Date().getTime();
         setTimeout(() => {
           localStorage.setItem("operationId", response.data._id);
@@ -236,7 +239,7 @@ const CreateOperation = () => {
         }, 500);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to verify OTP!");
+      toast.error(error.response?.data?.message || "Impersonation failed!");
     }
   };
 
@@ -395,7 +398,7 @@ const CreateOperation = () => {
                 </td>
                 <td>{operation.email}</td>
                 <td>{operation.password}</td>
-                <td className="cursor-pointer font-semibold" onClick={() => handleloginteam(operation.email, operation.password)}>Login <i className="fa fa-sign-in"></i></td>
+                <td className="cursor-pointer font-semibold" onClick={() => handleloginteam(operation._id)}>Login <i className="fa fa-sign-in"></i></td>
                 <td className="text-center">
                   <div
                     className={`cursor-pointer inline-flex items-center px-2 py-1 rounded-full text-xs font-bold ${operation.isOnline !== false ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'

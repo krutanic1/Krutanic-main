@@ -3,6 +3,7 @@ const router = express.Router();
 const Mentorship = require("../models/Mentorship");
 const { sendEmail } = require("../controllers/emailController");
 const crypto = require('crypto');
+const verifyAnyAuth = require("../middleware/verifyAnyAuth");
 // post request to add new mentorship enqueries
 router.post("/mentorship/register", async (req, res) => {
   const { name, email, collegeEmail, phone, collegeName, domain, passingyear, reason } = req.body;
@@ -33,7 +34,7 @@ router.post("/mentorship/register", async (req, res) => {
 });
 
 //get request to retrieve all the mentorship data in admin 
-router.get("/mentorqueries", async (req, res) => {
+router.get("/mentorqueries", verifyAnyAuth, async (req, res) => {
   try {
     queries = await Mentorship.find().sort({ _id: -1 });
     res.status(200).json(queries);
@@ -43,7 +44,7 @@ router.get("/mentorqueries", async (req, res) => {
 });
 
 //put request to update the action data in admin
-router.put("/queriesaction/:id", async (req, res) => {
+router.put("/queriesaction/:id", verifyAnyAuth, async (req, res) => {
   try {
     const id = req.params.id;
     const { action } = req.body;
@@ -73,7 +74,7 @@ router.put("/queriesaction/:id", async (req, res) => {
 });
 
 //put request to asign bda into lead
-router.put("/bdaasign/:id", async (req, res) => {
+router.put("/bdaasign/:id", verifyAnyAuth, async (req, res) => {
   try {
     const id = req.params.id;
     const { bda, action } = req.body;

@@ -22,7 +22,9 @@ const NewStudentEnroll = require("./routes/NewStudentEnroll");
 const AdvEnroll = require("./routes/AdvEnroll");
 const CreateMarketing = require("./routes/CreateMarketing");
 const sendMailWithAttchement = require("./routes/SendMailWithAttechment");
-const CronRoutes = require("./routes/CronRoutes"); // Vercel Cron Routes
+const CronRoutes = require("./routes/CronRoutes");
+const adminImpersonation = require("./routes/adminImpersonation");
+ // Vercel Cron Routes
 
 const Mockai = require("./routes/mock");
 
@@ -128,6 +130,7 @@ app.use("/api/adv-teams", AdvTeamRoutes);
 app.use("/api/adv-reports", AdvReportRoutes);
 app.use("/api/adv-notifications", AdvNotificationRoutes);
 app.use("/api/admin", AdvAdminRoutes);
+app.use("/api/admin", adminImpersonation);
 
 // CREATEJOBS
 app.use("/", CreateJob);

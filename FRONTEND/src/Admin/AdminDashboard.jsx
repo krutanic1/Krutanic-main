@@ -277,7 +277,7 @@ const AdminDashboard = () => {
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{course.title}</td>
-                  <td>{Object.keys(course.session).length}</td>
+                  <td>{course.session ? Object.keys(course.session).length : 0}</td>
                   <td>{payment?.filter((item) => item.domainId === course._id && item.monthOpted === currentMonth).length || 0}</td>
                   <td>{payment?.filter((item) => item.domainId === course._id && item.monthOpted === nextMonth).length || 0}</td>
                 </tr>

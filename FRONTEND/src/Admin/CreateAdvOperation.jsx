@@ -230,11 +230,14 @@ const CreateAdvOperation = () => {
     }
   };
 
-  const handleloginteam = async (email, password) => {
+  const handleloginteam = async (userId) => {
     try {
-      const response = await axios.post(`${API}/checkadvoperation`, { email, password });
+      const response = await axios.post(`${API}/api/admin/impersonate`, 
+        { userId, role: "ADV_OPERATION" },
+        { withCredentials: true }
+      );
       if (response.status === 200) {
-        toast.success("Login successful!");
+        toast.success("Impersonation successful!");
         const loginTime = new Date().getTime();
         setTimeout(() => {
           localStorage.setItem("advOperationId", response.data._id);
@@ -245,7 +248,7 @@ const CreateAdvOperation = () => {
         }, 500);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to login!");
+      toast.error(error.response?.data?.message || "Impersonation failed!");
     }
   };
 
@@ -382,12 +385,12 @@ const CreateAdvOperation = () => {
                 </td>
                 <td>{operation.email}</td>
                 <td>{operation.password}</td>
-                <td
-                  className="cursor-pointer font-semibold"
-                  onClick={() => handleloginteam(operation.email, operation.password)}
-                >
-                  Login <i className="fa fa-sign-in"></i>
-                </td>
+                  <td
+                    className="cursor-pointer font-semibold"
+                    onClick={() => handleloginteam(operation._id)}
+                  >
+                    Login <i className="fa fa-sign-in"></i>
+                  </td>
                 <td className="text-center">
                   <div
                     onClick={() => handleToggleStatus(operation._id)}

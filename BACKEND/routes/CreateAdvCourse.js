@@ -1,10 +1,11 @@
 const express = require("express");
 const CreateAdvCourse = require("../models/CreateAdvCourse");
 const { cachedQuery, invalidateCache } = require("../utils/cache");
+const verifyAdminCookie = require("../middleware/verifyAdminCookie");
 const router = express.Router();
 
 // post request to post all the advance courses
-router.post("/createadvcourse", async (req, res) => {
+router.post("/createadvcourse", verifyAdminCookie, async (req, res) => {
   const { title, description } = req.body;
   try {
     const course = new CreateAdvCourse({
@@ -51,7 +52,7 @@ router.get("/getadvcourses", async (req, res) => {
 });
 
 // delete request to delete selected advance course by id
-router.delete("/deleteadvcourse/:_id", async (req, res) => {
+router.delete("/deleteadvcourse/:_id", verifyAdminCookie, async (req, res) => {
   const { _id } = req.params;
   try {
     const courses = await CreateAdvCourse.findByIdAndDelete(_id);
@@ -66,7 +67,7 @@ router.delete("/deleteadvcourse/:_id", async (req, res) => {
 });
 
 //put request to edit selected advance course by id
-router.put("/editadvcourse/:_id", async (req, res) => {
+router.put("/editadvcourse/:_id", verifyAdminCookie, async (req, res) => {
   const { _id } = req.params;
   const { title, description } = req.body;
 
@@ -91,7 +92,7 @@ router.put("/editadvcourse/:_id", async (req, res) => {
 });
 
 //put request to add sessions by id
-router.put("/updateadvcourse/:id", async (req, res) => {
+router.put("/updateadvcourse/:id", verifyAdminCookie, async (req, res) => {
   try {
     const updatedCourse = await CreateAdvCourse.findByIdAndUpdate(
       req.params.id,
@@ -105,7 +106,7 @@ router.put("/updateadvcourse/:id", async (req, res) => {
 });
 
 //put request to add a lecture video in the modules
-router.put("/updateadvcourse/:courseId", async (req, res) => {
+router.put("/updateadvcourse/:courseId", verifyAdminCookie, async (req, res) => {
   try {
     const { courseId } = req.params;
     const updatedCourse = req.body;

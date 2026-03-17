@@ -9,9 +9,10 @@ const jwt = require("jsonwebtoken");
 const { default: mongoose } = require("mongoose");
 require("dotenv").config();
 const crypto = require("crypto");
+const verifyAdminCookie = require("../middleware/verifyAdminCookie");
 
 // POST to create a new ADV operation account
-router.post("/createadvoperation", async (req, res) => {
+router.post("/createadvoperation", verifyAdminCookie, async (req, res) => {
   const { fullname, email, password, languages } = req.body;
   try {
     const newAdvOperation = new CreateAdvOperation({
@@ -61,7 +62,7 @@ router.get("/getadvoperation", async (req, res) => {
 });
 
 // PUT request to edit the ADV operations details
-router.put("/updateadvoperation/:id", async (req, res) => {
+router.put("/updateadvoperation/:id", verifyAdminCookie, async (req, res) => {
   try {
     const { id } = req.params;
     const { fullname, email, password, languages } = req.body;
@@ -97,7 +98,7 @@ router.put("/toggleadvonlinestatus/:id", async (req, res) => {
 });
 
 // DELETE request to delete the ADV operation account
-router.delete("/deleteadvoperation/:id", async (req, res) => {
+router.delete("/deleteadvoperation/:id", verifyAdminCookie, async (req, res) => {
   try {
     const { id } = req.params;
     const deletedOperation = await CreateAdvOperation.findByIdAndDelete(id);
@@ -110,6 +111,7 @@ router.delete("/deleteadvoperation/:id", async (req, res) => {
   }
 });
 
+/*
 // Direct Login for Admin Panel Bypass
 router.post("/checkadvoperation", async (req, res) => {
   const { email, password } = req.body;
@@ -139,6 +141,7 @@ router.post("/checkadvoperation", async (req, res) => {
       .json({ message: "Failed to login directly", error: error.message });
   }
 });
+*/
 
 // Send OTP for ADV operation login
 router.post("/advoperationsendotp", async (req, res) => {
@@ -226,7 +229,7 @@ router.get("/AdvOperationDashboard", authMiddleware, (req, res) => {
 });
 
 // Assign target to ADV operation
-router.post("/assigntargettoadvoperation/:id", async (req, res) => {
+router.post("/assigntargettoadvoperation/:id", verifyAdminCookie, async (req, res) => {
   try {
     const { id } = req.params;
     const { target } = req.body;

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../API";
+import checkAdminAuth from "../checkAdminAuth";
 import toast ,{Toaster} from 'react-hot-toast';
 
 
@@ -13,6 +14,18 @@ const AdminLogIn = () => {
   const [isTimerActive, setIsTimerActive] = useState(false);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      if (!localStorage.getItem("adminToken")) return;
+      
+      const isAdmin = await checkAdminAuth();
+      if (isAdmin) {
+        navigate("/AdminDashboard");
+      }
+    };
+    checkAuth();
+  }, [navigate]);
 
   useEffect(() => {
     let timer;

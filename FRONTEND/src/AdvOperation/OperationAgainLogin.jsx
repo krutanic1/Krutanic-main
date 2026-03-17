@@ -10,6 +10,7 @@ const OperationAgainLogin = () => {
     const [password, setPassword] = useState('');
 
     const navigate = useNavigate();
+/*
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -33,6 +34,11 @@ const OperationAgainLogin = () => {
             toast.error('An error occurred while logging in');
         }
     };
+*/
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        toast.error("Password login is disabled. Please use OTP login.");
+    };
 
     return (
         <div id='loginpage'>
@@ -49,6 +55,7 @@ const OperationAgainLogin = () => {
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            disabled
                         />
                     </div>
                     <div>
@@ -56,14 +63,15 @@ const OperationAgainLogin = () => {
                         <input
                             type="password"
                             required
-                            placeholder='Enter your password'
+                            placeholder='Password login disabled'
                             id="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            disabled
                         />
                     </div>
                     <div>
-                        <button type='submit'>Login</button>
+                        <button disabled type='submit'>Login (Disabled)</button>
                     </div>
                 </form>
                 <p>--------------------or--------------------</p>

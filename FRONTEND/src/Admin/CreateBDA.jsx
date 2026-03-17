@@ -247,11 +247,14 @@ const CreateBDA = () => {
       });
   }
 
-  const handleloginteam = async (email, password) => {
+  const handleloginteam = async (userId, role) => {
     try {
-      const response = await axios.post(`${API}/checkbdaauth`, { email, password });
+      const response = await axios.post(`${API}/api/admin/impersonate`, 
+        { userId, role },
+        { withCredentials: true }
+      );
       if (response.status === 200) {
-        toast.success("Login successful!");
+        toast.success("Impersonation successful!");
         const loginTime = new Date().getTime();
         setTimeout(() => {
           localStorage.setItem("bdaId", response.data.bdaId);
@@ -262,7 +265,7 @@ const CreateBDA = () => {
         }, 500);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to verify OTP!");
+      toast.error(error.response?.data?.message || "Impersonation failed!");
     }
   };
 
@@ -439,7 +442,7 @@ const CreateBDA = () => {
                   <td>{bda.designation}</td>
                   <td>{bda.team}</td>
                   <td>{bda.password}</td>
-                  <td className="cursor-pointer font-semibold" onClick={() => handleloginteam(bda.email, bda.password)}>Login <i className="fa fa-sign-in"></i></td>
+                  <td className="cursor-pointer font-semibold" onClick={() => handleloginteam(bda._id, bda.designation)}>Login <i className="fa fa-sign-in"></i></td>
                   <td>{bda.status}</td>
                   <td>
                     <button title="Edit" onClick={() => handleEdit(bda)}><i className="fa fa-edit"></i></button>

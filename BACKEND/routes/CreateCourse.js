@@ -1,10 +1,11 @@
 const express = require("express");
 const CreateCourse = require("../models/CreateCourse");
 const { cachedQuery, invalidateCache } = require("../utils/cache");
+const verifyAdminCookie = require("../middleware/verifyAdminCookie");
 const router = express.Router();
 
 // post request to post all the courses
-router.post("/createcourse", async (req, res) => {
+router.post("/createcourse", verifyAdminCookie, async (req, res) => {
   const { title, description } = req.body;
   try {
     const course = new CreateCourse({
@@ -61,7 +62,7 @@ router.get("/getcourses", async (req, res) => {
 });
 
 // delete request to delete selected course by id
-router.delete("/deletecourse/:_id", async (req, res) => {
+router.delete("/deletecourse/:_id", verifyAdminCookie, async (req, res) => {
   const { _id } = req.params;
   try {
     const courses = await CreateCourse.findByIdAndDelete(_id);
@@ -76,7 +77,7 @@ router.delete("/deletecourse/:_id", async (req, res) => {
 });
 
 //put request to edit selected course by id
-router.put("/editcourse/:_id", async (req, res) => {
+router.put("/editcourse/:_id", verifyAdminCookie, async (req, res) => {
   const { _id } = req.params;
   const { title, description } = req.body;
 
@@ -101,7 +102,7 @@ router.put("/editcourse/:_id", async (req, res) => {
 });
 
 //put request to add a sessions by id
-router.put("/updatecourse/:id", async (req, res) => {
+router.put("/updatecourse/:id", verifyAdminCookie, async (req, res) => {
   try {
     const updatedCourse = await CreateCourse.findByIdAndUpdate(
       req.params.id,
@@ -115,7 +116,7 @@ router.put("/updatecourse/:id", async (req, res) => {
 });
 
 //put request to add a lecture video in the moduls
-router.put("/updatecourse/:courseId", async (req, res) => {
+router.put("/updatecourse/:courseId", verifyAdminCookie, async (req, res) => {
   try {
     const { courseId } = req.params;
     const updatedCourse = req.body;

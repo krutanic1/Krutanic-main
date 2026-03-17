@@ -109,14 +109,24 @@ const AddModule = () => {
     setisModuleFormVisible(false);
   };
 
-  if (!selectedCourse) {
-    return <div id="loader">
-      <div className="three-body">
-        <div className="three-body__dot"></div>
-        <div className="three-body__dot"></div>
-        <div className="three-body__dot"></div>
+  if (!selectedCourse && courses.length > 0) {
+    return (
+      <div id="loader">
+        <div className="three-body">
+          <div className="three-body__dot"></div>
+          <div className="three-body__dot"></div>
+          <div className="three-body__dot"></div>
+        </div>
       </div>
-    </div>;
+    );
+  }
+
+  if (courses.length === 0 && !selectedCourse) {
+    return (
+      <div style={{ padding: "40px", textAlign: "center" }}>
+        <h3>No courses found. Please create a course first.</h3>
+      </div>
+    );
   }
   return (
     <div id="addmodule" >
@@ -190,7 +200,7 @@ const AddModule = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {Object.keys(selectedCourse.session).map((key) => (
+                  {selectedCourse.session && Object.keys(selectedCourse.session).map((key) => (
                     <tr key={key}>
                       <td className=" capitalize">{key}</td>
                       <td>{selectedCourse.session[key].title}</td>
