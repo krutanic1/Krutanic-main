@@ -1340,7 +1340,13 @@ app.post('/api/generate-content', async (req, res) => {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
+    const model = genAI.getGenerativeModel({ 
+      model: 'gemini-1.5-flash-8b',
+      generationConfig: {
+        temperature: 0.9,
+        maxOutputTokens: 8000,
+      }
+    });
 
     const fullPrompt = `You are an expert email campaign content writer. Based on the following request, generate professional email campaign content.And make sure these mails wont be cited as spams.
     Follow these rules strictly:
