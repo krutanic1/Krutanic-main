@@ -1,5 +1,4 @@
 import express from 'express';
-import cors from 'cors';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 import mongoose from 'mongoose';
@@ -16,7 +15,61 @@ dotenv.config();
 const app = express();
 const port = Number(process.env.PORT) || 5001;
 
-app.use(cors({ origin: true, credentials: true }));
+const configuredCorsOrigins = String(process.env.MAILBLASTER_CORS_ORIGINS || process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+function isAllowedCorsOrigin(origin) {
+  if (!origin) return true;
+
+  if (configuredCorsOrigins.length > 0) {
+    return configuredCorsOrigins.includes(origin);
+  }
+
+  // Safe defaults if env allowlist is not configured.
+  if (/^https?:\/\/localhost(?::\d+)?$/i.test(origin)) return true;
+
+  try {
+    const url = new URL(origin);
+    return url.hostname.endsWith('.vercel.app');
+  } catch {
+    return false;
+  }
+}
+
+app.use((req, res, next) => {
+  const origin = String(req.headers.origin || '').trim();
+  const isAllowed = isAllowedCorsOrigin(origin);
+
+  if (origin && isAllowed) {
+    // For credentialed requests, never send wildcard.
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Vary', 'Origin');
+  }
+
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+
+  // Prevent stale 304 + stale CORS metadata for API responses.
+  if (req.path.startsWith('/api/')) {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  }
+
+  if (req.method === 'OPTIONS') {
+    if (!origin || isAllowed) return res.status(204).end();
+    return res.status(403).json({ ok: false, message: 'CORS origin is not allowed.' });
+  }
+
+  if (origin && !isAllowed) {
+    return res.status(403).json({ ok: false, message: 'CORS origin is not allowed.' });
+  }
+
+  return next();
+});
 app.use(express.json({ limit: '2mb' }));
 
 app.use('/api', async (_req, res, next) => {
