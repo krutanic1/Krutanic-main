@@ -71,18 +71,24 @@ function invalidateReadCache() {
 
 async function fetchSendersWithAvailability() {
   const senders = await Sender.find()
-    .select('user pass label blastedCount createdAt updatedAt')
+    .select('user label blastedCount createdAt updatedAt')
     .sort({ createdAt: 1 })
     .lean();
 
   return senders.map((sender) => {
     const availability = getSenderAvailability(sender);
     return {
-      ...sender,
+      ...toPublicSender(sender),
       ...availability,
       limitReached: !availability.canUse
     };
   });
+}
+
+function toPublicSender(senderDoc) {
+  if (!senderDoc) return senderDoc;
+  const { pass, ...safeSender } = senderDoc;
+  return safeSender;
 }
 
 async function fetchTemplateArray() {
@@ -895,7 +901,7 @@ app.post('/api/senders', async (req, res) => {
     if (!user || !pass) return res.status(400).json({ ok: false, message: 'user and pass are required.' });
     const sender = await Sender.create({ user: user.trim().toLowerCase(), pass, label: label || '' });
     invalidateReadCache();
-    res.json({ ok: true, sender });
+    res.json({ ok: true, sender: toPublicSender(sender.toObject ? sender.toObject() : sender) });
   } catch (err) {
     if (err.code === 11000) return res.status(400).json({ ok: false, message: 'This email is already added.' });
     res.status(500).json({ ok: false, message: err.message });
@@ -925,7 +931,7 @@ app.put('/api/senders/:id', async (req, res) => {
 
     if (!sender) return res.status(404).json({ ok: false, message: 'Sender not found.' });
     invalidateReadCache();
-    res.json({ ok: true, sender });
+    res.json({ ok: true, sender: toPublicSender(sender) });
   } catch (err) {
     res.status(500).json({ ok: false, message: err.message });
   }
