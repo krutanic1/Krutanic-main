@@ -22,10 +22,21 @@ const AddModule = () => {
       const response = await axios.get(`${API}/getcourses`);
       setCourses(response.data);
       if (response.data.length > 0) {
-        setSelectedCourse(response.data[0]);
+        await fetchCourseDetails(response.data[0]._id);
       }
     } catch (error) {
       console.error("There was an error fetching courses:", error);
+    }
+  };
+
+  const fetchCourseDetails = async (courseId) => {
+    try {
+      const response = await axios.get(`${API}/getcourses`, {
+        params: { courseId },
+      });
+      setSelectedCourse(response.data || null);
+    } catch (error) {
+      console.error("There was an error fetching course details:", error);
     }
   };
 
@@ -33,7 +44,7 @@ const AddModule = () => {
     fetchCourses();
   }, []);
   const handleCourseClick = (course) => {
-    setSelectedCourse(course);
+    fetchCourseDetails(course._id);
   };
   const handleModuleSubmit = async (event) => {
     event.preventDefault();
