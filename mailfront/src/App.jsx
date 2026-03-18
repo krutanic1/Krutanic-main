@@ -128,10 +128,6 @@ function MailblasterOtpLogin({ onAuthenticated }) {
     <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: '#f4f6f8', padding: 16 }}>
       <div style={{ width: '100%', maxWidth: 420, background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: 20 }}>
         <h2 style={{ marginTop: 0, marginBottom: 8 }}>Mail Blaster Admin Login</h2>
-        <p style={{ marginTop: 0, color: '#6b7280', fontSize: 13 }}>
-          Only emails present in admin login collection can sign in.
-        </p>
-
         <form onSubmit={step === 'email' ? requestOtp : verifyOtp}>
           <label style={{ display: 'block', fontSize: 13, marginBottom: 6 }}>Admin Email</label>
           <input
