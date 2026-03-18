@@ -33,7 +33,7 @@ async function apiFetch(path, opts = {}) {
   }
 
   try {
-    const r = await fetch(API + path, opts);
+    const r = await fetch(API + path, { credentials: 'include', ...opts });
     const text = await r.text();
     let data = {};
 
@@ -58,6 +58,131 @@ async function apiFetch(path, opts = {}) {
       message: `Unable to reach mailback API: ${err.message}`
     };
   }
+}
+
+function MailblasterOtpLogin({ onAuthenticated }) {
+  const [email, setEmail] = useState('');
+  const [otp, setOtp] = useState('');
+  const [step, setStep] = useState('email');
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const session = await apiFetch('/api/auth/session');
+      if (mounted && session.ok) {
+        onAuthenticated(session.email || '');
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [onAuthenticated]);
+
+  async function requestOtp(e) {
+    e.preventDefault();
+    setBusy(true);
+    setError('');
+    setMessage('');
+
+    const d = await apiFetch('/api/auth/request-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+
+    setBusy(false);
+    if (!d.ok) {
+      setError(d.message || 'Failed to send OTP.');
+      return;
+    }
+
+    setStep('otp');
+    setMessage('OTP sent. Please check your inbox.');
+  }
+
+  async function verifyOtp(e) {
+    e.preventDefault();
+    setBusy(true);
+    setError('');
+    setMessage('');
+
+    const d = await apiFetch('/api/auth/verify-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, otp })
+    });
+
+    setBusy(false);
+    if (!d.ok) {
+      setError(d.message || 'Invalid OTP.');
+      return;
+    }
+
+    onAuthenticated(d.email || email);
+  }
+
+  return (
+    <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: '#f4f6f8', padding: 16 }}>
+      <div style={{ width: '100%', maxWidth: 420, background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: 20 }}>
+        <h2 style={{ marginTop: 0, marginBottom: 8 }}>Mail Blaster Admin Login</h2>
+        <p style={{ marginTop: 0, color: '#6b7280', fontSize: 13 }}>
+          Only emails present in admin login collection can sign in.
+        </p>
+
+        <form onSubmit={step === 'email' ? requestOtp : verifyOtp}>
+          <label style={{ display: 'block', fontSize: 13, marginBottom: 6 }}>Admin Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            disabled={step === 'otp'}
+            placeholder="admin@company.com"
+            style={{ ...W, marginBottom: 10 }}
+          />
+
+          {step === 'otp' && (
+            <>
+              <label style={{ display: 'block', fontSize: 13, marginBottom: 6 }}>OTP</label>
+              <input
+                type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                required
+                placeholder="6-digit OTP"
+                style={{ ...W, marginBottom: 10 }}
+              />
+            </>
+          )}
+
+          <button type="submit" disabled={busy} style={{ width: '100%', padding: '10px 14px' }}>
+            {busy ? 'Please wait...' : (step === 'email' ? 'Send OTP' : 'Verify OTP')}
+          </button>
+        </form>
+
+        {step === 'otp' && (
+          <button
+            type="button"
+            onClick={() => {
+              setStep('email');
+              setOtp('');
+              setError('');
+              setMessage('');
+            }}
+            style={{ marginTop: 8, width: '100%', padding: '10px 14px' }}
+          >
+            Change Email
+          </button>
+        )}
+
+        {message && <p style={{ color: '#047857', marginTop: 10, marginBottom: 0 }}>{message}</p>}
+        {error && <p style={{ color: '#b91c1c', marginTop: 10, marginBottom: 0 }}>{error}</p>}
+      </div>
+    </div>
+  );
 }
 
 async function fetchInitialBootstrap() {
@@ -91,7 +216,7 @@ function getResetCountdown(sender, nowMs) {
   return formatCountdown(remainingMs);
 }
 
-function AdminMailBlaster() {
+function AdminMailBlaster({ authedEmail, onLogout }) {
   // stored senders (from DB)
   const [senders, setSenders] = useState([]);
   const dragSenderIdx = useRef(null);
@@ -385,6 +510,11 @@ function AdminMailBlaster() {
     setBusyOps((prev) => ({ ...prev, validate: false }));
   }
 
+  async function handleLogout() {
+    await apiFetch('/api/auth/logout', { method: 'POST' });
+    onLogout();
+  }
+
   async function validateRecipients() {
     const typedValidatorEmails = validatorEmailList();
     const emails = typedValidatorEmails.length ? typedValidatorEmails : recipientList();
@@ -649,7 +779,13 @@ function AdminMailBlaster() {
 
       `}</style>
       <div className="app-shell" style={{ padding: 16 }}>
-      <h2>Mail Blaster</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+        <h2 style={{ margin: 0 }}>Mail Blaster</h2>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <small style={{ color: '#6b7280' }}>Logged in as {authedEmail || 'admin'}</small>
+          <button type="button" onClick={handleLogout}>Logout</button>
+        </div>
+      </div>
 
       <div className="sender-layout" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         {/* Add Sender: horizontal bar */}
@@ -1215,4 +1351,12 @@ function AdminMailBlaster() {
   );
 }
 
-export default AdminMailBlaster;
+export default function App() {
+  const [authenticatedEmail, setAuthenticatedEmail] = useState('');
+
+  if (!authenticatedEmail) {
+    return <MailblasterOtpLogin onAuthenticated={setAuthenticatedEmail} />;
+  }
+
+  return <AdminMailBlaster authedEmail={authenticatedEmail} onLogout={() => setAuthenticatedEmail('')} />;
+}

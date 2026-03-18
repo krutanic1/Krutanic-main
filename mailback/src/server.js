@@ -5,6 +5,7 @@ import nodemailer from 'nodemailer';
 import mongoose from 'mongoose';
 import net from 'net';
 import { promises as dns } from 'dns';
+import crypto from 'crypto';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { connectDB, isDBConnected } from './db.js';
 import { Sender } from './models/Sender.js';
@@ -15,7 +16,7 @@ dotenv.config();
 const app = express();
 const port = Number(process.env.PORT) || 5001;
 
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: '2mb' }));
 
 app.use('/api', async (_req, res, next) => {
@@ -31,6 +32,129 @@ app.use('/api', async (_req, res, next) => {
     });
   }
 });
+
+const AUTH_COOKIE_NAME = 'mailblaster_auth';
+const AUTH_TOKEN_TTL_MS = Number(process.env.MAILBLASTER_AUTH_TTL_MS || 60 * 60 * 1000);
+const OTP_EXPIRY_MS = Number(process.env.MAILBLASTER_OTP_EXPIRY_MS || 10 * 60 * 1000);
+const AUTH_SECRET = String(process.env.MAILBLASTER_AUTH_SECRET || process.env.JWT_SECRET || 'change-me-mailblaster-secret');
+const ADMIN_COLLECTION_CANDIDATES = [
+  String(process.env.MAILBLASTER_ADMIN_COLLECTION || '').trim(),
+  'adminlogin',
+  'adminmails'
+].filter(Boolean);
+
+function parseCookies(req) {
+  const raw = String(req.headers?.cookie || '');
+  const parsed = {};
+  raw.split(';').forEach((entry) => {
+    const idx = entry.indexOf('=');
+    if (idx <= 0) return;
+    const key = entry.slice(0, idx).trim();
+    const value = entry.slice(idx + 1).trim();
+    if (!key) return;
+    parsed[key] = decodeURIComponent(value);
+  });
+  return parsed;
+}
+
+function getRequestToken(req) {
+  const authHeader = String(req.headers?.authorization || '');
+  if (authHeader.toLowerCase().startsWith('bearer ')) {
+    return authHeader.slice(7).trim();
+  }
+  return parseCookies(req)[AUTH_COOKIE_NAME] || '';
+}
+
+function toBase64Url(input) {
+  return Buffer.from(input)
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/g, '');
+}
+
+function fromBase64Url(input) {
+  const normalized = String(input || '').replace(/-/g, '+').replace(/_/g, '/');
+  const pad = normalized.length % 4;
+  const padded = normalized + (pad ? '='.repeat(4 - pad) : '');
+  return Buffer.from(padded, 'base64').toString('utf8');
+}
+
+function signTokenPayload(payloadBase64) {
+  return toBase64Url(
+    crypto
+      .createHmac('sha256', AUTH_SECRET)
+      .update(payloadBase64)
+      .digest()
+  );
+}
+
+function createAuthToken(email) {
+  const payload = {
+    email: String(email || '').toLowerCase(),
+    exp: Date.now() + AUTH_TOKEN_TTL_MS
+  };
+  const payloadBase64 = toBase64Url(JSON.stringify(payload));
+  const signature = signTokenPayload(payloadBase64);
+  return `${payloadBase64}.${signature}`;
+}
+
+function verifyAuthToken(token) {
+  try {
+    const [payloadBase64, signature] = String(token || '').split('.');
+    if (!payloadBase64 || !signature) return null;
+
+    const expectedSig = signTokenPayload(payloadBase64);
+    if (signature !== expectedSig) return null;
+
+    const payload = JSON.parse(fromBase64Url(payloadBase64));
+    if (!payload?.email || !payload?.exp) return null;
+    if (Date.now() > Number(payload.exp)) return null;
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+function isPublicApiPath(pathname) {
+  return pathname === '/api/health'
+    || pathname === '/api/auth/request-otp'
+    || pathname === '/api/auth/verify-otp'
+    || pathname === '/api/auth/session'
+    || pathname === '/api/auth/logout';
+}
+
+function requireMailblasterAuth(req, res, next) {
+  const requestPath = String(req.originalUrl || req.url || '').split('?')[0];
+  if (isPublicApiPath(requestPath)) return next();
+
+  const token = getRequestToken(req);
+  const payload = verifyAuthToken(token);
+  if (!payload) {
+    return res.status(401).json({ ok: false, message: 'Unauthorized. Please login with OTP.' });
+  }
+
+  req.mailblasterAuth = payload;
+  return next();
+}
+
+async function findAdminRecordByEmail(email) {
+  const normalizedEmail = String(email || '').trim().toLowerCase();
+  if (!normalizedEmail) return null;
+  const db = mongoose.connection?.db;
+  if (!db) return null;
+
+  for (const collectionName of ADMIN_COLLECTION_CANDIDATES) {
+    const doc = await db.collection(collectionName).findOne({ email: normalizedEmail });
+    if (doc) {
+      return { doc, collectionName };
+    }
+  }
+
+  return null;
+}
+
+app.use('/api', requireMailblasterAuth);
 
 const defaultSmtp = {
   host: process.env.DEFAULT_SMTP_HOST || 'smtp.gmail.com',
@@ -639,6 +763,147 @@ app.get('/', (_req, res) => {
 
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true, service: 'mailback', timestamp: new Date().toISOString() });
+});
+
+app.get('/api/auth/session', (req, res) => {
+  const payload = verifyAuthToken(getRequestToken(req));
+  if (!payload) {
+    return res.status(401).json({ ok: false, message: 'Session expired. Please login again.' });
+  }
+
+  return res.json({ ok: true, email: payload.email });
+});
+
+app.post('/api/auth/request-otp', async (req, res) => {
+  try {
+    const email = String(req.body?.email || '').trim().toLowerCase();
+    if (!email) {
+      return res.status(400).json({ ok: false, message: 'Email is required.' });
+    }
+
+    const adminRecord = await findAdminRecordByEmail(email);
+    if (!adminRecord) {
+      return res.status(403).json({ ok: false, message: 'You are not authorized for Mail Blaster.' });
+    }
+
+    const smtpUser = [
+      process.env.MAILBLASTER_OTP_SMTP_USER,
+      process.env.SMTP_MAIL,
+      process.env.SMTP_OFFFERMAIL,
+      process.env.SMTP_MAIL2
+    ]
+      .map((value) => String(value || '').trim())
+      .find(Boolean) || '';
+
+    const smtpPass = [
+      process.env.MAILBLASTER_OTP_SMTP_PASS,
+      process.env.SMTP_PASSWORD,
+      process.env.SMTP_OFFERPASSWORD,
+      process.env.SMTP_PASSWORD2
+    ]
+      .map((value) => String(value || '').replace(/\s+/g, '').trim())
+      .find(Boolean) || '';
+
+    const fromAddress = String(process.env.MAILBLASTER_OTP_FROM || smtpUser || '').trim();
+
+    if (!smtpUser || !smtpPass || !fromAddress) {
+      return res.status(500).json({
+        ok: false,
+        message: 'OTP mailer is not configured on server. Configure SMTP user, password, and from address in environment variables.'
+      });
+    }
+
+    const otp = String(crypto.randomInt(100000, 1000000));
+    const otpUpdatedAt = new Date();
+
+    await mongoose.connection
+      .db
+      .collection(adminRecord.collectionName)
+      .updateOne(
+        { _id: adminRecord.doc._id },
+        { $set: { otp, otpUpdatedAt } }
+      );
+
+    const transporter = nodemailer.createTransport({
+      host: defaultSmtp.host,
+      port: defaultSmtp.port,
+      secure: defaultSmtp.secure,
+      auth: {
+        user: smtpUser,
+        pass: smtpPass
+      }
+    });
+
+    const expiresMinutes = Math.max(1, Math.round(OTP_EXPIRY_MS / 60000));
+    await transporter.sendMail({
+      from: fromAddress,
+      to: email,
+      subject: 'Mail Blaster Login OTP',
+      html: `<p>Your Mail Blaster OTP is <strong>${otp}</strong>.</p><p>This OTP expires in ${expiresMinutes} minutes.</p>`
+    });
+
+    return res.json({ ok: true, message: 'OTP sent to your admin email.' });
+  } catch (err) {
+    return res.status(500).json({ ok: false, message: err.message || 'Failed to send OTP.' });
+  }
+});
+
+app.post('/api/auth/verify-otp', async (req, res) => {
+  try {
+    const email = String(req.body?.email || '').trim().toLowerCase();
+    const otpInput = String(req.body?.otp || '').trim();
+
+    if (!email || !otpInput) {
+      return res.status(400).json({ ok: false, message: 'Email and OTP are required.' });
+    }
+
+    const adminRecord = await findAdminRecordByEmail(email);
+    if (!adminRecord) {
+      return res.status(403).json({ ok: false, message: 'You are not authorized for Mail Blaster.' });
+    }
+
+    const savedOtp = String(adminRecord.doc?.otp || '').trim();
+    const otpUpdatedAtMs = adminRecord.doc?.otpUpdatedAt ? new Date(adminRecord.doc.otpUpdatedAt).getTime() : NaN;
+    const isExpired = !Number.isFinite(otpUpdatedAtMs) || (Date.now() - otpUpdatedAtMs > OTP_EXPIRY_MS);
+
+    if (!savedOtp || otpInput !== savedOtp) {
+      return res.status(401).json({ ok: false, message: 'Invalid OTP.' });
+    }
+    if (isExpired) {
+      return res.status(401).json({ ok: false, message: 'OTP expired. Request a new OTP.' });
+    }
+
+    await mongoose.connection
+      .db
+      .collection(adminRecord.collectionName)
+      .updateOne(
+        { _id: adminRecord.doc._id },
+        { $set: { otp: null, otpUpdatedAt: null } }
+      );
+
+    const token = createAuthToken(email);
+    res.cookie(AUTH_COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      maxAge: AUTH_TOKEN_TTL_MS,
+      path: '/'
+    });
+
+    return res.json({ ok: true, email });
+  } catch (err) {
+    return res.status(500).json({ ok: false, message: err.message || 'Failed to verify OTP.' });
+  }
+});
+
+app.post('/api/auth/logout', (_req, res) => {
+  res.clearCookie(AUTH_COOKIE_NAME, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+    path: '/'
+  });
+  return res.json({ ok: true });
 });
 
 app.get('/api/validate-emails/progress/:key', (req, res) => {
