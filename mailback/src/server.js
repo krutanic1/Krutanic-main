@@ -1664,8 +1664,9 @@ app.post('/api/generate-content', async (req, res) => {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
+    const geminiModel = String(process.env.GEMINI_MODEL || 'gemini-3-flash-preview').trim();
     const model = genAI.getGenerativeModel({ 
-      model: 'gemini-1.5-flash-8b',
+      model: geminiModel,
       generationConfig: {
         temperature: 0.9,
         maxOutputTokens: 8000,
