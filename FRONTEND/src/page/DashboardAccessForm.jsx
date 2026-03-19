@@ -10,7 +10,7 @@ const Dialog = ({ isOpen, onClose, fullname, errorMessage, email, counselor, dom
 
   // Create WhatsApp message with user details
   const whatsappMessage = `Hello,\n I am ${fullname}.\n Email: ${email}.\n Domain: ${domain}.\n Opted Month: ${monthOpted}.\n Kindly confirm my details`;
-  const whatsappLink = `https://wa.me/917022936875?text=${encodeURIComponent(whatsappMessage)}`;
+  const whatsappLink = `https://wa.me/917829102936?text=${encodeURIComponent(whatsappMessage)}`;
 
   return (
     <div style={styles.modal}>
@@ -36,7 +36,7 @@ const Dialog = ({ isOpen, onClose, fullname, errorMessage, email, counselor, dom
             </p>
             <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-500 rounded">
               <p className="text-sm text-gray-700">
-                <strong>Note:</strong> Please contact your assigned operations executive <br />Bhumika HK <br /> 7022936875<br /> bhumika@krutanic.org
+                <strong>Note:</strong> Please contact your assigned operations executive <br />Bhumika HK <br /> 7829102936<br /> bhumika@krutanic.org
               </p>
               <a
                 href={whatsappLink}
@@ -220,22 +220,9 @@ const DashboardAccessForm = () => {
     navigate("/dashboardaccessform");
   };
 
-  const [getTransactionId, setGetTransactionId] = useState([]);
-  const getTransactionIdList = async () => {
-    try {
-      const response = await axios.get(`${API}/gettransactionwithname`);
-      setGetTransactionId(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    getTransactionIdList();
-  }, []);
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
 
   const handleSubmit = async (event) => {
     setIsSubmitting(true);
@@ -268,10 +255,7 @@ const DashboardAccessForm = () => {
       languages: languages,
     };
 
-    if (
-      getTransactionId.transaction.includes(email) &&
-      getTransactionId.counselor.includes(counselor)
-    ) {
+    if (isEmailVerified) {
       try {
         let response = await axios.post(`${API}/newstudentenroll`, formData);
 
@@ -298,9 +282,7 @@ const DashboardAccessForm = () => {
         setIsModalOpen(true);
       }
     } else {
-      toast.error("Enter valid email and try again.");
-      resetForm();
-      window.location.reload();
+      toast.error("Please enter a valid registered email.");
       setIsSubmitting(false);
     }
   };
@@ -310,40 +292,33 @@ const DashboardAccessForm = () => {
     resetForm();
   };
 
-  // const handleEmailChange = (e) => {
-  //   const enteredEmail = e.target.value.trim();
-  //   setEmail(enteredEmail);
-  //   if (getTransactionId.transaction.includes(enteredEmail)) {
-  //     const matchedCounselor = getTransactionId.counselor.find((counselorItem, index) => getTransactionId.transaction[index] === enteredEmail);
-  //      const matchedLead = getTransactionId.lead.find((counselorItem, index) => getTransactionId.transaction[index] === enteredEmail);
-  //     console.log("Matched Counselor:", matchedCounselor);
-  //     console.log("Counselor lead:", matchedLead);
-  //     if (matchedCounselor) {
-  //       setCounselor(matchedCounselor);
-  //     }
-  //   }
-  // };
 
-  const handleEmailChange = (e) => {
+  const handleEmailChange = async (e) => {
     const enteredEmail = e.target.value.trim();
     setEmail(enteredEmail);
+    setIsEmailVerified(false); // Reset verification on change
 
-    // Defensive nullish checks
-    if (getTransactionId?.transaction?.includes(enteredEmail)) {
-      const index = getTransactionId.transaction.indexOf(enteredEmail);
-
-      const matchedCounselor = getTransactionId.counselor?.[index];
-      const matchedLead = getTransactionId.lead?.[index];
-
-      console.log("Matched Counselor:", matchedCounselor);
-      console.log("Counselor Lead:", matchedLead);
-
-      if (matchedCounselor) {
-        setCounselor(matchedCounselor);
+    // Valid email check before calling backend
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailRegex.test(enteredEmail)) {
+      try {
+        const response = await axios.post(`${API}/verify-transaction-email`, { email: enteredEmail });
+        
+        if (response.data.success) {
+          setCounselor(response.data.counselor || "");
+          setLead(response.data.lead || "");
+          setIsEmailVerified(true);
+          console.log("Email verified successfully");
+        }
+      } catch (error) {
+        console.error("Verification failed:", error.response?.data?.message || error.message);
+        setCounselor("");
+        setLead("");
+        setIsEmailVerified(false);
       }
-      if (matchedLead) {
-        setLead(matchedLead);
-      }
+    } else {
+      setCounselor("");
+      setLead("");
     }
   };
 

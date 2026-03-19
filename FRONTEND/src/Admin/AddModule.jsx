@@ -22,10 +22,21 @@ const AddModule = () => {
       const response = await axios.get(`${API}/getcourses`);
       setCourses(response.data);
       if (response.data.length > 0) {
-        setSelectedCourse(response.data[0]);
+        await fetchCourseDetails(response.data[0]._id);
       }
     } catch (error) {
       console.error("There was an error fetching courses:", error);
+    }
+  };
+
+  const fetchCourseDetails = async (courseId) => {
+    try {
+      const response = await axios.get(`${API}/getcourses`, {
+        params: { courseId },
+      });
+      setSelectedCourse(response.data || null);
+    } catch (error) {
+      console.error("There was an error fetching course details:", error);
     }
   };
 
@@ -33,7 +44,7 @@ const AddModule = () => {
     fetchCourses();
   }, []);
   const handleCourseClick = (course) => {
-    setSelectedCourse(course);
+    fetchCourseDetails(course._id);
   };
   const handleModuleSubmit = async (event) => {
     event.preventDefault();
@@ -109,14 +120,24 @@ const AddModule = () => {
     setisModuleFormVisible(false);
   };
 
-  if (!selectedCourse) {
-    return <div id="loader">
-      <div className="three-body">
-        <div className="three-body__dot"></div>
-        <div className="three-body__dot"></div>
-        <div className="three-body__dot"></div>
+  if (!selectedCourse && courses.length > 0) {
+    return (
+      <div id="loader">
+        <div className="three-body">
+          <div className="three-body__dot"></div>
+          <div className="three-body__dot"></div>
+          <div className="three-body__dot"></div>
+        </div>
       </div>
-    </div>;
+    );
+  }
+
+  if (courses.length === 0 && !selectedCourse) {
+    return (
+      <div style={{ padding: "40px", textAlign: "center" }}>
+        <h3>No courses found. Please create a course first.</h3>
+      </div>
+    );
   }
   return (
     <div id="addmodule" >
@@ -190,7 +211,7 @@ const AddModule = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {Object.keys(selectedCourse.session).map((key) => (
+                  {selectedCourse.session && Object.keys(selectedCourse.session).map((key) => (
                     <tr key={key}>
                       <td className=" capitalize">{key}</td>
                       <td>{selectedCourse.session[key].title}</td>

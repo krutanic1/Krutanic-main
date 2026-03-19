@@ -7,6 +7,7 @@ const CreateAdvCourse = require("../models/CreateAdvCourse");
 const TransactionId = require("../models/AddTransactionId");
 const CreateOperation = require("../models/CreateOperation");
 const mongoose = require("mongoose");
+const verifyAnyAuth = require("../middleware/verifyAnyAuth");
 
 router.post("/advenroll", async (req, res) => {
   try {
@@ -233,7 +234,7 @@ router.post("/advenroll", async (req, res) => {
 });
 
 // Get all advance enrollments
-router.get("/getadvenrolls", async (req, res) => {
+router.get("/getadvenrolls", verifyAnyAuth, async (req, res) => {
   try {
     const { limit = 0, skip = 0, all } = req.query;
 
@@ -265,7 +266,7 @@ router.get("/getadvenrolls", async (req, res) => {
 });
 
 // Get single advance enrollment by ID
-router.get("/getadvenroll/:id", async (req, res) => {
+router.get("/getadvenroll/:id", verifyAnyAuth, async (req, res) => {
   try {
     const advEnroll = await AdvEnroll.findById(req.params.id);
     if (!advEnroll) {
@@ -279,7 +280,7 @@ router.get("/getadvenroll/:id", async (req, res) => {
 });
 
 // Update advance enrollment status
-router.post("/updateadvenrollstatus", async (req, res) => {
+router.post("/updateadvenrollstatus", verifyAnyAuth, async (req, res) => {
   try {
     const { id, status } = req.body;
 
@@ -304,7 +305,7 @@ router.post("/updateadvenrollstatus", async (req, res) => {
 });
 
 // Update advance enrollment operation assignment
-router.post("/update-adv-operation/:id", async (req, res) => {
+router.post("/update-adv-operation/:id", verifyAnyAuth, async (req, res) => {
   try {
     const { operationName, operationId } = req.body;
     const { id } = req.params;
@@ -336,7 +337,7 @@ router.post("/update-adv-operation/:id", async (req, res) => {
 });
 
 // Handle PUT request to update advance student details
-router.put("/editadvstudentdetails/:_id", async (req, res) => {
+router.put("/editadvstudentdetails/:_id", verifyAnyAuth, async (req, res) => {
   const { _id } = req.params;
   console.log(`[AdvEnroll] Attempting to update student ${_id} with data:`, req.body);
   const {

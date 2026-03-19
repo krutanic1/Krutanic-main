@@ -1,6 +1,6 @@
 import axios from "axios";
 
-// axios.defaults.withCredentials = true;
+axios.defaults.withCredentials = true;
 
 axios.interceptors.request.use(
     (config) => {
@@ -44,10 +44,25 @@ axios.interceptors.response.use(
                 localStorage.removeItem("token");
                 localStorage.removeItem("userEmail");
                 localStorage.removeItem("userId");
+                localStorage.removeItem("adminToken");
 
-                // You could also clear other tokens if you want a global logout, 
-                // but the prompt specific to "user session" usually implies the main user.
-                window.location.href = "/login";
+                // Clear other potential tokens if needed
+                localStorage.removeItem("bdaToken");
+                localStorage.removeItem("operationToken");
+                localStorage.removeItem("advOperationToken");
+
+                // Redirect based on path
+                if (currentPath.startsWith("/admin") || currentPath.includes("admin")) {
+                    window.location.href = "/AdminLogin";
+                } else if (currentPath.startsWith("/bda") || currentPath.includes("bda")) {
+                    window.location.href = "/TeamLogin";
+                } else if (currentPath.startsWith("/operation") || currentPath.includes("operation")) {
+                    window.location.href = "/OperationLogin";
+                } else if (currentPath.startsWith("/advoperation") || currentPath.includes("advoperation")) {
+                    window.location.href = "/AdvOperationLogin";
+                } else {
+                    window.location.href = "/login";
+                }
             }
         }
         return Promise.reject(error);

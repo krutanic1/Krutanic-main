@@ -16,6 +16,7 @@ const BookedAmount = () => {
     setFullname("");
     setEmail("");
     setPhone("");
+    setWhatsAppNumber("");
     setProgram("");
     setCounselor("");
     setDomain("");
@@ -129,6 +130,7 @@ const BookedAmount = () => {
       fullname: fullname,
       email: email.trim(),
       phone: phone,
+      whatsAppNumber: whatsAppNumber,
       program: program,
       counselor: counselor.trim(),
       domain: domain.trim(),

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import API from "../API";
 import logo from "../assets/LOGO3.png";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -7,12 +9,20 @@ const AdminHeader = () => {
   const navigate = useNavigate();
   const [isAdvToggleOn, setIsAdvToggleOn] = useState(false);
 
-  const handleLogout = () => {
-    toast.success("Logout successful!!!");
-    setTimeout(() => {
+  const handleLogout = async () => {
+    try {
+      await axios.post(`${API}/admin/logout`, {}, { withCredentials: true });
+      toast.success("Logout successful!!!");
+      setTimeout(() => {
+        localStorage.removeItem("adminToken");
+        navigate("/AdminLogin");
+      }, 2000);
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Even if backend fails, clear local storage and redirect
       localStorage.removeItem("adminToken");
       navigate("/AdminLogin");
-    }, 2000);
+    }
   };
   return (
     <div id="AdminHeader">
@@ -111,7 +121,7 @@ const AdminHeader = () => {
               <i className="fa fa-check mr-2"></i>Full Paid Amount
             </Link>
             <Link to="/MentorQueries">
-              <i className="fa fa-question-circle mr-2"></i>Mentor's Queries
+              <i className="fa fa-question-circle mr-2"></i>Mentor&apos;s Queries
             </Link>
             <Link to="/MasterClasses">
               <i className="fa fa-graduation-cap mr-2"></i>Master Class
@@ -134,6 +144,7 @@ const AdminHeader = () => {
             <Link to="/RevenueSheet">
               <i className="fa fa-line-chart mr-2"></i>Revenue Sheet
             </Link>
+
           </>
         )}
         {isAdvToggleOn && (

@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const Advance = require("../models/Advance");
+const verifyAnyAuth = require("../middleware/verifyAnyAuth");
 
 
-router.get("/advancequeries", async (req, res) => {
+router.get("/advancequeries", verifyAnyAuth, async (req, res) => {
   const { limit, all } = req.query;
   try {
     // If all=true or limit=0, fetch all records (for dashboard)
@@ -55,7 +56,7 @@ router.post("/advance/register", async (req, res) => {
 });
 
 //put request to update the mentorship data in admin
-router.put("/advancequery/:id", async (req, res) => {
+router.put("/advancequery/:id", verifyAnyAuth, async (req, res) => {
   try {
     const id = req.params.id;
     const { action } = req.body;

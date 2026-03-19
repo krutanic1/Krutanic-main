@@ -17,7 +17,7 @@ const verifyAdminCookie = require("../middleware/verifyAdminCookie");
 
 
 // Route to save admin email
-router.post("/admin", expressAsyncHandler(async (req, res) => {
+router.post("/admin", verifyAdminCookie, expressAsyncHandler(async (req, res) => {
   const { email, password, otp, fullname } = req.body;
   if (!email) {
     return res.status(400).json({ error: "Email is required" });
@@ -104,14 +104,14 @@ router.post("/otpverify", expressAsyncHandler(async (req, res) => {
     const token = jwt.sign(
       { email: admin.email },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "10m" }
     );
 
     res.cookie("adminToken", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-      maxAge: 60 * 60 * 1000 // 1 hour
+      maxAge: 10 * 60 * 1000 // 10 minutes
     });
 
     res.status(200).json({ message: "OTP verified successfully", token });
@@ -123,6 +123,7 @@ router.post("/otpverify", expressAsyncHandler(async (req, res) => {
 
 
 
+/*
 //if in case login with password so cheack email and password 
 router.post("/checkadmin", async (req, res) => {
   const { email, password } = req.body;
@@ -150,6 +151,7 @@ router.post("/checkadmin", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+*/
 
 //-------------------------operation
 //send login details to operation team

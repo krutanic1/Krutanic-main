@@ -1,10 +1,11 @@
 const express = require("express");
 const CreateAdvCourse = require("../models/CreateAdvCourse");
 const { cachedQuery, invalidateCache } = require("../utils/cache");
+const verifyAdminCookie = require("../middleware/verifyAdminCookie");
 const router = express.Router();
 
 // post request to post all the advance courses
-router.post("/createadvcourse", async (req, res) => {
+router.post("/createadvcourse", verifyAdminCookie, async (req, res) => {
   const { title, description } = req.body;
   try {
     const course = new CreateAdvCourse({
@@ -14,7 +15,7 @@ router.post("/createadvcourse", async (req, res) => {
     await course.save();
 
     // ✅ Invalidate courses cache when new course is created
-    invalidateCache('advcourses:all', 'static');
+    invalidateCache('advcourses:titles', 'static');
 
     res.status(201).json(course);
   } catch (error) {
@@ -31,10 +32,10 @@ router.get("/getadvcourses", async (req, res) => {
       // Don't cache individual course lookups (different every time)
       courses = await CreateAdvCourse.findById(courseId);
     } else {
-      // ✅ CACHE: Courses list (rarely changes, 5 min TTL)
+      // ✅ CACHE: Courses list (titles only, 5 min TTL)
       courses = await cachedQuery(
-        'advcourses:all',
-        () => CreateAdvCourse.find().sort({ _id: -1 }).lean(),
+        'advcourses:titles',
+        () => CreateAdvCourse.find({}, '_id title').sort({ _id: -1 }).lean(),
         300,  // 5 minutes TTL
         'static'
       );
@@ -51,13 +52,13 @@ router.get("/getadvcourses", async (req, res) => {
 });
 
 // delete request to delete selected advance course by id
-router.delete("/deleteadvcourse/:_id", async (req, res) => {
+router.delete("/deleteadvcourse/:_id", verifyAdminCookie, async (req, res) => {
   const { _id } = req.params;
   try {
     const courses = await CreateAdvCourse.findByIdAndDelete(_id);
 
     // ✅ Invalidate courses cache when course is deleted
-    invalidateCache('advcourses:all', 'static');
+    invalidateCache('advcourses:titles', 'static');
 
     res.status(200).json(courses);
   } catch (error) {
@@ -66,7 +67,7 @@ router.delete("/deleteadvcourse/:_id", async (req, res) => {
 });
 
 //put request to edit selected advance course by id
-router.put("/editadvcourse/:_id", async (req, res) => {
+router.put("/editadvcourse/:_id", verifyAdminCookie, async (req, res) => {
   const { _id } = req.params;
   const { title, description } = req.body;
 
@@ -82,7 +83,7 @@ router.put("/editadvcourse/:_id", async (req, res) => {
     }
 
     // ✅ Invalidate courses cache when course is edited
-    invalidateCache('advcourses:all', 'static');
+    invalidateCache('advcourses:titles', 'static');
 
     res.status(200).json(course);
   } catch (error) {
@@ -91,7 +92,7 @@ router.put("/editadvcourse/:_id", async (req, res) => {
 });
 
 //put request to add sessions by id
-router.put("/updateadvcourse/:id", async (req, res) => {
+router.put("/updateadvcourse/:id", verifyAdminCookie, async (req, res) => {
   try {
     const updatedCourse = await CreateAdvCourse.findByIdAndUpdate(
       req.params.id,
@@ -105,7 +106,7 @@ router.put("/updateadvcourse/:id", async (req, res) => {
 });
 
 //put request to add a lecture video in the modules
-router.put("/updateadvcourse/:courseId", async (req, res) => {
+router.put("/updateadvcourse/:courseId", verifyAdminCookie, async (req, res) => {
   try {
     const { courseId } = req.params;
     const updatedCourse = req.body;

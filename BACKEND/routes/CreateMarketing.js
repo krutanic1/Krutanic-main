@@ -10,6 +10,8 @@ const CreateMarketing = require("../models/CreateMarketing");
 const NewEnrollStudent = require("../models/NewStudentEnroll");
 
 require("dotenv").config();
+const verifyAdminCookie = require("../middleware/verifyAdminCookie");
+const verifyAnyAuth = require("../middleware/verifyAnyAuth");
 
 router.post("/marketingverifyotp", async (req, res) => {
   const { email, otp } = req.body;
@@ -23,7 +25,7 @@ router.post("/marketingverifyotp", async (req, res) => {
     }
     user.otp = null;
     await user.save();
-    const token = jwt.sign({ _id: user._id, email: user.email, designation: user.designation, team: user.team }, process.env.JWT_SECRET, { expiresIn: "10h" });
+    const token = jwt.sign({ _id: user._id, email: user.email, designation: user.designation, team: user.team }, process.env.JWT_SECRET, { expiresIn: "10m" });
     res.status(200).json({ token, user: user.fullname, message: "Login successful!", });
   } catch (error) {
     console.error("Failed to verify OTP:", error);
@@ -83,7 +85,7 @@ router.post("/marketingsendotp", async (req, res) => {
 });
 
 //add team name from create marketing page 
-router.post("/addmarketingteamname", async (req, res) => {
+router.post("/addmarketingteamname", verifyAnyAuth, async (req, res) => {
   const { teamname } = req.body;
   try {
     const newTeam = new MarketingTeamName({ teamname, });
@@ -95,7 +97,7 @@ router.post("/addmarketingteamname", async (req, res) => {
 });
 
 // GET request to retrieve all marketing team names
-router.get("/getmarketingteamname", async (req, res) => {
+router.get("/getmarketingteamname", verifyAnyAuth, async (req, res) => {
   try {
     const teamname = await MarketingTeamName.find();
     res.status(200).json(teamname);
@@ -105,7 +107,7 @@ router.get("/getmarketingteamname", async (req, res) => {
 });
 
 //post to create a new marketing account
-router.post("/createmarketing", async (req, res) => {
+router.post("/createmarketing", verifyAnyAuth, async (req, res) => {
   const { fullname, email, designation, team, password } = req.body;
   try {
     const newmarketingdets = new CreateMarketing({
@@ -129,6 +131,7 @@ router.post("/createmarketing", async (req, res) => {
   }
 });
 
+/*
 // Direct login for marketing (without OTP)
 router.post("/checkmarketingauth", async (req, res) => {
   const { email, password } = req.body;
@@ -145,7 +148,7 @@ router.post("/checkmarketingauth", async (req, res) => {
     const token = jwt.sign(
       { _id: user._id, email: user.email, designation: user.designation, team: user.team },
       process.env.JWT_SECRET,
-      { expiresIn: "10h" }
+      { expiresIn: "10m" }
     );
     res.status(200).json({ token, marketingId: user._id, marketingName: user.fullname });
   } catch (err) {
@@ -153,9 +156,10 @@ router.post("/checkmarketingauth", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+*/
 
 // GET request to retrieve all masrketing accounts
-router.get("/getmarketing", async (req, res) => {
+router.get("/getmarketing", verifyAnyAuth, async (req, res) => {
   const { operationId } = req.query;
   try {
     let operation;
@@ -199,7 +203,7 @@ router.get("/getmarketingexecutive", async (req, res) => {
 });
 
 // put request to edit the marketing details
-router.put("/updatemarketing/:id", async (req, res) => {
+router.put("/updatemarketing/:id", verifyAnyAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const { fullname, email, designation, team, password } = req.body;
@@ -218,7 +222,7 @@ router.put("/updatemarketing/:id", async (req, res) => {
 });
 
 //delete request to delete the masrketing account
-router.delete("/deletemarketing/:id", async (req, res) => {
+router.delete("/deletemarketing/:id", verifyAnyAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const deletedOperation = await CreateMarketing.findByIdAndDelete(id);
@@ -415,7 +419,7 @@ router.put("/marketingUpdateExecutive/:leadId", async (req, res) => {
 
 // Admin routes for marketing leads management
 // GET all marketing leads for admin
-router.get("/admin/getallmarketingleads", async (req, res) => {
+router.get("/admin/getallmarketingleads", verifyAnyAuth, async (req, res) => {
   try {
     const allLeads = await NewEnrollStudent.find()
       .sort({ createdAt: -1 })
@@ -428,7 +432,7 @@ router.get("/admin/getallmarketingleads", async (req, res) => {
 });
 
 // GET all marketing executives for admin
-router.get("/admin/getallmarketingexecutives", async (req, res) => {
+router.get("/admin/getallmarketingexecutives", verifyAnyAuth, async (req, res) => {
   try {
     const allExecutives = await CreateMarketing.find()
       .select("fullname email designation team")

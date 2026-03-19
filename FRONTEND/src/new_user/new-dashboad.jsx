@@ -124,7 +124,7 @@ export const TopNav = ({ userData, enrollData, onLogout, onHamburger, mobileSide
         const name = userData?.fullname || "Student";
         const email = userData?.email || "";
         const msg = `Hello, I need mentor support.\nName: ${name}\nEmail: ${email}\nProgram: ${programName}`;
-        window.open(`https://wa.me/917022936875?text=${encodeURIComponent(msg)}`, "_blank");
+        window.open(`https://wa.me/917829102936?text=${encodeURIComponent(msg)}`, "_blank");
     };
 
     const notifications = [
@@ -705,7 +705,7 @@ const PaymentsSection = ({ enrollment, userData }) => {
         const name = userData?.fullname || "Student";
         const email = userData?.email || "";
         const msg = `Hello, I need help with my payment.\nName: ${name}\nEmail: ${email}\nProgram: ${enrollment?.program || ""}\nPaid: ₹${paidAmount.toLocaleString()} / ₹${programPrice.toLocaleString()}`;
-        window.open(`https://wa.me/917022936875?text=${encodeURIComponent(msg)}`, "_blank");
+        window.open(`https://wa.me/917829102936?text=${encodeURIComponent(msg)}`, "_blank");
     };
 
     return (

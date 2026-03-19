@@ -6,10 +6,11 @@ const CreateBDA = require("../models/CreateBDA");
 const { cachedQuery, invalidateCache } = require("../utils/cache");
 const TeamName = require("../models/TeamName");
 const TransactionId = require("../models/AddTransactionId");
+const verifyAnyAuth = require("../middleware/verifyAnyAuth");
 const crypto = require('crypto');
 
 //post to create a new bda account
-router.post("/createbda", async (req, res) => {
+router.post("/createbda", verifyAnyAuth, async (req, res) => {
   const { fullname, email, team, teams, designation, password } = req.body;
   try {
     const newbda = new CreateBDA({
@@ -33,7 +34,7 @@ router.post("/createbda", async (req, res) => {
 });
 
 // GET request to retrieve all bda accounts (WITH CACHING)
-router.get("/getbda", async (req, res) => {
+router.get("/getbda", verifyAnyAuth, async (req, res) => {
   const { bdaId } = req.query;
   try {
     let bda;
@@ -81,7 +82,7 @@ router.get("/getbda", async (req, res) => {
 });
 
 // put request to edit the bda details
-router.put("/updatebda/:id", async (req, res) => {
+router.put("/updatebda/:id", verifyAnyAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const { fullname, email, password, team, teams, designation } = req.body;
@@ -104,7 +105,7 @@ router.put("/updatebda/:id", async (req, res) => {
 });
 
 //put request to update the bda status inactive 
-router.put("/updatestatus/:id", async (req, res) => {
+router.put("/updatestatus/:id", verifyAnyAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
@@ -127,7 +128,7 @@ router.put("/updatestatus/:id", async (req, res) => {
 });
 
 //put request to asign a target to all bda accounts
-router.post("/assigntarget/:id", async (req, res) => {
+router.post("/assigntarget/:id", verifyAnyAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const { target } = req.body;
@@ -146,7 +147,7 @@ router.post("/assigntarget/:id", async (req, res) => {
 });
 
 //delete request to delete the bda account
-router.delete("/deletebda/:id", async (req, res) => {
+router.delete("/deletebda/:id", verifyAnyAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const deletedbda = await CreateBDA.findByIdAndDelete(id);
@@ -160,7 +161,7 @@ router.delete("/deletebda/:id", async (req, res) => {
 });
 
 //delete request to delete the target 
-router.put("/deletetarget/:id", async (req, res) => {
+router.put("/deletetarget/:id", verifyAnyAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const { target } = req.body;
@@ -236,11 +237,7 @@ router.post("/bdaverifyotp", async (req, res) => {
       return res.status(404).json({ message: "BDA not found" });
     }
 
-    // ✅ ADMIN IMPERSONATION: If OTP is empty/undefined, allow admin to login as any BDA
-    // This enables admins to test/access any BDA account without needing OTP
-    const isAdminImpersonation = !otp || otp === "";
-
-    if (!isAdminImpersonation && bda.otp !== otp) {
+    if (bda.otp !== otp) {
       // Regular login: OTP must match
       return res.status(400).json({ message: "Invalid OTP" });
     }
@@ -249,22 +246,15 @@ router.post("/bdaverifyotp", async (req, res) => {
       return res.status(403).json({ message: "Access denied. Your account is inactive." });
     }
 
-    // Clear OTP after successful login (skip for admin impersonation to avoid saving)
-    if (!isAdminImpersonation) {
-      bda.otp = null;
-      await bda.save();
-    }
+    // Clear OTP after successful login
+    bda.otp = null;
+    await bda.save();
 
     const token = jwt.sign(
       { id: bda._id, email: bda.email },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "10m" }
     );
-
-    // Log admin impersonation for security audit
-    if (isAdminImpersonation) {
-      console.log(`🔐 [ADMIN IMPERSONATION] Admin logged in as: ${bda.email} (${bda.fullname})`);
-    }
 
     res.status(200).json({
       token,
@@ -279,6 +269,7 @@ router.post("/bdaverifyotp", async (req, res) => {
   }
 });
 
+/*
 router.post("/checkbdaauth", async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -288,11 +279,7 @@ router.post("/checkbdaauth", async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    // ✅ ADMIN IMPERSONATION: If password is empty/undefined, allow admin to login as any BDA
-    // This enables admins to test/access any BDA account without needing their password
-    const isAdminImpersonation = !password || password === "";
-
-    if (!isAdminImpersonation && password !== bda.password) {
+    if (password !== bda.password) {
       // Regular login: password must match
       return res.status(401).json({ message: "Invalid email or password" });
     }
@@ -304,17 +291,13 @@ router.post("/checkbdaauth", async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    // Log admin impersonation for security audit
-    if (isAdminImpersonation) {
-      console.log(`🔐 [ADMIN IMPERSONATION] Admin logged in as: ${bda.email} (${bda.fullname})`);
-    }
-
     res.status(200).json({ token, bdaId: bda._id, bdaName: bda.fullname });
   } catch (err) {
     console.error("Error during login", err);
     res.status(500).json({ message: "Server error" });
   }
 });
+*/
 
 //post request to add transaction id
 router.post("/addtransactionid", async (req, res) => {
@@ -338,7 +321,7 @@ router.post("/addtransactionid", async (req, res) => {
 
 
 // GET request to retrieve all transaction ids
-router.get("/gettransactionid", async (req, res) => {
+router.get("/gettransactionid", verifyAnyAuth, async (req, res) => {
   try {
     const transactionId = await TransactionId.find().sort({ _id: -1 });
     res.status(200).json(transactionId);
@@ -349,28 +332,35 @@ router.get("/gettransactionid", async (req, res) => {
 }
 );
 
-// GET request to retrieve all transaction ids with name 
-router.get("/gettransactionwithname", async (req, res) => {
+
+// POST request to verify a single transaction email (Secure replacement for gettransactionwithname)
+router.post("/verify-transaction-email", async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
   try {
-    const transactions = await TransactionId.find();
-    const transactionList = transactions.map(item => item.transactionId);
-    const counselorList = transactions.map(item => item.counselor);
-    const lead = transactions.map(item => item.lead);
+    // Search for transaction where the email matches transactionId field (based on frontend usage)
+    const transaction = await TransactionId.findOne({ transactionId: email });
+    
+    if (!transaction) {
+      return res.status(404).json({ message: "Transaction not found for this email" });
+    }
 
     res.status(200).json({
-      transaction: transactionList,
-      counselor: counselorList,
-      lead: lead
+      success: true,
+      counselor: transaction.counselor,
+      lead: transaction.lead
     });
+  } catch (error) {
+    console.error("Error verifying transaction email:", error);
+    res.status(500).json({ message: "Server error during verification" });
   }
-  catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-}
-);
+});
 
 //add team name from create bda page 
-router.post("/addteamname", async (req, res) => {
+router.post("/addteamname", verifyAnyAuth, async (req, res) => {
   const { teamname } = req.body;
   try {
     const newTeam = new TeamName({
@@ -384,7 +374,7 @@ router.post("/addteamname", async (req, res) => {
 });
 
 // GET request to retrieve all team names
-router.get("/getteamname", async (req, res) => {
+router.get("/getteamname", verifyAnyAuth, async (req, res) => {
   try {
     const teamname = await TeamName.find();
     res.status(200).json(teamname);
@@ -394,7 +384,7 @@ router.get("/getteamname", async (req, res) => {
 });
 
 // post request to assign target to team
-router.post("/targetassigntoteam", async (req, res) => {
+router.post("/targetassigntoteam", verifyAnyAuth, async (req, res) => {
   try {
     const { teamId, targetValue, payments, currentMonth } = req.body;
 
@@ -426,7 +416,7 @@ router.post("/targetassigntoteam", async (req, res) => {
 });
 
 //delete team last index target 
-router.delete("/delete-target", async (req, res) => {
+router.delete("/delete-target", verifyAnyAuth, async (req, res) => {
   try {
     const { teamId, targetId } = req.body;
 
@@ -452,7 +442,7 @@ router.delete("/delete-target", async (req, res) => {
 });
 
 //put request to update the bda access
-router.put("/updateaccess/:id", async (req, res) => {
+router.put("/updateaccess/:id", verifyAnyAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const { Access } = req.body;

@@ -11,11 +11,11 @@ const jwt = require("jsonwebtoken");
 const { default: mongoose } = require("mongoose");
 require("dotenv").config();
 const crypto = require("crypto");
-// const mongoose = require('mongoose');
+const verifyAnyAuth = require("../middleware/verifyAnyAuth");
 // const { ObjectId } = mongoose.Types;
 
 //post to create a new operation account
-router.post("/createoperation", async (req, res) => {
+router.post("/createoperation", verifyAnyAuth, async (req, res) => {
   const { fullname, email, password, languages } = req.body;
   try {
     const newoperation = new CreateOperation({
@@ -42,7 +42,7 @@ router.post("/createoperation", async (req, res) => {
 });
 
 // GET request to retrieve all operation accounts (WITH CACHING)
-router.get("/getoperation", async (req, res) => {
+router.get("/getoperation", verifyAnyAuth, async (req, res) => {
   const { operationId } = req.query;
   try {
     let operation;
@@ -70,7 +70,7 @@ router.get("/getoperation", async (req, res) => {
 });
 
 // put request to edit the opertions details
-router.put("/updateoperation/:id", async (req, res) => {
+router.put("/updateoperation/:id", verifyAnyAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const { fullname, email, password, languages } = req.body;
@@ -89,7 +89,7 @@ router.put("/updateoperation/:id", async (req, res) => {
 });
 
 // Toggle Online/Offline status
-router.put("/toggleonlinestatus/:id", async (req, res) => {
+router.put("/toggleonlinestatus/:id", verifyAnyAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const operation = await CreateOperation.findById(id);
@@ -109,7 +109,7 @@ router.put("/toggleonlinestatus/:id", async (req, res) => {
 });
 
 //delete request to delete the operation account
-router.delete("/deleteoperation/:id", async (req, res) => {
+router.delete("/deleteoperation/:id", verifyAnyAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const deletedOperation = await CreateOperation.findByIdAndDelete(id);
@@ -187,7 +187,7 @@ router.post("/operationverifyotp", async (req, res) => {
     const token = jwt.sign(
       { _id: operation._id, email: operation.email },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "10m" }
     );
     res.status(200).json({
       token,
@@ -301,6 +301,7 @@ router.put("/mailsendedchange/:id", async (req, res) => {
   }
 });
 
+/*
 // if in case operation login with email and password
 router.post("/checkoperation", async (req, res) => {
   const { email, password } = req.body;
@@ -327,6 +328,7 @@ router.post("/checkoperation", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+*/
 
 // ----------------------------------------------------
 router.post("/sendedOnboardingMail", async (req, res) => {
@@ -409,7 +411,7 @@ router.post("/sendofferletter", async (req, res) => {
 });
 
 //put request to asign a target to all bda accounts
-router.post("/assigntargettooperation/:id", async (req, res) => {
+router.post("/assigntargettooperation/:id", verifyAnyAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const { target } = req.body;

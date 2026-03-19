@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../API";
+import checkAdminAuth from "../checkAdminAuth";
 import toast, { Toaster } from "react-hot-toast";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
@@ -11,6 +12,19 @@ const LoginAdmin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
+  React.useEffect(() => {
+    const checkAuth = async () => {
+      if (!localStorage.getItem("adminToken")) return;
+
+      const isAdmin = await checkAdminAuth();
+      if (isAdmin) {
+        navigate("/AdminDashboard");
+      }
+    };
+    checkAuth();
+  }, [navigate]);
+
+/*
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!email || !password) {
@@ -33,6 +47,10 @@ const LoginAdmin = () => {
       toast.error(err.response?.data?.error || "Login failed");
     }
   };
+*/
+  const handleLogin = () => {
+    toast.error("Password login is disabled. Please use OTP login.");
+  };
 
   return (
     <div id="loginpage">
@@ -45,13 +63,15 @@ const LoginAdmin = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Email"
+          disabled
         />
         <input
           type={showPassword ? "text" : "password"}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
+          placeholder="Password login disabled"
           autoComplete="off"
+          disabled
         />
         <span
           className=" absolute mt-2 right-9 cursor-pointer"
@@ -59,7 +79,7 @@ const LoginAdmin = () => {
         >
           {showPassword ? <FaEye /> : <FaEyeSlash />}
         </span>
-        <button >Log In</button>
+        <button disabled>Log In (Disabled)</button>
          </form>
         <p>--------------------or--------------------</p>
         <div className="loginwith">

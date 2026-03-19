@@ -8,6 +8,7 @@ const TransactionId = require("../models/AddTransactionId");
 const CreateOperation = require("../models/CreateOperation");
 const mongoose = require("mongoose");
 const authMiddleware = require("../middleware/UserAuth");
+const verifyAnyAuth = require("../middleware/verifyAnyAuth");
 
 router.post("/newstudentenroll", async (req, res) => {
   try {
@@ -307,7 +308,7 @@ const convertExcel = async (studentData, retryCount = 0) => {
  * Aggregates revenue data by month including total, credited, and pending amounts.
  * Supports pagination.
  */
-router.get("/getmonthlyrevenue", async (req, res) => {
+router.get("/getmonthlyrevenue", verifyAnyAuth, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
@@ -440,7 +441,7 @@ router.get("/getmonthlyrevenue", async (req, res) => {
 });
 
 // GET request to retrieve all new student enroll
-router.get("/getnewstudentenroll", async (req, res) => {
+router.get("/getnewstudentenroll", verifyAnyAuth, async (req, res) => {
   const { studentenrollid, month, year, startDate, endDate, all, page, limit, status, search, counselor, operationName } = req.query;
   try {
     let StudentEnroll;
@@ -581,7 +582,7 @@ router.get("/getnewstudentenroll", async (req, res) => {
 });
 
 // Handle POST request to update remark for an existing student
-router.post("/updateremark", async (req, res) => {
+router.post("/updateremark", verifyAnyAuth, async (req, res) => {
   const { remark, studentId, referRemark } = req.body;
   try {
     let existingStudent = await NewEnrollStudent.findById(studentId);
@@ -610,7 +611,7 @@ router.post("/updateremark", async (req, res) => {
 });
 
 // Handle PUT request to update student details
-router.put("/editstudentdetails/:_id", async (req, res) => {
+router.put("/editstudentdetails/:_id", verifyAnyAuth, async (req, res) => {
   const { _id } = req.params;
   const {
     fullname,
@@ -626,6 +627,7 @@ router.put("/editstudentdetails/:_id", async (req, res) => {
     clearPaymentMonth,
     operationName,
     operationId,
+    whatsAppNumber,
     whatAppNumber,
     remainingAmount,
     collegeName,
@@ -666,7 +668,7 @@ router.put("/editstudentdetails/:_id", async (req, res) => {
         clearPaymentMonth,
         operationName,
         operationId,
-        whatAppNumber,
+        whatsAppNumber: whatsAppNumber ?? whatAppNumber,
         remainingAmount,
         collegeName,
         branch,
@@ -689,7 +691,7 @@ router.put("/editstudentdetails/:_id", async (req, res) => {
 });
 
 // handle post request to update the student's status and edit access
-router.post("/updateStudentStatus", async (req, res) => {
+router.post("/updateStudentStatus", verifyAnyAuth, async (req, res) => {
   const { studentId, status } = req.body;
   try {
     const student = await NewEnrollStudent.findById(studentId);
@@ -708,7 +710,7 @@ router.post("/updateStudentStatus", async (req, res) => {
 });
 
 //post request to update the operation name and id from admin panel
-router.post("/update-operation/:id", async (req, res) => {
+router.post("/update-operation/:id", verifyAnyAuth, async (req, res) => {
   try {
     const { operationName, operationId } = req.body;
     const { id } = req.params;

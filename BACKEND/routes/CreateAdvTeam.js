@@ -235,12 +235,8 @@ router.post("/advteamverifyotp", async (req, res) => {
       return res.status(404).json({ message: "Adv Team member not found" });
     }
 
-    // ✅ ADMIN IMPERSONATION: If OTP is empty/undefined, allow admin to login as any member
-    // This enables admins to test/access any account without needing OTP
-    const isAdminImpersonation = !otp || otp === "";
-
-    if (!isAdminImpersonation && advTeam.otp !== otp) {
-      // Regular login: OTP must match
+    // Regular login: OTP must match
+    if (advTeam.otp !== otp) {
       return res.status(400).json({ message: "Invalid OTP" });
     }
 
@@ -248,22 +244,15 @@ router.post("/advteamverifyotp", async (req, res) => {
       return res.status(403).json({ message: "Access denied. Your account is inactive." });
     }
 
-    // Clear OTP after successful login (skip for admin impersonation to avoid saving)
-    if (!isAdminImpersonation) {
-      advTeam.otp = null;
-      await advTeam.save();
-    }
+    // Clear OTP after successful login
+    advTeam.otp = null;
+    await advTeam.save();
 
     const token = jwt.sign(
       { id: advTeam._id, email: advTeam.email },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "10m" }
     );
-
-    // Log admin impersonation for security audit
-    if (isAdminImpersonation) {
-      console.log(`🔐 [ADMIN IMPERSONATION] Admin logged in as: ${advTeam.email} (${advTeam.fullname})`);
-    }
 
     res.status(200).json({
       token,
@@ -284,6 +273,7 @@ router.post("/advteamverifyotp", async (req, res) => {
   }
 });
 
+/*
 router.post("/checkadvteamauth", async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -332,6 +322,7 @@ router.post("/checkadvteamauth", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+*/
 
 //put request to update the adv team access
 router.put("/updateadvteamaccess/:id", async (req, res) => {
