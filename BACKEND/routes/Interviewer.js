@@ -47,7 +47,7 @@ router.post("/interviewer-login", async (req, res) => {
         const token = jwt.sign(
             { id: interviewer._id, role: "interviewer" },
             process.env.JWT_SECRET || "fallbacksecret",
-            { expiresIn: "1d" }
+            { expiresIn: "10m" }
         );
 
         res.status(200).json({

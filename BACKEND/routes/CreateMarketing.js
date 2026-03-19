@@ -25,7 +25,7 @@ router.post("/marketingverifyotp", async (req, res) => {
     }
     user.otp = null;
     await user.save();
-    const token = jwt.sign({ _id: user._id, email: user.email, designation: user.designation, team: user.team }, process.env.JWT_SECRET, { expiresIn: "10h" });
+    const token = jwt.sign({ _id: user._id, email: user.email, designation: user.designation, team: user.team }, process.env.JWT_SECRET, { expiresIn: "10m" });
     res.status(200).json({ token, user: user.fullname, message: "Login successful!", });
   } catch (error) {
     console.error("Failed to verify OTP:", error);
@@ -148,7 +148,7 @@ router.post("/checkmarketingauth", async (req, res) => {
     const token = jwt.sign(
       { _id: user._id, email: user.email, designation: user.designation, team: user.team },
       process.env.JWT_SECRET,
-      { expiresIn: "10h" }
+      { expiresIn: "10m" }
     );
     res.status(200).json({ token, marketingId: user._id, marketingName: user.fullname });
   } catch (err) {

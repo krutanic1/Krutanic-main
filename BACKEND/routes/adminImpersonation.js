@@ -79,7 +79,7 @@ router.post("/impersonate", verifyAdminCookie, async (req, res) => {
     const token = jwt.sign(
       tokenPayload,
       process.env.JWT_SECRET,
-      { expiresIn: "10h" }
+      { expiresIn: "10m" }
     );
 
     // Prepare response data consistent with what the frontend expects for each role

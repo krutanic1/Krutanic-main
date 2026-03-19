@@ -9,6 +9,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { connectDB, isDBConnected } from './db.js';
 import { Sender } from './models/Sender.js';
 import { MailTemplate } from './models/MailTemplate.js';
+import { decrypt } from './utils/cryptoUtils.js';
 
 dotenv.config();
 //sdfghjk
@@ -597,7 +598,7 @@ function buildEmailValidationSmtpConfig({ smtpInput, senderFallback }) {
     ? smtpInput.secure
     : (smtpInput?.secure ? String(smtpInput.secure) === 'true' : defaultSmtp.secure);
   const user = smtpInput?.user || senderFallback?.user || '';
-  const pass = smtpInput?.pass || senderFallback?.pass || '';
+  const pass = decrypt(smtpInput?.pass || senderFallback?.pass || '');
 
   if (!host || !port || !user || !pass) return null;
 
@@ -614,12 +615,13 @@ function buildTransporterConfig({ host, port, secure, user, pass } = {}) {
   const h = host || defaultSmtp.host;
   const p = port ?? defaultSmtp.port;
   const s = secure ?? defaultSmtp.secure;
-  if (!h || !user || !pass) throw new Error('Missing SMTP config: host, user and pass are required.');
+  const dPass = decrypt(pass);
+  if (!h || !user || !dPass) throw new Error('Missing SMTP config: host, user and pass are required.');
   return {
     host: h,
     port: Number(p),
     secure: typeof s === 'boolean' ? s : String(s) === 'true',
-    auth: { user, pass }
+    auth: { user, pass: dPass }
   };
 }
 
