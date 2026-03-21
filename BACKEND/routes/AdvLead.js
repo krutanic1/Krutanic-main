@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require("multer");
 const csv = require("csv-parser");
 const fs = require("fs");
+const xlsx = require("xlsx");
 const mongoose = require("mongoose");
 const path = require("path");
 const os = require("os");
@@ -506,43 +507,68 @@ router.get("/timeline/:id", async (req, res) => {
     }
 });
 
-// POST: Bulk Import Leads (CSV)
+// POST: Bulk Import Leads (CSV & Excel)
 router.post("/bulk-import", upload.single("file"), async (req, res) => {
     if (!req.file) return res.status(400).json({ message: "No file uploaded" });
 
-    const leads = [];
-    fs.createReadStream(req.file.path)
-        .pipe(csv())
-        .on("data", (data) => leads.push(data))
-        .on("end", async () => {
-            try {
-                let successCount = 0;
-                let failCount = 0;
+    const processLeads = async (leads) => {
+        try {
+            let successCount = 0;
+            let failCount = 0;
 
-                for (const leadData of leads) {
-                    try {
-                        const existingLead = await AdvLead.findOne({ phone_number: leadData.phone_number });
-                        if (!existingLead) {
-                            const newLead = new AdvLead({
-                                ...leadData,
-                                source: "csv_import",
-                                status: "fresh"
-                            });
-                            await newLead.save();
-                            successCount++;
-                        } else {
-                            failCount++;
-                        }
-                    } catch (err) {
+            for (const leadData of leads) {
+                if (!leadData.phone_number && !leadData.email) continue; // Skip empty rows
+
+                try {
+                    const existingLead = await AdvLead.findOne({ phone_number: leadData.phone_number });
+                    if (!existingLead) {
+                        const newLead = new AdvLead({
+                            ...leadData,
+                            source: "csv_import",
+                            status: "fresh"
+                        });
+                        await newLead.save();
+                        successCount++;
+                    } else {
                         failCount++;
                     }
+                } catch (err) {
+                    failCount++;
                 }
-                fs.unlinkSync(req.file.path);
-                res.status(200).json({ message: "Import completed", successCount, failCount });
-            } catch (error) {
-                res.status(500).json({ message: error.message });
             }
-        });
+            if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+            res.status(200).json({ message: "Import completed", successCount, failCount });
+        } catch (error) {
+            if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+            res.status(500).json({ message: error.message });
+        }
+    };
+
+    const isExcel = req.file.originalname.match(/\.(xlsx|xls)$/i) ||
+                    req.file.mimetype.includes("spreadsheetml") ||
+                    req.file.mimetype.includes("excel");
+
+    if (isExcel) {
+        try {
+            const workbook = xlsx.readFile(req.file.path);
+            const sheetName = workbook.SheetNames[0];
+            const leads = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
+            await processLeads(leads);
+        } catch (error) {
+            if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+            res.status(500).json({ message: "Failed to parse Excel file: " + error.message });
+        }
+    } else {
+        const leads = [];
+        fs.createReadStream(req.file.path)
+            .pipe(csv())
+            .on("data", (data) => leads.push(data))
+            .on("end", () => processLeads(leads))
+            .on("error", (error) => {
+                if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+                res.status(500).json({ message: "Failed to parse CSV file: " + error.message });
+            });
+    }
 });
 
 // POST: Log a call activity from Leads Book (SR Inside Sales Specialist)

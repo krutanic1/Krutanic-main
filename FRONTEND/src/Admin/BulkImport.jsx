@@ -15,7 +15,7 @@ const BulkImport = () => {
 
     const handleUpload = async () => {
         if (!file) {
-            toast.error("Please select a CSV file first");
+            toast.error("Please select a CSV or Excel file first");
             return;
         }
 
@@ -42,17 +42,20 @@ const BulkImport = () => {
             <div className="coursetable">
                 <h1>📥 Bulk Lead Import</h1>
                 <p style={{ color: '#666', marginBottom: '5px' }}>
-                    Upload a <strong>CSV file</strong> with the following columns:
+                    Upload a <strong>CSV or Excel (.xlsx) file</strong> with the following columns:
                 </p>
-                <code style={{ background: '#f5f5f5', padding: '8px 12px', borderRadius: '4px', display: 'block', marginBottom: '20px', fontSize: '13px' }}>
+                <code style={{ background: '#f5f5f5', padding: '8px 12px', borderRadius: '4px', display: 'block', marginBottom: '10px', fontSize: '13px' }}>
                     full_name, email, phone_number, opted_domain, year_of_passing, company_name
                 </code>
+                <a href="/sample_leads.xlsx" download style={{ display: 'inline-block', marginBottom: '20px', color: '#1890ff', textDecoration: 'none', fontWeight: '500' }}>
+                    ⬇️ Download Sample Excel File
+                </a>
 
                 <div style={{ margin: '20px 0', padding: '30px', border: '2px dashed #91d5ff', borderRadius: '10px', textAlign: 'center', background: '#f0f9ff' }}>
                     <div style={{ marginBottom: '15px', fontSize: '40px' }}>📄</div>
                     <input
                         type="file"
-                        accept=".csv"
+                        accept=".csv, .xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
                         onChange={handleFileChange}
                         style={{ marginBottom: '15px' }}
                     />
