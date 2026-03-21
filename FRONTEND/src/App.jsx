@@ -1,4 +1,4 @@
-import React, { lazy } from "react";
+import React, { lazy, useEffect } from "react";
 import { Routes, Route, BrowserRouter, useLocation, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Header from "./Components/Header";
@@ -212,6 +212,82 @@ const App = () => {
 
 const AppContent = () => {
   const location = useLocation();
+
+  useEffect(() => {
+    const checkTokens = () => {
+      const tokens = [
+        { key: "token", path: "/login" },
+        { key: "adminToken", path: "/AdminLogin" },
+        { key: "bdaToken", path: "/TeamLogin" },
+        { key: "operationToken", path: "/OperationLogin" },
+        { key: "advOperationToken", path: "/AdvOperationLogin" },
+        { key: "advTeamToken", path: "/AdvTeamLogin" },
+        { key: "pctoken", path: "/PClogin" },
+        { key: "eventToken", path: "/EventLogin" },
+        { key: "marketingToken", path: "/marketing/login" },
+      ];
+
+      let hasExpired = false;
+      let redirectPath = null;
+
+      tokens.forEach(({ key, path }) => {
+        const tokenValue = localStorage.getItem(key);
+        if (tokenValue) {
+          try {
+            // Standard JWT has 3 parts separated by dots
+            const parts = tokenValue.split('.');
+            if (parts.length === 3) {
+              const payload = JSON.parse(atob(parts[1]));
+              // If token has expiration and is expired
+              if (payload.exp && payload.exp * 1000 < Date.now()) {
+                localStorage.removeItem(key);
+                hasExpired = true;
+                redirectPath = path;
+
+                // Clear associated data for standard user token
+                if (key === "token") {
+                  localStorage.removeItem("userEmail");
+                  localStorage.removeItem("userId");
+                }
+              }
+            }
+          } catch (e) {
+            console.error("Error decoding token for", key, e);
+            // Optionally remove if decoding fails 
+            // localStorage.removeItem(key);
+          }
+        }
+      });
+
+      if (hasExpired && redirectPath) {
+        const currentPath = window.location.pathname.toLowerCase();
+        if (!currentPath.includes("login") && !currentPath.includes("loginadmin") && !currentPath.includes("/marketing/login")) {
+          window.location.href = redirectPath;
+        }
+      }
+    };
+
+    // Run initially
+    checkTokens();
+
+    // Run on tab visibility change
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        checkTokens();
+      }
+    };
+
+    // Periodically run check every 15 seconds
+    const intervalId = setInterval(checkTokens, 15000);
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      clearInterval(intervalId);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
   const headerPaths = [
     "/",
     "/login",
