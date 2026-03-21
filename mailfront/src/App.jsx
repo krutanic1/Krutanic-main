@@ -53,6 +53,14 @@ async function apiFetch(path, opts = {}) {
 
     return data;
   } catch (err) {
+    if (err?.name === 'AbortError') {
+      return {
+        ok: false,
+        aborted: true,
+        message: 'Request was cancelled.'
+      };
+    }
+
     return {
       ok: false,
       message: `Unable to reach mailback API: ${err.message}`
@@ -264,6 +272,9 @@ function AdminMailBlaster({ authedEmail, onLogout }) {
   const [geminiPrompt, setGeminiPrompt] = useState('');
   const [geminiGenerating, setGeminiGenerating] = useState(false);
   const [geminiError, setGeminiError] = useState('');
+  const [refreshingBlastCount, setRefreshingBlastCount] = useState(false);
+  const validationAbortRef = useRef(null);
+  const validationPollRef = useRef(null);
 
   const recipientList = () => [...new Set(recipients.split(/[\n,]/).map(s => s.trim()).filter(Boolean))];
   const validatorEmailList = () => [...new Set(validatorEmails.split(/[\n,;]+/).map((s) => s.trim()).filter(Boolean))];
@@ -316,12 +327,34 @@ function AdminMailBlaster({ authedEmail, onLogout }) {
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (validationPollRef.current) {
+        clearInterval(validationPollRef.current);
+        validationPollRef.current = null;
+      }
+      if (validationAbortRef.current) {
+        validationAbortRef.current.abort();
+        validationAbortRef.current = null;
+      }
+    };
+  }, []);
+
   async function loadSenders() {
     const d = await apiFetch('/api/senders');
     if (d.ok) {
       setSenders(d.senders);
       setEditPassById((prev) => Object.fromEntries(d.senders.map((s) => [s._id, prev[s._id] || ''])));
       setSelectedById((prev) => Object.fromEntries(d.senders.map((s) => [s._id, s.canUse ? (prev[s._id] ?? false) : false])));
+    }
+  }
+
+  async function refreshBlastCount() {
+    setRefreshingBlastCount(true);
+    try {
+      await loadSenders();
+    } finally {
+      setRefreshingBlastCount(false);
     }
   }
 
@@ -528,6 +561,8 @@ function AdminMailBlaster({ authedEmail, onLogout }) {
     setEmailValidationResult(null);
     const progressKey = `validator-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
     setValidationProgress({ stage: 'upload list', current: 0, total: emails.length, done: false });
+    const controller = new AbortController();
+    validationAbortRef.current = controller;
 
     let pollTimer = null;
     let pollInFlight = false;
@@ -552,15 +587,22 @@ function AdminMailBlaster({ authedEmail, onLogout }) {
     };
 
     pollTimer = setInterval(pollProgress, 700);
+    validationPollRef.current = pollTimer;
 
     try {
       const d = await apiFetch('/api/validate-emails', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ emails, senderIds: selectedSenderIds, progressKey })
+        body: JSON.stringify({ emails, senderIds: selectedSenderIds, progressKey }),
+        signal: controller.signal
       });
 
       await pollProgress();
+
+      if (d?.aborted) {
+        setValidatorStatus('Validation stopped by user.');
+        return;
+      }
 
       setEmailValidationResult(d);
       if (d.ok) {
@@ -572,8 +614,32 @@ function AdminMailBlaster({ authedEmail, onLogout }) {
       setValidatorStatus('Unable to validate recipients right now.');
     } finally {
       if (pollTimer) clearInterval(pollTimer);
+      validationPollRef.current = null;
+      validationAbortRef.current = null;
       setBusyOps((prev) => ({ ...prev, validateRecipients: false }));
     }
+  }
+
+  function clearRecipients() {
+    setRecipients('');
+  }
+
+  function clearValidatorEmails() {
+    setValidatorEmails('');
+  }
+
+  function stopValidation() {
+    if (validationPollRef.current) {
+      clearInterval(validationPollRef.current);
+      validationPollRef.current = null;
+    }
+    if (validationAbortRef.current) {
+      validationAbortRef.current.abort();
+      validationAbortRef.current = null;
+    }
+    setBusyOps((prev) => ({ ...prev, validateRecipients: false }));
+    setValidationProgress((prev) => (prev ? { ...prev, done: true } : prev));
+    setValidatorStatus('Validation stopped by user.');
   }
 
   function useCleanRecipients() {
@@ -930,7 +996,19 @@ function AdminMailBlaster({ authedEmail, onLogout }) {
                   <th style={{ textAlign: 'left', fontSize: 12, padding: '3px 8px 3px 0' }}>#</th>
                   <th style={{ textAlign: 'left', fontSize: 12, padding: '3px 8px 3px 0' }}>Use</th>
                   <th style={{ textAlign: 'left', fontSize: 12, padding: '3px 8px 3px 0' }}>Email</th>
-                  <th style={{ textAlign: 'left', fontSize: 12, padding: '3px 8px 3px 0' }}>Blasted</th>
+                  <th style={{ textAlign: 'left', fontSize: 12, padding: '3px 8px 3px 0' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
+                      <span>Blasted</span>
+                      <button
+                        type="button"
+                        onClick={refreshBlastCount}
+                        disabled={!senders.length || refreshingBlastCount}
+                        style={{ padding: '4px 8px', fontSize: 11 }}
+                      >
+                        {refreshingBlastCount ? 'Refreshing...' : 'Refresh'}
+                      </button>
+                    </div>
+                  </th>
                   <th style={{ textAlign: 'left', fontSize: 12, padding: '3px 0' }}>Status</th>
                   <th></th>
                 </tr>
@@ -1052,6 +1130,9 @@ function AdminMailBlaster({ authedEmail, onLogout }) {
               <td>
                 <textarea rows={6} value={recipients} onChange={e => setRecipients(e.target.value)}
                   placeholder="one per line or comma separated" required style={W} />
+                <div style={{ marginTop: 8 }}>
+                  <button type="button" onClick={clearRecipients}>Refresh Recipients</button>
+                </div>
                 <small className="field-note">{recCount} recipient{recCount !== 1 ? 's' : ''}{activeSenderCount > 0 ? ` — ${activeSenderCount} sender${activeSenderCount !== 1 ? 's' : ''} — ~${perSender} each` : ''}</small>
                 <br />
                 <small className="field-note">{activeSenderCount} sender{activeSenderCount !== 1 ? 's' : ''} selected for sending</small>
@@ -1116,6 +1197,9 @@ function AdminMailBlaster({ authedEmail, onLogout }) {
             placeholder="Paste emails here, one per line (or comma/semicolon separated)"
             style={W}
           />
+          <div style={{ marginTop: 8 }}>
+            <button type="button" onClick={clearValidatorEmails}>Refresh Validator</button>
+          </div>
           <div className="action-row" style={{ marginTop: 10 }}>
             <button
               type="button"
@@ -1124,6 +1208,15 @@ function AdminMailBlaster({ authedEmail, onLogout }) {
             >
               {isBusy('validateRecipients') ? 'Validating List...' : 'Validate Mails'}
             </button>
+            {isBusy('validateRecipients') && (
+              <button
+                type="button"
+                onClick={stopValidation}
+                style={{ background: '#dc2626', borderColor: '#b91c1c', color: '#fff' }}
+              >
+                Stop Validation
+              </button>
+            )}
             <button
               type="button"
               onClick={useCleanRecipients}
