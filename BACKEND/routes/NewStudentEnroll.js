@@ -473,7 +473,7 @@ router.get("/getnewstudentenroll", verifyAnyAuth, async (req, res) => {
 
       // Filter by Counselor
       if (counselor) {
-        query.counselor = counselor;
+        query.counselor = { $regex: `^${counselor}$`, $options: "i" };
       }
 
       // Filter by Operation Name

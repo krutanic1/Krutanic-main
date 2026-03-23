@@ -13,7 +13,7 @@ const BDARevenueSheet = () => {
     try {
       const response = await axios.get(`${API}/getnewstudentenroll?all=true`);
       const filteredData = response.data.filter(
-        (item) => item.counselor && item.counselor === bdaName
+        (item) => item.counselor && item.counselor.toLowerCase() === bdaName.toLowerCase()
       );
       setNewStudent(filteredData);
     } catch (err) {

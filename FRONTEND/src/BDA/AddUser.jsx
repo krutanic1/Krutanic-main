@@ -22,7 +22,7 @@ const AddUser = () => {
   const getTransactionIdList = async () => {
     try {
       const response = await axios.get(`${API}/gettransactionid`);
-      setGetTransactionId(response.data.filter((item) => item.counselor === bdaName));
+      setGetTransactionId(response.data.filter((item) => item.counselor?.toLowerCase() === bdaName?.toLowerCase()));
     }
     catch (error) {
       console.error(error);

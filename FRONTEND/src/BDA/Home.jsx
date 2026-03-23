@@ -36,7 +36,7 @@ const Home = () => {
       const response = await axios.get(`${API}/getnewstudentenroll?all=true`);
       setNewStudent(
         response.data.filter(
-          (item) => item.counselor && item.counselor === bdaName
+          (item) => item.counselor && item.counselor.toLowerCase() === bdaName.toLowerCase()
         )
       );
     } catch (error) {
@@ -47,7 +47,7 @@ const Home = () => {
   const fetchBda = async () => {
     try {
       const response = await axios.get(`${API}/getbda`);
-      setBda(response.data.filter((item) => item.fullname === bdaName));
+      setBda(response.data.filter((item) => item.fullname.toLowerCase() === bdaName.toLowerCase()));
     } catch (error) {
       console.error("There was an error fetching bda:", error);
     }

@@ -57,7 +57,7 @@ const OnBoarding = () => {
     try {
       const response = await axios.get(`${API}/getnewstudentenroll?all=true`);
       const studentsData = response.data.filter(
-        (item) => item.status === "booked" && item.counselor === bdaName
+        (item) => item.status === "booked" && item.counselor?.toLowerCase() === bdaName?.toLowerCase()
       );
       setNewStudent(studentsData);
       setFilteredStudents(studentsData);

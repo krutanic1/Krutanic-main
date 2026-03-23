@@ -135,7 +135,10 @@ function MailblasterOtpLogin({ onAuthenticated }) {
   return (
     <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: '#f4f6f8', padding: 16 }}>
       <div style={{ width: '100%', maxWidth: 420, background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: 20 }}>
-        <h2 style={{ marginTop: 0, marginBottom: 8 }}>Mail Blaster Admin Login</h2>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+          <img src="/image.png" alt="Logo" style={{ width: 48, height: 48, borderRadius: '50%', objectFit: 'contain' }} />
+          <h2 style={{ margin: 0 }}>Mail Blaster Admin Login</h2>
+        </div>
         <form onSubmit={step === 'email' ? requestOtp : verifyOtp}>
           <label style={{ display: 'block', fontSize: 13, marginBottom: 6 }}>Admin Email</label>
           <input
@@ -923,7 +926,10 @@ function AdminMailBlaster({ authedEmail, onLogout }) {
       `}</style>
       <div className="app-shell" style={{ padding: 16 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <img src="/image.png" alt="Logo" style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'contain' }} />
         <h2 style={{ margin: 0 }}>Mail Blaster</h2>
+      </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <small style={{ color: '#6b7280' }}>Logged in as {authedEmail || 'admin'}</small>
           <button type="button" onClick={handleLogout}>Logout</button>

@@ -12,7 +12,7 @@ const Booked = () => {
       // Fetch all records to ensure we get data for this BDA across all months
       const response = await axios.get(`${API}/getnewstudentenroll?all=true`);
       const bookedStudents = response.data.filter(
-        (item) => item.counselor === bdaName && item.status === "booked"
+        (item) => item.counselor?.toLowerCase() === bdaName?.toLowerCase() && item.status === "booked"
       );
       setNewStudent(bookedStudents);
       setFilteredStudents(bookedStudents);
