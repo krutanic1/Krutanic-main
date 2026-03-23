@@ -4,6 +4,7 @@ import { useDashboard, getThumbnail } from "../DashboardContext";
 import { useDashboardMetrics } from "../hooks/useDashboardMetrics";
 import { StatCard } from "../new-dashboad";
 import { AssignmentMatrixSection, InternshipReadinessSection } from "../components/MatrixSections";
+import AttendanceStreak from "../components/AttendanceStreak";
 
 const OverviewPage = () => {
     const navigate = useNavigate();
@@ -77,6 +78,9 @@ const OverviewPage = () => {
                     <StatCard icon="payments" label="Payment Status" value={isFullyPaid ? "Paid" : "Pending"} status={paymentStatusColor} statusText={paymentStatusText} />
                 </div>
             )}
+
+            {/* Attendance Streak Heatmap */}
+            <AttendanceStreak userId={localStorage.getItem("userId")} />
 
             {/* Program Overview Card */}
             <section className="nd-section">

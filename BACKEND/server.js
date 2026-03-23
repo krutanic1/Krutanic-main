@@ -90,6 +90,10 @@ app.use(cookieParser());
 // Middleware to parse JSON
 app.use(express.json());
 
+// ✅ Attendance (Cumulative Timer) - Priority Registration
+const AttendanceRoute = require("./routes/Attendance");
+app.use("/attendance", AttendanceRoute);
+
 //create course
 app.use("/", createcourse);
 //create advance course

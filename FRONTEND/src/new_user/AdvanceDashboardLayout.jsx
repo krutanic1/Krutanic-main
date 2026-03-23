@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
+import API from "../API";
 import { Toaster } from "react-hot-toast";
 import { DashboardProvider, useDashboard } from "./DashboardContext";
 import { TopNav } from "./new-dashboad";
@@ -171,6 +173,25 @@ const LayoutInner = () => {
     useEffect(() => {
         setMobileSidebarOpen(false);
     }, [location.pathname]);
+
+    // Attendance: Mark on login (one-shot, no timer)
+    useEffect(() => {
+        if (!userData?._id) return;
+
+        const markAttendance = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                await axios.post(`${API}/attendance/mark`, {}, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                console.log("[Attendance] ✅ Marked on login");
+            } catch (err) {
+                console.error("[Attendance] ❌ Failed:", err.message);
+            }
+        };
+
+        markAttendance();
+    }, [userData?._id]);
 
     return (
         <div className="nd-root">
