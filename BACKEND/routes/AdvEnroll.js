@@ -530,5 +530,253 @@ router.get("/advenrollments/:id/sessions", async (req, res) => {
     res.status(500).json({ message: "Failed to fetch advance sessions", error });
   }
 });
+router.get("/advgetdailyrevenue", async (req, res) => {
+  const { month, year, startDate, endDate } = req.query;
+
+  try {
+    let matchStage = {};
+
+    if (startDate && endDate) {
+      // Custom Range
+      // Ensure endDate covers the full day
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      matchStage.createdAt = {
+        $gte: new Date(startDate),
+        $lte: end
+      };
+    } else if (month && year) {
+      // Monthly Range
+      const monthMap = {
+        "january": 0, "february": 1, "march": 2, "april": 3, "may": 4, "june": 5,
+        "july": 6, "august": 7, "september": 8, "october": 9, "november": 10, "december": 11
+      };
+      const cleanMonth = (month || "").trim().toLowerCase();
+      const monthIndex = monthMap[cleanMonth];
+
+      if (monthIndex !== undefined) {
+        const y = parseInt(year);
+        const start = new Date(y, monthIndex, 1);
+        const end = new Date(y, monthIndex + 1, 0, 23, 59, 59, 999);
+        matchStage.createdAt = {
+          $gte: start,
+          $lte: end
+        };
+      } else {
+        return res.status(400).json({ message: "Invalid month name" });
+      }
+    } else {
+      // Default to current month if no params provided
+      const now = new Date();
+      const start = new Date(now.getFullYear(), now.getMonth(), 1);
+      const end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+      matchStage.createdAt = { $gte: start, $lte: end };
+    }
+
+    const pipeline = [
+      { $match: matchStage },
+      {
+        $project: {
+          createdAt: 1,
+          programPrice: { $ifNull: ["$programPrice", 0] },
+          paidAmount: { $ifNull: ["$paidAmount", 0] },
+          status: 1,
+          remark: 1
+        }
+      },
+      {
+        $addFields: {
+          isCredited: {
+            $or: [
+              { $eq: ["$status", "fullPaid"] },
+              {
+                $and: [
+                  { $isArray: "$remark" },
+                  { $gt: [{ $size: "$remark" }, 0] },
+                  { $eq: [{ $arrayElemAt: ["$remark", -1] }, "Half_Cleared"] }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        $addFields: {
+          creditedAmount: {
+            $cond: { if: "$isCredited", then: "$paidAmount", else: 0 }
+          }
+        }
+      },
+      {
+        $addFields: {
+          pendingAmount: { $subtract: ["$programPrice", "$creditedAmount"] }
+        }
+      },
+      {
+        $group: {
+          // Group by date in IST timezone (+05:30)
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt", timezone: "+05:30" } },
+          displayDate: { $first: { $dateToString: { format: "%d/%m/%Y", date: "$createdAt", timezone: "+05:30" } } },
+          totalRevenue: { $sum: "$programPrice" },
+          bookedRevenue: { $sum: "$paidAmount" },
+          creditedRevenue: { $sum: "$creditedAmount" },
+          pendingRevenue: { $sum: "$pendingAmount" },
+          payments: { $sum: 1 }
+        }
+      },
+      { $sort: { _id: -1 } }, // Sort by YYYY-MM-DD descending
+      {
+        $project: {
+          _id: 0,
+          date: "$displayDate",
+          total: "$totalRevenue",
+          booked: "$bookedRevenue",
+          credited: "$creditedRevenue",
+          pending: "$pendingRevenue",
+          payments: "$payments"
+        }
+      }
+    ];
+
+    const dailyStats = await AdvEnroll.aggregate(pipeline);
+    res.status(200).json(dailyStats);
+
+  } catch (error) {
+    console.error("Error in /advgetdailyrevenue:", error);
+    res.status(500).json({ message: "Server error fetching daily revenue", error: error.message });
+  }
+});
+
+router.get("/advgetmonthlyrevenue", verifyAnyAuth, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // 1. Aggregation Pipeline for Monthly Stats
+    const pipeline = [
+      {
+        $project: {
+          month: { $month: "$createdAt" },
+          year: { $year: "$createdAt" },
+          createdAt: 1,
+          programPrice: { $ifNull: ["$programPrice", 0] },
+          paidAmount: { $ifNull: ["$paidAmount", 0] },
+          status: 1,
+          remark: 1
+        }
+      },
+      {
+        $addFields: {
+          // Determine if credited based on status or remark (matching frontend logic)
+          isCredited: {
+            $or: [
+              { $eq: ["$status", "fullPaid"] },
+              {
+                $and: [
+                  { $isArray: "$remark" },
+                  { $gt: [{ $size: "$remark" }, 0] },
+                  { $eq: [{ $arrayElemAt: ["$remark", -1] }, "Half_Cleared"] }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        $addFields: {
+          creditedAmount: {
+            $cond: { if: "$isCredited", then: "$paidAmount", else: 0 }
+          }
+        }
+      },
+      {
+        $addFields: {
+          pendingAmount: { $subtract: ["$programPrice", "$creditedAmount"] }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            month: "$month",
+            year: "$year"
+          },
+          totalRevenue: { $sum: "$programPrice" },
+          bookedRevenue: { $sum: "$paidAmount" },
+          creditedRevenue: { $sum: "$creditedAmount" },
+          pendingRevenue: { $sum: "$pendingAmount" },
+          totalPayments: { $sum: 1 },
+          firstDate: { $min: "$createdAt" } // Used for sorting
+        }
+      },
+      {
+        $sort: { firstDate: -1 } // Sort by most recent month first
+      },
+      {
+        $project: {
+          _id: 0,
+          month: {
+            $concat: [
+              {
+                $switch: {
+                  branches: [
+                    { case: { $eq: ["$_id.month", 1] }, then: "January" },
+                    { case: { $eq: ["$_id.month", 2] }, then: "February" },
+                    { case: { $eq: ["$_id.month", 3] }, then: "March" },
+                    { case: { $eq: ["$_id.month", 4] }, then: "April" },
+                    { case: { $eq: ["$_id.month", 5] }, then: "May" },
+                    { case: { $eq: ["$_id.month", 6] }, then: "June" },
+                    { case: { $eq: ["$_id.month", 7] }, then: "July" },
+                    { case: { $eq: ["$_id.month", 8] }, then: "August" },
+                    { case: { $eq: ["$_id.month", 9] }, then: "September" },
+                    { case: { $eq: ["$_id.month", 10] }, then: "October" },
+                    { case: { $eq: ["$_id.month", 11] }, then: "November" },
+                    { case: { $eq: ["$_id.month", 12] }, then: "December" }
+                  ],
+                  default: "Unknown"
+                }
+              },
+              " ",
+              { $toString: "$_id.year" }
+            ]
+          },
+          total: "$totalRevenue",
+          booked: "$bookedRevenue",
+          credited: "$creditedRevenue",
+          pending: "$pendingRevenue",
+          payments: "$totalPayments"
+        }
+      }
+    ];
+
+    // execute aggregation
+    const allMonthlyStats = await AdvEnroll.aggregate(pipeline);
+
+    // 2. Pagination Logic (in memory since aggregation result needs slicing)
+    // Note: optimization for huge datasets would require $facet in aggregation, 
+    // but for monthly stats, the array size is small (number of months in operation).
+    const totalItems = allMonthlyStats.length;
+    const totalPages = Math.ceil(totalItems / limit);
+    const paginatedData = allMonthlyStats.slice(skip, skip + limit);
+
+    // 3. Calculate Grand Total Revenue (All Time)
+    // We can sum up the results from the aggregation directly
+    const grandTotal = allMonthlyStats.reduce((acc, curr) => acc + (curr.total || 0), 0);
+
+    res.status(200).json({
+      data: paginatedData,
+      pagination: {
+        currentPage: page,
+        totalPages: totalPages,
+        totalItems: totalItems,
+        grandTotal: grandTotal
+      }
+    });
+
+  } catch (error) {
+    console.error("Error in /advgetmonthlyrevenue:", error);
+    res.status(500).json({ message: "Server error fetching monthly revenue", error: error.message });
+  }
+});
 
 module.exports = router;

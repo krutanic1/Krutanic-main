@@ -55,6 +55,7 @@ import Createmanager from "./Admin/CreateManager";
 import MasterClasses from "./Admin/MasterClasses";
 import LoginAdmin from "./Admin/LoginAdmin";
 import RevenueSheet from "./Admin/RevenueSheet";
+import AdvRevenueSheet from "./Admin/advadminrevenue";
 import AllTeamDetail from "./Admin/AllTeamDetail";
 import AddEvent from "./Admin/AddEvent";
 import EventRegistration from "./Admin/EventRegistration";
@@ -350,6 +351,7 @@ const AppContent = () => {
     "/mentorqueries",
     "/advancequeries",
     "/revenuesheet",
+    "/advrevenuesheet",
     "/createplacementcoordinator",
     "/onboardingdetails",
     "/advonboardingdetails",
@@ -537,6 +539,7 @@ const AppContent = () => {
         <Route path="/MentorQueries" element={isAuthenticatedAdmin() ? <MentorQueries /> : <Navigate to="/AdminLogin" />} />
         <Route path="/CreateManager" element={isAuthenticatedAdmin() ? <Createmanager /> : <Navigate to="/AdminLogin" />} />
         <Route path="/RevenueSheet" element={isAuthenticatedAdmin() ? <RevenueSheet /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/AdvRevenueSheet" element={isAuthenticatedAdmin() ? <AdvRevenueSheet /> : <Navigate to="/AdminLogin" />} />
         <Route path="/OnBoardingDetails" element={isAuthenticatedAdmin() ? <OnBoardingDetails /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AdvOnBoardingDetails" element={isAuthenticatedAdmin() ? <AdvOnBoardingDetails /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AdvBooked" element={isAuthenticatedAdmin() ? <AdvBooked /> : <Navigate to="/AdminLogin" />} />

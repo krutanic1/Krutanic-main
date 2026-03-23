@@ -26,7 +26,8 @@ router.post("/impersonate", verifyAdminCookie, async (req, res) => {
     let user;
     let tokenPayload = {};
 
-    switch (role.toUpperCase()) {
+    const normalizedRole = role.toUpperCase();
+    switch (normalizedRole) {
       case "BDA":
       case "MANAGER":
       case "LEADER":
@@ -94,14 +95,14 @@ router.post("/impersonate", verifyAdminCookie, async (req, res) => {
       }
     };
 
-    // Add role-specific fields
-    if (role.includes("BDA") || role === "MANAGER" || role === "LEADER") {
+    // Add role-specific fields using normalized checks
+    if (normalizedRole.includes("BDA") || normalizedRole === "MANAGER" || normalizedRole === "LEADER") {
       responseData.bdaId = user._id;
       responseData.bdaName = user.fullname;
-    } else if (role.includes("OPERATION")) {
+    } else if (normalizedRole.includes("OPERATION")) {
       responseData._id = user._id;
       responseData.operationName = user.fullname;
-    } else if (role.includes("ADV_TEAM") || role.startsWith("ADV") || role.includes("INSIDE SALES")) {
+    } else if (normalizedRole.includes("ADV_TEAM") || normalizedRole.startsWith("ADV") || normalizedRole.includes("INSIDE SALES")) {
       responseData.bdaId = user._id;
       responseData.bdaName = user.fullname;
       responseData.designation = user.designation;

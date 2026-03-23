@@ -207,6 +207,9 @@ const AdminHeader = () => {
             <Link to="/BulkImport">
               <i className="fa fa-upload mr-2"></i>Bulk Import Leads
             </Link>
+            <Link to="/AdvRevenueSheet">
+              <i className="fa fa-line-chart mr-2"></i>ADV Revenue Sheet
+            </Link>
           </>
         )}
         <button onClick={handleLogout}>
