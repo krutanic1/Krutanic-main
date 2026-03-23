@@ -984,9 +984,18 @@ function AdminMailBlaster({ authedEmail, onLogout }) {
               </button>
               <small style={{ color: '#6b7280' }}>Accounts at limit are skipped automatically.</small>
             </div>
-            <button type="button" onClick={checkAllLimits} disabled={!senders.length || isBusy('checkLimits')}>
-              {isBusy('checkLimits') ? 'Checking…' : 'Check All Limits'}
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <button type="button" onClick={checkAllLimits} disabled={!senders.length || isBusy('checkLimits')}>
+                {isBusy('checkLimits') ? 'Checking…' : 'Check All Limits'}
+              </button>
+              <button
+                type="button"
+                onClick={refreshBlastCount}
+                disabled={!senders.length || refreshingBlastCount}
+              >
+                {refreshingBlastCount ? 'Refreshing...' : 'Refresh'}
+              </button>
+            </div>
           </div>
 
           {senders.length === 0 && (
@@ -1002,19 +1011,7 @@ function AdminMailBlaster({ authedEmail, onLogout }) {
                   <th style={{ textAlign: 'left', fontSize: 12, padding: '3px 8px 3px 0' }}>#</th>
                   <th style={{ textAlign: 'left', fontSize: 12, padding: '3px 8px 3px 0' }}>Use</th>
                   <th style={{ textAlign: 'left', fontSize: 12, padding: '3px 8px 3px 0' }}>Email</th>
-                  <th style={{ textAlign: 'left', fontSize: 12, padding: '3px 8px 3px 0' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
-                      <span>Blasted</span>
-                      <button
-                        type="button"
-                        onClick={refreshBlastCount}
-                        disabled={!senders.length || refreshingBlastCount}
-                        style={{ padding: '4px 8px', fontSize: 11 }}
-                      >
-                        {refreshingBlastCount ? 'Refreshing...' : 'Refresh'}
-                      </button>
-                    </div>
-                  </th>
+                  <th style={{ textAlign: 'left', fontSize: 12, padding: '3px 8px 3px 0' }}>Blasted</th>
                   <th style={{ textAlign: 'left', fontSize: 12, padding: '3px 0' }}>Status</th>
                   <th></th>
                 </tr>

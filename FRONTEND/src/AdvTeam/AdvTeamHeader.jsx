@@ -186,9 +186,9 @@ const AdvTeamHeader = () => {
                 <i className="fa fa-history"></i> Record
               </Link>
             )}
-          <Link to="/advteam/onboarding">
+          {/* <Link to="/advteam/onboarding">
             <i className="fa fa-edit"></i> OnBoarding Form
-          </Link>
+          </Link> */}
           <Link to="/advteam/booked">
             <i className="fa fa-calendar-o"></i> Booked Payment
           </Link>
