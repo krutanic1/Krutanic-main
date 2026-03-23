@@ -187,7 +187,7 @@ router.post("/operationverifyotp", async (req, res) => {
     const token = jwt.sign(
       { _id: operation._id, email: operation.email },
       process.env.JWT_SECRET,
-      { expiresIn: "10m" }
+      { expiresIn: "1h" }
     );
     res.status(200).json({
       token,

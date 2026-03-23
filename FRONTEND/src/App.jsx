@@ -1,6 +1,7 @@
 import React, { lazy, useEffect } from "react";
 import { Routes, Route, BrowserRouter, useLocation, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import ReactPixel from 'react-facebook-pixel';
 import Header from "./Components/Header";
 import HomePage from "./page/landing";
 import ContactUs from "./page/ContactUs";
@@ -213,6 +214,10 @@ const App = () => {
 
 const AppContent = () => {
   const location = useLocation();
+
+  useEffect(() => {
+    ReactPixel.pageView();
+  }, [location]);
 
   useEffect(() => {
     const checkTokens = () => {

@@ -29,6 +29,16 @@ import "./style/verify.css";
 import './style/Linkedin.css'
 import "./style/ReferAndEarn.css"
 import "./style/CreateMarketingTeam.css"
+import ReactPixel from 'react-facebook-pixel';
+
+const options = {
+  autoConfig: true,
+  debug: false,
+};
+
+ReactPixel.init('753815477788409', options);
+ReactPixel.pageView();
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
