@@ -43,6 +43,10 @@ const Performancemarket = () => {
     reason: "",
   });
 
+    const [otpSent, setOtpSent] = useState(false);
+    const [otp, setOtp] = useState("");
+    const [emailVerified, setEmailVerified] = useState(false);
+
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
@@ -450,6 +454,8 @@ const Performancemarket = () => {
     };
 
     window.addEventListener("scroll", handleScroll);
+    
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollPos]);
 
@@ -465,6 +471,37 @@ const Performancemarket = () => {
     setFormData({ ...formData, [name]: value });
   };
 const [actionType, setActionType] = useState();
+  
+    const sendOTP = async () => {
+        if (!formData.email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/)) {
+            toast.error("Please enter a valid email address.");
+            return;
+        }
+        try {
+            await axios.post(`${API}/advance-send-otp`, { email: formData.email });
+            toast.success("OTP sent to your email!");
+            setOtpSent(true);
+        } catch (error) {
+            toast.error("Failed to send OTP. Try again.");
+        }
+    };
+
+    const verifyOTP = async () => {
+        try {
+            const response = await axios.post(`${API}/advance-verify-otp`, { email: formData.email, otp });
+            if (response.data.success) {
+                toast.success("Email verified successfully!");
+                setEmailVerified(true);
+                setOtp("");
+                setOtpSent(false);
+            } else {
+                toast.error("Invalid OTP. Try again.");
+            }
+        } catch (error) {
+            toast.error("Verification failed or Invalid OTP.");
+        }
+    };
+
   const handleFormSubmit = async (e , actionType) => {
     e.preventDefault();
     try {
@@ -913,8 +950,41 @@ const [actionType, setActionType] = useState();
                               value={formData.email}
                               onChange={handleInputChange}
                               className="w-full border border-gray-300 p-1.5 rounded-md"
-                              required
+                              disabled={emailVerified}
+                  required
                             />
+                {!emailVerified ? (
+                    !otpSent ? (
+                        <button
+                            type="button"
+                            onClick={sendOTP}
+                            className="w-full bg-[#f15b29] text-white p-1.5 rounded-md text-sm mt-2 transition"
+                        >
+                            Verify Email
+                        </button>
+                    ) : (
+                        <div className="flex gap-2 mt-2">
+                            <input
+                                type="text"
+                                value={otp}
+                                onChange={(e) => setOtp(e.target.value)}
+                                placeholder="Enter OTP"
+                                className="w-full border border-gray-300 p-1.5 rounded-md text-black"
+                            />
+                            <button
+                                type="button"
+                                onClick={verifyOTP}
+                                className="bg-green-600 text-white px-3 py-1.5 rounded-md text-sm whitespace-nowrap"
+                            >
+                                Submit OTP
+                            </button>
+                        </div>
+                    )
+                ) : (
+                    <div className="bg-green-100 border border-green-400 text-green-700 px-3 py-1.5 rounded-md mt-2 text-center text-sm">
+                        ✅ Email Verified
+                    </div>
+                )}
                             <input
                               type="text"
                               id="number"
@@ -1026,16 +1096,16 @@ const [actionType, setActionType] = useState();
                             )}
                            <div className="flex justify-center gap-2">
                                                <button
-                                                 type="submit"
+                                                 type="submit" disabled={!emailVerified}
                                                  onClick={(e) => setActionType("Only Download Brochure")}
-                                                 className="px-4 py-2 w-full bg-[#f15b29] text-white rounded-md"
+                                                 className="px-4 py-2 w-full bg-[#f15b29] text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
                                                >
                                                  <i className="fa fa-download"></i>
                                                </button>
                                                <button
-                                                 type="submit"
+                                                 type="submit" disabled={!emailVerified}
                                                  onClick={(e) => setActionType("Requested To Call Back")}
-                                                 className="px-4 py-2 w-full bg-[#f15b29] flex items-center justify-center gap-1 text-white rounded-md"
+                                                 className="px-4 py-2 w-full bg-[#f15b29] flex items-center justify-center gap-1 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
                                                >
                                                  <i className="fa fa-download"></i> +{" "}
                                                  <RiCustomerService2Fill />

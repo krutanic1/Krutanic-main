@@ -16,10 +16,13 @@ const ApplyForm = () => {
     experience: "",
     goal: "",
     goalOther: "",
-    reason: "",
     domain: "",
     domainOther: "",
   });
+
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [emailVerified, setEmailVerified] = useState(false);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -34,13 +37,21 @@ const ApplyForm = () => {
     const phoneRegex = /^[0-9]{10}$/;
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
 
+    if (!emailVerified) {
+      toast.error("Please verify your email before submitting.");
+      setLoading(false);
+      return;
+    }
+
     if (!phoneRegex.test(formData.number)) {
       toast.error("Please enter a valid phone number.");
+      setLoading(false);
       return;
     }
 
     if (!emailRegex.test(formData.email)) {
       toast.error("Please enter a valid email address.");
+      setLoading(false);
       return;
     }
     try {
@@ -71,6 +82,36 @@ const ApplyForm = () => {
     }
   };
 
+  const sendOTP = async () => {
+    if (!formData.email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+    try {
+      await axios.post(`${API}/advance-send-otp`, { email: formData.email });
+      toast.success("OTP sent to your email!");
+      setOtpSent(true);
+    } catch (error) {
+      toast.error("Failed to send OTP. Try again.");
+    }
+  };
+
+  const verifyOTP = async () => {
+    try {
+      const response = await axios.post(`${API}/advance-verify-otp`, { email: formData.email, otp });
+      if (response.data.success) {
+        toast.success("Email verified successfully!");
+        setEmailVerified(true);
+        setOtp("");
+        setOtpSent(false);
+      } else {
+        toast.error("Invalid OTP. Try again.");
+      }
+    } catch (error) {
+      toast.error("Verification failed or Invalid OTP.");
+    }
+  };
+
   const FormOff = () => {
     // setShowForm(false);
     setFormData({
@@ -84,6 +125,9 @@ const ApplyForm = () => {
       domain: "",
       domainOther: "",
     });
+    setOtpSent(false);
+    setOtp("");
+    setEmailVerified(false);
   };
 
   useEffect(() => {
@@ -123,8 +167,41 @@ const ApplyForm = () => {
               value={formData.email}
               onChange={handleInputChange}
               className="w-full border border-gray-300 p-1.5 rounded-md"
+              disabled={emailVerified}
               required
             />
+            {!emailVerified ? (
+                !otpSent ? (
+                    <button
+                        type="button"
+                        onClick={sendOTP}
+                        className="w-full bg-[#f15b29] text-white p-1.5 rounded-md text-sm transition"
+                    >
+                        Verify Email
+                    </button>
+                ) : (
+                    <div className="flex gap-2">
+                        <input
+                            type="text"
+                            value={otp}
+                            onChange={(e) => setOtp(e.target.value)}
+                            placeholder="Enter OTP"
+                            className="w-full border border-gray-300 p-1.5 rounded-md text-black"
+                        />
+                        <button
+                            type="button"
+                            onClick={verifyOTP}
+                            className="bg-green-600 text-white px-3 py-1.5 rounded-md text-sm whitespace-nowrap"
+                        >
+                            Submit OTP
+                        </button>
+                    </div>
+                )
+            ) : (
+                <div className="bg-green-100 border border-green-400 text-green-700 px-3 py-1.5 rounded-md text-center text-sm">
+                    ✅ Email Verified
+                </div>
+            )}
             <input
               type="text"
               id="number"
@@ -253,8 +330,8 @@ const ApplyForm = () => {
                     </button> */}
               <button
                 type="submit"
-                disabled={loading}
-                className="px-4 py-1 bg-[#f15b29] text-white rounded-md"
+                disabled={loading || !emailVerified}
+                className="px-4 py-1 bg-[#f15b29] text-white rounded-md disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {loading ? "Loading..." : "Submit"}
               </button>

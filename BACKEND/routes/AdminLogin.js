@@ -268,7 +268,7 @@ router.put('/mailsendedbda/:id', async (req, res) => {
   }
 });
 
-// -------------------------Advanced Team
+// -------------------------Advanced Team--------------------------------
 //send login details to advanced team
 router.post('/sendmailtoadvteam', async (req, res) => {
   const { fullname, email } = req.body;

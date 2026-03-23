@@ -16,6 +16,10 @@ const MentorshipForm = ({ isPopup, onClose }) => {
     passingyear: "",
   });
 
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [emailVerified, setEmailVerified] = useState(false);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -28,6 +32,12 @@ const MentorshipForm = ({ isPopup, onClose }) => {
     e.preventDefault();
     const phoneRegex = /^[0-9]{10}$/;
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
+    if (!emailVerified) {
+      toast.error("Please verify your email before submitting.");
+      setIsSubmitting(false);
+      return;
+    }
 
     if (!phoneRegex.test(formData.number)) {
       toast.error("Please enter a valid phone number.");
@@ -64,6 +74,36 @@ const MentorshipForm = ({ isPopup, onClose }) => {
     }
   };
 
+  const sendOTP = async () => {
+    if (!formData.email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+    try {
+      await axios.post(`${API}/mentorship-send-otp`, { email: formData.email });
+      toast.success("OTP sent to your email!");
+      setOtpSent(true);
+    } catch (error) {
+      toast.error("Failed to send OTP. Try again.");
+    }
+  };
+
+  const verifyOTP = async () => {
+    try {
+      const response = await axios.post(`${API}/mentorship-verify-otp`, { email: formData.email, otp });
+      if (response.data.success) {
+        toast.success("Email verified successfully!");
+        setEmailVerified(true);
+        setOtp("");
+        setOtpSent(false);
+      } else {
+        toast.error("Invalid OTP. Try again.");
+      }
+    } catch (error) {
+      toast.error("Verification failed or Invalid OTP.");
+    }
+  };
+
   const ClearForm = () => {
     setShowForm(false);
     setFormData({
@@ -75,6 +115,9 @@ const MentorshipForm = ({ isPopup, onClose }) => {
       domain: "",
       passingyear: "",
     });
+    setOtpSent(false);
+    setOtp("");
+    setEmailVerified(false);
     if (onClose) onClose();
   };
 
@@ -84,10 +127,10 @@ const MentorshipForm = ({ isPopup, onClose }) => {
 
       {!isPopup && (
         <button
-          className="submit-btn-premium w-auto px-10"
+          // className="submit-btn-premium w-auto px-10"
           onClick={() => setShowForm(true)}
         >
-          Apply Now
+          
         </button>
       )}
 
@@ -122,9 +165,43 @@ const MentorshipForm = ({ isPopup, onClose }) => {
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="Email id"
+                    disabled={emailVerified}
                     required
                   />
                 </div>
+
+                {!emailVerified ? (
+                  !otpSent ? (
+                    <button
+                      type="button"
+                      onClick={sendOTP}
+                      className="w-full bg-[#f15b29] text-white py-2 rounded-xl text-sm font-semibold mb-3 hover:bg-[#e04a1b] transition shadow-md"
+                    >
+                      Verify Email
+                    </button>
+                  ) : (
+                    <div className="flex gap-2 mb-3">
+                       <input
+                        type="text"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        placeholder="Enter OTP"
+                        className="p-2 w-full border-2 border-slate-200 rounded-xl text-black focus:border-[#f15b29] outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={verifyOTP}
+                        className="bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap hover:bg-green-700 transition shadow-md"
+                      >
+                        Submit OTP
+                      </button>
+                    </div>
+                  )
+                ) : (
+                  <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-xl mb-3 text-center text-sm font-semibold">
+                    ✅ Email Verified
+                  </div>
+                )}
 
                 <div className="form-group-modern">
                   <input
@@ -215,8 +292,8 @@ const MentorshipForm = ({ isPopup, onClose }) => {
 
                 <button
                   type="submit"
-                  disabled={isSubmitting}
-                  className="submit-btn-premium"
+                  disabled={isSubmitting || !emailVerified}
+                  className="submit-btn-premium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
                     <>
