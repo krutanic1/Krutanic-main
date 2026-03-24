@@ -1,0 +1,366 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+require('dotenv').config();
+
+const dbConnect = require('../src/config/db');
+
+const app = express();
+
+// Middleware
+app.use(express.json());
+app.use(cors());
+
+// DB Connection
+dbConnect();
+
+// Routes
+app.get('/', (req, res) => {
+  res.redirect('/api');
+});
+
+app.get('/api', (req, res) => {
+  res.status(200).json({ status: 'success', message: 'SmartWarmup API is running' });
+});
+
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ 
+    uptime: process.uptime(),
+    timestamp: Date.now(),
+    db: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+  });
+});
+
+// Sample route to test email sending
+app.post('/api/test-email', async (req, res) => {
+  const { smtpConfig, mailOptions } = req.body;
+  const { sendMail } = require('../src/services/mailer');
+  
+  try {
+    const info = await sendMail(smtpConfig, mailOptions);
+    res.status(200).json({ status: 'success', messageId: info.messageId });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+// Sample route to test IMAP fetching
+app.post('/api/test-imap', async (req, res) => {
+  const { imapConfig } = req.body;
+  const { fetchEmails } = require('../src/services/imap');
+  
+  try {
+    const results = await fetchEmails(imapConfig);
+    res.status(200).json({ status: 'success', resultsCount: results.length });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+// Bulk add accounts
+app.post('/api/accounts/bulk-add', async (req, res) => {
+  const accounts = req.body;
+  const Account = require('../src/models/Account');
+
+  if (!Array.isArray(accounts)) {
+    return res.status(400).json({ status: 'error', message: 'Input must be an array of accounts' });
+  }
+
+  try {
+    const result = await Account.insertMany(accounts, { ordered: false });
+    res.status(201).json({ 
+      status: 'success', 
+      message: `${result.length} accounts added`,
+      count: result.length 
+    });
+  } catch (error) {
+    if (error.writeErrors) {
+      const insertedCount = error.result.nInserted;
+      res.status(207).json({ 
+        status: 'partial_success', 
+        message: `${insertedCount} accounts added, some failed`,
+        errors: error.writeErrors.length,
+        count: insertedCount
+      });
+    } else {
+      res.status(500).json({ status: 'error', message: error.message });
+    }
+  }
+});
+
+// Get all accounts
+app.get('/api/accounts', async (req, res) => {
+  const Account = require('../src/models/Account');
+  try {
+    const accounts = await Account.find({}).sort({ createdAt: -1 });
+    res.status(200).json({ status: 'success', data: accounts });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+// Toggle warmup for an account
+app.post('/api/accounts/:id/toggle-warmup', async (req, res) => {
+  const Account = require('../src/models/Account');
+  try {
+    const account = await Account.findById(req.params.id);
+    if (!account) return res.status(404).json({ status: 'error', message: 'Account not found' });
+    
+    // Toggle enabled status (handle missing field by defaulting to false if it was 'on' by absence)
+    const currentStatus = account.warmup?.enabled !== false; 
+    account.warmup = {
+      ...account.warmup,
+      enabled: !currentStatus
+    };
+    
+    await account.save();
+    res.status(200).json({ status: 'success', enabled: account.warmup.enabled });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+// Start warmup process (Schedule jobs for 24h)
+app.post('/api/warmup/start', async (req, res) => {
+  const Account = require('../src/models/Account');
+  const WarmupJob = require('../src/models/WarmupJob');
+  const { generate24hJobs } = require('../src/utils/warmup-scheduler');
+
+  try {
+    // 1. Fetch enabled accounts (or those with the field missing, treating as enabled by default)
+    const accounts = await Account.find({ 
+      $or: [
+        { 'warmup.enabled': true }, 
+        { 'warmup.enabled': { $exists: false } }
+      ] 
+    });
+    
+    const uniqueDomains = new Set(accounts.map(a => a.user.split('@')[1]));
+    
+    if (accounts.length < 2 || uniqueDomains.size < 2) {
+      return res.status(400).json({ 
+        status: 'error', 
+        message: `Requirement not met: Found ${accounts.length} accounts across ${uniqueDomains.size} unique domains. Need at least 2 of each.`
+      });
+    }
+
+    // 2. Generate jobs
+    const jobs = generate24hJobs(accounts);
+
+    // 3. Save to DB
+    await WarmupJob.insertMany(jobs);
+
+    res.status(200).json({ 
+      status: 'success', 
+      message: `Warmup started. ${jobs.length} jobs scheduled for the next 24 hours.`,
+      accountCount: accounts.length
+    });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+// Vercel Cron: Process pending warmup jobs
+app.get('/api/cron/process-warmup', async (req, res) => {
+  const Account = require('../src/models/Account');
+  const WarmupJob = require('../src/models/WarmupJob');
+  const { sendMail } = require('../src/services/mailer');
+
+  try {
+    const jobs = await WarmupJob.find({
+      status: 'pending',
+      scheduledAt: { $lte: new Date() }
+    }).limit(20);
+
+    if (jobs.length === 0) {
+      return res.status(200).json({ status: 'success', message: 'No pending jobs to process' });
+    }
+
+    const results = await Promise.allSettled(jobs.map(async (job) => {
+      try {
+        job.status = 'processing';
+        await job.save();
+
+        const sender = await Account.findById(job.accountId);
+        const target = await Account.findById(job.targetId);
+
+        if (!sender || !target) throw new Error('Account not found');
+
+        await sendMail({
+          host: sender.smtp?.host || process.env.DEFAULT_SMTP_HOST,
+          port: sender.smtp?.port || process.env.DEFAULT_SMTP_PORT,
+          user: sender.user,
+          pass: sender.pass
+        }, {
+          to: target.user,
+          // Leaving subject and text undefined will trigger generateDynamicContent internally
+        });
+
+        job.status = 'done';
+        await job.save();
+        await Account.findByIdAndUpdate(sender._id, { $inc: { 'warmup.sentToday': 1 } });
+        return { jobId: job._id, status: 'done' };
+      } catch (error) {
+        job.attempts += 1;
+        job.error = error.message;
+        job.status = (job.attempts < 3) ? 'pending' : 'failed';
+        if (job.status === 'pending') job.scheduledAt = new Date(Date.now() + 5 * 60 * 1000);
+        await job.save();
+        throw error;
+      }
+    }));
+
+    res.status(200).json({ status: 'success', processed: jobs.length });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+// Get activity logs
+app.get('/api/logs', async (req, res) => {
+  const WarmupJob = require('../src/models/WarmupJob');
+  const Account = require('../src/models/Account');
+  try {
+    const jobs = await WarmupJob.find({ status: { $in: ['done', 'failed', 'processing'] } })
+      .sort({ updatedAt: -1 })
+      .limit(50);
+    
+    // Manual hydration because of collection mapping might be tricky with populate
+    const accountIds = [...new Set([...jobs.map(j => j.accountId), ...jobs.map(j => j.targetId)])];
+    const accounts = await Account.find({ _id: { $in: accountIds } });
+    const accMap = accounts.reduce((map, acc) => {
+      map[acc._id.toString()] = acc.user;
+      return map;
+    }, {});
+
+    const hydratedLogs = jobs.map(j => ({
+      _id: j._id,
+      sender: accMap[j.accountId.toString()] || 'Unknown',
+      recipient: accMap[j.targetId.toString()] || 'Unknown',
+      status: j.status,
+      scheduledAt: j.scheduledAt,
+      completedAt: j.updatedAt,
+      error: j.error
+    }));
+
+    res.status(200).json({ status: 'success', data: hydratedLogs });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+// Vercel Cron: Check for replies and respond
+app.get('/api/cron/check-replies', async (req, res) => {
+  const Account = require('../src/models/Account');
+  const { fetchUnreadEmails } = require('../src/services/imap');
+  const { sendMail, generateReply } = require('../src/services/mailer');
+
+  try {
+    const accounts = await Account.find({ 'warmup.enabled': true });
+    const allPartners = accounts.map(a => a.user.toLowerCase());
+
+    const summary = [];
+    const { decrypt } = require('../src/utils/crypto');
+
+    // Helper: Wrap promise with timeout
+    const withTimeout = (promise, ms, label) => {
+      const timeout = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error(`Timeout: ${label} exceeded ${ms}ms`)), ms)
+      );
+      return Promise.race([promise, timeout]);
+    };
+
+    // Process in batches of 5
+    const BATCH_SIZE = 5;
+    for (let i = 0; i < accounts.length; i += BATCH_SIZE) {
+      const batch = accounts.slice(i, i + BATCH_SIZE);
+      console.log(`Reply-check batch ${Math.floor(i/BATCH_SIZE) + 1}/${Math.ceil(accounts.length/BATCH_SIZE)}...`);
+      
+      await Promise.allSettled(batch.map(async (acc) => {
+        try {
+          const unread = await withTimeout(
+            fetchUnreadEmails({
+              user: acc.user,
+              pass: decrypt(acc.pass),
+              host: process.env.DEFAULT_IMAP_HOST,
+              port: parseInt(process.env.DEFAULT_IMAP_PORT) || 993
+            }),
+            15000,
+            acc.user
+          );
+
+          const warmupEmails = unread.filter(email => 
+            allPartners.includes(email.from.toLowerCase())
+          );
+
+          for (const email of warmupEmails) {
+            if (Math.random() > 0.3) {
+              const reply = await withTimeout(
+                generateReply(email.subject, email.text),
+                10000,
+                `reply-${email.from}`
+              );
+              await withTimeout(
+                sendMail({
+                  host: process.env.DEFAULT_SMTP_HOST,
+                  port: parseInt(process.env.DEFAULT_SMTP_PORT) || 465,
+                  user: acc.user,
+                  pass: acc.pass
+                }, {
+                  to: email.from,
+                  subject: reply.subject,
+                  text: reply.body
+                }),
+                10000,
+                `send-${email.from}`
+              );
+              summary.push({ account: acc.user, repliedTo: email.from });
+            }
+          }
+        } catch (err) {
+          console.error(`Reply error for ${acc.user}:`, err.message);
+        }
+      }));
+    }
+
+    res.status(200).json({ status: 'success', repliesSent: summary.length, details: summary });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+// For local testing
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  // Local Debug: Simulate Vercel Cron every 60 seconds
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  console.log('Local Cron Simulator: Starting (every 60s)...');
+  setInterval(async () => {
+    console.log('Local Cron: Running process-warmup...');
+    const WarmupJob = require('../src/models/WarmupJob');
+    const Account = require('../src/models/Account');
+    // We can't easily mock req/res here, so I'll refactor the logic or just let the user use the endpoint
+    // Actually, I'll just trigger the endpoint internally using a helper or just fetch the URL
+    try {
+      // Simulate the GET request for processing jobs
+      const http = require('http');
+      http.get('http://localhost:5000/api/cron/process-warmup', (res) => {
+        console.log(`Local Cron (Process): Status ${res.statusCode}`);
+      });
+      
+      // Simulate the GET request for checking replies (every 5 mins is better but for test every 60s is fine)
+      http.get('http://localhost:5000/api/cron/check-replies', (res) => {
+        console.log(`Local Cron (Replies): Status ${res.statusCode}`);
+      });
+    } catch (e) {
+      console.error('Local Cron Error:', e.message);
+    }
+  }, 60000); 
+}
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+}
+
+module.exports = app;

@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.js"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/process-warmup",
+      "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/cron/check-replies",
+      "schedule": "*/5 * * * *"
+    }
+  ]
+}
