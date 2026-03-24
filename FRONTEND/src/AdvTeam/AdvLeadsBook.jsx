@@ -20,6 +20,7 @@ const AdvLeadsBook = () => {
     const [formState, setFormState] = useState({});
     const [expandedLogId, setExpandedLogId] = useState(null);
     const [selectedOutcome, setSelectedOutcome] = useState("");
+    const [dateFilter, setDateFilter] = useState("");
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -35,7 +36,7 @@ const AdvLeadsBook = () => {
         setLoading(true);
         try {
             const res = await axios.get(`${API}/api/adv-leads/get-adv-leads`, {
-                params: { role: designation, userId, page, limit, outcome: selectedOutcome, strictlyOwned: true }
+                params: { role: designation, userId, page, limit, outcome: selectedOutcome, strictlyOwned: true, date: dateFilter }
             });
             if (res.data && res.data.leads) {
                 setLeads(res.data.leads);
@@ -52,7 +53,7 @@ const AdvLeadsBook = () => {
         }
     };
 
-    useEffect(() => { fetchMyLeads(currentPage); }, [currentPage, selectedOutcome]);
+    useEffect(() => { fetchMyLeads(currentPage); }, [currentPage, selectedOutcome, dateFilter]);
 
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
@@ -291,6 +292,13 @@ const AdvLeadsBook = () => {
                 </div>
 
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <input 
+                        type="date" 
+                        value={dateFilter} 
+                        onChange={e => { setDateFilter(e.target.value); setCurrentPage(1); }} 
+                        style={{ padding: '8px 16px', borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '14px', background: '#fff', outline: 'none' }} 
+                        title="Filter by Assigned Date" 
+                    />
                     <div style={{ display: 'flex', background: '#fff', padding: '4px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
                         <button
                             onClick={() => setSelectedOutcome("")}
@@ -457,6 +465,10 @@ const AdvLeadsBook = () => {
                                                 <div style={{ minWidth: '100px' }}>
                                                     <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '4px' }}>Organization</div>
                                                     <div style={{ fontSize: '14px', fontWeight: '500', color: '#64748B' }}>{lead.company_name || 'Individual'}</div>
+                                                </div>
+                                                <div style={{ minWidth: '100px' }}>
+                                                    <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '4px' }}>Assigned Date</div>
+                                                    <div style={{ fontSize: '13px', fontWeight: '500', color: '#64748B' }}>{lead.created_at ? new Date(lead.created_at).toLocaleString('en-IN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}</div>
                                                 </div>
                                             </div>
 

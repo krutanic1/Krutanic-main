@@ -216,6 +216,7 @@ router.post("/bulk-assign-to-leader", async (req, res) => {
         );
 
         res.status(200).json({ success: true, assigned: myLeads.length, message: `${myLeads.length} lead(s) assigned to ${leaderName}` });
+   
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -250,7 +251,7 @@ router.post("/bulk-assign-to-specialist", async (req, res) => {
 
 // GET: Fetch leads based on role with team-based isolation
 router.get("/get-adv-leads", async (req, res) => {
-    const { role, userId, page = 1, limit = 25, outcome, strictlyOwned } = req.query;
+    const { role, userId, page = 1, limit = 25, outcome, strictlyOwned, date } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
     try {
@@ -316,10 +317,17 @@ router.get("/get-adv-leads", async (req, res) => {
             }
         }
 
-        // Apply outcome filter if provided
-        let query = baseQuery;
+        // Apply outcome and date filters if provided
+        let query = { ...baseQuery };
         if (outcome) {
-            query = { $and: [baseQuery, { last_outcome: outcome }] };
+            query.last_outcome = outcome;
+        }
+        if (date) {
+            const startOfDay = new Date(date);
+            startOfDay.setHours(0, 0, 0, 0);
+            const endOfDay = new Date(date);
+            endOfDay.setHours(23, 59, 59, 999);
+            query.created_at = { $gte: startOfDay, $lte: endOfDay };
         }
 
         const totalCount = await AdvLead.countDocuments(query);

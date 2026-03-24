@@ -9,6 +9,7 @@ const AdvTeamMyLeads = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
+    const [dateFilter, setDateFilter] = useState("");
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -150,7 +151,12 @@ const AdvTeamMyLeads = () => {
         const matchSearch = (l.full_name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
             (l.phone_number || "").includes(searchTerm);
         const matchStatus = !statusFilter || l.status === statusFilter;
-        return matchSearch && matchStatus;
+        let matchDate = true;
+        if (dateFilter && l.created_at) {
+          const leadDate = new Date(l.created_at).toISOString().split('T')[0];
+          matchDate = leadDate === dateFilter;
+        }
+        return matchSearch && matchStatus && matchDate;
     });
 
     const statusBadgeStyle = (status) => {
@@ -236,6 +242,7 @@ const AdvTeamMyLeads = () => {
 
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '15px', flexWrap: 'wrap' }}>
                     <input placeholder="Search current page..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} style={{ padding: '8px 12px', border: '1px solid #ddd', borderRadius: '6px', flex: 1, minWidth: '180px' }} />
+                    <input type="date" value={dateFilter} onChange={e => setDateFilter(e.target.value)} style={{ padding: '8px 12px', border: '1px solid #ddd', borderRadius: '6px' }} title="Filter by Assigned Date" />
                     <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '6px' }}>
                         <option value="">All Statuses</option>
                         <option value="fresh">Fresh</option>
@@ -260,17 +267,18 @@ const AdvTeamMyLeads = () => {
                         <div style={{ overflowX: 'auto' }}>
                             <table>
                                 <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Phone</th>
-                                        <th>Domain</th>
-                                        <th>Education</th>
-                                        <th>Status</th>
-                                        <th>Assigned To</th>
-                                        <th>Score</th>
-                                    </tr>
+                                     <tr>
+                                         <th>#</th>
+                                         <th>Name</th>
+                                         <th>Email</th>
+                                         <th>Phone</th>
+                                         <th>Domain</th>
+                                         <th>Education</th>
+                                         <th>Status</th>
+                                         <th>Assigned To</th>
+                                         <th>Assigned Date</th>
+                                         <th>Score</th>
+                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filteredLeads.map((lead, idx) => {
@@ -290,6 +298,9 @@ const AdvTeamMyLeads = () => {
                                                 </td>
                                                 <td style={{ fontSize: '13px', color: '#555' }}>
                                                     {lead.owner_name || lead.current_owner_id?.name || '—'}
+                                                </td>
+                                                <td style={{ fontSize: '13px', color: '#555' }}>
+                                                    {lead.created_at ? new Date(lead.created_at).toLocaleString('en-IN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}
                                                 </td>
                                                 <td>
                                                     <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '12px', background: (lead.score || 0) > 15 ? '#f6ffed' : '#f5f5f5', border: `1px solid ${(lead.score || 0) > 15 ? '#b7eb8f' : '#d9d9d9'}` }}>
