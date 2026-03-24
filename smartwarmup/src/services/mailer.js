@@ -124,10 +124,13 @@ const sendMail = async (config, mailOptions = {}) => {
 
   const decryptedPass = decrypt(config.pass);
 
+  const host = config.host || process.env.DEFAULT_SMTP_HOST || 'smtp.gmail.com';
+  const port = config.port || process.env.DEFAULT_SMTP_PORT || 465;
+
   const transporter = nodemailer.createTransport({
-    host: config.host || process.env.DEFAULT_SMTP_HOST,
-    port: config.port || process.env.DEFAULT_SMTP_PORT,
-    secure: (config.port || process.env.DEFAULT_SMTP_PORT) == 465,
+    host: (host === 'localhost' || host === '127.0.0.1') ? 'smtp.gmail.com' : host,
+    port: (host === 'localhost' || host === '127.0.0.1') ? 465 : port,
+    secure: ((host === 'localhost' || host === '127.0.0.1') ? 465 : port) == 465,
     auth: {
       user: config.user,
       pass: decryptedPass,

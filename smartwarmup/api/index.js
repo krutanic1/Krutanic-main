@@ -186,9 +186,12 @@ app.get('/api/cron/process-warmup', async (req, res) => {
 
         if (!sender || !target) throw new Error('Account not found');
 
+        const smtpHost = sender.smtp?.host || process.env.DEFAULT_SMTP_HOST || 'smtp.gmail.com';
+        const smtpPort = sender.smtp?.port || process.env.DEFAULT_SMTP_PORT || 465;
+
         await sendMail({
-          host: sender.smtp?.host || process.env.DEFAULT_SMTP_HOST,
-          port: sender.smtp?.port || process.env.DEFAULT_SMTP_PORT,
+          host: (smtpHost === 'localhost' || smtpHost === '127.0.0.1') ? 'smtp.gmail.com' : smtpHost,
+          port: (smtpHost === 'localhost' || smtpHost === '127.0.0.1') ? 465 : smtpPort,
           user: sender.user,
           pass: sender.pass
         }, {
@@ -278,12 +281,15 @@ app.get('/api/cron/check-replies', async (req, res) => {
       
       await Promise.allSettled(batch.map(async (acc) => {
         try {
+          const imapHost = process.env.DEFAULT_IMAP_HOST || 'imap.gmail.com';
+          const imapPort = parseInt(process.env.DEFAULT_IMAP_PORT) || 993;
+
           const unread = await withTimeout(
             fetchUnreadEmails({
               user: acc.user,
               pass: decrypt(acc.pass),
-              host: process.env.DEFAULT_IMAP_HOST,
-              port: parseInt(process.env.DEFAULT_IMAP_PORT) || 993
+              host: (imapHost === 'localhost' || imapHost === '127.0.0.1') ? 'imap.gmail.com' : imapHost,
+              port: (imapHost === 'localhost' || imapHost === '127.0.0.1') ? 993 : imapPort
             }),
             15000,
             acc.user
@@ -300,10 +306,13 @@ app.get('/api/cron/check-replies', async (req, res) => {
                 10000,
                 `reply-${email.from}`
               );
+              const smtpHost = process.env.DEFAULT_SMTP_HOST || 'smtp.gmail.com';
+              const smtpPort = parseInt(process.env.DEFAULT_SMTP_PORT) || 465;
+
               await withTimeout(
                 sendMail({
-                  host: process.env.DEFAULT_SMTP_HOST,
-                  port: parseInt(process.env.DEFAULT_SMTP_PORT) || 465,
+                  host: (smtpHost === 'localhost' || smtpHost === '127.0.0.1') ? 'smtp.gmail.com' : smtpHost,
+                  port: (smtpHost === 'localhost' || smtpHost === '127.0.0.1') ? 465 : smtpPort,
                   user: acc.user,
                   pass: acc.pass
                 }, {

@@ -13,7 +13,7 @@ const senderSchema = new mongoose.Schema({
     sentToday: { type: Number, default: 0 },
     warmupStartDate: { type: Date, default: Date.now }
   }
-}, { 
+}, { //ghjkl;'
   timestamps: true,
   collection: 'mailsenders' // Explicitly map to the existing collection
 });
