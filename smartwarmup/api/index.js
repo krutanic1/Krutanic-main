@@ -160,7 +160,46 @@ app.post('/api/warmup/start', async (req, res) => {
   }
 });
 
-// Vercel Cron: Process pending warmup jobs
+// Stop warmup process (Clear pending jobs)
+app.post('/api/warmup/stop', async (req, res) => {
+  const WarmupJob = require('../src/models/WarmupJob');
+  try {
+    const result = await WarmupJob.deleteMany({ status: 'pending' });
+    res.status(200).json({ status: 'success', message: 'Warmup stopped. Pending jobs cleared.', deletedCount: result.deletedCount });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+// Get warmup status
+app.get('/api/warmup/status', async (req, res) => {
+  const WarmupJob = require('../src/models/WarmupJob');
+  try {
+    const totalJobsToday = await WarmupJob.countDocuments({
+      createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) }
+    });
+    const pendingJobs = await WarmupJob.countDocuments({ status: 'pending' });
+    const finishedJobs = await WarmupJob.countDocuments({ 
+      status: 'done',
+      updatedAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } 
+    });
+    
+    // Find earliest pending or processing job to approximate start time
+    const earliestJob = await WarmupJob.findOne({ status: { $in: ['done', 'processing', 'pending'] } })
+      .sort({ createdAt: 1 });
+
+    res.status(200).json({
+      status: 'success',
+      totalJobsToday,
+      pendingJobs,
+      finishedJobs,
+      startedAt: earliestJob ? earliestJob.createdAt : null,
+      serverTime: new Date()
+    });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
 app.get('/api/cron/process-warmup', async (req, res) => {
   const Account = require('../src/models/Account');
   const WarmupJob = require('../src/models/WarmupJob');
@@ -177,14 +216,31 @@ app.get('/api/cron/process-warmup', async (req, res) => {
     }
 
     const results = await Promise.allSettled(jobs.map(async (job) => {
+      let sender = null;
       try {
         job.status = 'processing';
         await job.save();
 
-        const sender = await Account.findById(job.accountId);
+        sender = await Account.findById(job.accountId);
         const target = await Account.findById(job.targetId);
 
         if (!sender || !target) throw new Error('Account not found');
+
+        // Check for Daily Limit and Auto-Reset
+        const now = new Date();
+        const lastReset = sender.warmup?.lastLimitReset ? new Date(sender.warmup.lastLimitReset) : new Date(0);
+        const hoursSinceReset = (now - lastReset) / (1000 * 60 * 60);
+
+        if (hoursSinceReset >= 24) {
+          console.log(`Resetting warmup counts for ${sender.user}`);
+          sender.warmup.sentToday = 0;
+          sender.warmup.lastLimitReset = now;
+          await sender.save();
+        }
+
+        if (sender.warmup?.sentToday >= sender.warmup?.dailyLimit) {
+          throw new Error(`Daily limit (${sender.warmup.dailyLimit}) reached for ${sender.user}`);
+        }
 
         const rawHost = String(sender.smtp?.host || process.env.DEFAULT_SMTP_HOST || 'smtp.gmail.com').trim();
         const rawPort = sender.smtp?.port || process.env.DEFAULT_SMTP_PORT || 465;

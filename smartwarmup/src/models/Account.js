@@ -11,7 +11,8 @@ const senderSchema = new mongoose.Schema({
     enabled: { type: Boolean, default: true },
     dailyLimit: { type: Number, default: 50 },
     sentToday: { type: Number, default: 0 },
-    warmupStartDate: { type: Date, default: Date.now }
+    warmupStartDate: { type: Date, default: Date.now },
+    lastLimitReset: { type: Date, default: Date.now }
   },
   smtp: {
     host: String,

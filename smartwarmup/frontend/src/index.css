@@ -151,3 +151,23 @@ tr:hover {
 .log-status.failed { color: #c0392b; }
 .log-status.processing { color: #f1c40f; }
 .log-error { color: #e74c3c; font-style: italic; }
+.timer-display {
+  background: #1e1e1e;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #444;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 1rem;
+}
+.timer-label {
+  font-size: 0.7rem;
+  color: #888;
+  text-transform: uppercase;
+}
+.timer-value {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #f1c40f;
+}
