@@ -127,7 +127,13 @@ const sendMail = async (config, mailOptions = {}) => {
   const rawHost = String(config.host || process.env.DEFAULT_SMTP_HOST || 'smtp.gmail.com').trim();
   const rawPort = config.port || process.env.DEFAULT_SMTP_PORT || 465;
 
-  const isLocal = rawHost === 'localhost' || rawHost === '127.0.0.1' || rawHost === '0.0.0.0' || rawHost === '::1';
+  const isLocal = rawHost === 'localhost' || 
+                  rawHost === '127.0.0.1' || 
+                  rawHost === '0.0.0.0' || 
+                  rawHost === '::1' || 
+                  rawHost.includes('local') || 
+                  rawHost === '';
+                  
   const host = isLocal ? 'smtp.gmail.com' : rawHost;
   const port = isLocal ? 465 : rawPort;
 

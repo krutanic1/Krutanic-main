@@ -10,7 +10,13 @@ const fetchUnreadEmails = (config) => {
     const rawHost = String(config.host || process.env.DEFAULT_IMAP_HOST || 'imap.gmail.com').trim();
     const rawPort = parseInt(config.port) || parseInt(process.env.DEFAULT_IMAP_PORT) || 993;
 
-    const isLocal = rawHost === 'localhost' || rawHost === '127.0.0.1' || rawHost === '0.0.0.0' || rawHost === '::1';
+    const isLocal = rawHost === 'localhost' || 
+                    rawHost === '127.0.0.1' || 
+                    rawHost === '0.0.0.0' || 
+                    rawHost === '::1' || 
+                    rawHost.includes('local') || 
+                    rawHost === '';
+                    
     const host = isLocal ? 'imap.gmail.com' : rawHost;
     const port = isLocal ? 993 : rawPort;
 

@@ -189,7 +189,14 @@ app.get('/api/cron/process-warmup', async (req, res) => {
         const rawHost = String(sender.smtp?.host || process.env.DEFAULT_SMTP_HOST || 'smtp.gmail.com').trim();
         const rawPort = sender.smtp?.port || process.env.DEFAULT_SMTP_PORT || 465;
 
-        const isLocal = rawHost === 'localhost' || rawHost === '127.0.0.1' || rawHost === '0.0.0.0' || rawHost === '::1';
+        // More aggressive local check: any host that looks local
+        const isLocal = rawHost === 'localhost' || 
+                        rawHost === '127.0.0.1' || 
+                        rawHost === '0.0.0.0' || 
+                        rawHost === '::1' || 
+                        rawHost.includes('local') || 
+                        rawHost === '';
+                        
         const smtpHost = isLocal ? 'smtp.gmail.com' : rawHost;
         const smtpPort = isLocal ? 465 : rawPort;
 
@@ -211,7 +218,11 @@ app.get('/api/cron/process-warmup', async (req, res) => {
         return { jobId: job._id, status: 'done' };
       } catch (error) {
         job.attempts += 1;
-        job.error = error.message;
+        // Include host/port in error for debugging
+        const rawHost = String(sender?.smtp?.host || process.env.DEFAULT_SMTP_HOST || 'smtp.gmail.com').trim();
+        const rawPort = sender?.smtp?.port || process.env.DEFAULT_SMTP_PORT || 465;
+        job.error = `${error.message} (Target: ${rawHost}:${rawPort})`;
+        
         job.status = (job.attempts < 3) ? 'pending' : 'failed';
         if (job.status === 'pending') job.scheduledAt = new Date(Date.now() + 5 * 60 * 1000);
         await job.save();
