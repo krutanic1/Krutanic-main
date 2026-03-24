@@ -7,14 +7,18 @@ const { simpleParser } = require('mailparser');
  */
 const fetchUnreadEmails = (config) => {
   return new Promise((resolve, reject) => {
-    const host = config.host || process.env.DEFAULT_IMAP_HOST || 'imap.gmail.com';
-    const port = parseInt(config.port) || parseInt(process.env.DEFAULT_IMAP_PORT) || 993;
+    const rawHost = String(config.host || process.env.DEFAULT_IMAP_HOST || 'imap.gmail.com').trim();
+    const rawPort = parseInt(config.port) || parseInt(process.env.DEFAULT_IMAP_PORT) || 993;
+
+    const isLocal = rawHost === 'localhost' || rawHost === '127.0.0.1' || rawHost === '0.0.0.0' || rawHost === '::1';
+    const host = isLocal ? 'imap.gmail.com' : rawHost;
+    const port = isLocal ? 993 : rawPort;
 
     const imap = new Imap({
       user: config.user,
       password: config.pass,
-      host: (host === 'localhost' || host === '127.0.0.1') ? 'imap.gmail.com' : host,
-      port: (host === 'localhost' || host === '127.0.0.1') ? 993 : port,
+      host: host,
+      port: port,
       tls: true,
       tlsOptions: { rejectUnauthorized: false }
     });

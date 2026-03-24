@@ -186,12 +186,18 @@ app.get('/api/cron/process-warmup', async (req, res) => {
 
         if (!sender || !target) throw new Error('Account not found');
 
-        const smtpHost = sender.smtp?.host || process.env.DEFAULT_SMTP_HOST || 'smtp.gmail.com';
-        const smtpPort = sender.smtp?.port || process.env.DEFAULT_SMTP_PORT || 465;
+        const rawHost = String(sender.smtp?.host || process.env.DEFAULT_SMTP_HOST || 'smtp.gmail.com').trim();
+        const rawPort = sender.smtp?.port || process.env.DEFAULT_SMTP_PORT || 465;
+
+        const isLocal = rawHost === 'localhost' || rawHost === '127.0.0.1' || rawHost === '0.0.0.0' || rawHost === '::1';
+        const smtpHost = isLocal ? 'smtp.gmail.com' : rawHost;
+        const smtpPort = isLocal ? 465 : rawPort;
+
+        console.log(`[Job ${job._id}] Sender: ${sender.user}, Host: ${smtpHost}, Port: ${smtpPort} (Raw: ${rawHost}:${rawPort})`);
 
         await sendMail({
-          host: (smtpHost === 'localhost' || smtpHost === '127.0.0.1') ? 'smtp.gmail.com' : smtpHost,
-          port: (smtpHost === 'localhost' || smtpHost === '127.0.0.1') ? 465 : smtpPort,
+          host: smtpHost,
+          port: smtpPort,
           user: sender.user,
           pass: sender.pass
         }, {
@@ -281,15 +287,19 @@ app.get('/api/cron/check-replies', async (req, res) => {
       
       await Promise.allSettled(batch.map(async (acc) => {
         try {
-          const imapHost = process.env.DEFAULT_IMAP_HOST || 'imap.gmail.com';
-          const imapPort = parseInt(process.env.DEFAULT_IMAP_PORT) || 993;
+          const rawImapHost = String(process.env.DEFAULT_IMAP_HOST || 'imap.gmail.com').trim();
+          const rawImapPort = parseInt(process.env.DEFAULT_IMAP_PORT) || 993;
+
+          const isLocalImap = rawImapHost === 'localhost' || rawImapHost === '127.0.0.1' || rawImapHost === '0.0.0.0' || rawImapHost === '::1';
+          const imapHost = isLocalImap ? 'imap.gmail.com' : rawImapHost;
+          const imapPort = isLocalImap ? 993 : rawImapPort;
 
           const unread = await withTimeout(
             fetchUnreadEmails({
               user: acc.user,
               pass: decrypt(acc.pass),
-              host: (imapHost === 'localhost' || imapHost === '127.0.0.1') ? 'imap.gmail.com' : imapHost,
-              port: (imapHost === 'localhost' || imapHost === '127.0.0.1') ? 993 : imapPort
+              host: imapHost,
+              port: imapPort
             }),
             15000,
             acc.user
@@ -306,13 +316,17 @@ app.get('/api/cron/check-replies', async (req, res) => {
                 10000,
                 `reply-${email.from}`
               );
-              const smtpHost = process.env.DEFAULT_SMTP_HOST || 'smtp.gmail.com';
-              const smtpPort = parseInt(process.env.DEFAULT_SMTP_PORT) || 465;
+              const rawSmtpHost = String(process.env.DEFAULT_SMTP_HOST || 'smtp.gmail.com').trim();
+              const rawSmtpPort = parseInt(process.env.DEFAULT_SMTP_PORT) || 465;
+
+              const isLocalSmtp = rawSmtpHost === 'localhost' || rawSmtpHost === '127.0.0.1' || rawSmtpHost === '0.0.0.0' || rawSmtpHost === '::1';
+              const smtpHost = isLocalSmtp ? 'smtp.gmail.com' : rawSmtpHost;
+              const smtpPort = isLocalSmtp ? 465 : rawSmtpPort;
 
               await withTimeout(
                 sendMail({
-                  host: (smtpHost === 'localhost' || smtpHost === '127.0.0.1') ? 'smtp.gmail.com' : smtpHost,
-                  port: (smtpHost === 'localhost' || smtpHost === '127.0.0.1') ? 465 : smtpPort,
+                  host: smtpHost,
+                  port: smtpPort,
                   user: acc.user,
                   pass: acc.pass
                 }, {
