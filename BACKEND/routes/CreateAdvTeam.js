@@ -251,7 +251,7 @@ router.post("/advteamverifyotp", async (req, res) => {
     const token = jwt.sign(
       { id: advTeam._id, email: advTeam.email },
       process.env.JWT_SECRET,
-      { expiresIn: "10m" }
+      { expiresIn: "10h" }
     );
 
     res.status(200).json({
