@@ -114,43 +114,13 @@ const AdvLeadsBook = () => {
         }
     };
 
-    const handleRemoteDial = async (leadId) => {
-        try {
-            toast.loading("Sending dial request to your mobile app...", { id: `dial-${leadId}` });
-            await axios.post(`${API}/api/adv-leads/remote-dial-request`, {
-                specialistId: userId,
-                leadId: leadId
-            });
-            toast.success("Dialing started on mobile! Waiting for call log...", { id: `dial-${leadId}` });
-
-            // Poll for new call history every 5 seconds for the next 2 minutes
-            let polls = 0;
-            const pollInterval = setInterval(async () => {
-                polls++;
-                if (polls > 24) { // 2 minutes max
-                    clearInterval(pollInterval);
-                    return;
-                }
-
-                try {
-                    const res = await axios.get(`${API}/api/adv-leads/call-history/${leadId}`);
-                    setCallHistory(prev => {
-                        const prevHistory = prev[leadId] || [];
-                        const newHistory = res.data?.calls || [];
-
-                        // If we got a new call log, stop polling & show success
-                        if (newHistory.length > prevHistory.length) {
-                            clearInterval(pollInterval);
-                            toast.success("Call log synced from mobile!");
-                        }
-                        return { ...prev, [leadId]: newHistory };
-                    });
-                } catch (e) { }
-            }, 5000);
-
-        } catch (err) {
-            toast.error("Failed to trigger remote dial.", { id: `dial-${leadId}` });
+    const handleRemoteDial = (phoneNumber) => {
+        const dialNumber = String(phoneNumber || "").replace(/\D/g, "");
+        if (!dialNumber) {
+            toast.error("Phone number is not available.");
+            return;
         }
+        window.location.href = `tel:${dialNumber}`;
     };
 
     const StatusBadge = ({ status }) => {
@@ -423,8 +393,8 @@ const AdvLeadsBook = () => {
                                                             <i className="fa fa-envelope"></i>
                                                         </a>
                                                         <button
-                                                            title="Dial on Mobile App"
-                                                            onClick={(e) => { e.stopPropagation(); handleRemoteDial(lead._id); }}
+                                                            title="Call"
+                                                            onClick={(e) => { e.stopPropagation(); handleRemoteDial(lead.phone_number); }}
                                                             style={{
                                                                 display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer',
                                                                 width: '32px', height: '32px', borderRadius: '50%', background: '#F59E0B',
