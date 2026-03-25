@@ -4,6 +4,9 @@ const cors = require('cors');
 require('dotenv').config();
 
 const dbConnect = require('../src/config/db');
+const otpService = require('../src/services/otpService');
+const jwt = require('jsonwebtoken');
+const authMiddleware = require('../src/middleware/authMiddleware');
 
 const app = express();
 
@@ -29,6 +32,69 @@ app.get('/api/health', (req, res) => {
     timestamp: Date.now(),
     db: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
   });
+});
+
+// Auth Routes
+app.post('/api/auth/send-otp', async (req, res) => {
+  const { email } = req.body;
+  console.log(`POST /api/auth/send-otp received for email: ${email}`);
+  
+  if (!email) {
+    return res.status(400).json({ status: 'error', message: 'Email is required' });
+  }
+
+  try {
+    const result = await otpService.processOTPRequest(email);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('OTP request error:', error.message);
+    res.status(error.message === 'Email not authorized for login' ? 403 : 500)
+       .json({ status: 'error', message: error.message });
+  }
+});
+
+app.post('/api/auth/verify-otp', async (req, res) => {
+  const { email, otp } = req.body;
+
+  if (!email || !otp) {
+    return res.status(400).json({ status: 'error', message: 'Email and OTP are required' });
+  }
+
+  try {
+    const result = await otpService.verifyOTP(email, otp);
+    
+    // Generate JWT token if verification is successful
+    const token = jwt.sign(
+      { email: email.toLowerCase() },
+      process.env.JWT_SECRET || 'fallback_secret',
+      { expiresIn: '7d' }
+    );
+
+    res.status(200).json({ 
+      ...result, 
+      token,
+      user: { email: email.toLowerCase() } 
+    });
+  } catch (error) {
+    console.error('OTP verification error:', error.message);
+    res.status(401).json({ status: 'error', message: error.message });
+  }
+});
+
+// Admin Mail Management (Protected or for internal use)
+app.post('/api/admin/add-mail', async (req, res) => {
+  const { email } = req.body;
+  const AdminMail = require('../src/models/AdminMail');
+  
+  try {
+    const exists = await AdminMail.findOne({ email: email.toLowerCase() });
+    if (exists) return res.status(400).json({ status: 'error', message: 'Email already exists' });
+    
+    await AdminMail.create({ email: email.toLowerCase() });
+    res.status(201).json({ status: 'success', message: 'Admin email added' });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
 });
 
 // Sample route to test email sending
@@ -89,7 +155,7 @@ app.post('/api/accounts/bulk-add', async (req, res) => {
 });
 
 // Get all accounts
-app.get('/api/accounts', async (req, res) => {
+app.get('/api/accounts', authMiddleware, async (req, res) => {
   const Account = require('../src/models/Account');
   try {
     const accounts = await Account.find({}).sort({ createdAt: -1 });
@@ -100,7 +166,7 @@ app.get('/api/accounts', async (req, res) => {
 });
 
 // Toggle warmup for an account
-app.post('/api/accounts/:id/toggle-warmup', async (req, res) => {
+app.post('/api/accounts/:id/toggle-warmup', authMiddleware, async (req, res) => {
   const Account = require('../src/models/Account');
   try {
     const account = await Account.findById(req.params.id);
@@ -121,7 +187,7 @@ app.post('/api/accounts/:id/toggle-warmup', async (req, res) => {
 });
 
 // Start warmup process (Schedule jobs for 24h)
-app.post('/api/warmup/start', async (req, res) => {
+app.post('/api/warmup/start', authMiddleware, async (req, res) => {
   const Account = require('../src/models/Account');
   const WarmupJob = require('../src/models/WarmupJob');
   const { generate24hJobs } = require('../src/utils/warmup-scheduler');
@@ -161,7 +227,7 @@ app.post('/api/warmup/start', async (req, res) => {
 });
 
 // Stop warmup process (Clear pending jobs)
-app.post('/api/warmup/stop', async (req, res) => {
+app.post('/api/warmup/stop', authMiddleware, async (req, res) => {
   const WarmupJob = require('../src/models/WarmupJob');
   try {
     const result = await WarmupJob.deleteMany({ status: 'pending' });
@@ -172,7 +238,7 @@ app.post('/api/warmup/stop', async (req, res) => {
 });
 
 // Get warmup status
-app.get('/api/warmup/status', async (req, res) => {
+app.get('/api/warmup/status', authMiddleware, async (req, res) => {
   const WarmupJob = require('../src/models/WarmupJob');
   try {
     const totalJobsToday = await WarmupJob.countDocuments({
@@ -200,7 +266,7 @@ app.get('/api/warmup/status', async (req, res) => {
     res.status(500).json({ status: 'error', message: error.message });
   }
 });
-app.get('/api/cron/process-warmup', async (req, res) => {
+app.get('/api/cron/process-warmup', authMiddleware, async (req, res) => {
   const Account = require('../src/models/Account');
   const WarmupJob = require('../src/models/WarmupJob');
   const { sendMail } = require('../src/services/mailer');
@@ -326,7 +392,7 @@ app.get('/api/logs', async (req, res) => {
 });
 
 // Vercel Cron: Check for replies and respond
-app.get('/api/cron/check-replies', async (req, res) => {
+app.get('/api/cron/check-replies', authMiddleware, async (req, res) => {
   const Account = require('../src/models/Account');
   const { fetchUnreadEmails } = require('../src/services/imap');
   const { sendMail, generateReply } = require('../src/services/mailer');

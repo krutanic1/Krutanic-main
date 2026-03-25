@@ -3,25 +3,75 @@ import axios from 'axios';
 import './index.css';
 
 function App() {
+  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [email, setEmail] = useState('');
+  const [otp, setOtp] = useState('');
+  const [step, setStep] = useState('email'); // 'email' or 'otp'
   const [accounts, setAccounts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [starting, setStarting] = useState(false);
   const [stopping, setStopping] = useState(false);
   const [message, setMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [logs, setLogs] = useState([]);
   const [showLogs, setShowLogs] = useState(false);
   const [cycleStatus, setCycleStatus] = useState(null);
 
   useEffect(() => {
-    fetchAccounts();
-    fetchCycleStatus();
-    const interval = setInterval(() => {
-      if (showLogs) fetchLogs();
-      fetchCycleStatus();
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       fetchAccounts();
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [showLogs]);
+      fetchCycleStatus();
+      const interval = setInterval(() => {
+        if (showLogs) fetchLogs();
+        fetchCycleStatus();
+        fetchAccounts();
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [token, showLogs]);
+
+  const handleSendOtp = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMessage('');
+    try {
+      const res = await axios.post('/api/auth/send-otp', { email });
+      setStep('otp');
+      setMessage(res.data.message);
+    } catch (err) {
+      setErrorMessage(err.response?.data?.message || 'Failed to send OTP');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMessage('');
+    try {
+      const res = await axios.post('/api/auth/verify-otp', { email, otp });
+      const newToken = res.data.token;
+      localStorage.setItem('token', newToken);
+      setToken(newToken);
+      setMessage('Login successful');
+    } catch (err) {
+      setErrorMessage(err.response?.data?.message || 'Invalid OTP');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    setToken(null);
+    setStep('email');
+    setEmail('');
+    setOtp('');
+    setAccounts([]);
+    setCycleStatus(null);
+  };
 
   const fetchAccounts = async () => {
     try {
@@ -112,6 +162,58 @@ function App() {
     return Math.round((cycleStatus.finishedJobs / cycleStatus.totalJobsToday) * 100);
   };
 
+  if (!token) {
+    return (
+      <div className="login-container">
+        <div className="login-box">
+          <h2>Krutanic SmartWarmup</h2>
+          <p>Sign in to your account</p>
+          
+          {message && <div className="alert success">{message}</div>}
+          {errorMessage && <div className="alert error">{errorMessage}</div>}
+          
+          {step === 'email' ? (
+            <form onSubmit={handleSendOtp}>
+              <div className="form-group">
+                <label>Admin Email</label>
+                <input 
+                  type="email" 
+                  value={email} 
+                  onChange={(e) => setEmail(e.target.value)} 
+                  placeholder="admin@krutanic.com"
+                  required
+                />
+              </div>
+              <button type="submit" className="login-btn" disabled={loading}>
+                {loading ? 'Sending...' : 'Send OTP'}
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleVerifyOtp}>
+              <div className="form-group">
+                <label>Enter OTP</label>
+                <input 
+                  type="text" 
+                  value={otp} 
+                  onChange={(e) => setOtp(e.target.value)} 
+                  placeholder="123456"
+                  maxLength="6"
+                  required
+                />
+              </div>
+              <button type="submit" className="login-btn" disabled={loading}>
+                {loading ? 'Verifying...' : 'Login'}
+              </button>
+              <button type="button" className="text-btn" onClick={() => setStep('email')}>
+                Back to Email
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="dashboard">
       <div className="header">
@@ -153,6 +255,9 @@ function App() {
             style={{ background: cycleStatus?.pendingJobs > 0 ? '#555' : '#27ae60' }}
           >
             {starting ? 'Starting...' : cycleStatus?.pendingJobs > 0 ? 'Cycle Running' : 'Start 24h Cycle'}
+          </button>
+          <button className="btn" style={{ background: '#2c3e50' }} onClick={logout}>
+            Logout
           </button>
         </div>
       </div>
