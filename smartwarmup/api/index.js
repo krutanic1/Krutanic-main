@@ -14,8 +14,27 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// DB Connection
-dbConnect();
+// DB Connection (Async check in middleware for serverless robustness)
+app.use(async (req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    try {
+      if (!process.env.MONGODB_URI) {
+        console.error('CRITICAL: MONGODB_URI is missing in environment variables');
+      }
+      await dbConnect();
+      next();
+    } catch (err) {
+      console.error('DB middleware error:', err.message);
+      return res.status(500).json({ 
+        status: 'error', 
+        message: 'Database connection failed. Please check MONGODB_URI in your environment variables.',
+        details: err.message
+      });
+    }
+  } else {
+    next();
+  }
+});
 
 // Routes
 app.get('/', (req, res) => {
