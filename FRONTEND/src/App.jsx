@@ -58,6 +58,7 @@ import LoginAdmin from "./Admin/LoginAdmin";
 import RevenueSheet from "./Admin/RevenueSheet";
 import AdvRevenueSheet from "./Admin/advadminrevenue";
 import AllTeamDetail from "./Admin/AllTeamDetail";
+import AdvTeamDetail from "./Admin/AdvTeamDetail";
 import AddEvent from "./Admin/AddEvent";
 import EventRegistration from "./Admin/EventRegistration";
 import OnBoardingDetails from "./Admin/OnBoardingDetails";
@@ -551,6 +552,7 @@ const AppContent = () => {
         <Route path="/AdvFullPaid" element={isAuthenticatedAdmin() ? <AdvFullPaid /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AdvDefault" element={isAuthenticatedAdmin() ? <AdvDefault /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AllTeamDetail" element={isAuthenticatedAdmin() ? <AllTeamDetail /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/AdvTeamDetail" element={isAuthenticatedAdmin() ? <AdvTeamDetail /> : <Navigate to="/AdminLogin" />} />
         <Route path="/CreatePlacementCoordinator" element={isAuthenticatedAdmin() ? (<CreatePlacementCoordinator />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/MasterClasses" element={isAuthenticatedAdmin() ? (<MasterClasses />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/AddEvent" element={isAuthenticatedAdmin() ? (<AddEvent />) : (<Navigate to="/AdminLogin" />)} />

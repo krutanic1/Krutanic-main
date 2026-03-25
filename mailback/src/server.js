@@ -218,6 +218,9 @@ const defaultSmtp = {
 
 const SENDER_RESET_WINDOW_HOURS = 26;
 const SENDER_RESET_WINDOW_MS = SENDER_RESET_WINDOW_HOURS * 60 * 60 * 1000;
+const SENDER_AUTO_RESET_HOURS = 20;
+const SENDER_AUTO_RESET_MS = SENDER_AUTO_RESET_HOURS * 60 * 60 * 1000;
+const SENDER_DAILY_LIMIT = Number(process.env.SENDER_DAILY_LIMIT || 1900);
 const VALIDATION_PROGRESS_TTL_MS = 10 * 60 * 1000;
 const READ_CACHE_TTL_MS = Number(process.env.READ_CACHE_TTL_MS || 30000);
 const validationProgressStore = new Map();
@@ -776,6 +779,14 @@ function getConfiguredSenderLimit() {
   return Number.isFinite(configuredLimit) && configuredLimit > 0 ? configuredLimit : 1900;
 }
 
+function shouldAutoReset20Hour(sender, now = Date.now()) {
+  const updatedAtMs = sender?.updatedAt ? new Date(sender.updatedAt).getTime() : NaN;
+  const used = Number(sender?.blastedCount || 0);
+  const autoResetMs = now - SENDER_AUTO_RESET_MS;
+  const shouldReset = Number.isFinite(updatedAtMs) && updatedAtMs < autoResetMs && used < SENDER_DAILY_LIMIT;
+  return shouldReset;
+}
+
 function getSenderAvailability(sender, now = Date.now()) {
   const resetBeforeMs = now - SENDER_RESET_WINDOW_MS;
   const updatedAtMs = sender?.updatedAt ? new Date(sender.updatedAt).getTime() : NaN;
@@ -1267,11 +1278,20 @@ app.get('/api/senders/:id/limit', async (req, res) => {
     if (!sender) return res.status(404).json({ ok: false, message: 'Sender not found.' });
 
     const availability = getSenderAvailability(sender);
+    let autoResetAfter20Hours = false;
 
     if (availability.restored) {
       await Sender.updateOne({ _id: sender._id }, { $set: { blastedCount: 0 } });
       sender = await Sender.findById(req.params.id).lean();
       invalidateReadCache();
+    }
+
+    // Check for 20-hour auto-reset for mails that didn't hit the limit
+    if (shouldAutoReset20Hour(sender)) {
+      await Sender.updateOne({ _id: sender._id }, { $set: { blastedCount: 0 } });
+      sender = await Sender.findById(req.params.id).lean();
+      invalidateReadCache();
+      autoResetAfter20Hours = true;
     }
 
     const currentAvailability = getSenderAvailability(sender);
@@ -1288,6 +1308,7 @@ app.get('/api/senders/:id/limit', async (req, res) => {
       resetWindowHours: currentAvailability.resetWindowHours,
       updatedAt: sender.updatedAt,
       restored: !!availability.restored,
+      autoResetAfter20Hours,
       note: `Daily limit is restored when updatedAt is older than ${SENDER_RESET_WINDOW_HOURS} hours. Provider-side limits still vary by account.`
     });
   } catch (err) {

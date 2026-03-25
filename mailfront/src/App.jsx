@@ -526,7 +526,8 @@ function AdminMailBlaster({ authedEmail, onLogout }) {
         used: d.used,
         limit: d.limit,
         remaining: d.remaining,
-        note: d.note
+        note: d.note,
+        autoResetAfter20Hours: d.autoResetAfter20Hours
       }
     }));
   }
@@ -534,6 +535,8 @@ function AdminMailBlaster({ authedEmail, onLogout }) {
   async function checkAllLimits() {
     setBusyOps((prev) => ({ ...prev, checkLimits: true }));
     await Promise.all(senders.map((s) => checkLimit(s._id)));
+    // Reload senders to reflect any auto-resets that happened on the backend
+    await loadSenders();
     setBusyOps((prev) => ({ ...prev, checkLimits: false }));
   }
 
@@ -1087,7 +1090,7 @@ function AdminMailBlaster({ authedEmail, onLogout }) {
                             Used {limitById[s._id].used} / {limitById[s._id].limit} • Remaining {limitById[s._id].remaining}
                           </div>
                         )}
-                        {limitReached && !limitById[s._id]?.error && !limitById[s._id]?.limit && (
+                        {limitReached && !limitById[s._id]?.error && !limitById[s._id]?.limit && !limitById[s._id]?.autoResetAfter20Hours && (
                           <div style={{ marginTop: 4, color: '#b91c1c', fontSize: 12 }}>
                             Reset in {getResetCountdown(s, countdownNowMs)}
                           </div>

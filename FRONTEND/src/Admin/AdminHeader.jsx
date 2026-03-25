@@ -200,6 +200,9 @@ const AdminHeader = () => {
             <Link to="/AdvLeadManagement">
               <i className="fa fa-users mr-2"></i>ADV Lead Management
             </Link>
+            <Link to="/AdvTeamDetail">
+              <i className="fa fa-users mr-2"></i>ADV Team Details
+            </Link>
             <Link to="/AdminAnalytics">
               <i className="fa fa-area-chart mr-2"></i>ADV Analytics
             </Link>
