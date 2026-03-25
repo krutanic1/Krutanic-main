@@ -1,0 +1,16 @@
+[
+  {
+    "user": "seed1@gmail.com",
+    "pass": "app-password-1",
+    "host": "imap.gmail.com",
+    "port": 993,
+    "tls": true
+  },
+  {
+    "user": "seed2@outlook.com",
+    "pass": "password-2",
+    "host": "outlook.office365.com",
+    "port": 993,
+    "tls": true
+  }
+]

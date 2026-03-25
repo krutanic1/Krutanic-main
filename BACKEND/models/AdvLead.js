@@ -34,6 +34,8 @@ const AdvLeadSchema = new mongoose.Schema({
     isLocked: { type: Boolean, default: false },
     lockedBy: { type: mongoose.Schema.Types.ObjectId, ref: "AdvUser" },
     lockTime: { type: Date },
+    uploaded_by: { type: String }, // User ID of the uploader
+    uploaded_by_role: { type: String }, // Role of the uploader
     created_at: { type: Date, default: Date.now }
 });
 

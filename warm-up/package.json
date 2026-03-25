@@ -1,0 +1,19 @@
+{
+  "name": "mail-warm-up",
+  "version": "1.0.0",
+  "description": "Emergency Email Deliverability & Warmup Tool",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "audit": "node src/utils/dns-audit.js",
+    "engage": "node src/engine/engagement-bot.js",
+    "build": "cd frontend && npm install && npm run build"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "imap-simple": "^5.1.0",
+    "mailparser": "^3.7.1",
+    "nodemailer": "^6.10.0"
+  }
+}

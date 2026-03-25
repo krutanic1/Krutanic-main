@@ -29,11 +29,19 @@ const AdvLeadManagement = () => {
     const [assigning, setAssigning] = useState(false);
     const [freshCount, setFreshCount] = useState(0);
 
+    // Upload state
+    const [showUploadModal, setShowUploadModal] = useState(false);
+    const [file, setFile] = useState(null);
+    const [uploading, setUploading] = useState(false);
+    const [importStats, setImportStats] = useState(null);
+    const [userName, setUserName] = useState("");
+
     const fetchAdvTeamProfile = async () => {
         if (!advTeamId) return;
         try {
             const res = await axios.get(`${API}/getadvteam`, { params: { advTeamId } });
             setUserDesignation(res.data.designation);
+            setUserName(res.data.fullname);
         } catch (err) {
             console.error("Failed to fetch profile");
         }
@@ -50,14 +58,20 @@ const AdvLeadManagement = () => {
         } catch (err) {
             console.error("Failed to fetch specialists");
         }
-    };
+    };//dfghjklfghj
 
     const fetchFreshCount = async () => {
         try {
-            const res = await axios.get(`${API}/api/adv-leads/fresh-leads-count`);
+            const endpoint = (userDesignation === "admin" || userDesignation === "ADMIN") 
+                ? `${API}/api/adv-leads/fresh-leads-count` 
+                : `${API}/api/adv-leads/owned-leads-count`;
+            
+            const res = await axios.get(endpoint, {
+                params: { userId: advTeamId, role: userDesignation }
+            });
             setFreshCount(res.data.count || 0);
         } catch (err) {
-            console.error("Failed to fetch fresh count");
+            console.error("Failed to fetch count");
         }
     };
 
@@ -86,6 +100,30 @@ const AdvLeadManagement = () => {
             setLeads([]);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleUpload = async () => {
+        if (!file) { toast.error("Please select a file"); return; }
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("uploaderId", advTeamId);
+        formData.append("uploaderRole", userDesignation);
+        formData.append("uploaderName", userName);
+
+        setUploading(true);
+        try {
+            const res = await axios.post(`${API}/api/adv-leads/bulk-import`, formData, {
+                headers: { "Content-Type": "multipart/form-data" }
+            });
+            toast.success("Import Complete!");
+            setImportStats(res.data);
+            fetchLeads(1);
+            fetchFreshCount();
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Import failed");
+        } finally {
+            setUploading(false);
         }
     };
 
@@ -160,25 +198,46 @@ const AdvLeadManagement = () => {
             <div className="coursetable">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
                     <h1>Team Lead Management ({userDesignation})</h1>
-                    {(userDesignation === "ADV Leader" || userDesignation === "LEADER" || userDesignation === "MANAGER") && (
-                        <button
-                            onClick={() => setShowAssignPanel(true)}
-                            style={{
-                                padding: '10px 20px',
-                                background: '#1890ff',
-                                color: '#fff',
-                                border: 'none',
-                                borderRadius: '6px',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                fontWeight: '600'
-                            }}
-                        >
-                            <i className="fa fa-user-plus"></i> Assign Leads <span style={{ background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: '10px', fontSize: '12px' }}>{freshCount} fresh</span>
-                        </button>
-                    )}
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        {(userDesignation === "ADV Leader" || userDesignation === "LEADER" || userDesignation === "MANAGER" || userDesignation === "ADV Manager") && (
+                            <button
+                                onClick={() => { setShowUploadModal(true); setImportStats(null); setFile(null); }}
+                                style={{
+                                    padding: '10px 20px',
+                                    background: '#2ecc71',
+                                    color: '#fff',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    fontWeight: '600'
+                                }}
+                            >
+                                <i className="fa fa-upload"></i> Upload Leads
+                            </button>
+                        )}
+                        {(userDesignation === "ADV Leader" || userDesignation === "LEADER" || userDesignation === "MANAGER" || userDesignation === "ADV Manager") && (
+                            <button
+                                onClick={() => setShowAssignPanel(true)}
+                                style={{
+                                    padding: '10px 20px',
+                                    background: '#1890ff',
+                                    color: '#fff',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    fontWeight: '600'
+                                }}
+                            >
+                                <i className="fa fa-user-plus"></i> Assign Leads <span style={{ background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: '10px', fontSize: '12px' }}>{freshCount} available</span>
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 <div style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
@@ -289,6 +348,69 @@ const AdvLeadManagement = () => {
                             </div>
                         </div>
                     </>
+                )}
+
+                {/* ─── Upload Modal Overlay ─── */}
+                {showUploadModal && (
+                    <div style={{
+                        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                        backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex',
+                        justifyContent: 'center', alignItems: 'center', zIndex: 1000
+                    }}>
+                        <div style={{
+                            backgroundColor: '#fff', padding: '30px', borderRadius: '12px',
+                            width: '500px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)'
+                        }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+                                <h2 style={{ margin: 0 }}>Bulk Lead Import</h2>
+                                <button onClick={() => setShowUploadModal(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '20px' }}>&times;</button>
+                            </div>
+
+                            <p style={{ fontSize: '14px', color: '#666', marginBottom: '15px' }}>
+                                Upload a CSV or Excel file with: <strong>full_name, email, phone_number, opted_domain</strong>
+                            </p>
+
+                            <div style={{ padding: '20px', border: '2px dashed #ddd', borderRadius: '8px', textAlign: 'center', marginBottom: '20px' }}>
+                                <input 
+                                    type="file" 
+                                    accept=".csv, .xlsx" 
+                                    onChange={(e) => { setFile(e.target.files[0]); setImportStats(null); }}
+                                    style={{ marginBottom: '10px' }}
+                                />
+                                {file && <p style={{ fontSize: '12px', color: '#1890ff' }}>Selected: {file.name}</p>}
+                            </div>
+
+                            {importStats && (
+                                <div style={{ padding: '15px', background: '#f6ffed', border: '1px solid #b7eb8f', borderRadius: '6px', marginBottom: '20px' }}>
+                                    <p style={{ margin: 0, color: '#389e0d', fontWeight: 'bold' }}>Import Success!</p>
+                                    <p style={{ margin: '5px 0 0', fontSize: '13px' }}>Success: {importStats.successCount} | Failed: {importStats.failCount}</p>
+                                </div>
+                            )}
+
+                            <div style={{ display: 'flex', gap: '12px' }}>
+                                <button
+                                    onClick={handleUpload}
+                                    disabled={uploading || !file}
+                                    style={{
+                                        flex: 2, padding: '12px', background: '#2ecc71', color: '#fff',
+                                        border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600',
+                                        opacity: (uploading || !file) ? 0.7 : 1
+                                    }}
+                                >
+                                    {uploading ? 'Processing...' : 'Start Upload'}
+                                </button>
+                                <button
+                                    onClick={() => setShowUploadModal(false)}
+                                    style={{
+                                        flex: 1, padding: '12px', background: '#f5f5f5', color: '#333',
+                                        border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer'
+                                    }}
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 )}
                 {/* ─── Assignment Panel Overlay ─── */}
                 {showAssignPanel && (

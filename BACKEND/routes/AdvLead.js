@@ -111,6 +111,30 @@ router.get("/fresh-leads-count", async (req, res) => {
     }
 });
 
+// GET: Count owned leads for a manager or leader
+router.get("/owned-leads-count", async (req, res) => {
+    const { userId, role } = req.query;
+    if (!userId) return res.status(400).json({ message: "userId is required" });
+
+    try {
+        const roleNorm = (role || "").toLowerCase();
+        let query = { 
+            owner_id: userId, 
+            status: { $nin: ["converted", "closed"] } 
+        };
+
+        if (roleNorm === "admin") {
+            const count = await AdvLead.countDocuments({ status: "fresh" });
+            return res.status(200).json({ count });
+        }
+
+        const count = await AdvLead.countDocuments(query);
+        res.status(200).json({ count });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
 // POST: Bulk assign fresh leads to a manager
 router.post("/bulk-assign-to-manager", async (req, res) => {
     const { managerId, managerName, count } = req.body;
@@ -519,6 +543,8 @@ router.get("/timeline/:id", async (req, res) => {
 router.post("/bulk-import", upload.single("file"), async (req, res) => {
     if (!req.file) return res.status(400).json({ message: "No file uploaded" });
 
+    const { uploaderId, uploaderRole, uploaderName } = req.body;
+
     const processLeads = async (leads) => {
         try {
             let successCount = 0;
@@ -530,10 +556,38 @@ router.post("/bulk-import", upload.single("file"), async (req, res) => {
                 try {
                     const existingLead = await AdvLead.findOne({ phone_number: leadData.phone_number });
                     if (!existingLead) {
+                        const roleNorm = (uploaderRole || "").toLowerCase();
+                        let status = "fresh";
+                        let owner_id = uploaderId;
+                        let owner_name = uploaderName;
+                        let current_owner_role = roleNorm;
+                        let manager_id = undefined;
+                        let leader_id = undefined;
+
+                        if (roleNorm.includes("manager")) {
+                            status = "assigned_to_manager";
+                            manager_id = uploaderId;
+                        } else if (roleNorm.includes("leader")) {
+                            status = "assigned_to_leader";
+                            leader_id = uploaderId;
+                        } else if (roleNorm === "admin") {
+                            status = "fresh";
+                            owner_id = undefined;
+                            owner_name = undefined;
+                            current_owner_role = undefined;
+                        }
+
                         const newLead = new AdvLead({
                             ...leadData,
                             source: "csv_import",
-                            status: "fresh"
+                            status: status,
+                            owner_id,
+                            owner_name,
+                            manager_id,
+                            leader_id,
+                            current_owner_role,
+                            uploaded_by: uploaderId,
+                            uploaded_by_role: uploaderRole
                         });
                         await newLead.save();
                         successCount++;
@@ -900,25 +954,29 @@ router.get("/get-my-team-specialists", async (req, res) => {
     }
 });
 
-// POST: Leader/Manager assigns fresh leads directly to specialist
+// POST: Leader/Manager assigns their leads directly to specialist
 router.post("/leader-bulk-assign-specialist", async (req, res) => {
     const { leaderId, specialistId, specialistName, count } = req.body;
     if (!leaderId || !specialistId || !count) {
         return res.status(400).json({ message: "leaderId, specialistId and count are required" });
     }
     try {
-        const freshLeads = await AdvLead.find({ status: "fresh" })
+        const query = {
+            owner_id: leaderId,
+            status: { $nin: ["converted", "closed", "assigned_to_specialist"] }
+        };
+        const myLeads = await AdvLead.find(query)
             .sort({ created_at: 1 })
             .limit(parseInt(count));
 
-        if (freshLeads.length === 0) {
-            return res.status(404).json({ message: "No fresh leads available" });
+        if (myLeads.length === 0) {
+            return res.status(404).json({ message: "No leads available to assign" });
         }
 
         const leader = await AdvTeamMember.findById(leaderId);
         const specialist = await AdvTeamMember.findById(specialistId);
 
-        const leadIds = freshLeads.map(l => l._id);
+        const leadIds = myLeads.map(l => l._id);
         await AdvLead.updateMany(
             { _id: { $in: leadIds } },
             {
@@ -936,7 +994,7 @@ router.post("/leader-bulk-assign-specialist", async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: `${freshLeads.length} leads assigned to ${specialistName || specialist?.fullname}`
+            message: `${myLeads.length} leads assigned to ${specialistName || specialist?.fullname}`
         });
     } catch (error) {
         res.status(400).json({ message: error.message });
