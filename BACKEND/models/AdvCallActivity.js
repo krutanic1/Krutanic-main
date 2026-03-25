@@ -14,7 +14,7 @@ const AdvCallActivitySchema = new mongoose.Schema({
     reminderSent: { type: Boolean, default: false },
     callOutcome: {
         type: String,
-        enum: ["interested", "not_interested", "no_answer", "callback_requested", "converted"],
+        enum: ["interested", "not_interested", "no_answer", "callback_requested", "converted", "junk", "follow_up"],
         required: true
     },
     followUpDate: { type: Date },

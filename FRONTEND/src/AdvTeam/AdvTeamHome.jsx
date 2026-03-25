@@ -7,6 +7,10 @@ const AdvTeamHome = () => {
   const [advEnrollments, setAdvEnrollments] = useState([]);
   const [advTeamMember, setAdvTeamMember] = useState([]);
   const [leads, setLeads] = useState([]); // New state for leads
+  const [outcomeCounts, setOutcomeCounts] = useState({
+    fresh: 0, interested: 0, follow_up: 0, callback_requested: 0,
+    no_answer: 0, not_interested: 0, junk: 0, converted: 0, total: 0
+  });
   
   const advTeamName = localStorage.getItem("advTeamName");
   const userId = localStorage.getItem("advTeamId");
@@ -18,14 +22,24 @@ const AdvTeamHome = () => {
   const today = new Date();
   const currentMonth = today.toISOString().slice(0, 7);
 
+  const fetchOutcomeCounts = async () => {
+    try {
+      if (!userId) return;
+      const res = await axios.get(`${API}/api/adv-leads/get-outcome-counts`, {
+        params: { role: apiRole, userId, strictlyOwned: true }
+      });
+      if (res.data) {
+        setOutcomeCounts(res.data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch outcome counts", err);
+    }
+  };
+
   const fetchAdvEnrollments = async () => {
     try {
       const response = await axios.get(`${API}/getadvenrolls`);
-      console.log("Adv Enrollments Response:", response.data);
-      
-      // Handle both possible response structures
       const enrollments = response.data.data || response.data;
-      
       setAdvEnrollments(
         enrollments.filter(
           (item) => item.counselor && item.counselor === advTeamName
@@ -45,189 +59,145 @@ const AdvTeamHome = () => {
     }
   };
 
-  const fetchMyLeads = async () => {
-    try {
-      if (!userId) return;
-      const res = await axios.get(`${API}/api/adv-leads/get-adv-leads`, {
-        params: { role: apiRole, userId, page: 1, limit: 10000, strictlyOwned: true }
-      });
-      if (res.data && res.data.leads) {
-        setLeads(res.data.leads);
-      }
-    } catch (err) {
-      console.error("Failed to fetch leads", err);
-    }
-  };
-
   useEffect(() => {
     fetchAdvTeamMember();
     fetchAdvEnrollments();
-    fetchMyLeads();
+    fetchOutcomeCounts();
   }, []);
 
-  const totalRevenue = advEnrollments.reduce(
-    (acc, student) => acc + (student.programPrice || 0),
-    0
-  );
-  
-  const bookedRevenue = advEnrollments.reduce(
-    (acc, student) => acc + (student.paidAmount || 0),
-    0
-  );
+  const totalRevenue = advEnrollments.reduce((acc, student) => acc + (student.programPrice || 0), 0);
+  const bookedRevenue = advEnrollments.reduce((acc, student) => acc + (student.paidAmount || 0), 0);
   
   const creditedRevenue = advEnrollments.reduce((acc, student) => {
     const lastRemark = Array.isArray(student.remark) && student.remark.length > 0
       ? student.remark[student.remark.length - 1]
       : null;
-
-    if (
-      student.status === "fullPaid" ||
-      lastRemark === "Half_Cleared"
-    ) {
+    if (student.status === "fullPaid" || lastRemark === "Half_Cleared") {
       return acc + (student.paidAmount || 0);
     }
-
     return acc;
   }, 0);
 
   const pendingRevenue = totalRevenue - creditedRevenue;
-
   const totalBooked = advEnrollments.filter((s) => s.status === "booked").length;
   const totalFullPaid = advEnrollments.filter((s) => s.status === "fullPaid").length;
   const totalDefault = advEnrollments.filter((s) => s.status === "default").length;
 
-  const totalAssignedLeads = leads.length;
-  const totalConvertedLeads = leads.filter(l => l.status === "converted").length;
-  const totalInFollowupLeads = leads.filter(l => l.status === "in_followup").length;
-  const totalFreshLeads = leads.filter(l => ["fresh", "assigned_to_manager", "assigned_to_leader", "assigned_to_specialist"].includes(l.status)).length;
-
   const [showConfetti, setShowConfetti] = useState(false);
   useEffect(() => {
-    if (totalConvertedLeads > 0) {
+    if (outcomeCounts.converted > 0) {
       setShowConfetti(true);
       const timer = setTimeout(() => setShowConfetti(false), 5000);
       return () => clearTimeout(timer);
     }
-  }, [totalConvertedLeads]);
+  }, [outcomeCounts.converted]);
+
+  const LeadStatCard = ({ label, count, icon, color, bgColor, borderColor, isHuge = false }) => (
+    <div style={{ 
+      background: bgColor || '#fff', 
+      border: `1px solid ${borderColor || '#eee'}`,
+      padding: '24px',
+      borderRadius: '20px',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      minHeight: isHuge ? '160px' : '120px',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+      transition: 'transform 0.2s ease',
+      position: 'relative',
+      overflow: 'hidden'
+    }} onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-4px)'} 
+       onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h3 style={{ margin: 0, fontSize: '15px', color: '#64748B', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</h3>
+        <div style={{ color: color, fontSize: '20px' }}>{icon}</div>
+      </div>
+      <p style={{ margin: '12px 0 4px 0', fontSize: isHuge ? '42px' : '32px', fontWeight: '800', color: color, lineHeight: '1' }}>{count}</p>
+      {label === 'Converted' && showConfetti && isHuge && (
+        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+           <Confetti width={300} height={160} recycle={false} numberOfPieces={100} gravity={0.2} />
+        </div>
+      )}
+    </div>
+  );
 
   return (
-    <div id="BdaPanel">
-      <div className="welcome-message">
-        <h2>Welcome to Advance Program Dashboard, {advTeamName}! 🎉</h2>
-        <p>Here's an overview of your advance program enrollments and performance.</p>
+    <div id="BdaPanel" style={{ padding: '30px', background: '#F8FAFC', minHeight: '100vh', fontFamily: "'Inter', sans-serif" }}>
+      <div className="welcome-message" style={{ marginBottom: '40px' }}>
+        <h2 style={{ fontSize: '32px', fontWeight: '800', color: '#1E293B', marginBottom: '8px' }}>Welcome to Advance Dashboard, {advTeamName}! 🎉</h2>
+        <p style={{ fontSize: '16px', color: '#64748B' }}>Real-time overview of your pipeline and enrollment performance.</p>
       </div>
 
-      <div className="stats-container">
-        <div className="state-card">
-          <div className="state-header">
-            <h3>Total Enrollments</h3>
-            <i className="fa fa-users"></i>
-          </div>
-          <p className="status-count">{advEnrollments.length}</p>
-          <p className="status-info">All Advance Students</p>
-        </div>
-
-        <div className="state-card">
-          <div className="state-header">
-            <h3>Booked</h3>
-            <i className="fa fa-calendar"></i>
-          </div>
-          <p className="status-count">{totalBooked}</p>
-          <p className="status-info">Booked Payments</p>
-        </div>
-
-        <div className="state-card">
-          <div className="state-header">
-            <h3>Full Paid</h3>
-            <i className="fa fa-check-circle"></i>
-          </div>
-          <p className="status-count">{totalFullPaid}</p>
-          <p className="status-info">Completed Payments</p>
-        </div>
-
-        <div className="state-card">
-          <div className="state-header">
-            <h3>Default</h3>
-            <i className="fa fa-exclamation-triangle"></i>
-          </div>
-          <p className="status-count">{totalDefault}</p>
-          <p className="status-info">Default Payments</p>
-        </div>
-      </div>
-
-      <div className="stats-container" style={{ marginTop: '20px' }}>
-        <div className="state-card" style={{ background: '#e6f7ff', border: '1px solid #91d5ff' }}>
-          <div className="state-header" style={{ color: '#096dd9' }}>
-            <h3>Total Leads</h3>
-            <i className="fa fa-users"></i>
-          </div>
-          <p className="status-count" style={{ color: '#096dd9' }}>{totalAssignedLeads}</p>
-          <p className="status-info" style={{ color: '#096dd9' }}>Assigned Leads</p>
-        </div>
-
-        <div className="state-card" style={{ 
-          background: '#f6ffed', 
-          border: '1px solid #b7eb8f', 
-          borderRadius: '12px',
-          padding: '20px',
-          position: 'relative',
+      {/* Primary Highlights */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px', marginBottom: '40px' }}>
+        <LeadStatCard label="Total Leads" count={outcomeCounts.total} icon="💎" color="#3B82F6" bgColor="#EFF6FF" borderColor="#BFDBFE" isHuge />
+        <LeadStatCard label="Converted" count={outcomeCounts.converted} icon="🏆" color="#10B981" bgColor="#ECFDF5" borderColor="#A7F3D0" isHuge />
+        <LeadStatCard label="Total Enrollments" count={advEnrollments.length} icon="👨‍🎓" color="#8B5CF6" bgColor="#F5F3FF" borderColor="#DDD6FE" isHuge />
+        <div style={{ 
+          background: 'linear-gradient(135deg, #1E293B, #0F172A)', 
+          padding: '24px', 
+          borderRadius: '20px', 
+          color: '#fff',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between',
-          minHeight: '140px',
-          overflow: 'hidden'
+          justifyContent: 'center'
         }}>
-          {showConfetti && (
-            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
-              <Confetti width={300} height={200} recycle={false} numberOfPieces={150} gravity={0.2} />
-            </div>
-          )}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
-            <h3 style={{ margin: 0, color: '#4b5563', fontSize: '18px', fontWeight: '500' }}>Converted</h3>
-            <div style={{ width: '30px', height: '30px', background: '#f15a29', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '16px' }}>
-              <i className="fa fa-check"></i>
-            </div>
-          </div>
-          <p style={{ margin: '15px 0', color: '#389e0d', fontSize: '42px', fontWeight: 'bold', lineHeight: '1' }}>{totalConvertedLeads}</p>
-          <p style={{ margin: 0, color: '#389e0d', fontSize: '14px', fontWeight: '500' }}>Converted Leads</p>
-        </div>
-
-        <div className="state-card" style={{ background: '#fffbe6', border: '1px solid #ffe58f' }}>
-          <div className="state-header" style={{ color: '#d48806' }}>
-            <h3>In Follow-up</h3>
-            <i className="fa fa-phone"></i>
-          </div>
-          <p className="status-count" style={{ color: '#d48806' }}>{totalInFollowupLeads}</p>
-          <p className="status-info" style={{ color: '#d48806' }}>Active Follow-ups</p>
-        </div>
-
-        <div className="state-card" style={{ background: '#f0f5ff', border: '1px solid #adc6ff' }}>
-          <div className="state-header" style={{ color: '#1d39c4' }}>
-            <h3>Fresh</h3>
-            <i className="fa fa-envelope-open"></i>
-          </div>
-          <p className="status-count" style={{ color: '#1d39c4' }}>{totalFreshLeads}</p>
-          <p className="status-info" style={{ color: '#1d39c4' }}>Uncontacted Leads</p>
+          <h3 style={{ margin: 0, fontSize: '14px', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '8px' }}>Booked Revenue</h3>
+          <p style={{ margin: 0, fontSize: '36px', fontWeight: '800' }}>₹{bookedRevenue.toLocaleString()}</p>
+          <p style={{ margin: '8px 0 0 0', fontSize: '12px', color: '#64748B' }}>From {totalBooked} bookings</p>
         </div>
       </div>
 
-      <div className="revenue-section">
-        <div className="revenue-card">
-          <h3>Total Revenue</h3>
-          <p className="revenue-amount">₹{totalRevenue.toLocaleString()}</p>
-        </div>
-        <div className="revenue-card">
-          <h3>Booked Revenue</h3>
-          <p className="revenue-amount">₹{bookedRevenue.toLocaleString()}</p>
-        </div>
-        <div className="revenue-card">
-          <h3>Credited Revenue</h3>
-          <p className="revenue-amount">₹{creditedRevenue.toLocaleString()}</p>
-        </div>
-        <div className="revenue-card">
-          <h3>Pending Revenue</h3>
-          <p className="revenue-amount">₹{pendingRevenue.toLocaleString()}</p>
-        </div>
+      <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#1E293B', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <span style={{ width: '12px', height: '12px', background: '#3B82F6', borderRadius: '4px' }}></span>
+        Lead Pipeline Breakdown
+      </h3>
+      
+      {/* Detailed Pipeline Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '40px' }}>
+        <LeadStatCard label="Fresh Leads" count={outcomeCounts.fresh} icon="🆕" color="#64748B" />
+        <LeadStatCard label="Interested" count={outcomeCounts.interested} icon="✅" color="#10B981" />
+        <LeadStatCard label="Follow Up" count={outcomeCounts.follow_up} icon="📞" color="#3B82F6" />
+        <LeadStatCard label="Callback Requested" count={outcomeCounts.callback_requested} icon="🔄" color="#3B82F6" />
+        <LeadStatCard label="No Answer" count={outcomeCounts.no_answer} icon="📵" color="#F59E0B" />
+        <LeadStatCard label="Not Interested" count={outcomeCounts.not_interested} icon="❌" color="#EF4444" />
+        <LeadStatCard label="Junk Leads" count={outcomeCounts.junk} icon="🗑️" color="#94A3B8" />
+      </div>
+
+      <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#1E293B', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <span style={{ width: '12px', height: '12px', background: '#8B5CF6', borderRadius: '4px' }}></span>
+        Enrollment & Revenue Stats
+      </h3>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginBottom: '40px' }}>
+        {[
+          { label: "Booked", count: totalBooked, info: "Booked Payments", color: "#F59E0B", icon: "fa-calendar" },
+          { label: "Full Paid", count: totalFullPaid, info: "Completed Payments", color: "#10B981", icon: "fa-check-circle" },
+          { label: "Default", count: totalDefault, info: "Default Payments", color: "#EF4444", icon: "fa-exclamation-triangle" },
+        ].map(stat => (
+          <div key={stat.label} className="state-card" style={{ background: '#fff' }}>
+            <div className="state-header" style={{ color: stat.color }}>
+              <h3>{stat.label}</h3>
+              <i className={`fa ${stat.icon}`}></i>
+            </div>
+            <p className="status-count" style={{ color: stat.color }}>{stat.count}</p>
+            <p className="status-info" style={{ color: '#64748B' }}>{stat.info}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="revenue-section" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px' }}>
+        {[
+          { label: "Total Revenue", amount: totalRevenue, color: "#1E293B" },
+          { label: "Booked Revenue", amount: bookedRevenue, color: "#3B82F6" },
+          { label: "Credited Revenue", amount: creditedRevenue, color: "#10B981" },
+          { label: "Pending Revenue", amount: pendingRevenue, color: "#EF4444" },
+        ].map(rev => (
+          <div key={rev.label} className="revenue-card" style={{ background: '#fff', border: '1px solid #E2E8F0' }}>
+            <h3 style={{ fontSize: '14px', color: '#64748B', textTransform: 'uppercase' }}>{rev.label}</h3>
+            <p className="revenue-amount" style={{ color: rev.color, fontSize: '28px' }}>₹{rev.amount.toLocaleString()}</p>
+          </div>
+        ))}
       </div>
     </div>
   );

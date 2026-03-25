@@ -4,10 +4,13 @@ import toast, { Toaster } from "react-hot-toast";
 import API from "../API";
 
 const CALL_OUTCOMES = [
+    { value: "fresh", label: "🆕 Fresh Leads", color: "#64748B" },
     { value: "interested", label: "✅ Interested", color: "#52c41a" },
-    { value: "not_interested", label: "❌ Not Interested", color: "#ff4d4f" },
-    { value: "no_answer", label: "📵 No Answer", color: "#faad14" },
+    { value: "follow_up", label: "📞 Follow Up", color: "#1890ff" },
     { value: "callback_requested", label: "🔄 Callback Requested", color: "#1890ff" },
+    { value: "no_answer", label: "📵 No Answer", color: "#faad14" },
+    { value: "not_interested", label: "❌ Not Interested", color: "#ff4d4f" },
+    { value: "junk", label: "🗑️ Junk Leads", color: "#8c8c8c" },
     { value: "converted", label: "🏆 Converted", color: "#722ed1" },
 ];
 
@@ -270,15 +273,6 @@ const AdvLeadsBook = () => {
                         title="Filter by Assigned Date" 
                     />
                     <div style={{ display: 'flex', background: '#fff', padding: '4px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
-                        <button
-                            onClick={() => setSelectedOutcome("")}
-                            style={{
-                                padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer', border: 'none',
-                                background: selectedOutcome === "" ? '#F1F5F9' : 'transparent', color: selectedOutcome === "" ? '#1E293B' : '#64748B'
-                            }}
-                        >
-                            All Leads
-                        </button>
                         {CALL_OUTCOMES.map(o => (
                             <button
                                 key={o.value}
@@ -292,6 +286,15 @@ const AdvLeadsBook = () => {
                                 {o.label}
                             </button>
                         ))}
+                        <button
+                            onClick={() => setSelectedOutcome("")}
+                            style={{
+                                padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer', border: 'none',
+                                background: selectedOutcome === "" ? '#F1F5F9' : 'transparent', color: selectedOutcome === "" ? '#1E293B' : '#64748B'
+                            }}
+                        >
+                            All Leads
+                        </button>
                     </div>
 
                     <div style={styles.statsRow}>
@@ -335,7 +338,7 @@ const AdvLeadsBook = () => {
                                 const isOpen = activeLead === lead._id;
                                 const form = formState[lead._id] || {};
                                 const history = callHistory[lead._id] || [];
-                                const demoNeeded = ["interested", "callback_requested"].includes(form.callOutcome);
+                                const demoNeeded = ["interested", "callback_requested", "follow_up"].includes(form.callOutcome);
 
                                 return (
                                     <div key={lead._id} style={{
@@ -438,7 +441,7 @@ const AdvLeadsBook = () => {
                                                 </div>
                                                 <div style={{ minWidth: '100px' }}>
                                                     <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '4px' }}>Assigned Date</div>
-                                                    <div style={{ fontSize: '13px', fontWeight: '500', color: '#64748B' }}>{lead.created_at ? new Date(lead.created_at).toLocaleString('en-IN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}</div>
+                                                    <div style={{ fontSize: '13px', fontWeight: '500', color: '#64748B' }}>{lead.assigned_at ? new Date(lead.assigned_at).toLocaleString('en-IN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : (lead.created_at ? new Date(lead.created_at).toLocaleString('en-IN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—')}</div>
                                                 </div>
                                             </div>
 

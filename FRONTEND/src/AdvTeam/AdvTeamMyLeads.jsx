@@ -23,10 +23,19 @@ const AdvTeamMyLeads = () => {
     const [assignCount, setAssignCount] = useState("");
     const [assigning, setAssigning] = useState(false);
 
+    // Manual Assign State
+    const [isManualAssignMode, setIsManualAssignMode] = useState(false);
+    const [selectedLeadIds, setSelectedLeadIds] = useState([]);
+
     // Read from localStorage (set on login)
     const userId = localStorage.getItem("advTeamId");
     const userName = localStorage.getItem("advTeamName");
-    const designation = localStorage.getItem("advTeamDesignation") || "";
+
+    // Use state for profile data fetched from API (localStorage may be empty for old sessions)
+    const [userProfile, setUserProfile] = useState(null);
+    const designation = userProfile?.designation || localStorage.getItem("advTeamDesignation") || "";
+    const userTeam = userProfile?.team || localStorage.getItem("advTeamTeam") || "";
+
     const isLeader = designation.toLowerCase().includes("leader");
     const isSpecialist = designation.toLowerCase().includes("specialist") || designation.toLowerCase().includes("sales");
     const isManager = !isLeader && !isSpecialist;
@@ -67,10 +76,27 @@ const AdvTeamMyLeads = () => {
         }
     };
 
+    // Always fetch profile from API so designation and team are always correct
+    const fetchUserProfile = async () => {
+        if (!userId) return;
+        try {
+            const res = await axios.get(`${API}/getadvteam`, { params: { advTeamId: userId } });
+            if (res.data) {
+                setUserProfile(res.data);
+                // Update localStorage for future sessions
+                localStorage.setItem("advTeamDesignation", res.data.designation || "");
+                localStorage.setItem("advTeamTeam", res.data.team || "");
+            }
+        } catch (err) {
+            console.error("Failed to fetch user profile", err);
+        }
+    };
+
     useEffect(() => {
-        fetchMyLeads(1);
+        fetchUserProfile();
         fetchTeamMembers();
-    }, []);
+        fetchMyLeads(1);
+    }, [userId]);
 
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
@@ -132,11 +158,66 @@ const AdvTeamMyLeads = () => {
         }
     };
 
-    const assignTargets = isManager
-        ? teamMembers.filter(m => m.designation === "ADV Leader" && m.status === "Active")
-        : teamMembers.filter(m =>
-            (m.designation === "SR Inside Sales Specialist" || m.designation === "Inside Sales Specialist") && m.status === "Active"
+    const handleManualAssign = async () => {
+        if (selectedLeadIds.length === 0) {
+            toast.error("Please select at least one lead");
+            return;
+        }
+        if (!selectedMember) {
+            toast.error(`Please select a ${assignTargetLabel} below`);
+            return;
+        }
+
+        setAssigning(true);
+        try {
+            const res = await axios.post(`${API}/api/adv-leads/manual-bulk-assign`, {
+                leadIds: selectedLeadIds,
+                assigneeId: selectedMember._id,
+                assigneeName: selectedMember.fullname,
+                assigneeRole: selectedMember.designation
+            });
+            toast.success(res.data.message);
+            setIsManualAssignMode(false);
+            setSelectedLeadIds([]);
+            setSelectedMember(null);
+            fetchMyLeads(currentPage);
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Manual assignment failed");
+        } finally {
+            setAssigning(false);
+        }
+    };
+
+    const toggleLeadSelection = (leadId) => {
+        setSelectedLeadIds(prev =>
+            prev.includes(leadId) ? prev.filter(id => id !== leadId) : [...prev, leadId]
         );
+    };
+
+    const toggleAllSelection = () => {
+        if (selectedLeadIds.length === leads.length) {
+            setSelectedLeadIds([]);
+        } else {
+            setSelectedLeadIds(leads.map(l => l._id));
+        }
+    };
+
+    const assignTargets = (() => {
+        const members = teamMembers;
+        if (isManager) {
+            return members.filter(m => {
+                const desig = (m.designation || "").toUpperCase();
+                const sameTeam = !userTeam || (m.team || "").trim().toUpperCase() === userTeam.trim().toUpperCase();
+                return (desig.includes("LEADER")) && sameTeam;
+            });
+        } else {
+            return members.filter(m => {
+                const desig = (m.designation || "").toUpperCase();
+                const sameTeam = !userTeam || (m.team || "").trim().toUpperCase() === userTeam.trim().toUpperCase();
+                return desig.includes("SPECIALIST") && sameTeam;
+            });
+        }
+    })();
 
     const availableLeadsCount = leads.filter(l => {
         if (isManager) {
@@ -221,16 +302,28 @@ const AdvTeamMyLeads = () => {
                         <span style={{ color: '#888', fontSize: '13px' }}>{userName} — {designation}</span>
                     </div>
                     {canAssign && (
-                        <button onClick={() => setShowAssignPanel(true)} style={{ padding: '10px 22px', background: '#52c41a', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            📤 Assign to {assignTargetLabel}
-                            {availableLeadsCount > 0 && <span style={{ background: '#fff', color: '#52c41a', borderRadius: '12px', padding: '1px 8px', fontSize: '13px', fontWeight: 'bold' }}>{availableLeadsCount}</span>}
-                        </button>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            {!isManualAssignMode ? (
+                                <>{/* line 307 */}
+                                    <button onClick={() => { setIsManualAssignMode(true); setSelectedLeadIds([]); }} style={{ padding: '10px 22px', background: '#1890ff', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        🖱️ Assign Manual Leads
+                                    </button>
+                                    <button onClick={() => setShowAssignPanel(true)} style={{ padding: '10px 22px', background: '#52c41a', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        📤 Bulk Assign (Count)
+                                        {availableLeadsCount > 0 && <span style={{ background: '#fff', color: '#52c41a', borderRadius: '12px', padding: '1px 8px', fontSize: '13px', fontWeight: 'bold' }}>{availableLeadsCount}</span>}
+                                    </button>
+                                </>
+                            ) : (
+                                <button onClick={() => { setIsManualAssignMode(false); setSelectedLeadIds([]); }} style={{ padding: '10px 22px', background: '#ff4d4f', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: 'bold', cursor: 'pointer' }}>
+                                    ❌ Cancel Manual Assignment
+                                </button>
+                            )}
+                        </div>
                     )}
                 </div>
 
                 <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
-                    {[
-                        { label: 'This Page', count: leads.length, bg: '#f9f9f9', border: '#d9d9d9', color: '#333' },
+                    {[{ label: 'This Page', count: leads.length, bg: '#f9f9f9', border: '#d9d9d9', color: '#333' },
                         { label: 'Total Leads', count: totalCount, bg: '#e6f7ff', border: '#91d5ff', color: '#096dd9' },
                     ].map((s, i) => (
                         <div key={i} style={{ padding: '12px 18px', background: s.bg, border: `1px solid ${s.border}`, borderRadius: '8px', flex: 1, minWidth: '100px', textAlign: 'center' }}>
@@ -238,6 +331,24 @@ const AdvTeamMyLeads = () => {
                             <div style={{ fontSize: '12px', color: '#666' }}>{s.label}</div>
                         </div>
                     ))}
+                    {isManualAssignMode && (
+                        <div style={{ padding: '12px 18px', background: '#fff7e6', border: '1px solid #ffd591', borderRadius: '8px', flex: 2, minWidth: '200px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                            <div style={{ flex: 1 }}>
+                                <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#d46b08' }}>{selectedLeadIds.length} Selected</div>
+                                <div style={{ fontSize: '11px', color: '#666' }}>Manual Selection Mode</div>
+                            </div>
+                            <select value={selectedMember?._id || ""} onChange={e => {
+                                const m = assignTargets.find(m => m._id === e.target.value);
+                                setSelectedMember(m || null);
+                            }} style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '13px', flex: 2 }}>
+                                <option value="">-- Assign to {assignTargetLabel} --</option>
+                                {assignTargets.map(m => <option key={m._id} value={m._id}>{m.fullname}</option>)}
+                            </select>
+                            <button onClick={handleManualAssign} disabled={assigning || selectedLeadIds.length === 0 || !selectedMember} style={{ padding: '8px 16px', background: (selectedLeadIds.length === 0 || !selectedMember) ? '#ccc' : '#52c41a', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: (selectedLeadIds.length === 0 || !selectedMember) ? 'not-allowed' : 'pointer' }}>
+                                {assigning ? "..." : "Confirm"}
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '15px', flexWrap: 'wrap' }}>
@@ -268,6 +379,11 @@ const AdvTeamMyLeads = () => {
                             <table>
                                 <thead>
                                      <tr>
+                                         {isManualAssignMode && (
+                                             <th style={{ width: '40px' }}>
+                                                 <input type="checkbox" checked={selectedLeadIds.length === leads.length && leads.length > 0} onChange={toggleAllSelection} />
+                                             </th>
+                                         )}
                                          <th>#</th>
                                          <th>Name</th>
                                          <th>Email</th>
@@ -283,8 +399,14 @@ const AdvTeamMyLeads = () => {
                                 <tbody>
                                     {filteredLeads.map((lead, idx) => {
                                         const sc = statusBadgeStyle(lead.status);
+                                        const isSelected = selectedLeadIds.includes(lead._id);
                                         return (
-                                            <tr key={lead._id}>
+                                            <tr key={lead._id} style={{ background: isSelected ? '#f6ffed' : 'transparent' }}>
+                                                {isManualAssignMode && (
+                                                    <td>
+                                                        <input type="checkbox" checked={isSelected} onChange={() => toggleLeadSelection(lead._id)} />
+                                                    </td>
+                                                )}
                                                 <td style={{ color: '#888', fontSize: '12px' }}>{(currentPage - 1) * limit + idx + 1}</td>
                                                 <td><strong>{lead.full_name}</strong></td>
                                                 <td style={{ fontSize: '12px', color: '#666' }}>{lead.email || '—'}</td>
@@ -300,7 +422,7 @@ const AdvTeamMyLeads = () => {
                                                     {lead.owner_name || lead.current_owner_id?.name || '—'}
                                                 </td>
                                                 <td style={{ fontSize: '13px', color: '#555' }}>
-                                                    {lead.created_at ? new Date(lead.created_at).toLocaleString('en-IN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}
+                                                    {lead.assigned_at ? new Date(lead.assigned_at).toLocaleString('en-IN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : (lead.created_at ? new Date(lead.created_at).toLocaleString('en-IN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—')}
                                                 </td>
                                                 <td>
                                                     <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '12px', background: (lead.score || 0) > 15 ? '#f6ffed' : '#f5f5f5', border: `1px solid ${(lead.score || 0) > 15 ? '#b7eb8f' : '#d9d9d9'}` }}>

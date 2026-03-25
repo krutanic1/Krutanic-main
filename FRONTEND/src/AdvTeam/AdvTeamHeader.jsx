@@ -45,7 +45,7 @@ const AdvTeamHeader = () => {
     const sessionStartTime = localStorage.getItem("advTeamSessionStartTime");
     if (sessionStartTime) {
       const currentTime = new Date().getTime();
-      const expirationTime = 3 * 60 * 60 * 1000; // 3 hours
+      const expirationTime = 10 * 60 * 60 * 1000; // 10 hours
       if (currentTime - sessionStartTime > expirationTime) {
         toast.error("Session Time Out");
         localStorage.removeItem("advTeamId");
@@ -183,7 +183,7 @@ const AdvTeamHeader = () => {
             advTeamData?.designation === "ADV Leader" ||
             advTeamData?.designation === "LEADER") && (
               <Link to="/advteam/record">
-                <i className="fa fa-history"></i> Record
+                <i className="fa fa-history"></i> Call Record
               </Link>
             )}
           {/* <Link to="/advteam/onboarding">

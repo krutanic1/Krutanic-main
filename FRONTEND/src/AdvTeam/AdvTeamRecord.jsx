@@ -9,6 +9,8 @@ const CALL_OUTCOMES = [
     { value: "no_answer", label: "📵 No Answer", color: "#faad14" },
     { value: "callback_requested", label: "🔄 Callback Requested", color: "#1890ff" },
     { value: "converted", label: "🏆 Converted", color: "#722ed1" },
+    { value: "junk", label: "🗑️ Junk Leads", color: "#8c8c8c" },
+    { value: "follow_up", label: "📅 Follow Up", color: "#eb2f96" },
 ];
 
 const AdvTeamRecord = () => {
@@ -28,13 +30,13 @@ const AdvTeamRecord = () => {
 
     const userId = localStorage.getItem("advTeamId");
     const userName = localStorage.getItem("advTeamName");
-    const designation = localStorage.getItem("advTeamDesignation");
+    const [userDesignation, setUserDesignation] = useState(localStorage.getItem("advTeamDesignation") || "");
 
     const fetchRecords = async (page = 1) => {
         setLoading(true);
         try {
             const res = await axios.get(`${API}/api/adv-leads/get-adv-record`, {
-                params: { role: designation, userId, page, limit }
+                params: { role: userDesignation, userId, page, limit }
             });
             if (res.data && res.data.activities) {
                 setActivities(res.data.activities);
@@ -51,11 +53,31 @@ const AdvTeamRecord = () => {
         }
     };
 
+    const fetchUserProfile = async () => {
+        if (!userId) return;
+        try {
+            const res = await axios.get(`${API}/getadvteam`, { params: { advTeamId: userId } });
+            if (res.data && res.data.designation) {
+                setUserDesignation(res.data.designation);
+                localStorage.setItem("advTeamDesignation", res.data.designation);
+                localStorage.setItem("advTeamTeam", res.data.team || "");
+            }
+        } catch (err) {
+            console.error("Failed to fetch user profile", err);
+        }
+    };
+
     useEffect(() => {
-        if (userId && designation) {
+        if (userId && !userDesignation) {
+            fetchUserProfile();
+        }
+    }, [userId, userDesignation]);
+
+    useEffect(() => {
+        if (userId && userDesignation) {
             fetchRecords(currentPage);
         }
-    }, [userId, designation, currentPage]);
+    }, [userId, userDesignation, currentPage]);
 
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
@@ -251,7 +273,7 @@ const AdvTeamRecord = () => {
 
             <header style={styles.header}>
                 <div style={styles.titleSection}>
-                    <h1 style={styles.title}>Team Activity Records</h1>
+                    <h1 style={styles.title}>Call Records</h1>
                     <div style={styles.breadcrumb}>
                         <span
                             style={view !== "specialists" ? styles.breadcrumbItem : { fontWeight: '600' }}

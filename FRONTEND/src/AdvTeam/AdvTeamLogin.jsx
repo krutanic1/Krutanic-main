@@ -38,6 +38,8 @@ const AdvTeamLogin = () => {
           localStorage.setItem("advTeamId", response.data.bdaId);
           localStorage.setItem("advTeamName", response.data.bdaName);
           localStorage.setItem("advTeamToken", response.data.token);
+          localStorage.setItem("advTeamDesignation", response.data.user.role);
+          localStorage.setItem("advTeamTeam", response.data.user.team);
           localStorage.setItem("advTeamSessionStartTime", loginTime);
           navigate("/advteam/home");
         }, 2000);

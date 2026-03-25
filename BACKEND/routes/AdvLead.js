@@ -20,6 +20,77 @@ const cloudinary = require("../middleware/cloudinary");
 
 
 
+// GET: Fetch counts for all lead outcomes with team-based isolation
+router.get("/get-outcome-counts", async (req, res) => {
+    const { role, userId, strictlyOwned } = req.query;
+
+    try {
+        let baseQuery = {};
+        const roleNorm = (role || "").toLowerCase();
+
+        if (roleNorm === "admin") {
+            // Admin sees all
+        } else if (strictlyOwned === "true") {
+            baseQuery = { $or: [{ owner_id: userId }, { current_owner_id: userId }] };
+        } else if (roleNorm.includes("manager")) {
+            const teams = await AdvTeamStructure.find({ manager_id: userId });
+            const teamIds = teams.map(t => t._id);
+            const teamNames = teams.map(t => t.team_name);
+            baseQuery = {
+                $or: [
+                    { status: "fresh" },
+                    { manager_id: userId },
+                    { team_id: { $in: teamIds } },
+                    { team_name: { $in: teamNames } },
+                    { owner_id: userId },
+                    { current_owner_id: userId }
+                ]
+            };
+        } else if (roleNorm.includes("leader")) {
+            const teams = await AdvTeamStructure.find({ leaders: userId });
+            const teamIds = teams.map(t => t._id);
+            const teamNames = teams.map(t => t.team_name);
+            baseQuery = {
+                $or: [
+                    { status: "fresh" },
+                    { leader_id: userId },
+                    { team_id: { $in: teamIds } },
+                    { team_name: { $in: teamNames } },
+                    { owner_id: userId },
+                    { current_owner_id: userId }
+                ]
+            };
+        } else {
+            const isValidId = mongoose.Types.ObjectId.isValid(userId);
+            if (isValidId) {
+                baseQuery = { $or: [{ owner_id: userId }, { current_owner_id: userId }] };
+            } else if (roleNorm === "admin") {
+                baseQuery = {};
+            } else {
+                return res.status(200).json({ fresh: 0, interested: 0, follow_up: 0, callback_requested: 0, no_answer: 0, not_interested: 0, junk: 0, converted: 0 });
+            }
+        }
+
+        const outcomes = ["interested", "follow_up", "callback_requested", "no_answer", "not_interested", "junk", "converted"];
+        const counts = {};
+
+        // 1. Count Fresh (no interaction yet)
+        counts.fresh = await AdvLead.countDocuments({ ...baseQuery, last_interaction_at: { $exists: false } });
+
+        // 2. Count by last_outcome
+        await Promise.all(outcomes.map(async (outcome) => {
+            counts[outcome] = await AdvLead.countDocuments({ ...baseQuery, last_outcome: outcome });
+        }));
+
+        // 3. Total Owned (Simplified)
+        counts.total = await AdvLead.countDocuments(baseQuery);
+
+        res.status(200).json(counts);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
 // POST: Add lead from Google Form with Automation
 router.post("/add-adv-lead", async (req, res) => {
     console.log("Receiving Lead Submission:", JSON.stringify(req.body, null, 2));
@@ -80,6 +151,7 @@ router.post("/add-adv-lead", async (req, res) => {
             team_id: team?._id,
             current_owner_id: assignedSpecialistId,
             current_owner_role: assignedSpecialistId ? "sr_inside_sales_specialist" : null,
+            assigned_at: assignedSpecialistId ? new Date() : undefined,
             score
         });
 
@@ -154,7 +226,7 @@ router.post("/bulk-assign-to-manager", async (req, res) => {
 
         await AdvLead.updateMany(
             { _id: { $in: leadIds } },
-            { $set: { owner_id: managerId, owner_name: managerName, manager_id: managerId, current_owner_role: "manager", status: "assigned_to_manager" } }
+            { $set: { owner_id: managerId, owner_name: managerName, manager_id: managerId, current_owner_role: "manager", status: "assigned_to_manager", assigned_at: new Date() } }
         );
 
         res.status(200).json({ success: true, assigned: freshLeads.length, message: `${freshLeads.length} lead(s) assigned to ${managerName}` });
@@ -203,6 +275,7 @@ router.post("/admin-bulk-assign", async (req, res) => {
                     current_owner_role: dbRole,
                     status: dbStatus,
                     team_id: team ? team._id : null,
+                    assigned_at: new Date(),
                     ...(dbRole === "manager" ? { manager_id: assigneeId } : { leader_id: assigneeId })
                 }
             }
@@ -236,7 +309,7 @@ router.post("/bulk-assign-to-leader", async (req, res) => {
         const leadIds = myLeads.map(l => l._id);
         await AdvLead.updateMany(
             { _id: { $in: leadIds } },
-            { $set: { owner_id: leaderId, owner_name: leaderName, leader_id: leaderId, current_owner_role: "leader", status: "assigned_to_leader" } }
+            { $set: { owner_id: leaderId, owner_name: leaderName, leader_id: leaderId, current_owner_role: "leader", status: "assigned_to_leader", assigned_at: new Date() } }
         );
 
         res.status(200).json({ success: true, assigned: myLeads.length, message: `${myLeads.length} lead(s) assigned to ${leaderName}` });
@@ -264,10 +337,63 @@ router.post("/bulk-assign-to-specialist", async (req, res) => {
         const leadIds = myLeads.map(l => l._id);
         await AdvLead.updateMany(
             { _id: { $in: leadIds } },
-            { $set: { owner_id: specialistId, owner_name: specialistName, specialist_id: specialistId, current_owner_role: "sr_inside_sales_specialist", status: "assigned_to_specialist" } }
+            { $set: { owner_id: specialistId, owner_name: specialistName, specialist_id: specialistId, current_owner_role: "sr_inside_sales_specialist", status: "assigned_to_specialist", assigned_at: new Date() } }
         );
 
         res.status(200).json({ success: true, assigned: myLeads.length, message: `${myLeads.length} lead(s) assigned to ${specialistName}` });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+// POST: Manual bulk assign specific leads to someone (Checkbox selected)
+router.post("/manual-bulk-assign", async (req, res) => {
+    const { leadIds, assigneeId, assigneeName, assigneeRole } = req.body;
+    if (!leadIds || !Array.isArray(leadIds) || leadIds.length === 0 || !assigneeId || !assigneeRole) {
+        return res.status(400).json({ message: "leadIds, assigneeId, and assigneeRole are required" });
+    }
+    try {
+        // Find if this person belongs to a team to set team_id
+        const team = await AdvTeamStructure.findOne({
+            $or: [{ manager_id: assigneeId }, { leaders: assigneeId }, { "members.userId": assigneeId }]
+        });
+
+        // Map backend roles/statuses
+        let dbRole = "manager";
+        let dbStatus = "assigned_to_manager";
+        const roleNorm = assigneeRole.toLowerCase();
+
+        if (roleNorm.includes("leader")) {
+            dbRole = "leader";
+            dbStatus = "assigned_to_leader";
+        } else if (roleNorm.includes("specialist") || roleNorm.includes("sales")) {
+            dbRole = "sr_inside_sales_specialist";
+            dbStatus = "assigned_to_specialist";
+        }
+
+        const updateData = {
+            owner_id: assigneeId,
+            owner_name: assigneeName,
+            current_owner_role: dbRole,
+            status: dbStatus,
+            team_id: team ? team._id : null,
+            assigned_at: new Date()
+        };
+
+        if (dbRole === "manager") updateData.manager_id = assigneeId;
+        else if (dbRole === "leader") updateData.leader_id = assigneeId;
+        else if (dbRole === "sr_inside_sales_specialist") updateData.specialist_id = assigneeId;
+
+        await AdvLead.updateMany(
+            { _id: { $in: leadIds } },
+            { $set: updateData }
+        );
+
+        res.status(200).json({
+            success: true,
+            assigned: leadIds.length,
+            message: `${leadIds.length} lead(s) manually assigned to ${assigneeName} (${dbRole})`
+        });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -344,21 +470,30 @@ router.get("/get-adv-leads", async (req, res) => {
         // Apply outcome and date filters if provided
         let query = { ...baseQuery };
         if (outcome) {
-            query.last_outcome = outcome;
+            if (outcome === "fresh") {
+                // Leads with no interaction are considered fresh
+                query.last_interaction_at = { $exists: false };
+            } else {
+                query.last_outcome = outcome;
+            }
         }
         if (date) {
             const startOfDay = new Date(date);
             startOfDay.setHours(0, 0, 0, 0);
             const endOfDay = new Date(date);
             endOfDay.setHours(23, 59, 59, 999);
-            query.created_at = { $gte: startOfDay, $lte: endOfDay };
+            query.$or = [
+                { assigned_at: { $gte: startOfDay, $lte: endOfDay } },
+                { assigned_at: { $exists: false }, created_at: { $gte: startOfDay, $lte: endOfDay } }
+            ];
         }
 
         const totalCount = await AdvLead.countDocuments(query);
         const leads = await AdvLead.find(query)
             .populate("team_id", "team_name")
             .populate("current_owner_id", "name")
-            .sort({ created_at: -1 })
+            // NEW SORT: Push interacted leads to bottom, keep new ones at top
+            .sort({ last_interaction_at: 1, created_at: -1 })
             .skip(skip)
             .limit(parseInt(limit));
 
@@ -374,13 +509,15 @@ router.get("/get-adv-leads", async (req, res) => {
 });
 
 
+
 // PUT: Assign to Team (Admin) — supports team name string from existing system
 router.put("/assign-lead-to-team/:id", async (req, res) => {
     const { teamId, teamName } = req.body;
     try {
         const updateData = {
             current_owner_role: "manager",
-            status: "assigned_to_team"
+            status: "assigned_to_team",
+            assigned_at: new Date()
         };
         if (teamId) updateData.team_id = teamId;
         if (teamName) updateData.team_name = teamName;
@@ -398,7 +535,7 @@ router.put("/assign-lead-to-manager/:id", async (req, res) => {
     try {
         const lead = await AdvLead.findByIdAndUpdate(
             req.params.id,
-            { owner_id: managerId, owner_name: managerName, manager_id: managerId, current_owner_role: "manager", status: "assigned_to_manager" },
+            { owner_id: managerId, owner_name: managerName, manager_id: managerId, current_owner_role: "manager", status: "assigned_to_manager", assigned_at: new Date() },
             { new: true }
         );
         res.status(200).json(lead);
@@ -413,7 +550,7 @@ router.put("/assign-lead-to-leader/:id", async (req, res) => {
     try {
         const lead = await AdvLead.findByIdAndUpdate(
             req.params.id,
-            { owner_id: leaderId, owner_name: leaderName, leader_id: leaderId, current_owner_role: "leader", status: "assigned_to_leader" },
+            { owner_id: leaderId, owner_name: leaderName, leader_id: leaderId, current_owner_role: "leader", status: "assigned_to_leader", assigned_at: new Date() },
             { new: true }
         );
         res.status(200).json(lead);
@@ -428,7 +565,7 @@ router.put("/assign-lead-to-specialist/:id", async (req, res) => {
     try {
         const lead = await AdvLead.findByIdAndUpdate(
             req.params.id,
-            { owner_id: specialistId, owner_name: specialistName, specialist_id: specialistId, current_owner_role: "sr_inside_sales_specialist", status: "assigned_to_specialist" },
+            { owner_id: specialistId, owner_name: specialistName, specialist_id: specialistId, current_owner_role: "sr_inside_sales_specialist", status: "assigned_to_specialist", assigned_at: new Date() },
             { new: true }
         );
         res.status(200).json(lead);
@@ -644,7 +781,8 @@ router.post("/bulk-import", upload.single("file"), async (req, res) => {
                             leader_id,
                             current_owner_role,
                             uploaded_by: uploaderId,
-                            uploaded_by_role: uploaderRole
+                            uploaded_by_role: uploaderRole,
+                            assigned_at: status !== "fresh" ? new Date() : undefined
                         });
                         await newLead.save();
                         successCount++;
@@ -744,6 +882,8 @@ router.post("/log-call-activity", async (req, res) => {
             not_interested: "closed",
             no_answer: undefined,
             callback_requested: "in_followup",
+            junk: "closed",
+            follow_up: "in_followup",
         };
 
         const stageMap = {
@@ -751,7 +891,9 @@ router.post("/log-call-activity", async (req, res) => {
             converted: "converted",
             not_interested: "lost",
             callback_requested: "contacted",
-            no_answer: "contacted"
+            no_answer: "contacted",
+            junk: "lost",
+            follow_up: "contacted",
         };
 
         // Define funnel hierarchy to prevent moving backward
@@ -777,6 +919,9 @@ router.post("/log-call-activity", async (req, res) => {
         }
 
         if (demoScheduleDate) updateFields.demo_date = demoScheduleDate;
+        
+        // NEW: Update last interaction time to push to bottom of list
+        updateFields.last_interaction_at = new Date();
 
         await AdvLead.findByIdAndUpdate(leadId, { $set: updateFields });
 
@@ -961,19 +1106,27 @@ router.get("/lead-call-history/:leadId", async (req, res) => {
 
 // GET: Get call activities for Manager/Leader (Record Page)
 router.get("/get-adv-record", async (req, res) => {
-    const { role, userId, page = 1, limit = 25 } = req.query;
+    let { role, userId, page = 1, limit = 25 } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
     try {
-        let query = {};
-        const roleNorm = (role || "").toLowerCase();
+        let roleNorm = (role || "").toLowerCase();
 
+        // Fallback: If role is missing but userId exists, look up user's designation
+        if (!roleNorm && userId) {
+            const user = await AdvTeamMember.findById(userId);
+            if (user && user.designation) {
+                roleNorm = user.designation.toLowerCase();
+            }
+        }
+
+        let query = {};
         if (roleNorm.includes("manager")) {
             query = { managerId: userId };
         } else if (roleNorm.includes("leader")) {
             query = { leaderId: userId };
         } else {
-            return res.status(403).json({ message: "Access denied" });
+            return res.status(403).json({ message: "Access denied: Role missing or user not authorized" });
         }
 
         const totalCount = await AdvCallActivity.countDocuments(query);

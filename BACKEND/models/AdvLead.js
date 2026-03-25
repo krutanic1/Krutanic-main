@@ -37,6 +37,8 @@ const AdvLeadSchema = new mongoose.Schema({
     uploaded_by: { type: String }, // User ID of the uploader
     uploaded_by_role: { type: String }, // Role of the uploader
     extra_fields: { type: Map, of: String },
+    last_interaction_at: { type: Date }, // Track last worked-on time
+    assigned_at: { type: Date }, // NEW: Track when the lead was last assigned
     created_at: { type: Date, default: Date.now }
 });
 
