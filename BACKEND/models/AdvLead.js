@@ -36,6 +36,7 @@ const AdvLeadSchema = new mongoose.Schema({
     lockTime: { type: Date },
     uploaded_by: { type: String }, // User ID of the uploader
     uploaded_by_role: { type: String }, // Role of the uploader
+    extra_fields: { type: Map, of: String },
     created_at: { type: Date, default: Date.now }
 });
 

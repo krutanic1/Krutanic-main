@@ -286,6 +286,7 @@ const AdvLeadManagement = () => {
                                         <th>Status Info</th>
                                         <th>Backend Status</th>
                                         <th>Score</th>
+                                        <th>Other Details</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -319,6 +320,13 @@ const AdvLeadManagement = () => {
                                                     }}>
                                                         {lead.score || 0}
                                                     </div>
+                                                </td>
+                                                <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                    {lead.extra_fields && Object.keys(lead.extra_fields).length > 0 ? (
+                                                        <span title={Object.entries(lead.extra_fields).map(([k, v]) => `${k}: ${v}`).join('\n')}>
+                                                            {Object.entries(lead.extra_fields).map(([k, v]) => `${k}: ${v}`).join(', ')}
+                                                        </span>
+                                                    ) : '—'}
                                                 </td>
                                             </tr>
                                         );
@@ -367,7 +375,7 @@ const AdvLeadManagement = () => {
                             </div>
 
                             <p style={{ fontSize: '14px', color: '#666', marginBottom: '15px' }}>
-                                Upload a CSV or Excel file with: <strong>full_name, email, phone_number, opted_domain</strong>
+                                Upload a CSV or Excel file. Standard columns like <strong>Name, Email, Phone, Domain</strong> are automatically recognized. Any extra columns will be preserved as "Other Details".
                             </p>
 
                             <div style={{ padding: '20px', border: '2px dashed #ddd', borderRadius: '8px', textAlign: 'center', marginBottom: '20px' }}>
@@ -381,9 +389,39 @@ const AdvLeadManagement = () => {
                             </div>
 
                             {importStats && (
-                                <div style={{ padding: '15px', background: '#f6ffed', border: '1px solid #b7eb8f', borderRadius: '6px', marginBottom: '20px' }}>
-                                    <p style={{ margin: 0, color: '#389e0d', fontWeight: 'bold' }}>Import Success!</p>
-                                    <p style={{ margin: '5px 0 0', fontSize: '13px' }}>Success: {importStats.successCount} | Failed: {importStats.failCount}</p>
+                                <div style={{ 
+                                    padding: '15px', 
+                                    background: importStats.errorCount > 0 ? '#fff1f0' : '#f6ffed', 
+                                    border: `1px solid ${importStats.errorCount > 0 ? '#ffa39e' : '#b7eb8f'}`, 
+                                    borderRadius: '6px', 
+                                    marginBottom: '20px' 
+                                }}>
+                                    <p style={{ margin: 0, color: importStats.errorCount > 0 ? '#cf1322' : '#389e0d', fontWeight: 'bold' }}>
+                                        Import Summary
+                                    </p>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '5px', marginTop: '10px' }}>
+                                        <div style={{ textAlign: 'center', padding: '5px', background: 'rgba(255,255,255,0.6)', borderRadius: '4px' }}>
+                                            <div style={{ fontSize: '10px', color: '#666' }}>Total</div>
+                                            <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{importStats.totalRows}</div>
+                                        </div>
+                                        <div style={{ textAlign: 'center', padding: '5px', background: 'rgba(255,255,255,0.6)', borderRadius: '4px' }}>
+                                            <div style={{ fontSize: '10px', color: '#2ecc71' }}>New</div>
+                                            <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2ecc71' }}>{importStats.successCount}</div>
+                                        </div>
+                                        <div style={{ textAlign: 'center', padding: '5px', background: 'rgba(255,255,255,0.6)', borderRadius: '4px' }}>
+                                            <div style={{ fontSize: '10px', color: '#fa8c16' }}>Skip (Dup)</div>
+                                            <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#fa8c16' }}>{importStats.duplicateCount}</div>
+                                        </div>
+                                        <div style={{ textAlign: 'center', padding: '5px', background: 'rgba(255,255,255,0.6)', borderRadius: '4px' }}>
+                                            <div style={{ fontSize: '10px', color: '#f5222d' }}>Error</div>
+                                            <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#f5222d' }}>{importStats.errorCount}</div>
+                                        </div>
+                                    </div>
+                                    {importStats.errorCount > 0 && (
+                                        <p style={{ margin: '8px 0 0', fontSize: '11px', color: '#cf1322' }}>
+                                            * Errors are usually due to missing Name or Phone columns.
+                                        </p>
+                                    )}
                                 </div>
                             )}
 

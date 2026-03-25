@@ -500,16 +500,36 @@ const AdvLeadsBook = () => {
                                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                                         {[
                                                             { label: 'Email', value: lead.email },
+                                                            { label: 'Phone', value: lead.phone_number },
+                                                            { label: 'Organization', value: lead.company_name },
                                                             { label: 'Background', value: lead.education_background },
                                                             { label: 'Current Status', value: lead.current_status },
                                                             { label: 'Upskilling Ready', value: lead.upskilling_ready },
                                                             { label: 'Start Timeframe', value: lead.start_timeframe },
+                                                            { label: 'Source', value: lead.source?.replace(/_/g, ' ') },
                                                         ].map((item, i) => (
-                                                            <div key={i}>
-                                                                <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '2px' }}>{item.label}</div>
-                                                                <div style={{ fontSize: '13px', fontWeight: '600', color: '#334155', wordBreak: 'break-all' }}>{item.value || 'N/A'}</div>
-                                                            </div>
+                                                            item.value && (
+                                                                <div key={i}>
+                                                                    <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '2px' }}>{item.label}</div>
+                                                                    <div style={{ fontSize: '13px', fontWeight: '600', color: '#334155', wordBreak: 'break-all' }}>{item.value}</div>
+                                                                </div>
+                                                            )
                                                         ))}
+
+                                                        {/* Extra Fields Header */}
+                                                        {lead.extra_fields && Object.keys(lead.extra_fields).length > 0 && (
+                                                            <div style={{ borderTop: '1px solid #F1F5F9', marginTop: '5px', paddingTop: '10px' }}>
+                                                                <div style={{ fontSize: '10px', color: '#94A3B8', fontWeight: 'bold', marginBottom: '10px' }}>ADDITIONAL INFO</div>
+                                                                <div style={{ display: 'grid', gap: '12px' }}>
+                                                                    {Object.entries(lead.extra_fields).map(([key, val]) => (
+                                                                        <div key={key}>
+                                                                            <div style={{ fontSize: '11px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '2px' }}>{key.replace(/_/g, ' ')}</div>
+                                                                            <div style={{ fontSize: '13px', fontWeight: '600', color: '#334155', wordBreak: 'break-all' }}>{val || '—'}</div>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
 

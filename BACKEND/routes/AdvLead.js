@@ -539,22 +539,79 @@ router.get("/timeline/:id", async (req, res) => {
     }
 });
 
+// Helper for flexible mapping
+const fieldMapping = {
+    full_name: ["name", "full_name", "fullname", "student_name", "customer_name", "lead_name", "contact_persona_name"],
+    email: ["email", "email_address", "e_mail", "mail", "email_id"],
+    phone_number: ["phone", "mobile", "contact", "phone_number", "mobile_number", "contact_number", "whatsapp_number"],
+    opted_domain: ["domain", "course", "interest", "opted_domain", "program", "applied_for"],
+    education_background: ["qualification", "education", "education_background", "degree"]
+};
+
+const normalizeHeader = (header) => {
+    if (!header) return "";
+    return header.toString().toLowerCase().trim().replace(/[\s\-_]+/g, '_');
+};
+
 // POST: Bulk Import Leads (CSV & Excel)
 router.post("/bulk-import", upload.single("file"), async (req, res) => {
     if (!req.file) return res.status(400).json({ message: "No file uploaded" });
 
     const { uploaderId, uploaderRole, uploaderName } = req.body;
 
-    const processLeads = async (leads) => {
+    const processLeads = async (rawLeads) => {
         try {
             let successCount = 0;
-            let failCount = 0;
+            let duplicateCount = 0;
+            let errorCount = 0;
+            let totalRows = rawLeads.length;
 
-            for (const leadData of leads) {
-                if (!leadData.phone_number && !leadData.email) continue; // Skip empty rows
+            console.log(`Starting process of ${totalRows} leads...`);
 
+            for (const row of rawLeads) {
                 try {
-                    const existingLead = await AdvLead.findOne({ phone_number: leadData.phone_number });
+                    // 1. Map fields flexibly
+                    let leadData = { extra_fields: {} };
+                    
+                    Object.keys(row).forEach(key => {
+                        const normalizedKey = normalizeHeader(key);
+                        let value = row[key];
+                        
+                        // Basic cleanup for values
+                        if (typeof value === 'string') value = value.trim();
+
+                        let mapped = false;
+                        for (const [standardField, synonyms] of Object.entries(fieldMapping)) {
+                            if (synonyms.includes(normalizedKey)) {
+                                leadData[standardField] = value;
+                                mapped = true;
+                                break;
+                            }
+                        }
+
+                        if (!mapped) {
+                            leadData.extra_fields[normalizedKey] = value;
+                        }
+                    });
+
+                    // Cast phone to string if it's a number
+                    if (leadData.phone_number) {
+                        leadData.phone_number = leadData.phone_number.toString();
+                    }
+
+                    // Basic validation: must have at least phone_number or full_name
+                    if (!leadData.phone_number && !leadData.full_name) {
+                        console.log("Skipping row: missing both phone and name", row);
+                        errorCount++;
+                        continue; 
+                    }
+
+                    // Check for existing lead by phone if available
+                    let existingLead = null;
+                    if (leadData.phone_number) {
+                        existingLead = await AdvLead.findOne({ phone_number: leadData.phone_number });
+                    }
+
                     if (!existingLead) {
                         const roleNorm = (uploaderRole || "").toLowerCase();
                         let status = "fresh";
@@ -592,15 +649,27 @@ router.post("/bulk-import", upload.single("file"), async (req, res) => {
                         await newLead.save();
                         successCount++;
                     } else {
-                        failCount++;
+                        duplicateCount++;
                     }
-                } catch (err) {
-                    failCount++;
+                } catch (rowErr) {
+                    console.error("Row processing error:", rowErr.message, "Row data:", row);
+                    errorCount++;
                 }
             }
+
             if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
-            res.status(200).json({ message: "Import completed", successCount, failCount });
+            
+            console.log(`Import finished. Success: ${successCount}, Duplicates: ${duplicateCount}, Errors: ${errorCount}`);
+            
+            res.status(200).json({ 
+                message: "Import completed", 
+                totalRows,
+                successCount, 
+                duplicateCount, 
+                errorCount 
+            });
         } catch (error) {
+            console.error("Process leads error:", error);
             if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
             res.status(500).json({ message: error.message });
         }
