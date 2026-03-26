@@ -27,6 +27,9 @@ const AdvTeamMyLeads = () => {
     const [isManualAssignMode, setIsManualAssignMode] = useState(false);
     const [selectedLeadIds, setSelectedLeadIds] = useState([]);
 
+    // Lead Details Modal State
+    const [selectedLead, setSelectedLead] = useState(null);
+
     // Read from localStorage (set on login)
     const userId = localStorage.getItem("advTeamId");
     const userName = localStorage.getItem("advTeamName");
@@ -387,14 +390,15 @@ const AdvTeamMyLeads = () => {
                                          <th>#</th>
                                          <th>Name</th>
                                          <th>Email</th>
-                                         <th>Phone</th>
-                                         <th>Domain</th>
-                                         <th>Education</th>
-                                         <th>Status</th>
-                                         <th>Assigned To</th>
-                                         <th>Assigned Date</th>
-                                         <th>Score</th>
-                                     </tr>
+                                          <th>Phone</th>
+                                          <th>Domain</th>
+                                          <th>Education</th>
+                                          <th>Assigned To</th>
+                                          <th>Other Details</th>
+                                          <th>Assigned Date</th>
+                                          <th>Score</th>
+                                          <th>Actions</th>
+                                      </tr>
                                 </thead>
                                 <tbody>
                                     {filteredLeads.map((lead, idx) => {
@@ -413,13 +417,19 @@ const AdvTeamMyLeads = () => {
                                                 <td>{lead.phone_number}</td>
                                                 <td>{lead.opted_domain || '—'}</td>
                                                 <td style={{ fontSize: '12px', color: '#555' }}>{lead.education_background || '—'}</td>
-                                                <td>
-                                                    <span style={{ padding: '3px 10px', borderRadius: '12px', fontSize: '11px', background: sc.bg, border: `1px solid ${sc.border}`, color: sc.color, whiteSpace: 'nowrap' }}>
-                                                        {lead.status?.replace(/_/g, ' ')}
-                                                    </span>
-                                                </td>
                                                 <td style={{ fontSize: '13px', color: '#555' }}>
                                                     {lead.owner_name || lead.current_owner_id?.name || '—'}
+                                                </td>
+                                                <td style={{ fontSize: '11px', color: '#666', minWidth: '180px', verticalAlign: 'top', padding: '10px 8px' }}>
+                                                    {lead.extra_fields && Object.keys(lead.extra_fields).length > 0 ? (
+                                                        <div style={{ wordBreak: 'break-word', lineHeight: '1.4', whiteSpace: 'normal' }}>
+                                                            {Object.entries(lead.extra_fields).map(([k, v]) => (
+                                                                <div key={k} style={{ marginBottom: '2px' }}>
+                                                                    <strong style={{ color: '#888' }}>{k}:</strong> {v}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    ) : '—'}
                                                 </td>
                                                 <td style={{ fontSize: '13px', color: '#555' }}>
                                                     {lead.assigned_at ? new Date(lead.assigned_at).toLocaleString('en-IN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : (lead.created_at ? new Date(lead.created_at).toLocaleString('en-IN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—')}
@@ -428,6 +438,14 @@ const AdvTeamMyLeads = () => {
                                                     <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '12px', background: (lead.score || 0) > 15 ? '#f6ffed' : '#f5f5f5', border: `1px solid ${(lead.score || 0) > 15 ? '#b7eb8f' : '#d9d9d9'}` }}>
                                                         {lead.score || 0}
                                                     </span>
+                                                </td>
+                                                <td>
+                                                    <button 
+                                                        onClick={() => setSelectedLead(lead)}
+                                                        style={{ padding: '4px 10px', background: '#1890ff', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
+                                                    >
+                                                        👁️ View
+                                                    </button>
                                                 </td>
                                             </tr>
                                         );
@@ -457,6 +475,99 @@ const AdvTeamMyLeads = () => {
                     </>
                 )}
             </div>
+
+            {/* ── Lead Details Modal ── */}
+            {selectedLead && (
+                <div 
+                    onClick={() => setSelectedLead(null)}
+                    style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
+                >
+                    <div 
+                        onClick={e => e.stopPropagation()}
+                        style={{ background: '#fff', borderRadius: '12px', width: '100%', maxWidth: '700px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 10px 40px rgba(0,0,0,0.2)' }}
+                    >
+                        <div style={{ padding: '20px 25px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, background: '#fff', zIndex: 1, borderRadius: '12px 12px 0 0' }}>
+                            <h2 style={{ margin: 0, color: '#1a3353' }}>Lead Full Details</h2>
+                            <button onClick={() => setSelectedLead(null)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#999' }}>&times;</button>
+                        </div>
+                        
+                        <div style={{ padding: '25px' }}>
+                            {/* Section: Basic Information */}
+                            <h3 style={{ borderLeft: '4px solid #1890ff', paddingLeft: '10px', marginBottom: '15px', fontSize: '16px', color: '#1890ff' }}>Primary Information</h3>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' }}>
+                                {[
+                                    { label: 'Full Name', value: selectedLead.full_name },
+                                    { label: 'Email Address', value: selectedLead.email },
+                                    { label: 'Phone Number', value: selectedLead.phone_number },
+                                    { label: 'Opted Domain', value: selectedLead.opted_domain },
+                                    { label: 'Lead Score', value: selectedLead.score || 0 },
+                                    { label: 'Current Status', value: selectedLead.status?.replace(/_/g, ' ') },
+                                    { label: 'Lead Source', value: selectedLead.source || 'Direct' },
+                                ].map((item, idx) => (
+                                    <div key={idx}>
+                                        <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', fontWeight: 'bold' }}>{item.label}</div>
+                                        <div style={{ fontSize: '14px', color: '#333', fontWeight: '500', marginTop: '4px' }}>{item.value || '—'}</div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Section: Academic & Professional */}
+                            <h3 style={{ borderLeft: '4px solid #52c41a', paddingLeft: '10px', marginBottom: '15px', fontSize: '16px', color: '#52c41a' }}>Academic & Professional</h3>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' }}>
+                                {[
+                                    { label: 'Education', value: selectedLead.education_background },
+                                    { label: 'Current Job/Status', value: selectedLead.current_status },
+                                    { label: 'Company Name', value: selectedLead.company_name },
+                                    { label: 'Year of Passing', value: selectedLead.year_of_passing },
+                                    { label: 'Upskilling Ready', value: selectedLead.upskilling_ready },
+                                    { label: 'Start Timeframe', value: selectedLead.start_timeframe },
+                                ].map((item, idx) => (
+                                    <div key={idx}>
+                                        <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', fontWeight: 'bold' }}>{item.label}</div>
+                                        <div style={{ fontSize: '14px', color: '#333', fontWeight: '500', marginTop: '4px' }}>{item.value || '—'}</div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Section: Extra/Custom Fields */}
+                            {selectedLead.extra_fields && Object.keys(selectedLead.extra_fields).length > 0 && (
+                                <>
+                                    <h3 style={{ borderLeft: '4px solid #faad14', paddingLeft: '10px', marginBottom: '15px', fontSize: '16px', color: '#faad14' }}>Additional Imported Data</h3>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px', padding: '15px', background: '#fcfcfc', borderRadius: '8px', border: '1px solid #f0f0f0' }}>
+                                        {Object.entries(selectedLead.extra_fields).map(([key, value], idx) => (
+                                            <div key={idx}>
+                                                <div style={{ fontSize: '11px', color: '#888', textTransform: 'capitalize', fontWeight: 'bold' }}>{key.replace(/_/g, ' ')}</div>
+                                                <div style={{ fontSize: '14px', color: '#333', fontWeight: '500', marginTop: '4px' }}>{String(value) || '—'}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </>
+                            )}
+
+                            {/* Section: System Metadata */}
+                            <h3 style={{ borderLeft: '4px solid #722ed1', paddingLeft: '10px', marginBottom: '15px', fontSize: '16px', color: '#722ed1' }}>System Metadata</h3>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+                                {[
+                                    { label: 'Assigned To', value: selectedLead.owner_name || selectedLead.current_owner_id?.name },
+                                    { label: 'Team', value: selectedLead.team_name || selectedLead.team_id?.team_name },
+                                    { label: 'Lead ID', value: selectedLead._id },
+                                    { label: 'Created At', value: selectedLead.created_at ? new Date(selectedLead.created_at).toLocaleString() : '—' },
+                                    { label: 'Last Interaction', value: selectedLead.last_interaction_at ? new Date(selectedLead.last_interaction_at).toLocaleString() : '—' },
+                                ].map((item, idx) => (
+                                    <div key={idx}>
+                                        <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', fontWeight: 'bold' }}>{item.label}</div>
+                                        <div style={{ fontSize: '14px', color: '#333', fontWeight: '500', marginTop: '4px', wordBreak: 'break-all' }}>{item.value || '—'}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        
+                        <div style={{ padding: '20px 25px', borderTop: '1px solid #eee', textAlign: 'right', background: '#f9f9f9', borderRadius: '0 0 12px 12px' }}>
+                            <button onClick={() => setSelectedLead(null)} style={{ padding: '10px 25px', background: '#1890ff', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>Close Details</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
