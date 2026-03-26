@@ -20,6 +20,7 @@ import ScrollToTop from "./Components/ScrollToTop";
 import Advance from "./page/Advance";
 import Mentorship from "./page/Mentorship";
 import DataScience from "./page/AdvanceCourse/DataScience";
+import DataAnalytics from "./page/AdvanceCourse/DataAnalytics";
 import DigitalMarket from "./page/AdvanceCourse/DigitalMarket";
 import MernStack from "./page/AdvanceCourse/MernStack";
 import Investmentbanking from "./page/AdvanceCourse/Investmentbanking";
@@ -310,6 +311,7 @@ const AppContent = () => {
     "/advance",
     "/mentorship",
     "/datascience",
+    "/dataanalytics",
     "/digitalmarket",
     "/performancemarket",
     "/mernstack",
@@ -507,6 +509,7 @@ const AppContent = () => {
         <Route path="/Advance" element={<Advance />} />
         <Route path="/Mentorship" element={<Mentorship />} />
         <Route path="/DataScience" element={<DataScience />} />
+        <Route path="/DataAnalytics" element={<DataAnalytics />} />
         <Route path="/DigitalMarket" element={<DigitalMarket />} />
         <Route path="/Performancemarket" element={<Performancemarket />} />
         <Route path="/MernStack" element={<MernStack />} />

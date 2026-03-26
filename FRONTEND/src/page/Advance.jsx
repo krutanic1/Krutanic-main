@@ -22,6 +22,7 @@ import img from "../assets/developers/hacker.png"
 
 import faqimg from '../assets/Advanced Course Images/Digital Markting/questionmark.jpg'
 import datascience from '../assets/Advanced Course Images/Data science/DS 3.jpg'
+import dataAnalytics from '../assets/Advanced Course Images/Data science/DS 4.jpg'
 import digital from '../assets/Advanced Course Images/Digital Markting/DM 1.jpg'
 import Investmentbanking from '../assets/Advanced Course Images/Investment banking/IB 6.jpg'
 import MERN from '../assets/Advanced Course Images/Mern Stack Development/MSD 1.jpg'
@@ -74,6 +75,9 @@ const Advance = () => {
 
   const handleViewCourse1 = () => {
     navigate("/DataScience");
+  };
+  const handleViewCourse9 = () => {
+    navigate("/DataAnalytics");
   };
   const handleViewCourse2 = () => {
     navigate("/DigitalMarket");
@@ -361,6 +365,29 @@ const Advance = () => {
                 </p>
                 <button
                   onClick={handleViewCourse1}
+                  className="bg-[#000] shadow-sm shadow-slate-50 border-gray-800 text-[#eee] px-4 py-2 rounded-md hover:bg-[#f15b29] hover:text-white ease-linear duration-700"
+                >
+                  Explore Details
+                </button>
+              </div>
+            </div>
+            <div className="bg-[#080808] shadow-sm shadow-slate-50 rounded-xl overflow-hidden flex flex-col items-center">
+              <div className="overflow-hidden  lg:h-[300px]">
+                <img
+                  src={dataAnalytics}
+                  alt="Data Analytics"
+                  className="hover:scale-110  ease-linear duration-700"
+                />
+              </div>
+              <div className="p-2">
+                <h3 className="text-xl font-semibold text-white mb-2">
+                  Data Analytics
+                </h3>
+                <p className="text-sm -tracking-tighter text-white mb-4">
+                  Turning raw data into actionable insights through visualization and business intelligence.
+                </p>
+                <button
+                  onClick={handleViewCourse9}
                   className="bg-[#000] shadow-sm shadow-slate-50 border-gray-800 text-[#eee] px-4 py-2 rounded-md hover:bg-[#f15b29] hover:text-white ease-linear duration-700"
                 >
                   Explore Details
