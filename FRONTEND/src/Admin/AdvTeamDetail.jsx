@@ -17,8 +17,8 @@ const AdvTeamDetail = () => {
 
   const fetchAllData = async () => {
     try {
-      // Fetch all advance users
-      const response = await axios.get(`${API}/adv-admin/users`, { withCredentials: true });
+      // Fetch all advance users (with team details)
+      const response = await axios.get(`${API}/api/admin/agents`, { withCredentials: true });
       const users = response.data || [];
       
       // Filter to show only active agents
@@ -33,7 +33,7 @@ const AdvTeamDetail = () => {
   const fetchTeamNames = async () => {
     try {
       // Fetch all teams from AdvTeamStructure
-      const response = await axios.get(`${API}/adv-team/get-all-teams`, { withCredentials: true });
+      const response = await axios.get(`${API}/api/adv-teams/get-all-teams`, { withCredentials: true });
       const teams = response.data || [];
       setTeamNames(teams);
     } catch (error) {
@@ -160,9 +160,9 @@ const AdvTeamDetail = () => {
 
   const filteredData = selectedTeam
     ? allData.filter((agent) => {
-        const teamId = agent.team_id?._id || agent.team_id;
-        const selectedTeamId = teamNames.find(t => t.team_name === selectedTeam)?._id;
-        return teamId === selectedTeamId;
+        const teamId = String(agent.team_id?._id || agent.team_id || "");
+        const selectedTeamId = String(teamNames.find((t) => t.team_name === selectedTeam)?._id || "");
+        return teamId && selectedTeamId && teamId === selectedTeamId;
       })
     : allData;
 
@@ -228,17 +228,16 @@ const AdvTeamDetail = () => {
       }));
   };
 
-  const getTop3ForRoles = (roles) => {
-    const roleSet = new Set(roles.map((role) => role.toLowerCase()));
+  const getTop3ByRoles = (roles) => {
+    const normalizedRoles = new Set(roles.map((role) => role.toLowerCase()));
 
     return allData
-      .filter((agent) => roleSet.has((agent.role || "").toLowerCase()))
+      .filter((agent) => normalizedRoles.has((agent.role || "").toLowerCase()))
       .slice(0, 3)
       .map((agent) => ({
         name: agent.name,
         email: agent.email,
         team: agent.team_id?.team_name || "N/A",
-        status: agent.status || "Active",
       }));
   };
 
@@ -386,34 +385,51 @@ const AdvTeamDetail = () => {
       )}
 
       <div className="coursetable">
-        <h2>Advance Team Details</h2>
-        <h2>{selectedTeam}</h2>
-        <div className="mb-2">
-          <div className="flex justify-between items-center gap-5 flex-wrap">
+        <div className="mb-5">
+          <div className="flex justify-between items-start gap-4 flex-wrap">
             <div>
-              <strong>Total Agents: </strong>
-              {filteredData.length}
+              <h2 className="mb-1">Advance Team Details</h2>
+              <p className="text-sm text-slate-600">
+                Team Performance Snapshot
+                {selectedTeam ? ` - ${selectedTeam}` : " - All Teams"}
+              </p>
             </div>
+
+            <select
+              className="min-w-[220px] rounded-md border border-slate-300 px-3 py-2 bg-white"
+              value={selectedTeam}
+              onChange={(e) => setSelectedTeam(e.target.value)}
+            >
+              <option value="">All Teams</option>
+              {teamNames.map((team, index) => (
+                <option key={index} value={team.team_name}>
+                  {team.team_name}
+                </option>
+              ))}
+            </select>
           </div>
 
-          <select
-            value={selectedTeam}
-            onChange={(e) => setSelectedTeam(e.target.value)}
-          >
-            <option value="">All Teams</option>
-            {teamNames.map((team, index) => (
-              <option key={index} value={team.team_name}>
-                {team.team_name}
-              </option>
-            ))}
-          </select>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+            <div className="rounded-md border bg-white p-3">
+              <p className="text-xs uppercase text-slate-500">Total Agents</p>
+              <p className="text-2xl font-semibold text-slate-900">{filteredData.length}</p>
+            </div>
+            <div className="rounded-md border bg-white p-3">
+              <p className="text-xs uppercase text-slate-500">Active Teams</p>
+              <p className="text-2xl font-semibold text-slate-900">{teamNames.length}</p>
+            </div>
+            <div className="rounded-md border bg-white p-3">
+              <p className="text-xs uppercase text-slate-500">Top Managers Shown</p>
+              <p className="text-2xl font-semibold text-slate-900">{Math.min(getTop3Managers().length, 3)}</p>
+            </div>
+          </div>
         </div>
 
-        {/* Top 3 Teams */}
-        <div className="flex gap-4 my-6 flex-wrap">
-          <div className="flex-1 min-w-[300px]">
+        <h3 className="text-base font-semibold text-slate-700 mb-2">Leaderboard</h3>
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 my-6">
+          <div className="border rounded-md p-3 bg-white overflow-x-auto">
             <h3 className="text-lg font-bold mb-2">🏆 Top 3 Teams</h3>
-            <table className="bdarevenuetable" border="1">
+            <table className="bdarevenuetable w-full" border="1">
               <thead>
                 <tr>
                   <th>Rank</th>
@@ -434,9 +450,9 @@ const AdvTeamDetail = () => {
           </div>
 
           {/* Top 3 Managers */}
-          <div className="flex-1 min-w-[300px]">
+          <div className="border rounded-md p-3 bg-white overflow-x-auto">
             <h3 className="text-lg font-bold mb-2">⭐ Top 3 Managers</h3>
-            <table className="bdarevenuetable" border="1">
+            <table className="bdarevenuetable w-full" border="1">
               <thead>
                 <tr>
                   <th>Rank</th>
@@ -465,64 +481,67 @@ const AdvTeamDetail = () => {
           </div>
         </div>
 
-        {/* Top 3 for Specific Roles */}
-        <div className="my-6">
-          <h3 className="text-lg font-bold mb-4">👥 Top 3 for Each Role</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              {
-                title: "ADV Manager",
-                roles: ["manager", "adv_manager"],
-              },
-              {
-                title: "ADV Leader",
-                roles: ["leader", "adv_leader"],
-              },
-              {
-                title: "Inside Sales Specialist",
-                roles: ["inside_sales_specialist", "inside sales specialist"],
-              },
-              {
-                title: "SR Inside Sales Specialist",
-                roles: ["sr_inside_sales_specialist", "sr inside sales specialist"],
-              },
-            ].map((roleConfig) => {
-              const topAgents = getTop3ForRoles(roleConfig.roles);
+        <h3 className="text-base font-semibold text-slate-700 mb-2">Role Highlights</h3>
+        <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4 my-6">
+          {[
+            {
+              title: "Top 3 Leaders",
+              icon: "👑",
+              roles: ["leader", "adv_leader"],
+              emptyLabel: "No Leaders",
+            },
+            {
+              title: "Top 3 Inside Sales Specialists",
+              icon: "📞",
+              roles: ["inside_sales_specialist", "inside sales specialist"],
+              emptyLabel: "No Inside Sales Specialists",
+            },
+            {
+              title: "Top 3 SR Inside Sales Specialists",
+              icon: "⭐",
+              roles: ["sr_inside_sales_specialist", "sr inside sales specialist"],
+              emptyLabel: "No SR Specialists",
+            },
+          ].map((roleConfig) => {
+            const roleData = getTop3ByRoles(roleConfig.roles);
 
-              return (
-                <div key={roleConfig.title} className="border p-4 rounded">
-                  <h4 className="font-bold mb-2">{roleConfig.title}</h4>
-                  <table className="bdarevenuetable w-full border-collapse text-sm" border="1">
+            return (
+              <div key={roleConfig.title} className="border rounded-md p-3 bg-white overflow-x-auto">
+                <h3 className="text-lg font-bold mb-2">{roleConfig.icon} {roleConfig.title}</h3>
+                <table className="bdarevenuetable w-full" border="1">
                   <thead>
                     <tr>
                       <th>Rank</th>
                       <th>Name</th>
+                      <th>Email</th>
                       <th>Team</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {topAgents.length > 0 ? (
-                      topAgents.map((agent, index) => (
+                    {roleData.length > 0 ? (
+                      roleData.map((agent, index) => (
                         <tr key={index}>
                           <td>#{index + 1}</td>
                           <td>{agent.name}</td>
+                          <td>{agent.email}</td>
                           <td>{agent.team}</td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="3">No Data</td>
+                        <td colSpan="4">{roleConfig.emptyLabel}</td>
                       </tr>
                     )}
                   </tbody>
                 </table>
-                </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
         </div>
 
-        <table border="1">
+        <h3 className="text-base font-semibold text-slate-700 mb-2">All Agents</h3>
+        <div className="overflow-x-auto rounded-md border">
+        <table className="w-full" border="1">
           <thead>
             <tr>
               <th>Sl</th>
@@ -549,7 +568,10 @@ const AdvTeamDetail = () => {
                 <td>{agent.team_id?.team_name || "N/A"}</td>
                 <td>{agent.status || "Active"}</td>
                 <td>
-                  <button onClick={() => selectedAgentDetail(agent)}>
+                  <button
+                    className="px-3 py-1 rounded border border-slate-300 bg-white hover:bg-slate-50"
+                    onClick={() => selectedAgentDetail(agent)}
+                  >
                     View Details
                   </button>
                 </td>
@@ -557,6 +579,7 @@ const AdvTeamDetail = () => {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
     </>
