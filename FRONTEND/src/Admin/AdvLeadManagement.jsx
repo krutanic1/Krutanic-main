@@ -25,6 +25,10 @@ const AdvLeadManagement = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
 
+    // Manual Assign State
+    const [isManualAssignMode, setIsManualAssignMode] = useState(false);
+    const [selectedLeadIds, setSelectedLeadIds] = useState([]);
+
     const fetchFreshCount = async () => {
         try {
             const res = await axios.get(`${API}/api/adv-leads/fresh-leads-count`);
@@ -60,8 +64,8 @@ const AdvLeadManagement = () => {
         try {
             const res = await axios.get(`${API}/getadvteam`);
             const data = res.data || [];
-            // Filter both Managers and Leaders
-            setManagers(data.filter(m => (m.designation === "ADV Manager" || m.designation === "ADV Leader") && m.status === "Active"));
+            // For Admin, show all active team members (Managers, Leaders, Specialists) as potential assignees
+            setManagers(data.filter(m => m.status === "Active"));
         } catch (err) {
             console.error("Failed to fetch assignees");
         }
@@ -104,6 +108,51 @@ const AdvLeadManagement = () => {
             toast.error(err.response?.data?.message || "Assignment failed");
         } finally {
             setAssigning(false);
+        }
+    };
+
+    const handleManualAssign = async () => {
+        if (selectedLeadIds.length === 0) {
+            toast.error("Please select at least one lead");
+            return;
+        }
+        if (!selectedAssignee) {
+            toast.error(`Please select a person below`);
+            return;
+        }
+
+        setAssigning(true);
+        try {
+            const res = await axios.post(`${API}/api/adv-leads/manual-bulk-assign`, {
+                leadIds: selectedLeadIds,
+                assigneeId: selectedAssignee._id,
+                assigneeName: selectedAssignee.fullname,
+                assigneeRole: selectedAssignee.designation
+            });
+            toast.success(res.data.message);
+            setIsManualAssignMode(false);
+            setSelectedLeadIds([]);
+            setSelectedAssignee(null);
+            fetchLeads(currentPage);
+            fetchFreshCount();
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Manual assignment failed");
+        } finally {
+            setAssigning(false);
+        }
+    };
+
+    const toggleLeadSelection = (leadId) => {
+        setSelectedLeadIds(prev =>
+            prev.includes(leadId) ? prev.filter(id => id !== leadId) : [...prev, leadId]
+        );
+    };
+
+    const toggleAllSelection = () => {
+        if (selectedLeadIds.length === filteredLeads.length) {
+            setSelectedLeadIds([]);
+        } else {
+            setSelectedLeadIds(filteredLeads.map(l => l._id));
         }
     };
 
@@ -243,21 +292,48 @@ const AdvLeadManagement = () => {
                 {/* ── Header Row ── */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
                     <h1>ADV Lead Management</h1>
-                    <button
-                        onClick={() => setShowAssignPanel(true)}
-                        style={{
-                            padding: '10px 22px', background: '#1890ff', color: '#fff',
-                            border: 'none', borderRadius: '8px', fontSize: '15px',
-                            fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'
-                        }}
-                    >
-                        📋 Assign Leads
-                        {freshCount > 0 && (
-                            <span style={{ background: '#fff', color: '#1890ff', borderRadius: '12px', padding: '1px 8px', fontSize: '13px', fontWeight: 'bold' }}>
-                                {freshCount} fresh
-                            </span>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        {!isManualAssignMode ? (
+                            <>
+                                <button
+                                    onClick={() => { setIsManualAssignMode(true); setSelectedLeadIds([]); }}
+                                    style={{
+                                        padding: '10px 22px', background: '#fff', color: '#1890ff',
+                                        border: '1px solid #1890ff', borderRadius: '8px', fontSize: '15px',
+                                        fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'
+                                    }}
+                                >
+                                    🖱️ Manual Assign
+                                </button>
+                                <button
+                                    onClick={() => setShowAssignPanel(true)}
+                                    style={{
+                                        padding: '10px 22px', background: '#1890ff', color: '#fff',
+                                        border: 'none', borderRadius: '8px', fontSize: '15px',
+                                        fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'
+                                    }}
+                                >
+                                    📋 Bulk Assign (Count)
+                                    {freshCount > 0 && (
+                                        <span style={{ background: '#fff', color: '#1890ff', borderRadius: '12px', padding: '1px 8px', fontSize: '13px', fontWeight: 'bold' }}>
+                                            {freshCount} fresh
+                                        </span>
+                                    )}
+                                </button>
+                            </>
+                        ) : (
+                            <button
+                                onClick={() => { setIsManualAssignMode(false); setSelectedLeadIds([]); }}
+                                style={{
+                                    padding: '10px 22px', background: '#ff4d4f', color: '#fff',
+                                    border: 'none', borderRadius: '8px', fontSize: '15px',
+                                    fontWeight: 'bold', cursor: 'pointer'
+                                }}
+                            >
+                                ❌ Cancel Manual Mode
+                            </button>
                         )}
-                    </button>
+                    </div>
                 </div>
 
                 {/* ── Stats Row ── */}
@@ -274,6 +350,88 @@ const AdvLeadManagement = () => {
                         </div>
                     ))}
                 </div>
+
+                {/* ── Manual Assign Bar (Full Width) ── */}
+                {isManualAssignMode && (
+                    <div style={{ 
+                        padding: '16px 24px', 
+                        background: '#f0f7ff', 
+                        border: '1px solid #1890ff', 
+                        borderRadius: '12px', 
+                        marginBottom: '20px', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'space-between',
+                        boxShadow: '0 4px 12px rgba(24, 144, 255, 0.1)',
+                        animation: 'fadeIn 0.3s ease'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                            <div style={{ 
+                                background: '#1890ff', 
+                                color: '#fff', 
+                                padding: '8px 16px', 
+                                borderRadius: '8px', 
+                                textAlign: 'center',
+                                minWidth: '100px'
+                            }}>
+                                <div style={{ fontSize: '18px', fontWeight: 'bold' }}>{selectedLeadIds.length}</div>
+                                <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Selected</div>
+                            </div>
+                            <div>
+                                <h3 style={{ margin: 0, fontSize: '16px', color: '#003a8c' }}>Manual Assignment Mode</h3>
+                                <p style={{ margin: 0, fontSize: '12px', color: '#40a9ff' }}>Select leads below and choose an assignee</p>
+                            </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, maxWidth: '600px', marginLeft: '40px' }}>
+                            <select
+                                value={selectedAssignee?._id || ""}
+                                onChange={e => {
+                                    const m = managers.find(m => m._id === e.target.value);
+                                    setSelectedAssignee(m || null);
+                                }}
+                                style={{ 
+                                    flex: 1, 
+                                    padding: '10px 15px', 
+                                    border: '1px solid #d9d9d9', 
+                                    borderRadius: '8px', 
+                                    fontSize: '14px',
+                                    outline: 'none',
+                                    transition: 'border-color 0.3s'
+                                }}
+                            >
+                                <option value="">-- Select Assignee (Manager / Leader / Specialist) --</option>
+                                {managers.map(m => (
+                                    <option key={m._id} value={m._id}>
+                                        {m.fullname} ({m.designation} - {m.team || 'No Team'})
+                                    </option>
+                                ))}
+                            </select>
+                            
+                            <button
+                                onClick={handleManualAssign}
+                                disabled={assigning || selectedLeadIds.length === 0 || !selectedAssignee}
+                                style={{
+                                    padding: '10px 28px',
+                                    background: (selectedLeadIds.length === 0 || !selectedAssignee) ? '#f5f5f5' : '#1890ff',
+                                    color: (selectedLeadIds.length === 0 || !selectedAssignee) ? '#bfbfbf' : '#fff', 
+                                    border: 'none', 
+                                    borderRadius: '8px', 
+                                    fontWeight: 'bold',
+                                    fontSize: '15px',
+                                    cursor: (selectedLeadIds.length === 0 || !selectedAssignee) ? 'not-allowed' : 'pointer',
+                                    transition: 'all 0.3s',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    boxShadow: (selectedLeadIds.length === 0 || !selectedAssignee) ? 'none' : '0 2px 8px rgba(24, 144, 255, 0.3)'
+                                }}
+                            >
+                                {assigning ? "Processing..." : <>✅ Confirm Assignment</>}
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 {/* ── Filters ── */}
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '15px', flexWrap: 'wrap' }}>
@@ -313,6 +471,15 @@ const AdvLeadManagement = () => {
                             <table>
                                 <thead>
                                     <tr>
+                                        {isManualAssignMode && (
+                                            <th style={{ width: '40px' }}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedLeadIds.length === filteredLeads.length && filteredLeads.length > 0}
+                                                    onChange={toggleAllSelection}
+                                                />
+                                            </th>
+                                        )}
                                         <th>#</th>
                                         <th>Name</th>
                                         <th>Email</th>
@@ -328,8 +495,18 @@ const AdvLeadManagement = () => {
                                 <tbody>
                                     {filteredLeads.map((lead, idx) => {
                                         const sc = statusColor(lead.status);
+                                        const isSelected = selectedLeadIds.includes(lead._id);
                                         return (
-                                            <tr key={lead._id}>
+                                            <tr key={lead._id} style={{ background: isSelected ? '#f6ffed' : 'transparent' }}>
+                                                {isManualAssignMode && (
+                                                    <td>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={isSelected}
+                                                            onChange={() => toggleLeadSelection(lead._id)}
+                                                        />
+                                                    </td>
+                                                )}
                                                 <td style={{ color: '#888', fontSize: '12px' }}>{(currentPage - 1) * limit + idx + 1}</td>
                                                 <td><strong>{lead.full_name}</strong></td>
                                                 <td style={{ fontSize: '12px', color: '#666' }}>{lead.email}</td>
