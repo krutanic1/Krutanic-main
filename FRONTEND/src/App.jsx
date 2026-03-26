@@ -569,7 +569,7 @@ const AppContent = () => {
           isAuthenticatedAdmin() ? <AdvLeadManagement /> : <Navigate to="/AdminLogin" />
         } />
         <Route path="/advteam/lead-management" element={
-          isAuthenticatedAdvTeam() ? <AdvTeamLeadManagement /> : <Navigate to="/AdminLogin" />
+          isAuthenticatedAdvTeam() ? <AdvTeamLeadManagement /> : <Navigate to="/AdvTeamLogin" />
         } />
         <Route path="/AdminAnalytics" element={isAuthenticatedAdmin() ? (<AdminAnalytics />) : (<Navigate to="/AdminLogin" />)} />
 
