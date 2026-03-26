@@ -285,6 +285,7 @@ const AdvLeadManagement = () => {
                                         <th>Education</th>
                                         <th>Status Info</th>
                                         <th>Backend Status</th>
+                                        <th>ASSISTED TO</th>
                                         <th>Score</th>
                                         <th>Other Details</th>
                                     </tr>
@@ -310,6 +311,9 @@ const AdvLeadManagement = () => {
                                                         {lead.status.replace(/_/g, ' ')}
                                                     </span>
                                                 </td>
+                                                <td style={{ fontSize: '13px' }}>
+                                                    {lead.owner_name || '—'}
+                                                </td>
                                                 <td>
                                                     <div style={{
                                                         padding: '4px 8px', borderRadius: '6px', fontSize: '12px',
@@ -321,11 +325,15 @@ const AdvLeadManagement = () => {
                                                         {lead.score || 0}
                                                     </div>
                                                 </td>
-                                                <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                <td style={{ fontSize: '11px', color: '#666', minWidth: '180px', verticalAlign: 'top', padding: '10px 8px' }}>
                                                     {lead.extra_fields && Object.keys(lead.extra_fields).length > 0 ? (
-                                                        <span title={Object.entries(lead.extra_fields).map(([k, v]) => `${k}: ${v}`).join('\n')}>
-                                                            {Object.entries(lead.extra_fields).map(([k, v]) => `${k}: ${v}`).join(', ')}
-                                                        </span>
+                                                        <div style={{ wordBreak: 'break-word', lineHeight: '1.4', whiteSpace: 'normal' }}>
+                                                            {Object.entries(lead.extra_fields).map(([k, v]) => (
+                                                                <div key={k} style={{ marginBottom: '2px' }}>
+                                                                    <strong style={{ color: '#888' }}>{k}:</strong> {v}
+                                                                </div>
+                                                            ))}
+                                                        </div>
                                                     ) : '—'}
                                                 </td>
                                             </tr>
