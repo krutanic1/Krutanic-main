@@ -11,18 +11,74 @@ const AdvTeamDetail = () => {
   const [dailyRevenue, setDailyRevenue] = useState([]);
   const [monthlyRevenue, setMonthlyRevenue] = useState([]);
   const [teamNames, setTeamNames] = useState([]);
+  const [advTeamEmailMap, setAdvTeamEmailMap] = useState({});
 
   const today = new Date();
   const currentMonth = today.toISOString().slice(0, 7);
 
+  const normalizeRole = (role = "") => {
+    const value = String(role).trim().toLowerCase();
+    if (value === "adv manager") return "manager";
+    if (value === "adv leader") return "leader";
+    if (value === "sr inside sales specialist") return "sr_inside_sales_specialist";
+    if (value === "inside sales specialist") return "inside_sales_specialist";
+    return value;
+  };
+
   const fetchAllData = async () => {
     try {
-      // Fetch all advance users (with team details)
-      const response = await axios.get(`${API}/api/admin/agents`, { withCredentials: true });
-      const users = response.data || [];
-      
-      // Filter to show only active agents
-      const activeAgents = users.filter(user => user.status !== "Inactive");
+      const [crmRes, legacyRes] = await Promise.allSettled([
+        axios.get(`${API}/api/admin/agents`, { withCredentials: true }),
+        axios.get(`${API}/getadvteam`, { withCredentials: true }),
+      ]);
+
+      const crmUsers = crmRes.status === "fulfilled" && Array.isArray(crmRes.value.data)
+        ? crmRes.value.data
+        : [];
+      const legacyUsers = legacyRes.status === "fulfilled" && Array.isArray(legacyRes.value.data)
+        ? legacyRes.value.data
+        : [];
+
+      const legacyByEmail = {};
+      legacyUsers.forEach((user) => {
+        const emailKey = String(user.email || "").toLowerCase();
+        if (!emailKey) return;
+        legacyByEmail[emailKey] = user;
+      });
+      setAdvTeamEmailMap(legacyByEmail);
+
+      let normalizedUsers = [];
+
+      if (crmUsers.length > 0) {
+        normalizedUsers = crmUsers.map((user) => {
+          const emailKey = String(user.email || "").toLowerCase();
+          const legacyMatch = legacyByEmail[emailKey];
+
+          return {
+            ...user,
+            name: user.name || user.fullname || legacyMatch?.fullname || "",
+            email: user.email || legacyMatch?.email || "",
+            role: normalizeRole(user.role || user.designation || legacyMatch?.designation),
+            status: user.status || legacyMatch?.status || "Active",
+            // Force legacy team fallback when CRM team is missing
+            team: user.team || legacyMatch?.team || "",
+            teams: user.teams || legacyMatch?.teams || [],
+          };
+        });
+      } else {
+        normalizedUsers = legacyUsers.map((user) => ({
+          _id: user._id,
+          name: user.fullname || user.name || "",
+          email: user.email || "",
+          role: normalizeRole(user.designation || user.role),
+          status: user.status || "Active",
+          team: user.team || "",
+          teams: user.teams || [],
+          team_id: null,
+        }));
+      }
+
+      const activeAgents = normalizedUsers.filter((user) => user.status !== "Inactive");
       setAllData(activeAgents);
       console.log("Active Agents:", activeAgents);
     } catch (error) {
@@ -32,10 +88,25 @@ const AdvTeamDetail = () => {
 
   const fetchTeamNames = async () => {
     try {
-      // Fetch all teams from AdvTeamStructure
-      const response = await axios.get(`${API}/api/adv-teams/get-all-teams`, { withCredentials: true });
-      const teams = response.data || [];
-      setTeamNames(teams);
+      const [newTeamsRes, legacyTeamNamesRes] = await Promise.allSettled([
+        axios.get(`${API}/api/adv-teams/get-all-teams`, { withCredentials: true }),
+        axios.get(`${API}/getadvteamname`, { withCredentials: true }),
+      ]);
+
+      const newTeams = newTeamsRes.status === "fulfilled" && Array.isArray(newTeamsRes.value.data)
+        ? newTeamsRes.value.data
+        : [];
+      const legacyNames = legacyTeamNamesRes.status === "fulfilled" && Array.isArray(legacyTeamNamesRes.value.data)
+        ? legacyTeamNamesRes.value.data
+        : [];
+
+      const mergedTeamNames = [
+        ...newTeams.map((team) => team.team_name || team.team).filter(Boolean),
+        ...legacyNames.map((team) => team.teamname || team.team_name || team.team).filter(Boolean),
+      ];
+
+      const uniqueTeamObjects = Array.from(new Set(mergedTeamNames)).map((name) => ({ team_name: name }));
+      setTeamNames(uniqueTeamObjects);
     } catch (error) {
       console.error("Error fetching team names:", error);
     }
@@ -158,11 +229,49 @@ const AdvTeamDetail = () => {
     setDetailVisible(false);
   };
 
+  const getTeamNameById = (teamId) => {
+    if (!teamId) return "";
+    const match = teamNames.find((team) => String(team._id || "") === String(teamId));
+    return match?.team_name || match?.team || "";
+  };
+
+  const getAgentTeamName = (agent) => {
+    if (!agent) return "N/A";
+
+    if (agent.team_id?.team_name) return agent.team_id.team_name;
+
+    const teamId = agent.team_id?._id || agent.team_id;
+    if (teamId) {
+      const mappedName = getTeamNameById(teamId);
+      if (mappedName) return mappedName;
+    }
+
+    if (agent.team) return agent.team;
+    if (agent.team_name) return agent.team_name;
+    if (Array.isArray(agent.teams) && agent.teams.length > 0) return agent.teams.join(", ");
+
+    const emailKey = String(agent.email || "").toLowerCase();
+    const legacyMatch = advTeamEmailMap[emailKey];
+    if (legacyMatch?.team) return legacyMatch.team;
+    if (Array.isArray(legacyMatch?.teams) && legacyMatch.teams.length > 0) {
+      return legacyMatch.teams.join(", ");
+    }
+
+    return "N/A";
+  };
+
+  const availableTeamOptions = Array.from(
+    new Set(
+      teamNames
+        .map((team) => team.team_name || team.team)
+        .concat(allData.map((agent) => getAgentTeamName(agent)))
+        .filter((name) => name && name !== "N/A")
+    )
+  );
+
   const filteredData = selectedTeam
     ? allData.filter((agent) => {
-        const teamId = String(agent.team_id?._id || agent.team_id || "");
-        const selectedTeamId = String(teamNames.find((t) => t.team_name === selectedTeam)?._id || "");
-        return teamId && selectedTeamId && teamId === selectedTeamId;
+        return String(getAgentTeamName(agent)).split(",").map((t) => t.trim()).includes(selectedTeam);
       })
     : allData;
 
@@ -198,16 +307,24 @@ const AdvTeamDetail = () => {
     const teamRevenue = {};
 
     allData.forEach((agent) => {
-      const teamName = agent.team_id?.team_name || "Unknown";
-      if (!teamRevenue[teamName]) {
-        teamRevenue[teamName] = {
-          team: teamName,
-          totalRevenue: 0,
-          creditedRevenue: 0,
-          agentCount: 0,
-        };
-      }
-      teamRevenue[teamName].agentCount++;
+      const teamList = String(getAgentTeamName(agent))
+        .split(",")
+        .map((name) => name.trim())
+        .filter(Boolean);
+
+      if (teamList.length === 0) teamList.push("N/A");
+
+      teamList.forEach((teamName) => {
+        if (!teamRevenue[teamName]) {
+          teamRevenue[teamName] = {
+            team: teamName,
+            totalRevenue: 0,
+            creditedRevenue: 0,
+            agentCount: 0,
+          };
+        }
+        teamRevenue[teamName].agentCount++;
+      });
     });
 
     return Object.values(teamRevenue)
@@ -223,7 +340,7 @@ const AdvTeamDetail = () => {
         name: agent.name,
         email: agent.email,
         role: agent.role,
-        team: agent.team_id?.team_name || "N/A",
+        team: getAgentTeamName(agent),
         status: agent.status || "Active",
       }));
   };
@@ -237,7 +354,7 @@ const AdvTeamDetail = () => {
       .map((agent) => ({
         name: agent.name,
         email: agent.email,
-        team: agent.team_id?.team_name || "N/A",
+        team: getAgentTeamName(agent),
       }));
   };
 
@@ -401,9 +518,9 @@ const AdvTeamDetail = () => {
               onChange={(e) => setSelectedTeam(e.target.value)}
             >
               <option value="">All Teams</option>
-              {teamNames.map((team, index) => (
-                <option key={index} value={team.team_name}>
-                  {team.team_name}
+              {availableTeamOptions.map((teamName, index) => (
+                <option key={index} value={teamName}>
+                  {teamName}
                 </option>
               ))}
             </select>
@@ -565,7 +682,7 @@ const AdvTeamDetail = () => {
                 </td>
                 <td>{agent.email}</td>
                 <td>{agent.role}</td>
-                <td>{agent.team_id?.team_name || "N/A"}</td>
+                <td>{getAgentTeamName(agent)}</td>
                 <td>{agent.status || "Active"}</td>
                 <td>
                   <button
