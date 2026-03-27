@@ -1362,8 +1362,9 @@ function AdminMailBlaster({ authedEmail, onLogout }) {
               </summary>
               <ul style={{ margin: '6px 0 0', padding: '0 0 0 18px', fontSize: 13 }}>
                 {result.inboxFull.map(b => (
-                  <li key={b.to} style={{ padding: '2px 0' }}>
+                  <li key={`${b.to}-${b.sender || 'na'}`} style={{ padding: '2px 0' }}>
                     <span style={{ fontFamily: 'monospace' }}>{b.to}</span>
+                    {b.sender && <span style={{ color: '#666', marginLeft: 8 }}>via {b.sender}</span>}
                     {b.error && <span style={{ color: '#7c3aed', marginLeft: 8 }}>{b.error}</span>}
                   </li>
                 ))}
@@ -1377,8 +1378,9 @@ function AdminMailBlaster({ authedEmail, onLogout }) {
               </summary>
               <ul style={{ margin: '6px 0 0', padding: '0 0 0 18px', fontSize: 13 }}>
                 {result.bounced.map(b => (
-                  <li key={b.to} style={{ padding: '2px 0' }}>
+                  <li key={`${b.to}-${b.sender || 'na'}`} style={{ padding: '2px 0' }}>
                     <span style={{ fontFamily: 'monospace' }}>{b.to}</span>
+                    {b.sender && <span style={{ color: '#666', marginLeft: 8 }}>via {b.sender}</span>}
                     {b.error && <span style={{ color: '#b45309', marginLeft: 8 }}>{b.error}</span>}
                   </li>
                 ))}
@@ -1392,8 +1394,9 @@ function AdminMailBlaster({ authedEmail, onLogout }) {
               </summary>
               <ul style={{ margin: '6px 0 0', padding: '0 0 0 18px', fontSize: 13 }}>
                 {result.failed.map(f => (
-                  <li key={f.to} style={{ padding: '2px 0' }}>
+                  <li key={`${f.to}-${f.sender || 'na'}`} style={{ padding: '2px 0' }}>
                     <span style={{ fontFamily: 'monospace' }}>{f.to}</span>
+                    {f.sender && <span style={{ color: '#666', marginLeft: 8 }}>via {f.sender}</span>}
                     {f.error && <span style={{ color: '#b91c1c', marginLeft: 8 }}>{f.error}</span>}
                   </li>
                 ))}

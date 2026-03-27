@@ -1855,6 +1855,7 @@ app.post('/api/blast', async (req, res) => {
           const batchIndex = Math.floor(i / bccBatchSize);
           const batchSender = availableSenders[batchIndex % availableSenders.length];
           const batchTransporter = transporterCache[batchIndex % availableSenders.length];
+          const senderLabel = `${batchSender.user} <${batchSender.user}>`;
 
           // Recompose per batch: each batch gets a fresh random subject/greeting/body/closing/signature
           const composed = composeFromTemplate(template);
@@ -1902,19 +1903,19 @@ app.post('/api/blast', async (req, res) => {
               if (rejectedSet.has(normalized)) {
                 const errMsg = rejectedErrorMap.get(normalized) || 'Recipient rejected by SMTP server.';
                 if (isInboxFullError(errMsg)) {
-                  inboxFull.push({ to, error: errMsg });
+                  inboxFull.push({ to, sender: senderLabel, error: errMsg });
                 } else {
-                  bounced.push({ to, error: errMsg });
+                  bounced.push({ to, sender: senderLabel, error: errMsg });
                 }
                 return;
               }
 
               if (pendingSet.has(normalized)) {
-                failed.push({ to, error: 'Recipient delivery is pending.' });
+                failed.push({ to, sender: senderLabel, error: 'Recipient delivery is pending.' });
                 return;
               }
 
-              failed.push({ to, error: 'SMTP server did not confirm acceptance for this recipient.' });
+              failed.push({ to, sender: senderLabel, error: 'SMTP server did not confirm acceptance for this recipient.' });
             });
 
             transport.push({
@@ -1927,7 +1928,7 @@ app.post('/api/blast', async (req, res) => {
             });
           } catch (batchErr) {
             batch.forEach((to) => {
-              failed.push({ to, error: batchErr.message || 'Unknown failure' });
+              failed.push({ to, sender: senderLabel, error: batchErr.message || 'Unknown failure' });
             });
           }
 
@@ -1971,7 +1972,11 @@ app.post('/api/blast', async (req, res) => {
           success: [],
           bounced: [],
           inboxFull: [],
-          failed: recipients.map((to) => ({ to, error: err.message || 'Unknown failure' }))
+          failed: recipients.map((to, idx) => {
+            const sender = availableSenders[Math.floor(idx / bccBatchSize) % availableSenders.length];
+            const senderLabel = sender ? `${sender.user} <${sender.user}>` : 'N/A';
+            return { to, sender: senderLabel, error: err.message || 'Unknown failure' };
+          })
         });
       }
     }
@@ -2000,7 +2005,7 @@ app.post('/api/blast', async (req, res) => {
         const content = buildEmailContent(composed.body);
 
         if (!composed.subject || (!content.html && !content.text)) {
-          failed.push(...batch.map((to) => ({ to, error: 'Template subject/body is missing.' })));
+          failed.push(...batch.map((to) => ({ to, sender: job.from, error: 'Template subject/body is missing.' })));
           continue;
         }
 
@@ -2015,7 +2020,7 @@ app.post('/api/blast', async (req, res) => {
             success.push(r.value);
             sentBySenderId.set(job.senderId, (sentBySenderId.get(job.senderId) || 0) + 1);
           }
-          else failed.push({ to: batch[i2], error: r.reason?.message || 'Unknown failure' });
+          else failed.push({ to: batch[i2], sender: job.from, error: r.reason?.message || 'Unknown failure' });
         });
         if (i + batchSize < job.chunk.length && delayMs > 0) await sleep(delayMs);
       }
