@@ -77,6 +77,19 @@ const AdvLeadManagement = () => {
         fetchFreshCount();
     }, [currentPage]);
 
+    const handleMakeFresh = async (leadId) => {
+        if (!window.confirm("Are you sure you want to make this lead fresh? This will delete all call logs and reset assignments.")) return;
+        
+        try {
+            const res = await axios.put(`${API}/api/adv-leads/make-fresh/${leadId}`);
+            toast.success(res.data.message);
+            fetchLeads(currentPage);
+            fetchFreshCount();
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Failed to reset lead");
+        }
+    };
+
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
             setCurrentPage(newPage);
@@ -490,6 +503,7 @@ const AdvLeadManagement = () => {
                                         <th>Backend Status</th>
                                         <th>Assigned To</th>
                                         <th>Score</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -526,6 +540,27 @@ const AdvLeadManagement = () => {
                                                     <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '12px', background: (lead.score || 0) > 15 ? '#f6ffed' : '#f5f5f5', border: `1px solid ${(lead.score || 0) > 15 ? '#b7eb8f' : '#d9d9d9'}` }}>
                                                         {lead.score || 0}
                                                     </span>
+                                                </td>
+                                                <td>
+                                                    <button 
+                                                        onClick={() => handleMakeFresh(lead._id)}
+                                                        title="Make Lead Fresh"
+                                                        style={{
+                                                            padding: '6px 12px',
+                                                            background: '#ff4d4f',
+                                                            color: '#fff',
+                                                            border: 'none',
+                                                            borderRadius: '6px',
+                                                            cursor: 'pointer',
+                                                            fontSize: '11px',
+                                                            fontWeight: '600',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '4px'
+                                                        }}
+                                                    >
+                                                        <i className="fa fa-refresh"></i> Fresh
+                                                    </button>
                                                 </td>
                                             </tr>
                                         );

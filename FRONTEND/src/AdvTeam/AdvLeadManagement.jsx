@@ -42,6 +42,7 @@ const AdvLeadManagement = () => {
             const res = await axios.get(`${API}/getadvteam`, { params: { advTeamId } });
             setUserDesignation(res.data.designation);
             setUserName(res.data.fullname);
+            console.log("Adv Team Profile:", res.data);
         } catch (err) {
             console.error("Failed to fetch profile");
         }
@@ -168,6 +169,19 @@ const AdvLeadManagement = () => {
         }
     };
 
+    const handleMakeFresh = async (leadId) => {
+        if (!window.confirm("Are you sure you want to make this lead fresh? This will delete all call logs and reset assignments.")) return;
+        
+        try {
+            const res = await axios.put(`${API}/api/adv-leads/make-fresh/${leadId}`);
+            toast.success(res.data.message);
+            fetchLeads(currentPage);
+            fetchFreshCount();
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Failed to reset lead");
+        }
+    };
+
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
             setCurrentPage(newPage);
@@ -288,6 +302,7 @@ const AdvLeadManagement = () => {
                                         <th>ASSISTED TO</th>
                                         <th>Score</th>
                                         <th>Other Details</th>
+                                        {userDesignation && userDesignation.toLowerCase().includes("admin") && <th>Actions</th>}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -336,6 +351,26 @@ const AdvLeadManagement = () => {
                                                         </div>
                                                     ) : '—'}
                                                 </td>
+                                                {userDesignation && userDesignation.toLowerCase().includes("admin") && (
+                                                    <td>
+                                                        <button 
+                                                            onClick={() => handleMakeFresh(lead._id)}
+                                                            title="Make Lead Fresh"
+                                                            style={{
+                                                                padding: '6px 10px',
+                                                                background: '#ff4d4f',
+                                                                color: '#fff',
+                                                                border: 'none',
+                                                                borderRadius: '4px',
+                                                                cursor: 'pointer',
+                                                                fontSize: '12px',
+                                                                fontWeight: '600'
+                                                            }}
+                                                        >
+                                                            <i className="fa fa-refresh"></i> Fresh
+                                                        </button>
+                                                    </td>
+                                                )}
                                             </tr>
                                         );
                                     })}

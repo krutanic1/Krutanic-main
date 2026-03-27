@@ -492,8 +492,9 @@ router.get("/get-adv-leads", async (req, res) => {
         const leads = await AdvLead.find(query)
             .populate("team_id", "team_name")
             .populate("current_owner_id", "name")
-            // NEW SORT: Push interacted leads to bottom, keep new ones at top
-            .sort({ last_interaction_at: 1, created_at: -1 })
+            // Sort by assigned_at ascending (nulls/undefined first = fresh leads)
+            // then by created_at descending (newest first)
+            .sort({ assigned_at: 1, created_at: -1 })
             .skip(skip)
             .limit(parseInt(limit));
 
@@ -615,6 +616,51 @@ router.post("/log-call/:id", async (req, res) => {
         await lead.save();
 
         res.status(200).json({ success: true, lead });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+// PUT: Make fresh (Admin power to reset lead and delete call logs)
+router.put("/make-fresh/:id", async (req, res) => {
+    try {
+        const leadId = req.params.id;
+        
+        // 1. Reset lead fields
+        const updatedLead = await AdvLead.findByIdAndUpdate(leadId, {
+            $set: {
+                status: "fresh",
+                stage: "new",
+                last_outcome: null,
+                last_interaction_at: null,
+                assigned_at: null,
+                isLocked: false,
+                lockedBy: null,
+                lockTime: null,
+                // Clear all ownership fields
+                owner_id: null,
+                owner_name: null,
+                manager_id: null,
+                leader_id: null,
+                specialist_id: null,
+                current_owner_id: null,
+                current_owner_role: null,
+                team_id: null,
+                team_name: null
+            }
+        }, { new: true });
+
+        if (!updatedLead) {
+            return res.status(404).json({ message: "Lead not found" });
+        }
+
+        // 2. Delete related call activities and followups
+        await Promise.all([
+            AdvCallActivity.deleteMany({ leadId }),
+            AdvFollowup.deleteMany({ leadId })
+        ]);
+
+        res.status(200).json({ success: true, message: "Lead has been made fresh and all logs deleted.", lead: updatedLead });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
