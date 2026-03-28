@@ -10,21 +10,32 @@ const attendanceSchema = new mongoose.Schema({
         type: String, // YYYY-MM-DD
         required: true
     },
-    totalMinutes: {
-        type: Number,
-        default: 0
-    },
-    isMarked: {
-        type: Boolean,
-        default: false
-    },
     timestamp: {
         type: Date,
         default: Date.now
+    },
+    lat: {
+        type: Number,
+        required: false
+    },
+    lng: {
+        type: Number,
+        required: false
+    },
+    ip: {
+        type: String,
+        required: false
+    },
+    deviceInfo: {
+        type: String,
+        required: false
     }
 }, { timestamps: true });
 
 // Ensure a user can only have one attendance record per day
 attendanceSchema.index({ userId: 1, date: 1 }, { unique: true });
+
+// Optimize monthly aggregation queries
+attendanceSchema.index({ userId: 1, timestamp: 1 });
 
 module.exports = mongoose.model("Attendance", attendanceSchema);

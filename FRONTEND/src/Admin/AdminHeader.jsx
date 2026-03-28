@@ -141,6 +141,9 @@ const AdminHeader = () => {
             <Link to="/AllTeamDetail">
               <i className="fa fa-users mr-2"></i>Team Detail
             </Link>
+            <Link to="/Admin/Attendance">
+              <i className="fa fa-calendar mr-2"></i>Attendance
+            </Link>
             <Link to="/RevenueSheet">
               <i className="fa fa-line-chart mr-2"></i>Revenue Sheet
             </Link>
@@ -207,6 +210,9 @@ const AdminHeader = () => {
               <i className="fa fa-area-chart mr-2"></i>ADV Analytics
             </Link>
 
+            <Link to="/Admin/Attendance">
+              <i className="fa fa-calendar mr-2"></i>Attendance
+            </Link>
             <Link to="/BulkImport">
               <i className="fa fa-upload mr-2"></i>Bulk Import Leads
             </Link>

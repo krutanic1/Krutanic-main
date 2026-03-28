@@ -33,6 +33,7 @@ import PromptEngineering from "./page/AdvanceCourse/PromptEngineering";
 import DashboardAccessForm from "./page/DashboardAccessForm";
 import AdvanceDashboardAccess from "./page/AdvanceDashboardAccess";
 import Alumni from "./page/Alumni";
+import Attendance from "./page/Attendance";
 
 // Admin
 import AdminHeader from "./Admin/AdminHeader";
@@ -73,6 +74,7 @@ import AlumniData from "./Admin/AlumniData";
 import InactiveBda from "./Admin/InactiveBda";
 import ReferAndEarnResponse from "./Admin/ReferAndEarnResponse";
 import CreateMarketingTeam from "./Admin/CreateMarketingTeam";
+import AdminAttendance from "./Admin/AdminAttendance";
 
 // Operation Team
 import OperationLogin from "./Operation/OperationLogin";
@@ -390,7 +392,8 @@ const AppContent = () => {
     "/admin/agentactivity",
     "/admin/reports",
 
-    "/bulkimport"
+    "/bulkimport",
+    "/admin/attendance"
   ];
 
   const operationheaderPaths = [
@@ -523,6 +526,7 @@ const AppContent = () => {
         <Route path="/Alumni" element={<Alumni />} />
         <Route path="/Verify" element={<Verified />} />
         <Route path="/ReferAndEarn" element={<ReferAndEarn />} />
+        <Route path="/attendance" element={<Attendance />} />
 
         {/* Admin Panel Start */}
         <Route path="/AdminLogin" element={<AdminLogIn />} />
@@ -585,6 +589,7 @@ const AppContent = () => {
         <Route path="/Admin/Reports" element={isAuthenticatedAdmin() ? <AdminReports /> : <Navigate to="/AdminLogin" />} />
 
         <Route path="/BulkImport" element={isAuthenticatedAdmin() ? (<BulkImport />) : (<Navigate to="/AdminLogin" />)} />
+        <Route path="/Admin/Attendance" element={isAuthenticatedAdmin() ? <AdminAttendance /> : <Navigate to="/AdminLogin" />} />
 
 
 
@@ -703,8 +708,15 @@ const AppContent = () => {
 
       </Routes>
 
-      {headerPaths.includes(location.pathname.toLowerCase()) && <Footer />}
-      {lmsFooterPaths.includes(location.pathname.toLowerCase()) && <LmsFooter />}
+      {/* Global Footers - Exclude attendance and clean dashboards */}
+      {location.pathname.toLowerCase() !== "/attendance" && 
+       !adminheaderPaths.includes(location.pathname.toLowerCase()) && 
+       !advteamheaderPaths.includes(location.pathname.toLowerCase()) && (
+        <>
+          {lmsFooterPaths.includes(location.pathname.toLowerCase()) ? <LmsFooter /> : <Footer />}
+        </>
+      )}
+
     </div>
   );
 };

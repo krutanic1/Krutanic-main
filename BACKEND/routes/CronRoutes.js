@@ -104,7 +104,6 @@ router.all('/api/cron/payment-reminders', async (req, res) => {
                 istTime
             });
         }
-
     } catch (error) {
         console.error('❌ Error in Payment Reminder Cron Route:', error);
         res.status(500).json({
@@ -113,6 +112,68 @@ router.all('/api/cron/payment-reminders', async (req, res) => {
             timestamp,
             istTime
         });
+    }
+});
+
+// Monthly Attendance Report Cron Endpoint (Triggered by Vercel Cron)
+router.all('/api/cron/monthly-attendance', async (req, res) => {
+    const timestamp = new Date().toISOString();
+    const istTime = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+    console.log(`⏰ [${istTime} IST] Running Vercel Cron: Monthly Attendance Report`);
+
+    try {
+        // Security: Verify request is from Vercel Cron or has valid CRON_SECRET
+        const authHeader = req.headers.authorization;
+        const vercelCronHeader = req.headers['x-vercel-cron'];
+        const expectedAuth = `Bearer ${process.env.CRON_SECRET}`;
+
+        const isVercelCron = vercelCronHeader === '1';
+        const hasValidSecret = process.env.CRON_SECRET && authHeader === expectedAuth;
+
+        if (!isVercelCron && !hasValidSecret) {
+            console.error('❌ Unauthorized cron request - Monthly Attendance');
+            return res.status(401).json({ error: 'Unauthorized', timestamp, istTime });
+        }
+
+        const { sendMonthlyAttendanceReports } = require('../services/attendanceReportService');
+        await sendMonthlyAttendanceReports();
+
+        res.status(200).json({
+            success: true,
+            message: `Monthly attendance reports triggered successfully`,
+            timestamp,
+            istTime
+        });
+
+    } catch (error) {
+        console.error('❌ Error in Monthly Attendance Cron Route:', error);
+        res.status(500).json({ error: 'Internal Server Error', details: error.message, timestamp, istTime });
+    }
+});
+
+// Test endpoint for manual triggering: Monthly Attendance Report
+router.get('/api/cron/test-monthly-attendance', async (req, res) => {
+    const timestamp = new Date().toISOString();
+    const istTime = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+    console.log(`🧪 [${istTime} IST] Manual test trigger: Monthly Attendance Report`);
+
+    try {
+        const { sendMonthlyAttendanceReports } = require('../services/attendanceReportService');
+        await sendMonthlyAttendanceReports();
+
+        res.status(200).json({
+            success: true,
+            message: `Test: Monthly attendance reports triggered successfully`,
+            timestamp,
+            istTime,
+            note: 'This triggers reports for ALL employees for the PREVIOUS month.'
+        });
+
+    } catch (error) {
+        console.error('❌ Error in test endpoint:', error);
+        res.status(500).json({ error: 'Internal Server Error', details: error.message, timestamp, istTime });
     }
 });
 

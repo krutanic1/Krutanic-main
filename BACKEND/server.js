@@ -135,6 +135,8 @@ app.use("/api/adv-reports", AdvReportRoutes);
 app.use("/api/adv-notifications", AdvNotificationRoutes);
 app.use("/api/admin", AdvAdminRoutes);
 app.use("/api/admin", adminImpersonation);
+const atdRoutes = require("./routes/atdRoutes");
+app.use("/api/atd", atdRoutes);
 
 // CREATEJOBS
 app.use("/", CreateJob);
@@ -255,10 +257,13 @@ if (process.env.NODE_ENV !== "production") {
       console.error("❌ Seeding failed, but continuing startup:", seedErr.message);
     }
 
-    // Initialize Payment Reminder Scheduler (local development only)
+    // Initialize Schedulers (local development only)
     // Note: Production uses Vercel Cron (see vercel.json and CronRoutes.js)
     const { initializePaymentReminderScheduler } = require("./services/paymentReminderService");
+    const { initializeAttendanceReportScheduler } = require("./services/attendanceReportService");
+    
     initializePaymentReminderScheduler();
+    initializeAttendanceReportScheduler();
 
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);

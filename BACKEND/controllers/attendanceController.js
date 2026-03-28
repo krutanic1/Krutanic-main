@@ -1,0 +1,138 @@
+const Attendance = require("../models/Attendance");
+const redis = require("../config/redis");
+
+/**
+ * @desc Haversine formula to calculate distance in meters
+ */
+function getDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371e3; // meters
+  const phi1 = (lat1 * Math.PI) / 180;
+  const phi2 = (lat2 * Math.PI) / 180;
+  const deltaPhi = ((lat2 - lat1) * Math.PI) / 180;
+  const deltaLambda = ((lon2 - lon1) * Math.PI) / 180;
+
+  const a =
+    Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+    Math.cos(phi1) * Math.cos(phi2) * Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c; // in meters
+}
+
+/**
+ * @desc Mark attendance with geolocation check
+ * @route POST /api/atd/mark
+ * @access Private
+ */
+exports.markAttendance = async (req, res) => {
+  try {
+    const { lat, lng } = req.body;
+    const userId = req.user._id;
+    const today = new Date().toISOString().split("T")[0];
+
+    if (!lat || !lng) {
+      return res.status(400).json({ error: "Location is required" });
+    }
+
+    const key = `attendance:${userId}:${today}`;
+
+    // Check if already marked today in Redis
+    const exists = await redis.get(key);
+    if (exists) return res.status(400).json({ error: "Already marked today" });
+
+    // Office location (configurable in .env)
+    const officeLat = parseFloat(process.env.OFFICE_LAT) || 12.9716;
+    const officeLng = parseFloat(process.env.OFFICE_LNG) || 77.5946;
+
+    const distance = getDistance(lat, lng, officeLat, officeLng);
+
+    if (distance > 100) {
+      return res.status(400).json({ 
+        error: "Outside area", 
+        message: `You are ${Math.round(distance)}m away. You must be within 100m of the office.`
+      });
+    }
+
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    const deviceInfo = req.headers['user-agent'];
+
+    await Attendance.create({
+      userId,
+      date: today,
+      timestamp: new Date(),
+      lat,
+      lng,
+      ip,
+      deviceInfo
+    });
+
+    // Cache in Redis for 24 hours
+    await redis.set(key, "1", { ex: 86400 });
+
+    res.json({ success: true, message: "Attendance marked successfully" });
+  } catch (error) {
+    console.error("MarkAttendance Error:", error);
+    res.status(500).json({ error: "Failed to mark attendance" });
+  }
+};
+
+/**
+ * @desc Get attendance history for the logged-in user with pagination and filters
+ * @route GET /api/atd/history
+ * @access Private
+ */
+exports.getHistory = async (req, res) => {
+  try {
+    const { month, year, page = 1, limit = 5 } = req.query;
+    const filter = { userId: req.user._id };
+
+    // Month filtering (Regex on YYYY-MM-DD string)
+    if (month !== undefined && year !== undefined) {
+      const monthStr = (parseInt(month) + 1).toString().padStart(2, "0");
+      filter.date = { $regex: new RegExp(`^${year}-${monthStr}-`) };
+    }
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    
+    const globalTotal = await Attendance.countDocuments({ userId: req.user._id });
+    // Calculate counts in JS
+    let lateCount = 0;
+    let halfDayCount = 0;
+    let onTimeCount = 0;
+    allMatchingData.forEach(h => {
+      const d = new Date(h.timestamp);
+      const hours = d.getHours();
+      const mins = d.getMinutes();
+      
+      if (hours >= 14) {
+        halfDayCount++;
+      } else if (hours > 11 || (hours === 11 && mins > 5)) {
+        lateCount++;
+      } else {
+        onTimeCount++;
+      }
+    });
+
+    const total = allMatchingData.length;
+
+    const data = await Attendance.find(filter)
+      .sort({ timestamp: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    res.json({
+      data,
+      total,
+      globalTotal,
+      onTimeCount,
+      lateCount,
+      halfDayCount,
+      page: parseInt(page),
+      limit: parseInt(limit),
+      totalPages: Math.ceil(total / parseInt(limit))
+    });
+  } catch (error) {
+    console.error("GetHistory Error:", error);
+    res.status(500).json({ error: "Failed to fetch history" });
+  }
+};
