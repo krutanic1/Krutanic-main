@@ -43,13 +43,14 @@ exports.markAttendance = async (req, res) => {
     // Office location (configurable in .env)
     const officeLat = parseFloat(process.env.OFFICE_LAT) || 12.9716;
     const officeLng = parseFloat(process.env.OFFICE_LNG) || 77.5946;
+    const attendanceRadiusMeters = parseFloat(process.env.ATTENDANCE_RADIUS_METERS) || 10;
 
     const distance = getDistance(lat, lng, officeLat, officeLng);
 
-    if (distance > 100) {
+    if (distance > attendanceRadiusMeters) {
       return res.status(400).json({ 
         error: "Outside area", 
-        message: `You are ${Math.round(distance)}m away. You must be within 100m of the office.`
+        message: `You are ${Math.round(distance)}m away. You must be within ${attendanceRadiusMeters}m of the office.`
       });
     }
 
