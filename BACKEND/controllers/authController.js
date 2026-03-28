@@ -4,6 +4,8 @@ const Admin = require("../models/AdminMail");
 const AdvOps = require("../models/CreateAdvOperation");
 const Bda = require("../models/CreateBDA");
 const Teams = require("../models/CreateAdvTeam");
+const Marketing = require("../models/CreateMarketing");
+const Ops = require("../models/CreateOperation");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const redis = require("../config/redis");
@@ -30,7 +32,9 @@ exports.checkUser = async (req, res) => {
         { model: Admin, role: "admin" },
         { model: AdvOps, role: "operations" },
         { model: Bda, role: "bda" },
-        { model: Teams, role: "team_member" }
+        { model: Teams, role: "team_member" },
+        { model: Marketing, role: "marketing" },
+        { model: Ops, role: "operations" }
       ];
 
       for (let item of collections) {
