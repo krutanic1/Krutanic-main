@@ -214,12 +214,16 @@ exports.getAdminUsers = async (req, res) => {
       let halfDayCount = 0;
       let onTimeCount = 0;
       records.forEach(r => {
+        // Convert to IST (UTC + 5:30)
         const d = new Date(r.timestamp);
-        const hours = d.getHours();
-        const mins = d.getMinutes();
-        if (hours >= 14) {
+        const istTime = new Date(d.getTime() + (5.5 * 60 * 60 * 1000));
+        const hours = istTime.getUTCHours();
+        const mins = istTime.getUTCMinutes();
+        const totalMinutes = hours * 60 + mins;
+
+        if (totalMinutes > 14 * 60) {
           halfDayCount++;
-        } else if (hours > 11 || (hours === 11 && mins > 5)) {
+        } else if (totalMinutes > 11 * 60 + 5) {
           lateCount++;
         } else {
           onTimeCount++;
@@ -276,11 +280,15 @@ exports.getAdminUserHistory = async (req, res) => {
       .limit(parseInt(limit));
 
     const data = rawData.map(r => {
+      // Convert to IST (UTC + 5:30)
       const d = new Date(r.timestamp);
-      const hours = d.getHours();
-      const mins = d.getMinutes();
-      const isHalfDay = hours >= 14;
-      const isLate = !isHalfDay && (hours > 11 || (hours === 11 && mins > 5));
+      const istTime = new Date(d.getTime() + (5.5 * 60 * 60 * 1000));
+      const hours = istTime.getUTCHours();
+      const mins = istTime.getUTCMinutes();
+      const totalMinutes = hours * 60 + mins;
+
+      const isHalfDay = totalMinutes > 14 * 60;
+      const isLate = !isHalfDay && totalMinutes > 11 * 60 + 5;
       return { ...r.toObject(), isLate, isHalfDay };
     });
 

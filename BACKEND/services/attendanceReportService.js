@@ -123,7 +123,7 @@ const generateAttendanceReportEmail = (user, monthName, year, stats) => {
             ` : ''}
 
             <p style="font-size: 13px; color: #64748b; margin-top: 20px;">
-                <strong>Note:</strong> Attendance is calculated based on the following rules:<br/>
+                <strong>Note:</strong> Attendance is calculated based on the following rules (IST):<br/>
                 • Before 11:05 AM: Full Present<br/>
                 • 11:05 AM - 02:00 PM: Late Login<br/>
                 • After 02:00 PM: Half Day
@@ -134,6 +134,51 @@ const generateAttendanceReportEmail = (user, monthName, year, stats) => {
             <p><strong>Krutanic</strong> • A Ladder for Brighter Future</p>
             <p>&copy; ${year} Krutanic. All rights reserved.</p>
             <p style="margin-top: 15px;">This is an automated system-generated report. Please do not reply directly to this email.</p>
+        </div>
+    </div>
+</body>
+</html>
+  `;
+};
+
+/**
+ * Generate a warning email for late logins
+ */
+const generateLateWarningEmail = (user, lateCount) => {
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #334155; padding: 20px; }
+        .container { max-width: 600px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px; padding: 30px; }
+        .warning-box { background: #fff7ed; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px; }
+        .highlight { color: #c2410c; font-weight: 800; }
+        .footer { font-size: 12px; color: #94a3b8; margin-top: 30px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 style="color: #0f172a;">Attendance Warning</h2>
+        <p>Hello <strong>${user.name}</strong>,</p>
+        <p>This is an automated notification regarding your attendance for today.</p>
+        
+        <div class="warning-box">
+            Our records show that you logged in after 11:05 AM today.
+        </div>
+
+        <p>Currently, you have accumulated <span class="highlight">${lateCount} late logins</span> in this month.</p>
+        
+        <p style="background: #fef2f2; color: #991b1b; padding: 10px; border-radius: 4px; font-weight: 700;">
+            IMPORTANT: 3 late logins in a month will lead to a 1-day Loss of Pay (LOP).
+        </p>
+
+        <p>Please ensure you check in before 11:05 AM to avoid any salary deductions.</p>
+        
+        <div class="footer">
+            <p><strong>Krutanic Attendance System</strong></p>
+            <p>This is a system-generated message. Please do not reply.</p>
         </div>
     </div>
 </body>
@@ -196,18 +241,21 @@ const sendMonthlyAttendanceReports = async (targetUserId = null, targetMonth = n
           lateDates: [],
           halfDates: []
         };
-
         records.forEach(r => {
+          // Convert to IST (UTC + 5:30)
           const d = new Date(r.timestamp);
-          const hours = d.getHours();
-          const mins = d.getMinutes();
-          const dateStr = d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', weekday: 'short' });
-          const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          const istTime = new Date(d.getTime() + (5.5 * 60 * 60 * 1000));
+          const hours = istTime.getUTCHours();
+          const mins = istTime.getUTCMinutes();
+          const totalMinutes = hours * 60 + mins;
+          
+          const dateStr = istTime.getUTCDate() + ' ' + istTime.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' });
+          const timeStr = istTime.getUTCHours().toString().padStart(2, '0') + ':' + istTime.getUTCMinutes().toString().padStart(2, '0');
 
-          if (hours >= 14) {
+          if (totalMinutes > 14 * 60) {
             stats.half++;
             stats.halfDates.push({ date: dateStr, time: timeStr });
-          } else if (hours > 11 || (hours === 11 && mins > 5)) {
+          } else if (totalMinutes > 11 * 60 + 5) {
             stats.late++;
             stats.lateDates.push({ date: dateStr, time: timeStr });
           } else {
@@ -241,6 +289,69 @@ const sendMonthlyAttendanceReports = async (targetUserId = null, targetMonth = n
 };
 
 /**
+ * Daily check for late logins (Run at 12:00 AM IST)
+ * Checks people who logged in late YESTERDAY and sends warning if count >= 2
+ */
+const checkDailyLateLogins = async () => {
+  try {
+    const istNow = getISTDate();
+    // Yesterday's date in IST
+    const yesterday = new Date(istNow);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const datePrefix = `${yesterday.getFullYear()}-${(yesterday.getMonth() + 1).toString().padStart(2, '0')}-${yesterday.getDate().toString().padStart(2, '0')}`;
+    
+    // Find all logins from yesterday
+    const yesterdayRecords = await Attendance.find({
+      date: datePrefix
+    });
+
+    console.log(`[Daily Check] Scanning ${yesterdayRecords.length} records for ${datePrefix}...`);
+
+    for (const record of yesterdayRecords) {
+      const d = new Date(record.timestamp);
+      const istTime = new Date(d.getTime() + (5.5 * 60 * 60 * 1000));
+      const hours = istTime.getUTCHours();
+      const mins = istTime.getUTCMinutes();
+      const totalMinutes = hours * 60 + mins;
+
+      // If logged in after 11:05 AM
+      if (totalMinutes > 11 * 60 + 5) {
+        const user = await AtdUser.findById(record.userId);
+        if (!user || !user.email) continue;
+
+        // Calculate TOTAL late logins for THIS month
+        const currentMonthPrefix = `${istNow.getFullYear()}-${(istNow.getMonth() + 1).toString().padStart(2, '0')}-`;
+        const monthRecords = await Attendance.find({
+          userId: user._id,
+          date: { $regex: new RegExp(`^${currentMonthPrefix}`) }
+        });
+
+        let lateCount = 0;
+        monthRecords.forEach(r => {
+          const rd = new Date(r.timestamp);
+          const rist = new Date(rd.getTime() + (5.5 * 60 * 60 * 1000));
+          if ((rist.getUTCHours() * 60 + rist.getUTCMinutes()) > (11 * 60 + 5)) {
+            lateCount++;
+          }
+        });
+
+        // Send mail if 2 or more late logins
+        if (lateCount >= 2) {
+          console.log(`[Alert] Sending late warning to ${user.email} (Count: ${lateCount})`);
+          await sendEmail({
+            email: user.email,
+            subject: `Action Required: Attendance Warning (Late Logins: ${lateCount})`,
+            message: generateLateWarningEmail(user, lateCount)
+          });
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Error in checkDailyLateLogins:", error);
+  }
+};
+
+/**
  * Initialize the monthly scheduler
  */
 const initializeAttendanceReportScheduler = () => {
@@ -253,7 +364,16 @@ const initializeAttendanceReportScheduler = () => {
         timezone: "Asia/Kolkata"
     });
 
-    console.log("✅ Monthly Attendance Report Scheduler initialized (runs 1st of every month at 9:00 PM IST)");
+    // Schedule daily late login check at 12:00 AM IST
+    // Cron: 0 0 * * *
+    cron.schedule("0 0 * * *", async () => {
+        console.log(`📧 Checking for daily late login alerts...`);
+        await checkDailyLateLogins();
+    }, {
+        timezone: "Asia/Kolkata"
+    });
+
+    console.log("✅ Attendance Schedulers initialized: Monthly (1st, 9PM) & Daily Late Login Alert (Daily, 12AM)");
 };
 
 module.exports = {

@@ -107,13 +107,22 @@ exports.getHistory = async (req, res) => {
     }
 
     allMatchingData.forEach(h => {
+      // Convert to IST (UTC + 5:30)
       const d = new Date(h.timestamp);
-      const hours = d.getHours();
-      const mins = d.getMinutes();
+      const istTime = new Date(d.getTime() + (5.5 * 60 * 60 * 1000));
+      const hours = istTime.getUTCHours();
+      const mins = istTime.getUTCMinutes();
       
-      if (hours >= 14) {
+      // Thresholds:
+      // On Time: <= 11:05 AM
+      // Late: > 11:05 AM AND <= 2:00 PM (14:00)
+      // Half Day: > 2:00 PM (14:00)
+      
+      const totalMinutes = hours * 60 + mins;
+      
+      if (totalMinutes > 14 * 60) {
         halfDayCount++;
-      } else if (hours > 11 || (hours === 11 && mins > 5)) {
+      } else if (totalMinutes > 11 * 60 + 5) {
         lateCount++;
       } else {
         onTimeCount++;
