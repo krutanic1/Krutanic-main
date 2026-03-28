@@ -13,6 +13,13 @@ const { sendEmail } = require("./emailController");
 
 const JWT_SECRET = process.env.JWT_SECRET || "KRUTANIC24";
 
+function sanitizeAtdUser(userDoc) {
+  if (!userDoc) return userDoc;
+  const user = typeof userDoc.toObject === "function" ? userDoc.toObject() : { ...userDoc };
+  delete user.pin;
+  return user;
+}
+
 /**
  * @desc Check if user exists in AtdUser, if not, sync from other collections
  * @route POST /api/atd/check-user
@@ -63,7 +70,7 @@ exports.checkUser = async (req, res) => {
       return res.status(403).json({ error: "Not allowed" });
     }
 
-    res.json(user);
+    res.json(sanitizeAtdUser(user));
   } catch (error) {
     console.error("CheckUser Error:", error);
     res.status(500).json({ error: "Server error" });
@@ -140,7 +147,7 @@ exports.verifyOtp = async (req, res) => {
       expiresIn: "7d"
     });
 
-    res.json({ success: true, token, user });
+    res.json({ success: true, token, user: sanitizeAtdUser(user) });
   } catch (error) {
     console.error("VerifyOtp Error:", error);
     res.status(500).json({ error: "Verification failed" });
@@ -330,7 +337,7 @@ exports.loginPin = async (req, res) => {
       expiresIn: "7d"
     });
 
-    res.json({ success: true, token, user });
+    res.json({ success: true, token, user: sanitizeAtdUser(user) });
   } catch (error) {
     console.error("LoginPin Error:", error);
     res.status(500).json({ error: "Login failed" });
@@ -354,7 +361,7 @@ exports.addAdminUser = async (req, res) => {
       if (pin) user.pin = pin;
       user.source = source || "manual_admin";
       await user.save();
-      return res.json({ success: true, message: "User updated successfully", user });
+      return res.json({ success: true, message: "User updated successfully", user: sanitizeAtdUser(user) });
     }
 
     // Create new
@@ -366,7 +373,7 @@ exports.addAdminUser = async (req, res) => {
       source: source || "manual_admin"
     });
 
-    res.json({ success: true, message: "User added successfully", user });
+    res.json({ success: true, message: "User added successfully", user: sanitizeAtdUser(user) });
   } catch (error) {
     console.error("AddAdminUser Error:", error);
     res.status(500).json({ error: "Failed to add member" });
