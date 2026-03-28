@@ -49,6 +49,11 @@ const AdminAttendance = () => {
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [sendingReport, setSendingReport] = useState(null); // stores userId being sent
   const [isBulkSending, setIsBulkSending] = useState(false);
+  
+  // Add Member State
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newMember, setNewMember] = useState({ email: "", name: "", role: "Employee", pin: "" });
+  const [addingMember, setAddingMember] = useState(false);
 
   const fetchMembers = useCallback(async () => {
     setLoading(true);
@@ -185,6 +190,34 @@ const AdminAttendance = () => {
     }
   };
 
+  const handleAddMember = async (e) => {
+    e.preventDefault();
+    if (!newMember.email || !newMember.name || !newMember.pin) {
+      toast.error("Please fill all fields");
+      return;
+    }
+    if (newMember.pin.length < 4 || newMember.pin.length > 6) {
+      toast.error("PIN must be 4-6 digits");
+      return;
+    }
+
+    setAddingMember(true);
+    try {
+      const token = localStorage.getItem("adminToken");
+      await axios.post(`${API}/api/atd/admin/add-user`, newMember, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success("Member added successfully!");
+      setShowAddModal(false);
+      setNewMember({ email: "", name: "", role: "Employee", pin: "" });
+      fetchMembers();
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Failed to add member");
+    } finally {
+      setAddingMember(false);
+    }
+  };
+
   const monthNames = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
@@ -192,7 +225,76 @@ const AdminAttendance = () => {
 
   return (
     <div className="admin-attendance-container" style={styles.container}>
-      <Toaster position="top-right" />
+      {/* Add Member Modal */}
+      {showAddModal && (
+        <div style={styles.modalOverlay}>
+           <div style={{ ...styles.modalContent, maxWidth: "450px" }}>
+              <div style={styles.modalHeader}>
+                 <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <div style={{ ...styles.iconBox, backgroundColor: "#fff7ed" }}><Users color="#FF6B00" /></div>
+                    <div>
+                       <h2 style={styles.modalTitle}>Add New Member</h2>
+                       <p style={{ fontSize: "12px", color: "#64748b" }}>Register a new employee for attendance tracking</p>
+                    </div>
+                 </div>
+                 <button onClick={() => setShowAddModal(false)} style={styles.closeBtn}><X size={20} /></button>
+              </div>
+
+              <form onSubmit={handleAddMember} style={{ padding: "30px" }}>
+                 <div style={styles.formGroup}>
+                    <label style={styles.label}>Full Name</label>
+                    <input 
+                       type="text" 
+                       placeholder="e.g. John Doe"
+                       style={styles.input}
+                       value={newMember.name}
+                       onChange={e => setNewMember({...newMember, name: e.target.value})}
+                       required
+                    />
+                 </div>
+                 <div style={styles.formGroup}>
+                    <label style={styles.label}>Email Address</label>
+                    <input 
+                       type="email" 
+                       placeholder="john@krutanic.com"
+                       style={styles.input}
+                       value={newMember.email}
+                       onChange={e => setNewMember({...newMember, email: e.target.value})}
+                       required
+                    />
+                 </div>
+                 <div style={styles.formGroup}>
+                    <label style={styles.label}>Designation/Role</label>
+                    <input 
+                       type="text" 
+                       placeholder="e.g. Software Engineer"
+                       style={styles.input}
+                       value={newMember.role}
+                       onChange={e => setNewMember({...newMember, role: e.target.value})}
+                       required
+                    />
+                 </div>
+                 <div style={styles.formGroup}>
+                    <label style={styles.label}>Predefined PIN (4-6 digits)</label>
+                    <input 
+                       type="text" 
+                       placeholder="123456"
+                       style={styles.input}
+                       value={newMember.pin}
+                       onChange={e => setNewMember({...newMember, pin: e.target.value})}
+                       required
+                    />
+                 </div>
+
+                 <button type="submit" disabled={addingMember} style={styles.primaryBtn}>
+                    {addingMember ? "Registering..." : "Add Member"}
+                 </button>
+              </form>
+           </div>
+        </div>
+      )}
+
+      <Toaster position="top-center" />
       <style>{`
         .admin-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
         .admin-table th { padding: 16px; text-align: left; color: #64748b; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
@@ -226,6 +328,13 @@ const AdminAttendance = () => {
           <p style={styles.subtitle}>Track and manage employee presence across all departments</p>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
+          <button 
+            style={styles.addBtn}
+            onClick={() => setShowAddModal(true)}
+          >
+             <Users size={18} />
+             <span>Add Member</span>
+          </button>
           <button 
             style={{ ...styles.exportBtn, background: '#0f172a', color: 'white', border: 'none' }}
             onClick={sendAllReports}
@@ -369,6 +478,10 @@ const AdminAttendance = () => {
               <div style={styles.paginationRow}>
                 <span style={styles.pageInfo}>Page {currentPage} of {totalPages} ({totalMembers} members)</span>
                 <div style={{ display: 'flex', gap: '10px' }}>
+                <button onClick={() => setShowAddModal(true)} style={styles.addBtn}>
+                   <Users size={18} />
+                   <span>Add Member</span>
+                </button>
                   <button 
                     className="pagination-btn" 
                     disabled={currentPage === 1}
@@ -608,6 +721,48 @@ const styles = {
     fontSize: '13px',
     fontWeight: '800'
   },
+   primaryBtn: {
+    width: "100%",
+    padding: "14px",
+    backgroundColor: "#FF6B00",
+    color: "#ffffff",
+    border: "none",
+    borderRadius: "12px",
+    fontSize: "16px",
+    fontWeight: "700",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "10px",
+    transition: "all 0.2s"
+   },
+   addBtn: {
+    padding: "10px 18px",
+    backgroundColor: "#fff7ed",
+    color: "#C2410C",
+    border: "1px solid #ffedd5",
+    borderRadius: "10px",
+    fontSize: "14px",
+    fontWeight: "700",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    transition: "all 0.2s"
+   },
+   bulkBtn: {
+    width: '36px',
+    height: '36px',
+    borderRadius: '10px',
+    border: 'none',
+    background: '#f1f5f9',
+    color: '#64748b',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer'
+  },
   viewBtn: {
     width: '36px',
     height: '36px',
@@ -631,6 +786,29 @@ const styles = {
   loadingState: { padding: '100px', textAlign: 'center', color: '#64748b' },
   
   // Modal Styles
+  modalOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1000,
+    backdropFilter: 'blur(4px)'
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: '24px',
+    width: '90%',
+    maxWidth: '800px',
+    maxHeight: '90vh',
+    overflowY: 'auto',
+    position: 'relative',
+    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+  },
   closeBtn: {
     position: 'absolute',
     top: '20px',
@@ -640,6 +818,38 @@ const styles = {
     cursor: 'pointer',
     color: '#94a3b8'
   },
+   modalHeader: {
+    padding: "24px 30px",
+    borderBottom: "1px solid #f1f5f9",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center"
+   },
+   formGroup: {
+    marginBottom: "20px"
+   },
+   label: {
+    display: "block",
+    fontSize: "13px",
+    fontWeight: "700",
+    color: "#475569",
+    marginBottom: "8px"
+   },
+   input: {
+    width: "100%",
+    padding: "12px 16px",
+    borderRadius: "10px",
+    border: "1.5px solid #e2e8f0",
+    fontSize: "14px",
+    outline: "none",
+    transition: "border-color 0.2s"
+   },
+   modalTitle: {
+     margin: 0,
+     fontSize: "22px",
+     fontWeight: "800",
+     color: "#0f172a"
+   },
   modalStat: {
      display: 'flex',
      alignItems: 'center',

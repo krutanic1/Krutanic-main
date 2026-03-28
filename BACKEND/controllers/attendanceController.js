@@ -99,6 +99,13 @@ exports.getHistory = async (req, res) => {
     let lateCount = 0;
     let halfDayCount = 0;
     let onTimeCount = 0;
+    let allMatchingData = [];
+    try {
+      allMatchingData = await Attendance.find(filter);
+    } catch (err) {
+      console.error("Database find error:", err);
+    }
+
     allMatchingData.forEach(h => {
       const d = new Date(h.timestamp);
       const hours = d.getHours();

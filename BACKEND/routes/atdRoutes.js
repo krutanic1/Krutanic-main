@@ -18,6 +18,7 @@ router.get("/history", atdAuth, attendanceController.getHistory);
 
 // Admin Attendance routes
 router.get("/admin/users", atdAuth, authController.getAdminUsers);
+router.post("/admin/add-user", atdAuth, authController.addAdminUser);
 router.get("/admin/user/:userId/history", atdAuth, authController.getAdminUserHistory);
 
 // Send specific report (Admin only)

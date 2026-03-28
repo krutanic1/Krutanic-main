@@ -7,6 +7,7 @@ const Teams = require("../models/CreateAdvTeam");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const redis = require("../config/redis");
+const { sendEmail } = require("./emailController");
 
 const JWT_SECRET = process.env.JWT_SECRET || "KRUTANIC24";
 
@@ -79,9 +80,31 @@ exports.sendOtp = async (req, res) => {
     // Store OTP in Redis for 5 minutes (300 seconds)
     await redis.set(`otp:${email.toLowerCase()}`, otp, { ex: 300 });
 
-    console.log(`OTP for ${email}:`, otp); // In production, send this via email
+    // Send Real Email
+    const emailData = {
+      email: email.toLowerCase(),
+      subject: "Your Krutanic Attendance Verification Code",
+      message: `
+        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px;">
+          <h2 style="color: #0f172a; text-align: center;">Identity Verification</h2>
+          <p style="color: #64748b; text-align: center;">Enter the code below to access your attendance dashboard or reset your PIN.</p>
+          <div style="background: #f8fafc; padding: 20px; text-align: center; border-radius: 8px; margin: 25px 0;">
+            <span style="font-size: 32px; font-weight: 800; letter-spacing: 5px; color: #FF6B00;">${otp}</span>
+          </div>
+          <p style="font-size: 12px; color: #94a3b8; text-align: center;">This code will expire in 5 minutes. If you didn't request this, please ignore this email.</p>
+        </div>
+      `
+    };
 
-    res.json({ success: true, message: "OTP sent successfully" });
+    try {
+      await sendEmail(emailData);
+      res.json({ success: true, message: "OTP sent successfully" });
+    } catch (err) {
+      console.error("Email send failed:", err);
+      // Fallback for dev: still return success but log code
+      console.log(`Fallback OTP for ${email}:`, otp);
+      res.json({ success: true, message: "OTP generated (Dev Mode Fallback)", otp: process.env.NODE_ENV === 'development' ? otp : undefined });
+    }
   } catch (error) {
     console.error("SendOtp Error:", error);
     res.status(500).json({ error: "Failed to send OTP" });
@@ -253,7 +276,7 @@ exports.getAdminUserHistory = async (req, res) => {
       const hours = d.getHours();
       const mins = d.getMinutes();
       const isHalfDay = hours >= 14;
-      const isLate = !isHalfDay && (hours > 11 || (hours === 11 && mins > 15));
+      const isLate = !isHalfDay && (hours > 11 || (hours === 11 && mins > 5));
       return { ...r.toObject(), isLate, isHalfDay };
     });
 
@@ -299,5 +322,41 @@ exports.loginPin = async (req, res) => {
   } catch (error) {
     console.error("LoginPin Error:", error);
     res.status(500).json({ error: "Login failed" });
+  }
+};
+
+/**
+ * @desc Admin manually adds/updates a user in AtdUser
+ * @route POST /api/atd/admin/add-user
+ */
+exports.addAdminUser = async (req, res) => {
+  try {
+    const { email, name, role, pin, source } = req.body;
+    if (!email || !name) return res.status(400).json({ error: "Email and Name are required" });
+
+    let user = await AtdUser.findOne({ email: email.toLowerCase() });
+    if (user) {
+      // Update existing
+      user.name = name;
+      user.role = role || user.role;
+      if (pin) user.pin = pin;
+      user.source = source || "manual_admin";
+      await user.save();
+      return res.json({ success: true, message: "User updated successfully", user });
+    }
+
+    // Create new
+    user = await AtdUser.create({
+      email: email.toLowerCase(),
+      name,
+      role: role || "Employee",
+      pin: pin || null,
+      source: source || "manual_admin"
+    });
+
+    res.json({ success: true, message: "User added successfully", user });
+  } catch (error) {
+    console.error("AddAdminUser Error:", error);
+    res.status(500).json({ error: "Failed to add member" });
   }
 };

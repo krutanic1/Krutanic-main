@@ -65,6 +65,7 @@ const Attendance = () => {
   const [userData, setUserData] = useState(null);
   const [otp, setOtp] = useState("");
   const [pin, setPin] = useState("");
+  const [resetMode, setResetMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [marking, setMarking] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -86,14 +87,23 @@ const Attendance = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Load token and initial data
+  // Load token and initial data (Auto-login)
   useEffect(() => {
     const token = localStorage.getItem("atdToken");
     const storedUser = localStorage.getItem("atdUser");
-    if (token && storedUser) {
-      setUserData(JSON.parse(storedUser));
-      setStep(5);
-      fetchHistory(token, 1, filterMonth, filterYear);
+    if (token) {
+      if (storedUser) {
+        setUserData(JSON.parse(storedUser));
+        setStep(5);
+        fetchHistory(token, 1, filterMonth, filterYear);
+      } else {
+        setStep(5);
+      }
+    } else if (storedUser) {
+      const user = JSON.parse(storedUser);
+      setEmail(user.email);
+      setUserData(user);
+      setStep(2);
     }
   }, []);
 
@@ -158,7 +168,12 @@ const Attendance = () => {
     setLoading(true);
     try {
       const res = await axios.post(`${API}/api/atd/verify-otp`, { email, otp });
-      loginSuccess(res.data);
+      if (resetMode) {
+        setStep(6);
+        setResetMode(false);
+      } else {
+        loginSuccess(res.data);
+      }
     } catch (err) {
       toast.error(err.response?.data?.error || "Invalid OTP");
     } finally {
@@ -234,7 +249,6 @@ const Attendance = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("Checked in successfully!");
-        // Refresh current page
         fetchHistory(token, currentPage, filterMonth, filterYear);
       } catch (err) {
         toast.error(err.response?.data?.error || "Failed to mark attendance");
@@ -266,74 +280,21 @@ const Attendance = () => {
     <div style={styles.container}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        
         * { font-family: 'Plus Jakarta Sans', sans-serif; }
-        
-        .auth-animate-in {
-          animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        .pulse-btn {
-          box-shadow: 0 0 0 0 rgba(255, 107, 0, 0.7);
-          animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-          0% { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0.4); }
-          70% { box-shadow: 0 0 0 15px rgba(255, 107, 0, 0); }
-          100% { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0); }
-        }
-
-        .glass-card {
-           background: #ffffff;
-           border: 1px solid #e2e8f0;
-           box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-
-        .input-group:focus-within svg {
-          color: #FF6B00 !important;
-        }
-
+        .auth-animate-in { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .pulse-btn { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0.7); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(255, 107, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0); } }
+        .glass-card { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        .input-group:focus-within svg { color: #FF6B00 !important; }
         .spin { animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        .custom-select {
-          appearance: none;
-          background-color: #f8fafc;
-          border: 1.5px solid #e2e8f0;
-          border-radius: 10px;
-          padding: 8px 32px 8px 12px;
-          font-size: 13px;
-          font-weight: 700;
-          color: #0f172a;
-          cursor: pointer;
-          outline: none;
-          transition: all 0.2s;
-        }
+        .custom-select { appearance: none; -webkit-appearance: none; -moz-appearance: none; background-color: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 8px 32px 8px 12px; font-size: 13px; font-weight: 700; color: #0f172a; cursor: pointer; outline: none; transition: all 0.2s; }
         .custom-select:hover { border-color: #cbd5e1; }
         .custom-select:focus { border-color: #FF6B00; }
-
-        .pagination-btn {
-           width: 38px;
-           height: 38px;
-           display: flex;
-           alignItems: center;
-           justifyContent: center;
-           border-radius: 10px;
-           background-color: #f8fafc;
-           border: 1.5px solid #e2e8f0;
-           color: #64748b;
-           cursor: pointer;
-           transition: all 0.2s;
-        }
+        .pagination-btn { width: 38px; height: 38px; display: flex; alignItems: center; justifyContent: center; border-radius: 10px; background-color: #f8fafc; border: 1.5px solid #e2e8f0; color: #64748b; cursor: pointer; transition: all 0.2s; }
         .pagination-btn:hover:not(:disabled) { border-color: #FF6B00; color: #FF6B00; }
         .pagination-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
         @media (max-width: 768px) {
           .dash-grid { grid-template-columns: 1fr !important; }
           .auth-wrapper { padding: 20px !important; }
@@ -349,7 +310,6 @@ const Attendance = () => {
       
       <Toaster position="top-center" />
 
-      {/* Auth Screen */}
       {step !== 5 && (
         <div className="auth-wrapper" style={styles.authWrapper}>
            <div style={{ position: "absolute", top: "40px", left: "40px" }}>
@@ -361,14 +321,7 @@ const Attendance = () => {
               <form onSubmit={handleEmailCheck}>
                 <div style={styles.inputGroup} className="input-group">
                    <Mail size={20} style={styles.inputIcon} />
-                   <input 
-                    type="email" 
-                    placeholder="E-mail Address" 
-                    style={styles.formInput} 
-                    value={email} 
-                    onChange={e => setEmail(e.target.value)} 
-                    required 
-                  />
+                   <input type="email" placeholder="E-mail Address" style={styles.formInput} value={email} onChange={e => setEmail(e.target.value)} required />
                 </div>
                 <button type="submit" disabled={loading} style={styles.primaryBtn}>
                   {loading ? "Verifying..." : "Continue"}
@@ -403,19 +356,9 @@ const Attendance = () => {
             <AuthCard icon={Fingerprint} title="Verify OTP" sub={`We sent a code to ${email}`}>
               <form onSubmit={handleVerifyOtp}>
                 <div style={styles.inputGroup} className="input-group">
-                   <input 
-                    type="text" 
-                    placeholder="• • • • • •" 
-                    maxLength="6"
-                    style={{ ...styles.formInput, textAlign: "center", fontSize: "28px", letterSpacing: "8px", fontWeight: "800" }} 
-                    value={otp} 
-                    onChange={e => setOtp(e.target.value)} 
-                    required 
-                  />
+                   <input type="text" placeholder="• • • • • •" maxLength="6" style={{ ...styles.formInput, textAlign: "center", fontSize: "28px", letterSpacing: "8px", fontWeight: "800" }} value={otp} onChange={e => setOtp(e.target.value)} required />
                 </div>
-                <button type="submit" disabled={loading} style={styles.primaryBtn}>
-                   Verify Identity
-                </button>
+                <button type="submit" disabled={loading} style={styles.primaryBtn}>Verify Identity</button>
                 <button type="button" onClick={handleSendOtp} style={styles.textBtn}>Resend verification code</button>
               </form>
             </AuthCard>
@@ -425,18 +368,13 @@ const Attendance = () => {
             <AuthCard icon={ShieldCheck} title="Enter PIN" sub="Access your secure dashboard.">
               <form onSubmit={handleLoginPin}>
                 <div style={styles.inputGroup} className="input-group">
-                   <input 
-                    type="password" 
-                    placeholder="Enter PIN" 
-                    maxLength="6"
-                    style={{ ...styles.formInput, textAlign: "center", fontSize: "28px", letterSpacing: "12px", fontWeight: "800" }} 
-                    value={pin} 
-                    onChange={e => setPin(e.target.value)} 
-                    required 
-                  />
+                   <input type="password" placeholder="Enter PIN" maxLength="6" style={{ ...styles.formInput, textAlign: "center", fontSize: "28px", letterSpacing: "12px", fontWeight: "800" }} value={pin} onChange={e => setPin(e.target.value)} required />
                 </div>
                 <button type="submit" disabled={loading} style={styles.primaryBtn}>Login Dashboard</button>
-                <button type="button" onClick={() => setStep(2)} style={styles.textBtn}>Back to methods</button>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+                  <button type="button" onClick={() => setStep(2)} style={styles.textBtn}>Back</button>
+                  <button type="button" onClick={() => { setResetMode(true); handleSendOtp(); }} style={styles.textBtn}>Forgot PIN?</button>
+                </div>
               </form>
             </AuthCard>
           )}
@@ -445,15 +383,7 @@ const Attendance = () => {
             <AuthCard icon={Lock} title="Create Secret PIN" sub="Set a quick access PIN for your next login.">
               <form onSubmit={handleSetFirstPin}>
                 <div style={styles.inputGroup} className="input-group">
-                   <input 
-                    type="password" 
-                    placeholder="Set New PIN" 
-                    maxLength="6"
-                    style={{ ...styles.formInput, textAlign: "center", fontSize: "28px", letterSpacing: "12px", fontWeight: "800" }} 
-                    value={pin} 
-                    onChange={e => setPin(e.target.value)} 
-                    required 
-                  />
+                   <input type="password" placeholder="Set New PIN" maxLength="6" style={{ ...styles.formInput, textAlign: "center", fontSize: "28px", letterSpacing: "12px", fontWeight: "800" }} value={pin} onChange={e => setPin(e.target.value)} required />
                 </div>
                 <button type="submit" disabled={loading} style={styles.primaryBtn}>Confirm & Finish</button>
               </form>
@@ -462,31 +392,28 @@ const Attendance = () => {
         </div>
       )}
 
-      {/* Dashboard Screen */}
       {step === 5 && (
         <div style={styles.dashContainer}>
-          {/* Top Navbar */}
           <header className="header-main" style={styles.dashHeader}>
-            <div className="brand-box" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-               <img src={Logo} alt="Logo" style={{ height: "30px" }} />
-               <div style={{ width: "1px", height: "18px", background: "#e2e8f0" }} />
-               <span className="brand-text" style={styles.dashBrand}>SYSTEM</span>
+            <div className="brand-box">
+               <img src={Logo} alt="Logo" style={styles.headerLogo} />
             </div>
             
-            <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                <div className="time-display" style={styles.timeCluster}>
                   <div style={styles.timeMain}>{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                  <div style={styles.timeSec}>{currentTime.toLocaleTimeString([], { second: '2-digit' })}</div>
+                  <div className="hide-mobile" style={styles.timeSec}>{currentTime.toLocaleTimeString([], { second: '2-digit' })}</div>
                </div>
-               <button onClick={logout} style={styles.logoutBtn}>
-                 <LogOut size={18} />
-                 <span className="hide-mobile">Logout</span>
-               </button>
+               <div style={{ display: 'flex', gap: '10px' }}>
+                 <button onClick={logout} style={styles.logoutBtn}>
+                   <LogOut size={18} />
+                   <span className="hide-mobile">Logout</span>
+                 </button>
+               </div>
             </div>
           </header>
 
           <main style={styles.dashMain}>
-             {/* Header Section */}
              <div style={styles.dashHero}>
                 <div>
                    <h1 style={styles.welcomeText}>
@@ -504,7 +431,6 @@ const Attendance = () => {
              </div>
 
              <div className="dash-grid" style={styles.dashGrid}>
-                {/* Left: Check-in Actions */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
                    <div className="glass-card" style={styles.mainActionCard}>
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "30px" }}>
@@ -537,34 +463,10 @@ const Attendance = () => {
                       </button>
 
                       <div className="stats-grid" style={styles.statsGrid}>
-                         <StatCard 
-                            icon={<Fingerprint color="#1e293b" />} 
-                            label="TOTAL LOGINS" 
-                            value={totalRecords} 
-                            color="#1e293b"
-                            subLabel={`${monthNames[filterMonth]} ${filterYear}`}
-                         />
-                         <StatCard 
-                            icon={<UserCheck color="#10b981" />} 
-                            label="FULL PRESENT" 
-                            value={onTimeCount} 
-                            color="#10b981"
-                            subLabel="Before 11:05 AM"
-                         />
-                         <StatCard 
-                            icon={<Clock color="#f59e0b" />} 
-                            label="LATE LOGINS" 
-                            value={lateCount} 
-                            color="#f59e0b"
-                            subLabel="11:05 AM - 02:00 PM"
-                         />
-                         <StatCard 
-                            icon={<Clock color="#f43f5e" />} 
-                            label="HALF DAYS" 
-                            value={halfDayCount} 
-                            color="#f43f5e"
-                            subLabel="After 02:00 PM"
-                         />
+                         <StatCard icon={<Fingerprint color="#1e293b" />} label="TOTAL LOGINS" value={totalRecords} color="#1e293b" subLabel={`${monthNames[filterMonth]} ${filterYear}`} />
+                         <StatCard icon={<UserCheck color="#10b981" />} label="FULL PRESENT" value={onTimeCount} color="#10b981" subLabel="Before 11:05 AM" />
+                         <StatCard icon={<Clock color="#f59e0b" />} label="LATE LOGINS" value={lateCount} color="#f59e0b" subLabel="11:05 AM - 02:00 PM" />
+                         <StatCard icon={<Clock color="#f43f5e" />} label="HALF DAYS" value={halfDayCount} color="#f43f5e" subLabel="After 02:00 PM" />
                       </div>
                       
                       <div style={{ ...styles.statCard, background: "#f8fafc", boxShadow: "none", border: "1px solid #e2e8f0", marginBottom: "30px", padding: "15px 24px" }}>
@@ -578,7 +480,6 @@ const Attendance = () => {
                    </div>
                 </div>
 
-                {/* Right: History Log */}
                 <div className="glass-card" style={styles.logCard}>
                    <div className="log-header" style={styles.logHeader}>
                       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -589,36 +490,15 @@ const Attendance = () => {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                          <span style={{ fontSize: '11px', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase' }}>Filter:</span>
                          <div className="log-controls" style={{ display: "flex", gap: "8px", position: "relative" }}>
-                         {/* Month Filter */}
                          <div style={{ position: "relative" }}>
-                            <select 
-                               value={filterMonth} 
-                               onChange={(e) => {
-                                  setFilterMonth(e.target.value);
-                                  setCurrentPage(1);
-                               }}
-                               className="custom-select"
-                            >
-                               {monthNames.map((name, i) => (
-                                 <option key={i} value={i}>{name}</option>
-                               ))}
+                            <select value={filterMonth} onChange={(e) => { setFilterMonth(e.target.value); setCurrentPage(1); }} className="custom-select">
+                               {monthNames.map((name, i) => (<option key={i} value={i}>{name}</option>))}
                             </select>
                             <ChevronDown size={14} style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "#64748b" }} />
                          </div>
-
-                         {/* Year Filter */}
                          <div style={{ position: "relative" }}>
-                            <select 
-                               value={filterYear} 
-                               onChange={(e) => {
-                                  setFilterYear(e.target.value);
-                                  setCurrentPage(1);
-                               }}
-                               className="custom-select"
-                            >
-                               {[2024, 2025, 2026].map(year => (
-                                 <option key={year} value={year}>{year}</option>
-                               ))}
+                            <select value={filterYear} onChange={(e) => { setFilterYear(e.target.value); setCurrentPage(1); }} className="custom-select">
+                               {[2024, 2025, 2026].map(year => (<option key={year} value={year}>{year}</option>))}
                             </select>
                             <ChevronDown size={14} style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "#64748b" }} />
                          </div>
@@ -667,26 +547,11 @@ const Attendance = () => {
                              </div>
                            ))}
 
-                           {/* Pagination Controls */}
                            {totalPages > 1 && (
                              <div style={styles.paginationRow}>
-                                <button 
-                                  disabled={currentPage === 1} 
-                                  onClick={() => setCurrentPage(p => p - 1)}
-                                  className="pagination-btn"
-                                >
-                                   <ChevronLeft size={18} />
-                                </button>
-                                <span style={styles.pageIndicator}>
-                                   {currentPage} / {totalPages}
-                                </span>
-                                <button 
-                                  disabled={currentPage === totalPages} 
-                                  onClick={() => setCurrentPage(p => p + 1)}
-                                  className="pagination-btn"
-                                >
-                                   <ChevronRight size={18} />
-                                </button>
+                                <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="pagination-btn"><ChevronLeft size={18} /></button>
+                                <span style={styles.pageIndicator}>{currentPage} / {totalPages}</span>
+                                <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="pagination-btn"><ChevronRight size={18} /></button>
                              </div>
                            )}
                         </>
@@ -864,12 +729,9 @@ const styles = {
     color: "#64748b",
     fontSize: "14px",
     fontWeight: "600",
-    width: "100%",
-    marginTop: "20px",
     cursor: "pointer",
     textDecoration: "underline"
   },
-  // Dashboard Styles
   dashContainer: {
     minHeight: "100vh",
     backgroundColor: "#f8fafc",
@@ -879,18 +741,19 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: "0 40px",
+    padding: "0 20px",
     borderBottom: "1px solid #e2e8f0",
     backgroundColor: "#ffffff",
     position: "sticky",
     top: 0,
-    zIndex: 100
+    zIndex: 100,
+    flexWrap: "nowrap",
+    overflow: "hidden"
   },
-  dashBrand: {
-    color: "#FF6B00",
-    fontWeight: "800",
-    fontSize: "13px",
-    letterSpacing: "1.5px"
+  headerLogo: {
+    height: "24px",
+    maxWidth: "140px",
+    objectFit: "contain"
   },
   timeCluster: {
     display: "flex",
@@ -1027,34 +890,6 @@ const styles = {
      transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
      boxShadow: "0 10px 20px -5px rgba(255, 107, 0, 0.4)"
   },
-  statsRow: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: "15px",
-    marginTop: "25px"
-  },
-  statBox: {
-    backgroundColor: "#f8fafc",
-    padding: "20px",
-    borderRadius: "20px",
-    textAlign: "center",
-    border: "1px solid #e2e8f0"
-  },
-  statVal: {
-    fontSize: "28px",
-    fontWeight: "800",
-    color: "#0f172a",
-    marginBottom: "4px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  statLab: {
-    fontSize: "12px",
-    fontWeight: "700",
-    color: "#94a3b8",
-    textTransform: "uppercase"
-  },
   logCard: {
     padding: "0",
     borderRadius: "32px",
@@ -1076,20 +911,6 @@ const styles = {
      display: "flex",
      alignItems: "center",
      justifyContent: "center"
-  },
-  logTab: {
-    backgroundColor: "#f1f5f9",
-    color: "#64748b",
-    fontSize: "11px",
-    fontWeight: "800",
-    padding: "4px 12px",
-    borderRadius: "100px",
-    textTransform: "uppercase"
-  },
-  logContent: {
-    maxHeight: "500px",
-    overflowY: "auto",
-    padding: "20px 40px 40px"
   },
   logRow: {
     display: "flex",
