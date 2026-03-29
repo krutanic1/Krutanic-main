@@ -497,6 +497,7 @@ const AdvLeadManagement = () => {
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Phone</th>
+                                        <th>Source</th>
                                         <th>Domain</th>
                                         <th>Education</th>
                                         <th>Status Info</th>
@@ -525,6 +526,7 @@ const AdvLeadManagement = () => {
                                                 <td><strong>{lead.full_name}</strong></td>
                                                 <td style={{ fontSize: '12px', color: '#666' }}>{lead.email}</td>
                                                 <td>{lead.phone_number}</td>
+                                                <td style={{ fontSize: '12px', color: '#666' }}>{lead.source || '—'}</td>
                                                 <td style={{ fontSize: '13px' }}>{lead.opted_domain || '—'}</td>
                                                 <td style={{ fontSize: '12px', color: '#555' }}>{lead.education_background || '—'}</td>
                                                 <td style={{ fontSize: '12px', color: '#555' }}>{lead.current_status || '—'}</td>
@@ -534,7 +536,16 @@ const AdvLeadManagement = () => {
                                                     </span>
                                                 </td>
                                                 <td style={{ fontSize: '13px', color: '#555' }}>
-                                                    {lead.owner_name || lead.current_owner_id?.name || '—'}
+                                                    {(() => {
+                                                        const name = lead.owner_name || lead.current_owner_id?.name || '—';
+                                                        const team = lead.team_name || lead.team_id?.team_name || managers.find(m => m.fullname === name || m._id === (lead.owner_id || lead.current_owner_id?._id))?.team;
+                                                        return (
+                                                            <>
+                                                                {name}
+                                                                {team && <><br /><span style={{ color: '#1890ff', fontSize: '11px', fontWeight: '600' }}>({team})</span></>}
+                                                            </>
+                                                        );
+                                                    })()}
                                                 </td>
                                                 <td>
                                                     <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '12px', background: (lead.score || 0) > 15 ? '#f6ffed' : '#f5f5f5', border: `1px solid ${(lead.score || 0) > 15 ? '#b7eb8f' : '#d9d9d9'}` }}>

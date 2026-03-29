@@ -390,14 +390,15 @@ const AdvTeamMyLeads = () => {
                                          <th>#</th>
                                          <th>Name</th>
                                          <th>Email</th>
-                                          <th>Phone</th>
-                                          <th>Domain</th>
-                                          <th>Education</th>
-                                          <th>Assigned To</th>
-                                          <th>Other Details</th>
-                                          <th>Assigned Date</th>
-                                          <th>Score</th>
-                                          <th>Actions</th>
+                                         <th>Phone</th>
+                                         <th>Source</th>
+                                         <th>Domain</th>
+                                         <th>Education</th>
+                                         <th>Assigned To</th>
+                                         <th>Other Details</th>
+                                         <th>Assigned Date</th>
+                                         <th>Score</th>
+                                         <th>Actions</th>
                                       </tr>
                                 </thead>
                                 <tbody>
@@ -415,10 +416,20 @@ const AdvTeamMyLeads = () => {
                                                 <td><strong>{lead.full_name}</strong></td>
                                                 <td style={{ fontSize: '12px', color: '#666' }}>{lead.email || '—'}</td>
                                                 <td>{lead.phone_number}</td>
+                                                <td style={{ fontSize: '12px', color: '#666' }}>{lead.source || '—'}</td>
                                                 <td>{lead.opted_domain || '—'}</td>
                                                 <td style={{ fontSize: '12px', color: '#555' }}>{lead.education_background || '—'}</td>
                                                 <td style={{ fontSize: '13px', color: '#555' }}>
-                                                    {lead.owner_name || lead.current_owner_id?.name || '—'}
+                                                    {(() => {
+                                                        const name = lead.owner_name || lead.current_owner_id?.name || '—';
+                                                        const team = lead.team_name || lead.team_id?.team_name || teamMembers.find(m => m.fullname === name || m._id === (lead.owner_id || lead.current_owner_id?._id))?.team;
+                                                        return (
+                                                            <>
+                                                                {name}
+                                                                {team && <><br /><span style={{ color: '#1890ff', fontSize: '11px', fontWeight: '600' }}>({team})</span></>}
+                                                            </>
+                                                        );
+                                                    })()}
                                                 </td>
                                                 <td style={{ fontSize: '11px', color: '#666', minWidth: '180px', verticalAlign: 'top', padding: '10px 8px' }}>
                                                     {lead.extra_fields && Object.keys(lead.extra_fields).length > 0 ? (
