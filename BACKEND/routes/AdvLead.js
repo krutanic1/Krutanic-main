@@ -99,6 +99,8 @@ router.post("/add-adv-lead", async (req, res) => {
     // Backup for field mapping
     if (!opted_domain && req.body.domain) opted_domain = req.body.domain;
     if (!opted_domain && req.body.Domains) opted_domain = req.body.Domains;
+    if (!opted_domain && req.body.ad_name) opted_domain = req.body.ad_name;
+    if (!opted_domain && req.body.campaign_name) opted_domain = req.body.campaign_name;
 
     // Handle incoming Meta Ads specific field 'phone' if 'phone_number' is missing
     if (!phone_number && req.body.phone) phone_number = req.body.phone;
@@ -131,6 +133,11 @@ router.post("/add-adv-lead", async (req, res) => {
 
         // --- 2. Lead Scoring Logic ---
         let score = 0;
+
+        // Auto-map survey answers for scoring
+        const start_timeframe = req.body.start_timeframe || req.body['how_soon_are_you_planning_to_start?'];
+        const upskilling_ready = req.body.upskilling_ready || req.body['are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?'];
+
         const normalizedDomain = (opted_domain || "").toLowerCase().trim();
         if (normalizedDomain.includes("data science") || normalizedDomain.includes("ai/ml")) score += 10;
 
@@ -138,8 +145,8 @@ router.post("/add-adv-lead", async (req, res) => {
         const currentYear = new Date().getFullYear();
         if (parseInt(year_of_passing) >= currentYear - 2) score += 5;
 
-        if (req.body.upskilling_ready === "Yes") score += 15;
-        if (req.body.start_timeframe === "Immediately") score += 10;
+        if (upskilling_ready === "Yes") score += 15;
+        if (start_timeframe === "Immediately") score += 10;
 
         // --- 3. Auto-assignment & Round-robin ---
         let assignedSpecialistId = null;
@@ -157,14 +164,15 @@ router.post("/add-adv-lead", async (req, res) => {
 
         const newLead = new AdvLead({
             ...req.body,
-            phone_number: phone_number, // Ensure mapped phone is used
-            opted_domain: opted_domain, // Ensure the mapped value is used
+            phone_number: phone_number,
+            opted_domain: opted_domain,
             source: leadSource,
             status: assignedSpecialistId ? "assigned_to_specialist" : "fresh",
             team_id: team?._id,
             current_owner_id: assignedSpecialistId,
             current_owner_role: assignedSpecialistId ? "sr_inside_sales_specialist" : null,
             assigned_at: assignedSpecialistId ? new Date() : undefined,
+            extra_fields: req.body, // Capture all original columns here
             score
         });
 

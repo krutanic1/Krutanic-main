@@ -3,7 +3,7 @@
  * ---------------------------------------
  */
 
-const API_URL = "https://krutanic.com/api/adv-leads/add-adv-lead"; 
+const API_URL = "https://krutanic-main.vercel.app/api/adv-leads/add-adv-lead"; 
 
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
@@ -43,20 +43,25 @@ function syncAllLeads() {
     // --- Hardcoded & Custom Mappings ---
     payload.source = "meta_ads";
     
-    // Core Field Mappings with Cleaning
+    // Core Field Mappings
     if (idxFullName !== -1) payload.full_name = String(row[idxFullName]);
     if (idxPhone !== -1 && row[idxPhone]) {
-      // Clean phone: Remove 'p:', spaces, etc.
       payload.phone_number = String(row[idxPhone]).replace(/^p:/i, '').replace(/\s+/g, '');
     }
     if (idxEmail !== -1) payload.email = String(row[idxEmail]);
 
-    // Advanced Mappings from Meta Ads specific columns
-    const timeframeCol = headersRaw.find(function(h) { return h.toLowerCase().indexOf('planning_to_start') !== -1; });
-    if (timeframeCol) payload.start_timeframe = payload[timeframeCol];
+    // Domain Mapping: use ad_name or campaign_name
+    const idxAdName = headers.indexOf('ad_name');
+    if (idxAdName !== -1) payload.ad_name = String(row[idxAdName]);
+    const idxCampaignName = headers.indexOf('campaign_name');
+    if (idxCampaignName !== -1) payload.campaign_name = String(row[idxCampaignName]);
 
-    const upskillingCol = headersRaw.find(function(h) { return h.toLowerCase().indexOf('willing_to_invest') !== -1; });
-    if (upskillingCol) payload.upskilling_ready = payload[upskillingCol];
+    // Special Survey Mappings (Planning to Start & Language)
+    const timeframeCol = headersRaw.find(function(h) { return h.toLowerCase().indexOf('planning_to_start') !== -1; });
+    if (timeframeCol) payload.start_timeframe = String(payload[timeframeCol]);
+
+    const langCol = headersRaw.find(function(h) { return h.toLowerCase().indexOf('language') !== -1; });
+    if (langCol) payload.language = String(payload[langCol]);
 
     const result = sendLeadToBackend(payload);
     if (result.success) {
@@ -71,7 +76,7 @@ function syncAllLeads() {
 
   var summaryMessage = "Sync Complete!\n✅ Success: " + successCount + "\n❌ Failed: " + errorCount;
   if (errorCount > 0) {
-    summaryMessage += "\n\nLast Error: " + lastError;
+    summaryMessage = summaryMessage + "\n\nLast Error: " + lastError;
   }
   SpreadsheetApp.getUi().alert(summaryMessage);
 }
@@ -128,7 +133,7 @@ function sendLeadToBackend(payload) {
     const response = UrlFetchApp.fetch(API_URL, options);
     const code = response.getResponseCode();
     const responseText = response.getContentText();
-    let responseJson = {};
+    var responseJson = {};
     try { responseJson = JSON.parse(responseText); } catch(e) {}
 
     if (code === 200 || code === 201) return { success: true };
