@@ -96,6 +96,9 @@ const AdminHeader = () => {
             <Link to="/CreateInterviewer">
               <i className="fa fa-user-plus mr-2"></i>Create Interviewer
             </Link>
+            <Link to="/CreateHR">
+               <i className="fa fa-user-circle-o mr-2"></i>Create HR A/c
+            </Link>
             <Link to="/CreateInterview">
               <i className="fa fa-calendar-plus-o mr-2"></i>Create Mock Interview
             </Link>

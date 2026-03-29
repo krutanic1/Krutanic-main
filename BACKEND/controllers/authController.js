@@ -6,6 +6,7 @@ const Bda = require("../models/CreateBDA");
 const Teams = require("../models/CreateAdvTeam");
 const Marketing = require("../models/CreateMarketing");
 const Ops = require("../models/CreateOperation");
+const HR = require("../models/CreateHR");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const redis = require("../config/redis");
@@ -41,7 +42,8 @@ exports.checkUser = async (req, res) => {
         { model: Bda, role: "bda" },
         { model: Teams, role: "team_member" },
         { model: Marketing, role: "marketing" },
-        { model: Ops, role: "operations" }
+        { model: Ops, role: "operations" },
+        { model: HR, role: "hr" }
       ];
 
       for (let item of collections) {
@@ -215,12 +217,18 @@ exports.getAdminUsers = async (req, res) => {
       const records = await Attendance.find({
         userId: u._id,
         date: { $regex: new RegExp(`^${datePrefix}`) }
-      }).select("timestamp");
+      }).select("timestamp isHalfDayOverride");
 
       let lateCount = 0;
       let halfDayCount = 0;
       let onTimeCount = 0;
       records.forEach(r => {
+        // Check Override first
+        if (r.isHalfDayOverride) {
+          halfDayCount++;
+          return;
+        }
+
         // Convert to IST (UTC + 5:30)
         const d = new Date(r.timestamp);
         const istTime = new Date(d.getTime() + (5.5 * 60 * 60 * 1000));
@@ -294,7 +302,9 @@ exports.getAdminUserHistory = async (req, res) => {
       const mins = istTime.getUTCMinutes();
       const totalMinutes = hours * 60 + mins;
 
-      const isHalfDay = totalMinutes > 14 * 60;
+      let isHalfDay = totalMinutes > 14 * 60;
+      if (r.isHalfDayOverride) isHalfDay = true;
+      
       const isLate = !isHalfDay && totalMinutes > 11 * 60 + 5;
       return { ...r.toObject(), isLate, isHalfDay };
     });
@@ -377,5 +387,174 @@ exports.addAdminUser = async (req, res) => {
   } catch (error) {
     console.error("AddAdminUser Error:", error);
     res.status(500).json({ error: "Failed to add member" });
+  }
+};
+
+/**
+ * @desc Send reminders to users who haven't marked attendance today
+ * @route POST /api/atd/admin/send-reminders
+ */
+exports.sendAttendanceReminders = async (req, res) => {
+  try {
+    // Get current date in YYYY-MM-DD (IST)
+    const now = new Date();
+    const istOffset = 5.5 * 60 * 60 * 1000;
+    const istTime = new Date(now.getTime() + istOffset);
+    const today = istTime.toISOString().split("T")[0];
+
+    // Get all users
+    const allUsers = await AtdUser.find({}).select("email name");
+    
+    // Get today's attendance records
+    const attendanceToday = await Attendance.find({ date: today }).select("userId");
+    const usersWithAttendance = new Set(attendanceToday.map(a => a.userId.toString()));
+
+    // Filter missing users
+    const missingUsers = allUsers.filter(u => !usersWithAttendance.has(u._id.toString()));
+
+    if (missingUsers.length === 0) {
+      return res.json({ success: true, message: "All employees have marked attendance today!" });
+    }
+
+    const emailPromises = missingUsers.map(user => {
+      const emailData = {
+        email: user.email.toLowerCase(),
+        subject: "Reminder: Mark Your Attendance",
+        message: `
+          <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px;">
+            <h2 style="color: #0f172a; text-align: center;">Attendance Reminder</h2>
+            <p style="color: #64748b; text-align: center;">Hello ${user.name},</p>
+            <p style="color: #64748b; text-align: center;">We noticed you haven't marked your attendance for today (${today}).</p>
+            <p style="color: #64748b; text-align: center;">Please log in to the portal and mark your attendance promptly.</p>
+            <div style="text-align: center; margin: 25px 0;">
+              <a href="https://www.krutanic.com/attendance" style="background: #FF6B00; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">Go to Dashboard</a>
+            </div>
+            <p style="font-size: 11px; color: #94a3b8; text-align: center;">Note: If you are on an approved leave, please ignore this reminder.</p>
+          </div>
+        `
+      };
+      return sendEmail(emailData).catch(err => {
+        console.error(`Failed to send reminder email to ${user.email}:`, err);
+        return null;
+      });
+    });
+
+    await Promise.all(emailPromises);
+
+    res.json({ 
+      success: true, 
+      message: `Attendance reminders sent to ${missingUsers.length} employees`,
+      count: missingUsers.length
+    });
+  } catch (error) {
+    console.error("SendReminders Error:", error);
+    res.status(500).json({ error: "Failed to send reminders" });
+  }
+};
+
+/**
+ * @desc Send absent notification emails to users who haven't marked attendance today
+ * @route POST /api/atd/admin/send-absent-mails
+ */
+exports.sendAbsentMails = async (req, res) => {
+  try {
+    const now = new Date();
+    const istOffset = 5.5 * 60 * 60 * 1000;
+    const istTime = new Date(now.getTime() + istOffset);
+    const today = istTime.toISOString().split("T")[0];
+
+    const allUsers = await AtdUser.find({}).select("email name");
+    const attendanceToday = await Attendance.find({ date: today }).select("userId");
+    const usersWithAttendance = new Set(attendanceToday.map(a => a.userId.toString()));
+
+    const absentUsers = allUsers.filter(u => !usersWithAttendance.has(u._id.toString()));
+
+    if (absentUsers.length === 0) {
+      return res.json({ success: true, message: "No one is absent today!" });
+    }
+
+    const emailPromises = absentUsers.map(user => {
+      const emailData = {
+        email: user.email.toLowerCase(),
+        subject: "Official Notice: Absent Today",
+        message: `
+          <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #fee2e2; border-radius: 12px; background-color: #fef2f2;">
+            <h2 style="color: #991b1b; text-align: center;">Absence Notification</h2>
+            <p style="color: #450a0a; text-align: center; font-weight: bold;">Hello ${user.name},</p>
+            <p style="color: #7f1d1d; text-align: center;">Our records indicate that you have <strong>not marked your attendance</strong> for today (${today}).</p>
+            <p style="color: #7f1d1d; text-align: center;">As a result, your status for today has been noted as <strong>Absent</strong> in the attendance system.</p>
+            <div style="text-align: center; margin: 25px 0;">
+              <p style="font-size: 14px; color: #991b1b;">If this is an error, please contact HR or mark your attendance immediately if the window is still open.</p>
+              <a href="https://www.krutanic.com/attendance" style="background: #ef4444; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; margin-top: 10px;">View Attendance Portal</a>
+            </div>
+            <p style="font-size: 11px; color: #991b1b; text-align: center; opacity: 0.8;">Note: This is an automated notification. If you are on an approved leave, please ignore this.</p>
+          </div>
+        `
+      };
+      return sendEmail(emailData).catch(err => null);
+    });
+
+    await Promise.all(emailPromises);
+
+    res.json({ 
+      success: true, 
+      message: `Absent notification emails sent to ${absentUsers.length} employees`,
+      count: absentUsers.length
+    });
+  } catch (error) {
+    console.error("SendAbsentMails Error:", error);
+    res.status(500).json({ error: "Failed to send absent emails" });
+  }
+};
+
+/**
+ * @desc Manually update attendance status (Half Day override)
+ * @route PATCH /api/atd/admin/attendance/:recordId
+ */
+exports.updateAttendanceStatus = async (req, res) => {
+  try {
+    const { recordId } = req.params;
+    const { isHalfDayOverride } = req.body;
+
+    const record = await Attendance.findById(recordId);
+    if (!record) return res.status(404).json({ error: "Attendance record not found" });
+
+    const isMarkedHalf = !record.isHalfDayOverride && isHalfDayOverride === true;
+
+    record.isHalfDayOverride = isHalfDayOverride;
+    await record.save();
+
+    // Notify employee if marked as Half Day
+    if (isMarkedHalf) {
+      try {
+        const user = await AtdUser.findById(record.userId);
+        if (user && user.email) {
+          const emailData = {
+            email: user.email.toLowerCase(),
+            subject: "Attendance Update: Marked as Half Day",
+            message: `
+              <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px;">
+                <h2 style="color: #0f172a; text-align: center;">Attendance Notification</h2>
+                <p style="color: #64748b; text-align: center;">Hello ${user.name},</p>
+                <p style="color: #64748b; text-align: center;">This is to inform you that HR has marked your attendance for <strong>${record.date}</strong> as a <strong>Half Day</strong>.</p>
+                <p style="color: #64748b; text-align: center;">Your monthly attendance totals have been updated to reflect this change.</p>
+                <div style="text-align: center; margin: 25px 0;">
+                  <a href="https://www.krutanic.com/attendance" style="background: #FF6B00; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">View Details</a>
+                </div>
+                <p style="font-size: 11px; color: #94a3b8; text-align: center;">If you have any questions regarding this update, please contact the HR department.</p>
+              </div>
+            `
+          };
+          await sendEmail(emailData);
+        }
+      } catch (err) {
+        console.error("Failed to send half-day notification email:", err);
+      }
+    }
+
+    res.json({ success: true, message: "Attendance status updated successfully", record });
+  } catch (error) {
+    console.error("UpdateAttendanceStatus Error:", error);
+    res.status(500).json({ error: "Failed to update status" });
   }
 };

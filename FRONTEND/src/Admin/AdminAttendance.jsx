@@ -49,6 +49,9 @@ const AdminAttendance = () => {
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [sendingReport, setSendingReport] = useState(null); // stores userId being sent
   const [isBulkSending, setIsBulkSending] = useState(false);
+  const [isReminding, setIsReminding] = useState(false);
+  const [isSendingAbsent, setIsSendingAbsent] = useState(false);
+  const [updatingRecord, setUpdatingRecord] = useState(null);
   
   // Add Member State
   const [showAddModal, setShowAddModal] = useState(false);
@@ -187,6 +190,59 @@ const AdminAttendance = () => {
       toast.error("Failed to start bulk dispatch");
     } finally {
       setIsBulkSending(false);
+    }
+  };
+
+  const sendReminders = async () => {
+    if (!window.confirm("Send attendance reminders to all employees who haven't marked attendance today?")) return;
+    setIsReminding(true);
+    try {
+      const token = localStorage.getItem("adminToken");
+      const res = await axios.post(`${API}/api/atd/admin/send-reminders`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success(res.data.message);
+    } catch (err) {
+      toast.error("Failed to send reminders");
+    } finally {
+      setIsReminding(false);
+    }
+  };
+
+  const sendAbsentMails = async () => {
+    if (!window.confirm("Send absent notification emails to all employees who haven't marked attendance today?")) return;
+    setIsSendingAbsent(true);
+    try {
+      const token = localStorage.getItem("adminToken");
+      const res = await axios.post(`${API}/api/atd/admin/send-absent-mails`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success(res.data.message);
+    } catch (err) {
+      toast.error("Failed to send absent emails");
+    } finally {
+      setIsSendingAbsent(false);
+    }
+  };
+
+  const toggleHalfDay = async (recordId, currentVal) => {
+    setUpdatingRecord(recordId);
+    try {
+      const token = localStorage.getItem("adminToken");
+      await axios.patch(`${API}/api/atd/admin/attendance/${recordId}`, {
+        isHalfDayOverride: !currentVal
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success("Status updated");
+      // Update local history
+      setUserHistory(prev => prev.map(r => r._id === recordId ? { ...r, isHalfDayOverride: !currentVal, isHalfDay: !currentVal ? true : r.isHalfDay } : r));
+      // Refresh counts
+      fetchMembers();
+    } catch (err) {
+      toast.error("Failed to update status");
+    } finally {
+      setUpdatingRecord(null);
     }
   };
 
@@ -334,6 +390,28 @@ const AdminAttendance = () => {
           >
              <Users size={18} />
              <span>Add Member</span>
+          </button>
+          <button 
+            style={{ ...styles.exportBtn, background: '#f59e0b', color: 'white', border: 'none' }}
+            onClick={sendReminders}
+            disabled={isReminding}
+          >
+            {isReminding ? (
+              <><Loader size={18} className="animate-spin" /> Reminding...</>
+            ) : (
+              <><Clock size={18} /> Send Reminders</>
+            )}
+          </button>
+          <button 
+            style={{ ...styles.exportBtn, background: '#ef4444', color: 'white', border: 'none' }}
+            onClick={sendAbsentMails}
+            disabled={isSendingAbsent}
+          >
+            {isSendingAbsent ? (
+              <><Loader size={18} className="animate-spin" /> Sending...</>
+            ) : (
+              <><X size={18} /> Send Absent Mails</>
+            )}
           </button>
           <button 
             style={{ ...styles.exportBtn, background: '#0f172a', color: 'white', border: 'none' }}

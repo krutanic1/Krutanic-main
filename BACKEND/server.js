@@ -16,6 +16,7 @@ const createoperation = require("./routes/CreateOperation");
 const createadvoperation = require("./routes/CreateAdvOperation");
 const createbda = require("./routes/CreateBDA");
 const createadvteam = require("./routes/CreateAdvTeam");
+const createhr = require("./routes/CreateHR");
 const Mentorship = require("./routes/Mentorship");
 const Advance = require("./routes/Advance");
 const NewStudentEnroll = require("./routes/NewStudentEnroll");
@@ -107,6 +108,8 @@ app.use("/", CreateMarketing);
 app.use("/", createbda);
 //create adv team
 app.use("/", createadvteam);
+//create hr
+app.use("/", createhr);
 // mentorship
 app.use("/", Mentorship);
 //advance

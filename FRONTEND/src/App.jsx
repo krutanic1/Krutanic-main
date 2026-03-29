@@ -188,6 +188,12 @@ import BDAAgainLogin from "./BDA/BDAAgainLogin";
 import EventDetails from "./page/EventDetails";
 import AdvanceDashboardLayout from "./new_user/AdvanceDashboardLayout";
 
+// HR Portal
+import HRLogin from "./HR/HRLogin";
+import HRHeader from "./HR/HRHeader";
+import HRAttendance from "./HR/HRAttendance";
+import CreateHR from "./Admin/CreateHR";
+
 // Lazily load Advanced Dashboard Pages
 const OverviewPage = lazy(() => import("./new_user/pages/OverviewPage"));
 const TrainingPage = lazy(() => import("./new_user/pages/TrainingPage"));
@@ -235,6 +241,7 @@ const AppContent = () => {
         { key: "pctoken", path: "/PClogin" },
         { key: "eventToken", path: "/EventLogin" },
         { key: "marketingToken", path: "/marketing/login" },
+        { key: "hrToken", path: "/hrlogin" },
       ];
 
       let hasExpired = false;
@@ -339,6 +346,7 @@ const AppContent = () => {
     "/marketing/login",
     "/interviewer-login",
     "/interviewerlogin", // Handle potential typo or case
+    "/hrlogin",
   ];
 
   const adminheaderPaths = [
@@ -380,6 +388,7 @@ const AppContent = () => {
     "/referandearnresponse",
     "/createmarketingteam",
     "/createinterviewer",
+    "/createhr",
     "/createinterview",
     "/adminprojectpage",
     "/advprojectpage",
@@ -450,6 +459,10 @@ const AppContent = () => {
     "/advteam/lead-management"
   ];
 
+  const hrheaderPaths = [
+    "/hrdashboard"
+  ];
+
   const userheaderPaths = [
   ];
 
@@ -471,6 +484,7 @@ const AppContent = () => {
   const isAuthenticatedPC = () => !!localStorage.getItem("pctoken");
   const isAuthenticatedEventUser = () => !!localStorage.getItem("eventToken");
   const isAuthenticatedMarketing = () => !!localStorage.getItem("marketingToken");
+  const isAuthenticatedHR = () => !!localStorage.getItem("hrToken");
 
   return (
     <div>
@@ -490,6 +504,8 @@ const AppContent = () => {
         <AdvTeamHeader />
       ) : placementcoodinatorHeaderPaths.includes(location.pathname.toLowerCase()) && isAuthenticatedPC() ? (
         <PCHeader />
+      ) : hrheaderPaths.includes(location.pathname.toLowerCase()) && isAuthenticatedHR() ? (
+        <HRHeader />
       ) : userheaderPaths.includes(location.pathname.toLowerCase()) ? (
         <UserHeader />
       ) : headerPaths.includes(location.pathname.toLowerCase()) ? (
@@ -572,6 +588,7 @@ const AppContent = () => {
         <Route path="/CreateMarketingTeam" element={isAuthenticatedAdmin() ? (<CreateMarketingTeam />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/CreateInterviewer" element={isAuthenticatedAdmin() ? (<CreateInterviewer />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/CreateInterview" element={isAuthenticatedAdmin() ? (<CreateInterview />) : (<Navigate to="/AdminLogin" />)} />
+        <Route path="/CreateHR" element={isAuthenticatedAdmin() ? (<CreateHR />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/AdvExercisePage" element={isAuthenticatedAdmin() ? (<AdvExercisePage />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/advleadmanagement" element={
           isAuthenticatedAdmin() ? <AdvLeadManagement /> : <Navigate to="/AdminLogin" />
@@ -580,6 +597,11 @@ const AppContent = () => {
           isAuthenticatedAdvTeam() ? <AdvTeamLeadManagement /> : <Navigate to="/AdvTeamLogin" />
         } />
         <Route path="/AdminAnalytics" element={isAuthenticatedAdmin() ? (<AdminAnalytics />) : (<Navigate to="/AdminLogin" />)} />
+
+        {/* HR Portal Start */}
+        <Route path="/hrlogin" element={<HRLogin />} />
+        <Route path="/hrdashboard" element={isAuthenticatedHR() ? <HRAttendance /> : <Navigate to="/hrlogin" />} />
+        {/* HR Portal End */}
 
         {/* Phase 13 Admin CRM Routes */}
         <Route path="/AdvAdminDashboard" element={isAuthenticatedAdmin() ? <AdvAdminDashboard /> : <Navigate to="/AdminLogin" />} />
@@ -711,8 +733,10 @@ const AppContent = () => {
 
       {/* Global Footers - Exclude attendance and clean dashboards */}
       {location.pathname.toLowerCase() !== "/attendance" && 
+       location.pathname.toLowerCase() !== "/hrlogin" &&
        !adminheaderPaths.includes(location.pathname.toLowerCase()) && 
-       !advteamheaderPaths.includes(location.pathname.toLowerCase()) && (
+       !advteamheaderPaths.includes(location.pathname.toLowerCase()) && 
+       !hrheaderPaths.includes(location.pathname.toLowerCase()) && (
         <>
           {lmsFooterPaths.includes(location.pathname.toLowerCase()) ? <LmsFooter /> : <Footer />}
         </>

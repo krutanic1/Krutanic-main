@@ -29,6 +29,10 @@ const attendanceSchema = new mongoose.Schema({
     deviceInfo: {
         type: String,
         required: false
+    },
+    isHalfDayOverride: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true });
 

@@ -4,6 +4,7 @@ const adminMail = require("../models/AdminMail");
 const Operation = require("../models/CreateOperation");
 const bda = require("../models/CreateBDA");
 const advTeam = require("../models/CreateAdvTeam");
+const HrModel = require("../models/CreateHR");
 const expressAsyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
@@ -326,6 +327,63 @@ router.put('/mailsendedadvteam/:id', async (req, res) => {
   }
 });
 
+// -------------------------HR Team--------------------------------
+//send login details to hr team
+router.post('/sendmailtohr', async (req, res) => {
+  const { fullname, email } = req.body;
+  const emailMessage = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+      <div style="background-color: #F15B29; color: #fff; text-align: center; padding: 20px;">
+        <h1>Welcome to Krutanic!</h1>
+      </div>
+      <div style="padding: 20px;">
+        <p style="font-size: 16px; text-transform: capitalize; color: #333;">Dear ${fullname},</p>
+        <p style="font-size: 14px; color: #555;">Welcome to the HR Team at Krutanic!</p>
+        <p style="font-size: 14px; color: #555;">Here are your login details:</p>
+        <p style="font-size: 14px; color: #333;"> Use your official company email (<strong>${email}</strong>) along with the OTP provided to log in.</p>
+        <p style="font-size: 14px; color: #555;">
+          <a href="https://www.krutanic.com/hrlogin" target="_blank" style="color: #F15B29; text-decoration: none;">Click here to log in</a>. 
+        </p>
+        <p style="font-size: 14px; color: #555;">If you need further assistance, feel free to reach out to the IT team.</p>
+        <p style="font-size: 14px; color: #333;">Best regards,</p>
+        <p style="font-size: 14px; color: #333;">Team Krutanic</p>
+      </div>
+      <div style="text-align: center; font-size: 12px; color: #888; padding: 10px 0; border-top: 1px solid #ddd;">
+        <p>&copy; 2024 Krutanic. All Rights Reserved.</p>
+      </div>
+    </div>
+  `;
+  try {
+    await sendEmail({
+      email,
+      subject: 'Welcome to Krutanic - HR Team Login',
+      message: emailMessage,
+    });
+    res.status(200).json({ message: 'Email sent successfully!' });
+  } catch (error) {
+    console.error('Error sending email:', error);
+    res.status(500).json({ message: 'Error sending email.', error: error.message });
+  }
+});
+
+// store a value after sending a login details to hr team 
+router.put('/mailsendedhr/:id', async (req, res) => {
+  const { id } = req.params;
+  const { mailSended } = req.body;
+  const objectId = new mongoose.Types.ObjectId(id);
+  try {
+    const hrData = await HrModel.findById({ _id: objectId });
+    if (!hrData) {
+      return res.status(404).send({ message: 'HR member not found.' });
+    }
+    hrData.mailSended = mailSended;
+    await hrData.save();
+    res.status(200).send({ message: 'HR record updated successfully!', hrData });
+  } catch (error) {
+    console.error('Error updating HR data record:', error);
+    res.status(500).send({ message: 'Failed to update HR record.' });
+  }
+});
 
 router.post("/sendmailtoplacementcoordinator", async (req, res) => {
   const { fullname, email } = req.body;
