@@ -670,7 +670,15 @@ const AdvLeadsBook = () => {
                                                         <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: designTokens.colors.textPrimary }}>Intelligence</h3>
                                                     </div>
 
-                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                                    <div style={{ 
+                                                        display: 'flex', 
+                                                        flexDirection: 'column', 
+                                                        gap: '20px',
+                                                        maxHeight: '600px',
+                                                        overflowY: 'auto',
+                                                        paddingRight: '12px',
+                                                        scrollbarWidth: 'thin'
+                                                    }}>
                                                         {[
                                                             { label: 'Primary Contact', value: lead.email, icon: 'mail' },
                                                             { label: 'Workplace', value: lead.company_name, icon: 'business' },

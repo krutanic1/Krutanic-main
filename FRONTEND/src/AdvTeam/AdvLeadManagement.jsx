@@ -11,6 +11,7 @@ const AdvLeadManagement = () => {
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [selectedLeadForDetails, setSelectedLeadForDetails] = useState(null);
     const limit = 25;
 
     // Auth context
@@ -42,6 +43,17 @@ const AdvLeadManagement = () => {
             const res = await axios.get(`${API}/getadvteam`, { params: { advTeamId } });
             setUserDesignation(res.data.designation);
             setUserName(res.data.fullname);
+            
+            // Automatically select the correct status filter based on role
+            const roleStr = (res.data.designation || "").toLowerCase();
+            if (roleStr.includes("leader")) {
+                setStatusFilter("assigned_to_leader");
+            } else if (roleStr.includes("manager")) {
+                setStatusFilter("assigned_to_manager");
+            } else if (roleStr.includes("specialist")) {
+                setStatusFilter("assigned_to_specialist");
+            }
+            
             console.log("Adv Team Profile:", res.data);
         } catch (err) {
             console.error("Failed to fetch profile");
@@ -76,7 +88,7 @@ const AdvLeadManagement = () => {
         }
     };
 
-    const fetchLeads = async (page = 1) => {
+    const fetchLeads = async (page = 1, forceStatus = statusFilter) => {
         if (!userDesignation) return;
         setLoading(true);
         try {
@@ -85,7 +97,8 @@ const AdvLeadManagement = () => {
                     role: userDesignation,
                     userId: advTeamId,
                     page,
-                    limit
+                    limit,
+                    status: forceStatus
                 }
             });
             if (res.data && res.data.leads) {
@@ -138,9 +151,9 @@ const AdvLeadManagement = () => {
 
     useEffect(() => {
         if (userDesignation) {
-            fetchLeads(currentPage);
+            fetchLeads(currentPage, statusFilter);
         }
-    }, [currentPage, userDesignation]);
+    }, [currentPage, userDesignation, statusFilter]);
 
     const handleBulkAssign = async () => {
         if (!selectedAssignee) { toast.error("Please select a specialist"); return; }
@@ -203,12 +216,72 @@ const AdvLeadManagement = () => {
     const filteredLeads = leads.filter(l => {
         const matchSearch = (l.full_name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
             (l.phone_number || "").includes(searchTerm);
-        const matchStatus = !statusFilter || l.status === statusFilter;
-        return matchSearch && matchStatus;
+        return matchSearch;
     });
 
     return (
         <div id="create-marketing-team">
+            <Toaster position="top-center" />
+            
+            {/* ─── Lead Details Modal ─── */}
+            {selectedLeadForDetails && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                    backgroundColor: 'rgba(0,0,0,0.7)', display: 'flex',
+                    justifyContent: 'center', alignItems: 'center', zIndex: 2000,
+                    backdropFilter: 'blur(4px)'
+                }}>
+                    <div style={{
+                        backgroundColor: '#fff', padding: '32px', borderRadius: '16px',
+                        width: '600px', maxHeight: '85vh', overflowY: 'auto',
+                        boxShadow: '0 20px 50px rgba(0,0,0,0.3)', position: 'relative'
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid #eee', paddingBottom: '16px' }}>
+                            <h2 style={{ margin: 0, color: '#1a1a1a' }}>📝 Lead Intelligence</h2>
+                            <button onClick={() => setSelectedLeadForDetails(null)} style={{ border: 'none', background: '#f5f5f5', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', fontSize: '18px' }}>&times;</button>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+                            <div>
+                                <label style={{ fontSize: '11px', fontWeight: '800', color: '#888', textTransform: 'uppercase' }}>Full Name</label>
+                                <div style={{ fontSize: '15px', fontWeight: '600' }}>{selectedLeadForDetails.full_name}</div>
+                            </div>
+                            <div>
+                                <label style={{ fontSize: '11px', fontWeight: '800', color: '#888', textTransform: 'uppercase' }}>Email Address</label>
+                                <div style={{ fontSize: '15px', fontWeight: '600' }}>{selectedLeadForDetails.email || '—'}</div>
+                            </div>
+                            <div>
+                                <label style={{ fontSize: '11px', fontWeight: '800', color: '#888', textTransform: 'uppercase' }}>Phone Number</label>
+                                <div style={{ fontSize: '15px', fontWeight: '600' }}>{selectedLeadForDetails.phone_number}</div>
+                            </div>
+                            <div>
+                                <label style={{ fontSize: '11px', fontWeight: '800', color: '#888', textTransform: 'uppercase' }}>Target Domain</label>
+                                <div style={{ fontSize: '15px', fontWeight: '600' }}>{selectedLeadForDetails.opted_domain || 'General'}</div>
+                            </div>
+                        </div>
+
+                        <div style={{ background: '#f9f9f9', padding: '20px', borderRadius: '12px', border: '1px solid #eee' }}>
+                            <h3 style={{ marginTop: 0, marginBottom: '16px', fontSize: '14px', color: '#1890ff', borderBottom: '1px dashed #ddd', paddingBottom: '8px' }}>🚀 Meta Ads & Questionnaire Info</h3>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                {Object.entries(selectedLeadForDetails.extra_fields || {}).map(([key, val]) => (
+                                    <div key={key}>
+                                        <div style={{ fontSize: '10px', fontWeight: '800', color: '#888', textTransform: 'uppercase', marginBottom: '2px' }}>{key.replace(/_/g, ' ')}</div>
+                                        <div style={{ fontSize: '13px', color: '#333', fontWeight: '500' }}>{val || '—'}</div>
+                                    </div>
+                                ))}
+                                {(!selectedLeadForDetails.extra_fields || Object.keys(selectedLeadForDetails.extra_fields).length === 0) && (
+                                    <div style={{ color: '#999', fontStyle: 'italic', fontSize: '13px' }}>No questionnaire data available.</div>
+                                )}
+                            </div>
+                        </div>
+                        
+                        <div style={{ marginTop: '24px', textAlign: 'right' }}>
+                            <button onClick={() => setSelectedLeadForDetails(null)} style={{ padding: '10px 24px', background: '#1890ff', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer' }}>Close Details</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="coursetable">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
                     <h1>Team Lead Management ({userDesignation})</h1>
@@ -232,6 +305,7 @@ const AdvLeadManagement = () => {
                                 <i className="fa fa-upload"></i> Upload Leads
                             </button>
                         )}
+                        {/* 
                         {(userDesignation === "ADV Leader" || userDesignation === "LEADER" || userDesignation === "MANAGER" || userDesignation === "ADV Manager") && (
                             <button
                                 onClick={() => setShowAssignPanel(true)}
@@ -251,6 +325,7 @@ const AdvLeadManagement = () => {
                                 <i className="fa fa-user-plus"></i> Assign Leads <span style={{ background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: '10px', fontSize: '12px' }}>{freshCount} available</span>
                             </button>
                         )}
+                        */}
                     </div>
                 </div>
 
@@ -271,7 +346,10 @@ const AdvLeadManagement = () => {
                     />
                     <select
                         value={statusFilter}
-                        onChange={e => setStatusFilter(e.target.value)}
+                        onChange={e => {
+                            setStatusFilter(e.target.value);
+                            setCurrentPage(1);
+                        }}
                         style={{ padding: '10px', border: '1px solid #ddd', borderRadius: '8px', minWidth: '150px' }}
                     >
                         <option value="">All Statuses</option>
@@ -301,7 +379,7 @@ const AdvLeadManagement = () => {
                                         <th>Backend Status</th>
                                         <th>ASSISTED TO</th>
                                         <th>Score</th>
-                                        <th>Other Details</th>
+                                        <th>Details</th>
                                         {userDesignation && userDesignation.toLowerCase().includes("admin") && <th>Actions</th>}
                                     </tr>
                                 </thead>
@@ -340,16 +418,19 @@ const AdvLeadManagement = () => {
                                                         {lead.score || 0}
                                                     </div>
                                                 </td>
-                                                <td style={{ fontSize: '11px', color: '#666', minWidth: '180px', verticalAlign: 'top', padding: '10px 8px' }}>
-                                                    {lead.extra_fields && Object.keys(lead.extra_fields).length > 0 ? (
-                                                        <div style={{ wordBreak: 'break-word', lineHeight: '1.4', whiteSpace: 'normal' }}>
-                                                            {Object.entries(lead.extra_fields).map(([k, v]) => (
-                                                                <div key={k} style={{ marginBottom: '2px' }}>
-                                                                    <strong style={{ color: '#888' }}>{k}:</strong> {v}
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    ) : '—'}
+                                                <td>
+                                                    <button 
+                                                        onClick={() => setSelectedLeadForDetails(lead)}
+                                                        style={{ 
+                                                            padding: '6px 12px', background: '#fff', border: '1px solid #1890ff', 
+                                                            color: '#1890ff', borderRadius: '6px', fontSize: '12px', fontWeight: '700', 
+                                                            cursor: 'pointer', transition: 'all 0.2s' 
+                                                        }}
+                                                        onMouseOver={(e) => { e.currentTarget.style.background = '#1890ff'; e.currentTarget.style.color = '#fff'; }}
+                                                        onMouseOut={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#1890ff'; }}
+                                                    >
+                                                        <i className="fa fa-eye"></i> View All
+                                                    </button>
                                                 </td>
                                                 {userDesignation && userDesignation.toLowerCase().includes("admin") && (
                                                     <td>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import API from "../API";
-import AdminHeader from "./AdminHeader";
+
 
 const AdvTeamDetail = () => {
   const [detailVisible, setDetailVisible] = useState(false);
@@ -360,7 +360,6 @@ const AdvTeamDetail = () => {
 
   return (
     <>
-      <AdminHeader />
       <div id="AdminAddCourse">
       {/* Selected agent detail */}
       {detailVisible && selectedAgent && (

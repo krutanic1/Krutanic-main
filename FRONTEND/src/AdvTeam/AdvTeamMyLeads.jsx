@@ -27,8 +27,9 @@ const AdvTeamMyLeads = () => {
     const [isManualAssignMode, setIsManualAssignMode] = useState(false);
     const [selectedLeadIds, setSelectedLeadIds] = useState([]);
 
-    // Lead Details Modal State
+    // Lead View Modal State
     const [selectedLead, setSelectedLead] = useState(null);
+    const [selectedLeadForDetails, setSelectedLeadForDetails] = useState(null);
 
     // Read from localStorage (set on login)
     const userId = localStorage.getItem("advTeamId");
@@ -48,11 +49,11 @@ const AdvTeamMyLeads = () => {
     // Who can the current user assign to?
     const assignTargetLabel = isManager ? "Leader" : "SR Sales Specialist";
 
-    const fetchMyLeads = async (page = 1) => {
+    const fetchMyLeads = async (page = 1, forceStatus = statusFilter) => {
         setLoading(true);
         try {
             const res = await axios.get(`${API}/api/adv-leads/get-adv-leads`, {
-                params: { role: apiRole, userId, page, limit, strictlyOwned: true }
+                params: { role: apiRole, userId, page, limit, strictlyOwned: true, status: forceStatus }
             });
             if (res.data && res.data.leads) {
                 setLeads(res.data.leads);
@@ -89,17 +90,36 @@ const AdvTeamMyLeads = () => {
                 // Update localStorage for future sessions
                 localStorage.setItem("advTeamDesignation", res.data.designation || "");
                 localStorage.setItem("advTeamTeam", res.data.team || "");
+                
+                // Automatically select the correct status filter based on role
+                const roleStr = (res.data.designation || "").toLowerCase();
+                if (roleStr.includes("leader")) {
+                    setStatusFilter("assigned_to_leader");
+                } else if (roleStr.includes("manager")) {
+                    setStatusFilter("assigned_to_manager");
+                } else if (roleStr.includes("specialist")) {
+                    setStatusFilter("assigned_to_specialist");
+                }
             }
         } catch (err) {
             console.error("Failed to fetch user profile", err);
         }
     };
 
+    // Fetch user profile and team members only once on mount (or when userId changes)
     useEffect(() => {
-        fetchUserProfile();
-        fetchTeamMembers();
-        fetchMyLeads(1);
+        if (userId) {
+            fetchUserProfile();
+            fetchTeamMembers();
+        }
     }, [userId]);
+
+    // Fetch leads whenever page or statusFilter changes
+    useEffect(() => {
+        if (userId) {
+            fetchMyLeads(currentPage, statusFilter);
+        }
+    }, [currentPage, statusFilter, userId]);
 
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
@@ -234,13 +254,12 @@ const AdvTeamMyLeads = () => {
     const filteredLeads = leads.filter(l => {
         const matchSearch = (l.full_name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
             (l.phone_number || "").includes(searchTerm);
-        const matchStatus = !statusFilter || l.status === statusFilter;
         let matchDate = true;
         if (dateFilter && l.created_at) {
           const leadDate = new Date(l.created_at).toISOString().split('T')[0];
           matchDate = leadDate === dateFilter;
         }
-        return matchSearch && matchStatus && matchDate;
+        return matchSearch && matchDate;
     });
 
     const statusBadgeStyle = (status) => {
@@ -258,6 +277,67 @@ const AdvTeamMyLeads = () => {
 
     return (
         <div id="create-marketing-team">
+            <Toaster position="top-center" />
+
+            {/* ─── Lead Details Modal ─── */}
+            {selectedLeadForDetails && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                    backgroundColor: 'rgba(0,0,0,0.7)', display: 'flex',
+                    justifyContent: 'center', alignItems: 'center', zIndex: 2000,
+                    backdropFilter: 'blur(4px)'
+                }}>
+                    <div style={{
+                        backgroundColor: '#fff', padding: '32px', borderRadius: '16px',
+                        width: '600px', maxHeight: '85vh', overflowY: 'auto',
+                        boxShadow: '0 20px 50px rgba(0,0,0,0.3)', position: 'relative'
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid #eee', paddingBottom: '16px' }}>
+                            <h2 style={{ margin: 0, color: '#1a1a1a' }}>📝 Lead Intelligence</h2>
+                            <button onClick={() => setSelectedLeadForDetails(null)} style={{ border: 'none', background: '#f5f5f5', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', fontSize: '18px' }}>&times;</button>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+                            <div>
+                                <label style={{ fontSize: '11px', fontWeight: '800', color: '#888', textTransform: 'uppercase' }}>Full Name</label>
+                                <div style={{ fontSize: '15px', fontWeight: '600' }}>{selectedLeadForDetails.full_name}</div>
+                            </div>
+                            <div>
+                                <label style={{ fontSize: '11px', fontWeight: '800', color: '#888', textTransform: 'uppercase' }}>Email Address</label>
+                                <div style={{ fontSize: '15px', fontWeight: '600' }}>{selectedLeadForDetails.email || '—'}</div>
+                            </div>
+                            <div>
+                                <label style={{ fontSize: '11px', fontWeight: '800', color: '#888', textTransform: 'uppercase' }}>Phone Number</label>
+                                <div style={{ fontSize: '15px', fontWeight: '600' }}>{selectedLeadForDetails.phone_number}</div>
+                            </div>
+                            <div>
+                                <label style={{ fontSize: '11px', fontWeight: '800', color: '#888', textTransform: 'uppercase' }}>Target Domain</label>
+                                <div style={{ fontSize: '15px', fontWeight: '600' }}>{selectedLeadForDetails.opted_domain || 'General'}</div>
+                            </div>
+                        </div>
+
+                        <div style={{ background: '#f9f9f9', padding: '20px', borderRadius: '12px', border: '1px solid #eee' }}>
+                            <h3 style={{ marginTop: 0, marginBottom: '16px', fontSize: '14px', color: '#1890ff', borderBottom: '1px dashed #ddd', paddingBottom: '8px' }}>🚀 Meta Ads & Questionnaire Info</h3>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                {Object.entries(selectedLeadForDetails.extra_fields || {}).map(([key, val]) => (
+                                    <div key={key}>
+                                        <div style={{ fontSize: '10px', fontWeight: '800', color: '#888', textTransform: 'uppercase', marginBottom: '2px' }}>{key.replace(/_/g, ' ')}</div>
+                                        <div style={{ fontSize: '13px', color: '#333', fontWeight: '500' }}>{val || '—'}</div>
+                                    </div>
+                                ))}
+                                {(!selectedLeadForDetails.extra_fields || Object.keys(selectedLeadForDetails.extra_fields).length === 0) && (
+                                    <div style={{ color: '#999', fontStyle: 'italic', fontSize: '13px' }}>No questionnaire data available.</div>
+                                )}
+                            </div>
+                        </div>
+                        
+                        <div style={{ marginTop: '24px', textAlign: 'right' }}>
+                            <button onClick={() => setSelectedLeadForDetails(null)} style={{ padding: '10px 24px', background: '#1890ff', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer' }}>Close Details</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <Toaster position="top-center" />
 
             {showAssignPanel && (
@@ -357,7 +437,10 @@ const AdvTeamMyLeads = () => {
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '15px', flexWrap: 'wrap' }}>
                     <input placeholder="Search current page..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} style={{ padding: '8px 12px', border: '1px solid #ddd', borderRadius: '6px', flex: 1, minWidth: '180px' }} />
                     <input type="date" value={dateFilter} onChange={e => setDateFilter(e.target.value)} style={{ padding: '8px 12px', border: '1px solid #ddd', borderRadius: '6px' }} title="Filter by Assigned Date" />
-                    <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '6px' }}>
+                    <select value={statusFilter} onChange={e => {
+                        setStatusFilter(e.target.value);
+                        setCurrentPage(1);
+                    }} style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '6px' }}>
                         <option value="">All Statuses</option>
                         <option value="fresh">Fresh</option>
                         <option value="assigned_to_manager">Assigned to Manager</option>
@@ -395,7 +478,8 @@ const AdvTeamMyLeads = () => {
                                          <th>Domain</th>
                                          <th>Education</th>
                                          <th>Assigned To</th>
-                                         <th>Other Details</th>
+                                         <th>Details</th>
+                                         <th>Created At</th>
                                          <th>Assigned Date</th>
                                          <th>Score</th>
                                          <th>Actions</th>
@@ -431,18 +515,24 @@ const AdvTeamMyLeads = () => {
                                                         );
                                                     })()}
                                                 </td>
-                                                <td style={{ fontSize: '11px', color: '#666', minWidth: '180px', verticalAlign: 'top', padding: '10px 8px' }}>
-                                                    {lead.extra_fields && Object.keys(lead.extra_fields).length > 0 ? (
-                                                        <div style={{ wordBreak: 'break-word', lineHeight: '1.4', whiteSpace: 'normal' }}>
-                                                            {Object.entries(lead.extra_fields).map(([k, v]) => (
-                                                                <div key={k} style={{ marginBottom: '2px' }}>
-                                                                    <strong style={{ color: '#888' }}>{k}:</strong> {v}
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    ) : '—'}
+                                                <td>
+                                                    <button 
+                                                        onClick={() => setSelectedLeadForDetails(lead)}
+                                                        style={{ 
+                                                            padding: '6px 12px', background: '#fff', border: '1px solid #1890ff', 
+                                                            color: '#1890ff', borderRadius: '6px', fontSize: '12px', fontWeight: '700', 
+                                                            cursor: 'pointer', transition: 'all 0.2s' 
+                                                        }}
+                                                        onMouseOver={(e) => { e.currentTarget.style.background = '#1890ff'; e.currentTarget.style.color = '#fff'; }}
+                                                        onMouseOut={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#1890ff'; }}
+                                                    >
+                                                        <i className="fa fa-eye"></i> View All
+                                                    </button>
                                                 </td>
-                                                <td style={{ fontSize: '13px', color: '#555' }}>
+                                                <td style={{ fontSize: '12px', color: '#888', whiteSpace: 'nowrap' }}>
+                                                    {lead.created_at ? new Date(lead.created_at).toLocaleString('en-IN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}
+                                                </td>
+                                                <td style={{ fontSize: '13px', color: '#555', whiteSpace: 'nowrap' }}>
                                                     {lead.assigned_at ? new Date(lead.assigned_at).toLocaleString('en-IN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : (lead.created_at ? new Date(lead.created_at).toLocaleString('en-IN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—')}
                                                 </td>
                                                 <td>

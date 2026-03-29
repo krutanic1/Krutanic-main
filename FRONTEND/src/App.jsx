@@ -369,6 +369,7 @@ const AppContent = () => {
     "/advfullpaid",
     "/advdefault",
     "/allteamdetail",
+    "/advteamdetail",
     "/masterclasses",
     "/addevent",
     "/eventregistration",

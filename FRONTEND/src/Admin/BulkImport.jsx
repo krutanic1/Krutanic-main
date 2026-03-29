@@ -7,6 +7,7 @@ const BulkImport = () => {
     const [file, setFile] = useState(null);
     const [importStats, setImportStats] = useState(null);
     const [uploading, setUploading] = useState(false);
+    const [selectedSource, setSelectedSource] = useState("Bulk CSV Import");
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
@@ -21,6 +22,7 @@ const BulkImport = () => {
 
         const formData = new FormData();
         formData.append("file", file);
+        formData.append("source", selectedSource);
 
         setUploading(true);
         try {
@@ -47,9 +49,33 @@ const BulkImport = () => {
                 <code style={{ background: '#f5f5f5', padding: '8px 12px', borderRadius: '4px', display: 'block', marginBottom: '10px', fontSize: '13px' }}>
                     full_name, email, phone_number, opted_domain, year_of_passing, company_name
                 </code>
-                <a href="/sample_leads.xlsx" download style={{ display: 'inline-block', marginBottom: '20px', color: '#1890ff', textDecoration: 'none', fontWeight: '500' }}>
+                <a href="/sample_leads.xlsx" download style={{ display: 'inline-block', marginBottom: '10px', color: '#1890ff', textDecoration: 'none', fontWeight: '500' }}>
                     ⬇️ Download Sample Excel File
                 </a>
+
+                <div style={{ marginBottom: '20px', padding: '15px', background: '#fffbe6', border: '1px solid #ffe58f', borderRadius: '8px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#856404' }}>
+                        🎯 Select Lead Source:
+                    </label>
+                    <select 
+                        value={selectedSource}
+                        onChange={(e) => setSelectedSource(e.target.value)}
+                        style={{
+                            width: '100%',
+                            padding: '10px',
+                            borderRadius: '6px',
+                            border: '1px solid #d9d9d9',
+                            fontSize: '14px',
+                            background: '#fff'
+                        }}
+                    >
+                        <option value="Bulk CSV Import">Bulk CSV Import (Default)</option>
+                        <option value="Meta Ads">Meta Ads</option>
+                        <option value="Website Leads">Website Leads</option>
+                        <option value="Email Marketing">Email Marketing</option>
+                        <option value="Organic Leads">Organic Leads</option>
+                    </select>
+                </div>
 
                 <div style={{ margin: '20px 0', padding: '30px', border: '2px dashed #91d5ff', borderRadius: '10px', textAlign: 'center', background: '#f0f9ff' }}>
                     <div style={{ marginBottom: '15px', fontSize: '40px' }}>📄</div>

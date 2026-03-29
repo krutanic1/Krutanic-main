@@ -25,8 +25,9 @@ const AdvTeamRecord = () => {
 
     // Navigation State
     const [view, setView] = useState("specialists"); // "specialists" | "leads" | "history"
-    const [selectedSpecialist, setSelectedSpecialist] = useState(null);
+     const [selectedSpecialist, setSelectedSpecialist] = useState(null);
     const [selectedLead, setSelectedLead] = useState(null);
+    const [selectedLeadForDetails, setSelectedLeadForDetails] = useState(null);
 
     const userId = localStorage.getItem("advTeamId");
     const userName = localStorage.getItem("advTeamName");
@@ -111,6 +112,9 @@ const AdvTeamRecord = () => {
                     id: leadId,
                     name: leadName,
                     phone: leadPhone,
+                    email: act.leadId?.email || "—",
+                    domain: act.leadId?.opted_domain || "General",
+                    extra_fields: act.leadId?.extra_fields || {},
                     activities: [],
                     lastUpdated: null
                 };
@@ -269,6 +273,64 @@ const AdvTeamRecord = () => {
 
     return (
         <div style={styles.container}>
+            {/* ─── Lead Details Modal ─── */}
+            {selectedLeadForDetails && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                    backgroundColor: 'rgba(0,0,0,0.7)', display: 'flex',
+                    justifyContent: 'center', alignItems: 'center', zIndex: 2000,
+                    backdropFilter: 'blur(4px)'
+                }}>
+                    <div style={{
+                        backgroundColor: '#fff', padding: '32px', borderRadius: '16px',
+                        width: '600px', maxHeight: '85vh', overflowY: 'auto',
+                        boxShadow: '0 20px 50px rgba(0,0,0,0.3)', position: 'relative'
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid #eee', paddingBottom: '16px' }}>
+                            <h2 style={{ margin: 0, color: '#1a1a1a' }}>📝 Lead Intelligence</h2>
+                            <button onClick={() => setSelectedLeadForDetails(null)} style={{ border: 'none', background: '#f5f5f5', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', fontSize: '18px' }}>&times;</button>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+                            <div>
+                                <label style={{ fontSize: '11px', fontWeight: '800', color: '#888', textTransform: 'uppercase' }}>Full Name</label>
+                                <div style={{ fontSize: '15px', fontWeight: '600' }}>{selectedLeadForDetails.name}</div>
+                            </div>
+                            <div>
+                                <label style={{ fontSize: '11px', fontWeight: '800', color: '#888', textTransform: 'uppercase' }}>Email Address</label>
+                                <div style={{ fontSize: '15px', fontWeight: '600' }}>{selectedLeadForDetails.email}</div>
+                            </div>
+                            <div>
+                                <label style={{ fontSize: '11px', fontWeight: '800', color: '#888', textTransform: 'uppercase' }}>Phone Number</label>
+                                <div style={{ fontSize: '15px', fontWeight: '600' }}>{selectedLeadForDetails.phone}</div>
+                            </div>
+                            <div>
+                                <label style={{ fontSize: '11px', fontWeight: '800', color: '#888', textTransform: 'uppercase' }}>Target Domain</label>
+                                <div style={{ fontSize: '15px', fontWeight: '600' }}>{selectedLeadForDetails.domain || 'General'}</div>
+                            </div>
+                        </div>
+
+                        <div style={{ background: '#f9f9f9', padding: '20px', borderRadius: '12px', border: '1px solid #eee' }}>
+                            <h3 style={{ marginTop: 0, marginBottom: '16px', fontSize: '14px', color: '#3B82F6', borderBottom: '1px dashed #ddd', paddingBottom: '8px' }}>🚀 Meta Ads & Questionnaire Info</h3>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                {Object.entries(selectedLeadForDetails.extra_fields || {}).map(([key, val]) => (
+                                    <div key={key}>
+                                        <div style={{ fontSize: '10px', fontWeight: '800', color: '#888', textTransform: 'uppercase', marginBottom: '2px' }}>{key.replace(/_/g, ' ')}</div>
+                                        <div style={{ fontSize: '13px', color: '#333', fontWeight: '500' }}>{val || '—'}</div>
+                                    </div>
+                                ))}
+                                {(!selectedLeadForDetails.extra_fields || Object.keys(selectedLeadForDetails.extra_fields).length === 0) && (
+                                    <div style={{ color: '#999', fontStyle: 'italic', fontSize: '13px' }}>No questionnaire data available.</div>
+                                )}
+                            </div>
+                        </div>
+                        
+                        <div style={{ marginTop: '24px', textAlign: 'right' }}>
+                            <button onClick={() => setSelectedLeadForDetails(null)} style={{ padding: '10px 24px', background: '#3B82F6', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer' }}>Close Details</button>
+                        </div>
+                    </div>
+                </div>
+            )}
             <Toaster position="top-center" />
 
             <header style={styles.header}>
@@ -444,7 +506,7 @@ const AdvTeamRecord = () => {
                                                 <span style={styles.badge('#3B82F6')}>{lead.activities.length} logs</span>
                                             </td>
                                             <td style={styles.td}>{formatDate(lead.lastUpdated)}</td>
-                                            <td style={styles.td}>
+                                            <td style={{ ...styles.td, display: 'flex', gap: '8px' }}>
                                                 <button
                                                     onClick={() => { setSelectedLead(lead); setView("history"); }}
                                                     style={{
@@ -453,6 +515,15 @@ const AdvTeamRecord = () => {
                                                     }}
                                                 >
                                                     View History
+                                                </button>
+                                                <button
+                                                    onClick={() => { setSelectedLeadForDetails(lead); }}
+                                                    style={{
+                                                        padding: '6px 12px', background: '#fff', color: '#3B82F6',
+                                                        border: '1px solid #3B82F6', borderRadius: '8px', cursor: 'pointer', fontSize: '12px'
+                                                    }}
+                                                >
+                                                    View Details
                                                 </button>
                                             </td>
                                         </tr>

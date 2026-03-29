@@ -422,7 +422,7 @@ router.post("/manual-bulk-assign", async (req, res) => {
 
 // GET: Fetch leads based on role with team-based isolation
 router.get("/get-adv-leads", async (req, res) => {
-    const { role, userId, page = 1, limit = 25, outcome, strictlyOwned, date } = req.query;
+    const { role, userId, page = 1, limit = 25, outcome, strictlyOwned, date, status } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
     try {
@@ -488,8 +488,12 @@ router.get("/get-adv-leads", async (req, res) => {
             }
         }
 
-        // Apply outcome and date filters if provided
+        // Apply extra filters if provided
         let query = { ...baseQuery };
+        if (status) {
+            query.status = status;
+        }
+        
         if (outcome) {
             if (outcome === "fresh") {
                 // Leads with no interaction are considered fresh
@@ -513,9 +517,12 @@ router.get("/get-adv-leads", async (req, res) => {
         const leads = await AdvLead.find(query)
             .populate("team_id", "team_name")
             .populate("current_owner_id", "name")
-            // Sort by assigned_at ascending (nulls/undefined first = fresh leads)
-            // then by created_at descending (newest first)
-            .sort({ assigned_at: 1, created_at: -1 })
+            // CRITICAL SORT:
+            // 1. last_interaction_at: 1 (Put Leads with NULL/No interaction at the very top of Page 1, 2, 3...)
+            // 2. status: -1 (Among fresh interactions, prioritize those explicitly marked 'fresh' over those assigned to someone)
+            // 3. assigned_at: -1 (Most recently assigned leads first)
+            // 4. created_at: -1 (Newest Leads of each category first)
+            .sort({  assigned_at: -1, created_at: -1 })
             .skip(skip)
             .limit(parseInt(limit));
 
@@ -761,7 +768,7 @@ const normalizeHeader = (header) => {
 router.post("/bulk-import", upload.single("file"), async (req, res) => {
     if (!req.file) return res.status(400).json({ message: "No file uploaded" });
 
-    const { uploaderId, uploaderRole, uploaderName } = req.body;
+    const { uploaderId, uploaderRole, uploaderName, source } = req.body;
 
     const processLeads = async (rawLeads) => {
         try {
@@ -840,7 +847,7 @@ router.post("/bulk-import", upload.single("file"), async (req, res) => {
 
                         const newLead = new AdvLead({
                             ...leadData,
-                            source: "csv_import",
+                            source: source || "Bulk CSV Import",
                             status: status,
                             owner_id,
                             owner_name,
