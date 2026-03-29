@@ -100,6 +100,18 @@ router.post("/add-adv-lead", async (req, res) => {
     if (!opted_domain && req.body.domain) opted_domain = req.body.domain;
     if (!opted_domain && req.body.Domains) opted_domain = req.body.Domains;
 
+    // Handle incoming Meta Ads specific field 'phone' if 'phone_number' is missing
+    if (!phone_number && req.body.phone) phone_number = req.body.phone;
+    if (!phone_number && req.body.Phone) phone_number = req.body.Phone;
+
+    // ✅ NORMALIZE PHONE NUMBER: Remove Meta Ads 'p:' prefix and other formatting
+    if (phone_number) {
+        phone_number = String(phone_number).replace(/^p:/i, '').replace(/\s+/g, '');
+    }
+
+    // Handle incoming source mapping (default to google_form)
+    const leadSource = req.body.source || "google_form";
+
     try {
         const existingLead = await AdvLead.findOne({ phone_number });
         if (existingLead) {
@@ -145,8 +157,9 @@ router.post("/add-adv-lead", async (req, res) => {
 
         const newLead = new AdvLead({
             ...req.body,
+            phone_number: phone_number, // Ensure mapped phone is used
             opted_domain: opted_domain, // Ensure the mapped value is used
-            source: "google_form",
+            source: leadSource,
             status: assignedSpecialistId ? "assigned_to_specialist" : "fresh",
             team_id: team?._id,
             current_owner_id: assignedSpecialistId,
