@@ -19,6 +19,65 @@ const RemoteDialQueue = require("../models/RemoteDialQueue");
 const cloudinary = require("../middleware/cloudinary");
 const axios = require("axios");
 
+// ✅ Meta Webhook Verification (GET)
+router.get("/meta-webhook", (req, res) => {
+    const mode = req.query['hub.mode'];
+    const token = req.query['hub.verify_token'];
+    const challenge = req.query['hub.challenge'];
+    const verifyToken = process.env.META_VERIFY_TOKEN || 'meta_krutanic_2026';
+
+    if (mode === 'subscribe' && token === verifyToken) {
+        console.log("Meta Webhook Verified ✅");
+        return res.status(200).send(challenge);
+    }
+    return res.status(403).send('Forbidden');
+});
+
+// ✅ Test Meta Lead Capture Simulation
+router.get("/test-meta-lead", (req, res) => {
+    res.status(400).json({ error: "Missing Lead ID. Use: /test-meta-lead/[LEAD_ID]" });
+});
+
+router.get("/test-meta-lead/:leadId", async (req, res) => {
+    const { leadId } = req.params;
+    console.log(`🛠️ Manually triggering Meta Lead capture for ID: ${leadId}`);
+    try {
+        const leadData = await fetchLeadFromMeta(leadId);
+        if (!leadData) return res.status(400).json({ error: "Failed to fetch lead details. Check server logs." });
+        const lead = await processAndSaveLead(leadData);
+        res.status(200).json({ success: true, message: "Lead captured successfully", lead });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ✅ Receive Lead Data from Meta (POST)
+router.post("/meta-webhook", async (req, res) => {
+    console.log("---- 🔔 Meta Webhook Received ----");
+    console.log("Body:", JSON.stringify(req.body, null, 2));
+    const body = req.body;
+
+    if (body.object === 'page') {
+        try {
+            for (const entry of body.entry) {
+                for (const change of entry.changes) {
+                    if (change.field === 'leadgen') {
+                        const leadId = change.value.leadgen_id;
+                        console.log(`Processing Meta Lead ID: ${leadId}`);
+                        const leadData = await fetchLeadFromMeta(leadId);
+                        if (leadData) await processAndSaveLead(leadData);
+                    }
+                }
+            }
+            return res.status(200).json({ status: 'ok' });
+        } catch (error) {
+            console.error("Meta Webhook Processing Error:", error.message);
+            return res.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+    res.status(404).json({ error: "Not a page event" });
+});
+
 // Reusable function to process lead scoring, assignment and saving
 async function processAndSaveLead(leadPayload) {
     let { phone_number, opted_domain, company_name, year_of_passing, full_name, email, source } = leadPayload;
@@ -155,23 +214,6 @@ async function fetchLeadFromMeta(leadId) {
     }
 }
 
-// 🛠️ DEBUG ONLY: Test Meta Lead Capture simulation
-router.get("/test-meta-lead/:leadId", async (req, res) => {
-    const { leadId } = req.params;
-    console.log(`🛠️ Manually triggering Meta Lead capture for ID: ${leadId}`);
-    try {
-        const leadData = await fetchLeadFromMeta(leadId);
-        if (!leadData) {
-            return res.status(400).json({ error: "Failed to fetch lead details. Check server logs." });
-        }
-        const lead = await processAndSaveLead(leadData);
-        res.status(200).json({ success: true, message: "Lead captured successfully", lead });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-
 
 // GET: Fetch counts for all lead outcomes with team-based isolation
 router.get("/get-outcome-counts", async (req, res) => {
@@ -255,52 +297,6 @@ router.post("/add-adv-lead", async (req, res) => {
     }
 });
 
-// ✅ Meta Webhook Verification (GET request)
-router.get("/meta-webhook", (req, res) => {
-    const mode = req.query['hub.mode'];
-    const token = req.query['hub.verify_token'];
-    const challenge = req.query['hub.challenge'];
-    const verifyToken = process.env.META_VERIFY_TOKEN || 'meta_krutanic_2026';
-
-    if (mode === 'subscribe' && token === verifyToken) {
-        console.log("Meta Webhook Verified ✅");
-        return res.status(200).send(challenge);
-    } else {
-        return res.status(403).send('Forbidden');
-    }
-});
-
-// ✅ Receive Lead Data from Meta (POST request)
-router.post("/meta-webhook", async (req, res) => {
-    console.log("---- 🔔 Meta Webhook Received ----");
-    console.log("Body:", JSON.stringify(req.body, null, 2));
-    const body = req.body;
-
-    if (body.object === 'page') {
-        try {
-            for (const entry of body.entry) {
-                for (const change of entry.changes) {
-                    if (change.field === 'leadgen') {
-                        const leadId = change.value.leadgen_id;
-                        console.log(`Processing Meta Lead ID: ${leadId}`);
-
-                        // Fetch lead details from Meta
-                        const leadData = await fetchLeadFromMeta(leadId);
-                        if (leadData) {
-                            // Save to CRM using the refactored function
-                            await processAndSaveLead(leadData);
-                        }
-                    }
-                }
-            }
-            return res.status(200).json({ status: 'ok' });
-        } catch (error) {
-            console.error("Meta Webhook Processing Error:", error.message);
-            return res.status(500).json({ error: "Internal Server Error" });
-        }
-    }
-    res.status(404).json({ error: "Not a page event" });
-});
 
 // GET: Count fresh leads
 router.get("/fresh-leads-count", async (req, res) => {
