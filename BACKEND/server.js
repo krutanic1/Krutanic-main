@@ -85,11 +85,16 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-app.use(bodyParser.json());
-app.use(cookieParser());
+// Middleware to parse JSON with raw body capture for webhook verification
+const captureRawBody = (req, res, buf) => {
+  if (req.originalUrl && req.originalUrl.includes('/meta-webhook')) {
+    req.rawBody = buf;
+  }
+};
 
-// Middleware to parse JSON
-app.use(express.json());
+app.use(bodyParser.json({ verify: captureRawBody }));
+app.use(express.json({ verify: captureRawBody }));
+app.use(cookieParser());
 
 // ✅ Attendance (Cumulative Timer) - Priority Registration
 const AttendanceRoute = require("./routes/Attendance");

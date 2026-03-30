@@ -18,6 +18,7 @@ const AdvTeamMember = require("../models/CreateAdvTeam");
 const RemoteDialQueue = require("../models/RemoteDialQueue");
 const cloudinary = require("../middleware/cloudinary");
 const axios = require("axios");
+const crypto = require("crypto");
 
 // ✅ Meta Webhook Verification (GET)
 router.get("/meta-webhook", (req, res) => {
@@ -56,12 +57,28 @@ router.get("/test-meta-lead/:leadId", async (req, res) => {
     }
 });
 
-// ✅ Receive Lead Data from Meta (POST)
+// ✅ Receive Lead Data from Meta (POST request with HMAC Verification)
 router.post("/meta-webhook", async (req, res) => {
     console.log("---- 🔔 Meta Webhook Received ----");
-    console.log("Body:", JSON.stringify(req.body, null, 2));
-    const body = req.body;
+    
+    // 🛡️ Security Check: HMAC Signature Verification
+    const signature = req.headers['x-hub-signature-256'];
+    const APP_SECRET = process.env.META_APP_SECRET;
 
+    if (APP_SECRET && signature) {
+        const hmac = crypto.createHmac('sha256', APP_SECRET);
+        const hash = 'sha256=' + hmac.update(req.rawBody).digest('hex');
+        
+        if (signature !== hash) {
+            console.error("❌ Meta Webhook: Invalid Signature. Request rejected.");
+            return res.status(401).json({ error: "Invalid signature" });
+        }
+        console.log("✅ Meta Webhook Signature Verified.");
+    } else if (!APP_SECRET) {
+        console.warn("⚠️  META_APP_SECRET missing in .env. Skipping signature verification.");
+    }
+
+    const body = req.body;
     if (body.object === 'page') {
         try {
             for (const entry of body.entry) {
@@ -69,8 +86,10 @@ router.post("/meta-webhook", async (req, res) => {
                     if (change.field === 'leadgen') {
                         const leadId = change.value.leadgen_id;
                         console.log(`Processing Meta Lead ID: ${leadId}`);
-                        const leadData = await fetchLeadFromMeta(leadId);
-                        if (leadData) await processAndSaveLead(leadData);
+                        const result = await fetchLeadFromMeta(leadId);
+                        if (result && !result.error) {
+                            await processAndSaveLead(result);
+                        }
                     }
                 }
             }
@@ -169,14 +188,14 @@ async function processAndSaveLead(leadPayload) {
     }
     return newLead;
 }
-
 async function fetchLeadFromMeta(leadId) {
     const accessToken = process.env.META_PAGE_ACCESS_TOKEN;
     if (!accessToken) {
         console.error("META_PAGE_ACCESS_TOKEN is missing in environment variables");
-        return null;
+        return { error: true, detail: "Missing Access Token" };
     }
     try {
+        // Using v21.0 as it's the current recommended version
         const response = await axios.get(`https://graph.facebook.com/v21.0/${leadId}`, {
             params: { 
                 access_token: accessToken,
