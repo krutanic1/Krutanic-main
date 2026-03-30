@@ -651,7 +651,7 @@ router.get("/get-adv-leads", async (req, res) => {
             // 2. status: -1 (Among fresh interactions, prioritize those explicitly marked 'fresh' over those assigned to someone)
             // 3. assigned_at: -1 (Most recently assigned leads first)
             // 4. created_at: -1 (Newest Leads of each category first)
-            .sort({ status: -1, created_at: -1 })
+            .sort({  assigned_at: -1, created_at: -1 })
             .skip(skip)
             .limit(parseInt(limit));
 
