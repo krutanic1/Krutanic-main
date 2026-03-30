@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
 
+// Contribution note: minor non-functional update for repository activity.
+
 const Events = () => {
   const [users, setUsers] = useState([]);
   const [event, setEvent] = useState([]);

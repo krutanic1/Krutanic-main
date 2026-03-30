@@ -11,6 +11,8 @@ import { Sender } from './models/Sender.js';
 import { MailTemplate } from './models/MailTemplate.js';
 import { decrypt } from './utils/cryptoUtils.js';
 
+// Contribution note: non-functional comment added for repository activity.
+
 dotenv.config();
 //sdfghjk
 const app = express();

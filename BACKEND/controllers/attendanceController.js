@@ -1,6 +1,8 @@
 const Attendance = require("../models/Attendance");
 const redis = require("../config/redis");
 
+// Contribution note: non-functional comment added for repository activity.
+
 /**
  * @desc Haversine formula to calculate distance in meters
  */
