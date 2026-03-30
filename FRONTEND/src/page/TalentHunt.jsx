@@ -7,7 +7,6 @@ import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import API from "../API";
 import logo from '../assets/LOGO3.png';
-import Footer from "../Components/Footer";
 import Header from "../Components/Header";
 
 import Typed from 'typed.js';
@@ -324,7 +323,7 @@ const TalentHunt = () => {
         </div>
       )}
 
-      <Footer />
+
     </div>
   );
 };

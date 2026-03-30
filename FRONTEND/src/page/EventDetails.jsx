@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import API from "../API";
 import Header from "../Components/Header";
-import Footer from "../Components/Footer";
 import { Helmet } from "react-helmet";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -291,8 +290,6 @@ const EventDetails = () => {
                     </div>
                 </div>
             </main>
-
-            <Footer />
         </div>
     );
 };

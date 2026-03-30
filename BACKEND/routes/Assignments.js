@@ -44,7 +44,7 @@ router.post('/attempt', async (req, res) => {
             levelData.status = 'Not Started';
         }
 
-        await stats.save();
+          await stats.save();
 
         res.json({ message: 'Attempt recorded', attempt, stats: stats.levels[level] });
 

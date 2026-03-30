@@ -734,6 +734,8 @@ const AppContent = () => {
       {/* Global Footers - Exclude attendance and clean dashboards */}
       {location.pathname.toLowerCase() !== "/attendance" && 
        location.pathname.toLowerCase() !== "/hrlogin" &&
+       location.pathname.toLowerCase() !== "/eventdashboard" &&
+       location.pathname.toLowerCase() !== "/dashboard" &&
        !adminheaderPaths.includes(location.pathname.toLowerCase()) && 
        !advteamheaderPaths.includes(location.pathname.toLowerCase()) && 
        !hrheaderPaths.includes(location.pathname.toLowerCase()) && (
