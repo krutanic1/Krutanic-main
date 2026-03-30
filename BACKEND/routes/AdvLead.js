@@ -145,10 +145,31 @@ async function fetchLeadFromMeta(leadId) {
         }
         return mappedData;
     } catch (error) {
-        console.error("Error fetching lead from Meta:", error.response?.data || error.message);
+        console.error("❌ Meta API Error (fetchLeadFromMeta):", {
+            leadId,
+            status: error.response?.status,
+            data: error.response?.data,
+            message: error.message
+        });
         return null;
     }
 }
+
+// 🛠️ DEBUG ONLY: Test Meta Lead Capture simulation
+router.get("/test-meta-lead/:leadId", async (req, res) => {
+    const { leadId } = req.params;
+    console.log(`🛠️ Manually triggering Meta Lead capture for ID: ${leadId}`);
+    try {
+        const leadData = await fetchLeadFromMeta(leadId);
+        if (!leadData) {
+            return res.status(400).json({ error: "Failed to fetch lead details. Check server logs." });
+        }
+        const lead = await processAndSaveLead(leadData);
+        res.status(200).json({ success: true, message: "Lead captured successfully", lead });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 
 
@@ -251,7 +272,8 @@ router.get("/meta-webhook", (req, res) => {
 
 // ✅ Receive Lead Data from Meta (POST request)
 router.post("/meta-webhook", async (req, res) => {
-    console.log("Receiving Meta Webhook POST:", JSON.stringify(req.body, null, 2));
+    console.log("---- 🔔 Meta Webhook Received ----");
+    console.log("Body:", JSON.stringify(req.body, null, 2));
     const body = req.body;
 
     if (body.object === 'page') {
