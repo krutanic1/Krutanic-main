@@ -42,9 +42,14 @@ router.get("/test-meta-lead/:leadId", async (req, res) => {
     const { leadId } = req.params;
     console.log(`🛠️ Manually triggering Meta Lead capture for ID: ${leadId}`);
     try {
-        const leadData = await fetchLeadFromMeta(leadId);
-        if (!leadData) return res.status(400).json({ error: "Failed to fetch lead details. Check server logs." });
-        const lead = await processAndSaveLead(leadData);
+        const result = await fetchLeadFromMeta(leadId);
+        if (result && result.error) {
+            return res.status(400).json({ 
+                error: "Meta API rejected the request.", 
+                details: result.detail 
+            });
+        }
+        const lead = await processAndSaveLead(result);
         res.status(200).json({ success: true, message: "Lead captured successfully", lead });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -204,13 +209,14 @@ async function fetchLeadFromMeta(leadId) {
         }
         return mappedData;
     } catch (error) {
+        const errorDetail = error.response?.data || error.message;
         console.error("❌ Meta API Error (fetchLeadFromMeta):", {
             leadId,
             status: error.response?.status,
-            data: error.response?.data,
+            data: errorDetail,
             message: error.message
         });
-        return null;
+        return { error: true, detail: errorDetail };
     }
 }
 
