@@ -17,6 +17,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "KRUTANIC24";
 function sanitizeAtdUser(userDoc) {
   if (!userDoc) return userDoc;
   const user = typeof userDoc.toObject === "function" ? userDoc.toObject() : { ...userDoc };
+  user.hasPin = !!user.pin;
   delete user.pin;
   return user;
 }

@@ -137,7 +137,7 @@ exports.getHistory = async (req, res) => {
     const rawData = await Attendance.find(filter)
       .sort({ timestamp: -1 })
       .skip(skip)
-      .limit(parseInt(limit));
+      .limit(parseInt(limit)); 
 
     const data = rawData.map(h => {
       // Convert to IST (UTC + 5:30)

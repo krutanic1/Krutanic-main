@@ -66,6 +66,7 @@ const Attendance = () => {
   const [otp, setOtp] = useState("");
   const [pin, setPin] = useState("");
   const [resetMode, setResetMode] = useState(false);
+  const [cameFromEmail, setCameFromEmail] = useState(false);
   const [loading, setLoading] = useState(false);
   const [marking, setMarking] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -103,7 +104,11 @@ const Attendance = () => {
       const user = JSON.parse(storedUser);
       setEmail(user.email);
       setUserData(user);
-      setStep(2);
+      if (user.hasPin) {
+        setStep(4);
+      } else {
+        setStep(2);
+      }
     }
   }, []);
 
@@ -138,8 +143,9 @@ const Attendance = () => {
     try {
       const res = await axios.post(`${API}/api/atd/check-user`, { email });
       setUserData(res.data);
-      if (res.data.pin) {
-        setStep(2); 
+      if (res.data.hasPin) {
+        setCameFromEmail(true);
+        setStep(4); // Direct to PIN screen
       } else {
         handleSendOtp(); 
       }
@@ -169,6 +175,9 @@ const Attendance = () => {
     try {
       const res = await axios.post(`${API}/api/atd/verify-otp`, { email, otp });
       if (resetMode) {
+        localStorage.setItem("atdToken", res.data.token);
+        localStorage.setItem("atdUser", JSON.stringify(res.data.user));
+        setUserData(res.data.user);
         setStep(6);
         setResetMode(false);
       } else {
@@ -225,7 +234,7 @@ const Attendance = () => {
     localStorage.setItem("atdToken", data.token);
     localStorage.setItem("atdUser", JSON.stringify(data.user));
     setUserData(data.user);
-    if (!data.user.pin) {
+    if (!data.user.hasPin) {
       setPin("");
       setStep(6);
     } else {
@@ -289,7 +298,8 @@ const Attendance = () => {
         .input-group:focus-within svg { color: #FF6B00 !important; }
         .spin { animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .custom-select { appearance: none; -webkit-appearance: none; -moz-appearance: none; background-color: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 8px 32px 8px 12px; font-size: 13px; font-weight: 700; color: #0f172a; cursor: pointer; outline: none; transition: all 0.2s; }
+        .custom-select { appearance: none !important; -webkit-appearance: none !important; -moz-appearance: none !important; background-color: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 8px 32px 8px 12px; font-size: 13px; font-weight: 700; color: #0f172a; cursor: pointer; outline: none; transition: all 0.2s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important; background-repeat: no-repeat !important; background-position: right 10px center !important; }
+        .custom-select::-ms-expand { display: none !important; }
         .custom-select:hover { border-color: #cbd5e1; }
         .custom-select:focus { border-color: #FF6B00; }
         .pagination-btn { width: 38px; height: 38px; display: flex; alignItems: center; justifyContent: center; border-radius: 10px; background-color: #f8fafc; border: 1.5px solid #e2e8f0; color: #64748b; cursor: pointer; transition: all 0.2s; }
@@ -372,7 +382,7 @@ const Attendance = () => {
                 </div>
                 <button type="submit" disabled={loading} style={styles.primaryBtn}>Login Dashboard</button>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
-                  <button type="button" onClick={() => setStep(2)} style={styles.textBtn}>Back</button>
+                  <button type="button" onClick={() => { if (cameFromEmail) { setStep(1); setCameFromEmail(false); } else { setStep(2); } }} style={styles.textBtn}>Back</button>
                   <button type="button" onClick={() => { setResetMode(true); handleSendOtp(); }} style={styles.textBtn}>Forgot PIN?</button>
                 </div>
               </form>
@@ -490,18 +500,16 @@ const Attendance = () => {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                          <span style={{ fontSize: '11px', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase' }}>Filter:</span>
                          <div className="log-controls" style={{ display: "flex", gap: "8px", position: "relative" }}>
-                         <div style={{ position: "relative" }}>
-                            <select value={filterMonth} onChange={(e) => { setFilterMonth(e.target.value); setCurrentPage(1); }} className="custom-select">
-                               {monthNames.map((name, i) => (<option key={i} value={i}>{name}</option>))}
-                            </select>
-                            <ChevronDown size={14} style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "#64748b" }} />
-                         </div>
-                         <div style={{ position: "relative" }}>
-                            <select value={filterYear} onChange={(e) => { setFilterYear(e.target.value); setCurrentPage(1); }} className="custom-select">
-                               {[2024, 2025, 2026].map(year => (<option key={year} value={year}>{year}</option>))}
-                            </select>
-                            <ChevronDown size={14} style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "#64748b" }} />
-                         </div>
+                          <div style={{ position: "relative" }}>
+                             <select value={filterMonth} onChange={(e) => { setFilterMonth(e.target.value); setCurrentPage(1); }} className="custom-select">
+                                {monthNames.map((name, i) => (<option key={i} value={i}>{name}</option>))}
+                             </select>
+                          </div>
+                          <div style={{ position: "relative" }}>
+                             <select value={filterYear} onChange={(e) => { setFilterYear(e.target.value); setCurrentPage(1); }} className="custom-select">
+                                {[2024, 2025, 2026].map(year => (<option key={year} value={year}>{year}</option>))}
+                             </select>
+                          </div>
                       </div>
                       </div>
                    </div>

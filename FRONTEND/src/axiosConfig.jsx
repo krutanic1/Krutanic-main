@@ -10,11 +10,14 @@ axios.interceptors.request.use(
         const advOperationToken = localStorage.getItem("advOperationToken");
         const advTeamToken = localStorage.getItem("advTeamToken");
 
-        if (token) config.headers.Authorization = token;
-        if (bdaToken) config.headers.Authorization = bdaToken;
-        if (operationToken) config.headers.Authorization = operationToken;
-        if (advOperationToken) config.headers.Authorization = advOperationToken;
-        if (advTeamToken) config.headers.Authorization = advTeamToken;
+        // Only apply default tokens if no Authorization header is already set
+        if (!config.headers.Authorization) {
+            if (token) config.headers.Authorization = token;
+            if (bdaToken) config.headers.Authorization = bdaToken;
+            if (operationToken) config.headers.Authorization = operationToken;
+            if (advOperationToken) config.headers.Authorization = advOperationToken;
+            if (advTeamToken) config.headers.Authorization = advTeamToken;
+        }
 
         return config;
     },
@@ -31,7 +34,8 @@ axios.interceptors.response.use(
                 const keysToRemove = [
                     "token", "userEmail", "userId", "adminToken",
                     "bdaToken", "operationToken", "advOperationToken",
-                    "advTeamToken", "advTeamId", "advTeamName", "advTeamSessionStartTime"
+                    "advTeamToken", "advTeamId", "advTeamName", "advTeamSessionStartTime",
+                    "atdToken", "atdUser"
                 ];
                 keysToRemove.forEach(key => localStorage.removeItem(key));
 
@@ -46,6 +50,8 @@ axios.interceptors.response.use(
                     window.location.href = "/TeamLogin";
                 } else if (currentPath.includes("operation")) {
                     window.location.href = "/OperationLogin";
+                } else if (currentPath.includes("attendance")) {
+                    window.location.href = "/attendance";
                 } else {
                     window.location.href = "/login";
                 }

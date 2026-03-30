@@ -17,6 +17,138 @@ const AdvNotification = require("../models/AdvNotification");
 const AdvTeamMember = require("../models/CreateAdvTeam");
 const RemoteDialQueue = require("../models/RemoteDialQueue");
 const cloudinary = require("../middleware/cloudinary");
+const axios = require("axios");
+
+// Reusable function to process lead scoring, assignment and saving
+async function processAndSaveLead(leadPayload) {
+    let { phone_number, opted_domain, company_name, year_of_passing, full_name, email, source } = leadPayload;
+
+    // Normalize domains
+    if (!opted_domain && leadPayload.domain) opted_domain = leadPayload.domain;
+    if (!opted_domain && leadPayload.Domains) opted_domain = leadPayload.Domains;
+    if (!opted_domain && leadPayload.ad_name) opted_domain = leadPayload.ad_name;
+    if (!opted_domain && leadPayload.campaign_name) opted_domain = leadPayload.campaign_name;
+
+    // Normalize phone
+    if (!phone_number && leadPayload.phone) phone_number = leadPayload.phone;
+    if (!phone_number && leadPayload.Phone) phone_number = leadPayload.Phone;
+    if (phone_number) {
+        phone_number = String(phone_number).replace(/^p:/i, '').replace(/\s+/g, '');
+    }
+
+    const leadSource = source || "google_form";
+
+    const existingLead = await AdvLead.findOne({ phone_number });
+    if (existingLead) {
+        // Update existing lead with new data if it comes again
+        return await AdvLead.findOneAndUpdate({ phone_number }, { $set: leadPayload }, { new: true });
+    }
+
+    // --- 1. Rule Engine: Map Domain to Team ---
+    const domainToTeamMap = {
+        "Data Science": "Team Alpha",
+        "Web Development": "Team Beta",
+        "AI/ML": "Team Gamma"
+    };
+    const targetTeamName = domainToTeamMap[opted_domain] || "General Team";
+    const team = await AdvTeamStructure.findOne({ team_name: targetTeamName });
+
+    // --- 2. Lead Scoring Logic ---
+    let score = 0;
+    const start_timeframe = leadPayload.start_timeframe || leadPayload['how_soon_are_you_planning_to_start?'];
+    const upskilling_ready = leadPayload.upskilling_ready || leadPayload['are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?'];
+
+    const normalizedDomain = (opted_domain || "").toLowerCase().trim();
+    if (normalizedDomain.includes("data science") || normalizedDomain.includes("ai/ml")) score += 10;
+    if (company_name) score += 10;
+    const currentYear = new Date().getFullYear();
+    if (parseInt(year_of_passing) >= currentYear - 2) score += 5;
+    if (upskilling_ready === "Yes") score += 15;
+    if (start_timeframe === "Immediately") score += 10;
+
+    // --- 3. Auto-assignment & Round-robin ---
+    let assignedSpecialistId = null;
+    if (team && team.specialists.length > 0) {
+        const specialists = await AdvUser.find({ _id: { $in: team.specialists } });
+        const assignmentCounts = await Promise.all(specialists.map(async (s) => ({
+            id: s._id,
+            count: await AdvLead.countDocuments({ current_owner_id: s._id })
+        })));
+        assignmentCounts.sort((a, b) => a.count - b.count);
+        assignedSpecialistId = assignmentCounts[0].id;
+    }
+
+    const newLead = new AdvLead({
+        ...leadPayload,
+        phone_number,
+        opted_domain,
+        source: leadSource,
+        status: assignedSpecialistId ? "assigned_to_specialist" : "fresh",
+        team_id: team?._id,
+        current_owner_id: assignedSpecialistId,
+        current_owner_role: assignedSpecialistId ? "sr_inside_sales_specialist" : null,
+        assigned_at: assignedSpecialistId ? new Date() : undefined,
+        extra_fields: leadPayload,
+        score
+    });
+
+    await newLead.save();
+
+    // --- 4. Trigger Notification ---
+    if (assignedSpecialistId) {
+        await new AdvNotification({
+            userId: assignedSpecialistId,
+            title: "New Lead Assigned",
+            message: `Lead ${full_name || "New Lead"} has been assigned to you.`,
+            type: "lead_assigned"
+        }).save();
+    }
+    return newLead;
+}
+
+async function fetchLeadFromMeta(leadId) {
+    const accessToken = process.env.META_PAGE_ACCESS_TOKEN;
+    if (!accessToken) {
+        console.error("META_PAGE_ACCESS_TOKEN is missing in environment variables");
+        return null;
+    }
+    try {
+        const response = await axios.get(`https://graph.facebook.com/v21.0/${leadId}`, {
+            params: { 
+                access_token: accessToken,
+                fields: "created_time,id,ad_id,ad_name,adset_id,adset_name,campaign_id,campaign_name,form_id,is_organic,field_data"
+            }
+        });
+        const leadData = response.data;
+        
+        // Start with basic metadata from the root of the response
+        const mappedData = { 
+            meta_lead_id: leadId, 
+            source: "facebook_ad",
+            facebook_ad_name: leadData.ad_name,
+            facebook_campaign_name: leadData.campaign_name,
+            facebook_form_id: leadData.form_id,
+            facebook_created_time: leadData.created_time,
+            ...leadData // Spread all top-level Meta data for completeness
+        };
+
+        // Extract user inputs from field_data
+        if (leadData.field_data) {
+            leadData.field_data.forEach(field => {
+                const name = field.name;
+                const value = field.values[0];
+                if (name === 'full_name') mappedData.full_name = value;
+                else if (name === 'email') mappedData.email = value;
+                else if (name === 'phone_number') mappedData.phone_number = value;
+                else mappedData[name] = value;
+            });
+        }
+        return mappedData;
+    } catch (error) {
+        console.error("Error fetching lead from Meta:", error.response?.data || error.message);
+        return null;
+    }
+}
 
 
 
@@ -91,107 +223,61 @@ router.get("/get-outcome-counts", async (req, res) => {
     }
 });
 
-// POST: Add lead from Google Form with Automation
+// POST: Add lead from Google Form with Automation (Updated to use reusable function)
 router.post("/add-adv-lead", async (req, res) => {
     console.log("Receiving Lead Submission:", JSON.stringify(req.body, null, 2));
-    let { phone_number, opted_domain, company_name, year_of_passing } = req.body;
-
-    // Backup for field mapping
-    if (!opted_domain && req.body.domain) opted_domain = req.body.domain;
-    if (!opted_domain && req.body.Domains) opted_domain = req.body.Domains;
-    if (!opted_domain && req.body.ad_name) opted_domain = req.body.ad_name;
-    if (!opted_domain && req.body.campaign_name) opted_domain = req.body.campaign_name;
-
-    // Handle incoming Meta Ads specific field 'phone' if 'phone_number' is missing
-    if (!phone_number && req.body.phone) phone_number = req.body.phone;
-    if (!phone_number && req.body.Phone) phone_number = req.body.Phone;
-
-    // ✅ NORMALIZE PHONE NUMBER: Remove Meta Ads 'p:' prefix and other formatting
-    if (phone_number) {
-        phone_number = String(phone_number).replace(/^p:/i, '').replace(/\s+/g, '');
-    }
-
-    // Handle incoming source mapping (default to google_form)
-    const leadSource = req.body.source || "google_form";
-
     try {
-        const existingLead = await AdvLead.findOne({ phone_number });
-        if (existingLead) {
-            // Update existing lead with new data if it comes again
-            await AdvLead.findOneAndUpdate({ phone_number }, { $set: req.body });
-            return res.status(200).json({ success: true, message: "Lead Updated", lead: existingLead });
-        }
-
-        // --- 1. Rule Engine: Map Domain to Team ---
-        const domainToTeamMap = {
-            "Data Science": "Team Alpha",
-            "Web Development": "Team Beta",
-            "AI/ML": "Team Gamma"
-        };
-        const targetTeamName = domainToTeamMap[opted_domain] || "General Team";
-        const team = await AdvTeamStructure.findOne({ team_name: targetTeamName });
-
-        // --- 2. Lead Scoring Logic ---
-        let score = 0;
-
-        // Auto-map survey answers for scoring
-        const start_timeframe = req.body.start_timeframe || req.body['how_soon_are_you_planning_to_start?'];
-        const upskilling_ready = req.body.upskilling_ready || req.body['are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?'];
-
-        const normalizedDomain = (opted_domain || "").toLowerCase().trim();
-        if (normalizedDomain.includes("data science") || normalizedDomain.includes("ai/ml")) score += 10;
-
-        if (company_name) score += 10;
-        const currentYear = new Date().getFullYear();
-        if (parseInt(year_of_passing) >= currentYear - 2) score += 5;
-
-        if (upskilling_ready === "Yes") score += 15;
-        if (start_timeframe === "Immediately") score += 10;
-
-        // --- 3. Auto-assignment & Round-robin ---
-        let assignedSpecialistId = null;
-        if (team && team.specialists.length > 0) {
-            // Find specialist with least assignments (Simple Round-robin)
-            const specialists = await AdvUser.find({ _id: { $in: team.specialists } });
-            const assignmentCounts = await Promise.all(specialists.map(async (s) => ({
-                id: s._id,
-                count: await AdvLead.countDocuments({ current_owner_id: s._id })
-            })));
-
-            assignmentCounts.sort((a, b) => a.count - b.count);
-            assignedSpecialistId = assignmentCounts[0].id;
-        }
-
-        const newLead = new AdvLead({
-            ...req.body,
-            phone_number: phone_number,
-            opted_domain: opted_domain,
-            source: leadSource,
-            status: assignedSpecialistId ? "assigned_to_specialist" : "fresh",
-            team_id: team?._id,
-            current_owner_id: assignedSpecialistId,
-            current_owner_role: assignedSpecialistId ? "sr_inside_sales_specialist" : null,
-            assigned_at: assignedSpecialistId ? new Date() : undefined,
-            extra_fields: req.body, // Capture all original columns here
-            score
-        });
-
-        await newLead.save();
-
-        // --- 4. Trigger Notification ---
-        if (assignedSpecialistId) {
-            await new AdvNotification({
-                userId: assignedSpecialistId,
-                title: "New Lead Assigned",
-                message: `Lead ${req.body.full_name} has been assigned to you.`,
-                type: "lead_assigned"
-            }).save();
-        }
-
-        res.status(201).json({ success: true, lead: newLead });
+        const lead = await processAndSaveLead(req.body);
+        res.status(201).json({ success: true, lead });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
     }
+});
+
+// ✅ Meta Webhook Verification (GET request)
+router.get("/meta-webhook", (req, res) => {
+    const mode = req.query['hub.mode'];
+    const token = req.query['hub.verify_token'];
+    const challenge = req.query['hub.challenge'];
+    const verifyToken = process.env.META_VERIFY_TOKEN || 'meta_krutanic_2026';
+
+    if (mode === 'subscribe' && token === verifyToken) {
+        console.log("Meta Webhook Verified ✅");
+        return res.status(200).send(challenge);
+    } else {
+        return res.status(403).send('Forbidden');
+    }
+});
+
+// ✅ Receive Lead Data from Meta (POST request)
+router.post("/meta-webhook", async (req, res) => {
+    console.log("Receiving Meta Webhook POST:", JSON.stringify(req.body, null, 2));
+    const body = req.body;
+
+    if (body.object === 'page') {
+        try {
+            for (const entry of body.entry) {
+                for (const change of entry.changes) {
+                    if (change.field === 'leadgen') {
+                        const leadId = change.value.leadgen_id;
+                        console.log(`Processing Meta Lead ID: ${leadId}`);
+
+                        // Fetch lead details from Meta
+                        const leadData = await fetchLeadFromMeta(leadId);
+                        if (leadData) {
+                            // Save to CRM using the refactored function
+                            await processAndSaveLead(leadData);
+                        }
+                    }
+                }
+            }
+            return res.status(200).json({ status: 'ok' });
+        } catch (error) {
+            console.error("Meta Webhook Processing Error:", error.message);
+            return res.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+    res.status(404).json({ error: "Not a page event" });
 });
 
 // GET: Count fresh leads
