@@ -646,12 +646,8 @@ router.get("/get-adv-leads", async (req, res) => {
         const leads = await AdvLead.find(query)
             .populate("team_id", "team_name")
             .populate("current_owner_id", "name")
-            // CRITICAL SORT:
-            // 1. last_interaction_at: 1 (Put Leads with NULL/No interaction at the very top of Page 1, 2, 3...)
-            // 2. status: -1 (Among fresh interactions, prioritize those explicitly marked 'fresh' over those assigned to someone)
-            // 3. assigned_at: -1 (Most recently assigned leads first)
-            // 4. created_at: -1 (Newest Leads of each category first)
-            .sort({  assigned_at: -1, created_at: -1 })
+            // 1. created_at: -1 (Newest Leads first - ensures Rows 1 and 2 are for the latest sync)
+            .sort({ created_at: -1 })
             .skip(skip)
             .limit(parseInt(limit));
 
