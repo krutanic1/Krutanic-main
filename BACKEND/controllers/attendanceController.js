@@ -132,10 +132,26 @@ exports.getHistory = async (req, res) => {
 
     const total = allMatchingData.length;
 
-    const data = await Attendance.find(filter)
+    const rawData = await Attendance.find(filter)
       .sort({ timestamp: -1 })
       .skip(skip)
       .limit(parseInt(limit));
+
+    const data = rawData.map(h => {
+      // Convert to IST (UTC + 5:30)
+      const d = new Date(h.timestamp);
+      const istTime = new Date(d.getTime() + (5.5 * 60 * 60 * 1000));
+      const hours = istTime.getUTCHours();
+      const mins = istTime.getUTCMinutes();
+      const totalMinutes = hours * 60 + mins;
+
+      let isHalfDay = totalMinutes > 14 * 60;
+      if (h.isHalfDayOverride) isHalfDay = true;
+
+      const isLate = !isHalfDay && totalMinutes > 11 * 60 + 5;
+      
+      return { ...h.toObject(), isLate, isHalfDay };
+    });
 
     res.json({
       data,

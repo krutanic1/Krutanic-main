@@ -524,22 +524,28 @@ const Attendance = () => {
                                    <div>
                                       <div style={styles.rowTitle}>{new Date(h.date).toLocaleDateString('en-US', { weekday: 'long' })}</div>
                                       <div style={styles.rowSub}>
-                                         Verified Check-in • 
+                                         Verified • 
                                          <span style={{ 
-                                            color: h.timestamp && new Date(h.timestamp).getHours() >= 14 ? "#f43f5e" : 
-                                                   h.timestamp && (new Date(h.timestamp).getHours() > 11 || (new Date(h.timestamp).getHours() === 11 && new Date(h.timestamp).getMinutes() > 15)) ? "#f59e0b" : "#10b981", 
+                                            color: h.isHalfDay ? "#f43f5e" : 
+                                                   h.isLate ? "#f59e0b" : 
+                                                   (h.timestamp && new Date(h.timestamp).getHours() >= 14) ? "#f43f5e" :
+                                                   (h.timestamp && (new Date(h.timestamp).getHours() > 11 || (new Date(h.timestamp).getHours() === 11 && new Date(h.timestamp).getMinutes() > 5))) ? "#f59e0b" : "#10b981", 
                                             fontWeight: "700", 
                                             marginLeft: "5px" 
                                          }}>
-                                            {h.timestamp && new Date(h.timestamp).getHours() >= 14 ? "HALF DAY" :
-                                             h.timestamp && (new Date(h.timestamp).getHours() > 11 || (new Date(h.timestamp).getHours() === 11 && new Date(h.timestamp).getMinutes() > 15)) ? "LATE" : "ON TIME"}
+                                            {h.isHalfDay ? "HALF DAY" :
+                                             h.isLate ? "LATE" :
+                                             (h.timestamp && new Date(h.timestamp).getHours() >= 14) ? "HALF DAY" :
+                                             (h.timestamp && (new Date(h.timestamp).getHours() > 11 || (new Date(h.timestamp).getHours() === 11 && new Date(h.timestamp).getMinutes() > 5))) ? "LATE" : "ON TIME"}
                                          </span>
                                       </div>
                                    </div>
                                 </div>
                                 <div style={
-                                   h.timestamp && new Date(h.timestamp).getHours() >= 14 ? { ...styles.timeBadge, background: "#fff1f2", color: "#be123c", border: "1px solid #ffe4e6" } :
-                                   h.timestamp && (new Date(h.timestamp).getHours() > 11 || (new Date(h.timestamp).getHours() === 11 && new Date(h.timestamp).getMinutes() > 15)) ? { ...styles.timeBadge, background: "#fff7ed", color: "#c2410c", border: "1px solid #ffedd5" } : 
+                                   h.isHalfDay ? { ...styles.timeBadge, background: "#fff1f2", color: "#be123c", border: "1px solid #ffe4e6" } :
+                                   h.isLate ? { ...styles.timeBadge, background: "#fff7ed", color: "#c2410c", border: "1px solid #ffedd5" } :
+                                   (h.timestamp && new Date(h.timestamp).getHours() >= 14) ? { ...styles.timeBadge, background: "#fff1f2", color: "#be123c", border: "1px solid #ffe4e6" } :
+                                   (h.timestamp && (new Date(h.timestamp).getHours() > 11 || (new Date(h.timestamp).getHours() === 11 && new Date(h.timestamp).getMinutes() > 5))) ? { ...styles.timeBadge, background: "#fff7ed", color: "#c2410c", border: "1px solid #ffedd5" } : 
                                    styles.timeBadge
                                 }>
                                    {new Date(h.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
