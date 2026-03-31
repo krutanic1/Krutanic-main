@@ -2,8 +2,15 @@ const mongoose = require("mongoose");
 
 const AdvLeadSchema = new mongoose.Schema({
     full_name: { type: String, required: true },
-    email: { type: String, required: true },
-    phone_number: { type: String, required: true, unique: true },
+    email: { 
+        type: String, 
+        required: true, 
+        unique: true,
+        trim: true,
+        lowercase: true,
+        match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
+    },
+    phone_number: { type: String, required: true, unique: true, trim: true },
     opted_domain: { type: String },
     year_of_passing: { type: String },
     company_name: { type: String },

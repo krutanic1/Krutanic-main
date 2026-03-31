@@ -112,19 +112,36 @@ async function processAndSaveLead(leadPayload) {
     if (!opted_domain && leadPayload.ad_name) opted_domain = leadPayload.ad_name;
     if (!opted_domain && leadPayload.campaign_name) opted_domain = leadPayload.campaign_name;
 
-    // Normalize phone
+    // Normalize phone (Digits only)
     if (!phone_number && leadPayload.phone) phone_number = leadPayload.phone;
     if (!phone_number && leadPayload.Phone) phone_number = leadPayload.Phone;
     if (phone_number) {
-        phone_number = String(phone_number).replace(/^p:/i, '').replace(/\s+/g, '');
+        phone_number = String(phone_number).replace(/\D/g, '');
+    }
+
+    // Normalize email
+    if (email) {
+        email = String(email).toLowerCase().trim();
     }
 
     const leadSource = source || "google_form";
 
-    const existingLead = await AdvLead.findOne({ phone_number });
-    if (existingLead) {
-        // Update existing lead with new data if it comes again
-        return await AdvLead.findOneAndUpdate({ phone_number }, { $set: leadPayload }, { new: true });
+    // Check for existing lead by phone OR email
+    const duplicateQuery = [];
+    if (phone_number) duplicateQuery.push({ phone_number });
+    if (email) duplicateQuery.push({ email });
+
+    if (duplicateQuery.length > 0) {
+        const existingLead = await AdvLead.findOne({ $or: duplicateQuery });
+        if (existingLead) {
+            console.log(`Duplicate lead found: ${existingLead.email} / ${existingLead.phone_number}. Updating...`);
+            // Update existing lead with new data
+            return await AdvLead.findByIdAndUpdate(
+                existingLead._id, 
+                { $set: { ...leadPayload, phone_number, email } }, 
+                { new: true }
+            );
+        }
     }
 
     // --- 1. Rule Engine: Map Domain to Team ---
@@ -931,9 +948,14 @@ router.post("/bulk-import", upload.single("file"), async (req, res) => {
                         }
                     });
 
-                    // Cast phone to string if it's a number
+                    // Normalize phone (Digits only)
                     if (leadData.phone_number) {
-                        leadData.phone_number = leadData.phone_number.toString();
+                        leadData.phone_number = leadData.phone_number.toString().replace(/\D/g, '');
+                    }
+
+                    // Normalize email
+                    if (leadData.email) {
+                        leadData.email = leadData.email.toString().toLowerCase().trim();
                     }
 
                     // Basic validation: must have at least phone_number or full_name
@@ -943,10 +965,14 @@ router.post("/bulk-import", upload.single("file"), async (req, res) => {
                         continue; 
                     }
 
-                    // Check for existing lead by phone if available
+                    // Check for existing lead by phone OR email
                     let existingLead = null;
-                    if (leadData.phone_number) {
-                        existingLead = await AdvLead.findOne({ phone_number: leadData.phone_number });
+                    const query = [];
+                    if (leadData.phone_number) query.push({ phone_number: leadData.phone_number });
+                    if (leadData.email) query.push({ email: leadData.email });
+
+                    if (query.length > 0) {
+                        existingLead = await AdvLead.findOne({ $or: query });
                     }
 
                     if (!existingLead) {
