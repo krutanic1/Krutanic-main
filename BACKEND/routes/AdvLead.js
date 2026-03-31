@@ -660,13 +660,57 @@ router.get("/get-adv-leads", async (req, res) => {
         }
 
         const totalCount = await AdvLead.countDocuments(query);
-        const leads = await AdvLead.find(query)
-            .populate("team_id", "team_name")
-            .populate("current_owner_id", "name")
-            // 1. created_at: -1 (Newest Leads first - ensures Rows 1 and 2 are for the latest sync)
-            .sort({ created_at: -1 })
-            .skip(skip)
-            .limit(parseInt(limit));
+        
+        let leads;
+        if (roleNorm === "admin") {
+            // Use aggregation for Admin to prioritize "fresh" leads at the top
+            leads = await AdvLead.aggregate([
+                { $match: query },
+                {
+                    $addFields: {
+                        // Priority 0 for fresh, 1 for dialed, 2 for others
+                        statusPriority: {
+                            $switch: {
+                                branches: [
+                                    { case: { $eq: ["$status", "fresh"] }, then: 0 },
+                                    { case: { $eq: ["$status", "dialed"] }, then: 1 }
+                                ],
+                                default: 2
+                            }
+                        }
+                    }
+                },
+                { $sort: { statusPriority: 1, created_at: -1 } },
+                { $skip: skip },
+                { $limit: parseInt(limit) },
+                {
+                    $lookup: {
+                        from: "advteamstructures",
+                        localField: "team_id",
+                        foreignField: "_id",
+                        as: "team_id"
+                    }
+                },
+                { $unwind: { path: "$team_id", preserveNullAndEmptyArrays: true } },
+                {
+                    $lookup: {
+                        from: "advusers",
+                        localField: "current_owner_id",
+                        foreignField: "_id",
+                        as: "current_owner_id"
+                    }
+                },
+                { $unwind: { path: "$current_owner_id", preserveNullAndEmptyArrays: true } }
+            ]);
+        } else {
+            // Standard chronological sort for other roles
+            leads = await AdvLead.find(query)
+                .populate("team_id", "team_name")
+                .populate("current_owner_id", "name")
+                .sort({ created_at: -1 })
+                .skip(skip)
+                .limit(parseInt(limit));
+        }
 
         res.status(200).json({
             leads,
@@ -792,15 +836,15 @@ router.post("/log-call/:id", async (req, res) => {
     }
 });
 
-// PUT: Make fresh (Admin power to reset lead and delete call logs)
-router.put("/make-fresh/:id", async (req, res) => {
+// PUT: Make dialed (Admin power to reset lead and delete call logs, status becomes 'dialed')
+router.put("/make-dialed/:id", async (req, res) => {
     try {
         const leadId = req.params.id;
         
         // 1. Reset lead fields
         const updatedLead = await AdvLead.findByIdAndUpdate(leadId, {
             $set: {
-                status: "fresh",
+                status: "dialed",
                 stage: "new",
                 last_outcome: null,
                 last_interaction_at: null,
@@ -831,7 +875,7 @@ router.put("/make-fresh/:id", async (req, res) => {
             AdvFollowup.deleteMany({ leadId })
         ]);
 
-        res.status(200).json({ success: true, message: "Lead has been made fresh and all logs deleted.", lead: updatedLead });
+        res.status(200).json({ success: true, message: "Lead status reset to 'dialed' and all logs deleted.", lead: updatedLead });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }

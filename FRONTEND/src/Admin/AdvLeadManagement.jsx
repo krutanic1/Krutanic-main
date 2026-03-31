@@ -77,11 +77,11 @@ const AdvLeadManagement = () => {
         fetchFreshCount();
     }, [currentPage]);
 
-    const handleMakeFresh = async (leadId) => {
-        if (!window.confirm("Are you sure you want to make this lead fresh? This will delete all call logs and reset assignments.")) return;
+    const handleMakeDialed = async (leadId) => {
+        if (!window.confirm("Are you sure you want to change this lead status to 'dialed'? This will delete all call logs and reset assignments.")) return;
         
         try {
-            const res = await axios.put(`${API}/api/adv-leads/make-fresh/${leadId}`);
+            const res = await axios.put(`${API}/api/adv-leads/make-dialed/${leadId}`);
             toast.success(res.data.message);
             fetchLeads(currentPage);
             fetchFreshCount();
@@ -177,6 +177,7 @@ const AdvLeadManagement = () => {
             assigned_to_specialist: { bg: '#f0f5ff', border: '#adc6ff', color: '#1d39c4' },
             in_followup: { bg: '#fffbe6', border: '#ffe58f', color: '#ad8b00' },
             converted: { bg: '#f6ffed', border: '#b7eb8f', color: '#389e0d' },
+            dialed: { bg: '#f9f0ff', border: '#d3adf7', color: '#722ed1' }, // Added dialed status color
         };
         return map[status] || { bg: '#f5f5f5', border: '#d9d9d9', color: '#595959' };
     };
@@ -458,6 +459,7 @@ const AdvLeadManagement = () => {
                         style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '6px' }}>
                         <option value="">All Statuses</option>
                         <option value="fresh">Fresh</option>
+                        <option value="dialed">Dialed</option>
                         <option value="assigned_to_manager">Assigned to Manager</option>
                         <option value="assigned_to_leader">Assigned to Leader</option>
                         <option value="assigned_to_specialist">Assigned to Specialist</option>
@@ -554,11 +556,11 @@ const AdvLeadManagement = () => {
                                                 </td>
                                                 <td>
                                                     <button 
-                                                        onClick={() => handleMakeFresh(lead._id)}
-                                                        title="Make Lead Fresh"
+                                                        onClick={() => handleMakeDialed(lead._id)}
+                                                        title="Change to Dialed"
                                                         style={{
                                                             padding: '6px 12px',
-                                                            background: '#ff4d4f',
+                                                            background: '#722ed1', // Deep purple for Dialed
                                                             color: '#fff',
                                                             border: 'none',
                                                             borderRadius: '6px',
@@ -570,7 +572,7 @@ const AdvLeadManagement = () => {
                                                             gap: '4px'
                                                         }}
                                                     >
-                                                        <i className="fa fa-refresh"></i> Fresh
+                                                        <i className="fa fa-refresh"></i> Dialed
                                                     </button>
                                                 </td>
                                             </tr>
