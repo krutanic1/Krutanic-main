@@ -68,8 +68,8 @@ const advEnrollSchema = new Schema(
 
     whatsAppNumber: { type: String },
     remainingAmount: { type: Number },
-    collegeName: { type: String },
-    branch: { type: String },
+    experience: { type: String },
+    paymentPlan: { type: String },
     referFriend: { type: String },
     referRemark: [{ type: String }],
     yearOfPassingOut: { type: String },

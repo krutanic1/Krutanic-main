@@ -92,8 +92,8 @@ const AdvanceDashboardAccess = () => {
   const [modeofpayment, setModeOfPayment] = useState("");
   const [whatsAppNumber, setWhatsAppNumber] = useState("");
   const [remainingAmount, setRemainingAmount] = useState("");
-  const [collegeName, setCollegeName] = useState("");
-  const [branch, setBranch] = useState("");
+  const [experience, setExperience] = useState("");
+  const [paymentPlan, setPaymentPlan] = useState("");
   const [referFriend, setReferFriend] = useState("");
   const [yearOfPassingOut, setYearOfPassingOut] = useState("");
   const [course, setCourse] = useState([]);
@@ -187,8 +187,8 @@ const AdvanceDashboardAccess = () => {
     setRemainingAmount("");
     setMonthOpted("");
     setTransactionId("");
-    setCollegeName("");
-    setBranch("");
+    setExperience("");
+    setPaymentPlan("");
     setClearPaymentMonth("");
     setModeOfPayment("");
     setReferFriend("");
@@ -223,8 +223,8 @@ const AdvanceDashboardAccess = () => {
       modeofpayment: modeofpayment,
       whatsAppNumber: whatsAppNumber,
       remainingAmount: remainingAmount,
-      collegeName: collegeName,
-      branch: branch,
+      experience: experience,
+      paymentPlan: paymentPlan,
       referFriend: referFriend,
       yearOfPassingOut: yearOfPassingOut,
       lead: lead.trim(),
@@ -489,25 +489,18 @@ const AdvanceDashboardAccess = () => {
               <label htmlFor="Remaining Amount">Remaining Amount</label>
             </div>
 
-            <div className="input-field">
-              <input
-                value={collegeName}
-                onChange={(e) => setCollegeName(e.target.value)}
-                type="text"
-                required
-              />
-              <label htmlFor=" College Name"> College Name</label>
-            </div>
-
-            <div className="input-field">
-              <input
-                value={branch}
-                onChange={(e) => setBranch(e.target.value)}
-                type="text"
-                required
-              />
-              <label htmlFor="Branch/Department Name">Branch/Department</label>
-            </div>
+            <select
+              value={paymentPlan}
+              onChange={(e) => setPaymentPlan(e.target.value)}
+              required
+            >
+              <option value="" disabled>
+                Choose a payment plan that works best for you:
+              </option>
+              <option value="Pay in Full (One-time payment)">Pay in Full (One-time payment)</option>
+              <option value="Pay in 3 Easy Installments">Pay in 3 Easy Installments</option>
+              <option value="No Cost EMI (0% Interest) Upto 9 Months">No Cost EMI (0% Interest) Upto 9 Months</option>
+            </select> 
 
             <div className="input-field">
               <input
@@ -536,6 +529,16 @@ const AdvanceDashboardAccess = () => {
                 type="text"
               />
               <label htmlFor="Role">Role (if working)</label>
+            </div>
+
+            <div className="input-field">
+              <input
+                value={experience}
+                onChange={(e) => setExperience(e.target.value)}
+                type="text"
+                required
+              />
+              <label htmlFor="Experience">Experience</label>
             </div>
 
             <div className="input-field">
