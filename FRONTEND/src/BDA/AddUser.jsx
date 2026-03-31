@@ -52,8 +52,8 @@ const AddUser = () => {
     if (isSubmitting) return;
     setIsSubmitting(true);
 
-    // Check if SGFL or CGFL lead is selected
-    const isLeadOption = option === 'SGFL' || option === 'CGFL';
+    // Check if SGFL, CGFL, Meta Ads, LinkedIn or Email lead is selected
+    const isLeadOption = ['SGFL', 'CGFL', 'Meta Ads', 'LinkedIn Campaign', 'Email Campaign'].includes(option);
 
     // Find the selected executive to get their ID (if not a lead option)
     const selectedExecutive = !isLeadOption ? executives.find(exec => exec.fullname === option) : null;
@@ -120,6 +120,9 @@ const AddUser = () => {
               <option value="" disabled>Select Lead Source or Executive</option>
               <option value="SGFL">SGFL (Self Generated)</option>
               <option value="CGFL">CGFL (Company Generated)</option>
+              <option value="Meta Ads">Meta Ads</option>
+              <option value="LinkedIn Campaign">LinkedIn Campaign</option>
+              <option value="Email Campaign">Email Campaign</option>
               <option disabled>──────────</option>
               {executives.map((executive) => (
                 <option key={executive._id} value={executive.fullname}>
