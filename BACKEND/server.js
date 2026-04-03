@@ -45,6 +45,9 @@ const AddEvent = require("./routes/AddEvent")
 const Certificate = require("./routes/Certificate")
 const ReferAndEarn = require("./routes/ReferAndEarn");
 const Scraper = require("./routes/Scraper");
+const microCourseRoutes = require("./routes/microCourseRoutes");
+const microCourseAdminRoutes = require("./routes/microCourseAdminRoutes");
+const microCourseAuthRoutes = require("./routes/microCourseAuthRoutes");
 const cookieParser = require("cookie-parser");
 const os = require("os");
 
@@ -165,6 +168,11 @@ app.use("/", Scraper);
 
 //AddEvent
 app.use("/", AddEvent);
+
+// MicroCourses
+app.use("/api", microCourseRoutes);
+app.use("/api", microCourseAdminRoutes);
+app.use("/api", microCourseAuthRoutes);
 
 //send mail with attchement
 app.use("/", sendMailWithAttchement);

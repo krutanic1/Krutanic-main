@@ -639,6 +639,15 @@ router.get("/get-adv-leads", async (req, res) => {
         if (status) {
             query.status = status;
         }
+
+        const { month, year } = req.query;
+        if (month && year) {
+            const m = parseInt(month) - 1;
+            const y = parseInt(year);
+            const startDate = new Date(y, m, 1);
+            const endDate = new Date(y, m + 1, 0, 23, 59, 59, 999);
+            query.created_at = { $gte: startDate, $lte: endDate };
+        }
         
         if (outcome) {
             if (outcome === "fresh") {

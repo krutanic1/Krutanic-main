@@ -19,6 +19,8 @@ const AdvLeadManagement = () => {
     const [userDesignation, setUserDesignation] = useState("");
 
     // Filters
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
 
@@ -98,7 +100,9 @@ const AdvLeadManagement = () => {
                     userId: advTeamId,
                     page,
                     limit,
-                    status: forceStatus
+                    status: forceStatus,
+                    month: selectedMonth,
+                    year: selectedYear
                 }
             });
             if (res.data && res.data.leads) {
@@ -153,7 +157,13 @@ const AdvLeadManagement = () => {
         if (userDesignation) {
             fetchLeads(currentPage, statusFilter);
         }
-    }, [currentPage, userDesignation, statusFilter]);
+    }, [currentPage, userDesignation, statusFilter, selectedMonth, selectedYear]);
+
+    const months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+    const years = [new Date().getFullYear(), new Date().getFullYear() - 1];
 
     const handleBulkAssign = async () => {
         if (!selectedAssignee) { toast.error("Please select a specialist"); return; }
@@ -218,6 +228,21 @@ const AdvLeadManagement = () => {
             (l.phone_number || "").includes(searchTerm);
         return matchSearch;
     });
+
+    const formatDate = (date) => {
+        if (!date) return "Unknown Date";
+        return new Date(date).toLocaleDateString("en-GB");
+    };
+
+    // Grouping logic for the leads
+    const groupedLeads = filteredLeads.reduce((acc, lead) => {
+        const date = formatDate(lead.created_at);
+        if (!acc[date]) {
+            acc[date] = [];
+        }
+        acc[date].push(lead);
+        return acc;
+    }, {});
 
     return (
         <div id="create-marketing-team">
@@ -359,6 +384,24 @@ const AdvLeadManagement = () => {
                         <option value="assigned_to_specialist">Assigned to Specialist</option>
                         <option value="converted">Converted</option>
                     </select>
+
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: '#fff', padding: '10px 15px', borderRadius: '8px', border: '1px solid #ddd' }}>
+                        <span style={{ fontSize: '13px', color: '#666', fontWeight: 'bold' }}>📅 Created in:</span>
+                        <select 
+                            value={selectedMonth} 
+                            onChange={(e) => { setSelectedMonth(e.target.value); setCurrentPage(1); }}
+                            style={{ border: 'none', outline: 'none', background: 'transparent', fontWeight: '600', cursor: 'pointer' }}
+                        >
+                            {months.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
+                        </select>
+                        <select 
+                            value={selectedYear} 
+                            onChange={(e) => { setSelectedYear(e.target.value); setCurrentPage(1); }}
+                            style={{ border: 'none', outline: 'none', background: 'transparent', fontWeight: '600', cursor: 'pointer' }}
+                        >
+                            {years.map(y => <option key={y} value={y}>{y}</option>)}
+                        </select>
+                    </div>
                 </div>
 
                 {loading ? (
@@ -384,77 +427,86 @@ const AdvLeadManagement = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredLeads.map((lead, idx) => {
-                                        const s = getStatusStyle(lead.status);
-                                        return (
-                                            <tr key={lead._id}>
-                                                <td>{(currentPage - 1) * limit + idx + 1}</td>
-                                                <td style={{ fontWeight: 'bold' }}>{lead.full_name}</td>
-                                                <td style={{ fontSize: '12px' }}>{lead.email || '—'}</td>
-                                                <td>{lead.phone_number}</td>
-                                                <td>{lead.opted_domain || '—'}</td>
-                                                <td style={{ fontSize: '12px' }}>{lead.education_background || '—'}</td>
-                                                <td style={{ fontSize: '12px' }}>{lead.current_status || '—'}</td>
-                                                <td>
-                                                    <span style={{
-                                                        padding: '4px 10px', borderRadius: '12px', fontSize: '11px',
-                                                        fontWeight: 'bold', background: s.bg, color: s.color,
-                                                        border: `1px solid ${s.border}`, textTransform: 'lowercase'
-                                                    }}>
-                                                        {lead.status.replace(/_/g, ' ')}
-                                                    </span>
+                                    {Object.keys(groupedLeads).map((date) => (
+                                        <React.Fragment key={date}>
+                                            <tr style={{ background: '#f8f9fa' }}>
+                                                <td colSpan={userDesignation?.toLowerCase().includes("admin") ? "12" : "11"} style={{ fontWeight: '800', textAlign: 'center', padding: '10px', fontSize: '14px', letterSpacing: '1px', borderBottom: '2px solid #ddd' }}>
+                                                    📅 {date}
                                                 </td>
-                                                <td style={{ fontSize: '13px' }}>
-                                                    {lead.owner_name || '—'}
-                                                </td>
-                                                <td>
-                                                    <div style={{
-                                                        padding: '4px 8px', borderRadius: '6px', fontSize: '12px',
-                                                        fontWeight: 'bold', background: lead.score >= 25 ? '#f6ffed' : '#f5f5f5',
-                                                        color: lead.score >= 25 ? '#52c41a' : '#595959',
-                                                        border: `1px solid ${lead.score >= 25 ? '#b7eb8f' : '#d9d9d9'}`,
-                                                        textAlign: 'center', width: '30px'
-                                                    }}>
-                                                        {lead.score || 0}
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <button 
-                                                        onClick={() => setSelectedLeadForDetails(lead)}
-                                                        style={{ 
-                                                            padding: '6px 12px', background: '#fff', border: '1px solid #1890ff', 
-                                                            color: '#1890ff', borderRadius: '6px', fontSize: '12px', fontWeight: '700', 
-                                                            cursor: 'pointer', transition: 'all 0.2s' 
-                                                        }}
-                                                        onMouseOver={(e) => { e.currentTarget.style.background = '#1890ff'; e.currentTarget.style.color = '#fff'; }}
-                                                        onMouseOut={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#1890ff'; }}
-                                                    >
-                                                        <i className="fa fa-eye"></i> View All
-                                                    </button>
-                                                </td>
-                                                {userDesignation && userDesignation.toLowerCase().includes("admin") && (
-                                                    <td>
-                                                        <button 
-                                                            onClick={() => handleMakeFresh(lead._id)}
-                                                            title="Make Lead Fresh"
-                                                            style={{
-                                                                padding: '6px 10px',
-                                                                background: '#ff4d4f',
-                                                                color: '#fff',
-                                                                border: 'none',
-                                                                borderRadius: '4px',
-                                                                cursor: 'pointer',
-                                                                fontSize: '12px',
-                                                                fontWeight: '600'
-                                                            }}
-                                                        >
-                                                            <i className="fa fa-refresh"></i> Fresh
-                                                        </button>
-                                                    </td>
-                                                )}
                                             </tr>
-                                        );
-                                    })}
+                                            {groupedLeads[date].map((lead, idx) => {
+                                                const s = getStatusStyle(lead.status);
+                                                return (
+                                                    <tr key={lead._id}>
+                                                        <td>{(currentPage - 1) * limit + idx + 1}</td>
+                                                        <td style={{ fontWeight: 'bold' }}>{lead.full_name}</td>
+                                                        <td style={{ fontSize: '12px' }}>{lead.email || '—'}</td>
+                                                        <td>{lead.phone_number}</td>
+                                                        <td>{lead.opted_domain || '—'}</td>
+                                                        <td style={{ fontSize: '12px' }}>{lead.education_background || '—'}</td>
+                                                        <td style={{ fontSize: '12px' }}>{lead.current_status || '—'}</td>
+                                                        <td>
+                                                            <span style={{
+                                                                padding: '4px 10px', borderRadius: '12px', fontSize: '11px',
+                                                                fontWeight: 'bold', background: s.bg, color: s.color,
+                                                                border: `1px solid ${s.border}`, textTransform: 'lowercase'
+                                                            }}>
+                                                                {lead.status.replace(/_/g, ' ')}
+                                                            </span>
+                                                        </td>
+                                                        <td style={{ fontSize: '13px' }}>
+                                                            {lead.owner_name || '—'}
+                                                        </td>
+                                                        <td>
+                                                            <div style={{
+                                                                padding: '4px 8px', borderRadius: '6px', fontSize: '12px',
+                                                                fontWeight: 'bold', background: lead.score >= 25 ? '#f6ffed' : '#f5f5f5',
+                                                                color: lead.score >= 25 ? '#52c41a' : '#595959',
+                                                                border: `1px solid ${lead.score >= 25 ? '#b7eb8f' : '#d9d9d9'}`,
+                                                                textAlign: 'center', width: '30px'
+                                                            }}>
+                                                                {lead.score || 0}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <button 
+                                                                onClick={() => setSelectedLeadForDetails(lead)}
+                                                                style={{ 
+                                                                    padding: '6px 12px', background: '#fff', border: '1px solid #1890ff', 
+                                                                    color: '#1890ff', borderRadius: '6px', fontSize: '12px', fontWeight: '700', 
+                                                                    cursor: 'pointer', transition: 'all 0.2s' 
+                                                                }}
+                                                                onMouseOver={(e) => { e.currentTarget.style.background = '#1890ff'; e.currentTarget.style.color = '#fff'; }}
+                                                                onMouseOut={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#1890ff'; }}
+                                                            >
+                                                                <i className="fa fa-eye"></i> View All
+                                                            </button>
+                                                        </td>
+                                                        {userDesignation && userDesignation.toLowerCase().includes("admin") && (
+                                                            <td>
+                                                                <button 
+                                                                    onClick={() => handleMakeFresh(lead._id)}
+                                                                    title="Make Lead Fresh"
+                                                                    style={{
+                                                                        padding: '6px 10px',
+                                                                        background: '#ff4d4f',
+                                                                        color: '#fff',
+                                                                        border: 'none',
+                                                                        borderRadius: '4px',
+                                                                        cursor: 'pointer',
+                                                                        fontSize: '12px',
+                                                                        fontWeight: '600'
+                                                                    }}
+                                                                >
+                                                                    <i className="fa fa-refresh"></i> Fresh
+                                                                </button>
+                                                            </td>
+                                                        )}
+                                                    </tr>
+                                                );
+                                            })}
+                                        </React.Fragment>
+                                    ))}
                                 </tbody>
                             </table>
                         </div>

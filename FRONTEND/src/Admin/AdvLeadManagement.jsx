@@ -15,19 +15,21 @@ const AdvLeadManagement = () => {
     const [totalCount, setTotalCount] = useState(0);
     const limit = 25;
 
-    // Assign panel state
-    const [showAssignPanel, setShowAssignPanel] = useState(false);
-    const [selectedAssignee, setSelectedAssignee] = useState(null);
-    const [assignCount, setAssignCount] = useState("");
-    const [assigning, setAssigning] = useState(false);
-
     // Filters
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
 
     // Manual Assign State
     const [isManualAssignMode, setIsManualAssignMode] = useState(false);
     const [selectedLeadIds, setSelectedLeadIds] = useState([]);
+
+    // Assign panel state
+    const [showAssignPanel, setShowAssignPanel] = useState(false);
+    const [selectedAssignee, setSelectedAssignee] = useState(null);
+    const [assignCount, setAssignCount] = useState("");
+    const [assigning, setAssigning] = useState(false);
 
     const fetchFreshCount = async () => {
         try {
@@ -42,7 +44,7 @@ const AdvLeadManagement = () => {
         setLoading(true);
         try {
             const res = await axios.get(`${API}/api/adv-leads/get-adv-leads`, {
-                params: { role: "admin", page, limit }
+                params: { role: "admin", page, limit, month: selectedMonth, year: selectedYear }
             });
             if (res.data && res.data.leads) {
                 setLeads(res.data.leads);
@@ -75,7 +77,13 @@ const AdvLeadManagement = () => {
         fetchLeads(currentPage);
         fetchManagers();
         fetchFreshCount();
-    }, [currentPage]);
+    }, [currentPage, selectedMonth, selectedYear]);
+
+    const months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+    const years = [new Date().getFullYear(), new Date().getFullYear() - 1];
 
     const handleMakeDialed = async (leadId) => {
         if (!window.confirm("Are you sure you want to change this lead status to 'dialed'? This will delete all call logs and reset assignments.")) return;
@@ -188,6 +196,21 @@ const AdvLeadManagement = () => {
         const matchStatus = !statusFilter || l.status === statusFilter;
         return matchSearch && matchStatus;
     });
+
+    const formatDate = (date) => {
+        if (!date) return "Unknown Date";
+        return new Date(date).toLocaleDateString("en-GB");
+    };
+
+    // Grouping logic for the leads
+    const groupedLeads = filteredLeads.reduce((acc, lead) => {
+        const date = formatDate(lead.created_at);
+        if (!acc[date]) {
+            acc[date] = [];
+        }
+        acc[date].push(lead);
+        return acc;
+    }, {});
 
     const styles = {
         pagination: {
@@ -470,6 +493,24 @@ const AdvLeadManagement = () => {
                         style={{ padding: '8px 14px', background: '#f0f0f0', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer' }}>
                         🔄 Refresh
                     </button>
+
+                    <div style={{ display: 'flex', gap: '5px', alignItems: 'center', background: '#fff', padding: '5px 10px', borderRadius: '6px', border: '1px solid #ddd' }}>
+                        <span style={{ fontSize: '13px', color: '#666', fontWeight: 'bold' }}>📅 Month:</span>
+                        <select 
+                            value={selectedMonth} 
+                            onChange={(e) => { setSelectedMonth(e.target.value); setCurrentPage(1); }}
+                            style={{ border: 'none', outline: 'none', background: 'transparent', fontWeight: '600', cursor: 'pointer' }}
+                        >
+                            {months.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
+                        </select>
+                        <select 
+                            value={selectedYear} 
+                            onChange={(e) => { setSelectedYear(e.target.value); setCurrentPage(1); }}
+                            style={{ border: 'none', outline: 'none', background: 'transparent', fontWeight: '600', cursor: 'pointer' }}
+                        >
+                            {years.map(y => <option key={y} value={y}>{y}</option>)}
+                        </select>
+                    </div>
                 </div>
 
                 {/* ── Leads Table ── */}
@@ -510,74 +551,83 @@ const AdvLeadManagement = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredLeads.map((lead, idx) => {
-                                        const sc = statusColor(lead.status);
-                                        const isSelected = selectedLeadIds.includes(lead._id);
-                                        return (
-                                            <tr key={lead._id} style={{ background: isSelected ? '#f6ffed' : 'transparent' }}>
-                                                {isManualAssignMode && (
-                                                    <td>
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={isSelected}
-                                                            onChange={() => toggleLeadSelection(lead._id)}
-                                                        />
-                                                    </td>
-                                                )}
-                                                <td style={{ color: '#888', fontSize: '12px' }}>{(currentPage - 1) * limit + idx + 1}</td>
-                                                <td><strong>{lead.full_name}</strong></td>
-                                                <td style={{ fontSize: '12px', color: '#666' }}>{lead.email}</td>
-                                                <td>{lead.phone_number}</td>
-                                                <td style={{ fontSize: '12px', color: '#666' }}>{lead.source || '—'}</td>
-                                                <td style={{ fontSize: '13px' }}>{lead.opted_domain || '—'}</td>
-                                                <td style={{ fontSize: '12px', color: '#555' }}>{lead.education_background || '—'}</td>
-                                                <td style={{ fontSize: '12px', color: '#555' }}>{lead.current_status || '—'}</td>
-                                                <td>
-                                                    <span style={{ padding: '3px 10px', borderRadius: '12px', fontSize: '11px', background: sc.bg, border: `1px solid ${sc.border}`, color: sc.color, whiteSpace: 'nowrap' }}>
-                                                        {lead.status?.replace(/_/g, ' ')}
-                                                    </span>
-                                                </td>
-                                                <td style={{ fontSize: '13px', color: '#555' }}>
-                                                    {(() => {
-                                                        const name = lead.owner_name || lead.current_owner_id?.name || '—';
-                                                        const team = lead.team_name || lead.team_id?.team_name || managers.find(m => m.fullname === name || m._id === (lead.owner_id || lead.current_owner_id?._id))?.team;
-                                                        return (
-                                                            <>
-                                                                {name}
-                                                                {team && <><br /><span style={{ color: '#1890ff', fontSize: '11px', fontWeight: '600' }}>({team})</span></>}
-                                                            </>
-                                                        );
-                                                    })()}
-                                                </td>
-                                                <td>
-                                                    <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '12px', background: (lead.score || 0) > 15 ? '#f6ffed' : '#f5f5f5', border: `1px solid ${(lead.score || 0) > 15 ? '#b7eb8f' : '#d9d9d9'}` }}>
-                                                        {lead.score || 0}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <button 
-                                                        onClick={() => handleMakeDialed(lead._id)}
-                                                        title="Change to Dialed"
-                                                        style={{
-                                                            padding: '6px 12px',
-                                                            background: '#722ed1', // Deep purple for Dialed
-                                                            color: '#fff',
-                                                            border: 'none',
-                                                            borderRadius: '6px',
-                                                            cursor: 'pointer',
-                                                            fontSize: '11px',
-                                                            fontWeight: '600',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            gap: '4px'
-                                                        }}
-                                                    >
-                                                        <i className="fa fa-refresh"></i> Dialed
-                                                    </button>
+                                    {Object.keys(groupedLeads).map((date) => (
+                                        <React.Fragment key={date}>
+                                            <tr style={{ background: '#f8f9fa' }}>
+                                                <td colSpan={isManualAssignMode ? "13" : "12"} style={{ fontWeight: '800', textAlign: 'center', padding: '10px', fontSize: '14px', letterSpacing: '1px', borderBottom: '2px solid #ddd' }}>
+                                                    📅 {date}
                                                 </td>
                                             </tr>
-                                        );
-                                    })}
+                                            {groupedLeads[date].map((lead, idx) => {
+                                                const sc = statusColor(lead.status);
+                                                const isSelected = selectedLeadIds.includes(lead._id);
+                                                return (
+                                                    <tr key={lead._id} style={{ background: isSelected ? '#f6ffed' : 'transparent' }}>
+                                                        {isManualAssignMode && (
+                                                            <td>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={isSelected}
+                                                                    onChange={() => toggleLeadSelection(lead._id)}
+                                                                />
+                                                            </td>
+                                                        )}
+                                                        <td style={{ color: '#888', fontSize: '12px' }}>{(currentPage - 1) * limit + idx + 1}</td>
+                                                        <td><strong>{lead.full_name}</strong></td>
+                                                        <td style={{ fontSize: '12px', color: '#666' }}>{lead.email}</td>
+                                                        <td>{lead.phone_number}</td>
+                                                        <td style={{ fontSize: '12px', color: '#666' }}>{lead.source || '—'}</td>
+                                                        <td style={{ fontSize: '13px' }}>{lead.opted_domain || '—'}</td>
+                                                        <td style={{ fontSize: '12px', color: '#555' }}>{lead.education_background || '—'}</td>
+                                                        <td style={{ fontSize: '12px', color: '#555' }}>{lead.current_status || '—'}</td>
+                                                        <td>
+                                                            <span style={{ padding: '3px 10px', borderRadius: '12px', fontSize: '11px', background: sc.bg, border: `1px solid ${sc.border}`, color: sc.color, whiteSpace: 'nowrap' }}>
+                                                                {lead.status?.replace(/_/g, ' ')}
+                                                            </span>
+                                                        </td>
+                                                        <td style={{ fontSize: '13px', color: '#555' }}>
+                                                            {(() => {
+                                                                const name = lead.owner_name || lead.current_owner_id?.name || '—';
+                                                                const team = lead.team_name || lead.team_id?.team_name || managers.find(m => m.fullname === name || m._id === (lead.owner_id || lead.current_owner_id?._id))?.team;
+                                                                return (
+                                                                    <>
+                                                                        {name}
+                                                                        {team && <><br /><span style={{ color: '#1890ff', fontSize: '11px', fontWeight: '600' }}>({team})</span></>}
+                                                                    </>
+                                                                );
+                                                            })()}
+                                                        </td>
+                                                        <td>
+                                                            <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '12px', background: (lead.score || 0) > 15 ? '#f6ffed' : '#f5f5f5', border: `1px solid ${(lead.score || 0) > 15 ? '#b7eb8f' : '#d9d9d9'}` }}>
+                                                                {lead.score || 0}
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <button 
+                                                                onClick={() => handleMakeDialed(lead._id)}
+                                                                title="Change to Dialed"
+                                                                style={{
+                                                                    padding: '6px 12px',
+                                                                    background: '#722ed1', // Deep purple for Dialed
+                                                                    color: '#fff',
+                                                                    border: 'none',
+                                                                    borderRadius: '6px',
+                                                                    cursor: 'pointer',
+                                                                    fontSize: '11px',
+                                                                    fontWeight: '600',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    gap: '4px'
+                                                                }}
+                                                            >
+                                                                <i className="fa fa-refresh"></i> Dialed
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </React.Fragment>
+                                    ))}
                                 </tbody>
                             </table>
                         </div>

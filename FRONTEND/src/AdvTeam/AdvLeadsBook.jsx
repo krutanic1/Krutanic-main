@@ -86,6 +86,21 @@ const AdvLeadsBook = () => {
         }
     };
 
+    const formatDate = (date) => {
+        if (!date) return "Unknown Date";
+        return new Date(date).toLocaleDateString("en-GB");
+    };
+
+    // Grouping logic for the leads
+    const groupedLeads = leads.reduce((acc, lead) => {
+        const date = formatDate(lead.assigned_at || lead.created_at);
+        if (!acc[date]) {
+            acc[date] = [];
+        }
+        acc[date].push(lead);
+        return acc;
+    }, {});
+
     useEffect(() => { fetchMyLeads(currentPage); }, [currentPage, selectedOutcome, dateFilter]);
 
     const handlePageChange = (newPage) => {
@@ -247,7 +262,7 @@ const AdvLeadsBook = () => {
             overflowX: 'auto',
             flex: '1',
             minWidth: '200px',
-            maxWidth: 'calc(100vw - 920px)', // Increased to account for the new 'Unused' filter item
+            maxWidth: 'calc(100vw - 920px)',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
         },
@@ -556,343 +571,330 @@ const AdvLeadsBook = () => {
                 ) : (
                     <>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            {leads.map((lead, idx) => {
-                                const isOpen = activeLead === lead._id;
-                                const form = formState[lead._id] || {};
-                                const history = callHistory[lead._id] || [];
-                                const demoNeeded = ["interested", "callback_requested", "follow_up"].includes(form.callOutcome);
-
-                                return (
-                                    <div key={lead._id} style={{
-                                        ...styles.leadCard,
-                                        ...(isOpen ? styles.leadCardActive : {})
+                            {Object.keys(groupedLeads).map((date) => (
+                                <React.Fragment key={date}>
+                                    <div style={{
+                                        padding: '12px 24px',
+                                        background: 'linear-gradient(90deg, #f1f5f9 0%, #fff 100%)',
+                                        borderRadius: '12px',
+                                        border: '1px solid #e2e8f0',
+                                        margin: '16px 0 8px 0',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '12px',
+                                        boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
                                     }}>
-                                                                         <div
-                                            onClick={() => toggleRow(lead)}
-                                            style={styles.summaryRow(isOpen)}
-                                        >
-                                            <div style={{ width: '48px', color: designTokens.colors.textSecondary, fontWeight: '800', fontSize: '14px', opacity: 0.5 }}>
-                                                {String((currentPage - 1) * limit + idx + 1).padStart(2, '0')}
-                                            </div>
+                                        <span className="material-symbols-outlined" style={{ color: designTokens.colors.primary, fontSize: '20px' }}>event</span>
+                                        <span style={{ fontWeight: '800', fontSize: '14px', color: '#475569', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                                            {date}
+                                        </span>
+                                    </div>
+                                    {groupedLeads[date].map((lead, idx) => {
+                                        const isOpen = activeLead === lead._id;
+                                        const form = formState[lead._id] || {};
+                                        const history = callHistory[lead._id] || [];
+                                        const demoNeeded = ["interested", "callback_requested", "follow_up"].includes(form.callOutcome);
 
-                                            <div style={{ flex: 2 }}>
-                                                <div style={{ fontWeight: '800', fontSize: '18px', color: designTokens.colors.textPrimary, letterSpacing: '-0.01em' }}>{lead.full_name}</div>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '6px' }}>
-                                                    <div style={{ fontSize: '13px', color: designTokens.colors.textSecondary, fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                        <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>call</span>
-                                                        {lead.phone_number}
+                                        return (
+                                            <div key={lead._id} style={{
+                                                ...styles.leadCard,
+                                                ...(isOpen ? styles.leadCardActive : {})
+                                            }}>
+                                                <div
+                                                    onClick={() => toggleRow(lead)}
+                                                    style={styles.summaryRow(isOpen)}
+                                                >
+                                                    <div style={{ width: '48px', color: designTokens.colors.textSecondary, fontWeight: '800', fontSize: '14px', opacity: 0.5 }}>
+                                                        {String((currentPage - 1) * limit + idx + 1).padStart(2, '0')}
                                                     </div>
-                                                    <div style={{ display: 'flex', gap: '8px' }}>
-                                                        <a
-                                                            href={`https://wa.me/${lead.phone_number.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${lead.full_name}, this is from Krutanic`)}`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            title="WhatsApp"
-                                                            onClick={(e) => e.stopPropagation()}
-                                                            style={styles.iconBtn('#25D366')}
-                                                            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
-                                                            onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                                                        >
-                                                            <i className="fa fa-whatsapp"></i>
-                                                        </a>
-                                                        <a
-                                                            href={`mailto:${lead.email}?subject=Regarding Your Inquiry - Krutanic&body=${encodeURIComponent(`Hello ${lead.full_name},\n\nI hope you are doing well.`)}`}
-                                                            title="Email"
-                                                            onClick={(e) => e.stopPropagation()}
-                                                            style={styles.iconBtn(designTokens.colors.info)}
-                                                            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
-                                                            onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                                                        >
-                                                            <i className="fa fa-envelope"></i>
-                                                        </a>
-                                                        <button
-                                                            title="Dial"
-                                                            onClick={(e) => { e.stopPropagation(); handleRemoteDial(lead.phone_number); }}
-                                                            style={styles.iconBtn(designTokens.colors.warning)}
-                                                            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
-                                                            onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                                                        >
-                                                            <i className="fa fa-phone"></i>
-                                                        </button>
-                                                        <a
-                                                            href="https://meet.google.com/new"
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            title="Video Meet"
-                                                            onClick={(e) => e.stopPropagation()}
-                                                            style={styles.iconBtn('#EA4335')}
-                                                            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
-                                                            onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                                                        >
-                                                            <i className="fa fa-video-camera"></i>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
 
-                                            <div style={{ flex: 2.5, display: 'flex', alignItems: 'center', gap: '40px' }}>
-                                                <div style={{ minWidth: '120px' }}>
-                                                    <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.05em' }}>Target Domain</div>
-                                                    <div style={{ fontSize: '14px', fontWeight: '700', color: designTokens.colors.textPrimary }}>{lead.opted_domain || 'General'}</div>
-                                                </div>
-                                                <div style={{ minWidth: '120px' }}>
-                                                    <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.05em' }}>Entity</div>
-                                                    <div style={{ fontSize: '14px', fontWeight: '600', color: designTokens.colors.textSecondary }}>{lead.company_name || 'Individual'}</div>
-                                                </div>
-                                                <div style={{ minWidth: '130px' }}>
-                                                    <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.05em' }}>Assigned On</div>
-                                                    <div style={{ fontSize: '13px', fontWeight: '600', color: designTokens.colors.textSecondary }}>{lead.assigned_at ? new Date(lead.assigned_at).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : (lead.created_at ? new Date(lead.created_at).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—')}</div>
-                                                </div>
-                                            </div>
-
-                                            <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '24px' }}>
-                                                <StatusBadge status={lead.status} />
-                                                <div className="material-symbols-outlined" style={{
-                                                    width: '32px', height: '32px', borderRadius: '10px', background: isOpen ? designTokens.colors.primary : designTokens.colors.background,
-                                                    display: 'flex', alignItems: 'center', justifyContent: 'center', color: isOpen ? '#fff' : designTokens.colors.textSecondary,
-                                                    fontSize: '20px', transition: 'all 0.3s ease', cursor: 'pointer',
-                                                    boxShadow: isOpen ? `0 4px 12px ${designTokens.colors.primary}40` : 'none'
-                                                }}>
-                                                    {isOpen ? 'expand_less' : 'expand_more'}
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Action Panel */}
-                                        {isOpen && (
-                                            <div style={styles.actionPanel}>
-                                                {/* COLUMN 1: Lead Intelligence */}
-                                                <div style={{ borderRight: `1px solid ${designTokens.colors.border}`, paddingRight: '32px' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
-                                                        <div style={{ padding: '10px', background: `${designTokens.colors.success}15`, borderRadius: '12px', color: designTokens.colors.success }}>
-                                                            <span className="material-symbols-outlined">analytics</span>
+                                                    <div style={{ flex: 2 }}>
+                                                        <div style={{ fontWeight: '800', fontSize: '18px', color: designTokens.colors.textPrimary, letterSpacing: '-0.01em' }}>{lead.full_name}</div>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '6px' }}>
+                                                            <div style={{ fontSize: '13px', color: designTokens.colors.textSecondary, fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>call</span>
+                                                                {lead.phone_number}
+                                                            </div>
+                                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                                                <a
+                                                                    href={`https://wa.me/${lead.phone_number.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${lead.full_name}, this is from Krutanic`)}`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    title="WhatsApp"
+                                                                    onClick={(e) => e.stopPropagation()}
+                                                                    style={styles.iconBtn('#25D366')}
+                                                                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
+                                                                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                                                >
+                                                                    <i className="fa fa-whatsapp"></i>
+                                                                </a>
+                                                                <a
+                                                                    href={`mailto:${lead.email}?subject=Regarding Your Inquiry - Krutanic&body=${encodeURIComponent(`Hello ${lead.full_name},\n\nI hope you are doing well.`)}`}
+                                                                    title="Email"
+                                                                    onClick={(e) => e.stopPropagation()}
+                                                                    style={styles.iconBtn(designTokens.colors.info)}
+                                                                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
+                                                                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                                                >
+                                                                    <i className="fa fa-envelope"></i>
+                                                                </a>
+                                                                <button
+                                                                    title="Dial"
+                                                                    onClick={(e) => { e.stopPropagation(); handleRemoteDial(lead.phone_number); }}
+                                                                    style={styles.iconBtn(designTokens.colors.warning)}
+                                                                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
+                                                                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                                                >
+                                                                    <i className="fa fa-phone"></i>
+                                                                </button>
+                                                                <a
+                                                                    href="https://meet.google.com/new"
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    title="Video Meet"
+                                                                    onClick={(e) => e.stopPropagation()}
+                                                                    style={styles.iconBtn('#EA4335')}
+                                                                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
+                                                                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                                                >
+                                                                    <i className="fa fa-video-camera"></i>
+                                                                </a>
+                                                            </div>
                                                         </div>
-                                                        <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: designTokens.colors.textPrimary }}>Intelligence</h3>
                                                     </div>
 
-                                                    <div style={{ 
-                                                        display: 'flex', 
-                                                        flexDirection: 'column', 
-                                                        gap: '20px',
-                                                        maxHeight: '600px',
-                                                        overflowY: 'auto',
-                                                        paddingRight: '12px',
-                                                        scrollbarWidth: 'thin'
-                                                    }}>
-                                                        {[
-                                                            { label: 'Primary Contact', value: lead.email, icon: 'mail' },
-                                                            { label: 'Workplace', value: lead.company_name, icon: 'business' },
-                                                            { label: 'Educational Background', value: lead.education_background, icon: 'school' },
-                                                            { label: 'Growth Readiness', value: lead.upskilling_ready, icon: 'trending_up' },
-                                                            { label: 'Source Stream', value: lead.source?.replace(/_/g, ' '), icon: 'hub' },
-                                                        ].map((item, i) => (
-                                                            item.value && (
-                                                                <div key={i} style={{ display: 'flex', gap: '12px' }}>
-                                                                    <span className="material-symbols-outlined" style={{ fontSize: '18px', color: designTokens.colors.textSecondary, marginTop: '2px' }}>{item.icon}</span>
-                                                                    <div>
-                                                                        <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '4px', opacity: 0.6 }}>{item.label}</div>
-                                                                        <div style={{ fontSize: '13px', fontWeight: '700', color: designTokens.colors.textPrimary, wordBreak: 'break-all' }}>{item.value}</div>
-                                                                    </div>
+                                                    <div style={{ flex: 2.5, display: 'flex', alignItems: 'center', gap: '40px' }}>
+                                                        <div style={{ minWidth: '120px' }}>
+                                                            <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.05em' }}>Target Domain</div>
+                                                            <div style={{ fontSize: '14px', fontWeight: '700', color: designTokens.colors.textPrimary }}>{lead.opted_domain || 'General'}</div>
+                                                        </div>
+                                                        <div style={{ minWidth: '120px' }}>
+                                                            <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.05em' }}>Entity</div>
+                                                            <div style={{ fontSize: '14px', fontWeight: '600', color: designTokens.colors.textSecondary }}>{lead.company_name || 'Individual'}</div>
+                                                        </div>
+                                                        <div style={{ minWidth: '130px' }}>
+                                                            <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.05em' }}>Assigned On</div>
+                                                            <div style={{ fontSize: '13px', fontWeight: '600', color: designTokens.colors.textSecondary }}>{lead.assigned_at ? new Date(lead.assigned_at).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : (lead.created_at ? new Date(lead.created_at).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—')}</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '24px' }}>
+                                                        <StatusBadge status={lead.status} />
+                                                        <div className="material-symbols-outlined" style={{
+                                                            width: '32px', height: '32px', borderRadius: '10px', background: isOpen ? designTokens.colors.primary : designTokens.colors.background,
+                                                            display: 'flex', alignItems: 'center', justifyContent: 'center', color: isOpen ? '#fff' : designTokens.colors.textSecondary,
+                                                            fontSize: '20px', transition: 'all 0.3s ease', cursor: 'pointer',
+                                                            boxShadow: isOpen ? `0 4px 12px ${designTokens.colors.primary}40` : 'none'
+                                                        }}>
+                                                            {isOpen ? 'expand_less' : 'expand_more'}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Action Panel */}
+                                                {isOpen && (
+                                                    <div style={styles.actionPanel}>
+                                                        {/* COLUMN 1: Lead Intelligence */}
+                                                        <div style={{ borderRight: `1px solid ${designTokens.colors.border}`, paddingRight: '32px' }}>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
+                                                                <div style={{ padding: '10px', background: `${designTokens.colors.success}15`, borderRadius: '12px', color: designTokens.colors.success }}>
+                                                                    <span className="material-symbols-outlined">analytics</span>
                                                                 </div>
-                                                            )
-                                                        ))}
-                                                        
-                                                        {lead.extra_fields && Object.keys(lead.extra_fields).length > 0 && (
-                                                            <div style={{ borderTop: `1px dashed ${designTokens.colors.border}`, marginTop: '10px', paddingTop: '20px' }}>
-                                                                <div style={{ display: 'grid', gap: '16px' }}>
-                                                                    {Object.entries(lead.extra_fields).map(([key, val]) => (
-                                                                        <div key={key}>
-                                                                            <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '4px', opacity: 0.6 }}>{key.replace(/_/g, ' ')}</div>
-                                                                            <div style={{ fontSize: '13px', fontWeight: '600', color: designTokens.colors.textPrimary }}>{val || '—'}</div>
+                                                                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: designTokens.colors.textPrimary }}>Intelligence</h3>
+                                                            </div>
+
+                                                            <div style={{ 
+                                                                display: 'flex', 
+                                                                flexDirection: 'column', 
+                                                                gap: '20px',
+                                                                maxHeight: '600px',
+                                                                overflowY: 'auto',
+                                                                paddingRight: '12px',
+                                                                scrollbarWidth: 'thin'
+                                                            }}>
+                                                                {[
+                                                                    { label: 'Primary Contact', value: lead.email, icon: 'mail' },
+                                                                    { label: 'Workplace', value: lead.company_name, icon: 'business' },
+                                                                    { label: 'Educational Background', value: lead.education_background, icon: 'school' },
+                                                                    { label: 'Growth Readiness', value: lead.upskilling_ready, icon: 'trending_up' },
+                                                                    { label: 'Source Stream', value: lead.source?.replace(/_/g, ' '), icon: 'hub' },
+                                                                ].map((item, i) => (
+                                                                    item.value && (
+                                                                        <div key={i} style={{ display: 'flex', gap: '12px' }}>
+                                                                            <span className="material-symbols-outlined" style={{ fontSize: '18px', color: designTokens.colors.textSecondary, marginTop: '2px' }}>{item.icon}</span>
+                                                                            <div>
+                                                                                <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '4px', opacity: 0.6 }}>{item.label}</div>
+                                                                                <div style={{ fontSize: '13px', fontWeight: '700', color: designTokens.colors.textPrimary, wordBreak: 'break-all' }}>{item.value}</div>
+                                                                            </div>
                                                                         </div>
-                                                                    ))}
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-
-                                                {/* COLUMN 2: Interaction Hub */}
-                                                <div>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
-                                                        <div style={{ padding: '10px', background: `${designTokens.colors.primary}15`, borderRadius: '12px', color: designTokens.colors.primary }}>
-                                                            <span className="material-symbols-outlined">call_log</span>
-                                                        </div>
-                                                        <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: designTokens.colors.textPrimary }}>Interaction Hub</h3>
-                                                    </div>
-
-                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                                            <label style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase' }}>Current Disposition</label>
-                                                            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                                                                {CALL_OUTCOMES.map(o => (
-                                                                    <button
-                                                                        key={o.value}
-                                                                        onClick={() => updateForm(lead._id, 'callOutcome', o.value)}
-                                                                        style={styles.outcomeBtn(form.callOutcome === o.value, o.color)}
-                                                                    >
-                                                                        <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>{o.icon}</span>
-                                                                        {o.label.replace(/[^a-zA-Z\s]/g, '').trim()}
-                                                                    </button>
+                                                                    )
                                                                 ))}
-                                                            </div>
-                                                        </div>
-
-                                                        <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '24px' }}>
-                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                                                <label style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase' }}>Executive Summary</label>
-                                                                <textarea
-                                                                    style={{ ...styles.input, height: '140px', resize: 'none' }}
-                                                                    placeholder="Detail the conversation highlights..."
-                                                                    value={form.summary || ""}
-                                                                    onChange={e => updateForm(lead._id, 'summary', e.target.value)}
-                                                                />
-                                                            </div>
-                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                                                    <label style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase' }}>Internal Notes</label>
-                                                                    <input
-                                                                        style={styles.input}
-                                                                        placeholder="Private remarks..."
-                                                                        value={form.remark || ""}
-                                                                        onChange={e => updateForm(lead._id, 'remark', e.target.value)}
-                                                                    />
-                                                                </div>
-                                                                {demoNeeded && (
-                                                                    <div style={{ 
-                                                                        display: 'flex', 
-                                                                        flexDirection: 'column', 
-                                                                        gap: '10px', 
-                                                                        padding: '16px', 
-                                                                        background: `${designTokens.colors.info}10`, 
-                                                                        borderRadius: '16px',
-                                                                        border: `1px solid ${designTokens.colors.info}30`
-                                                                    }}>
-                                                                        <label style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.info, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                                            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>calendar_month</span>
-                                                                            Schedule Session
-                                                                        </label>
-                                                                        <input
-                                                                            type="datetime-local"
-                                                                            style={{ ...styles.input, border: 'none', background: '#FFFFFF', padding: '10px 14px' }}
-                                                                            value={form.demoScheduleDate || ""}
-                                                                            onChange={e => updateForm(lead._id, 'demoScheduleDate', e.target.value)}
-                                                                        />
+                                                                
+                                                                {lead.extra_fields && Object.keys(lead.extra_fields).length > 0 && (
+                                                                    <div style={{ borderTop: `1px dashed ${designTokens.colors.border}`, marginTop: '10px', paddingTop: '20px' }}>
+                                                                        <div style={{ display: 'grid', gap: '16px' }}>
+                                                                            {Object.entries(lead.extra_fields).map(([key, val]) => (
+                                                                                <div key={key}>
+                                                                                    <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '4px', opacity: 0.6 }}>{key.replace(/_/g, ' ')}</div>
+                                                                                    <div style={{ fontSize: '13px', fontWeight: '600', color: designTokens.colors.textPrimary }}>{val || '—'}</div>
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
                                                                     </div>
                                                                 )}
                                                             </div>
                                                         </div>
 
-                                                        <button
-                                                            disabled={submitting === lead._id || !form.callOutcome}
-                                                            onClick={() => handleLogCall(lead)}
-                                                            style={{
-                                                                marginTop: '12px', 
-                                                                padding: '18px', 
-                                                                borderRadius: '16px', 
-                                                                border: 'none',
-                                                                background: !form.callOutcome ? designTokens.colors.border : `linear-gradient(135deg, ${designTokens.colors.primary}, ${designTokens.colors.secondary})`,
-                                                                color: '#fff',
-                                                                fontWeight: '800', 
-                                                                fontSize: '16px', 
-                                                                cursor: 'pointer',
-                                                                transition: 'all 0.3s ease', 
-                                                                boxShadow: form.callOutcome ? `0 12px 24px ${designTokens.colors.primary}40` : 'none',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                justifyContent: 'center',
-                                                                gap: '12px'
-                                                            }}
-                                                        >
-                                                            {submitting === lead._id ? (
-                                                                <span className="material-symbols-outlined spinning">sync</span>
-                                                            ) : (
-                                                                <span className="material-symbols-outlined">rocket_launch</span>
-                                                            )}
-                                                            {submitting === lead._id ? "Processing..." : "Commit Interaction"}
-                                                        </button>
-                                                    </div>
-                                                </div>
+                                                        {/* COLUMN 2: Interaction Hub */}
+                                                        <div>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
+                                                                <div style={{ padding: '10px', background: `${designTokens.colors.primary}15`, borderRadius: '12px', color: designTokens.colors.primary }}>
+                                                                    <span className="material-symbols-outlined">call_log</span>
+                                                                </div>
+                                                                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: designTokens.colors.textPrimary }}>Interaction Hub</h3>
+                                                            </div>
 
-                                                {/* COLUMN 3: Historical Timeline */}
-                                                <div style={{ borderLeft: `1px solid ${designTokens.colors.border}`, paddingLeft: '32px' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
-                                                        <div style={{ padding: '10px', background: `${designTokens.colors.textSecondary}15`, borderRadius: '12px', color: designTokens.colors.textSecondary }}>
-                                                            <span className="material-symbols-outlined">history</span>
-                                                        </div>
-                                                        <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: designTokens.colors.textPrimary }}>Timeline</h3>
-                                                    </div>
+                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                                                    <label style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase' }}>Current Disposition</label>
+                                                                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                                                        {CALL_OUTCOMES.map(o => (
+                                                                            <button
+                                                                                key={o.value}
+                                                                                onClick={() => updateForm(lead._id, 'callOutcome', o.value)}
+                                                                                style={styles.outcomeBtn(form.callOutcome === o.value, o.color)}
+                                                                            >
+                                                                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>{o.icon}</span>
+                                                                                {o.label.replace(/[^a-zA-Z\s]/g, '').trim()}
+                                                                            </button>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
 
-                                                    {history.length === 0 ? (
-                                                        <div style={{
-                                                            height: '240px', display: 'flex', flexDirection: 'column',
-                                                            alignItems: 'center', justifyContent: 'center', color: designTokens.colors.textSecondary,
-                                                            background: designTokens.colors.background,
-                                                            borderRadius: '24px'
-                                                        }}>
-                                                            <span className="material-symbols-outlined" style={{ fontSize: '48px', marginBottom: '12px', opacity: 0.3 }}>inbox</span>
-                                                            <p style={{ fontSize: '14px', fontWeight: '600', opacity: 0.6 }}>Fresh lead - No history</p>
-                                                        </div>
-                                                    ) : (
-                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: '500px', overflowY: 'auto', paddingRight: '8px' }}>
-                                                            {history.map((act, i) => {
-                                                                const outcome = CALL_OUTCOMES.find(o => o.value === act.callOutcome);
-                                                                const isLogExpanded = expandedLogId === act._id;
-                                                                return (
-                                                                    <div
-                                                                        key={i}
-                                                                        onClick={() => setExpandedLogId(isLogExpanded ? null : act._id)}
-                                                                        style={styles.timelineItem(isLogExpanded)}
-                                                                    >
-                                                                        <div style={{ position: 'absolute', left: '-21px', top: '24px', width: '16px', height: '16px', borderRadius: '50%', background: outcome?.color || designTokens.colors.primary, border: '4px solid #fff', boxShadow: designTokens.shadows.sm }}></div>
-                                                                        
-                                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
-                                                                            <span style={{ fontSize: '11px', fontWeight: '900', color: outcome?.color || designTokens.colors.primary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                                                                {outcome?.label.replace(/[^a-zA-Z\s]/g, '').trim() || act.callOutcome}
-                                                                            </span>
-                                                                            <span style={{ fontSize: '11px', fontWeight: '700', color: designTokens.colors.textSecondary }}>
-                                                                                {new Date(act.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
-                                                                            </span>
+                                                                <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '24px' }}>
+                                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                                                        <label style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase' }}>Executive Summary</label>
+                                                                        <textarea
+                                                                            style={{ ...styles.input, height: '140px', resize: 'none' }}
+                                                                            placeholder="Detail the conversation highlights..."
+                                                                            value={form.summary || ""}
+                                                                            onChange={e => updateForm(lead._id, 'summary', e.target.value)}
+                                                                        />
+                                                                    </div>
+                                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                                                            <label style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase' }}>Internal Notes</label>
+                                                                            <input
+                                                                                style={styles.input}
+                                                                                placeholder="Private remarks..."
+                                                                                value={form.remark || ""}
+                                                                                onChange={e => updateForm(lead._id, 'remark', e.target.value)}
+                                                                            />
                                                                         </div>
-
-                                                                        {act.demoScheduleDate && (
-                                                                            <div style={{ marginBottom: '10px', fontSize: '11px', color: designTokens.colors.info, fontWeight: '800', padding: '6px 10px', background: `${designTokens.colors.info}10`, borderRadius: '8px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                                                                                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>calendar_today</span>
-                                                                                {new Date(act.demoScheduleDate).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                                                                            </div>
-                                                                        )}
-
-                                                                        <p style={{
-                                                                            margin: 0, fontSize: '13px', color: designTokens.colors.textPrimary, lineHeight: '1.6',
-                                                                            fontWeight: '500', display: '-webkit-box', WebkitLineClamp: isLogExpanded ? 'unset' : '2', WebkitBoxOrient: 'vertical',
-                                                                            overflow: 'hidden'
-                                                                        }}>
-                                                                            {act.summary || 'Summary not recorded'}
-                                                                        </p>
-
-                                                                        {isLogExpanded && (
-                                                                            <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: `1px dashed ${designTokens.colors.border}`, display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                                                                {act.remark && (
-                                                                                    <div style={{ fontSize: '12px', color: designTokens.colors.textSecondary }}>
-                                                                                        <strong style={{ color: designTokens.colors.textPrimary }}>Notes:</strong> {act.remark}
-                                                                                    </div>
-                                                                                )}
-                                                                                <div style={{ fontSize: '11px', color: designTokens.colors.textSecondary, fontStyle: 'italic', fontWeight: '500' }}>
-                                                                                    Recorded by {act.specialistName || 'System'}
-                                                                                </div>
+                                                                        {demoNeeded && (
+                                                                            <div style={{ 
+                                                                                display: 'flex', 
+                                                                                flexDirection: 'column', 
+                                                                                gap: '10px', 
+                                                                                padding: '16px', 
+                                                                                background: `${designTokens.colors.info}10`, 
+                                                                                borderRadius: '16px',
+                                                                                border: `1px solid ${designTokens.colors.info}30`
+                                                                            }}>
+                                                                                <label style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.info, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>calendar_month</span>
+                                                                                    Schedule Session
+                                                                                </label>
+                                                                                <input
+                                                                                    type="datetime-local"
+                                                                                    style={{ ...styles.input, border: 'none', background: '#FFFFFF', padding: '10px 14px' }}
+                                                                                    value={form.demoScheduleDate || ""}
+                                                                                    onChange={e => updateForm(lead._id, 'demoScheduleDate', e.target.value)}
+                                                                                />
                                                                             </div>
                                                                         )}
                                                                     </div>
-                                                                );
-                                                            })}
+                                                                </div>
+
+                                                                <button
+                                                                    disabled={submitting === lead._id || !form.callOutcome}
+                                                                    onClick={() => handleLogCall(lead)}
+                                                                    style={{
+                                                                        marginTop: '12px', 
+                                                                        padding: '18px', 
+                                                                        borderRadius: '16px', 
+                                                                        border: 'none',
+                                                                        background: !form.callOutcome ? designTokens.colors.border : `linear-gradient(135deg, ${designTokens.colors.primary}, ${designTokens.colors.secondary})`,
+                                                                        color: '#fff',
+                                                                        fontWeight: '800', 
+                                                                        fontSize: '16px', 
+                                                                        cursor: 'pointer',
+                                                                        transition: 'all 0.3s ease', 
+                                                                        boxShadow: form.callOutcome ? `0 12px 24px ${designTokens.colors.primary}40` : 'none',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'center',
+                                                                        gap: '12px'
+                                                                    }}
+                                                                >
+                                                                    {submitting === lead._id ? (
+                                                                        <>
+                                                                            <span className="material-symbols-outlined spinning">sync</span>
+                                                                            Executing Protocol...
+                                                                        </>
+                                                                    ) : (
+                                                                        <>
+                                                                            <span className="material-symbols-outlined">save</span>
+                                                                            Log Activity & Progress
+                                                                        </>
+                                                                    )}
+                                                                </button>
+                                                            </div>
                                                         </div>
-                                                    )}
-                                                </div>
+
+                                                        {/* COLUMN 3: Historical Records */}
+                                                        <div style={{ borderLeft: `1px solid ${designTokens.colors.border}`, paddingLeft: '32px' }}>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
+                                                                <div style={{ padding: '10px', background: `${designTokens.colors.secondary}15`, borderRadius: '12px', color: designTokens.colors.secondary }}>
+                                                                    <span className="material-symbols-outlined">history</span>
+                                                                </div>
+                                                                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: designTokens.colors.textPrimary }}>Records</h3>
+                                                            </div>
+
+                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: '500px', overflowY: 'auto', paddingRight: '16px' }}>
+                                                                {history.length === 0 ? (
+                                                                    <div style={{ padding: '40px 20px', textAlign: 'center', background: designTokens.colors.background, borderRadius: '20px', border: '1px solid #E2E8F0' }}>
+                                                                        <span className="material-symbols-outlined" style={{ fontSize: '48px', color: designTokens.colors.border, marginBottom: '12px' }}>cloud_off</span>
+                                                                        <p style={{ margin: 0, fontSize: '13px', color: designTokens.colors.textSecondary, fontWeight: '500' }}>No historical sequences found in the archives.</p>
+                                                                    </div>
+                                                                ) : (
+                                                                    history.map((h, i) => (
+                                                                        <div key={i} style={styles.timelineItem(expandedLogId === h._id)} onClick={() => setExpandedLogId(expandedLogId === h._id ? null : h._id)}>
+                                                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                                                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: CALL_OUTCOMES.find(o => o.value === h.callOutcome)?.color || designTokens.colors.primary }}></div>
+                                                                                    <span style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.textPrimary }}>{h.callOutcome?.toUpperCase()}</span>
+                                                                                </div>
+                                                                                <span style={{ fontSize: '11px', color: designTokens.colors.textSecondary, fontWeight: '600' }}>{new Date(h.createdAt).toLocaleDateString()}</span>
+                                                                            </div>
+                                                                            <p style={{ margin: 0, fontSize: '13px', color: designTokens.colors.textSecondary, display: '-webkit-box', WebkitLineClamp: expandedLogId === h._id ? 'unset' : 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{h.summary || "Archived interactions trace."}</p>
+                                                                            {expandedLogId === h._id && h.remark && (
+                                                                                <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px dashed #E2E8F0', fontSize: '12px', color: designTokens.colors.textSecondary, fontStyle: 'italic' }}>
+                                                                                    Internal Note: {h.remark}
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                    ))
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
-                                    </div>
-                                );
-                            })}
+                                        );
+                                    })}
+                                </React.Fragment>
+                            ))}
                         </div>
 
                         {/* Pagination UI */}

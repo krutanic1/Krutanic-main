@@ -572,7 +572,7 @@ router.get("/member-monthly", async (req, res) => {
 // ─────────────────────────────────────────────────────────────────
 router.get("/member-outcome-logs", async (req, res) => {
     try {
-        const { memberId, outcome, month, year } = req.query;
+        const { memberId, outcome, month, year, source } = req.query;
         if (!memberId || !outcome) {
             return res.status(400).json({ message: "memberId and outcome required" });
         }
@@ -582,12 +582,18 @@ router.get("/member-outcome-logs", async (req, res) => {
         const startDate   = new Date(targetYear, targetMonth, 1);
         const endDate     = new Date(targetYear, targetMonth + 1, 0, 23, 59, 59, 999);
 
-        // Get leads with this outcome assigned to this member in the month
-        const leads = await AdvLead.find({
+        const query = {
             owner_id: memberId,
             last_outcome: outcome,
             created_at: { $gte: startDate, $lte: endDate }
-        }, {
+        };
+
+        if (source) {
+            query.source = source;
+        }
+
+        // Get leads with this outcome assigned to this member in the month
+        const leads = await AdvLead.find(query, {
             full_name: 1, phone_number: 1, source: 1, opted_domain: 1,
             created_at: 1, assigned_at: 1, last_outcome: 1, status: 1
         }).sort({ created_at: -1 }).limit(200).lean();
@@ -623,6 +629,7 @@ router.get("/member-outcome-logs", async (req, res) => {
             name:       lead.full_name,
             phone:      lead.phone_number,
             source:     lead.source?.replace(/_/g, ' '),
+            sourceRaw:  lead.source,
             domain:     lead.opted_domain || '—',
             date:       lead.assigned_at || lead.created_at,
             outcome:    lead.last_outcome,

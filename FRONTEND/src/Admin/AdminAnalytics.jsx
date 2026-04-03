@@ -5,7 +5,7 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, 
     Cell, PieChart, Pie, LineChart, Line, Area, AreaChart
 } from 'recharts';
-import { TrendingUp, TrendingDown, Calendar, Database, Target, PhoneCall, Info, Users, X, ChevronRight, Award, DollarSign, AlertCircle, BarChart2 } from 'lucide-react';
+import { TrendingUp, TrendingDown, Calendar, Database, Target, PhoneCall, Info, Users, X, ChevronRight, Award, DollarSign, AlertCircle, BarChart2, Filter } from 'lucide-react';
 import API from '../API';
 
 // ────────────── CALL OUTCOME CONFIG ──────────────
@@ -45,6 +45,8 @@ const AdminAnalytics = () => {
     const [selectedOutcome, setSelectedOutcome] = useState(null);
     const [outcomeLogs, setOutcomeLogs] = useState([]);
     const [logsLoading, setLogsLoading] = useState(false);
+    const [sourceFilter, setSourceFilter] = useState('');
+    const [uniqueSources, setUniqueSources] = useState([]);
 
     const months = [
         "January", "February", "March", "April", "May", "June",
@@ -101,20 +103,36 @@ const AdminAnalytics = () => {
         return () => document.removeEventListener('mousedown', handler);
     }, [drawerOpen]);
 
-    const fetchOutcomeLogs = async (member, outcome) => {
-        if (selectedOutcome === outcome) {
+    const fetchOutcomeLogs = async (member, outcome, source = '') => {
+        // If clicking same outcome with no source filter, toggle close
+        if (selectedOutcome === outcome && source === sourceFilter && source === '') {
             setSelectedOutcome(null);
             setOutcomeLogs([]);
+            setSourceFilter('');
             return;
         }
+
         setSelectedOutcome(outcome);
+        setSourceFilter(source);
         setLogsLoading(true);
-        setOutcomeLogs([]);
+
         try {
             const res = await axios.get(
-                `${API}/api/adv-reports/member-outcome-logs?memberId=${member._id}&outcome=${outcome}&month=${selectedMonth}&year=${selectedYear}`
+                `${API}/api/adv-reports/member-outcome-logs?memberId=${member._id}&outcome=${outcome}&month=${selectedMonth}&year=${selectedYear}${source ? `&source=${encodeURIComponent(source)}` : ''}`
             );
-            setOutcomeLogs(res.data?.logs || []);
+            const logs = res.data?.logs || [];
+            setOutcomeLogs(logs);
+
+            // Extract unique raw source values (as stored in DB) for filter dropdown
+            // The backend returns source already formatted; we fetch raw from the full unfiltered load
+            if (source === '') {
+                // Get raw sources: extract from logs before formatting was applied
+                // We store uniqueSources as raw DB values (underscored) so the backend can match
+                const rawSources = [...new Set(
+                    logs.map(l => l.sourceRaw || l.source?.replace(/\s+/g, '_').toLowerCase()).filter(Boolean)
+                )].sort();
+                setUniqueSources(rawSources);
+            }
         } catch {
             toast.error('Failed to load call logs');
         } finally {
@@ -609,7 +627,10 @@ const AdminAnalytics = () => {
                                         return (
                                             <div
                                                 key={o.key}
-                                                onClick={() => fetchOutcomeLogs(selectedMember, o.key)}
+                                                onClick={() => {
+                                                    setSourceFilter(''); // Reset filter when switching outcomes
+                                                    fetchOutcomeLogs(selectedMember, o.key);
+                                                }}
                                                 style={{
                                                     background: isActive ? o.color : o.bg,
                                                     borderRadius: '12px', padding: '12px 14px',
@@ -652,9 +673,26 @@ const AdminAnalytics = () => {
                                                     </span>
                                                 )}
                                             </div>
-                                            <button onClick={() => { setSelectedOutcome(null); setOutcomeLogs([]); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', fontSize: '18px', display: 'flex', alignItems: 'center' }}>
-                                                <X size={16} />
-                                            </button>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                {/* Source Filter Dropdown */}
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#fff', padding: '4px 10px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
+                                                    <Filter size={14} color="#64748b" />
+                                                    <select 
+                                                        value={sourceFilter}
+                                                        onChange={(e) => fetchOutcomeLogs(selectedMember, selectedOutcome, e.target.value)}
+                                                        style={{ border: 'none', background: 'transparent', fontSize: '12px', fontWeight: '600', color: '#475569', outline: 'none', cursor: 'pointer' }}
+                                                    >
+                                                        <option value="">All Sources</option>
+                                                        {uniqueSources.map(s => (
+                                                            <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+
+                                                <button onClick={() => { setSelectedOutcome(null); setOutcomeLogs([]); setSourceFilter(''); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', fontSize: '18px', display: 'flex', alignItems: 'center', padding: '4px' }}>
+                                                    <X size={16} />
+                                                </button>
+                                            </div>
                                         </div>
 
                                         {/* Logs Body */}
