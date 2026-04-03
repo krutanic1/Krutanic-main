@@ -570,3 +570,26 @@ table tbody{
   -ms-overflow-style: none;
   scrollbar-width: none; 
 }
+
+/* Responsive Content Wrap for Admin Dashboard */
+.admin-content-wrap {
+  margin-left: 270px;
+  padding: 30px;
+  background: #f0f2f5;
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
+}
+
+@media screen and (max-width: 1366px) {
+  .admin-content-wrap {
+    margin-left: 265px;
+    padding: 20px;
+  }
+}
+
+@media screen and (max-width: 1100px) {
+  .admin-content-wrap {
+    margin-left: 0; /* Assuming sidebar is hidden or toggled on smaller screens */
+    padding: 15px;
+  }
+}

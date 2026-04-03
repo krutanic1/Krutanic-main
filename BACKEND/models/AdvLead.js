@@ -49,5 +49,12 @@ const AdvLeadSchema = new mongoose.Schema({
     created_at: { type: Date, default: Date.now }
 });
 
+// -- PERFORMANCE INDEXES FOR TEAM ANALYTICS --
+AdvLeadSchema.index({ owner_id: 1, last_outcome: 1, created_at: -1 });
+AdvLeadSchema.index({ created_at: -1 });
+AdvLeadSchema.index({ last_outcome: 1 });
+AdvLeadSchema.index({ owner_id: 1 });
+
+
 const AdvLead = mongoose.models.AdvLead || mongoose.model("AdvLead", AdvLeadSchema);
 module.exports = AdvLead;

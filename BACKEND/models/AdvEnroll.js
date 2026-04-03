@@ -99,6 +99,8 @@ advEnrollSchema.index({ counselor: 1 });
 advEnrollSchema.index({ domainId: 1 });
 advEnrollSchema.index({ status: 1, createdAt: -1 });
 advEnrollSchema.index({ createdAt: -1, lead: 1, status: 1 });
+advEnrollSchema.index({ counselor: 1, createdAt: -1 });
+
 
 const AdvEnroll = mongoose.model("AdvEnroll", advEnrollSchema);
 module.exports = AdvEnroll;

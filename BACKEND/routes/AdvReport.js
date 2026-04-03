@@ -4,6 +4,8 @@ const AdvCallActivity = require("../models/AdvCallActivity");
 const AdvLead = require("../models/AdvLead");
 const AdvFollowup = require("../models/AdvFollowup");
 const AdvUser = require("../models/AdvUser");
+const AdvEnroll = require("../models/AdvEnroll");
+const AdvTeamMember = require("../models/CreateAdvTeam");
 
 // Specialist Performance (Calls today/yesterday)
 router.get("/specialist-stats/:id", async (req, res) => {
@@ -279,6 +281,361 @@ router.get("/export/conversions", async (req, res) => {
         }
     } catch (error) {
         res.status(400).json({ message: error.message });
+    }
+});
+
+// Comprehensive Stats for Domain/Source analysis with Month Filter and Growth
+router.get("/comprehensive-stats", async (req, res) => {
+    try {
+        const { month, year } = req.query;
+        const targetMonth = month ? parseInt(month) - 1 : new Date().getMonth();
+        const targetYear = year ? parseInt(year) : new Date().getFullYear();
+
+        const startDate = new Date(targetYear, targetMonth, 1);
+        const endDate = new Date(targetYear, targetMonth + 1, 0, 23, 59, 59, 999);
+
+        const prevStartDate = new Date(targetYear, targetMonth - 1, 1);
+        const prevEndDate = new Date(targetYear, targetMonth, 0, 23, 59, 59, 999);
+
+        // Helper for summary stats
+        const getSummary = async (start, end) => {
+            const total = await AdvLead.countDocuments({ created_at: { $gte: start, $lte: end } });
+            const converted = await AdvLead.countDocuments({ 
+                created_at: { $gte: start, $lte: end }, 
+                $or: [{ last_outcome: "converted" }, { stage: "converted" }] 
+            });
+            const junk = await AdvLead.countDocuments({ 
+                created_at: { $gte: start, $lte: end }, 
+                last_outcome: { $in: ["junk", "not_interested"] } 
+            });
+            return { total, converted, junk };
+        };
+
+        const currentSummary = await getSummary(startDate, endDate);
+        const prevSummary = await getSummary(prevStartDate, prevEndDate);
+
+        // Calculate growth
+        const calcGrowth = (curr, prev) => {
+            if (prev === 0) return curr > 0 ? 100 : 0;
+            return parseFloat(((curr - prev) / prev * 100).toFixed(1));
+        };
+
+        const growth = {
+            total: calcGrowth(currentSummary.total, prevSummary.total),
+            converted: calcGrowth(currentSummary.converted, prevSummary.converted),
+            junk: calcGrowth(currentSummary.junk, prevSummary.junk)
+        };
+
+        // Domain Breakdown
+        const domainBreakdown = await AdvLead.aggregate([
+            { $match: { created_at: { $gte: startDate, $lte: endDate } } },
+            { $group: {
+                _id: "$opted_domain",
+                total: { $sum: 1 },
+                converted: { $sum: { $cond: [{ $or: [{ $eq: ["$last_outcome", "converted"] }, { $eq: ["$stage", "converted"] }] }, 1, 0] } },
+                junk: { $sum: { $cond: [{ $in: ["$last_outcome", ["junk", "not_interested"]] }, 1, 0] } }
+            }},
+            { $project: { domain: "$_id", total: 1, converted: 1, junk: 1, _id: 0 } },
+            { $sort: { total: -1 } }
+        ]);
+
+        // Source Breakdown
+        const sourceBreakdown = await AdvLead.aggregate([
+            { $match: { created_at: { $gte: startDate, $lte: endDate } } },
+            { $group: {
+                _id: "$source",
+                total: { $sum: 1 },
+                converted: { $sum: { $cond: [{ $or: [{ $eq: ["$last_outcome", "converted"] }, { $eq: ["$stage", "converted"] }] }, 1, 0] } },
+                junk: { $sum: { $cond: [{ $in: ["$last_outcome", ["junk", "not_interested"]] }, 1, 0] } }
+            }},
+            { $project: { source: "$_id", total: 1, converted: 1, junk: 1, _id: 0 } },
+            { $sort: { total: -1 } }
+        ]);
+
+        res.status(200).json({
+            summary: currentSummary,
+            growth,
+            domainBreakdown,
+            sourceBreakdown
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// ─────────────────────────────────────────────────────────────────
+// TEAM ANALYSIS: All members, all 9 outcomes, revenue — one pass
+// ─────────────────────────────────────────────────────────────────
+router.get("/team-analysis", async (req, res) => {
+    try {
+        const { month, year } = req.query;
+        const targetMonth = month ? parseInt(month) - 1 : new Date().getMonth();
+        const targetYear  = year  ? parseInt(year)  : new Date().getFullYear();
+
+        const startDate = new Date(targetYear, targetMonth, 1);
+        const endDate   = new Date(targetYear, targetMonth + 1, 0, 23, 59, 59, 999);
+
+        // 1. Get all team members (all roles)
+        const allMembers = await AdvTeamMember.find({}, {
+            fullname: 1, designation: 1, team: 1, teams: 1, _id: 1
+        }).lean();
+
+        if (!allMembers.length) return res.json({ managers: [], leaders: [], specialists: [] });
+
+        const memberIds = allMembers.map(m => String(m._id));
+
+        // 2. Leads grouped by owner_id and last_outcome — one aggregation
+        const leadAgg = await AdvLead.aggregate([
+            {
+                $match: {
+                    owner_id: { $in: memberIds },
+                    created_at: { $gte: startDate, $lte: endDate }
+                }
+            },
+            {
+                $group: {
+                    _id: { owner: "$owner_id", outcome: "$last_outcome" },
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        // 3. Revenue from AdvEnroll grouped by counselor (member fullname)
+        const memberNames = allMembers.map(m => m.fullname).filter(Boolean);
+
+        const revenueAgg = await AdvEnroll.aggregate([
+            {
+                $match: {
+                    counselor: { $in: memberNames },
+                    createdAt: { $gte: startDate, $lte: endDate }
+                }
+            },
+            {
+                $group: {
+                    _id: "$counselor",
+                    totalRevenue:   { $sum: "$programPrice" },
+                    totalPaid:      { $sum: "$paidAmount" },
+                    enrollCount:    { $sum: 1 }
+                }
+            }
+        ]);
+
+        // 4. Build lookup maps for fast access
+        const outcomesMap = {}; // memberId -> { outcome: count }
+        const OUTCOMES = ["fresh","interested","follow_up","callback_requested","no_answer","not_interested","junk","converted","unused"];
+
+        for (const row of leadAgg) {
+            const { owner, outcome } = row._id;
+            if (!outcomesMap[owner]) {
+                outcomesMap[owner] = { totalLeads: 0 };
+                OUTCOMES.forEach(o => (outcomesMap[owner][o] = 0));
+            }
+            outcomesMap[owner][outcome || "fresh"] = (outcomesMap[owner][outcome || "fresh"] || 0) + row.count;
+            outcomesMap[owner].totalLeads += row.count;
+        }
+
+        // revenueMap keyed by counselor name
+        const revenueMap = {};
+        for (const row of revenueAgg) {
+            revenueMap[row._id] = {
+                totalRevenue:   row.totalRevenue || 0,
+                pendingRevenue: Math.max(0, (row.totalRevenue || 0) - (row.totalPaid || 0)),
+                enrollCount:    row.enrollCount || 0
+            };
+        }
+
+        // 5. Combine into member objects
+        const buildMember = (m) => {
+            const id   = String(m._id);
+            const name = m.fullname;
+            const outcomes = outcomesMap[id]   || { totalLeads: 0 };
+            const revenue  = revenueMap[name]  || { totalRevenue: 0, pendingRevenue: 0, enrollCount: 0 };
+            OUTCOMES.forEach(o => { if (outcomes[o] === undefined) outcomes[o] = 0; });
+            return {
+                _id: id,
+                name,
+                designation: m.designation,
+                team: m.team || (m.teams && m.teams[0]) || "—",
+                ...outcomes,
+                ...revenue
+            };
+        };
+
+        const designationMap = {
+            managers:    ["advteam manager", "manager", "adv manager"],
+            leaders:     ["adv team leader", "team leader", "leader", "sr team leader"],
+            specialists: ["sr inside sales specialist", "inside sales specialist", "sales specialist", "specialist"]
+        };
+
+        const categorize = (desig = "") => {
+            const d = desig.toLowerCase().trim();
+            if (designationMap.managers.some(k => d.includes(k) || k.includes(d))) return "managers";
+            if (designationMap.leaders.some(k => d.includes(k) || k.includes(d))) return "leaders";
+            return "specialists";
+        };
+
+        const result = { managers: [], leaders: [], specialists: [] };
+        for (const m of allMembers) {
+            const cat = categorize(m.designation);
+            result[cat].push(buildMember(m));
+        }
+
+        // Sort each group by converted desc
+        ["managers", "leaders", "specialists"].forEach(cat => {
+            result[cat].sort((a, b) => (b.converted || 0) - (a.converted || 0));
+        });
+
+        res.status(200).json(result);
+    } catch (err) {
+        console.error("team-analysis error:", err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// ─────────────────────────────────────────────────────────────────
+// MEMBER MONTHLY TREND: 12-month bar chart for drill-down panel
+// ─────────────────────────────────────────────────────────────────
+router.get("/member-monthly", async (req, res) => {
+    try {
+        const { memberId, year } = req.query;
+        if (!memberId) return res.status(400).json({ message: "memberId required" });
+
+        // Fetch member name for counselor-based revenue match
+        const memberDoc = await AdvTeamMember.findById(memberId, { fullname: 1 }).lean();
+        const memberName = memberDoc?.fullname || null;
+
+        const targetYear = year ? parseInt(year) : new Date().getFullYear();
+        const startDate  = new Date(targetYear, 0, 1);
+        const endDate    = new Date(targetYear, 11, 31, 23, 59, 59, 999);
+
+
+        const leadsByMonth = await AdvLead.aggregate([
+            {
+                $match: {
+                    owner_id: memberId,
+                    created_at: { $gte: startDate, $lte: endDate }
+                }
+            },
+            {
+                $group: {
+                    _id: { month: { $month: "$created_at" }, outcome: "$last_outcome" },
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        const revenueByMonth = await AdvEnroll.aggregate([
+            {
+                $match: {
+                    counselor: memberName,
+                    createdAt: { $gte: startDate, $lte: endDate }
+                }
+            },
+            {
+                $group: {
+                    _id: { $month: "$createdAt" },
+                    revenue:  { $sum: "$programPrice" },
+                    paid:     { $sum: "$paidAmount" }
+                }
+            }
+        ]);
+
+        const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+        const monthly = MONTHS.map((name, i) => ({
+            month: name,
+            totalLeads: 0, converted: 0, interested: 0, junk: 0, not_interested: 0,
+            revenue: 0, pending: 0
+        }));
+
+        for (const row of leadsByMonth) {
+            const idx = row._id.month - 1;
+            const outcome = row._id.outcome || "fresh";
+            monthly[idx].totalLeads += row.count;
+            if (monthly[idx][outcome] !== undefined) monthly[idx][outcome] += row.count;
+        }
+
+        for (const row of revenueByMonth) {
+            const idx = row._id - 1;
+            monthly[idx].revenue  = row.revenue || 0;
+            monthly[idx].pending  = Math.max(0, (row.revenue || 0) - (row.paid || 0));
+        }
+
+        res.status(200).json(monthly);
+    } catch (err) {
+        console.error("member-monthly error:", err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// ─────────────────────────────────────────────────────────────────
+// OUTCOME CALL LOGS: Leads with specific outcome for a member
+// ─────────────────────────────────────────────────────────────────
+router.get("/member-outcome-logs", async (req, res) => {
+    try {
+        const { memberId, outcome, month, year } = req.query;
+        if (!memberId || !outcome) {
+            return res.status(400).json({ message: "memberId and outcome required" });
+        }
+
+        const targetMonth = month ? parseInt(month) - 1 : new Date().getMonth();
+        const targetYear  = year  ? parseInt(year)  : new Date().getFullYear();
+        const startDate   = new Date(targetYear, targetMonth, 1);
+        const endDate     = new Date(targetYear, targetMonth + 1, 0, 23, 59, 59, 999);
+
+        // Get leads with this outcome assigned to this member in the month
+        const leads = await AdvLead.find({
+            owner_id: memberId,
+            last_outcome: outcome,
+            created_at: { $gte: startDate, $lte: endDate }
+        }, {
+            full_name: 1, phone_number: 1, source: 1, opted_domain: 1,
+            created_at: 1, assigned_at: 1, last_outcome: 1, status: 1
+        }).sort({ created_at: -1 }).limit(200).lean();
+
+        // Get the latest call activity for each lead
+        const leadIds = leads.map(l => l._id);
+        const callLogs = await AdvCallActivity.aggregate([
+            {
+                $match: {
+                    leadId: { $in: leadIds },
+                    callOutcome: outcome
+                }
+            },
+            { $sort: { createdAt: -1 } },
+            {
+                $group: {
+                    _id: "$leadId",
+                    summary:   { $first: "$summary" },
+                    remark:    { $first: "$remark" },
+                    calledAt:  { $first: "$createdAt" },
+                    agentName: { $first: "$specialistName" }
+                }
+            }
+        ]);
+
+        const callMap = {};
+        for (const c of callLogs) {
+            callMap[String(c._id)] = c;
+        }
+
+        const result = leads.map(lead => ({
+            _id:        lead._id,
+            name:       lead.full_name,
+            phone:      lead.phone_number,
+            source:     lead.source?.replace(/_/g, ' '),
+            domain:     lead.opted_domain || '—',
+            date:       lead.assigned_at || lead.created_at,
+            outcome:    lead.last_outcome,
+            status:     lead.status,
+            summary:    callMap[String(lead._id)]?.summary || '—',
+            remark:     callMap[String(lead._id)]?.remark  || '',
+            calledAt:   callMap[String(lead._id)]?.calledAt || null,
+        }));
+
+        res.status(200).json({ logs: result, total: result.length });
+    } catch (err) {
+        console.error("member-outcome-logs error:", err);
+        res.status(500).json({ message: err.message });
     }
 });
 

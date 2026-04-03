@@ -33,6 +33,8 @@ AdvCallActivitySchema.index({ specialistId: 1 });
 AdvCallActivitySchema.index({ teamId: 1 });
 AdvCallActivitySchema.index({ createdAt: 1 });
 AdvCallActivitySchema.index({ callOutcome: 1 });
+AdvCallActivitySchema.index({ leadId: 1, callOutcome: 1, createdAt: -1 });
+
 
 const AdvCallActivity = mongoose.models.AdvCallActivity || mongoose.model("AdvCallActivity", AdvCallActivitySchema);
 module.exports = AdvCallActivity;
