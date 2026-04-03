@@ -54,6 +54,8 @@ AdvLeadSchema.index({ owner_id: 1, last_outcome: 1, created_at: -1 });
 AdvLeadSchema.index({ created_at: -1 });
 AdvLeadSchema.index({ last_outcome: 1 });
 AdvLeadSchema.index({ owner_id: 1 });
+AdvLeadSchema.index({ status: 1, created_at: -1 });
+AdvLeadSchema.index({ owner_id: 1, status: 1 });
 
 
 const AdvLead = mongoose.models.AdvLead || mongoose.model("AdvLead", AdvLeadSchema);

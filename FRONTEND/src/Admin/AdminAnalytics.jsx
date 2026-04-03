@@ -5,7 +5,7 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, 
     Cell, PieChart, Pie, LineChart, Line, Area, AreaChart
 } from 'recharts';
-import { TrendingUp, TrendingDown, Calendar, Database, Target, PhoneCall, Info, Users, X, ChevronRight, Award, DollarSign, AlertCircle, BarChart2, Filter } from 'lucide-react';
+import { TrendingUp, TrendingDown, Calendar, Database, Target, PhoneCall, Info, Users, X, ChevronRight, Award, DollarSign, AlertCircle, BarChart2, Filter, RotateCw } from 'lucide-react';
 import API from '../API';
 
 // ────────────── CALL OUTCOME CONFIG ──────────────
@@ -137,6 +137,19 @@ const AdminAnalytics = () => {
             toast.error('Failed to load call logs');
         } finally {
             setLogsLoading(false);
+        }
+    };
+
+    const handleMarkDialed = async (leadId) => {
+        if (!window.confirm("Are you sure you want to reset this lead to 'Dialed'? This will delete its current outcome and logs.")) return;
+        
+        try {
+            await axios.put(`${API}/api/adv-leads/make-dialed/${leadId}`);
+            toast.success("Lead reset to Dialed status");
+            // Re-fetch only the logs for the current outcome to reflect changes
+            fetchOutcomeLogs(selectedMember, selectedOutcome, sourceFilter);
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Failed to reset lead");
         }
     };
 
@@ -711,7 +724,7 @@ const AdminAnalytics = () => {
                                                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
                                                     <thead>
                                                         <tr style={{ background: '#f8fafc', position: 'sticky', top: 0, zIndex: 1 }}>
-                                                            {['#', 'Lead Name', 'Phone', 'Source', 'Domain', 'Date', 'Summary'].map(h => (
+                                                            {['#', 'Lead Name', 'Phone', 'Source', 'Domain', 'Date', 'Summary', 'Action'].map(h => (
                                                                 <th key={h} style={{ padding: '10px 12px', textAlign: 'left', fontWeight: '700', fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap', borderBottom: '1px solid #e2e8f0' }}>{h}</th>
                                                             ))}
                                                         </tr>
@@ -738,6 +751,27 @@ const AdminAnalytics = () => {
                                                                 </td>
                                                                 <td style={{ padding: '10px 12px', color: '#475569', fontSize: '13px', minWidth: '180px', lineHeight: '1.5' }}>
                                                                     {log.summary || '—'}
+                                                                </td>
+                                                                <td style={{ padding: '10px 12px' }}>
+                                                                    <button
+                                                                        onClick={() => handleMarkDialed(log._id)}
+                                                                        style={{
+                                                                            padding: '6px 14px',
+                                                                            borderRadius: '8px',
+                                                                            border: 'none',
+                                                                            background: '#8b5cf6',
+                                                                            color: '#fff',
+                                                                            fontSize: '11px',
+                                                                            fontWeight: '700',
+                                                                            cursor: 'pointer',
+                                                                            display: 'flex',
+                                                                            alignItems: 'center',
+                                                                            gap: '6px',
+                                                                            boxShadow: '0 2px 4px rgba(139, 92, 246, 0.2)'
+                                                                        }}
+                                                                    >
+                                                                        <RotateCw size={12} /> Dialed
+                                                                    </button>
                                                                 </td>
                                                             </tr>
                                                         ))}

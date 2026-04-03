@@ -90,17 +90,25 @@ router.get("/leaderboard", async (req, res) => {
 // Conversion Funnel Analytics
 router.get("/funnel", async (req, res) => {
     try {
-        const total = await AdvLead.countDocuments();
-        const assigned = await AdvLead.countDocuments({ status: { $ne: "fresh" } });
-        const contacted = await AdvCallActivity.distinct("leadId");
-        const followups = await AdvFollowup.distinct("leadId");
-        const converted = await AdvLead.countDocuments({ status: "converted" });
+        const [total, assigned, converted, contactedGroup, followupsGroup] = await Promise.all([
+            AdvLead.countDocuments(),
+            AdvLead.countDocuments({ status: { $ne: "fresh" } }),
+            AdvLead.countDocuments({ status: "converted" }),
+            AdvCallActivity.aggregate([
+                { $group: { _id: "$leadId" } },
+                { $count: "count" }
+            ]),
+            AdvFollowup.aggregate([
+                { $group: { _id: "$leadId" } },
+                { $count: "count" }
+            ])
+        ]);
 
         res.status(200).json({
             total,
             assigned,
-            contacted: contacted.length,
-            followups: followups.length,
+            contacted: contactedGroup[0]?.count || 0,
+            followups: followupsGroup[0]?.count || 0,
             converted
         });
     } catch (error) {
@@ -139,13 +147,15 @@ router.get("/performance-alerts", async (req, res) => {
 // Admin Global Stats
 router.get("/admin-global-stats", async (req, res) => {
     try {
-        const totalLeads = await AdvLead.countDocuments();
-        const freshLeads = await AdvLead.countDocuments({ status: "fresh" });
-        const convertedLeads = await AdvLead.countDocuments({ status: "converted" });
-
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        const totalCallsToday = await AdvCallActivity.countDocuments({ createdAt: { $gte: today } });
+
+        const [totalLeads, freshLeads, convertedLeads, totalCallsToday] = await Promise.all([
+            AdvLead.countDocuments(),
+            AdvLead.countDocuments({ status: "fresh" }),
+            AdvLead.countDocuments({ status: "converted" }),
+            AdvCallActivity.countDocuments({ createdAt: { $gte: today } })
+        ]);
 
         res.status(200).json({
             totalLeads,
@@ -299,20 +309,24 @@ router.get("/comprehensive-stats", async (req, res) => {
 
         // Helper for summary stats
         const getSummary = async (start, end) => {
-            const total = await AdvLead.countDocuments({ created_at: { $gte: start, $lte: end } });
-            const converted = await AdvLead.countDocuments({ 
-                created_at: { $gte: start, $lte: end }, 
-                $or: [{ last_outcome: "converted" }, { stage: "converted" }] 
-            });
-            const junk = await AdvLead.countDocuments({ 
-                created_at: { $gte: start, $lte: end }, 
-                last_outcome: { $in: ["junk", "not_interested"] } 
-            });
+            const [total, converted, junk] = await Promise.all([
+                AdvLead.countDocuments({ created_at: { $gte: start, $lte: end } }),
+                AdvLead.countDocuments({ 
+                    created_at: { $gte: start, $lte: end }, 
+                    $or: [{ last_outcome: "converted" }, { stage: "converted" }] 
+                }),
+                AdvLead.countDocuments({ 
+                    created_at: { $gte: start, $lte: end }, 
+                    last_outcome: { $in: ["junk", "not_interested"] } 
+                })
+            ]);
             return { total, converted, junk };
         };
 
-        const currentSummary = await getSummary(startDate, endDate);
-        const prevSummary = await getSummary(prevStartDate, prevEndDate);
+        const [currentSummary, prevSummary] = await Promise.all([
+            getSummary(startDate, endDate),
+            getSummary(prevStartDate, prevEndDate)
+        ]);
 
         // Calculate growth
         const calcGrowth = (curr, prev) => {
