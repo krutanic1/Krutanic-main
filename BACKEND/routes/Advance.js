@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Advance = require("../models/Advance");
+const AdvLead = require("../models/AdvLead");
 const verifyAnyAuth = require("../middleware/verifyAnyAuth");
 const crypto = require("crypto");
 const { sendEmail } = require("../controllers/emailController");
@@ -49,9 +50,7 @@ router.post("/advance/register", async (req, res) => {
       passedOutYear: passedOutYear || undefined,
       reason: reason
     });
-    await newRegistration.save();
-    res.status(201).json({ message: "Registration successfull!" });
-
+    res.status(201).json({ message: "Registration successful!" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error. Please try again later." });
@@ -65,20 +64,39 @@ router.put("/advancequery/:id", verifyAnyAuth, async (req, res) => {
     const { action } = req.body;
     const query = await Advance.findById(id);
     if (query) {
-      if (action === "Shared") {
-        query.action = "Shared";
+      if (action === "Share to CRM" || action === "Shared to CRM") {
+        query.action = "Shared to CRM";
+        
+        // -- MANUAL CRM INTEGRATION --
+        try {
+          await AdvLead.findOneAndUpdate(
+            { email: query.email.toLowerCase() },
+            {
+              $set: {
+                full_name: query.name,
+                phone_number: query.phone,
+                opted_domain: query.interestedDomain,
+                education_background: query.passedOutYear || "",
+                current_status: query.currentRole,
+                source: "Website Lead", // New source name for shading
+                last_interaction_at: new Date()
+              },
+              $setOnInsert: {
+                status: "fresh",
+                created_at: new Date()
+              }
+            },
+            { upsert: true, new: true }
+          );
+        } catch (leadError) {
+          console.error("Failed to share query to CRM:", leadError);
+          // Non-blocking
+        }
+      } else {
+        query.action = action;
       }
-      if (action === "Not Interested") {
-        query.action = "Not Interested";
-      }
-      if (action === "Already Paid") {
-        query.action = "Already Paid";
-      }
-      if (action === "Unseen") {
-        query.action = "Unseen";
-      }
+      
       await query.save();
-
       res.status(200).json({ message: "Query updated successfully" });
     } else {
       res.status(404).json({ message: "Query not found" });

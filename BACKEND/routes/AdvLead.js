@@ -19,6 +19,60 @@ const RemoteDialQueue = require("../models/RemoteDialQueue");
 const cloudinary = require("../middleware/cloudinary");
 const axios = require("axios");
 const crypto = require("crypto");
+const nodemailer = require("nodemailer");
+const AdvTemplate = require("../models/AdvTemplate");
+const AdminMail = require("../models/AdminMail");
+
+require("dotenv").config();
+
+// 🛡️ Meta Fields Blacklist (Fields to block from storage and frontend)
+const META_BLACKLIST = [
+    "id", "created_time", "ad_id", "ad_name", "adset_id", "adset_name", 
+    "campaign_id", "campaign_name", "form_id", "form_name", "is_organic", 
+    "platform", "lead_status", "meta_lead_id", "facebook_ad_name", 
+    "facebook_campaign_name", "facebook_form_id", "facebook_created_time"
+];
+
+const BLACKLIST_PROJECTION = META_BLACKLIST.map(f => `-${f}`).join(" ");
+
+// Direct Gemini REST API call (bypasses SDK v1beta issues)
+async function callGeminiAPI(prompt) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    // Try models in order of availability and speed (Primary: Gemini 3 Flash Preview)
+    const models = [
+        "gemini-3-flash-preview",
+        "gemini-2.0-flash",
+        "gemini-1.5-flash", 
+        "gemini-1.5-flash-8b", 
+        "gemini-1.5-pro", 
+        "gemini-pro"
+    ];
+    
+    for (const model of models) {
+        try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+            const payload = { contents: [{ parts: [{ text: prompt }] }] };
+            const response = await axios.post(url, payload, {
+                headers: { 'Content-Type': 'application/json' },
+                timeout: 20000 // 20s timeout for preview models
+            });
+            
+            if (response.data && response.data.candidates && response.data.candidates[0].content) {
+                console.log(`✅ Gemini success with model: ${model}`);
+                return response.data.candidates[0].content.parts[0].text;
+            }
+        } catch (err) {
+            const status = err?.response?.data?.error?.status;
+            // Silencing routine quota/not found logs to keep console clean
+            if (status !== "RESOURCE_EXHAUSTED" && status !== "NOT_FOUND") {
+                console.log(`❌ Gemini model ${model} failed: ${status || err.message}`);
+            }
+        }
+    }
+    // Instead of throwing, we log and let the route handle fallback
+    console.log("ℹ️ All Gemini models busy/unavailable. Using professional fallback template.");
+    return null; 
+}
 
 // ✅ Meta Webhook Verification (GET)
 router.get("/meta-webhook", (req, res) => {
@@ -126,6 +180,10 @@ async function processAndSaveLead(leadPayload) {
 
     const leadSource = source || "google_form";
 
+    // --- 🛡️ Cleanse sensitive Meta metadata globally ---
+    const cleansedFields = { ...leadPayload };
+    META_BLACKLIST.forEach(field => delete cleansedFields[field]);
+
     // Check for existing lead by phone OR email
     const duplicateQuery = [];
     if (phone_number) duplicateQuery.push({ phone_number });
@@ -135,10 +193,10 @@ async function processAndSaveLead(leadPayload) {
         const existingLead = await AdvLead.findOne({ $or: duplicateQuery });
         if (existingLead) {
             console.log(`Duplicate lead found: ${existingLead.email} / ${existingLead.phone_number}. Updating...`);
-            // Update existing lead with new data
+            // Update existing lead with new data (cleansed)
             return await AdvLead.findByIdAndUpdate(
                 existingLead._id, 
-                { $set: { ...leadPayload, phone_number, email } }, 
+                { $set: { ...cleansedFields, phone_number, email, extra_fields: cleansedFields } }, 
                 { new: true }
             );
         }
@@ -179,7 +237,7 @@ async function processAndSaveLead(leadPayload) {
     }
 
     const newLead = new AdvLead({
-        ...leadPayload,
+        ...cleansedFields,
         phone_number,
         opted_domain,
         source: leadSource,
@@ -188,7 +246,7 @@ async function processAndSaveLead(leadPayload) {
         current_owner_id: assignedSpecialistId,
         current_owner_role: assignedSpecialistId ? "sr_inside_sales_specialist" : null,
         assigned_at: assignedSpecialistId ? new Date() : undefined,
-        extra_fields: leadPayload,
+        extra_fields: cleansedFields,
         score
     });
 
@@ -466,6 +524,7 @@ router.post("/bulk-assign-to-leader", async (req, res) => {
     }
     try {
         const myLeads = await AdvLead.find({ owner_id: managerId, status: { $nin: ["converted", "closed"] } })
+            .select(BLACKLIST_PROJECTION)
             .sort({ created_at: 1 })
             .limit(parseInt(count));
 
@@ -494,6 +553,7 @@ router.post("/bulk-assign-to-specialist", async (req, res) => {
     }
     try {
         const myLeads = await AdvLead.find({ owner_id: leaderId, status: { $nin: ["converted", "closed"] } })
+            .select(BLACKLIST_PROJECTION)
             .sort({ created_at: 1 })
             .limit(parseInt(count));
 
@@ -709,11 +769,13 @@ router.get("/get-adv-leads", async (req, res) => {
                         as: "current_owner_id"
                     }
                 },
-                { $unwind: { path: "$current_owner_id", preserveNullAndEmptyArrays: true } }
+                { $unwind: { path: "$current_owner_id", preserveNullAndEmptyArrays: true } },
+                { $unset: META_BLACKLIST.concat(["extra_fields.id", "extra_fields.ad_id", "extra_fields.adset_id", "extra_fields.campaign_id", "extra_fields.form_id"]) }
             ]);
         } else {
             // Standard chronological sort for other roles
             leads = await AdvLead.find(query)
+                .select(BLACKLIST_PROJECTION)
                 .populate("team_id", "team_name")
                 .populate("current_owner_id", "name")
                 .sort({ created_at: -1 })
@@ -1244,7 +1306,7 @@ router.get("/check-remote-dial", async (req, res) => {
 
     try {
         const pendingRequest = await RemoteDialQueue.findOne({ specialistId, status: "pending" })
-            .populate("leadId", "full_name phone_number opted_domain email")
+            .populate("leadId", "full_name phone_number opted_domain email " + BLACKLIST_PROJECTION)
             .sort({ createdAt: -1 });
 
         if (pendingRequest) {
@@ -1335,7 +1397,7 @@ router.get("/upcoming-followups", async (req, res) => {
             followUpDate: { $gte: now },
             followUpStatus: "pending"
         })
-            .populate("leadId", "full_name phone_number opted_domain")
+            .populate("leadId", "full_name phone_number opted_domain " + BLACKLIST_PROJECTION)
             .sort({ followUpDate: 1 });
 
         res.status(200).json({ followUps });
@@ -1410,7 +1472,7 @@ router.get("/get-adv-record", async (req, res) => {
 
         const totalCount = await AdvCallActivity.countDocuments(query);
         const activities = await AdvCallActivity.find(query)
-            .populate("leadId", "full_name phone_number opted_domain company_name")
+            .populate("leadId", "full_name phone_number opted_domain company_name " + BLACKLIST_PROJECTION)
             .populate("specialistId", "name")
             .sort({ createdAt: -1 })
             .skip(skip)
@@ -1467,6 +1529,7 @@ router.post("/leader-bulk-assign-specialist", async (req, res) => {
             status: { $nin: ["converted", "closed", "assigned_to_specialist"] }
         };
         const myLeads = await AdvLead.find(query)
+            .select(BLACKLIST_PROJECTION)
             .sort({ created_at: 1 })
             .limit(parseInt(count));
 
@@ -1561,7 +1624,7 @@ router.get("/dialer-queue", async (req, res) => {
                 { specialist_id: specialistId }
             ],
             status: { $nin: ["converted", "closed"] }
-        });
+        }).select(BLACKLIST_PROJECTION);
 
         // 3. Sort by Priority: Follow-Ups > In Follow-up > Fresh
         const sortedLeads = allLeads.sort((a, b) => {
@@ -1595,12 +1658,188 @@ router.get("/dialer-queue", async (req, res) => {
 router.get("/:id", async (req, res) => {
     try {
         const lead = await AdvLead.findById(req.params.id)
+            .select(BLACKLIST_PROJECTION)
             .populate("team_id", "team_name")
             .populate("current_owner_id", "name");
         if (!lead) return res.status(404).json({ message: "Lead not found" });
         res.status(200).json(lead);
     } catch (error) {
         res.status(400).json({ message: error.message });
+    }
+});
+
+
+
+// ✅ POST: Send Lead Email (with brochure option)
+router.post("/send-lead-mail", async (req, res) => {
+    const { leadId, recipientEmail, subject, content, domain, sendBrochure, userId, senderName } = req.body;
+
+    if (!recipientEmail || !subject || !content) {
+        return res.status(400).json({ message: "Recipient, subject, and content are required" });
+    }
+
+    try {
+        let smtpConfig = {
+            host: process.env.SMTP_HOST,
+            port: process.env.SMTP_PORT,
+            secure: false,
+            auth: {
+                user: process.env.SMTP_MAIL,
+                pass: process.env.SMTP_PASSWORD,
+            }
+        };
+
+        let fromName = senderName || "Krutanic Support";
+        let fromEmail = process.env.SMTP_MAIL;
+        let replyTo = process.env.SMTP_MAIL;
+
+        // Try to fetch personal SMTP config if userId is provided
+        if (userId && mongoose.Types.ObjectId.isValid(userId)) {
+            const user = await AdvUser.findById(userId).select("smtpEmail smtpPassword name") || 
+                         await AdvTeamMember.findById(userId).select("smtpEmail smtpPassword fullname") ||
+                         await AdminMail.findById(userId).select("smtpEmail smtpPassword fullname");
+            
+            if (user && user.smtpEmail && user.smtpPassword) {
+                smtpConfig.auth.user = user.smtpEmail;
+                smtpConfig.auth.pass = user.smtpPassword;
+                fromEmail = user.smtpEmail;
+                replyTo = user.smtpEmail;
+                fromName = user.name || user.fullname || fromName;
+            } else {
+                // Return error if userId is provided but no personal SMTP found
+                return res.status(400).json({ message: "Please connect your professional email in the Email Settings first!" });
+            }
+        } else if (userId) {
+            // Invalid userId provided
+            return res.status(400).json({ message: "Invalid or missing user identification. Please log out and back in." });
+        }
+
+        const transporter = nodemailer.createTransport({
+            ...smtpConfig,
+            tls: { rejectUnauthorized: false }
+        });
+
+        const mailOptions = {
+            from: `"${fromName}" <${fromEmail}>`,
+            replyTo: replyTo,
+            to: recipientEmail,
+            subject: subject,
+            text: content, // Fallback for plain text clients
+            html: content.replace(/\n/g, '<br/>'), // Convert newlines to HTML breaks
+            attachments: []
+        };
+
+        // Attach brochure if requested
+        if (sendBrochure && domain) {
+            const brochureMap = {
+                // Matching dynamic dropdown names ending in " Advance"
+                "Data Science Advance": "DataScienceAdvancedProgram.pdf",
+                "Data Analytics Advance": "Data Analytics Advanced program.pdf",
+                "Digital Marketing Advance": "Digital Marketing Advanced Program.pdf",
+                "Performance Marketing Advance": "Performance marketing Advanced Program.pdf",
+                "MERN Stack Development Advance": "Mern Stack Web Development Advanced Program.pdf",
+                "Investment Banking Advance": "Investment Banking Advanced Program.pdf",
+                "Product Management Advance": "Product management Advanced program.pdf",
+                "Automation Testing Advance": "Automation testing Advanced Program.pdf",
+                "Cyber Security Advance": "Cyber Security Advanced Program.pdf",
+                "Prompt Engineering for Generative AI Advance": "Prompt engineering for generative AI Advanced Program.pdf"
+            };
+
+            const fileName = brochureMap[domain];
+
+            if (fileName) {
+                const brochurePath = path.join(__dirname, "../krutanic/", fileName);
+                if (fs.existsSync(brochurePath)) {
+                    mailOptions.attachments.push({
+                        filename: fileName,
+                        path: brochurePath
+                    });
+                }
+            }
+        }
+
+        await transporter.sendMail(mailOptions);
+        res.status(200).json({ success: true, message: "Email sent successfully!" });
+    } catch (error) {
+        console.error("Email Error:", error);
+        res.status(500).json({ message: "Failed to send email", error: error.message });
+    }
+});
+
+// ✅ GET: Fetch Email Templates for a User
+router.get("/get-templates/:userId", async (req, res) => {
+    try {
+        const templates = await AdvTemplate.find({ createdBy: req.params.userId }).sort({ createdAt: -1 });
+        res.status(200).json(templates);
+    } catch (error) {
+        res.status(500).json({ message: "Failed to fetch templates", error: error.message });
+    }
+});
+
+// ✅ POST: Save Email Template
+router.post("/save-template", async (req, res) => {
+    const { name, subject, body, userId } = req.body;
+    if (!name || !subject || !body || !userId) {
+        return res.status(400).json({ message: "All fields are required to save a template" });
+    }
+    try {
+        const newTemplate = new AdvTemplate({ name, subject, body, createdBy: userId });
+        await newTemplate.save();
+        res.status(201).json({ success: true, message: "Template saved successfully!", template: newTemplate });
+    } catch (error) {
+        res.status(500).json({ message: "Failed to save template", error: error.message });
+    }
+});
+
+// ✅ DELETE: Remove Email Template
+router.delete("/delete-template/:templateId", async (req, res) => {
+    try {
+        const deleted = await AdvTemplate.findByIdAndDelete(req.params.templateId);
+        if (!deleted) {
+            return res.status(404).json({ message: "Template not found" });
+        }
+        res.status(200).json({ success: true, message: "Template deleted successfully!" });
+    } catch (error) {
+        res.status(500).json({ message: "Failed to delete template", error: error.message });
+    }
+});
+
+// ✅ GET: Fetch SMTP Config (Email only)
+router.get("/get-smtp-config/:userId", async (req, res) => {
+    const { userId } = req.params;
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: "Invalid User ID" });
+    }
+    try {
+        const user = await AdvUser.findById(userId).select("smtpEmail") || 
+                     await AdvTeamMember.findById(userId).select("smtpEmail") ||
+                     await AdminMail.findById(userId).select("smtpEmail");
+        
+        if (!user) return res.status(404).json({ message: "User not found" });
+        res.status(200).json({ smtpEmail: user.smtpEmail || "" });
+    } catch (error) {
+        res.status(500).json({ message: "Failed to fetch SMTP config", error: error.message });
+    }
+});
+
+// ✅ POST: Save SMTP Config
+router.post("/save-smtp-config", async (req, res) => {
+    const { userId, smtpEmail, smtpPassword } = req.body;
+    if (!userId || !smtpEmail || !smtpPassword) {
+        return res.status(400).json({ message: "UserId, Email and App Password are required" });
+    }
+    try {
+        // Try updating in both possible user models
+        const userUpdate = await AdvUser.findByIdAndUpdate(userId, { smtpEmail, smtpPassword }, { new: true });
+        const legacyUpdate = await AdvTeamMember.findByIdAndUpdate(userId, { smtpEmail, smtpPassword }, { new: true });
+        const adminUpdate = await AdminMail.findByIdAndUpdate(userId, { smtpEmail, smtpPassword }, { new: true });
+
+        if (!userUpdate && !legacyUpdate && !adminUpdate) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.status(200).json({ success: true, message: "SMTP credentials saved successfully!" });
+    } catch (error) {
+        res.status(500).json({ message: "Failed to save SMTP config", error: error.message });
     }
 });
 

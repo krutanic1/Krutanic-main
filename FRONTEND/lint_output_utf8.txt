@@ -1,0 +1,30 @@
+﻿
+> client@0.0.0 lint
+> eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0
+
+node.exe : Invalid option 
+'--ext' - perhaps you 
+meant '-c'?
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
+    + CategoryInfo         
+     : NotSpecified: (Inv  
+  alid option ...you mea   
+ nt '-c'?:String) [], R    
+emoteException
+    + FullyQualifiedErrorI 
+   d : NativeCommandError
+ 
+You're using 
+eslint.config.js, some 
+command line flags are no 
+longer available. Please 
+see https://eslint.org/docs
+/latest/use/command-line-in
+terface for details.

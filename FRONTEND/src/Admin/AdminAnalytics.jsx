@@ -299,34 +299,55 @@ const AdminAnalytics = () => {
             </div>
 
             {/* Analytics Charts */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '25px', marginBottom: '30px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '25px', marginBottom: '30px' }}>
+                {/* Domain Analysis - FULL WIDTH & HORIZONTAL */}
                 <div style={{ background: '#fff', padding: '25px', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                    <h3 style={{ marginBottom: '20px' }}>Analysis by Domain</h3>
-                    <div style={{ height: '300px' }}>
+                    <h3 style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <BarChart2 size={20} color="#6366f1" /> Analysis by Domain — {months[selectedMonth-1]} {selectedYear}
+                    </h3>
+                    <div style={{ height: Math.max(400, (compStats.domainBreakdown?.length || 0) * 35) + 'px' }}>
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={compStats.domainBreakdown} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                <XAxis dataKey="domain" />
-                                <YAxis />
-                                <Tooltip cursor={{ fill: '#f5f5f5' }} />
-                                <Legend />
-                                <Bar dataKey="converted" stackId="a" fill="#52c41a" name="Converted" />
-                                <Bar dataKey="junk" stackId="a" fill="#ff4d4f" name="Junk" radius={[4, 4, 0, 0]} />
+                            <BarChart 
+                                layout="vertical" 
+                                data={compStats.domainBreakdown} 
+                                margin={{ top: 5, right: 30, left: 150, bottom: 5 }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f0f0f0" />
+                                <XAxis type="number" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
+                                <YAxis 
+                                    dataKey="domain" 
+                                    type="category" 
+                                    width={140} 
+                                    stroke="#64748b" 
+                                    fontSize={11} 
+                                    fontWeight="600"
+                                    tickLine={false} 
+                                    axisLine={false}
+                                />
+                                <Tooltip 
+                                    cursor={{ fill: '#f8fafc' }}
+                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 8px 24px rgba(0,0,0,0.1)' }}
+                                />
+                                <Bar dataKey="total" fill="#1890ff" name="Total Leads" radius={[0, 4, 4, 0]} barSize={20} />
+                                <Bar dataKey="converted" fill="#52c41a" name="Converted" radius={[0, 4, 4, 0]} barSize={20} />
+                                <Bar dataKey="junk" fill="#ff4d4f" name="Junk" radius={[0, 4, 4, 0]} barSize={20} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
+
+                {/* Source Analysis - Keep as second chart */}
                 <div style={{ background: '#fff', padding: '25px', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                     <h3 style={{ marginBottom: '20px' }}>Analysis by Source</h3>
                     <div style={{ height: '300px' }}>
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={compStats.sourceBreakdown} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                                 <XAxis dataKey="source" />
                                 <YAxis />
                                 <Tooltip cursor={{ fill: '#f5f5f5' }} />
                                 <Legend />
-                                <Bar dataKey="total" fill="#1890ff" name="Total Leads" radius={[4, 4, 0, 0]} />
+                                <Bar dataKey="total" fill="#6366f1" name="Total Leads" radius={[4, 4, 0, 0]} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>

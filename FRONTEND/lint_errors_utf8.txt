@@ -1,0 +1,1812 @@
+﻿
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AcceptedApplication.jsx
+   88:9   error  'handleToggleComponent' is assigned a value but never used      no-unused-vars
+  130:26  error  'error' is defined but never used                               no-unused-vars
+  258:16  error  'error' is defined but never used                               no-unused-vars
+  275:18  error  'error' is defined but never used                               no-unused-vars
+  287:21  error  Component definition is missing display name                    react/display-name
+  287:35  error  'user' is missing in props validation                           react/prop-types
+  287:41  error  'index' is missing in props validation                          react/prop-types
+  288:39  error  'user.components' is missing in props validation                react/prop-types
+  289:12  error  'user.components' is missing in props validation                react/prop-types
+  289:23  error  'user.components.atschecker' is missing in props validation     react/prop-types
+  290:12  error  'user.components' is missing in props validation                react/prop-types
+  290:23  error  'user.components.jobboard' is missing in props validation       react/prop-types
+  291:12  error  'user.components' is missing in props validation                react/prop-types
+  291:23  error  'user.components.myjob' is missing in props validation          react/prop-types
+  292:12  error  'user.components' is missing in props validation                react/prop-types
+  292:23  error  'user.components.mockinterview' is missing in props validation  react/prop-types
+  293:12  error  'user.components' is missing in props validation                react/prop-types
+  293:23  error  'user.components.exercise' is missing in props validation       react/prop-types
+  296:21  error  'user._id' is missing in props validation                       react/prop-types
+  298:19  error  'user.fullname' is missing in props validation                  react/prop-types
+  299:19  error  'user.email' is missing in props validation                     react/prop-types
+  300:19  error  'user.phone' is missing in props validation                     react/prop-types
+  301:19  error  'user.status' is missing in props validation                    react/prop-types
+  303:17  error  'user.components' is missing in props validation                react/prop-types
+  309:28  error  'user.isLoadingComponent' is missing in props validation        react/prop-types
+  311:59  error  'user._id' is missing in props validation                       react/prop-types
+  312:32  error  'user.isLoadingComponent' is missing in props validation        react/prop-types
+  314:23  error  'user.isLoadingComponent' is missing in props validation        react/prop-types
+  320:28  error  'user.isLoadingComponent' is missing in props validation        react/prop-types
+  322:59  error  'user._id' is missing in props validation                       react/prop-types
+  323:32  error  'user.isLoadingComponent' is missing in props validation        react/prop-types
+  325:23  error  'user.isLoadingComponent' is missing in props validation        react/prop-types
+  335:50  error  'user._id' is missing in props validation                       react/prop-types
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AddAdvCourse.jsx
+    1:8   error  'React' is defined but never used                                no-unused-vars
+   33:15  error  'response' is assigned a value but never used                    no-unused-vars
+   39:15  error  'response' is assigned a value but never used                    no-unused-vars
+   73:18  error  'response' is defined but never used                             no-unused-vars
+  168:53  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  168:78  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AddAdvModule.jsx
+    2:8   error  'React' is defined but never used                                no-unused-vars
+  211:60  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  211:74  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AddCourse.jsx
+   1:10  error  'React' is defined but never used              no-unused-vars
+  35:15  error  'response' is assigned a value but never used  no-unused-vars
+  41:15  error  'response' is assigned a value but never used  no-unused-vars
+  71:14  error  'response' is defined but never used           no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AddEvent.jsx
+    1:8  error    'React' is defined but never used                                                                              no-unused-vars
+  227:6  warning  React Hook useEffect has a missing dependency: 'fetchEvent'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AddModule.jsx
+   2:8  error    'React' is defined but never used                                                                                no-unused-vars
+  45:6  warning  React Hook useEffect has a missing dependency: 'fetchCourses'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AdminAnalytics.jsx
+    1:8   error    'React' is defined but never used                                                                                                       no-unused-vars
+    6:5   error    'Cell' is defined but never used                                                                                                        no-unused-vars
+    6:11  error    'PieChart' is defined but never used                                                                                                    no-unused-vars
+    6:21  error    'Pie' is defined but never used                                                                                                         no-unused-vars
+    6:26  error    'LineChart' is defined but never used                                                                                                   no-unused-vars
+    6:37  error    'Line' is defined but never used                                                                                                        no-unused-vars
+   71:18  error    'err' is defined but never used                                                                                                         no-unused-vars
+   93:8   warning  React Hook useEffect has missing dependencies: 'fetchData' and 'fetchTeamAnalysis'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  182:32  error    'value' is missing in props validation                                                                                                  react/prop-types
+  207:26  error    'idx' is missing in props validation                                                                                                    react/prop-types
+  215:31  error    'active' is missing in props validation                                                                                                 react/prop-types
+  215:39  error    'payload' is missing in props validation                                                                                                react/prop-types
+  215:48  error    'label' is missing in props validation                                                                                                  react/prop-types
+  216:34  error    'payload.length' is missing in props validation                                                                                         react/prop-types
+  220:26  error    'payload.map' is missing in props validation                                                                                            react/prop-types
+  230:28  error    'active' is missing in props validation                                                                                                 react/prop-types
+  230:36  error    'payload' is missing in props validation                                                                                                react/prop-types
+  230:45  error    'label' is missing in props validation                                                                                                  react/prop-types
+  231:34  error    'payload.length' is missing in props validation                                                                                         react/prop-types
+  235:26  error    'payload.map' is missing in props validation                                                                                            react/prop-types
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AdminAttendance.jsx
+    1:8   error  'React' is defined but never used                    no-unused-vars
+   13:3   error  'History' is defined but never used                  no-unused-vars
+   17:3   error  'Mail' is defined but never used                     no-unused-vars
+   18:3   error  'Shield' is defined but never used                   no-unused-vars
+   54:10  error  'updatingRecord' is assigned a value but never used  no-unused-vars
+   78:14  error  'err' is defined but never used                      no-unused-vars
+  105:14  error  'err' is defined but never used                      no-unused-vars
+  145:14  error  'err' is defined but never used                      no-unused-vars
+  169:14  error  'err' is defined but never used                      no-unused-vars
+  189:14  error  'err' is defined but never used                      no-unused-vars
+  205:14  error  'err' is defined but never used                      no-unused-vars
+  221:14  error  'err' is defined but never used                      no-unused-vars
+  228:9   error  'toggleHalfDay' is assigned a value but never used   no-unused-vars
+  242:14  error  'err' is defined but never used                      no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AdminDashboard.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AdminHeader.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AdminLogin.jsx
+   1:8   error  'React' is defined but never used  no-unused-vars
+   3:10  error  'Link' is defined but never used   no-unused-vars
+  75:14  error  'err' is defined but never used    no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AdminMarketingLeads.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AdminProjectPage.jsx
+    1:8   error  'React' is defined but never used  no-unused-vars
+  170:18  error  'error' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AdminReports.jsx
+   1:8   error  'React' is defined but never used             no-unused-vars
+   1:27  error  'useEffect' is defined but never used         no-unused-vars
+   4:8   error  'StatCard' is defined but never used          no-unused-vars
+  13:12  error  'loading' is assigned a value but never used  no-unused-vars
+  31:18  error  'error' is defined but never used             no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AdvAdminDashboard.jsx
+   1:8   error  'React' is defined but never used                     no-unused-vars
+   6:5   error  'LineChart' is defined but never used                 no-unused-vars
+   6:16  error  'Line' is defined but never used                      no-unused-vars
+   7:20  error  'Cell' is defined but never used                      no-unused-vars
+  23:12  error  'loading' is assigned a value but never used          no-unused-vars
+  36:11  error  'conversionTrend' is assigned a value but never used  no-unused-vars
+  55:18  error  'error' is defined but never used                     no-unused-vars
+  66:18  error  'error' is defined but never used                     no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AdvBooked.jsx
+  23:10  error  'remainingAmount' is assigned a value but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AdvCRMSetup.jsx
+   1:8   error  'React' is defined but never used  no-unused-vars
+  25:18  error  'err' is defined but never used    no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AdvExercisePage.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AdvLeadManagement.jsx
+   74:18  error    'err' is defined but never used                                                                                no-unused-vars
+   93:18  error    'err' is defined but never used                                                                                no-unused-vars
+  107:18  error    'err' is defined but never used                                                                                no-unused-vars
+  118:22  error    'err' is defined but never used                                                                                no-unused-vars
+  126:8   warning  React Hook useEffect has a missing dependency: 'fetchLeads'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  138:18  error    'err' is defined but never used                                                                                no-unused-vars
+  157:18  error    'err' is defined but never used                                                                                no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AdvOnBoardingDetails.jsx
+  14:10  error  'selectedAdvOperation' is assigned a value but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AdvProjectPage.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AdvTeamDetail.jsx
+    1:8   error    'React' is defined but never used                                                                                no-unused-vars
+   17:9   error    'currentMonth' is assigned a value but never used                                                                no-unused-vars
+  133:6   warning  React Hook useEffect has a missing dependency: 'fetchAllData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  284:9   error    'prevMonth1' is assigned a value but never used                                                                  no-unused-vars
+  285:9   error    'prevMonth2' is assigned a value but never used                                                                  no-unused-vars
+  286:9   error    'prevMonth3' is assigned a value but never used                                                                  no-unused-vars
+  288:9   error    'getTeamRevenueForMonth' is assigned a value but never used                                                      no-unused-vars
+  288:35  error    'month' is defined but never used                                                                                no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AgentActivity.jsx
+   1:8   error    'React' is defined but never used                                                                                 no-unused-vars
+  14:8   warning  React Hook useEffect has a missing dependency: 'fetchActivity'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  20:18  error    'error' is defined but never used                                                                                 no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AgentsManagement.jsx
+   1:8   error  'React' is defined but never used  no-unused-vars
+  21:18  error  'error' is defined but never used  no-unused-vars
+  33:18  error  'error' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AllTeamDetail.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\AlumniData.jsx
+   1:8   error  'React' is defined but never used  no-unused-vars
+  19:16  error  'err' is defined but never used    no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\BookedList.jsx
+    8:10  error  'filteredStudents' is assigned a value but never used  no-unused-vars
+  230:14  error  'error' is defined but never used                      no-unused-vars
+  391:17  error  Missing "key" prop for element in iterator             react/jsx-key
+  406:17  error  Missing "key" prop for element in iterator             react/jsx-key
+  415:17  error  Missing "key" prop for element in iterator             react/jsx-key
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\BulkImport.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\Components\AgentTable.jsx
+   1:8   error  'React' is defined but never used                no-unused-vars
+   3:23  error  'agents' is missing in props validation          react/prop-types
+   3:31  error  'onDeactivate' is missing in props validation    react/prop-types
+   3:45  error  'onViewActivity' is missing in props validation  react/prop-types
+  35:29  error  'agents.map' is missing in props validation      react/prop-types
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\Components\LeadTimeline.jsx
+   1:8    error    'React' is defined but never used                                                                       no-unused-vars
+   4:25   error    'leadId' is missing in props validation                                                                 react/prop-types
+   7:17   error    'process' is not defined                                                                                no-undef
+  14:22   error    'err' is defined but never used                                                                         no-unused-vars
+  21:8    warning  React Hook useEffect has a missing dependency: 'API'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  35:99   error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                         react/no-unescaped-entities
+  35:112  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                         react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\Components\NotificationList.jsx
+   1:8   error    'React' is defined but never used                                                                                      no-unused-vars
+   4:29  error    'userId' is missing in props validation                                                                                react/prop-types
+   6:17  error    'process' is not defined                                                                                               no-undef
+  12:18  error    'err' is defined but never used                                                                                        no-unused-vars
+  21:18  error    'err' is defined but never used                                                                                        no-unused-vars
+  32:8   warning  React Hook useEffect has a missing dependency: 'fetchNotifications'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\Components\StatCard.jsx
+  1:8   error  'React' is defined but never used       no-unused-vars
+  3:21  error  'title' is missing in props validation  react/prop-types
+  3:28  error  'value' is missing in props validation  react/prop-types
+  3:35  error  'icon' is missing in props validation   react/prop-types
+  3:41  error  'color' is missing in props validation  react/prop-types
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\CreateAdvOperation.jsx
+    2:8   error  'React' is defined but never used              no-unused-vars
+   35:15  error  'response' is assigned a value but never used  no-unused-vars
+   41:15  error  'response' is assigned a value but never used  no-unused-vars
+  195:37  error  'field' is defined but never used              no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\CreateAdvTeam.jsx
+    1:8   error  'React' is defined but never used  no-unused-vars
+  205:14  error  'error' is defined but never used  no-unused-vars
+  228:16  error  'error' is defined but never used  no-unused-vars
+  299:16  error  'error' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\CreateBDA.jsx
+    1:8   error  'React' is defined but never used  no-unused-vars
+  197:14  error  'error' is defined but never used  no-unused-vars
+  220:16  error  'error' is defined but never used  no-unused-vars
+  290:16  error  'error' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\CreateHR.jsx
+    1:8   error  'React' is defined but never used  no-unused-vars
+   90:16  error  'error' is defined but never used  no-unused-vars
+  118:14  error  'error' is defined but never used  no-unused-vars
+  134:16  error  'error' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\CreateInterview.jsx
+   1:8   error  'React' is defined but never used  no-unused-vars
+  74:18  error  'error' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\CreateInterviewer.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\CreateManager.jsx
+    2:8   error  'React' is defined but never used              no-unused-vars
+   32:15  error  'response' is assigned a value but never used  no-unused-vars
+   38:15  error  'response' is assigned a value but never used  no-unused-vars
+  151:14  error  'error' is defined but never used              no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\CreateMarketingTeam.jsx
+    1:8   error  'React' is defined but never used              no-unused-vars
+    6:10  error  'loading' is assigned a value but never used   no-unused-vars
+   71:15  error  'response' is assigned a value but never used  no-unused-vars
+   77:15  error  'response' is assigned a value but never used  no-unused-vars
+  181:14  error  'error' is defined but never used              no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\CreateOperation.jsx
+    2:8   error  'React' is defined but never used                  no-unused-vars
+   33:15  error  'response' is assigned a value but never used      no-unused-vars
+   39:15  error  'response' is assigned a value but never used      no-unused-vars
+   84:13  error  'currentMonth' is assigned a value but never used  no-unused-vars
+   85:13  error  'currentYear' is assigned a value but never used   no-unused-vars
+  215:14  error  'error' is defined but never used                  no-unused-vars
+  250:37  error  'field' is defined but never used                  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\CreatePlacementCoordinator.jsx
+   1:8   error  'React' is defined but never used              no-unused-vars
+  32:15  error  'response' is assigned a value but never used  no-unused-vars
+  38:15  error  'response' is assigned a value but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\DefaultList.jsx
+    7:10  error  'filteredStudents' is assigned a value but never used  no-unused-vars
+  100:15  error  'response' is assigned a value but never used          no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\EventRegistration.jsx
+  2:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\FullPaidList.jsx
+  7:10  error  'filteredStudents' is assigned a value but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\HalfPayment.jsx
+  7:10  error  'filteredStudents' is assigned a value but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\InactiveBda.jsx
+   1:8   error  'React' is defined but never used  no-unused-vars
+  65:16  error  'error' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\LeadAssignments.jsx
+   1:8   error  'React' is defined but never used  no-unused-vars
+  22:18  error  'error' is defined but never used  no-unused-vars
+  32:18  error  'error' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\LoginAdmin.jsx
+  2:8  error  'axios' is defined but never used  no-unused-vars
+  4:8  error  'API' is defined but never used    no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\ManagerDashboard.jsx
+   1:8   error    'React' is defined but never used                                                                                no-unused-vars
+  17:11  error    'designation' is assigned a value but never used                                                                 no-unused-vars
+  29:18  error    'err' is defined but never used                                                                                  no-unused-vars
+  50:18  error    'err' is defined but never used                                                                                  no-unused-vars
+  58:8   warning  React Hook useEffect has a missing dependency: 'fetchMyLeads'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  70:18  error    'err' is defined but never used                                                                                  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\MasterClasses.jsx
+    2:8   error  'React' is defined but never used                                no-unused-vars
+   47:15  error  'response' is assigned a value but never used                    no-unused-vars
+   50:15  error  'response' is assigned a value but never used                    no-unused-vars
+  122:13  error  'response' is assigned a value but never used                    no-unused-vars
+  233:30  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\MentorQueries.jsx
+    2:8   error  'React' is defined but never used                        no-unused-vars
+   42:15  error  Empty block statement                                    no-empty
+  126:43  error  'index' is defined but never used                        no-unused-vars
+  195:29  error  Missing "key" prop for element in iterator               react/jsx-key
+  232:15  error  Unknown property 'class' found, use 'className' instead  react/no-unknown-property
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\OnBoardingDetails.jsx
+  106:10  error  'selectedOperation' is assigned a value but never used  no-unused-vars
+  272:35  error  Missing "key" prop for element in iterator              react/jsx-key
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\PendingApplication.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\ReferAndEarnResponse.jsx
+   1:8   error  'React' is defined but never used                                no-unused-vars
+  19:16  error  'err' is defined but never used                                  no-unused-vars
+  46:27  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  47:27  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  48:27  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\RevenueSheet.jsx
+   1:8   error    'React' is defined but never used                                                                                     no-unused-vars
+   1:38  error    'useRef' is defined but never used                                                                                    no-unused-vars
+  26:10  error    'selectedLead' is assigned a value but never used                                                                     no-unused-vars
+  26:24  error    'setSelectedLead' is assigned a value but never used                                                                  no-unused-vars
+  89:6   warning  React Hook useEffect has a missing dependency: 'fetchMonthlyStats'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  98:6   warning  React Hook useEffect has a missing dependency: 'fetchDailyData'. Either include it or remove the dependency array     react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\Target.jsx
+    1:8   error  'React' is defined but never used              no-unused-vars
+  270:13  error  'response' is assigned a value but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\TeamsManagement.jsx
+   1:8   error  'React' is defined but never used  no-unused-vars
+  18:18  error  'error' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Admin\advadminrevenue.jsx
+   1:8   error    'React' is defined but never used                                                                                     no-unused-vars
+   1:38  error    'useRef' is defined but never used                                                                                    no-unused-vars
+  26:10  error    'selectedLead' is assigned a value but never used                                                                     no-unused-vars
+  26:24  error    'setSelectedLead' is assigned a value but never used                                                                  no-unused-vars
+  89:6   warning  React Hook useEffect has a missing dependency: 'fetchMonthlyStats'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  98:6   warning  React Hook useEffect has a missing dependency: 'fetchDailyData'. Either include it or remove the dependency array     react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvOperation\AdvBookedPayment.jsx
+   77:13  error    'response' is assigned a value but never used                                                                       no-unused-vars
+  162:14  error    'error' is defined but never used                                                                                   no-unused-vars
+  194:10  error    'remarks' is assigned a value but never used                                                                        no-unused-vars
+  213:16  error    'error' is defined but never used                                                                                   no-unused-vars
+  247:14  error    'err' is defined but never used                                                                                     no-unused-vars
+  262:6   warning  React Hook useEffect has a missing dependency: 'fetchAdvEnrolls'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  310:14  error    'error' is defined but never used                                                                                   no-unused-vars
+  363:9   error    'handleAddNewCandidate' is assigned a value but never used                                                          no-unused-vars
+  419:16  error    'error' is defined but never used                                                                                   no-unused-vars
+  517:14  error    'error' is defined but never used                                                                                   no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvOperation\AdvDefaultPayment.jsx
+    2:8   error    'React' is defined but never used                                                                                             no-unused-vars
+   31:6   warning  React Hook useEffect has a missing dependency: 'fetchAdvEnrolls'. Either include it or remove the dependency array            react-hooks/exhaustive-deps
+   43:41  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+   44:51  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+   73:45  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+   74:31  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+  124:41  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+  127:3   error    React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render  react-hooks/rules-of-hooks
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvOperation\AdvFullPayment.jsx
+    2:8   error    'React' is defined but never used                                                                                             no-unused-vars
+   33:6   warning  React Hook useEffect has a missing dependency: 'fetchAdvEnrolls'. Either include it or remove the dependency array            react-hooks/exhaustive-deps
+   47:41  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+   48:51  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+   77:45  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+   78:31  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+  128:41  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+  131:3   error    React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render  react-hooks/rules-of-hooks
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvOperation\AdvOperationRevenueSheet.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvOperation\BookedPayment.jsx
+    92:13  error    'response' is assigned a value but never used                                                                       no-unused-vars
+   248:10  error    'remarks' is assigned a value but never used                                                                        no-unused-vars
+   282:16  error    'error' is defined but never used                                                                                   no-unused-vars
+   331:14  error    'err' is defined but never used                                                                                     no-unused-vars
+   346:6   warning  React Hook useEffect has a missing dependency: 'fetchNewStudent'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   394:14  error    'error' is defined but never used                                                                                   no-unused-vars
+   449:9   error    'handleAddNewCandidate' is assigned a value but never used                                                          no-unused-vars
+   505:16  error    'error' is defined but never used                                                                                   no-unused-vars
+   612:14  error    'error' is defined but never used                                                                                   no-unused-vars
+  1409:36  error    Irregular whitespace not allowed                                                                                    no-irregular-whitespace
+  1409:43  error    Irregular whitespace not allowed                                                                                    no-irregular-whitespace
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvOperation\DefaultPayment.jsx
+    2:8   error    'React' is defined but never used                                                                                             no-unused-vars
+   33:6   warning  React Hook useEffect has a missing dependency: 'fetchNewStudent'. Either include it or remove the dependency array            react-hooks/exhaustive-deps
+   47:41  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+   48:51  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+   78:45  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+   79:31  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+  171:41  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+  174:3   error    React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render  react-hooks/rules-of-hooks
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvOperation\FullPayment.jsx
+    2:8   error    'React' is defined but never used                                                                                             no-unused-vars
+   34:6   warning  React Hook useEffect has a missing dependency: 'fetchNewStudent'. Either include it or remove the dependency array            react-hooks/exhaustive-deps
+   46:41  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+   47:51  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+   76:45  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+   77:31  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+  168:41  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+  171:3   error    React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render  react-hooks/rules-of-hooks
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvOperation\OperationAgainLogin.jsx
+   1:8   error  'React' is defined but never used              no-unused-vars
+   5:8   error  'API' is defined but never used                no-unused-vars
+   6:8   error  'axios' is defined but never used              no-unused-vars
+  12:11  error  'navigate' is assigned a value but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvOperation\OperationDashboard.jsx
+    1:8   error    'React' is defined but never used                                                                                                          no-unused-vars
+    4:10  error    'Pie' is defined but never used                                                                                                            no-unused-vars
+   28:10  error    'newStudent' is assigned a value but never used                                                                                            no-unused-vars
+   44:14  error    'err' is defined but never used                                                                                                            no-unused-vars
+   74:6   warning  React Hook useEffect has missing dependencies: 'fetchNewStudent' and 'fetchOperation'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  106:9   error    'bookedRevenue' is assigned a value but never used                                                                                         no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvOperation\OperationHeader.jsx
+   1:8   error    'React' is defined but never used                                                                                no-unused-vars
+  22:14  error    'err' is defined but never used                                                                                  no-unused-vars
+  29:9   error    'toggleVisibility' is assigned a value but never used                                                            no-unused-vars
+  63:6   warning  React Hook useEffect has a missing dependency: 'checkSession'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvOperation\OperationLogin.jsx
+  1:8   error  'React' is defined but never used  no-unused-vars
+  2:10  error  'Link' is defined but never used   no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvOperation\OperationRevenueSheets.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvTeam\AdvAddUser.jsx
+   1:8   error    'React' is defined but never used                                                                                        no-unused-vars
+  47:6   warning  React Hook useEffect has a missing dependency: 'getTransactionIdList'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  73:13  error    'response' is assigned a value but never used                                                                            no-unused-vars
+  79:14  error    'error' is defined but never used                                                                                        no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvTeam\AdvLeadManagement.jsx
+   92:18   error    'err' is defined but never used                                                                                                                                      no-unused-vars
+  105:18   error    'err' is defined but never used                                                                                                                                      no-unused-vars
+  120:18   error    'err' is defined but never used                                                                                                                                      no-unused-vars
+  148:18   error    'err' is defined but never used                                                                                                                                      no-unused-vars
+  186:22   error    'err' is defined but never used                                                                                                                                      no-unused-vars
+  196:8    warning  React Hook useEffect has missing dependencies: 'fetchAdvTeamProfile', 'fetchFreshCount', and 'fetchSpecialists'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  202:8    warning  React Hook useEffect has a missing dependency: 'fetchLeads'. Either include it or remove the dependency array                                                        react-hooks/exhaustive-deps
+  215:18   error    'err' is defined but never used                                                                                                                                      no-unused-vars
+  234:18   error    'err' is defined but never used                                                                                                                                      no-unused-vars
+  667:196  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                      react/no-unescaped-entities
+  667:210  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                      react/no-unescaped-entities
+  931:126  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                      react/no-unescaped-entities
+  931:139  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                      react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvTeam\AdvLeadsBook.jsx
+  637:13  error  Parsing error: Expected corresponding JSX closing tag for <div>
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvTeam\AdvTeamBooked.jsx
+   2:8  error    'React' is defined but never used                                                                                          no-unused-vars
+  34:6  warning  React Hook useEffect has a missing dependency: 'fetchBookedEnrollments'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvTeam\AdvTeamDefault.jsx
+   2:8  error    'React' is defined but never used                                                                                           no-unused-vars
+  34:6  warning  React Hook useEffect has a missing dependency: 'fetchDefaultEnrollments'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvTeam\AdvTeamFullPaid.jsx
+   2:8  error    'React' is defined but never used                                                                                            no-unused-vars
+  34:6  warning  React Hook useEffect has a missing dependency: 'fetchFullPaidEnrollments'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvTeam\AdvTeamHeader.jsx
+    1:8   error    'React' is defined but never used                                                                                                               no-unused-vars
+   12:9   error    'advTeamName' is assigned a value but never used                                                                                                no-unused-vars
+   15:10  error    'notifications' is assigned a value but never used                                                                                              no-unused-vars
+   18:9   error    'toggleVisibility' is assigned a value but never used                                                                                           no-unused-vars
+   64:6   warning  React Hook useEffect has a missing dependency: 'checkSession'. Either include it or remove the dependency array                                 react-hooks/exhaustive-deps
+   74:14  error    'err' is defined but never used                                                                                                                 no-unused-vars
+   91:14  error    'err' is defined but never used                                                                                                                 no-unused-vars
+  101:14  error    'err' is defined but never used                                                                                                                 no-unused-vars
+  111:6   warning  React Hook useEffect has missing dependencies: 'fetchAdvTeamData' and 'fetchNotifications'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvTeam\AdvTeamHome.jsx
+   2:8   error    'React' is defined but never used                                                                                                                                         no-unused-vars
+   8:10  error    'advTeamMember' is assigned a value but never used                                                                                                                        no-unused-vars
+   9:10  error    'leads' is assigned a value but never used                                                                                                                                no-unused-vars
+   9:17  error    'setLeads' is assigned a value but never used                                                                                                                             no-unused-vars
+  23:9   error    'currentMonth' is assigned a value but never used                                                                                                                         no-unused-vars
+  66:6   warning  React Hook useEffect has missing dependencies: 'fetchAdvEnrollments', 'fetchAdvTeamMember', and 'fetchOutcomeCounts'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  95:27  error    'label' is missing in props validation                                                                                                                                    react/prop-types
+  95:34  error    'count' is missing in props validation                                                                                                                                    react/prop-types
+  95:41  error    'icon' is missing in props validation                                                                                                                                     react/prop-types
+  95:47  error    'color' is missing in props validation                                                                                                                                    react/prop-types
+  95:54  error    'bgColor' is missing in props validation                                                                                                                                  react/prop-types
+  95:63  error    'borderColor' is missing in props validation                                                                                                                              react/prop-types
+  95:76  error    'isHuge' is missing in props validation                                                                                                                                   react/prop-types
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvTeam\AdvTeamLogin.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvTeam\AdvTeamMyLeads.jsx
+    1:8   error    'React' is defined but never used                                                                                    no-unused-vars
+   66:18  error    'err' is defined but never used                                                                                      no-unused-vars
+   78:18  error    'err' is defined but never used                                                                                      no-unused-vars
+  115:8   warning  React Hook useEffect has a missing dependency: 'fetchUserProfile'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  122:8   warning  React Hook useEffect has a missing dependency: 'fetchMyLeads'. Either include it or remove the dependency array      react-hooks/exhaustive-deps
+  490:47  error    'sc' is assigned a value but never used                                                                              no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvTeam\AdvTeamOnBoarding.jsx
+   77:6   warning  React Hook useEffect has a missing dependency: 'fetchAdvEnrollments'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  152:14  error    'error' is defined but never used                                                                                       no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvTeam\AdvTeamRecord.jsx
+   1:8   error    'React' is defined but never used                                                                                    no-unused-vars
+  33:11  error    'userName' is assigned a value but never used                                                                        no-unused-vars
+  75:8   warning  React Hook useEffect has a missing dependency: 'fetchUserProfile'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  81:8   warning  React Hook useEffect has a missing dependency: 'fetchRecords'. Either include it or remove the dependency array      react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\AdvTeam\AdvTeamRevenue.jsx
+   1:8  error    'React' is defined but never used                                                                                       no-unused-vars
+  31:6  warning  React Hook useEffect has a missing dependency: 'fetchAdvEnrollments'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\App.jsx
+    1:8  error  'React' is defined but never used           no-unused-vars
+  185:8  error  'MarketingLeads' is defined but never used  no-unused-vars
+  211:8  error  'Exercise' is defined but never used        no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\BDA\AddTeam.jsx
+    1:8   error    'React' is defined but never used                                                                                no-unused-vars
+    9:10  error    'bdaData' is assigned a value but never used                                                                     no-unused-vars
+   26:14  error    'err' is defined but never used                                                                                  no-unused-vars
+   32:6   warning  React Hook useEffect has a missing dependency: 'fetchBdaData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   61:15  error    'response' is assigned a value but never used                                                                    no-unused-vars
+   67:15  error    'response' is assigned a value but never used                                                                    no-unused-vars
+  168:14  error    'error' is defined but never used                                                                                no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\BDA\AddUser.jsx
+   1:8   error    'React' is defined but never used                                                                                        no-unused-vars
+  45:6   warning  React Hook useEffect has a missing dependency: 'getTransactionIdList'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  71:13  error    'response' is assigned a value but never used                                                                            no-unused-vars
+  77:14  error    'error' is defined but never used                                                                                        no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\BDA\AssignTarget.jsx
+   1:8   error    'React' is defined but never used                                                                         no-unused-vars
+  25:16  error    'err' is defined but never used                                                                           no-unused-vars
+  31:6   warning  React Hook useEffect has a missing dependency: 'bdaId'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\BDA\BDAAgainLogin.jsx
+   1:8   error  'React' is defined but never used              no-unused-vars
+   4:8   error  'API' is defined but never used                no-unused-vars
+   5:8   error  'axios' is defined but never used              no-unused-vars
+  10:11  error  'navigate' is assigned a value but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\BDA\BDAHeader.jsx
+   1:8   error    'React' is defined but never used                                                                                no-unused-vars
+  13:9   error    'BdaName' is assigned a value but never used                                                                     no-unused-vars
+  17:9   error    'toggleVisibility' is assigned a value but never used                                                            no-unused-vars
+  78:6   warning  React Hook useEffect has a missing dependency: 'checkSession'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  88:14  error    'err' is defined but never used                                                                                  no-unused-vars
+  95:6   warning  React Hook useEffect has a missing dependency: 'fetchBdaData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\BDA\BDARevenueSheet.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\BDA\Booked.jsx
+  35:6   warning  React Hook useEffect has a missing dependency: 'fetchNewStudent'. Either include it or remove the dependency array           react-hooks/exhaustive-deps
+  76:45  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render  react-hooks/rules-of-hooks
+  77:31  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render  react-hooks/rules-of-hooks
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\BDA\CompanyLeads.jsx
+    2:8   error    'React' is defined but never used                                                                              no-unused-vars
+   25:23  error    'setCurrentPage' is assigned a value but never used                                                            no-unused-vars
+   39:6   warning  React Hook useEffect has a missing dependency: 'getQueries'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   54:9   error    'totalPages' is assigned a value but never used                                                                no-unused-vars
+  103:43  error    'index' is defined but never used                                                                              no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\BDA\Default.jsx
+  36:6   warning  React Hook useEffect has a missing dependency: 'fetchNewStudent'. Either include it or remove the dependency array           react-hooks/exhaustive-deps
+  77:45  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render  react-hooks/rules-of-hooks
+  78:31  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render  react-hooks/rules-of-hooks
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\BDA\FullPaid.jsx
+  34:6   warning  React Hook useEffect has a missing dependency: 'fetchNewStudent'. Either include it or remove the dependency array           react-hooks/exhaustive-deps
+  75:45  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render  react-hooks/rules-of-hooks
+  76:31  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render  react-hooks/rules-of-hooks
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\BDA\GrowthBarChart.jsx
+   1:8   error  'React' is defined but never used          no-unused-vars
+  14:27  error  'data' is missing in props validation      react/prop-types
+  15:26  error  'data.map' is missing in props validation  react/prop-types
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\BDA\Home.jsx
+   2:8  error    'React' is defined but never used                                                                                                    no-unused-vars
+  59:6  warning  React Hook useEffect has missing dependencies: 'fetchBda' and 'fetchNewStudent'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  65:9  error    'bookedRevenue' is assigned a value but never used                                                                                   no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\BDA\LeaderBoard.jsx
+  7:24  error  'setSelectedTeam' is assigned a value but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\BDA\OnBoarding.jsx
+   45:9   error  'handleAddNewCandidate' is assigned a value but never used  no-unused-vars
+  121:14  error  'error' is defined but never used                           no-unused-vars
+  225:17  error  Missing "key" prop for element in iterator                  react/jsx-key
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\BDA\Reference.jsx
+   2:8   error  'React' is defined but never used                  no-unused-vars
+  29:10  error  'referRemarks' is assigned a value but never used  no-unused-vars
+  49:16  error  'error' is defined but never used                  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\BDA\TeamDetail.jsx
+    1:8   error    'React' is defined but never used                                                                         no-unused-vars
+   50:16  error    'err' is defined but never used                                                                           no-unused-vars
+   56:6   warning  React Hook useEffect has a missing dependency: 'bdaId'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  106:14  error    'error' is defined but never used                                                                         no-unused-vars
+  109:5   error    'fetchBda' is not defined                                                                                 no-undef
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\BDA\TeamLogin.jsx
+   2:8   error  'React' is defined but never used              no-unused-vars
+   4:24  error  'Link' is defined but never used               no-unused-vars
+  12:9   error  'errorRef' is assigned a value but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Components\AdvancedApplyPopup.jsx
+    1:8   error  'React' is defined but never used                                no-unused-vars
+    7:31  error  'onClose' is missing in props validation                         react/prop-types
+   88:18  error  'error' is defined but never used                                no-unused-vars
+  104:18  error  'error' is defined but never used                                no-unused-vars
+  283:95  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  284:66  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  285:82  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Components\Alumni.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Components\Feedback.jsx
+    1:8   error  'React' is defined but never used      no-unused-vars
+   60:11  error  Unknown property 'behavior' found      react/no-unknown-property
+   62:11  error  Unknown property 'scrollamount' found  react/no-unknown-property
+   84:11  error  Unknown property 'behavior' found      react/no-unknown-property
+   86:11  error  Unknown property 'scrollamount' found  react/no-unknown-property
+  108:11  error  Unknown property 'behavior' found      react/no-unknown-property
+  110:11  error  Unknown property 'scrollamount' found  react/no-unknown-property
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Components\Footer.jsx
+    1:8    error  'React' is defined but never used                                no-unused-vars
+  389:167  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  389:182  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  390:98   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  390:113  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  390:114  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  419:33   error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  419:40   error  Irregular whitespace not allowed                                 no-irregular-whitespace
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Components\Getintouch.jsx
+   1:8   error  'React' is defined but never used  no-unused-vars
+  27:70  error  Irregular whitespace not allowed   no-irregular-whitespace
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Components\Header.jsx
+   1:8   error  'React' is defined but never used                        no-unused-vars
+   4:8   error  'accenture' is defined but never used                    no-unused-vars
+   5:8   error  'mca' is defined but never used                          no-unused-vars
+   6:8   error  'iso' is defined but never used                          no-unused-vars
+   7:8   error  'msme' is defined but never used                         no-unused-vars
+  12:10  error  'isAutopopupVisible' is assigned a value but never used  no-unused-vars
+  34:9   error  'autoPopup' is assigned a value but never used           no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Components\HomePopup.jsx
+   1:8   error  'React' is defined but never used                                no-unused-vars
+   4:22  error  'onClose' is missing in props validation                         react/prop-types
+  27:94  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  44:20  error  Unknown property 'jsx' found                                     react/no-unknown-property
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Components\MargueeDemo.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Components\MentorShipMentors.jsx
+   1:8   error  'React' is defined but never used           no-unused-vars
+  89:13  error  Missing "key" prop for element in iterator  react/jsx-key
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Components\ShuffleHero.jsx
+   50:138  error    Irregular whitespace not allowed                                                                                   no-irregular-whitespace
+   50:172  error    Irregular whitespace not allowed                                                                                   no-irregular-whitespace
+  143:6    warning  React Hook useEffect has a missing dependency: 'shuffleSquares'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Components\Verified.jsx
+  1:8   error  'React' is defined but never used      no-unused-vars
+  1:27  error  'useEffect' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Components\VerticalAccordion.jsx
+  36:18  error  'open' is missing in props validation         react/prop-types
+  36:24  error  'setOpen' is missing in props validation      react/prop-types
+  36:33  error  'id' is missing in props validation           react/prop-types
+  36:37  error  'Icon' is missing in props validation         react/prop-types
+  36:43  error  'title' is missing in props validation        react/prop-types
+  36:50  error  'imgSrc' is missing in props validation       react/prop-types
+  36:58  error  'description' is missing in props validation  react/prop-types
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Components\Wave_single.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Components\advancecourses.jsx
+   1:8  error  'React' is defined but never used                   no-unused-vars
+  83:9  error  'toggleSection' is assigned a value but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Components\our_alumni.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Components\our_partner.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Components\popularcourse.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Components\testimonial.jsx
+    1:8    error  'React' is defined but never used                                no-unused-vars
+   35:20   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   35:336  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+   35:598  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+   35:609  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   51:20   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   51:23   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+   51:233  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+   51:371  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+   51:375  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+   51:387  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   67:20   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   67:22   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+   67:435  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+   67:438  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+   83:20   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   83:412  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   99:20   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   99:216  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+   99:221  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  116:20   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  116:291  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  116:294  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  116:297  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  116:303  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Components\wave_full.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Event\EventDashBoard.jsx
+   1:8   error  'React' is defined but never used                                                                                                                                                                                                                no-unused-vars
+  10:39  error  React Hook "useState" is called in function "hBoard" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use"     react-hooks/rules-of-hooks
+  11:41  error  React Hook "useState" is called in function "hBoard" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use"     react-hooks/rules-of-hooks
+  12:47  error  React Hook "useState" is called in function "hBoard" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use"     react-hooks/rules-of-hooks
+  13:20  error  React Hook "useNavigate" is called in function "hBoard" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use"  react-hooks/rules-of-hooks
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Event\Events.jsx
+    2:8   error  'React' is defined but never used                         no-unused-vars
+   17:9   error  'userName' is assigned a value but never used             no-unused-vars
+   95:13  error  'response' is assigned a value but never used             no-unused-vars
+  130:24  error  'dets' is missing in props validation                     react/prop-types
+  130:30  error  'status' is missing in props validation                   react/prop-types
+  131:11  error  'appliedCount' is assigned a value but never used         no-unused-vars
+  133:61  error  'dets._id' is missing in props validation                 react/prop-types
+  140:37  error  'dets._id' is missing in props validation                 react/prop-types
+  154:19  error  'dets.title' is missing in props validation               react/prop-types
+  157:28  error  'dets.start' is missing in props validation               react/prop-types
+  189:9   error  'filteredLeaderboard' is assigned a value but never used  no-unused-vars
+  301:14  error  Unknown property 'jsx' found                              react/no-unknown-property
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Event\Playground.jsx
+    2:8   error    'React' is defined but never used                                                                                                          no-unused-vars
+  149:6   warning  React Hook useEffect has missing dependencies: 'fetchApplied' and 'fetchAppliedUsers'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  162:6   warning  React Hook useEffect has a missing dependency: 'nextQuestion'. Either include it or remove the dependency array                            react-hooks/exhaustive-deps
+  193:6   warning  React Hook useEffect has a missing dependency: 'storeScore'. Either include it or remove the dependency array                              react-hooks/exhaustive-deps
+  392:27  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                            react/no-unescaped-entities
+  392:38  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                            react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Event\Profile.jsx
+   2:8  error    'React' is defined but never used                                                                                                     no-unused-vars
+  82:6  warning  React Hook useEffect has missing dependencies: 'fetchEventUsers' and 'userEmail'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\HR\HRAttendance.jsx
+    1:8   error  'React' is defined but never used                       no-unused-vars
+   15:3   error  'UserCheck' is defined but never used                   no-unused-vars
+   16:3   error  'ArrowRight' is defined but never used                  no-unused-vars
+   30:10  error  'totalMembers' is assigned a value but never used       no-unused-vars
+   43:10  error  'historyPage' is assigned a value but never used        no-unused-vars
+   44:10  error  'historyTotalPages' is assigned a value but never used  no-unused-vars
+   74:14  error  'err' is defined but never used                         no-unused-vars
+  101:14  error  'err' is defined but never used                         no-unused-vars
+  141:14  error  'err' is defined but never used                         no-unused-vars
+  165:14  error  'err' is defined but never used                         no-unused-vars
+  184:14  error  'err' is defined but never used                         no-unused-vars
+  200:14  error  'err' is defined but never used                         no-unused-vars
+  216:14  error  'err' is defined but never used                         no-unused-vars
+  237:14  error  'err' is defined but never used                         no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\HR\HRHeader.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\HR\HRLogin.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Interviewer\InterviewerDashboard.jsx
+   1:8   error    'React' is defined but never used                                                                                                    no-unused-vars
+  20:8   warning  React Hook useEffect has missing dependencies: 'fetchInterviews' and 'navigate'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  65:18  error    'error' is defined but never used                                                                                                    no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Interviewer\InterviewerLogin.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Marketing\MarketingAddExecutive.jsx
+    1:8   error    'React' is defined but never used                                                                                  no-unused-vars
+   34:14  error    'err' is defined but never used                                                                                    no-unused-vars
+   53:6   warning  React Hook useEffect has a missing dependency: 'fetchUserData'. Either include it or remove the dependency array   react-hooks/exhaustive-deps
+   59:6   warning  React Hook useEffect has a missing dependency: 'fetchExecutive'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   73:15  error    'response' is assigned a value but never used                                                                      no-unused-vars
+   79:15  error    'response' is assigned a value but never used                                                                      no-unused-vars
+  109:9   error    'handleDelete' is assigned a value but never used                                                                  no-unused-vars
+  165:14  error    'error' is defined but never used                                                                                  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Marketing\MarketingDashboard.jsx
+   1:8   error    'React' is defined but never used                                                                                 no-unused-vars
+  19:14  error    'err' is defined but never used                                                                                   no-unused-vars
+  26:6   warning  React Hook useEffect has a missing dependency: 'fetchLeadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Marketing\MarketingHeader.jsx
+   1:8   error  'React' is defined but never used  no-unused-vars
+  54:14  error  'err' is defined but never used    no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Marketing\MarketingLeads.jsx
+   1:8   error    'React' is defined but never used                                                                                                             no-unused-vars
+  17:14  error    'err' is defined but never used                                                                                                               no-unused-vars
+  29:14  error    'err' is defined but never used                                                                                                               no-unused-vars
+  70:6   warning  React Hook useEffect has missing dependencies: 'fetchExecutive' and 'fetchMarketingData'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Marketing\MarketingLogin.jsx
+  1:8   error  'React' is defined but never used  no-unused-vars
+  2:10  error  'Link' is defined but never used   no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Marketing\MarketingPrePayment.jsx
+   1:8   error    'React' is defined but never used                                                                                 no-unused-vars
+  16:14  error    'err' is defined but never used                                                                                   no-unused-vars
+  23:6   warning  React Hook useEffect has a missing dependency: 'fetchLeadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Operation\BookedPayment.jsx
+    81:13  error    'response' is assigned a value but never used                                                                       no-unused-vars
+   165:14  error    'error' is defined but never used                                                                                   no-unused-vars
+   198:10  error    'remarks' is assigned a value but never used                                                                        no-unused-vars
+   217:16  error    'error' is defined but never used                                                                                   no-unused-vars
+   251:14  error    'err' is defined but never used                                                                                     no-unused-vars
+   266:6   warning  React Hook useEffect has a missing dependency: 'fetchNewStudent'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   314:14  error    'error' is defined but never used                                                                                   no-unused-vars
+   369:9   error    'handleAddNewCandidate' is assigned a value but never used                                                          no-unused-vars
+   425:16  error    'error' is defined but never used                                                                                   no-unused-vars
+   531:14  error    'error' is defined but never used                                                                                   no-unused-vars
+   817:17  error    Missing "key" prop for element in iterator                                                                          react/jsx-key
+   825:17  error    Missing "key" prop for element in iterator                                                                          react/jsx-key
+  1142:36  error    Irregular whitespace not allowed                                                                                    no-irregular-whitespace
+  1142:43  error    Irregular whitespace not allowed                                                                                    no-irregular-whitespace
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Operation\DefaultPayment.jsx
+    2:8   error    'React' is defined but never used                                                                                             no-unused-vars
+   33:6   warning  React Hook useEffect has a missing dependency: 'fetchNewStudent'. Either include it or remove the dependency array            react-hooks/exhaustive-deps
+   47:41  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+   48:51  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+   78:45  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+   79:31  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+  171:41  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+  174:3   error    React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render  react-hooks/rules-of-hooks
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Operation\FullPayment.jsx
+    2:8   error    'React' is defined but never used                                                                                             no-unused-vars
+   34:6   warning  React Hook useEffect has a missing dependency: 'fetchNewStudent'. Either include it or remove the dependency array            react-hooks/exhaustive-deps
+   46:41  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+   47:51  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+   76:45  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+   77:31  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+  168:41  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render   react-hooks/rules-of-hooks
+  171:3   error    React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render  react-hooks/rules-of-hooks
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Operation\OperationAgainLogin.jsx
+   1:8   error  'React' is defined but never used              no-unused-vars
+   5:8   error  'API' is defined but never used                no-unused-vars
+   6:8   error  'axios' is defined but never used              no-unused-vars
+  12:11  error  'navigate' is assigned a value but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Operation\OperationDashboard.jsx
+    1:8   error    'React' is defined but never used                                                                                                          no-unused-vars
+    4:10  error    'Pie' is defined but never used                                                                                                            no-unused-vars
+   28:10  error    'newStudent' is assigned a value but never used                                                                                            no-unused-vars
+   44:14  error    'err' is defined but never used                                                                                                            no-unused-vars
+   74:6   warning  React Hook useEffect has missing dependencies: 'fetchNewStudent' and 'fetchOperation'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  106:9   error    'bookedRevenue' is assigned a value but never used                                                                                         no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Operation\OperationHeader.jsx
+   1:8   error    'React' is defined but never used                                                                                no-unused-vars
+  22:14  error    'err' is defined but never used                                                                                  no-unused-vars
+  29:9   error    'toggleVisibility' is assigned a value but never used                                                            no-unused-vars
+  63:6   warning  React Hook useEffect has a missing dependency: 'checkSession'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Operation\OperationLogin.jsx
+  1:8   error  'React' is defined but never used  no-unused-vars
+  2:10  error  'Link' is defined but never used   no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\Operation\OperationRevenueSheets.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\PageNotFound.jsx
+  16:51  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\PlacementCoordinator.jsx\JobPost.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\PlacementCoordinator.jsx\PCDashboard.jsx
+   1:8   error  'React' is defined but never used                           no-unused-vars
+  12:12  error  'recentApplications' is assigned a value but never used     no-unused-vars
+  12:32  error  'setRecentApplications' is assigned a value but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\PlacementCoordinator.jsx\PCHeader.jsx
+   1:8   error  'React' is defined but never used                      no-unused-vars
+   1:27  error  'useEffect' is defined but never used                  no-unused-vars
+  12:11  error  'toggleVisibility' is assigned a value but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\PlacementCoordinator.jsx\PClogin.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\User\AIMockInterview.jsx
+    1:8   error    'React' is defined but never used                                                                                                                no-unused-vars
+    4:13  error    'tf' is defined but never used                                                                                                                   no-unused-vars
+   14:12  error    'interviewStarted' is assigned a value but never used                                                                                            no-unused-vars
+   17:12  error    'showInstructions' is assigned a value but never used                                                                                            no-unused-vars
+   19:12  error    'isSpeaking' is assigned a value but never used                                                                                                  no-unused-vars
+   42:11  error    'beginInterview' is assigned a value but never used                                                                                              no-unused-vars
+   57:11  error    'continueInterview' is assigned a value but never used                                                                                           no-unused-vars
+   80:11  error    'cancelInterview' is assigned a value but never used                                                                                             no-unused-vars
+  110:11  error    'startSpeechRecognition' is assigned a value but never used                                                                                      no-unused-vars
+  149:11  error    'stopSpeechRecognition' is assigned a value but never used                                                                                       no-unused-vars
+  157:11  error    'submitResponse' is assigned a value but never used                                                                                              no-unused-vars
+  183:11  error    'handleNextStep' is assigned a value but never used                                                                                              no-unused-vars
+  251:8   warning  React Hook useEffect has missing dependencies: 'detectFace', 'stopVideo', and 'videoStream'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\User\AdvanceLearning.jsx
+    1:8   error    'React' is defined but never used                                                                               no-unused-vars
+    2:10  error    'Link' is defined but never used                                                                                no-unused-vars
+    3:8   error    'toast' is defined but never used                                                                               no-unused-vars
+  125:8   warning  React Hook useEffect has a missing dependency: 'sessionKeys'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\User\Excercise.jsx
+    1:8   error    'React' is defined but never used                                                                              no-unused-vars
+   20:10  error    'error' is assigned a value but never used                                                                     no-unused-vars
+  116:6   warning  React Hook useEffect has a missing dependency: 'submitTest'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\User\ExercisePage.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\User\JobBoard.jsx
+    2:8   error    'React' is defined but never used                                                                                     no-unused-vars
+   94:13  error    'response' is assigned a value but never used                                                                         no-unused-vars
+  111:6   warning  React Hook useEffect has a missing dependency: 'checkResumeStatus'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  301:16  error    Unknown property 'jsx' found                                                                                          react/no-unknown-property
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\User\JobBoardPage.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\User\MockInterview.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\User\MockInterviewPage.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\User\MyJob.jsx
+   1:8   error  'React' is defined but never used                          no-unused-vars
+  20:10  error  'pagination' is assigned a value but never used            no-unused-vars
+  28:31  error  'page' is assigned a value but never used                  no-unused-vars
+  52:21  error  'total' is assigned a value but never used                 no-unused-vars
+  81:9   error  'handlePlatformToggle' is assigned a value but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\User\MyJobPage.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\User\NewDashboard.jsx
+    2:8   error    'React' is defined but never used                                                                                                                                                      no-unused-vars
+    7:8   error    'logo' is defined but never used                                                                                                                                                       no-unused-vars
+   18:10  error    'userData' is assigned a value but never used                                                                                                                                          no-unused-vars
+   20:10  error    'componentsAccess' is assigned a value but never used                                                                                                                                  no-unused-vars
+   36:14  error    'err' is defined but never used                                                                                                                                                        no-unused-vars
+   94:13  error    'response' is assigned a value but never used                                                                                                                                          no-unused-vars
+  146:9   error    'handleLogout' is assigned a value but never used                                                                                                                                      no-unused-vars
+  157:9   error    'getWatchedCount' is assigned a value but never used                                                                                                                                   no-unused-vars
+  202:9   error    'handleRestrictedClick' is assigned a value but never used                                                                                                                             no-unused-vars
+  217:6   warning  React Hook useEffect has missing dependencies: 'fetchComponentsAccess', 'fetchUserData', 'fetchenrollData', and 'fethCertificate'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\User\NewEnrolledCourses.jsx
+   2:8   error    'React' is defined but never used                                                                                                         no-unused-vars
+   3:10  error    'Link' is defined but never used                                                                                                          no-unused-vars
+  11:9   error    'isAdvance' is assigned a value but never used                                                                                            no-unused-vars
+  12:10  error    'enrollData' is assigned a value but never used                                                                                           no-unused-vars
+  14:10  error    'userData' is assigned a value but never used                                                                                             no-unused-vars
+  23:14  error    'err' is defined but never used                                                                                                           no-unused-vars
+  70:9   error    'handleCourseClick' is assigned a value but never used                                                                                    no-unused-vars
+  83:9   error    'handleLogout' is assigned a value but never used                                                                                         no-unused-vars
+  96:6   warning  React Hook useEffect has missing dependencies: 'fetchEnrollData' and 'fetchUserData'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\User\NewLearning.jsx
+    1:8   error    'React' is defined but never used                                                                               no-unused-vars
+   23:11  error    Empty block statement                                                                                           no-empty
+   31:9   error    'navigate' is assigned a value but never used                                                                   no-unused-vars
+  155:9   error    'handleSelectChange' is assigned a value but never used                                                         no-unused-vars
+  175:6   warning  React Hook useEffect has a missing dependency: 'sessionKeys'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\User\ResumeATS.jsx
+   22:6   warning  React Hook useEffect has a missing dependency: 'fetchUserData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   31:14  error    'err' is defined but never used                                                                                   no-unused-vars
+   78:14  error    'err' is defined but never used                                                                                   no-unused-vars
+  104:14  error    'err' is defined but never used                                                                                   no-unused-vars
+  125:23  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                   react/no-unescaped-entities
+  125:37  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                   react/no-unescaped-entities
+  126:23  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                   react/no-unescaped-entities
+  126:37  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                   react/no-unescaped-entities
+  127:23  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                   react/no-unescaped-entities
+  127:38  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                   react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\User\ResumeATSPage.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\User\Setting.jsx
+   2:10  error  'Link' is defined but never used                   no-unused-vars
+   6:8   error  'logo' is defined but never used                   no-unused-vars
+  30:13  error  'response' is assigned a value but never used      no-unused-vars
+  44:9   error  'handleLogout' is assigned a value but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\User\Tawk.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\User\UserHeader.jsx
+   2:8   error  'React' is defined but never used                 no-unused-vars
+  15:23  error  'onNavigate' is missing in props validation       react/prop-types
+  15:35  error  'resetNavigation' is missing in props validation  react/prop-types
+  39:14  error  'err' is defined but never used                   no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\User\UserLayout.jsx
+   1:8   error  'React' is defined but never used              no-unused-vars
+   2:24  error  'useLocation' is defined but never used        no-unused-vars
+  14:9   error  'navigate' is assigned a value but never used  no-unused-vars
+  29:16  error  'err' is defined but never used                no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\User\UserSidebar.jsx
+    1:8   error    'React' is defined but never used                                                                                                               no-unused-vars
+    7:24  error    'isSidebarOpen' is missing in props validation                                                                                                  react/prop-types
+    7:39  error    'setIsSidebarOpen' is missing in props validation                                                                                               react/prop-types
+  137:6   warning  React Hook useEffect has missing dependencies: 'fetchComponentsAccess' and 'fetchUserData'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\new_user\AdvanceDashboardLayout.jsx
+   1:8   error  'React' is defined but never used               no-unused-vars
+  25:20  error  'collapsed' is missing in props validation      react/prop-types
+  25:31  error  'setCollapsed' is missing in props validation   react/prop-types
+  25:45  error  'onLogout' is missing in props validation       react/prop-types
+  25:55  error  'mobileOpen' is missing in props validation     react/prop-types
+  25:67  error  'setMobileOpen' is missing in props validation  react/prop-types
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\new_user\AdvanceLearningPage.jsx
+  8:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\new_user\DashboardContext.jsx
+    1:8   error    'React' is defined but never used                                                                                               no-unused-vars
+    9:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   64:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   75:37  error    'children' is missing in props validation                                                                                       react/prop-types
+  159:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\new_user\components\AttendanceStreak.jsx
+  1:8   error  'React' is defined but never used        no-unused-vars
+  6:29  error  'userId' is missing in props validation  react/prop-types
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\new_user\components\MatrixSections.jsx
+    1:8   error  'React' is defined but never used                         no-unused-vars
+    9:7   error  'ELIGIBILITY_COLORS' is assigned a value but never used   no-unused-vars
+   22:43  error  'assignmentMatrix' is missing in props validation         react/prop-types
+   22:61  error  'loading' is missing in props validation                  react/prop-types
+   23:71  error  'assignmentMatrix.length' is missing in props validation  react/prop-types
+   95:46  error  'internshipReadiness' is missing in props validation      react/prop-types
+   95:67  error  'loading' is missing in props validation                  react/prop-types
+  111:9   error  'completedWeeks' is assigned a value but never used       no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\new_user\new-dashboad.jsx
+     1:8    error    'React' is defined but never used                                                                            no-unused-vars
+    38:20   error    'collapsed' is missing in props validation                                                                   react/prop-types
+    38:31   error    'setCollapsed' is missing in props validation                                                                react/prop-types
+    38:45   error    'activeSection' is missing in props validation                                                               react/prop-types
+    38:60   error    'setActiveSection' is missing in props validation                                                            react/prop-types
+    38:78   error    'onLogout' is missing in props validation                                                                    react/prop-types
+    99:26   error    'userData' is missing in props validation                                                                    react/prop-types
+    99:36   error    'enrollData' is missing in props validation                                                                  react/prop-types
+    99:48   error    'onLogout' is missing in props validation                                                                    react/prop-types
+    99:58   error    'onHamburger' is missing in props validation                                                                 react/prop-types
+    99:71   error    'mobileSidebarOpen' is missing in props validation                                                           react/prop-types
+   100:11   error    'navigate' is assigned a value but never used                                                                no-unused-vars
+   121:32   error    'userData.fullname' is missing in props validation                                                           react/prop-types
+   122:33   error    'userData.email' is missing in props validation                                                              react/prop-types
+   188:40   error    'userData.fullname' is missing in props validation                                                           react/prop-types
+   188:50   error    'userData.fullname.charAt' is missing in props validation                                                    react/prop-types
+   197:48   error    'userData.fullname' is missing in props validation                                                           react/prop-types
+   197:58   error    'userData.fullname.charAt' is missing in props validation                                                    react/prop-types
+   200:79   error    'userData.fullname' is missing in props validation                                                           react/prop-types
+   201:80   error    'userData.email' is missing in props validation                                                              react/prop-types
+   226:28   error    'icon' is missing in props validation                                                                        react/prop-types
+   226:34   error    'label' is missing in props validation                                                                       react/prop-types
+   226:41   error    'value' is missing in props validation                                                                       react/prop-types
+   226:48   error    'status' is missing in props validation                                                                      react/prop-types
+   226:56   error    'statusText' is missing in props validation                                                                  react/prop-types
+   249:33   error    'icon' is missing in props validation                                                                        react/prop-types
+   249:39   error    'title' is missing in props validation                                                                       react/prop-types
+   249:46   error    'subtitle' is missing in props validation                                                                    react/prop-types
+   264:28   error    'enrollment' is missing in props validation                                                                  react/prop-types
+   264:40   error    'navigate' is missing in props validation                                                                    react/prop-types
+   265:34   error    'enrollment.domain' is missing in props validation                                                           react/prop-types
+   265:42   error    'enrollment.domain.session' is missing in props validation                                                   react/prop-types
+   265:78   error    'enrollment.domain' is missing in props validation                                                           react/prop-types
+   265:85   error    'enrollment.domain.session' is missing in props validation                                                   react/prop-types
+   267:75   error    'enrollment._id' is missing in props validation                                                              react/prop-types
+   267:91   error    'enrollment.domain' is missing in props validation                                                           react/prop-types
+   267:99   error    'enrollment.domain.session' is missing in props validation                                                   react/prop-types
+   312:83   error    'enrollment.domain' is missing in props validation                                                           react/prop-types
+   312:91   error    'enrollment.domain.title' is missing in props validation                                                     react/prop-types
+   312:120  error    'enrollment.domain' is missing in props validation                                                           react/prop-types
+   312:128  error    'enrollment.domain.session' is missing in props validation                                                   react/prop-types
+   312:163  error    'enrollment._id' is missing in props validation                                                              react/prop-types
+   312:203  error    'enrollment.watchedSessions' is missing in props validation                                                  react/prop-types
+   322:83   error    'enrollment.domain' is missing in props validation                                                           react/prop-types
+   322:91   error    'enrollment.domain.title' is missing in props validation                                                     react/prop-types
+   322:120  error    'enrollment.domain' is missing in props validation                                                           react/prop-types
+   322:128  error    'enrollment.domain.session' is missing in props validation                                                   react/prop-types
+   322:163  error    'enrollment._id' is missing in props validation                                                              react/prop-types
+   322:203  error    'enrollment.watchedSessions' is missing in props validation                                                  react/prop-types
+   354:29   error    'navigate' is defined but never used                                                                         no-unused-vars
+   354:29   error    'navigate' is missing in props validation                                                                    react/prop-types
+   400:30   error    'enrollment' is missing in props validation                                                                  react/prop-types
+   401:36   error    'enrollment.internshipstartsmonth' is missing in props validation                                            react/prop-types
+   402:34   error    'enrollment.internshipendsmonth' is missing in props validation                                              react/prop-types
+   403:37   error    'enrollment.domain' is missing in props validation                                                           react/prop-types
+   403:45   error    'enrollment.domain.title' is missing in props validation                                                     react/prop-types
+   403:66   error    'enrollment.domain' is missing in props validation                                                           react/prop-types
+   403:88   error    'enrollment.program' is missing in props validation                                                          react/prop-types
+   409:31   error    'enrollment.createdAt' is missing in props validation                                                        react/prop-types
+   409:63   error    'enrollment.createdAt' is missing in props validation                                                        react/prop-types
+   515:29   error    'navigate' is missing in props validation                                                                    react/prop-types
+   578:31   error    'enrollment' is missing in props validation                                                                  react/prop-types
+   579:39   error    'enrollment.domain' is missing in props validation                                                           react/prop-types
+   579:47   error    'enrollment.domain.session' is missing in props validation                                                   react/prop-types
+   579:80   error    'enrollment.domain' is missing in props validation                                                           react/prop-types
+   579:87   error    'enrollment.domain.session' is missing in props validation                                                   react/prop-types
+   580:75   error    'enrollment._id' is missing in props validation                                                              react/prop-types
+   580:91   error    'enrollment.domain' is missing in props validation                                                           react/prop-types
+   580:99   error    'enrollment.domain.session' is missing in props validation                                                   react/prop-types
+   580:119  error    'enrollment.watchedSessions' is missing in props validation                                                  react/prop-types
+   652:28   error    'enrollment' is missing in props validation                                                                  react/prop-types
+   652:40   error    'userData' is missing in props validation                                                                    react/prop-types
+   653:38   error    'enrollment.programPrice' is missing in props validation                                                     react/prop-types
+   654:36   error    'enrollment.paidAmount' is missing in props validation                                                       react/prop-types
+   656:37   error    'enrollment.status' is missing in props validation                                                           react/prop-types
+   660:32   error    'userData.fullname' is missing in props validation                                                           react/prop-types
+   661:33   error    'userData.email' is missing in props validation                                                              react/prop-types
+   662:114  error    'enrollment.program' is missing in props validation                                                          react/prop-types
+   694:81   error    'enrollment.program' is missing in props validation                                                          react/prop-types
+   698:81   error    'enrollment.domain' is missing in props validation                                                           react/prop-types
+   698:89   error    'enrollment.domain.title' is missing in props validation                                                     react/prop-types
+   698:110  error    'enrollment.domain' is missing in props validation                                                           react/prop-types
+   714:38   error    'enrollment.monthOpted' is missing in props validation                                                       react/prop-types
+   717:84   error    'enrollment.monthOpted' is missing in props validation                                                       react/prop-types
+   720:38   error    'enrollment.clearPaymentMonth' is missing in props validation                                                react/prop-types
+   723:95   error    'enrollment.clearPaymentMonth' is missing in props validation                                                react/prop-types
+   726:38   error    'enrollment.modeofpayment' is missing in props validation                                                    react/prop-types
+   729:84   error    'enrollment.modeofpayment' is missing in props validation                                                    react/prop-types
+   766:28   error    'enrollment' is missing in props validation                                                                  react/prop-types
+   767:11   error    'today' is assigned a value but never used                                                                   no-unused-vars
+   768:36   error    'enrollment.internshipstartsmonth' is missing in props validation                                            react/prop-types
+   769:34   error    'enrollment.internshipendsmonth' is missing in props validation                                              react/prop-types
+   770:38   error    'enrollment.createdAt' is missing in props validation                                                        react/prop-types
+   770:70   error    'enrollment.createdAt' is missing in props validation                                                        react/prop-types
+   845:28   error    'enrollment' is missing in props validation                                                                  react/prop-types
+   845:40   error    'loading' is missing in props validation                                                                     react/prop-types
+   845:49   error    'progressPct' is missing in props validation                                                                 react/prop-types
+   845:62   error    'watchedSessions' is defined but never used                                                                  no-unused-vars
+   845:62   error    'watchedSessions' is missing in props validation                                                             react/prop-types
+   845:79   error    'totalSessions' is missing in props validation                                                               react/prop-types
+   845:94   error    'programName' is missing in props validation                                                                 react/prop-types
+   845:107  error    'isFullyPaid' is missing in props validation                                                                 react/prop-types
+   845:120  error    'navigate' is missing in props validation                                                                    react/prop-types
+   846:5    error    'completionStatus' is missing in props validation                                                            react/prop-types
+   846:23   error    'completionText' is missing in props validation                                                              react/prop-types
+   846:39   error    'assignmentScore' is missing in props validation                                                             react/prop-types
+   846:56   error    'assignmentStatus' is missing in props validation                                                            react/prop-types
+   846:74   error    'assignmentText' is missing in props validation                                                              react/prop-types
+   847:5    error    'internshipStage' is missing in props validation                                                             react/prop-types
+   847:22   error    'internshipStatus' is missing in props validation                                                            react/prop-types
+   847:40   error    'internshipText' is missing in props validation                                                              react/prop-types
+   847:56   error    'readinessScore' is missing in props validation                                                              react/prop-types
+   847:72   error    'readinessStatus' is missing in props validation                                                             react/prop-types
+   847:89   error    'readinessText' is missing in props validation                                                               react/prop-types
+   848:5    error    'paymentStatusColor' is missing in props validation                                                          react/prop-types
+   848:25   error    'paymentStatusText' is missing in props validation                                                           react/prop-types
+   848:44   error    'programCompletion' is missing in props validation                                                           react/prop-types
+   854:25   error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                              react/no-unescaped-entities
+   897:77   error    'enrollment.domain' is missing in props validation                                                           react/prop-types
+   897:85   error    'enrollment.domain.category' is missing in props validation                                                  react/prop-types
+   926:62   error    'enrollment.domain' is missing in props validation                                                           react/prop-types
+   926:70   error    'enrollment.domain.title' is missing in props validation                                                     react/prop-types
+   927:59   error    'enrollment.domain' is missing in props validation                                                           react/prop-types
+   927:67   error    'enrollment.domain.session' is missing in props validation                                                   react/prop-types
+   928:63   error    'enrollment._id' is missing in props validation                                                              react/prop-types
+   929:72   error    'enrollment.watchedSessions' is missing in props validation                                                  react/prop-types
+   983:8    warning  React Hook useEffect has a missing dependency: 'fetchAll'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  1117:71   error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                              react/no-unescaped-entities
+  1117:78   error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                              react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\new_user\pages\CalendarPage.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\new_user\pages\CertificatePage.jsx
+    1:8   error    'React' is defined but never used                                                                                    no-unused-vars
+   62:8   warning  React Hook useEffect has a missing dependency: 'fetchCertificate'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  104:19  error    'response' is assigned a value but never used                                                                        no-unused-vars
+  343:62  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                      react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\new_user\pages\InternshipPage.jsx
+   1:8   error  'React' is defined but never used  no-unused-vars
+  40:22  error  'error' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\new_user\pages\OverviewPage.jsx
+   1:8   error  'React' is defined but never used                                no-unused-vars
+  49:11  error  'readinessScore' is assigned a value but never used              no-unused-vars
+  60:29  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\new_user\pages\PaymentsPage.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\new_user\pages\PlacementPage.jsx
+    1:8    error  'React' is defined but never used                 no-unused-vars
+   80:20   error  Component definition is missing display name      react/display-name
+   80:28   error  'guide' is missing in props validation            react/prop-types
+   80:35   error  'onClose' is missing in props validation          react/prop-types
+  118:116  error  'guide.icon' is missing in props validation       react/prop-types
+  119:63   error  'guide.title' is missing in props validation      react/prop-types
+  128:28   error  'guide.steps' is missing in props validation      react/prop-types
+  128:34   error  'guide.steps.map' is missing in props validation  react/prop-types
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\new_user\pages\PracticalPage.jsx
+   19:25  error  'project' is missing in props validation                         react/prop-types
+   19:34  error  'onConfirm' is missing in props validation                       react/prop-types
+   19:45  error  'onCancel' is missing in props validation                        react/prop-types
+   19:55  error  'loading' is missing in props validation                         react/prop-types
+   26:57  error  'project.title' is missing in props validation                   react/prop-types
+   43:27  error  'week' is missing in props validation                            react/prop-types
+   43:33  error  'dayIdx' is missing in props validation                          react/prop-types
+   43:41  error  'taskTitle' is missing in props validation                       react/prop-types
+   43:52  error  'phase' is defined but never used                                no-unused-vars
+   43:52  error  'phase' is missing in props validation                           react/prop-types
+   43:59  error  'dayData' is missing in props validation                         react/prop-types
+   43:68  error  'onSave' is missing in props validation                          react/prop-types
+   43:76  error  'onClose' is missing in props validation                         react/prop-types
+  153:23  error  Component definition is missing display name                     react/display-name
+  153:37  error  'wn' is missing in props validation                              react/prop-types
+  153:41  error  'wp' is defined but never used                                   no-unused-vars
+  153:41  error  'wp' is missing in props validation                              react/prop-types
+  153:45  error  'isActive' is missing in props validation                        react/prop-types
+  153:55  error  'isDone' is missing in props validation                          react/prop-types
+  153:63  error  'weekData' is missing in props validation                        react/prop-types
+  153:73  error  'setActiveWeek' is missing in props validation                   react/prop-types
+  153:88  error  'progress' is missing in props validation                        react/prop-types
+  153:98  error  'setSelectedDayModal' is missing in props validation             react/prop-types
+  188:50  error  'weekData.phase' is missing in props validation                  react/prop-types
+  192:43  error  'weekData.tasks' is missing in props validation                  react/prop-types
+  192:49  error  'weekData.tasks.map' is missing in props validation              react/prop-types
+  396:89  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\new_user\pages\ProfilePage.jsx
+   1:8   error  'React' is defined but never used            no-unused-vars
+   9:16  error  'text' is missing in props validation        react/prop-types
+   9:22  error  'colorClass' is missing in props validation  react/prop-types
+  15:17  error  'children' is missing in props validation    react/prop-types
+  15:27  error  'className' is missing in props validation   react/prop-types
+  21:25  error  'icon' is missing in props validation        react/prop-types
+  21:31  error  'title' is missing in props validation       react/prop-types
+  30:23  error  'navigate' is missing in props validation    react/prop-types
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\new_user\pages\ResumeBuilderPage.jsx
+    1:8    error  'React' is defined but never used                        no-unused-vars
+   82:18   error  'label' is missing in props validation                   react/prop-types
+   82:25   error  'value' is missing in props validation                   react/prop-types
+   82:32   error  'onChange' is missing in props validation                react/prop-types
+   82:42   error  'placeholder' is missing in props validation             react/prop-types
+   82:55   error  'type' is missing in props validation                    react/prop-types
+   82:70   error  'required' is missing in props validation                react/prop-types
+   95:21   error  'label' is missing in props validation                   react/prop-types
+   95:28   error  'value' is missing in props validation                   react/prop-types
+   95:35   error  'onChange' is missing in props validation                react/prop-types
+   95:45   error  'placeholder' is missing in props validation             react/prop-types
+   95:58   error  'hint' is missing in props validation                    react/prop-types
+  109:25   error  'data' is missing in props validation                    react/prop-types
+  109:31   error  'onChange' is missing in props validation                react/prop-types
+  112:50   error  'data.name' is missing in props validation               react/prop-types
+  113:46   error  'data.email' is missing in props validation              react/prop-types
+  116:46   error  'data.phone' is missing in props validation              react/prop-types
+  117:49   error  'data.location' is missing in props validation           react/prop-types
+  120:53   error  'data.linkedin' is missing in props validation           react/prop-types
+  121:51   error  'data.github' is missing in props validation             react/prop-types
+  123:56   error  'data.website' is missing in props validation            react/prop-types
+  138:120  error  'data.avatar' is missing in props validation             react/prop-types
+  149:26   error  'data' is missing in props validation                    react/prop-types
+  149:32   error  'onChange' is missing in props validation                react/prop-types
+  149:42   error  'onAdd' is missing in props validation                   react/prop-types
+  149:49   error  'onRemove' is missing in props validation                react/prop-types
+  151:15   error  'data.map' is missing in props validation                react/prop-types
+  155:27   error  'data.length' is missing in props validation             react/prop-types
+  180:27   error  'data' is missing in props validation                    react/prop-types
+  180:33   error  'onChange' is missing in props validation                react/prop-types
+  180:43   error  'onAdd' is missing in props validation                   react/prop-types
+  180:50   error  'onRemove' is missing in props validation                react/prop-types
+  182:15   error  'data.map' is missing in props validation                react/prop-types
+  186:27   error  'data.length' is missing in props validation             react/prop-types
+  212:25   error  'data' is missing in props validation                    react/prop-types
+  212:31   error  'onChange' is missing in props validation                react/prop-types
+  212:41   error  'onAdd' is missing in props validation                   react/prop-types
+  212:48   error  'onRemove' is missing in props validation                react/prop-types
+  214:15   error  'data.map' is missing in props validation                react/prop-types
+  218:27   error  'data.length' is missing in props validation             react/prop-types
+  240:23   error  'data' is missing in props validation                    react/prop-types
+  240:29   error  'onChange' is missing in props validation                react/prop-types
+  243:46   error  'data.languages' is missing in props validation          react/prop-types
+  244:59   error  'data.frameworks' is missing in props validation         react/prop-types
+  245:54   error  'data.tools' is missing in props validation              react/prop-types
+  246:45   error  'data.concepts' is missing in props validation           react/prop-types
+  250:22   error  'data' is missing in props validation                    react/prop-types
+  250:28   error  'onChange' is missing in props validation                react/prop-types
+  250:38   error  'onAdd' is missing in props validation                   react/prop-types
+  250:45   error  'onRemove' is missing in props validation                react/prop-types
+  253:15   error  'data.map' is missing in props validation                react/prop-types
+  257:27   error  'data.length' is missing in props validation             react/prop-types
+  278:20   error  'data' is missing in props validation                    react/prop-types
+  279:13   error  'data.personal' is missing in props validation           react/prop-types
+  279:26   error  'data.education' is missing in props validation          react/prop-types
+  279:37   error  'data.experience' is missing in props validation         react/prop-types
+  279:49   error  'data.projects' is missing in props validation           react/prop-types
+  279:59   error  'data.skills' is missing in props validation             react/prop-types
+  279:67   error  'data.extra' is missing in props validation              react/prop-types
+  280:30   error  'data.education.some' is missing in props validation     react/prop-types
+  281:31   error  'data.experience.some' is missing in props validation    react/prop-types
+  282:30   error  'data.projects.some' is missing in props validation      react/prop-types
+  283:30   error  'data.skills.languages' is missing in props validation   react/prop-types
+  283:50   error  'data.skills.frameworks' is missing in props validation  react/prop-types
+  283:71   error  'data.skills.tools' is missing in props validation       react/prop-types
+  283:87   error  'data.skills.concepts' is missing in props validation    react/prop-types
+  284:28   error  'data.extra.some' is missing in props validation         react/prop-types
+  285:29   error  'data.personal.phone' is missing in props validation     react/prop-types
+  285:38   error  'data.personal.location' is missing in props validation  react/prop-types
+  285:50   error  'data.personal.linkedin' is missing in props validation  react/prop-types
+  285:62   error  'data.personal.github' is missing in props validation    react/prop-types
+  285:72   error  'data.personal.website' is missing in props validation   react/prop-types
+  289:16   error  'data.personal.name' is missing in props validation      react/prop-types
+  289:51   error  'data.personal.name' is missing in props validation      react/prop-types
+  290:17   error  'data.personal.email' is missing in props validation     react/prop-types
+  291:49   error  'data.personal.email' is missing in props validation     react/prop-types
+  296:32   error  'data.education.map' is missing in props validation      react/prop-types
+  314:33   error  'data.experience.map' is missing in props validation     react/prop-types
+  329:31   error  'data.projects.map' is missing in props validation       react/prop-types
+  344:33   error  'data.skills.languages' is missing in props validation   react/prop-types
+  344:138  error  'data.skills.languages' is missing in props validation   react/prop-types
+  345:33   error  'data.skills.frameworks' is missing in props validation  react/prop-types
+  345:140  error  'data.skills.frameworks' is missing in props validation  react/prop-types
+  346:33   error  'data.skills.tools' is missing in props validation       react/prop-types
+  346:130  error  'data.skills.tools' is missing in props validation       react/prop-types
+  347:33   error  'data.skills.concepts' is missing in props validation    react/prop-types
+  347:136  error  'data.skills.concepts' is missing in props validation    react/prop-types
+  351:32   error  'data.extra.map' is missing in props validation          react/prop-types
+  357:17   error  'data.personal.name' is missing in props validation      react/prop-types
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\new_user\pages\TrainingPage.jsx
+  1:8   error  'React' is defined but never used      no-unused-vars
+  1:17  error  'useState' is defined but never used   no-unused-vars
+  1:27  error  'useEffect' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\AboutUs.jsx
+    2:8    error  'Slider' is defined but never used                               no-unused-vars
+   16:8    error  'gallery3' is defined but never used                             no-unused-vars
+   22:8    error  'gallery9' is defined but never used                             no-unused-vars
+   25:8    error  'gallery12' is defined but never used                            no-unused-vars
+   28:8    error  'gallery15' is defined but never used                            no-unused-vars
+   45:9    error  'settings' is assigned a value but never used                    no-unused-vars
+  109:425  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\AcceptedApplication.jsx
+    2:8   error    'React' is defined but never used                                                                              no-unused-vars
+    8:19  error    'isOpen' is missing in props validation                                                                        react/prop-types
+    8:27  error    'onClose' is missing in props validation                                                                       react/prop-types
+    8:36  error    'fullname' is missing in props validation                                                                      react/prop-types
+    8:46  error    'errorMessage' is missing in props validation                                                                  react/prop-types
+    8:60  error    'email' is missing in props validation                                                                         react/prop-types
+    8:67  error    'counselor' is missing in props validation                                                                     react/prop-types
+    8:78  error    'domain' is missing in props validation                                                                        react/prop-types
+  156:6   warning  React Hook useEffect has a missing dependency: 'monthNames'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  173:6   warning  React Hook useEffect has a missing dependency: 'monthNames'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  325:14  error    'error' is defined but never used                                                                              no-unused-vars
+  500:17  error    Missing "key" prop for element in iterator                                                                     react/jsx-key
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\Advance.jsx
+    2:8    error  'React' is defined but never used                                no-unused-vars
+  235:14   error  'error' is defined but never used                                no-unused-vars
+  251:14   error  'error' is defined but never used                                no-unused-vars
+  753:85   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  754:56   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  755:72   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  937:89   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  937:105  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  943:95   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  943:114  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  949:92   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  949:108  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  957:46   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  957:66   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\AdvanceCourse\AutomationTesting.jsx
+     1:8   error  'React' is defined but never used                                no-unused-vars
+   397:18  error  'error' is defined but never used                                no-unused-vars
+   413:18  error  'error' is defined but never used                                no-unused-vars
+   418:38  error  'actionType' is defined but never used                           no-unused-vars
+   627:41  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+   627:50  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+   699:22  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+   751:25  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+   751:29  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+   751:33  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+   971:87  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+   972:58  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+   973:74  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  1011:33  error  'e' is defined but never used                                    no-unused-vars
+  1019:33  error  'e' is defined but never used                                    no-unused-vars
+  1096:55  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  1096:59  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  1096:64  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\AdvanceCourse\Components\AdvisorForm.jsx
+    1:8   error  'React' is defined but never used                                no-unused-vars
+    8:8   error  'bgImage' is defined but never used                              no-unused-vars
+   45:18  error  'error' is defined but never used                                no-unused-vars
+   61:18  error  'error' is defined but never used                                no-unused-vars
+  100:27  error  'courseValue' is not defined                                     no-undef
+  103:50  error  'courseValue' is not defined                                     no-undef
+  316:85  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  317:56  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  318:72  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\AdvanceCourse\Components\ApplyForm.jsx
+    1:8   error  'React' is defined but never used                                no-unused-vars
+   70:27  error  'courseValue' is not defined                                     no-undef
+   73:50  error  'courseValue' is not defined                                     no-undef
+   94:14  error  'error' is defined but never used                                no-unused-vars
+  110:14  error  'error' is defined but never used                                no-unused-vars
+  287:81  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  288:52  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  289:68  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\AdvanceCourse\Components\ApplyNowButton.jsx
+    1:8   error  'React' is defined but never used                                no-unused-vars
+    8:27  error  'courseValue' is missing in props validation                     react/prop-types
+   45:18  error  'error' is defined but never used                                no-unused-vars
+   61:18  error  'error' is defined but never used                                no-unused-vars
+  288:83  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  289:54  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  290:70  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\AdvanceCourse\Components\BenefitsofLearning.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\AdvanceCourse\Components\Certification.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\AdvanceCourse\Components\Skills.jsx
+    1:8   error  'React' is defined but never used           no-unused-vars
+  329:22  error  'index' is defined but never used           no-unused-vars
+  332:15  error  Missing "key" prop for element in iterator  react/jsx-key
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\AdvanceCourse\Components\StoreSection.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\AdvanceCourse\DataAnalytics.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\AdvanceCourse\DataScience.jsx
+     1:8   error  'React' is defined but never used                                no-unused-vars
+   486:18  error  'error' is defined but never used                                no-unused-vars
+   502:18  error  'error' is defined but never used                                no-unused-vars
+   507:39  error  'actionType' is defined but never used                           no-unused-vars
+   543:9   error  'displayDate' is assigned a value but never used                 no-unused-vars
+  1020:87  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  1021:58  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  1022:74  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  1057:33  error  'e' is defined but never used                                    no-unused-vars
+  1064:33  error  'e' is defined but never used                                    no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\AdvanceCourse\DigitalMarket.jsx
+     1:8   error  'React' is defined but never used                                no-unused-vars
+    16:8   error  'curriculumimage' is defined but never used                      no-unused-vars
+   464:33  error  'actionType' is defined but never used                           no-unused-vars
+   464:45  error  'interestedDomain' is defined but never used                     no-unused-vars
+   480:18  error  'error' is defined but never used                                no-unused-vars
+   496:18  error  'error' is defined but never used                                no-unused-vars
+   501:38  error  'actionType' is defined but never used                           no-unused-vars
+  1069:87  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  1070:58  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  1071:74  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  1108:33  error  'e' is defined but never used                                    no-unused-vars
+  1115:33  error  'e' is defined but never used                                    no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\AdvanceCourse\Investmentbanking.jsx
+     1:8   error  'React' is defined but never used                                no-unused-vars
+    16:8   error  'curriculumimage' is defined but never used                      no-unused-vars
+   472:18  error  'error' is defined but never used                                no-unused-vars
+   488:18  error  'error' is defined but never used                                no-unused-vars
+   493:38  error  'actionType' is defined but never used                           no-unused-vars
+   830:33  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  1057:87  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  1058:58  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  1059:74  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  1096:48  error  'e' is defined but never used                                    no-unused-vars
+  1103:48  error  'e' is defined but never used                                    no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\AdvanceCourse\MernStack.jsx
+     1:8   error  'React' is defined but never used                                no-unused-vars
+    16:8   error  'curriculumimage' is defined but never used                      no-unused-vars
+   475:18  error  'error' is defined but never used                                no-unused-vars
+   491:18  error  'error' is defined but never used                                no-unused-vars
+   496:39  error  'actionType' is defined but never used                           no-unused-vars
+   840:26  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  1044:96  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  1045:67  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  1046:83  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  1081:58  error  'e' is defined but never used                                    no-unused-vars
+  1088:58  error  'e' is defined but never used                                    no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\AdvanceCourse\Performancemarket.jsx
+     1:8   error  'React' is defined but never used                                no-unused-vars
+    17:8   error  'curriculumimage' is defined but never used                      no-unused-vars
+   484:18  error  'error' is defined but never used                                no-unused-vars
+   500:18  error  'error' is defined but never used                                no-unused-vars
+   505:39  error  'actionType' is defined but never used                           no-unused-vars
+   570:11  error  'displayDate' is assigned a value but never used                 no-unused-vars
+  1063:97  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  1064:68  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  1065:84  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  1100:60  error  'e' is defined but never used                                    no-unused-vars
+  1107:60  error  'e' is defined but never used                                    no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\AdvanceCourse\ProductManagement.jsx
+     1:8   error  'React' is defined but never used                                no-unused-vars
+    18:8   error  'curriculumimage' is defined but never used                      no-unused-vars
+   469:18  error  'error' is defined but never used                                no-unused-vars
+   485:18  error  'error' is defined but never used                                no-unused-vars
+   490:39  error  'actionType' is defined but never used                           no-unused-vars
+  1039:96  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  1040:67  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  1041:83  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  1076:59  error  'e' is defined but never used                                    no-unused-vars
+  1083:59  error  'e' is defined but never used                                    no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\AdvanceCourse\PromptEngineering.jsx
+     1:8   error  'React' is defined but never used                                no-unused-vars
+   403:18  error  'error' is defined but never used                                no-unused-vars
+   419:18  error  'error' is defined but never used                                no-unused-vars
+   424:38  error  'actionType' is defined but never used                           no-unused-vars
+   633:32  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+   973:87  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+   974:58  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+   975:74  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  1012:33  error  'e' is defined but never used                                    no-unused-vars
+  1019:33  error  'e' is defined but never used                                    no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\AdvanceCourses.jsx
+    1:8   error  'React' is defined but never used                     no-unused-vars
+   57:10  error  'currentSlide' is assigned a value but never used     no-unused-vars
+   57:24  error  'setCurrentSlide' is assigned a value but never used  no-unused-vars
+  142:19  error  Irregular whitespace not allowed                      no-irregular-whitespace
+  142:24  error  Irregular whitespace not allowed                      no-irregular-whitespace
+  818:70  error  Irregular whitespace not allowed                      no-irregular-whitespace
+  837:26  error  'suryansh' is not defined                             no-undef
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\AdvanceDashboardAccess.jsx
+    2:8   error    'React' is defined but never used                                                                              no-unused-vars
+    9:19  error    'isOpen' is missing in props validation                                                                        react/prop-types
+    9:27  error    'onClose' is missing in props validation                                                                       react/prop-types
+    9:36  error    'fullname' is missing in props validation                                                                      react/prop-types
+    9:46  error    'errorMessage' is missing in props validation                                                                  react/prop-types
+    9:60  error    'email' is missing in props validation                                                                         react/prop-types
+    9:67  error    'counselor' is defined but never used                                                                          no-unused-vars
+    9:67  error    'counselor' is missing in props validation                                                                     react/prop-types
+    9:78  error    'domain' is missing in props validation                                                                        react/prop-types
+    9:86  error    'monthOpted' is missing in props validation                                                                    react/prop-types
+  162:6   warning  React Hook useEffect has a missing dependency: 'monthNames'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\Alumni.jsx
+  104:14  error  'error' is defined but never used             no-unused-vars
+  109:23  error  'field' is missing in props validation        react/prop-types
+  109:30  error  'placeholder' is missing in props validation  react/prop-types
+  109:43  error  'options' is missing in props validation      react/prop-types
+  127:20  error  'options.map' is missing in props validation  react/prop-types
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\Attendance.jsx
+    1:8    error    'React' is defined but never used                                                                                                                   no-unused-vars
+   22:3    error    'Zap' is defined but never used                                                                                                                     no-unused-vars
+   23:3    error    'Filter' is defined but never used                                                                                                                  no-unused-vars
+   24:3    error    'Download' is defined but never used                                                                                                                no-unused-vars
+   25:3    error    'PieChart' is defined but never used                                                                                                                no-unused-vars
+   26:3    error    'ChevronDown' is defined but never used                                                                                                             no-unused-vars
+   32:21   error    'icon' is missing in props validation                                                                                                               react/prop-types
+   32:27   error    'label' is missing in props validation                                                                                                              react/prop-types
+   32:34   error    'value' is missing in props validation                                                                                                              react/prop-types
+   32:41   error    'color' is missing in props validation                                                                                                              react/prop-types
+   32:48   error    'subLabel' is missing in props validation                                                                                                           react/prop-types
+   49:21   error    'children' is missing in props validation                                                                                                           react/prop-types
+   49:31   error    'title' is missing in props validation                                                                                                              react/prop-types
+   49:38   error    'sub' is missing in props validation                                                                                                                react/prop-types
+   49:43   error    'icon' is missing in props validation                                                                                                               react/prop-types
+  113:6    warning  React Hook useEffect has missing dependencies: 'fetchHistory', 'filterMonth', and 'filterYear'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  121:6    warning  React Hook useEffect has missing dependencies: 'fetchHistory' and 'step'. Either include them or remove the dependency array                        react-hooks/exhaustive-deps
+  123:38   error    'page' is defined but never used                                                                                                                    no-unused-vars
+  123:44   error    'month' is defined but never used                                                                                                                   no-unused-vars
+  123:51   error    'year' is defined but never used                                                                                                                    no-unused-vars
+  165:14   error    'err' is defined but never used                                                                                                                     no-unused-vars
+  208:14   error    'err' is defined but never used                                                                                                                     no-unused-vars
+  486:85   error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                     react/no-unescaped-entities
+  486:98   error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                     react/no-unescaped-entities
+  486:132  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                     react/no-unescaped-entities
+  486:141  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                     react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\Career.jsx
+    1:8   error    'React' is defined but never used                                                                                no-unused-vars
+   94:6   warning  React Hook useEffect has a missing dependency: 'handleScroll'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  110:35  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                  react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\Collabration.jsx
+    1:8   error  'React' is defined but never used                                no-unused-vars
+   59:13  error  'response' is assigned a value but never used                    no-unused-vars
+  165:43  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  165:46  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  199:18  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  268:21  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  268:26  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  293:56  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  331:36  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  331:39  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  331:44  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  346:28  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  347:25  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  362:30  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  377:20  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  377:24  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  392:39  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  416:45  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  427:21  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  479:18  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\ContactUs.jsx
+    1:8   error  'React' is defined but never used                                      no-unused-vars
+   18:20  error  'setFeedback' is assigned a value but never used                       no-unused-vars
+   31:13  error  'response' is assigned a value but never used                          no-unused-vars
+  249:15  error  Unknown property 'referrerpolicy' found, use 'referrerPolicy' instead  react/no-unknown-property
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\DashboardAccessForm.jsx
+    2:8   error    'React' is defined but never used                                                                              no-unused-vars
+    8:19  error    'isOpen' is missing in props validation                                                                        react/prop-types
+    8:27  error    'onClose' is missing in props validation                                                                       react/prop-types
+    8:36  error    'fullname' is missing in props validation                                                                      react/prop-types
+    8:46  error    'errorMessage' is missing in props validation                                                                  react/prop-types
+    8:60  error    'email' is missing in props validation                                                                         react/prop-types
+    8:67  error    'counselor' is defined but never used                                                                          no-unused-vars
+    8:67  error    'counselor' is missing in props validation                                                                     react/prop-types
+    8:78  error    'domain' is missing in props validation                                                                        react/prop-types
+    8:86  error    'monthOpted' is missing in props validation                                                                    react/prop-types
+  163:6   warning  React Hook useEffect has a missing dependency: 'monthNames'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  180:6   warning  React Hook useEffect has a missing dependency: 'monthNames'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  487:17  error    Missing "key" prop for element in iterator                                                                     react/jsx-key
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\EventDetails.jsx
+    1:8   error  'React' is defined but never used  no-unused-vars
+  111:18  error  'Footer' is not defined            react/jsx-no-undef
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\EventLogin.jsx
+   1:8   error  'React' is defined but never used          no-unused-vars
+  19:11  error  'from' is assigned a value but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\EventRegister.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\FeeStructure.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\ForgotPassword.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\Login.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\LoginWithOtp.jsx
+  2:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\MasterClass.jsx
+    2:8   error  'React' is defined but never used                                no-unused-vars
+   14:8   error  'imgmentor' is defined but never used                            no-unused-vars
+   15:8   error  'imgadvance' is defined but never used                           no-unused-vars
+   18:8   error  'logo' is defined but never used                                 no-unused-vars
+   53:10  error  'certificateData' is assigned a value but never used             no-unused-vars
+   53:27  error  'setCertificateData' is assigned a value but never used          no-unused-vars
+  194:13  error  'response' is assigned a value but never used                    no-unused-vars
+  281:89  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  375:13  error  Missing "key" prop for element in iterator                       react/jsx-key
+  480:58  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  500:15  error  Missing "key" prop for element in iterator                       react/jsx-key
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\Mentorship.jsx
+   2:8   error  'React' is defined but never used                                no-unused-vars
+  80:63  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\MentorshipForm.jsx
+    2:8   error  'React' is defined but never used         no-unused-vars
+    7:27  error  'isPopup' is missing in props validation  react/prop-types
+    7:36  error  'onClose' is missing in props validation  react/prop-types
+   86:14  error  'error' is defined but never used         no-unused-vars
+  102:14  error  'error' is defined but never used         no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\Mentorship\CourseMentor.jsx
+    1:8   error  'React' is defined but never used                   no-unused-vars
+   26:10  error  'RiCustomerService2Fill' is defined but never used  no-unused-vars
+   56:23  error  Unexpected empty object pattern                     no-empty-pattern
+  346:10  error  'actionType' is assigned a value but never used     no-unused-vars
+  346:22  error  'setActionType' is assigned a value but never used  no-unused-vars
+  429:13  error  'response' is assigned a value but never used       no-unused-vars
+  432:14  error  'error' is defined but never used                   no-unused-vars
+  448:14  error  'error' is defined but never used                   no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\Mentorship\EnrollMentor.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\Mentorship\FAQMentor.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\Mentorship\PopularCourse.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\ReferAndEarn.jsx
+    2:8   error  'React' is defined but never used                                no-unused-vars
+   27:12  error  'response' is assigned a value but never used                    no-unused-vars
+   28:14  error  'response' is defined but never used                             no-unused-vars
+  220:19  error  Missing "key" prop for element in iterator                       react/jsx-key
+  298:17  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  300:62  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\TalentHunt.jsx
+    9:8   error  'logo' is defined but never used                    no-unused-vars
+   64:9   error  'handleJoinNow' is assigned a value but never used  no-unused-vars
+   64:26  error  'eventId' is defined but never used                 no-unused-vars
+  307:56  error  'index' is defined but never used                   no-unused-vars
+
+C:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\landing.jsx
+    1:8    error  'React' is defined but never used                                no-unused-vars
+  156:38   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  156:87   error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  156:91   error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  156:109  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  156:136  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  159:109  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  162:84   error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  162:103  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  227:53   error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  227:98   error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  238:102  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  244:138  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  244:165  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  250:110  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  256:128  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  256:149  error  Irregular whitespace not allowed                                 no-irregular-whitespace
+  397:45   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+Γ£û 1350 problems (1265 errors, 85 warnings)
+  2 errors and 0 warnings potentially fixable with the `--fix` option.
+

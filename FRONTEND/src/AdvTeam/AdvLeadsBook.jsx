@@ -60,10 +60,31 @@ const AdvLeadsBook = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const limit = 25;
-
     const userId = localStorage.getItem("advTeamId");
     const userName = localStorage.getItem("advTeamName");
     const designation = localStorage.getItem("advTeamDesignation") || "SR Inside Sales Specialist";
+
+    // New Email Modal state
+    const [showEmailModal, setShowEmailModal] = useState(false);
+    const [selectedLeadForEmail, setSelectedLeadForEmail] = useState(null);
+    const [emailRecipient, setEmailRecipient] = useState("");
+    const [emailSubject, setEmailSubject] = useState("");
+    const [emailDomain, setEmailDomain] = useState("");
+    const [emailContent, setEmailContent] = useState("");
+    const [isSendingEmail, setIsSendingEmail] = useState(false);
+    const [sendBrochure, setSendBrochure] = useState(false);
+
+    // Personalized SMTP & Template state
+    const [showSMTPModal, setShowSMTPModal] = useState(false);
+    const [personalEmail, setPersonalEmail] = useState("");
+    const [appPassword, setAppPassword] = useState("");
+    const [templates, setTemplates] = useState([]);
+    const [selectedTemplateId, setSelectedTemplateId] = useState("");
+    const [showSaveTemplateModal, setShowSaveTemplateModal] = useState(false);
+    const [newTemplateName, setNewTemplateName] = useState("");
+    const [isSavingTemplate, setIsSavingTemplate] = useState(false);
+
+    const [advDomains, setAdvDomains] = useState(["General"]);
 
     const fetchMyLeads = async (page = 1) => {
         setLoading(true);
@@ -83,6 +104,92 @@ const AdvLeadsBook = () => {
             toast.error("Failed to fetch leads");
         } finally {
             setLoading(false);
+        }
+    };
+    useEffect(() => {
+        const fetchTemplates = async () => {
+            if (!userId) return;
+            try {
+                const res = await axios.get(`${API}/api/adv-leads/get-templates/${userId}`);
+                setTemplates(res.data);
+            } catch (err) {
+                console.error("Failed to fetch templates");
+            }
+        };
+        const fetchSMTPConfig = async () => {
+            if (!userId) return;
+            try {
+                const res = await axios.get(`${API}/api/adv-leads/get-smtp-config/${userId}`);
+                setPersonalEmail(res.data.smtpEmail || "");
+            } catch (err) {
+                console.error("Failed to fetch SMTP config");
+            }
+        };
+        const fetchDomains = async () => {
+            try {
+                const res = await axios.get(`${API}/getadvcourses`);
+                const titles = res.data.map(c => c.title.includes("Advance") ? c.title : `${c.title} Advance`);
+                setAdvDomains(["General", ...titles]);
+            } catch (err) {
+                console.error("Failed to fetch domains");
+            }
+        };
+        fetchMyLeads(currentPage);
+        fetchTemplates();
+        fetchSMTPConfig();
+        fetchDomains();
+    }, [currentPage, userId, selectedOutcome, dateFilter]);
+
+    const handleSaveSMTP = async () => {
+        if (!personalEmail || !appPassword) return toast.error("Both fields are required");
+        try {
+            await axios.post(`${API}/api/adv-leads/save-smtp-config`, {
+                userId,
+                smtpEmail: personalEmail,
+                smtpPassword: appPassword
+            });
+            toast.success("Email credentials saved!");
+            setShowSMTPModal(false);
+        } catch (err) {
+            toast.error("Failed to save credentials");
+        }
+    };
+
+    const handleSaveTemplate = async () => {
+        if (!newTemplateName) return toast.error("Template name is required");
+        setIsSavingTemplate(true);
+        try {
+            const res = await axios.post(`${API}/api/adv-leads/save-template`, {
+                name: newTemplateName,
+                subject: emailSubject,
+                body: emailContent,
+                userId
+            });
+            toast.success("Template saved!");
+            setTemplates([res.data.template, ...templates]);
+            setShowSaveTemplateModal(false);
+            setNewTemplateName("");
+        } catch (err) {
+            toast.error("Failed to save template");
+        } finally {
+            setIsSavingTemplate(false);
+        }
+    };
+
+    const handleDeleteTemplate = async () => {
+        if (!selectedTemplateId) return toast.error("Please select a template to delete");
+        const template = templates.find(t => t._id === selectedTemplateId);
+        if (!window.confirm(`Are you sure you want to delete the template "${template?.name}"?`)) return;
+
+        try {
+            await axios.delete(`${API}/api/adv-leads/delete-template/${selectedTemplateId}`);
+            toast.success("Template deleted!");
+            setTemplates(templates.filter(t => t._id !== selectedTemplateId));
+            setSelectedTemplateId("");
+            setEmailSubject("");
+            setEmailContent("");
+        } catch (err) {
+            toast.error("Failed to delete template");
         }
     };
 
@@ -521,7 +628,6 @@ const AdvLeadsBook = () => {
                                 ))}
                             </div>
                         </div>
-
                         <div style={styles.statsRow}>
                             <div style={styles.statCard}>
                                 <span style={{ fontSize: '20px', fontWeight: '800', color: designTokens.colors.primary }}>{totalCount}</span>
@@ -544,6 +650,26 @@ const AdvLeadsBook = () => {
                             title="Sync Leads"
                         >
                             sync
+                        </button>
+                        <button
+                            onClick={() => setShowSMTPModal(true)}
+                            style={{
+                                ...styles.statCard,
+                                background: designTokens.colors.surface,
+                                color: designTokens.colors.secondary,
+                                cursor: 'pointer',
+                                padding: '0 12px',
+                                borderRadius: '14px',
+                                height: '48px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '5px',
+                                border: `1px solid ${designTokens.colors.secondary}30`
+                            }}
+                            title="Mail Settings"
+                        >
+                            <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>settings_suggest</span>
+                            <span style={{ fontSize: '10px', fontWeight: '800', textTransform: 'uppercase' }}>Mail Settings</span>
                         </button>
                     </div>
                 </div>
@@ -617,6 +743,18 @@ const AdvLeadsBook = () => {
                                                             </div>
                                                             <div style={{ display: 'flex', gap: '8px' }}>
                                                                 <a
+                                                                    href={`https://wa.me/${lead.phone_number.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${lead.full_name}, Here is the payment link for the Advanced Program Slot Booking: https://pages.razorpay.com/Advanced_Program_Slot_Booking`)}`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    title="Send Payment Link (WhatsApp)"
+                                                                    onClick={(e) => e.stopPropagation()}
+                                                                    style={styles.iconBtn('#FF9800')}
+                                                                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
+                                                                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                                                >
+                                                                    <i className="fa fa-credit-card"></i>
+                                                                </a>
+                                                                <a
                                                                     href={`https://wa.me/${lead.phone_number.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${lead.full_name}, this is from Krutanic`)}`}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
@@ -628,16 +766,25 @@ const AdvLeadsBook = () => {
                                                                 >
                                                                     <i className="fa fa-whatsapp"></i>
                                                                 </a>
-                                                                <a
-                                                                    href={`mailto:${lead.email}?subject=Regarding Your Inquiry - Krutanic&body=${encodeURIComponent(`Hello ${lead.full_name},\n\nI hope you are doing well.`)}`}
-                                                                    title="Email"
-                                                                    onClick={(e) => e.stopPropagation()}
-                                                                    style={styles.iconBtn(designTokens.colors.info)}
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setSelectedLeadForEmail(lead);
+                                                                        setEmailRecipient(lead.email);
+                                                                        setEmailDomain(lead.course_domain || "General");
+                                                                        setShowEmailModal(true);
+                                                                    }}
+                                                                    title="Send Personalized Email"
+                                                                    style={{
+                                                                        ...styles.iconBtn(designTokens.colors.info),
+                                                                        border: 'none',
+                                                                        cursor: 'pointer'
+                                                                    }}
                                                                     onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
                                                                     onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                                                                 >
                                                                     <i className="fa fa-envelope"></i>
-                                                                </a>
+                                                                </button>
                                                                 <button
                                                                     title="Dial"
                                                                     onClick={(e) => { e.stopPropagation(); handleRemoteDial(lead.phone_number); }}
@@ -973,6 +1120,187 @@ const AdvLeadsBook = () => {
                     <span style={{ fontSize: '13px', fontWeight: '700' }}>Refresh Sync Active</span>
                 </div>
             </div>
+
+            {/* ─── Personalized Email Modal ─── */}
+            {showEmailModal && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                    backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex',
+                    justifyContent: 'center', alignItems: 'center', zIndex: 2000,
+                    backdropFilter: 'blur(5px)'
+                }}>
+                    <div style={{
+                        backgroundColor: '#fff', padding: '32px', borderRadius: '24px',
+                        width: '700px', maxHeight: '90vh', overflowY: 'auto',
+                        boxShadow: designTokens.shadows.xl, position: 'relative'
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid #f0f0f0', paddingBottom: '16px' }}>
+                            <h2 style={{ margin: 0, color: designTokens.colors.textPrimary, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <span className="material-symbols-outlined">mail</span> Send Personalized Email
+                            </h2>
+                            <button onClick={() => setShowEmailModal(false)} style={{ border: 'none', background: '#f5f5f5', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer' }}>&times;</button>
+                        </div>
+
+                        <div style={{ marginBottom: '20px', background: '#f8fafc', padding: '15px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                            <label style={{ fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '8px', display: 'block' }}>
+                                📋 Quick Templates
+                            </label>
+                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                <select 
+                                    value={selectedTemplateId}
+                                    onChange={(e) => {
+                                        const tId = e.target.value;
+                                        setSelectedTemplateId(tId);
+                                        const template = templates.find(t => t._id === tId);
+                                        if (template) {
+                                            setEmailSubject(template.subject);
+                                            setEmailContent(template.body);
+                                        }
+                                    }}
+                                    style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '1px solid #cbd5e1', background: '#fff', fontSize: '14px', cursor: 'pointer' }}
+                                >
+                                    <option value="">-- Select a saved template --</option>
+                                    {templates.map(t => (
+                                        <option key={t._id} value={t._id}>{t.name}</option>
+                                    ))}
+                                </select>
+                                {selectedTemplateId && (
+                                    <button 
+                                        onClick={handleDeleteTemplate}
+                                        title="Delete Selected Template"
+                                        style={{ padding: '10px', background: '#fee2e2', color: '#ef4444', border: '1px solid #fca5a5', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                    >
+                                        🗑️
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+                            <div>
+                                <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#666', marginBottom: '5px', display: 'block' }}>To</label>
+                                <input type="text" value={emailRecipient} onChange={(e) => setEmailRecipient(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }} />
+                            </div>
+                            <div>
+                                <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#666', marginBottom: '5px', display: 'block' }}>Domain</label>
+                                <select 
+                                    value={emailDomain} 
+                                    onChange={(e) => setEmailDomain(e.target.value)} 
+                                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', background: '#fff' }}
+                                >
+                                    {advDomains.map(d => (
+                                        <option key={d} value={d}>{d}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style={{ marginBottom: '20px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#666', marginBottom: '5px', display: 'block' }}>Subject</label>
+                                <button 
+                                    onClick={() => {
+                                        const prompt = encodeURIComponent(`Write a professional and catchy email for a ${emailDomain} student. The email should be about: ${emailSubject || 'the Advanced Program'}. Mention Krutanic and include a strong call to action.`);
+                                        window.open(`https://chatgpt.com/?q=${prompt}`, '_blank');
+                                    }}
+                                    style={{ border: 'none', background: 'linear-gradient(135deg, #722ed1 0%, #1890ff 100%)', color: '#fff', borderRadius: '20px', padding: '4px 12px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '5px' }}
+                                >
+                                    <span style={{ fontSize: '14px' }}>🤖</span> Generate with ChatGPT
+                                </button>
+                            </div>
+                            <input 
+                                type="text" 
+                                value={emailSubject} 
+                                onChange={(e) => setEmailSubject(e.target.value)}
+                                placeholder="Enter your email subject..."
+                                style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #ddd' }}
+                            />
+                        </div>
+
+                        <div style={{ marginBottom: '20px' }}>
+                            <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#666', marginBottom: '5px', display: 'block' }}>Body (Supports HTML)</label>
+                            <textarea 
+                                value={emailContent}
+                                onChange={(e) => setEmailContent(e.target.value)}
+                                style={{ width: '100%', height: '200px', padding: '15px', borderRadius: '12px', border: '1px solid #ddd', fontFamily: 'monospace' }}
+                            />
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '25px', padding: '10px', background: '#ecfdf5', borderRadius: '10px' }}>
+                            <input type="checkbox" checked={sendBrochure} onChange={(e) => setSendBrochure(e.target.checked)} id="bookBrochureCheck" />
+                            <label htmlFor="bookBrochureCheck" style={{ fontWeight: 'bold', color: '#065f46', cursor: 'pointer' }}>Include Program Brochure PDF</label>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '15px' }}>
+                            <button 
+                                onClick={async () => {
+                                    if(!emailSubject || !emailContent) return toast.error("Subject and content are required");
+                                    setIsSendingEmail(true);
+                                    try {
+                                        await axios.post(`${API}/api/adv-leads/send-lead-mail`, {
+                                            recipientEmail: emailRecipient,
+                                            subject: emailSubject,
+                                            content: emailContent,
+                                            domain: emailDomain,
+                                            sendBrochure,
+                                            userId,
+                                            senderName: userName
+                                        });
+                                        toast.success("Email sent!");
+                                        const isExisting = templates.some(t => t.subject === emailSubject && t.body === emailContent);
+                                        if(!isExisting) setShowSaveTemplateModal(true);
+                                        setShowEmailModal(false);
+                                    } catch {
+                                        toast.error("Failed to send mail");
+                                    } finally {
+                                        setIsSendingEmail(false);
+                                    }
+                                }}
+                                disabled={isSendingEmail}
+                                style={{ flex: 2, padding: '14px', background: designTokens.colors.success, color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}
+                            >
+                                {isSendingEmail ? "Sending..." : "🚀 Send Email"}
+                            </button>
+                            <button onClick={() => setShowEmailModal(false)} style={{ flex: 1, padding: '14px', background: '#f5f5f5', border: '1px solid #ddd', borderRadius: '12px', cursor: 'pointer' }}>Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ─── Save Template Modal ─── */}
+            {showSaveTemplateModal && (
+                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2100 }}>
+                    <div style={{ backgroundColor: '#fff', padding: '24px', borderRadius: '16px', width: '400px' }}>
+                        <h3 style={{ margin: '0 0 10px 0' }}>💾 Save as Template?</h3>
+                        <p style={{ fontSize: '14px', color: '#666', marginBottom: '20px' }}>Would you like to save this unique message for future use?</p>
+                        <input type="text" placeholder="Template Name" value={newTemplateName} onChange={(e) => setNewTemplateName(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #ddd', marginBottom: '20px' }} />
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <button onClick={handleSaveTemplate} disabled={isSavingTemplate} style={{ flex: 1, padding: '11px', background: designTokens.colors.primary, color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer' }}>Save Template</button>
+                            <button onClick={() => setShowSaveTemplateModal(false)} style={{ flex: 1, padding: '11px', background: '#f5f5f5', borderRadius: '10px', cursor: 'pointer', border: 'none' }}>Skip</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ─── SMTP Setup Modal ─── */}
+            {showSMTPModal && (
+                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.4)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2050, backdropFilter: 'blur(4px)' }}>
+                    <div style={{ backgroundColor: '#fff', padding: '32px', borderRadius: '24px', width: '480px' }}>
+                        <h3 style={{ margin: '0 0 20px 0' }}>📧 Email Account Setup</h3>
+                        <p style={{ fontSize: '13px', color: '#666', marginBottom: '20px' }}>Connect your professional email using a <strong>Google App Password</strong> to send emails directly from this dashboard.</p>
+                        <div style={{ marginBottom: '15px' }}>
+                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', marginBottom: '6px' }}>Official Email</label>
+                            <input type="email" value={personalEmail} onChange={(e) => setPersonalEmail(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #ddd' }} />
+                        </div>
+                        <div style={{ marginBottom: '25px' }}>
+                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', marginBottom: '6px' }}>App Password</label>
+                            <input type="password" value={appPassword} onChange={(e) => setAppPassword(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #ddd' }} />
+                        </div>
+                        <button onClick={handleSaveSMTP} style={{ width: '100%', padding: '15px', background: designTokens.colors.secondary, color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}>✅ Save Credentials</button>
+                        <button onClick={() => setShowSMTPModal(false)} style={{ width: '100%', marginTop: '10px', padding: '10px', background: 'none', border: 'none', color: '#888', cursor: 'pointer' }}>Close</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

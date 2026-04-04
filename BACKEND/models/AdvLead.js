@@ -57,6 +57,33 @@ AdvLeadSchema.index({ owner_id: 1 });
 AdvLeadSchema.index({ status: 1, created_at: -1 });
 AdvLeadSchema.index({ owner_id: 1, status: 1 });
 
+// -- PRIVACY TRANSFORMATIONS (Blocks Meta sensitive fields globally) --
+const BLACKLIST = [
+    "id", "created_time", "ad_id", "ad_name", "adset_id", "adset_name", 
+    "campaign_id", "campaign_name", "form_id", "form_name", "is_organic", 
+    "platform", "lead_status", "meta_lead_id", "facebook_ad_name", 
+    "facebook_campaign_name", "facebook_form_id", "facebook_created_time"
+];
+
+AdvLeadSchema.set("toJSON", {
+    transform: (doc, ret) => {
+        BLACKLIST.forEach(field => delete ret[field]);
+        if (ret.extra_fields) {
+            BLACKLIST.forEach(field => {
+                if (ret.extra_fields[field]) delete ret.extra_fields[field];
+            });
+        }
+        return ret;
+    }
+});
+
+AdvLeadSchema.set("toObject", {
+    transform: (doc, ret) => {
+        BLACKLIST.forEach(field => delete ret[field]);
+        return ret;
+    }
+});
+
 
 const AdvLead = mongoose.models.AdvLead || mongoose.model("AdvLead", AdvLeadSchema);
 module.exports = AdvLead;

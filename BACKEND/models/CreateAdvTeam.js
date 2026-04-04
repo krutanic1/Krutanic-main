@@ -11,6 +11,8 @@ const CreateAdvTeam = new mongoose.Schema({
   mailSended: { type: Boolean, default: false },
   Access: { type: Boolean, default: true },
   status: { type: String, default: "Active" },
+  smtpEmail: { type: String, default: "" },
+  smtpPassword: { type: String, default: "" }, // App Password
   target: [{ currentMonth: { type: String }, targetValue: { type: String }, payments: { type: String }, }],
 });
 

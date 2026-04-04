@@ -69,7 +69,9 @@ const AdminLogIn = () => {
         toast.success('login successful!!!');
         setTimeout(() => {
            localStorage.setItem("adminToken", response.data.token);
-          navigate("/AdminDashboard");
+           localStorage.setItem("adminId", response.data.adminId);
+           localStorage.setItem("adminName", response.data.adminName);
+           navigate("/AdminDashboard");
         }, 1500);
       }
     } catch (err) {

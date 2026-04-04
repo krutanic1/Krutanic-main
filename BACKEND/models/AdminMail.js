@@ -15,7 +15,9 @@ const AdminSchema = new mongoose.Schema({
   password: {
     type: String,
     default: "Admin@123"
-  }
+  },
+  smtpEmail: { type: String, default: "" },
+  smtpPassword: { type: String, default: "" }
 });
 
 const AdminMail = mongoose.model('adminMail', AdminSchema);

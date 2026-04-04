@@ -7,6 +7,16 @@ const AdvUser = require("../models/AdvUser");
 const AdvEnroll = require("../models/AdvEnroll");
 const AdvTeamMember = require("../models/CreateAdvTeam");
 
+const META_BLACKLIST = [
+    "id", "created_time", "ad_id", "ad_name", "adset_id", "adset_name", 
+    "campaign_id", "campaign_name", "form_id", "form_name", "is_organic", 
+    "platform", "lead_status", "meta_lead_id", "facebook_ad_name", 
+    "facebook_campaign_name", "facebook_form_id", "facebook_created_time",
+    "extra_fields" // Report routes usually don't need extra_fields, safe to hide entirely
+];
+
+const BLACKLIST_PROJECTION = META_BLACKLIST.map(f => `-${f}`).join(" ");
+
 // Specialist Performance (Calls today/yesterday)
 router.get("/specialist-stats/:id", async (req, res) => {
     const specialistId = req.params.id;
@@ -66,6 +76,61 @@ router.get("/leader-productivity/:teamId", async (req, res) => {
         res.status(200).json(stats);
     } catch (error) {
         res.status(400).json({ message: error.message });
+    }
+});
+
+// Domain-wise Monthly Analysis
+router.get("/domain-monthly-stats", async (req, res) => {
+    try {
+        const year = parseInt(req.query.year) || new Date().getFullYear();
+        const startDate = new Date(year, 0, 1);
+        const endDate = new Date(year, 11, 31, 23, 59, 59, 999);
+
+        const stats = await AdvLead.aggregate([
+            {
+                $match: {
+                    created_at: { $gte: startDate, $lte: endDate }
+                }
+            },
+            {
+                $project: {
+                    month: { $month: "$created_at" },
+                    domain: { $ifNull: ["$opted_domain", "Unknown"] }
+                }
+            },
+            {
+                $group: {
+                    _id: { month: "$month", domain: "$domain" },
+                    count: { $sum: 1 }
+                }
+            },
+            { $sort: { "_id.month": 1 } }
+        ]);
+
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const pivotData = months.map((m, i) => ({ month: m }));
+        const uniqueDomains = new Set();
+
+        stats.forEach(s => {
+            const monthIdx = s._id.month - 1;
+            const domainName = s._id.domain || "Unknown";
+            pivotData[monthIdx][domainName] = s.count;
+            uniqueDomains.add(domainName);
+        });
+
+        // Fill missing zeros for all domains in all months to keep chart consistent
+        pivotData.forEach(item => {
+            uniqueDomains.forEach(domain => {
+                if (!item[domain]) item[domain] = 0;
+            });
+        });
+
+        res.status(200).json({ 
+            data: pivotData, 
+            domains: Array.from(uniqueDomains) 
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 });
 
@@ -176,7 +241,7 @@ router.get("/export/leads", async (req, res) => {
         if (startDate && endDate) query.created_at = { $gte: new Date(startDate), $lte: new Date(endDate) };
         if (stage && stage !== 'all') query.stage = stage;
 
-        const leads = await AdvLead.find(query).lean();
+        const leads = await AdvLead.find(query).select(BLACKLIST_PROJECTION).lean();
 
         if (format === 'csv') {
             const { Parser } = require('json2csv');
@@ -260,7 +325,7 @@ router.get("/export/conversions", async (req, res) => {
         let query = { stage: 'converted' };
         if (startDate && endDate) query.created_at = { $gte: new Date(startDate), $lte: new Date(endDate) };
 
-        const leads = await AdvLead.find(query).lean();
+        const leads = await AdvLead.find(query).select(BLACKLIST_PROJECTION).lean();
 
         if (format === 'csv') {
             const { Parser } = require('json2csv');
@@ -607,10 +672,12 @@ router.get("/member-outcome-logs", async (req, res) => {
         }
 
         // Get leads with this outcome assigned to this member in the month
-        const leads = await AdvLead.find(query, {
-            full_name: 1, phone_number: 1, source: 1, opted_domain: 1,
-            created_at: 1, assigned_at: 1, last_outcome: 1, status: 1
-        }).sort({ created_at: -1 }).limit(200).lean();
+        // ⚠️ Note: We explicitly include needed fields and exclude META via BLACKLIST_PROJECTION
+        const leads = await AdvLead.find(query)
+            .select(`full_name phone_number source opted_domain created_at assigned_at last_outcome status ${BLACKLIST_PROJECTION}`)
+            .sort({ created_at: -1 })
+            .limit(200)
+            .lean();
 
         // Get the latest call activity for each lead
         const leadIds = leads.map(l => l._id);

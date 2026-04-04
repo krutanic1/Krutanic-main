@@ -54,6 +54,8 @@ const AdvanceQueries = () => {
         return "bg-red-800";
       case "Already Paid":
         return "bg-green-800";
+      case "Shared to CRM":
+        return "bg-orange-600";
       default:
         return "bg-gray-500";
     }
@@ -156,6 +158,9 @@ const AdvanceQueries = () => {
                             </option>
                             <option className="bg-green-600" value="Already Paid">
                               Already Paid
+                            </option>
+                            <option className="bg-orange-600" value="Shared to CRM">
+                              Shared to CRM
                             </option>
                           </select>
                         </td>

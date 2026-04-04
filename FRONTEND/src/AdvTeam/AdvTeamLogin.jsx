@@ -35,6 +35,7 @@ const AdvTeamLogin = () => {
         toast.success("Login successful!");
         const loginTime = new Date().getTime();
         setTimeout(() => {
+          localStorage.setItem("advTeamEmail", email);
           localStorage.setItem("advTeamId", response.data.bdaId);
           localStorage.setItem("advTeamName", response.data.bdaName);
           localStorage.setItem("advTeamToken", response.data.token);

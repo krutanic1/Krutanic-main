@@ -13,6 +13,8 @@ const AdvUserSchema = new mongoose.Schema({
     manager_id: { type: mongoose.Schema.Types.ObjectId, ref: "AdvUser" },
     team_id: { type: mongoose.Schema.Types.ObjectId, ref: "AdvTeamStructure" },
     status: { type: String, default: "Active" },
+    smtpEmail: { type: String, default: "" },
+    smtpPassword: { type: String, default: "" }, // App Password
     createdAt: { type: Date, default: Date.now }
 });
 

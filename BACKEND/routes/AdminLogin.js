@@ -115,7 +115,12 @@ router.post("/otpverify", expressAsyncHandler(async (req, res) => {
       maxAge: 60 * 60 * 1000 // 1 hour
     });
 
-    res.status(200).json({ message: "OTP verified successfully", token });
+    res.status(200).json({ 
+      message: "OTP verified successfully", 
+      token,
+      adminId: admin._id,
+      adminName: admin.fullname || "Admin"
+    });
   } catch (error) {
     res.status(500).json({ message: "Failed to verify OTP", error: error.message });
   }
