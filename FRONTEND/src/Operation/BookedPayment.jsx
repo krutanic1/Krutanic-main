@@ -985,12 +985,8 @@ const BookedAmount = () => {
                         <td>
                           <div
                             className=" cursor-pointer"
-                            onClick={
-                              !item.mailSended
-                                ? () => handleSendEmail(item)
-                                : null
-                            }
-                            disabled={item.mailSended}
+                            onClick={() => handleSendEmail(item)}
+                            title={item.mailSended ? "Resend credentials" : "Send credentials"}
                           >
                             {item.mailSended ? (
                               <div className="flex items-center justify-center w-full">

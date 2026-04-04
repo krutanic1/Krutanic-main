@@ -473,6 +473,13 @@ const AppContent = () => {
   ];
 
   const lmsFooterPaths = ['/jobboard'];
+  const noFooterPaths = [
+    '/operationdashboard',
+    '/bookedpayment',
+    '/fullpayment',
+    '/defaultpayment',
+    '/operationrevenuesheet',
+  ];
 
   const isAuthenticated = () => !!localStorage.getItem("token");
   const isAuthenticatedBda = () => !!localStorage.getItem("bdaToken");
@@ -739,6 +746,7 @@ const AppContent = () => {
        location.pathname.toLowerCase() !== "/hrlogin" &&
        location.pathname.toLowerCase() !== "/eventdashboard" &&
        location.pathname.toLowerCase() !== "/dashboard" &&
+        !noFooterPaths.includes(location.pathname.toLowerCase()) &&
        !adminheaderPaths.includes(location.pathname.toLowerCase()) && 
        !advteamheaderPaths.includes(location.pathname.toLowerCase()) && 
        !hrheaderPaths.includes(location.pathname.toLowerCase()) && (
