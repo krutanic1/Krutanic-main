@@ -4,63 +4,96 @@ import { Link } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
 // import { FaHandshake } from "react-icons/fa";
+import { FaLaptopCode, FaBriefcase, FaClock, FaGlobe, FaCheckCircle, FaStar, FaUserAlt, FaArrowRight, FaChartLine, FaCertificate, FaShieldAlt, FaDownload, FaExternalLinkAlt } from "react-icons/fa";
 
 import ShuffleHero from "../Components/ShuffleHero";
-import ClientsCarousel from "../Components/our_alumni";
+import ClientsCarousel from "../Components/our_alumni2";
 import Testimonial from "../Components/testimonial";
-import Wavefull from "../Components/wave_full";
 import Popularcourse from "../Components/popularcourse";
-import VerticalAccordion from "../Components/VerticalAccordion";
 
 // import whychoose from "../assets/whatmakedifferent.png";
-import specialization from "../assets/specialization.jpg";
+import specialization from "../../krutanic/images/publicspeech.jpg";
 import whyimg from "../assets/whychoose.jpg";
-import corporate from "../assets/corporatesolution.jpg";
+import corporate from "../../krutanic/images/asdfg.jpg";
 import comingsoon from "../assets/comingsoon.jpg";
+import internshipCertificate from "../assets/certificates/c/internship.jpg";
+import trainingCertificate from "../assets/certificates/c/training.jpg";
 
 // import roadmap from "../assets/roadmap.png";
 import AdvanceCounses from "../Components/advancecourses";
-import MentorshipForm from "./MentorshipForm";
-import { useState } from "react";
 
 const HomePage = () => {
-  const [showPopup, setShowPopup] = useState(false);
-
   useEffect(() => {
-    AOS.init({ duration: 1000, once: false });
-
-    let interval;
-    // Show popup after 5 seconds
-    const timer = setTimeout(() => {
-      setShowPopup(true);
-
-      // After first popup, start loop for every 1 minute
-      interval = setInterval(() => {
-        setShowPopup(true);
-      }, 60000); // 1 minute = 60,000 ms
-    }, 5000); // 5 seconds
-
-    return () => {
-      clearTimeout(timer);
-      if (interval) clearInterval(interval);
-    };
+    AOS.init({
+      duration: 700,
+      once: true,
+      offset: 40,
+      anchorPlacement: "top-bottom",
+      easing: "ease-out-cubic",
+    });
   }, []);
 
+  const corporatePoints = [
+    {
+      title: "Empowerment",
+      text: "Structured programs that strengthen professional abilities and create new opportunities for advancement.",
+    },
+    {
+      title: "Innovative Learning",
+      text: "Real-time training with the latest technologies for hands-on, impactful learning experiences.",
+    },
+    {
+      title: "Collaborative Networking",
+      text: "Engage in shared projects and interactive sessions that foster meaningful industry connections.",
+    },
+    {
+      title: "Creative Solutions",
+      text: "Encourage strategic problem-solving and innovation to meet modern business challenges.",
+    },
+  ];
+
+  const landingCredentialHighlights = [
+    {
+      title: "Elite Network",
+      text: "Created for business leaders, advisors and innovators",
+      icon: FaBriefcase,
+    },
+    {
+      title: "Career Growth",
+      text: "Builds skills and creativity for career growth",
+      icon: FaChartLine,
+    },
+  ];
+
+  const landingCredentialStats = [
+    {
+      value: "100+",
+      label: "Internship Partners",
+      icon: FaCertificate,
+      accent: "orange",
+    },
+    {
+      value: "Expert",
+      label: "Approved Program",
+      icon: FaShieldAlt,
+      accent: "orange",
+    },
+  ];
+
   return (
-    <div id="landingpage">
-      {showPopup && <MentorshipForm isPopup={true} onClose={() => setShowPopup(false)} />}
+    <div id="landingpage" className="landing-neo">
       {/* section hero */}
       <div className="hero">
         <ShuffleHero />
       </div>
-      <Wavefull />
       {/* section hero end */}
 
       {/* section aboutus */}
-      <div className="aboutus">
+      <div className="aboutus aboutus-vibrant">
         <div className="about1stdiv">
           <div className="text">
-            <h1 data-aos="zoom-in">| About Us</h1>
+            <span className="about-kicker" data-aos="fade-right">About Us</span>
+            <h1 data-aos="zoom-in">The Algorithmic <span>Path to Mastery.</span></h1>
             <p>
               {/* Krutanic is your trusted partner for career growth, offering advanced tech courses designed to prepare you for the fast-paced job market. We focus on delivering industry-relevant skills through expert guidance, ensuring that you gain both theoretical knowledge and practical experience. Each course is backed by hands-on projects, allowing you to work on real-world challenges that employers value. Whether you're starting your career or looking to upskill, our programs in Web Development, Data Science, and Digital Marketing are tailored to help you succeed. Join Krutanic today and take the next step toward achieving your career goals. */}
               Krutanic is dedicated to empowering your career growth with industry-leading tech courses designed for today’s fast-evolving job market. Learn from experienced industry experts who provide expert guidance and hands-on training through real-world projects. Gain personalized placement support and mentorship as you advance, whether you’re starting fresh or upskilling. Join Krutanic and explore courses that boost your skills and open doors to new career opportunities.
@@ -81,19 +114,23 @@ const HomePage = () => {
           <div className="box">
             <div data-aos="zoom-in" data-aos-delay="500">
               <span className="fa fa-graduation-cap"></span>
-              <p>Explore Industry-Leading Courses to Boost Skills.</p>
+              <h3>Explore Industry-Leading Courses</h3>
+              <p>Deep-dive into specialized curriculums designed by architects of modern data stacks.</p>
             </div>
             <div data-aos="zoom-in" data-aos-delay="1000">
               <span className="fa fa-briefcase"></span>
-              <p>Learn from Experienced Industry Experts.</p>
+              <h3>Learn from Experienced Experts</h3>
+              <p>Direct mentorship from senior practitioners currently solving complex global data challenges.</p>
             </div>
             <div data-aos="zoom-in" data-aos-delay="500">
               <span className="fa fa-laptop"></span>
-              <p>Gain Hands-On Experience with Real Projects.</p>
+              <h3>Gain Hands-On Experience</h3>
+              <p>Deploy real-world projects in our integrated cloud sandboxes with instant feedback loops.</p>
             </div>
             <div data-aos="zoom-in" data-aos-delay="1000">
               <span className="fa fa-line-chart"></span>
-              <p>Get Personalized Placement Support for Dream Job.</p>
+              <h3>Get Personalized Support</h3>
+              <p>End-to-end placement guidance and portfolio optimization tailored to your career trajectory.</p>
             </div>
           </div>
         </div>
@@ -118,6 +155,115 @@ const HomePage = () => {
       </div>
       {/* section aboutus end*/}
 
+      {/* section learning centre */}
+      <div className="learning-centre" data-aos="fade-up">
+        <div className="learning-centre-content">
+          <p className="eyebrow">Find Us In Your Neighborhood</p>
+          <h2>
+            Build Job-Ready Skills at our
+            <span> Krutanic Learning Centre</span>
+          </h2>
+          <ul>
+            <li>
+              <span className="fa fa-users" aria-hidden="true"></span>
+              100% classroom-focused guided learning experience
+            </li>
+            <li>
+              <span className="fa fa-sitemap" aria-hidden="true"></span>
+              Advance your career in AI, Data Science, and Full Stack Development
+            </li>
+            <li>
+              <span className="fa fa-rocket" aria-hidden="true"></span>
+              Career guidance, mock interviews, and hands-on projects
+            </li>
+          </ul>
+          <div className="learning-centre-actions">
+            <Link to="/ContactUs" className="btn-outline-centre">Explore centres</Link>
+            <Link to="/ContactUs" className="btn-primary-centre">Request a callback</Link>
+          </div>
+        </div>
+        <div className="learning-centre-image" data-aos="zoom-in" data-aos-delay="250">
+          <img src={corporate} alt="Krutanic learning centre support" />
+        </div>
+      </div>
+      {/* section learning centre end */}
+
+      {/* section certifications */}
+      <div className="landing-certifications" data-aos="fade-up">
+        <div className="landing-cert-grid">
+          <div className="landing-cert-left">
+            <p className="landing-cert-chip">Global Standards</p>
+            <h2>
+              Globally <span>Recognized</span> Certification
+            </h2>
+            <span className="landing-cert-bar" aria-hidden="true" />
+
+            <div className="landing-cert-feature-wrap">
+              {landingCredentialHighlights.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <article key={item.title} className="landing-cert-feature">
+                    <Icon className="landing-cert-feature-icon" />
+                    <div>
+                      <h3>{item.title}</h3>
+                      <p>{item.text}</p>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+
+            <div className="landing-cert-stat-wrap">
+              {landingCredentialStats.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <article key={item.label} className={`landing-cert-stat ${item.accent}`}>
+                    <Icon className="landing-cert-stat-icon" />
+                    <strong>{item.value}</strong>
+                    <span>{item.label}</span>
+                  </article>
+                );
+              })}
+            </div>
+
+            <div className="landing-cert-heading-row">
+              <div>
+                <h4>Your Credentials</h4>
+                <p>Industry-standard validation</p>
+              </div>
+              <a href={internshipCertificate} target="_blank" rel="noreferrer">
+                Preview <FaExternalLinkAlt />
+              </a>
+            </div>
+
+            <Link to="/Mentorship" className="landing-cert-cta">Get Certified Now</Link>
+          </div>
+
+          <div className="landing-cert-images">
+            <article className="landing-cert-card">
+              <img src={internshipCertificate} alt="Certificate of internship" />
+              <div className="landing-cert-card-footer">
+                <span>Certificate of Internship</span>
+                <a href={internshipCertificate} download>
+                  <FaDownload />
+                </a>
+              </div>
+            </article>
+
+            <article className="landing-cert-card">
+              <img src={trainingCertificate} alt="Training completion certificate" />
+              <div className="landing-cert-card-footer">
+                <span>Training Completion</span>
+                <a href={trainingCertificate} download>
+                  <FaDownload />
+                </a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+      {/* section certifications end */}
+
 
       {/* <div className="roadmap">
           <div>
@@ -126,77 +272,58 @@ const HomePage = () => {
           </div>
         </div> */}
 
-
-      {/* Start Your Career */}
-      <div className="startcareer">
-        <div data-aos="flip-up" data-aos-duration="100000sec">
-          <div className="startcareer-text">
-            <ul>
-              <li>Full Stack Development</li>
-              <li>Android App Development</li>
-              <li>Artificial Intelligence</li>
-              <li>MAchine Learning</li>
-              <li>Cyber Security</li>
-              <li>Data Science</li>
-              <li>Embedded System</li>
-              <li>Cloud Computing</li>
-              <li>IOT & Robotics</li>
-              <li>Auto Cad</li>
-              <li>Bussiness Analytics</li>
-              <li>Digital Marketing</li>
-              <li>Human Resource</li>
-              <li>Supply Chain Management</li>
-              <li>Nano Technology and Genetic</li>
-              <li>Graphics Design</li>
-            </ul>
-          </div>
-          <div>
-            <h2>Transform Your Career with Confidence </h2>
-            <p>
-              <span>&#10149;</span>We've Got Your Back! Learning professional training and skill development can be challenging, but we're with you all the way-tracking your progress, refining your skills, and ensuring no gaps in your career growth.
-            </p>
-            <p>
-              <span>&#10149;</span>Learn Anytime, Anywhere! Join live online courses, connect with dedicated mentors, and study flexibly from wherever you are.
-            </p>
-            <p>
-              <span>&#10149;</span>Boost Your Portfolio! Earn online certification, internship program certificates, and completion badges to strengthen your résumé and elevate your job placement opportunities.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Start Your Career end*/}
-
       {/* provide section */}
 
-      <div className="providesection">
+      <div className="providesection provide-vibrant">
         <div className="provide">
-          <h1 data-aos="zoom-in">| Krutanic Provides ?</h1>
-          <p>
-            At our organization, we are committed to offering an unparalleled
-            learning experience that empowers you to excel.
-          </p>
-          <div>
-            <div data-aos="fade-up" className="provide1">
+          <div className="provide-head" data-aos="fade-up">
+            <span className="provide-kicker">The Algorithmic Advantage</span>
+            <h2 className="provide-title">The Algorithmic Advantage</h2>
+            <p>
+              Our platform is engineered to bridge the gap between academic theory and high-stakes industrial reality.
+              Experience the Krutanic ecosystem.
+            </p>
+          </div>
+
+          <div className="providecards">
+            <article data-aos="fade-up" className="provide1">
               <span className="fa fa-graduation-cap text-green-500"></span>
               <h2>Expert Mentorship</h2>
-              <p>Get mentored by top professionals in the field.</p>
-            </div>
-            <div data-aos="fade-up" className="provide1">
+              <p>Learn directly from lead scientists and engineers currently working on global data problems.</p>
+              <a href="/mentors" className="provide-link">Meet Our Mentors <i className="fa fa-arrow-right" /></a>
+            </article>
+
+            <article data-aos="fade-up" className="provide1 provide1--accent">
               <span className="fa fa-map text-orange-500"></span>
               <h2>Customized Paths</h2>
-              <p>Programs customized to match your goals and ambitions.</p>
-            </div>
-            <div data-aos="fade-up" className="provide1">
+              <p>Every career trajectory is unique. Our adaptive curriculum adjusts to your specific goals and pace.</p>
+            </article>
+
+            <article data-aos="fade-up" className="provide1">
               <span className="fa fa-briefcase text-blue-700"></span>
               <h2>Industrial Training</h2>
-              <p>Skills designed to meet market and MNC standards.</p>
-            </div>
-            <div data-aos="fade-up" className="provide1">
+              <p>Work on live projects following MNC development standards and production workflows.</p>
+            </article>
+
+            <article data-aos="fade-up" className="provide1 provide1--success">
               <span className="fa fa-trophy text-red-500"></span>
               <h2>Proven Success</h2>
-              <p>Alumni excelling in leading global companies.</p>
+              <p>Our alumni do not just get jobs; they lead teams across high-growth technology organizations.</p>
+              <div className="provide-badges" aria-hidden="true">
+                <span>AI</span>
+                <span>DS</span>
+                <span>ML</span>
+                <span>BI</span>
+              </div>
+            </article>
+          </div>
+
+          <div className="provide-cta" data-aos="fade-up">
+            <div className="provide-cta-copy">
+              <h3 className="provide-cta-title">Ready to begin your data journey?</h3>
+              <p className="provide-cta-desc">Join the next cohort. Limited spots are available for the premium mentorship path.</p>
             </div>
+            <Link to="/Advance" className="provide-cta-btn">Claim Your Spot</Link>
           </div>
         </div>
       </div>
@@ -278,62 +405,13 @@ const HomePage = () => {
       </div>
       {/* advance courses end  */}
 
-      {/* <WhyChooseUs/> */}
-      <div className="whychoose">
-        <h1 data-aos="zoom-in">| Why choose us ?</h1>
-        <p>
-          Expertise, quality service, and student satisfaction guaranteed every time.
-        </p>
-        <div className="whydiv">
-          <div data-aos="fade-up-right" className="whyimg">
-            <img src={whyimg} alt="Best internship company in bangalore for students " />
-          </div>
-          <div className="whytext">
-            <div data-aos="fade-left" data-aos-duration="400" data-aos-delay="400" className="text">
-              <span>&#10149;</span>
-              <div>
-                <h2>Digital Skills</h2>
-                <p>
-                  Learn AI, Data Science, Digital Marketing, Web Development, UI/UX & more in-demand skills.
-                </p>
-              </div>
-            </div>
-            <div data-aos="fade-left" data-aos-duration="600" data-aos-delay="600" className="text">
-              <span>&#10149;</span>
-              <div>
-                <h2>Career Support</h2>
-                <p>
-                  Job-oriented training with resume building, mock interviews, and placement assistance.
-                </p>
-              </div>
-            </div>
-            <div data-aos="fade-left" data-aos-duration="800" data-aos-delay="800" className="text">
-              <span>&#10149;</span>
-              <div>
-                <h2>Flexible Learning</h2>
-                <p>
-                  Choose online, hybrid, or self-paced classes that fit your schedule.
-                </p>
-              </div>
-            </div>
-            <div data-aos="fade-left" data-aos-duration="1200" data-aos-delay="1200" className="text">
-              <span>&#10149;</span>
-              <div>
-                <h2>Global Networking</h2>
-                <p>Connect with industry experts, mentors, and international professionals. </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* WhyChooseUs end */}
 
       {/* section mission vission  */}
 
       <div className="misvis">
         <div className="mission">
-          <h1 data-aos="zoom-in">| OUR MISION</h1>
+          <h1 data-aos="zoom-in">| OUR MISSION</h1>
           <ul>
             <li> Expert faculty with real-world experience</li>
             <li>Comprehensive support for students</li>
@@ -348,7 +426,6 @@ const HomePage = () => {
             for programming, empowering students to achieve their full
             potential.
           </p>
-          <br />
           <Link to="/AboutUs">
             <button className="btnwhite">LEARN MORE</button>
           </Link>
@@ -357,48 +434,10 @@ const HomePage = () => {
 
       {/* section mission vission end  */}
 
-      {/* section empower  */}
-
-      <div className="empower">
-        <div data-aos="fade-up" data-aos-duration="400" data-aos-delay="400">
-          <span>&#127760;</span>
-          <p>
-            Empower students with skills for success in the digital economy.
-          </p>
-        </div>
-        <div data-aos="fade-up" data-aos-duration="600" data-aos-delay="600">
-          <span>&#128187;</span>
-          <p>
-            Deliver the best learning experience for success in the digital
-            world.
-          </p>
-        </div>
-        <div data-aos="fade-up" data-aos-duration="800" data-aos-delay="800">
-          <span>&#128640;</span>
-          <p>
-            Foster innovation and creativity by encouraging students to think
-            creatively
-          </p>
-        </div>
-        <div data-aos="fade-up" data-aos-duration="1200" data-aos-delay="1200">
-          <span>&#127793;</span>
-          <p>
-            Be a catalyst for positive change, transforming the world one
-            student at a time.
-          </p>
-        </div>
-      </div>
-
-      {/* section empower end */}
-
       {/* section testimonial */}
 
       <div className="testimonial">
-        <h1 data-aos="zoom-in">| Our Mentees' Feedback</h1>
-        <p>
-          how our students have transformed their learning journey and achieved
-          success.
-        </p>
+        <h1 className="feedback-heading" data-aos="fade-up">Our Mentees' Feedback</h1>
         <Testimonial />
       </div>
 
@@ -406,55 +445,42 @@ const HomePage = () => {
 
       {/* section Corporate Solution */}
 
-      <div className="corporatesolution">
-        <h1 data-aos="zoom-in">| Corporate Solutions</h1>
-        <p >Krutanic builds meaningful partnerships to deliver tailored training, practical projects, and advanced tools that accelerate skill development and drive lasting success.  </p>
-        <div className="corporatediv">
-          <div data-aos="fade-up-right" className="corporateimg">
-            <img src={corporate} alt="internship company in bangalore for college students" />
-          </div>
-          <div className="corporatetext">
-            <div data-aos="fade-left" data-aos-duration="400" data-aos-delay="400" className="text">
-              <span>&#10149;</span>
-              <div>
-                <h2>Empowerment</h2>
-                <p>
-                  Structured programs that strengthen professional abilities and create new opportunities for advancement.
-                </p>
-              </div>
+      {/* Corporate Solutions Modern UI */}
+      <section id="corporate-solutions" className="corporate-redesign">
+        <div className="corporate-wrap">
+          <header className="corporate-head" data-aos="fade-up">
+            <h2>| Corporate Solutions</h2>
+            <p>
+              Krutanic builds meaningful partnerships to deliver tailored training, practical projects,
+              and advanced tools that accelerate skill development and drive lasting success.
+            </p>
+          </header>
+
+          <div className="corporate-grid">
+            <div className="corporate-media" data-aos="fade-right" data-aos-duration="900">
+              <img src={corporate} alt="Corporate training collaboration" />
             </div>
-            <div data-aos="fade-left" data-aos-duration="600" data-aos-delay="600" className="text">
-              <span>&#10149;</span>
-              <div>
-                <h2>Innovative Learning</h2>
-                <p>
-                  Real-time training with the latest technologies for hands-on, impactful learning experiences.
-                </p>
-              </div>
-            </div>
-            <div data-aos="fade-left" data-aos-duration="800" data-aos-delay="800" className="text">
-              <span>&#10149;</span>
-              <div>
-                <h2>Collaborative Networking</h2>
-                <p>
-                  Engage in shared projects and interactive sessions that foster valuable industry connections.
-                </p>
-              </div>
-            </div>
-            <div data-aos="fade-left" data-aos-duration="1200" data-aos-delay="1200" className="text">
-              <span>&#10149;</span>
-              <div>
-                <h2>Creative Solutions</h2>
-                <p>
-                  Encourage innovative thinking and strategic problem-solving to meet today’s dynamic challenges
-                </p>
-              </div>
+
+            <div className="corporate-list">
+              {corporatePoints.map((item, index) => (
+                <article
+                  key={item.title}
+                  className="corporate-item"
+                  data-aos="fade-left"
+                  data-aos-duration="600"
+                  data-aos-delay={120 + index * 90}
+                >
+                  <span className="corporate-arrow" aria-hidden="true">→</span>
+                  <div>
+                    <h3>{item.title}</h3>
+                    <p>{item.text}</p>
+                  </div>
+                </article>
+              ))}
             </div>
           </div>
         </div>
-      </div>
-
-      {/* section Corporate Solution end */}
+      </section>
 
       {/* section Our Partner */}
 
@@ -468,30 +494,6 @@ const HomePage = () => {
       {/* section Our Partner */}
 
       <div className="whitediv">
-        {/* how to enroll  */}
-        <div className="ourprocess">
-          <div className="ourprocessdiv">
-            <div className="process1">
-              <h1 data-aos="zoom-in">| How to Enroll ?</h1>
-              <p>
-                Our process is designed to help you achieve your goals and
-                succeed in your career. We focus on guiding you every step of
-                the way so that you can get the most out of your learning
-                experience.
-              </p>
-              <p>
-                By enrolling with us, you’ll get access to a structured learning
-                experience, expert guidance, and a supportive community.
-              </p>
-            </div>
-            <div className="process2">
-              <VerticalAccordion />
-            </div>
-          </div>
-        </div>
-
-        {/* how to enroll end */}
-
         {/* what makes us different */}
 
         {/* <div className="whatmakesusdifferent">
@@ -503,20 +505,7 @@ const HomePage = () => {
 
         {/* what makes us different end */}
 
-        {/* Our Success Story */}
 
-        <div className="ourstory">
-          <h1 data-aos="zoom-in">| Our Success Story</h1>
-          <p>
-            Our Success Story is unfolding with every milestone we achieve—stay
-            tuned for our inspiring journey!
-          </p>
-          <div className="storydiv">
-            <img src={comingsoon} alt="internship company in bangalore for freshers " />
-          </div>
-        </div>
-
-        {/* Our Success Story end */}
       </div>
     </div>
   );

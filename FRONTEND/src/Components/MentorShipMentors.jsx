@@ -75,7 +75,7 @@ const MentorShipMentors = () => {
         >
           Meet our Mentors{" "}
         </h1>
-        <p data-aos="fade-up" className="text-white mb-8">
+        <p data-aos="fade-up" className="text-[#4b5563] mb-8">
           Meet the talented and creative minds behind our work. Our mentors
           bring a wealth of experience and a passion for innovation to every
           mentorship course.
@@ -86,13 +86,13 @@ const MentorShipMentors = () => {
           className="grid grid-cols-2 md:grid-cols-4 gap-[10px]"
         >
           {mentors.map((mentor) => (
-            <div className=" drop-shadow-lg bg-[#ffffff08] text-[#f15b29] p-[10px]  shadow-md rounded-lg  text-center">
+            <div key={mentor.name} className="drop-shadow-lg bg-white border border-[#e5e7eb] text-[#f15b29] p-[10px] shadow-md rounded-lg text-center">
               <div className="rounded-full overflow-hidden h-[100px] w-[100px] mx-auto">
                 <img src={mentor.image} alt={mentor.name} className="" />
               </div>
-              <h3 className="font-semibold text-lg mt-2">{mentor.name}</h3>
-              <p className="text-white text-xs">{mentor.designation}</p>
-              <p className="text-white">{mentor.experience}</p>
+              <h3 className="font-semibold text-lg mt-2 text-[#f15b29]">{mentor.name}</h3>
+              <p className="text-[#667085] text-xs">{mentor.designation}</p>
+              <p className="text-[#475467]">{mentor.experience}</p>
             </div>
           ))}
         </div>

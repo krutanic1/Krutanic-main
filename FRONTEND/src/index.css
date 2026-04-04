@@ -2,8 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap");
+
+:root {
+  --brand-navy: #050d2f;
+  --brand-blue: #2c6fff;
+  --brand-orange: #ff6b2d;
+  --surface-soft: #f7f8ff;
+}
+
 body {
-  font-family: "Montserrat";
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+  background: var(--surface-soft);
+  color: #0f172a;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Sora", "Montserrat", sans-serif;
 }
 
 /* Lexend font for new dashboard */
@@ -393,5 +414,953 @@ h1 {
   border: none;
   font-weight: bold;
   box-shadow: 0 4px 15px rgba(255, 61, 0, 0.4);
+}
+
+/* Public landing refresh: preserve original content, modernize visual style */
+#landingpage {
+  background: linear-gradient(180deg, #f8f9fc 0%, #f7f8ff 38%, #ffffff 100%);
+  color: #0f172a;
+  overflow-x: hidden;
+}
+
+#landingpage img,
+#landingpage video,
+#landingpage iframe,
+#landingpage canvas,
+#landingpage svg {
+  max-width: 100%;
+}
+
+#landingpage > div:not(.hero):not(.whitediv):not(.popularcourse):not(.workat) {
+  width: min(97%, 1500px);
+  margin: 0 auto;
+}
+
+#landingpage .aboutus,
+#landingpage .startcareer,
+#landingpage .providesection,
+#landingpage .specialization,
+#landingpage .whychoose,
+#landingpage .misvis,
+#landingpage .empower,
+#landingpage .testimonial,
+#landingpage .corporatesolution,
+#landingpage .ourprocess,
+#landingpage .ourstory,
+#landingpage .workat,
+#landingpage .popularcourse {
+  margin-top: 56px;
+}
+
+#landingpage .about1stdiv,
+#landingpage .specializationiner,
+#landingpage .whydiv,
+#landingpage .corporatediv,
+#landingpage .ourprocessdiv {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1.05fr 0.95fr;
+}
+
+#landingpage .about1stdiv .text,
+#landingpage .startcareer > div,
+#landingpage .provide,
+#landingpage .specialization > div,
+#landingpage .whychoose,
+#landingpage .corporatesolution,
+#landingpage .ourprocess,
+#landingpage .ourstory,
+#landingpage .misvis,
+#landingpage .empower,
+#landingpage .testimonial {
+  border: 1px solid #e8eaf3;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 16px 40px rgba(14, 30, 78, 0.06);
+}
+
+#landingpage .about1stdiv .text,
+#landingpage .provide,
+#landingpage .specialization > div,
+#landingpage .whychoose,
+#landingpage .corporatesolution,
+#landingpage .ourprocess,
+#landingpage .ourstory,
+#landingpage .testimonial,
+#landingpage .workat .alumni {
+  padding: 28px;
+}
+
+#landingpage h1 {
+  color: #0b1538;
+  letter-spacing: -0.02em;
+}
+
+#landingpage .btnblack,
+#landingpage .btnwhite {
+  border-radius: 999px;
+  padding: 11px 22px;
+  border: none;
+  background: #ff6b2d;
+  color: #fff;
+  font-weight: 700;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 8px 24px rgba(255, 107, 45, 0.28);
+}
+
+#landingpage .btnblack:hover,
+#landingpage .btnwhite:hover {
+  transform: translateY(-1px);
+}
+
+/* Force readable text contrast on restored landing content */
+#landingpage :is(
+  .aboutus,
+  .startcareer,
+  .providesection,
+  .workat,
+  .specialization,
+  .popularcourse,
+  .whychoose,
+  .misvis,
+  .empower,
+  .testimonial,
+  .corporatesolution,
+  .whitediv,
+  .ourprocess,
+  .ourstory
+) :is(h1, h2, h3, h4, p, li, a, span) {
+  color: #111827 !important;
+}
+
+#landingpage .btnblack,
+#landingpage .btnwhite,
+#landingpage .btn-shine,
+#landingpage .btnblack span,
+#landingpage .btnwhite span {
+  color: #ffffff !important;
+}
+
+#landingpage .box,
+#landingpage .boxfour,
+#landingpage .provide > div,
+#landingpage .empower {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+#landingpage .box > div,
+#landingpage .boxfour > div,
+#landingpage .provide1,
+#landingpage .empower > div,
+#landingpage .specialtext,
+#landingpage .whytext .text,
+#landingpage .corporatetext .text {
+  border: 1px solid #edf0fa;
+  background: #fbfcff;
+  border-radius: 16px;
+  padding: 14px;
+}
+
+#landingpage .number {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+#landingpage .number h2 {
+  margin: 0;
+  border-radius: 999px;
+  border: 1px solid #e9ecf5;
+  padding: 8px 12px;
+  font-size: 14px;
+  background: #f8f9ff;
+}
+
+#landingpage .workat .alumni,
+#landingpage .popularcourse,
+#landingpage .whitediv {
+  width: min(97%, 1500px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#landingpage .startcareer-text ul {
+  columns: 2;
+  column-gap: 20px;
+}
+
+#landingpage img {
+  border-radius: 16px;
+}
+
+/* Themed Start Career section */
+#landingpage .startcareer > div {
+  background: linear-gradient(135deg, #fff7f2 0%, #fffdfb 55%, #ffffff 100%);
+  border: 1px solid #ffd8c8;
+  border-radius: 22px;
+  padding: 30px;
+  box-shadow: 0 18px 36px rgba(241, 91, 41, 0.12);
+}
+
+#landingpage .startcareer :is(h2, p, li) {
+  color: #23314d !important;
+}
+
+#landingpage .startcareer h2 {
+  color: #14213d !important;
+}
+
+#landingpage .startcareer p {
+  line-height: 1.55;
+}
+
+#landingpage .startcareer span {
+  color: #f15b29 !important;
+}
+
+/* Specialization section visual refinement */
+#landingpage .specialization {
+  background: transparent;
+}
+
+#landingpage .specialization > div {
+  background: #ffffff;
+  border: 1px solid #e8ebf4;
+  border-radius: 24px;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+  padding: 28px;
+}
+
+#landingpage .specialization .specializationiner > div {
+  background: #f8faff !important;
+  border: 1px solid #e5eaf7;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+#landingpage .specialization .specializationiner .img img {
+  border-radius: 0 !important;
+  min-height: 100%;
+}
+
+#landingpage .specialization .specializationiner .textdiv {
+  background: linear-gradient(180deg, #f8faff 0%, #ffffff 100%) !important;
+  padding: 16px !important;
+  gap: 14px !important;
+}
+
+#landingpage .specialization .specialtext {
+  background: #ffffff !important;
+  border: 1px solid #e7ebf6 !important;
+  border-radius: 14px;
+  padding: 14px !important;
+  gap: 12px !important;
+}
+
+#landingpage .specialization .specialtext span {
+  color: #f15b29 !important;
+  font-size: 30px !important;
+  flex-shrink: 0;
+}
+
+/* Mission + Vision section refinement */
+#landingpage .misvis {
+  width: min(97%, 1500px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+#landingpage .misvis > div {
+  background: linear-gradient(170deg, #ffffff 0%, #fff9f5 100%);
+  border: 1px solid #f3dfd4;
+  border-radius: 22px;
+  padding: 26px;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
+}
+
+#landingpage .misvis h1 {
+  color: #132039 !important;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  margin-bottom: 18px !important;
+}
+
+#landingpage .misvis .mission ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#landingpage .misvis .mission li {
+  margin-bottom: 12px;
+  padding: 10px 0 12px;
+  border-bottom: 3px solid #f15b29;
+  font-weight: 600;
+}
+
+#landingpage .misvis .vission p {
+  line-height: 1.7;
+  color: #334155 !important;
+  margin-bottom: 24px;
+  max-width: 58ch;
+}
+
+#landingpage .misvis .vission .btnwhite {
+  background: #f15b29 !important;
+  color: #ffffff !important;
+  border: 0;
+  min-width: 160px;
+  min-height: 44px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 20px rgba(241, 91, 41, 0.24);
+  margin-top: 2px;
+}
+
+#landingpage .misvis .vission .btnwhite:hover {
+  background: #d94f21 !important;
+}
+
+/* Testimonial section readability refinement */
+#landingpage .testimonial,
+.testimonial {
+  background-image: none !important;
+  background-color: #f8faff !important;
+}
+
+#landingpage .testimonial .feedback-heading {
+  margin: 0 0 14px;
+  text-align: center;
+  font-size: clamp(24px, 3vw, 38px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0f172a !important;
+}
+
+#landingpage .testimonial {
+  position: relative;
+  border: 1px solid #e2e8f0;
+  background: #f8faff;
+  padding: 28px 14px;
+}
+
+#landingpage .testimonial .testimonialcontainer {
+  max-width: 1500px;
+  min-width: 100%;
+  margin: 0 auto;
+}
+
+#landingpage .testimonial .slick-track {
+  display: flex !important;
+}
+
+#landingpage .testimonial .slick-slide {
+  height: inherit !important;
+}
+
+#landingpage .testimonial .slick-slide > div {
+  height: 100%;
+}
+
+#landingpage .testimonial .feedback-slide {
+  padding: 8px;
+}
+
+#landingpage .testimonial .feedback-card {
+  height: 100%;
+  min-height: 330px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  padding: 18px;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+}
+
+#landingpage .testimonial .feedback-quote-wrap {
+  flex: 1;
+  overflow: hidden;
+}
+
+#landingpage .testimonial .feedback-quote-wrap p {
+  color: #334155 !important;
+  font-size: 18px;
+  line-height: 1.55;
+  font-style: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+#landingpage .testimonial .feedback-user {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+#landingpage .testimonial .feedback-user img {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(248, 155, 105, 0.7);
+}
+
+#landingpage .testimonial .feedback-user h2 {
+  margin: 0;
+  color: #ff9a66 !important;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+#landingpage .testimonial .feedback-user h3,
+#landingpage .testimonial .feedback-user p {
+  margin: 2px 0 0;
+  color: #64748b !important;
+  font-size: 13px;
+  font-style: normal;
+}
+
+@media (max-width: 760px) {
+  #landingpage .testimonial .feedback-card {
+    min-height: 290px;
+  }
+
+  #landingpage .testimonial .feedback-quote-wrap p {
+    font-size: 16px;
+  }
+}
+
+/* Popular Courses carousel refinement */
+#landingpage .popularcourse .container1 {
+  min-width: 100% !important;
+}
+
+#landingpage .popularcourse .slick-track {
+  display: flex !important;
+}
+
+#landingpage .popularcourse .slick-slide {
+  height: inherit !important;
+}
+
+#landingpage .popularcourse .slick-slide > div {
+  height: 100%;
+}
+
+#landingpage .popularcourse .course > div {
+  background: #ffffff !important;
+  border: 1px solid #e6eaf5 !important;
+  border-radius: 16px !important;
+  overflow: hidden;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 430px;
+}
+
+#landingpage .popularcourse .course > div > img {
+  width: 100%;
+  height: 210px;
+  object-fit: cover;
+  border-radius: 0 !important;
+}
+
+#landingpage .popularcourse .course > div > div {
+  padding: 14px !important;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+#landingpage .popularcourse .course h2 {
+  color: #0f172a !important;
+  font-size: 24px;
+  margin-bottom: 8px;
+  line-height: 1.2;
+  min-height: 58px;
+}
+
+#landingpage .popularcourse .course p {
+  color: #334155 !important;
+}
+
+#landingpage .popularcourse .course > div > div > p:first-of-type {
+  min-height: 72px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+#landingpage .popularcourse .course > div > div > p:nth-of-type(2) {
+  margin-top: 6px;
+}
+
+#landingpage .popularcourse .course p span {
+  color: #f15b29 !important;
+}
+
+#landingpage .popularcourse .course .btn {
+  margin-top: auto;
+  color: #f15b29 !important;
+  font-weight: 700;
+  background: transparent !important;
+}
+
+#landingpage .specialization .advanced-course-title,
+#landingpage .specialization .advanced-course-title span,
+#landingpage .specialization .advanced-course-title i {
+  color: #f15b29 !important;
+}
+
+@media (max-width: 980px) {
+  #landingpage .about1stdiv,
+  #landingpage .specializationiner,
+  #landingpage .whydiv,
+  #landingpage .corporatediv,
+  #landingpage .ourprocessdiv {
+    grid-template-columns: 1fr;
+  }
+
+  #landingpage .box,
+  #landingpage .boxfour,
+  #landingpage .provide > div,
+  #landingpage .empower {
+    grid-template-columns: 1fr;
+  }
+
+  #landingpage .startcareer-text ul {
+    columns: 1;
+  }
+
+  #landingpage .misvis {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Learning Centre section */
+#landingpage .learning-centre {
+  width: min(97%, 1500px);
+  margin: 56px auto 0;
+  border: 1px solid #dbe3f4;
+  border-radius: 30px;
+  padding: 28px;
+  display: grid;
+  gap: 26px;
+  grid-template-columns: 1.02fr 0.98fr;
+  align-items: center;
+  background:
+    radial-gradient(circle at 8% 18%, rgba(241, 91, 41, 0.16) 0%, rgba(241, 91, 41, 0) 35%),
+    radial-gradient(circle at 85% 18%, rgba(241, 91, 41, 0.12) 0%, rgba(241, 91, 41, 0) 32%),
+    linear-gradient(165deg, #ffffff 0%, #fff8f9 55%, #ffffff 100%);
+  box-shadow: 0 20px 46px rgba(16, 35, 74, 0.09);
+}
+
+#landingpage .learning-centre .learning-centre-content {
+  padding: 6px 8px;
+}
+
+#landingpage .learning-centre .eyebrow {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: 0.02em;
+  color: #334155 !important;
+  font-weight: 700;
+}
+
+#landingpage .learning-centre h2 {
+  margin: 12px 0 18px;
+  color: #0f172a !important;
+  font-size: clamp(34px, 4vw, 58px);
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+}
+
+#landingpage .learning-centre h2 span {
+  display: block;
+  color: #f15b29 !important;
+}
+
+#landingpage .learning-centre ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+#landingpage .learning-centre ul li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: #1f2937 !important;
+  font-size: 32px;
+  line-height: 1.48;
+}
+
+#landingpage .learning-centre ul li span {
+  color: #0f172a !important;
+  margin-top: 4px;
+  font-size: 22px;
+  width: 24px;
+  flex-shrink: 0;
+}
+
+#landingpage .learning-centre .learning-centre-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 26px;
+}
+
+#landingpage .learning-centre .learning-centre-actions a {
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 20px;
+  border-radius: 14px;
+  padding: 12px 22px;
+  min-width: 190px;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#landingpage .learning-centre .learning-centre-actions a:hover {
+  transform: translateY(-1px);
+}
+
+#landingpage .learning-centre .btn-outline-centre {
+  border: 1px solid #1f2937;
+  color: #111827 !important;
+  background: #ffffff;
+}
+
+#landingpage .learning-centre .btn-primary-centre {
+  border: 1px solid #f15b29;
+  color: #ffffff !important;
+  background: linear-gradient(180deg, #ff8f3d 0%, #f15b29 100%);
+  box-shadow: 0 12px 24px rgba(241, 91, 41, 0.24);
+}
+
+#landingpage .learning-centre .learning-centre-image {
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid #e0e7f7;
+  background: #eef2ff;
+  box-shadow: 0 16px 34px rgba(19, 40, 86, 0.14);
+}
+
+#landingpage .learning-centre .learning-centre-image img {
+  width: 100%;
+  height: 100%;
+  min-height: 460px;
+  object-fit: cover;
+  border-radius: 0 !important;
+}
+
+@media (max-width: 980px) {
+  #landingpage .learning-centre {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    gap: 16px;
+  }
+
+  #landingpage .learning-centre .learning-centre-content {
+    padding: 4px;
+  }
+
+  #landingpage .learning-centre .eyebrow {
+    font-size: 16px;
+  }
+
+  #landingpage .learning-centre ul li {
+    font-size: 19px;
+  }
+
+  #landingpage .learning-centre .learning-centre-actions {
+    margin-top: 18px;
+  }
+
+  #landingpage .learning-centre .learning-centre-actions a {
+    width: 100%;
+    font-size: 16px;
+    min-width: 0;
+  }
+
+  #landingpage .learning-centre .learning-centre-image img {
+    min-height: 260px;
+  }
+
+}
+
+/* Landing certifications section */
+#landingpage .landing-certifications {
+  width: min(97%, 1500px);
+  margin: 116px auto 0;
+  border: 1px solid #dbe3f4;
+  border-radius: 30px;
+  padding: 28px;
+  background: linear-gradient(165deg, #ffffff 0%, #f8f9fc 65%, #ffffff 100%);
+  box-shadow: 0 20px 46px rgba(16, 35, 74, 0.08);
+}
+
+#landingpage .landing-cert-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+#landingpage .landing-cert-left h2 {
+  margin: 14px 0 0;
+  color: #121827 !important;
+  font-size: clamp(2.1rem, 4vw, 5rem);
+  letter-spacing: -0.03em;
+  line-height: 0.98;
+}
+
+#landingpage .landing-cert-left h2 span {
+  color: #f15b29 !important;
+}
+
+#landingpage .landing-cert-chip {
+  margin: 0;
+  width: fit-content;
+  padding: 7px 14px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  font-weight: 800;
+  color: #31457a !important;
+  background: #dce5ff;
+}
+
+#landingpage .landing-cert-bar {
+  display: inline-block;
+  width: 78px;
+  height: 6px;
+  border-radius: 999px;
+  margin-top: 14px;
+  background: linear-gradient(135deg, #b83c11, #f15b29);
+}
+
+#landingpage .landing-cert-feature-wrap {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+#landingpage .landing-cert-feature {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  border-radius: 16px;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  background: rgba(255, 255, 255, 0.94);
+  padding: 16px;
+}
+
+#landingpage .landing-cert-feature-icon {
+  font-size: 1.1rem;
+  color: #f15b29;
+  margin-top: 4px;
+}
+
+#landingpage .landing-cert-feature h3 {
+  margin: 0;
+  color: #0f172a !important;
+  font-size: 40px;
+}
+
+#landingpage .landing-cert-feature p {
+  margin: 4px 0 0;
+  color: #2f3a4f !important;
+  line-height: 1.45;
+}
+
+#landingpage .landing-cert-stat-wrap {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+#landingpage .landing-cert-stat {
+  border-radius: 16px;
+  border: 1px solid rgba(17, 24, 39, 0.07);
+  background: #fff;
+  padding: 14px;
+  text-align: center;
+}
+
+#landingpage .landing-cert-stat-icon {
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+}
+
+#landingpage .landing-cert-stat strong {
+  display: block;
+  font-size: 1.9rem;
+  line-height: 1;
+}
+
+#landingpage .landing-cert-stat span {
+  display: block;
+  margin-top: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+}
+
+#landingpage .landing-cert-stat.orange .landing-cert-stat-icon,
+#landingpage .landing-cert-stat.orange strong {
+  color: #f15b29 !important;
+}
+
+#landingpage .landing-cert-stat.blue .landing-cert-stat-icon,
+#landingpage .landing-cert-stat.blue strong {
+  color: #3359b9 !important;
+}
+
+#landingpage .landing-cert-heading-row {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+#landingpage .landing-cert-heading-row h4 {
+  margin: 0;
+  color: #111827 !important;
+  font-size: 2.9rem;
+  line-height: 1;
+}
+
+#landingpage .landing-cert-heading-row p {
+  margin: 4px 0 0;
+  color: #6b7283 !important;
+}
+
+#landingpage .landing-cert-heading-row a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #b83c11 !important;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+#landingpage .landing-cert-cta {
+  margin-top: 14px;
+  width: 100%;
+  border: 0;
+  border-radius: 14px;
+  padding: 14px;
+  font-weight: 700;
+  font-size: 1.25rem;
+  text-align: center;
+  display: inline-flex;
+  justify-content: center;
+  text-decoration: none;
+  color: #fff !important;
+  background: linear-gradient(135deg, #f15b29, #ff7c4f);
+  box-shadow: 0 12px 22px rgba(241, 91, 41, 0.24);
+}
+
+#landingpage .landing-cert-images {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+#landingpage .landing-cert-card {
+  border-radius: 18px;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(17, 24, 39, 0.08);
+}
+
+#landingpage .landing-cert-card img {
+  width: 100%;
+  height: auto;
+  min-height: 230px;
+  object-fit: cover;
+  border-radius: 0;
+  display: block;
+}
+
+#landingpage .landing-cert-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+}
+
+#landingpage .landing-cert-card-footer span {
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-size: 0.84rem;
+  color: #111827 !important;
+}
+
+#landingpage .landing-cert-card-footer a {
+  color: #b83c11 !important;
+  font-size: 1rem;
+}
+
+@media (max-width: 980px) {
+  #landingpage .landing-cert-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #landingpage .landing-cert-left h2 {
+    max-width: 11ch;
+  }
+}
+
+@media (max-width: 760px) {
+  #landingpage .landing-certifications {
+    margin-top: 72px;
+    padding: 18px;
+    border-radius: 18px;
+  }
+
+  #landingpage .landing-cert-feature-wrap,
+  #landingpage .landing-cert-stat-wrap {
+    grid-template-columns: 1fr;
+  }
+
+  #landingpage .landing-cert-left h2 {
+    font-size: clamp(2rem, 10vw, 3.6rem);
+  }
+
+  #landingpage .landing-cert-feature h3 {
+    font-size: 30px;
+  }
+
+  #landingpage .landing-cert-heading-row h4 {
+    font-size: 2.1rem;
+  }
 }
  

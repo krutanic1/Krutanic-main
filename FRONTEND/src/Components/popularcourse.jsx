@@ -3,21 +3,45 @@ import { Link } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import ds from "../assets/mentorshipcourses/Data science.png";
-import fsd from "../assets/mentorshipcourses/full stack.png";
-import ai from "../assets/mentorshipcourses/AI.png";
-import da from "../assets/mentorshipcourses/DA.jpg";
-import cc from "../assets/mentorshipcourses/cloud computing.png";
+const ds = "/course_thumbnails/Data Science.jpg";
+const fsd = "/course_thumbnails/Full Stack Web.jpg";
+const ai = "/course_thumbnails/Artificial Intelligence.jpg";
+const da = "/course_thumbnails/Data Analytics.jpg";
+const cc = "/course_thumbnails/Cloud Computing.jpg";
 
 const Popularcourse = () => {
   const settings = {
+    infinite: true,
     autoplay: true,
-    autoplaySpeed: 2000,
-    slidesToShow: 5,
+    autoplaySpeed: 0,
+    slidesToShow: 4,
     slidesToScroll: 1,
-    speed: 3000,
+    speed: 6000,
+    cssEase: "linear",
+    pauseOnHover: true,
+    pauseOnFocus: true,
     dots: false,
-    arrow: false,
+    arrows: false,
+    responsive: [
+      {
+        breakpoint: 1200,
+        settings: {
+          slidesToShow: 3
+        }
+      },
+      {
+        breakpoint: 900,
+        settings: {
+          slidesToShow: 2
+        }
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 1
+        }
+      }
+    ]
   };
 
   return (

@@ -72,8 +72,8 @@ const ClientsCarousel = () => {
     <div className="workatslider">
       <style>{`
         .workatslider .client-img {
-          max-width: 130px !important;
-          max-height: 45px !important;
+          max-width: 400px !important;
+          max-height: 150px !important;
           width: 100%;
           height: auto;
           object-fit: contain !important;

@@ -1,935 +1,446 @@
-import React, { useState, useEffect } from "react";
-import "swiper/css";
-import "swiper/css/effect-cube";
-import "swiper/css/pagination";
-import logo from '../assets/courses/logo.jpg'
+import React from "react";
+import { Link } from "react-router-dom";
+import ClientsCarousel from "../Components/our_alumni";
+import birendraImg from "../assets/alumini/birendra.jpg";
+import rajaImg from "../assets/alumini/raja.jpg";
+import mithunImg from "../assets/alumini/mithun.jpg";
+import advanceHeroImg from "../../krutanic/images/advance.jpg";
+import { FaCheckCircle, FaStar, FaAward, FaBuilding } from "react-icons/fa";
+import { 
+  FaQuoteLeft,
+  FaNetworkWired, 
+  FaShieldAlt, 
+  FaSearchDollar, 
+  FaRocket, 
+  FaChartBar, 
+  FaGlobe, 
+  FaArrowRight,
+  FaLaptopCode,
+  FaBullhorn,
+  FaBriefcase,
+  FaGraduationCap,
+  FaShareAlt,
+  FaEnvelope,
+  FaBrain,
+  FaChartLine,
+  FaCoins,
+  FaDollarSign,
+  FaFileAlt,
+  FaBoxes
+} from "react-icons/fa";
 
-import AOS from "aos";
-import "aos/dist/aos.css";
+const columnsData = [
+  {
+    category: "Technology",
+    icon: <FaLaptopCode className="text-[#bf3b2b]" />,
+    count: "3 Programs",
+    cards: [
+      {
+        type: "icon",
+        icon: <FaNetworkWired />,
+        title: "Data Science Advanced Program",
+        desc: "Master Machine Learning, AI ethics, and large-scale neural architectures.",
+        link: "/DataScience"
+      },
+      {
+        type: "icon",
+        icon: <FaChartBar />,
+        title: "Data Analytics Advanced Program",
+        desc: "Master Excel, SQL, Python, and Power BI to drive business decisions with data.",
+        link: "/DataAnalytics"
+      },
+      {
+        type: "icon",
+        icon: <FaLaptopCode />,
+        title: "MERN Stack Development Advanced Program",
+        desc: "Full-stack web development utilizing MongoDB, Express, React, and Node.js.",
+        link: "/MernStack"
+      }
+    ]
+  },
+  {
+    category: "Marketing",
+    icon: <FaBullhorn className="text-[#bf3b2b]" />,
+    count: "3 Programs",
+    cards: [
+      {
+        type: "icon",
+        icon: <FaSearchDollar />,
+        title: "Digital Marketing Advanced Program",
+        desc: "Multi-channel strategies, consumer psychology, and scalable digital campaigns.",
+        link: "/DigitalMarket"
+      },
+      {
+        type: "icon",
+        icon: <FaChartLine />,
+        title: "Performance Marketing Advanced Program",
+        desc: "Data-driven ROI optimization and rigorous ad ecosystem management.",
+        link: "/Performancemarket"
+      },
+      {
+        type: "icon",
+        icon: <FaBrain />,
+        title: "Prompt Engineering with GenAI Advanced Program",
+        desc: "Master the art of communicating with and optimizing Large Language Models.",
+        link: "/PromptEngineering"
+      }
+    ]
+  },
+  {
+    category: "Business",
+    icon: <FaBriefcase className="text-[#bf3b2b]" />,
+    count: "2 Programs",
+    cards: [
+      {
+        type: "icon",
+        icon: <FaRocket />,
+        title: "Product Management Advanced Program",
+        desc: "Leading product lifecycle, agile methodologies, and cross-functional teams.",
+        link: "/ProductManagement"
+      },
+      {
+        type: "icon",
+        icon: <FaCoins />,
+        title: "Investment Banking Advanced Program",
+        desc: "Advanced financial modeling, valuation, and complex corporate finance.",
+        link: "/Investmentbanking"
+      }
+    ]
+  }
+];
+
+const learnerTestimonials = [
+  {
+    name: "Raja Singh",
+    role: "Stock Market Analyst",
+    experience: "4 Years of Experience",
+    date: "Aug 9, 2023",
+    image: rajaImg,
+    quote:
+      "Recently completed the stock market course and found it exceptionally informative and beneficial. The course was well-structured, making complex concepts easy to understand and practical to apply.",
+  },
+  {
+    name: "Birendra Kumar",
+    role: "Data Science Associate",
+    experience: "10 Years of Experience",
+    date: "Aug 17, 2022",
+    image: birendraImg,
+    quote:
+      "I completed my internship in stock market and also pursued more courses here. Great mentorship and training made a significant positive impact on my learning journey.",
+  },
+  {
+    name: "Mithun Prajapati",
+    role: "Full Stack Developer",
+    experience: "2 Years of Experience",
+    date: "Mar 10, 2021",
+    image: mithunImg,
+    quote:
+      "Successfully completed my full stack web development internship at Krutanic. Sessions were interactive, practical, and highly engaging with excellent mentor support.",
+  },
+];
+
+const capstoneSteps = [
+  {
+    step: "1",
+    title: "Bring Your Employer's Business Problem",
+    description:
+      "Go back and impress your boss and colleagues with the Data & AI solutions you come up with.",
+  },
+  {
+    step: "2",
+    title: "Bring a Future Employer's Problem",
+    description:
+      "Work on a challenge that helps you build a stronger portfolio for hiring managers.",
+  },
+  {
+    step: "3",
+    title: "Choose a Problem From Your Domain",
+    description:
+      "Pick a project from your career track and showcase practical problem-solving skills.",
+  },
+];
+
+const capstoneTracks = [
+  { title: "Marketing", icon: FaBullhorn },
+  { title: "Finance", icon: FaDollarSign },
+  { title: "Sales", icon: FaChartLine },
+  { title: "Human Resources", icon: FaFileAlt },
+  { title: "Operations and Supply chain", icon: FaBoxes },
+];
 
 const AdvanceCourses = () => {
-  const [activeCategory, setActiveCategory] = useState("Program");
-  const [openFAQ, setOpenFAQ] = useState(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const courseTopics = [
-    { title: "topics", icon: "🌐" },
-    { title: "topics", icon: "🎣" },
-    { title: "topics", icon: "⚡" },
-    { title: "topics", icon: "🛣️" },
-    { title: "topics", icon: "🗃️" },
-    { title: "topics", icon: "🗃️" },
-  ];
-
-  const modules = [
-    {
-      title: "",
-      objectives: "Short description about this module",
-      topics: ["topics", "topics", "topics", "topics", "topics"],
-    },
-    {
-      title: "",
-      objectives: "Short description about this module",
-      topics: ["topics", "topics", "topics", "topics", "topics"],
-    },
-    {
-      title: "",
-      objectives: "Short description about this module",
-      topics: ["topics", "topics", "topics", "topics", "topics"],
-    },
-    {
-      title: "",
-      objectives: "Short description about this module",
-      topics: ["topics", "topics", "topics", "topics", "topics"],
-    },
-    {
-      title: "",
-      objectives: "Short description about this module",
-      topics: ["topics", "topics", "topics", "topics", "topics"],
-    },
-  ];
-
-  // scrolling
-  const [isVisible, setIsVisible] = useState(false);
-  const [lastScrollPos, setLastScrollPos] = useState(0);
-  // scrolling ends
-  // enrolledment slides
-  const [currentSlide, setCurrentSlide] = useState(0);
-  // scrolling
-  // testimonial
-  const [currentSlide1, setCurrentSlide1] = useState(0);
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollPos = window.scrollY;
-      if (currentScrollPos > lastScrollPos) {
-        setIsVisible(true); // Show on scroll down
-      } else {
-        setIsVisible(false); // Hide on scroll up
-      }
-      setLastScrollPos(currentScrollPos);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollPos]);
-
-  const slides = [
-    {
-      title: "Register with us",
-      description:
-        "Explore pro courses and register for the interested course by filling out the form.",
-      icon: "🔍", // Replace with actual icon
-    },
-    {
-      title: "You will get a call",
-      description:
-        "You will soon get a call from one of our senior executives regarding a few details.",
-      icon: "💡", // Replace with actual icon
-    },
-    {
-      title: "Provide the  details",
-      description:
-        "Simply provide the required information to the senior executive.",
-      icon: "🚀", // Replace with actual icon
-    },
-    {
-      title: "Pay  course fee",
-      description: "Complete the payment process to enroll in the course.",
-      icon: "💳", // Replace with actual icon
-    },
-  ];
-
-  const handleOpenDialog = () => {
-    setIsDialogOpen(true);
-  };
-
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false);
-  };
-
-  const features = [
-    {
-      title: "Lorem Ipsum Dolor Sit Amet",
-      description:
-        "Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    },
-    {
-      title: "Sed Ut Perspiciatis",
-      description:
-        "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores.",
-    },
-    {
-      title: "At Veritatis Et Quasi",
-      description:
-        "Architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.",
-    },
-    {
-      title: "Ut Enim Ad Minima",
-      description:
-        "Quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur?",
-    },
-    {
-      title: "Quis Autem Vel",
-      description:
-        "Eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem.",
-    },
-    {
-      title: "Neque Porro Quisquam",
-      description:
-        "Est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora.",
-    },
-  ];
-  // store section ends here
-
-  // testimonial section
-  const testimonial = [
-    {
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod ",
-    },
-    {
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    },
-    {
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    },
-    {
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-    },
-    {
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-    },
-  ];
-  // testimonial ends here
-
-  //  why choose us
-  const Difference = [
-    {
-      title: "Lorem Ipsum Dolor",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt.",
-      icon: "👥",
-    },
-    {
-      title: "Consectetur Adipiscing",
-      description:
-        "Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.",
-      icon: "📘",
-    },
-    {
-      title: "Eiusmod Tempor",
-      description:
-        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
-      icon: "📦",
-    },
-    {
-      title: "Labore Et Dolore",
-      description:
-        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea.",
-      icon: "💼",
-    },
-    {
-      title: "Minim Veniam",
-      description:
-        "Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-      icon: "💻",
-    },
-    {
-      title: "Ullamco Laboris",
-      description:
-        "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat.",
-      icon: "🔗",
-    },
-  ];
-  // FAQ section New one
-  const faqData = {
-    Program: [
-      {
-        question: "Lorem ipsum dolor sit amet?",
-        answer:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      },
-      {
-        question: "Consectetur adipiscing elit?",
-        answer:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      },
-      {
-        question: "Integer nec odio?",
-        answer:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      },
-    ],
-    Eligibility: [
-      {
-        question: "Qui est eligibile?",
-        answer:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      },
-      {
-        question: "Cursus ante dapibus?",
-        answer:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      },
-      {
-        question: "Sed cursus ante dapibus?",
-        answer:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      },
-    ],
-    Community: [
-      {
-        question: "Sed cursus ante dapibus?",
-        answer:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      },
-      {
-        question: "Sed cursus ante dapibus?",
-        answer:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      },
-      {
-        question: "Career benefits?",
-        answer:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      },
-    ],
-    Lectures: [
-      {
-        question: "Lectures live or recorded?",
-        answer:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      },
-      {
-        question: "Missed a lecture?",
-        answer:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      },
-      {
-        question: "How long are the classes?",
-        answer:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      },
-    ],
-    Certification: [
-      {
-        question: "Certification available?",
-        answer:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      },
-      {
-        question: "Globally recognized?",
-        answer:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      },
-      {
-        question: "Exams for certification?",
-        answer:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      },
-    ],
-    Opportunities: [
-      {
-        question: "Career opportunities?",
-        answer:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      },
-      {
-        question: "Placement assistance?",
-        answer:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      },
-      {
-        question: "Hiring from this program?",
-        answer:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      },
-    ],
-  };
-  // NEW faq ends here
-  const learn = [ 
-    {
-      title: "Self paced video content",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor.",
-      icon: "📅",
-    },
-    {
-      title: "Project driven approach to achieve outcomes",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor.",
-      icon: "📘",
-    },
-    {
-      title: "Office hours with Mentors for clearing blockers",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor.",
-      icon: "🕒",
-    },
-    {
-      title: "Access to network of 1000+ learners",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor.",
-      icon: "👥",
-    },
-  ];
-
-  useEffect(() => {
-    AOS.init({ duration: 1000, once: false });
-  }, []);
   return (
-    <div id="advance-course">
-      <div id="advancecourse">
-        {/* hero part */}
-        <section className="">
-          <div className="py-12 px-6">
-            <div className="max-w-5xl mx-auto text-center">
-              <h1 className="text-4xl font-bold mb-6">
-                Lorem Ipsum:{" "}
-                <span className="text-orange-500">
-                  Advance Your Career With Our Program
-                </span>
-              </h1>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8 ">
-                <div className="flex flex-col items-center p-6 border border-gray-700 rounded-md mt-6">
-                  <div className="bg-orange-500 p-3 rounded-full">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="white"
-                      viewBox="0 0 24 24"
-                      className="h-8 w-8"
-                    >
-                      <path d="M16 10V7a4 4 0 10-8 0v3H5v10h14V10h-3zm-6 0V7a2 2 0 114 0v3H10z" />
-                    </svg>
-                  </div>
-
-                  <p className="mt-4 font-semibold text-lg">Batch Starting</p>
-                  <p className="text-orange-500">Month Name</p>
-                  {/* <p className="mt-2 text-sm">5 seats left</p> */}
-                </div>
-
-                <div className="flex flex-col items-center p-6 border  border-gray-700 rounded-md mt-6">
-                  <div className="bg-orange-500 p-3 rounded-full">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="white"
-                      viewBox="0 0 24 24"
-                      className="h-8 w-8"
-                    >
-                      <path d="M5 3v18l7-3 7 3V3H5zm12 13l-5-2.18L7 16V5h10v11z" />
-                    </svg>
-                  </div>
-                  <p className="mt-4 font-semibold text-lg">Duration</p>
-                  <p className="text-orange-500">Months </p>
-                </div>
-
-                <div className="flex flex-col items-center p-6 border border-gray-700 rounded-md mt-6">
-                  <div className="bg-orange-500 p-3 rounded-full">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="white"
-                      viewBox="0 0 24 24"
-                      className="h-8 w-8"
-                    >
-                      <path d="M12 2a10 10 0 1010 10A10 10 0 0012 2zm0 18a8 8 0 118-8 8 8 0 01-8 8zm1-13h-2v5h5v-2h-3z" />
-                    </svg>
-                  </div>
-                  <p className="mt-4 font-semibold text-lg">Program Rating</p>
-                  <p className="text-orange-500">Rating ⭐</p>
-                </div>
-              </div>
-              <div className="flex justify-center gap-7 ">
-                <button className="bg-transparent border border-orange-500 mt-9 text-orange-500 px-6 py-2 rounded-md hover:bg-orange-500 hover:text-black transition">
-                  Download Brochure
-                </button>
-                <button className="bg-transparent border border-orange-500 mt-9 text-orange-500 px-6 py-2 rounded-md hover:bg-orange-500 hover:text-black transition">
-                  Apply Now
-                </button>
-              </div>
-            </div>
+    <div className="min-h-screen bg-[#fafafa] font-sans selection:bg-orange-200">
+      <main className="max-w-[1240px] mx-auto px-6 py-16 lg:px-8">
+        
+        {/* Header Section */}
+        <div className="flex flex-col lg:flex-row justify-between items-start gap-12 mb-20 lg:mb-24 mt-8">
+          <div className="max-w-2xl">
+            <span className="inline-block bg-[#eff2ff] text-[#3453d1] font-bold text-[10px] uppercase tracking-widest py-2 px-4 rounded-full mb-6">
+              Program Catalog
+            </span>
+            <h1 className="text-[3.5rem] lg:text-[5rem] font-extrabold tracking-tight text-[#111] leading-[1.05]">
+              Build Career-Ready <br />Skills <span className="text-[#ff6a14]">for the Future</span>
+            </h1>
+            <p className="mt-6 text-[#555] text-lg lg:text-xl max-w-lg leading-relaxed">
+              Explore our high-velocity learning paths designed for the next generation of industry leaders and technical pioneers.
+            </p>
           </div>
-        </section>
-
-        {/* Course Overview Section */}
-        <section className="py-16">
-          <div className="container mx-auto">
-            <h2
-              data-aos="fade-down"
-              className="text-3xl font-bold text-center mb-12 text-orange-500"
-            >
-              Course Overview
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-              {courseTopics.map((topic, index) => (
-                <div
-                  data-aos="fade-down"
-                  key={index}
-                  className="bg-[#080810] p-6 rounded-lg text-center "
-                >
-                  <div className="text-4xl mb-4">{topic.icon}</div>
-                  <h3 className="text-xl font-bold uppercase text-white  hover:text-orange-700 transition-colors duration-300">
-                    {topic.title}
-                  </h3>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Curriculum Section */}
-        <section className="py-10 px-20">
-          <h2
-            data-aos="fade-down"
-            className="text-3xl font-bold text-center mb-5 text-orange-500"
-          >
-            Curriculum
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Modules Section */}
-            <div data-aos="fade-down" className="space-y-4 w-full ">
-              {modules.map((module, index) => (
-                <div key={index} className="border-b border-gray-700 pb-4">
-                  <button
-                    className="w-full text-left hover:text-orange-400 transition-colors duration-300 focus:outline-none"
-                    onClick={() =>
-                      document
-                        .getElementById(`module-${index}`)
-                        .classList.toggle("hidden")
-                    }
-                  >
-                    <h3 className="text-xl font-semibold">
-                      Module {index + 1}: {module.title}
-                    </h3>
-                    <p className="text-sm text-gray-400">{module.objectives}</p>
-                  </button>
-                  <div id={`module-${index}`} className="hidden mt-4">
-                    <ul className="list-disc pl-6 text-gray-300">
-                      {module.topics.map((topic, topicIndex) => (
-                        <li key={topicIndex} className="mb-2">
-                          {topic}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Image Section */}
-            <div
-              data-aos="fade-down"
-              className="w-full  rounded-xl overflow-hidden"
-            >
+          
+          <div className="relative mt-4 w-full max-w-[340px] lg:mt-12">
+            <div className="overflow-hidden rounded-[30px] border border-[#ececec] bg-white p-2 shadow-[0_20px_45px_rgba(15,23,42,0.12)]">
               <img
-                src="https://plus.unsplash.com/premium_photo-1661344287754-5b54e8feb18b?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt="Curriculum"
-                className="w-full h-full object-cover"
+                src={advanceHeroImg}
+                alt="Advanced learning programs"
+                className="h-[420px] w-full rounded-[24px] object-cover object-center md:h-[500px]"
               />
             </div>
-          </div>
-        </section>
 
-        {/* download curriculum section */}
-        <section className="flex justify-center items-center">
-          <div
-            data-aos="fade-down"
-            className=" p-6 flex justify-between items-center flex-wrap gap-5 rounded-lg shadow-lg border-2 border-orange-600 w-3/4"
-          >
-            <div>
-              <h2 className="text-xl font-bold mb-2">
-                Download your course Curriculum
-              </h2>
-              <p className="text-gray-400 text-sm">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit
-                impedit exercitationem repellat beatae rerum.
-              </p>
-            </div>
-            <button className="bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-6 rounded flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M3 8a1 1 0 011-1h12a1 1 0 011 1v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm9 4a1 1 0 10-2 0V9.707l-.293.293a1 1 0 11-1.414-1.414l2-2a1 1 0 011.414 0l2 2a1 1 0 11-1.414 1.414L12 9.707V12z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Download
-            </button>
-          </div>
-        </section>
-
-        {/* testimonial section  */}
-        <section className="">
-          <div className="py-16 px-4">
-            <div className="text-center mb-8">
-              <h3 data-aos="fade-down" className="text-3xl font-bold">
-                What our <span className="text-orange-500">Students</span> have
-                to say
-              </h3>
-              <p data-aos="fade-down" className="mt-4 text-gray-400">
-                Our students rave about the impactful and practical knowledge
-                they gain in our Data Analysis course. Have a look at it!
-              </p>
+            <div className="absolute left-0 top-8 -translate-x-1/2 rounded-2xl border border-white/70 bg-white/90 px-5 py-4 shadow-lg backdrop-blur">
+              <p className="text-3xl font-extrabold text-[#f15b29] leading-none">8</p>
+              <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-[#3453d1]">Programs</p>
             </div>
 
-            <div className="relative flex flex-col items-center">
-              {/* Bubble Images */}
-              <div
-                data-aos="fade-down"
-                className="flex items-center justify-center space-x-4 mb-8"
-              >
-                <div className="w-12 h-12 rounded-full bg-red-300"></div>
-                <div className="w-16 h-16 rounded-full bg-blue-300"></div>
-                <div className="w-20 h-20 rounded-full bg-purple-300"></div>
-                <div className="w-14 h-14 rounded-full bg-yellow-300"></div>
-                <div className="w-10 h-10 rounded-full bg-green-300"></div>
-              </div>
-
-              {/* Grey Box Content */}
-              <div
-                data-aos="fade-down"
-                className="bg-[#080810] text-gray-300 p-6 rounded-lg w-3/4 max-w-2xl"
-              >
-                <p className="text-lg">{testimonial[currentSlide1].text}</p>
-              </div>
-
-              {/* Dots */}
-              <div data-aos="fade-down" className="flex space-x-2 mt-4">
-                {testimonial.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentSlide1(index)}
-                    className={`w-3 h-3 rounded-full ${
-                      currentSlide1 === index ? "bg-red-500" : "bg-gray-400"
-                    }`}
-                  ></button>
-                ))}
-              </div>
+            <div className="absolute bottom-8 right-0 translate-x-1/2 rounded-2xl border border-white/70 bg-white/90 px-5 py-4 shadow-lg backdrop-blur">
+              <p className="text-3xl font-extrabold text-[#f15b29] leading-none">3</p>
+              <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-[#666]">Categories</p>
             </div>
           </div>
-        </section>
+        </div>
 
-        {/* new FAQ section */}
-        <section className="">
-          <div className="">
-            <h1
-              data-aos="fade-down"
-              className="text-center justify-cente text-4xl font-bold text-orange-700"
-            >
-              FAQ
-            </h1>
-            <div className="flex flex-col md:flex-row">
-              {/* Sidebar */}
-              <div className="md:w-1/4 w-full p-4 border-b md:border-b-0  border-orange-700">
-                <ul data-aos="fade-down" className="space-y-2">
-                  {Object.keys(faqData).map((category) => (
-                    <li
-                      key={category}
-                      onClick={() => {
-                        setActiveCategory(category);
-                        setOpenFAQ(null); // Reset any open question
-                      }}
-                      className={`cursor-pointer py-2 px-4 rounded-lg ${
-                        activeCategory === category
-                          ? "bg-[#080810] text-orange-700"
-                          : ""
-                      }`}
-                    >
-                      {category}
-                    </li>
-                  ))}
-                </ul>
+        {/* Grid Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {columnsData.map((col, idx) => (
+            <div key={idx} className="flex flex-col gap-8">
+              {/* Column Header */}
+              <div className="flex items-center justify-between border-b pb-4 mb-2">
+                <div className="flex items-center gap-3 font-bold text-xl text-[#111]">
+                  {col.icon} {col.category}
+                </div>
+                <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">{col.count}</span>
               </div>
-
-              {/* FAQ Content */}
-              <div className="md:w-3/4 w-full p-6">
-                <h2
-                  data-aos="fade-down"
-                  className="text-2xl font-bold mb-4 text-orange-700"
-                >
-                  {activeCategory} -
-                </h2>
-                <ul data-aos="fade-down" className="space-y-4">
-                  {faqData[activeCategory].map((faq, index) => (
-                    <li
-                      className="border border-[rgb(255,255,255,0.2)] overflow-hidden rounded-lg "
-                      key={index}
-                    >
-                      <button
-                        onClick={() =>
-                          setOpenFAQ(openFAQ === index ? null : index)
-                        }
-                        className="w-full text-left bg-[#080810] text-white py-3 px-5  flex justify-between items-center"
-                      >
-                        {faq.question}
-                        <span className="text-orange-400">
-                          {openFAQ === index ? "-" : "+"}
-                        </span>
-                      </button>
-                      {openFAQ === index && (
-                        <div className="p-4 bg-[rgb(255,255,255,0.2)] text-white">
-                          <p>{faq.answer}</p>
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              
+              {/* Cards */}
+              {col.cards.map((card, cardIdx) => (
+                <div key={cardIdx} className="bg-white rounded-[24px] shadow-[0_2px_15px_-3px_rgba(0,0,0,0.02),0_10px_20px_-2px_rgba(0,0,0,0.01)] hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                  {card.type === "image" ? (
+                    <>
+                      <div className="p-3 pb-0">
+                        <img src={card.imageUrl} alt={card.title} className="w-full h-[180px] object-cover rounded-[16px]" />
+                      </div>
+                      <div className="p-8 pt-6">
+                        <h3 className="text-lg font-bold text-[#111] mb-2">{card.title}</h3>
+                        <p className="text-sm text-gray-500 mb-8 leading-relaxed">
+                          {card.desc}
+                        </p>
+                        <Link to={card.link} className="inline-flex items-center gap-2 text-[#b03022] font-bold text-[10px] uppercase tracking-widest hover:text-[#e45a16] transition-colors">
+                          View Program <FaArrowRight />
+                        </Link>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="p-8">
+                      <div className="text-[#d84814] text-3xl mb-8">
+                        {card.icon}
+                      </div>
+                      <h3 className="text-lg font-bold text-[#111] mb-2">{card.title}</h3>
+                      <p className="text-sm text-gray-500 mb-8 leading-relaxed">
+                        {card.desc}
+                      </p>
+                      <Link to={card.link} className="inline-flex items-center gap-2 text-[#b03022] font-bold text-[10px] uppercase tracking-widest hover:text-[#e45a16] transition-colors">
+                        View Program <FaArrowRight />
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
-          </div>
-        </section>
+          ))}
+        </div>
 
-        {/* enrollement slide */}
-        <section className="">
-          <div className="">
-            <h1
-              data-aos="fade-down"
-              className="text-center text-3xl text-orange-500"
-            >
-              How to Enroll with us.
-            </h1>
-            <div className="relative w-full py-10 px-5 text-white flex items-center justify-center">
-              {/* Slide Content */}
-              <div className="flex items-center justify-center  flex-wrap text-center gap-20 px-20 sm:flex-col md:flex-row">
-                {slides.map((slide, index) => (
-                  <div
-                    data-aos="fade-down"
-                    key={index}
-                    className={`flex flex-col items-center transition-all hover:scale-110 duration-300 ease-linear`}
-                  >
-                    <div className="text-4xl">{slide.icon}</div>
-                    <h3 className="text-xl font-semibold mt-4">
-                      <span className="mr-2">{index + 1}.</span>
-                      {slide.title}
-                    </h3>
-                    <p className="text-sm mt-2">{slide.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+        {/* CTA Banner Section */}
+        <div className="mt-28 relative overflow-hidden bg-gradient-to-r from-[#ce390f] via-[#d64111] to-[#ee6916] rounded-[40px] p-12 lg:p-20 text-white shadow-xl shadow-orange-500/10">
+          <div className="absolute right-0 bottom-0 opacity-10 transform translate-x-12 translate-y-16">
+            <FaGraduationCap size={450} color="#fff" />
           </div>
-        </section>
-
-        {/* scrolling section */}
-        <section>
-          <div
-            className={`fixed bottom-0 left-0 w-full z-10 bg-[#fff] shadow-md flex justify-between items-center px-4 py-4   transition-transform duration-300 ${
-              isVisible ? "translate-y-0" : "translate-y-full"
-            }`}
-          >
-            <span className="text-lg font-semibold text-black">
-              Lorem ipsum dolor sit.
-            </span>
-            <div className="flex space-x-4">
-              <button className="flex items-center px-4 py-2 border rounded-md text-white bg-black  hover:text-orange-700">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="w-5 h-5 mr-2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-9-13.5v12m0 0L7.5 10.5m3.5 2.5L16.5 10.5"
-                  />
-                </svg>
-                Brochure
-              </button>
-              <button className="px-4 py-2 rounded-md text-white bg-black hover:text-orange-700 ">
-                Apply Now
-              </button>
-            </div>
-          </div>
-        </section>
-
-        {/* why choose us */}
-        <section className="py-10">
-          <div className="max-w-7xl mx-auto px-6 text-center">
-            <h2
-              data-aos="fade-down"
-              className="text-white text-3xl font-bold mb-6"
-            >
-              why Choose{" "}
-              <span className="text-orange-500">Particular Course Name</span>
-            </h2>
-            <p data-aos="fade-down" className="text-gray-400 mb-12">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          
+          <div className="relative z-10 max-w-2xl">
+            <h2 className="text-4xl lg:text-[44px] font-extrabold mb-6 leading-tight tracking-tight">Can't find your <br/> perfect program?</h2>
+            <p className="text-base lg:text-lg text-white/90 mb-10 max-w-md leading-relaxed font-light">
+              Speak with our academic advisors to build a custom learning path that aligns with your professional ambitions.
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {Difference.map((Difference, index) => (
-                <div
-                  data-aos="fade-down"
-                  key={index}
-                  className="bg-[#080810] p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition"
-                >
-                  <div className="text-orange-500 text-4xl mb-4">
-                    {Difference.icon}
-                  </div>
-                  <h3 className="text-lg text-orange-500 font-bold  mb-3">
-                    {Difference.title}
-                  </h3>
-                  <p className="text-white  ">{Difference.description}</p>
-                </div>
-              ))}
+            <div className="flex flex-wrap gap-4">
+              <Link to="/contactus" className="bg-white text-[#d64111] font-semibold py-3 px-8 rounded-xl hover:bg-gray-50 transition-colors shadow-sm text-sm">
+                Book a Consultation
+              </Link>
             </div>
           </div>
-        </section>
+        </div>
 
-         {/* why learn with us */}
-        <section className="bg-black text-white py-12">
-          <div className="max-w-6xl mx-auto px-6">
-            <h2 className="text-center text-3xl font-bold mb-8 text-orange-600">
-              Why learn with krutanic?
+        {/* Value Proposition Section */}
+        <div className="mt-28 mb-16 px-6 lg:px-12 bg-[#fafbfc] rounded-[40px] py-20 border border-gray-100 shadow-[inset_0_0_80px_rgba(0,0,0,0.01)] relative overflow-hidden text-left" style={{textAlign: "left"}}>
+          {/* Subtle bg decorations */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-orange-100 rounded-full blur-[100px] opacity-40 mix-blend-multiply pointer-events-none"></div>
+          <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-100 rounded-full blur-[100px] opacity-40 mix-blend-multiply pointer-events-none"></div>
+          
+          <div className="relative z-10 text-center max-w-2xl mx-auto mb-16">
+            <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight">
+              Why Choose <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-orange-500">Advanced Training?</span>
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 w-full">
-              {learn.map((learn, index) => (
-                <div
-                  key={index}
-                  className="flex flex-col items-center text-center bg-[#080810]  p-6 rounded-lg hover:shadow-lg transition duration-300"
-                >
-                  <div className="text-orange-500 text-4xl mb-4 hover:text-white">
-                    {learn.icon}
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2">
-                    {learn.title}
-                  </h3>
-                  <p className="text-gray-400">{learn.description}</p>
-                </div>
-              ))}
-            </div>
+            <p className="mt-4 text-gray-500 font-medium text-lg leading-relaxed">
+              Step beyond generic bootcamps. Our advanced programs are engineered exclusively for professionals aiming for leadership and mastery.
+            </p>
           </div>
-        </section>
 
-        {/* store section  */}
-        <section>
-          <div className="bg-white py-10 px-6 md:px-16">
-            <h2
-              data-aos="fade-down"
-              className="text-2xl md:text-3xl text-black font-bold text-center mb-10"
-            >
-              What Do We Have In Store For You?
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {features.map((feature, index) => (
-                <div
-                  data-aos="fade-down"
-                  key={index}
-                  className="relative bg-white p-6 shadow-lg rounded-lg border-l-8 border-orange-500"
-                >
-                  <div className="absolute -top-4 left-4 bg-orange-500 text-white w-8 h-8 flex items-center justify-center rounded-full">
-                    <span className="text-xl font-bold">📄</span>
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                    {feature.title}
-                  </h3>
-                  <p className="text-gray-600">{feature.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <div className="bg-white py-10 px-4 ">
-            <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center bg-white rounded-lg shadow-lg overflow-hidden  border-black">
-              <div className="md:w-1/3 flex items-center justify-center p-6">
-                <div className="text-center">
-                  <div className=" rounded-full flex items-center justify-center shadow-md mx-auto">
-                    <img src={logo} alt="" />
-                  </div>
-                </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10 text-left">
+            <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:-translate-y-2 hover:shadow-xl transition-all duration-300">
+              <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl mb-6">
+                <FaStar />
               </div>
-              <div className="md:w-2/3 p-6 text-center md:text-left">
-                <h2
-                  data-aos="fade-down"
-                  className="text-2xl font-semibold text-gray-800 mb-4"
-                >
-                  Get in Touch
-                </h2>
-                <p data-aos="fade-down" className="text-gray-600 mb-6">
-                Want to learn more about how Krutanic can shape your
-                career? Contact us today, and let’s build your future together!
-                </p>
-                <button
-                  data-aos="fade-down"
-                  onClick={handleOpenDialog}
-                  className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-6 rounded-md"
-                >
-                  Connect With Us
-                </button>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">1-on-1 Mentorship</h3>
+              <p className="text-gray-500 text-sm leading-relaxed">
+                Connect exclusively with industry veterans. Get direct feedback, career strategy, and exclusive insights to accelerate your vertical growth.
+              </p>
+            </div>
+            
+            <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:-translate-y-2 hover:shadow-xl transition-all duration-300 transform md:translate-y-6">
+              <div className="w-14 h-14 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center text-2xl mb-6">
+                <FaAward />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Global Certification</h3>
+              <p className="text-gray-500 text-sm leading-relaxed">
+                Earn verifiable, globally-recognized certifications that dramatically elevate your resume and explicitly validate your advanced expertise.
+              </p>
+            </div>
+
+            <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:-translate-y-2 hover:shadow-xl transition-all duration-300">
+              <div className="w-14 h-14 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center text-2xl mb-6">
+                <FaBuilding />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Live Architectures</h3>
+              <p className="text-gray-500 text-sm leading-relaxed">
+                Work directly on live enterprise-grade projects. Deal with massive scale, real data, and deployment strategies mirroring FAANG stacks.
+              </p>
+            </div>
+
+            <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:-translate-y-2 hover:shadow-xl transition-all duration-300 transform md:translate-y-6">
+              <div className="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-2xl mb-6">
+                <FaCheckCircle />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Placement Assistance</h3>
+              <p className="text-gray-500 text-sm leading-relaxed">
+                Gain direct access to our 250+ hiring partners aggressively looking for certified profiles. Prepare with elite mock interviews and portfolio tracking.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-24 mb-20 rounded-[30px] bg-white px-4 py-8 text-black shadow-[0_18px_50px_rgba(15,23,42,0.08)] md:px-8 md:py-10">
+          <h2 className="text-center text-[2rem] font-extrabold tracking-tight text-black md:text-[3.2rem]">
+            Choose Your Capstone Project
+          </h2>
+
+          <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_1.15fr] lg:items-center">
+            <div className="relative pl-10">
+              <div className="absolute left-[18px] top-3 bottom-0 w-px bg-[#e5e7eb]" aria-hidden="true" />
+              <div className="space-y-8">
+                {capstoneSteps.map((item, index) => (
+                  <div key={item.step} className="relative">
+                    <div className={`absolute -left-10 top-0 flex h-10 w-10 items-center justify-center rounded-full text-base font-bold ${index === 0 ? 'bg-[#f15b29] text-white shadow-[0_10px_24px_rgba(241,91,41,0.25)]' : 'border border-[#d1d5db] bg-white text-[#6b7280]'}`}>
+                      {item.step}
+                    </div>
+                    <div className="pt-1">
+                      <h3 className="text-[1.15rem] font-bold leading-snug text-[#111827] md:text-[1.45rem]">
+                        {item.title}
+                      </h3>
+                      {index === 0 && (
+                        <p className="mt-4 flex max-w-[36rem] items-start gap-3 text-[1rem] leading-8 text-[#374151] md:text-[1.1rem]">
+                          <span className="mt-2 inline-flex h-6 w-6 flex-none items-center justify-center rounded-full border border-[#f15b29] text-[#f15b29]">
+                            <span className="h-2.5 w-2.5 rounded-full bg-[#f15b29]" />
+                          </span>
+                          <span>{item.description}</span>
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* Dialog Box */}
-            {isDialogOpen && (
-            <div id="talktoadvisor" >
-              <div className="advisor" >
-                {/* Left: Form Section */}
-                <div className=" relative">
-                  <img
-                    src={suryansh}
-                    alt="Advisor"
-                    className=""
-                  />
-                  {/* Close Button */}
-                  <button
-                    onClick={handleCloseDialog}
-                    className="absolute top-0 left-0 text-xl text-white bg-black  rounded-full px-2 "
+            <div className="grid gap-6 sm:grid-cols-2">
+              {capstoneTracks.map((track, index) => {
+                const Icon = track.icon;
+                const isWide = index === 4;
+                return (
+                  <article
+                    key={track.title}
+                    className={`flex items-center gap-4 rounded-[22px] border border-[#f15b29] bg-white px-4 py-4 shadow-[0_8px_18px_rgba(15,23,42,0.04)] ${isWide ? 'sm:col-span-2 sm:max-w-[34rem] sm:justify-self-center' : ''}`}
                   >
-                    X
-                  </button>
-                </div>
-               
-
-                {/* Right: Image Section */}
-                <div >
-                  <h3 className="text-2xl font-semibold text-black mb-1.5">
-                    Talk to Our Advisor
-                  </h3>
-                  <form>
-                    <div className="mb-1.5">
-                      <input
-                        type="text"
-                        id="name"
-                        className="w-full border-b border-gray-300 rounded-md p-2"
-                        placeholder="Enter your name"
-                      />
+                    <div className="flex h-[84px] w-[84px] flex-none items-center justify-center rounded-[16px] border border-[#f15b29] bg-[#f5f5f5] text-[2rem] text-[#f15b29]">
+                      <Icon />
                     </div>
-                    <div className="mb-1.5">
-                      <input
-                        type="email"
-                        id="email"
-                        className="w-full border-b border-gray-300 rounded-md p-2"
-                        placeholder="Enter your email"
-                      />
+                    <div className="relative flex-1">
+                      <div className="inline-block rounded-full border border-[#f15b29] px-5 py-3 text-[1.15rem] font-medium leading-none text-[#3f3f46]">
+                        {track.title}
+                      </div>
                     </div>
-                    <div className="mb-1.5">
-                      <input
-                        type="text"
-                        id="phone"
-                        className="w-full border-b border-gray-300 rounded-md p-2"
-                        placeholder="Enter your mobile number"
-                      />
-                    </div>
-                    <div className="mb-1.5">
-                      <select
-                        id="program"
-                        className="w-full border-b border-gray-300 rounded-md p-2"
-                      >
-                        <option>What is your current role?</option>
-                        <option>Web Development</option>
-                        <option>Data Science</option>
-                        <option>UI/UX Design</option>
-                        <option>Digital Marketing</option>
-                      </select>
-                    </div>
-                    <div className="mb-1.5">
-                      <select
-                        id="program"
-                        className="w-full border-b border-gray-300 rounded-md p-2"
-                      >
-                        <option>Degree</option>
-                        <option>Web Development</option>
-                        <option>Data Science</option>
-                        <option>UI/UX Design</option>
-                        <option>Digital Marketing</option>
-                      </select>
-                    </div>
-                    <div className="mb-1.5">
-                      <select
-                        id="program"
-                        className="w-full border-b border-gray-300 rounded-md p-2"
-                      >
-                        <option>Year of experience</option>
-                        <option>Web Development</option>
-                        <option>Data Science</option>
-                        <option>UI/UX Design</option>
-                        <option>Digital Marketing</option>
-                      </select>
-                    </div>
-                    <div className="flex justify-start">
-                      <button
-                        type="submit"
-                        className="bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-md"
-                      >
-                        Submit
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
+                  </article>
+                );
+              })}
             </div>
-          )}
           </div>
-        </section>
-      </div>
+        </div>
+
+        <div className="mt-24 mb-20">
+          <div className="max-w-2xl mb-10">
+            <h2 className="text-3xl md:text-5xl font-extrabold text-[#111] tracking-tight">
+              What Our <span className="text-[#f15b29]">Learners Have To Say</span>
+            </h2>
+            <div className="mt-3 flex items-center gap-2 text-[#2f2f2f] font-semibold text-xl">
+              <FaStar className="text-[#f8b400]" />
+              <span>4.5</span>
+              <span className="text-[#878787]">•</span>
+              <span>7812 Ratings</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {learnerTestimonials.map((item) => (
+              <article key={item.name} className="group">
+                <div className="relative rounded-[28px] border border-[#ececec] bg-[#f5f5f5] p-7 min-h-[290px] shadow-[0_10px_22px_rgba(0,0,0,0.04)]">
+                  <FaQuoteLeft className="text-[#f15b29] text-3xl mb-4" />
+                  <p className="text-[#1f1f1f] text-[17px] leading-8 line-clamp-5">{item.quote}</p>
+                  <div className="mt-5 pt-4 border-t border-[#e2e2e2] flex items-center justify-end">
+                    <span className="text-[#444] font-medium">{item.date}</span>
+                  </div>
+                  <span className="absolute left-16 -bottom-4 h-8 w-8 rotate-45 bg-[#f5f5f5] border-r border-b border-[#ececec]" />
+                </div>
+
+                <div className="mt-8 flex items-center gap-4 px-4">
+                  <img src={item.image} alt={item.name} className="h-20 w-20 rounded-full object-cover ring-4 ring-white shadow-md" />
+                  <div>
+                    <h3 className="text-2xl font-bold text-[#111]">{item.name}</h3>
+                    <p className="text-[#555] text-lg">{item.role}</p>
+                    <p className="text-[#555] text-lg">{item.experience}</p>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        {/* Hiring Partners Carousel block */}
+        <div className="mt-28 mb-16 py-10 bg-white border-y border-gray-100">
+          <div className="text-center mb-10 max-w-2xl mx-auto">
+            <h2 className="text-3xl font-extrabold text-gray-900 mb-3 tracking-tight">Our Elite Hiring Partners</h2>
+            <p className="text-gray-500">Graduates from our advanced programs go on to drive immense value at top global firms.</p>
+          </div>
+          <div className="w-full transition-all duration-500">
+            <ClientsCarousel />
+          </div>
+        </div>
+
+      </main>
     </div>
   );
 };

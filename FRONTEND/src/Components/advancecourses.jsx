@@ -1,5 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
+import mernBrochure from "../../krutanic/Mern Stack Web Development Advanced Program.pdf";
+import dataScienceBrochure from "../../krutanic/DataScienceAdvancedProgram.pdf";
+import digitalMarketingBrochure from "../../krutanic/Digital Marketing Advanced Program.pdf";
+import investmentBankingBrochure from "../../krutanic/Investment Banking Advanced Program.pdf";
+import productManagementBrochure from "../../krutanic/Product management Advanced program.pdf";
+import performanceMarketingBrochure from "../../krutanic/Performance marketing Advanced Program.pdf";
+import automationTestingBrochure from "../../krutanic/Automation testing Advanced Program.pdf";
+import promptEngineeringBrochure from "../../krutanic/Prompt engineering for generative AI Advanced Program.pdf";
 
 // import ds from '../assets/Advanced Course Images/Data science/DS 3.jpg'
 // import dm from '../assets/Advanced Course Images/Digital Markting/DM 1.jpg'
@@ -11,78 +19,102 @@ import { Link } from "react-router-dom";
 const AdvanceCounses = () => {
   const courses = [
     {
+      institute: "KRUTANIC School Of Technology",
       title: "MERN Stack Development",
-      description:
-        "Building web apps using MongoDB, Express.js, React, and Node.js",
+      description: "Build production-ready web apps with MongoDB, Express.js, React, and Node.js.",
       icon: <i className="fa fa-code" aria-hidden="true"></i>,
-      level: "Advanced",
+      badge: "Bestseller",
+      badgeClass: "bg-[#6b0f44] text-white",
+      support: "360 Degree Career Support",
+      credential: "Executive Diploma",
       duration: "6 Months",
+      brochure: mernBrochure,
     },
     {
+      institute: "KRUTANIC School Of Technology",
       title: "Data Science",
-      description:
-        "Analyzing data to find insights that guide business decisions.",
+      description: "Analyze complex datasets and build practical machine learning solutions for business use-cases.",
       icon: <i className="fa fa-database" aria-hidden="true"></i>,
-      level: "Advanced",
+      badge: "New Course",
+      badgeClass: "bg-[#1d5fae] text-white",
+      support: "Live Project Mentoring",
+      credential: "Certification",
       duration: "6 Months",
+      brochure: dataScienceBrochure,
     },
     {
+      institute: "KRUTANIC School Of Technology",
       title: "Digital Marketing",
-      description:
-        "Promoting products online through channels like social media to drive business goals.",
+      description: "Master performance marketing, social media strategy, and data-driven growth campaigns.",
       icon: <i className="fa fa-bullhorn" aria-hidden="true"></i>,
-      level: "Advanced",
+      badge: "Popular",
+      badgeClass: "bg-[#0b6b8a] text-white",
+      support: "Placement & Portfolio Support",
+      credential: "Advanced Certificate",
       duration: "6 Months",
+      brochure: digitalMarketingBrochure,
     },
     {
+      institute: "KRUTANIC School Of Finance",
       title: "Investment Banking",
-      description:
-        "Advising on financial transactions and raising capital for companies.",
+      description: "Learn valuation, financial modeling, and deal lifecycle practices used in investment banking.",
       icon: <i className="fa fa-bank"></i>,
-      level: "Advanced",
+      badge: "Industry Ready",
+      badgeClass: "bg-[#374151] text-white",
+      support: "Interview Preparation",
+      credential: "PG Certification",
       duration: "6 Months",
+      brochure: investmentBankingBrochure,
     },
     {
+      institute: "KRUTANIC Product School",
       title: "Product Management",
-      description:
-        "Overseeing a product’s development from concept to market.",
+      description: "Plan and launch products with user-first strategy, agile execution, and growth metrics.",
       icon: <i className="fa fa-cube" aria-hidden="true"></i>,
-      level: "Advanced",
+      badge: "Career Switch",
+      badgeClass: "bg-[#7c3aed] text-white",
+      support: "Mentor Feedback",
+      credential: "Executive Program",
       duration: "6 Months",
+      brochure: productManagementBrochure,
     },
     {
+      institute: "KRUTANIC Marketing School",
       title: "Performance Marketing",
-      description:
-        "Marketing based on measurable actions, like clicks or sales.",
+      description: "Scale paid campaigns using analytics, attribution, and conversion optimization frameworks.",
       icon: <i className="fa fa-line-chart" aria-hidden="true"></i>,
-      level: "Advanced",
+      badge: "Hands-On",
+      badgeClass: "bg-[#b45309] text-white",
+      support: "Campaign Portfolio Build",
+      credential: "Specialization",
       duration: "6 Months",
+      brochure: performanceMarketingBrochure,
     },
     {
+      institute: "KRUTANIC QA School",
       title: "Automation Testing",
-      description:
-        "Streamlining Quality with Precision: Empowering Automation Testing",
+      description: "Build robust test automation pipelines for web apps with real-world QA workflows.",
       icon: <i className="fa fa-refresh" aria-hidden="true"></i>,
-      level: "Advanced",
+      badge: "In Demand",
+      badgeClass: "bg-[#2563eb] text-white",
+      support: "Job Ready Assessments",
+      credential: "Advanced Certificate",
       duration: "6 Months",
+      brochure: automationTestingBrochure,
     },
     {
+      institute: "KRUTANIC AI School",
       title: "Prompt Engineering AI",
-      description:
-        "Crafting the Future: Precision Prompt Engineering for Next-Gen AI",
+      description: "Design reliable prompts and AI workflows for productivity, automation, and business applications.",
       icon: <i className="fa fa-android" aria-hidden="true"></i>,
-      level: "Advanced",
+      badge: "Future Skills",
+      badgeClass: "bg-[#dc2626] text-white",
+      support: "AI Career Guidance",
+      credential: "Certification",
       duration: "6 Months",
+      brochure: promptEngineeringBrochure,
     },
   ];
-
-  // State to manage which section is open
-  const [openSection, setOpenSection] = useState(1);
-
-  // Function to handle section click
-  const toggleSection = (index) => {
-    setOpenSection(openSection === index ? null : index);
-  };
 
   // const sections = [
   //   {
@@ -160,32 +192,74 @@ const AdvanceCounses = () => {
 
 
   return (
-    <section>
-      <div className="rounded-xl py-1 bg-center bg-cover bg-[url('https://images.unsplash.com/photo-1590959651373-a3db0f38a961?q=80&w=1639&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')]">
-        <h1 data-aos="zoom-in">| Our advanced program</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+    <section className="space-y-12">
+      <div className="rounded-[28px] border border-[#ead9d9] bg-[#f3f3f5] p-4 md:p-7">
+
+        <div className="mb-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#111827]">Trending Courses</p>
+          <h1 data-aos="zoom-in" className="mt-2 text-3xl font-bold leading-tight text-[#030712] md:text-5xl">
+            Explore our <span className="text-[#d97706]">advanced programs</span>
+          </h1>
+        </div>
+
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {courses.map((course, index) => (
             <div
               key={index}
-              className="bg-[#00000021] border hover:scale-105 ease-linear duration-300 backdrop-blur-sm shadow-[#070707c7] drop-shadow-xl text-white rounded-lg shadow-md p-4 m-3"
+              className="group flex h-full flex-col rounded-3xl border border-[#e5e7eb] bg-white p-5 shadow-[0_8px_20px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_30px_rgba(15,23,42,0.12)]"
             >
-              <h2 className=" text-lg font-bold mb-2">
-                <span className="text-3xl mr-3 text-[#FE4323]">{course.icon}</span>
+              <div className="mb-4">
+                <div className="flex min-h-[142px] w-full items-center justify-center rounded-2xl bg-[#fff5ee] text-[88px] text-[#f15b29]">
+                  {course.icon}
+                </div>
+              </div>
+
+              <h2 className="mt-1 text-[34px] leading-[1.12] font-bold text-[#111827]">
                 {course.title}
               </h2>
-              <p className=" text-sm mb-4">{course.description}</p>
-              <p className=" text-sm mb-4">Duration: {course.duration}</p>
-              <p className=" text-sm">Level: {course.level}</p>
-              {/* <button className=" bg-[#f15b29] text-white font-bold py-2 px-4 rounded">
-                Know more
-              </button> */}
+
+              <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#4b5563]">{course.description}</p>
+
+              <span className="mt-3 inline-flex w-fit rounded-lg bg-[#eef6ff] px-3 py-1 text-xs font-semibold text-[#0d58a6]">
+                {course.support}
+              </span>
+
+              <div className="mt-4 space-y-2 text-sm text-[#111827]">
+                <p className="flex items-center gap-2">
+                  <i className="fa fa-id-card-o" aria-hidden="true"></i>
+                  <span>{course.credential}</span>
+                </p>
+                <p className="flex items-center gap-2">
+                  <i className="fa fa-calendar-o" aria-hidden="true"></i>
+                  <span>{course.duration}</span>
+                </p>
+              </div>
+
+              <div className="mt-5 grid grid-cols-2 gap-3">
+                <Link
+                  to="/advance"
+                  className="inline-flex items-center justify-center rounded-xl border border-[#111827] px-3 py-2.5 text-base font-semibold text-[#111827] transition hover:bg-[#111827] hover:text-white"
+                >
+                  View Program
+                </Link>
+                <a
+                  href={course.brochure}
+                  download={`${course.title} - Brochure.pdf`}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#f15b29] px-3 py-2.5 text-base font-semibold text-white transition hover:bg-[#d94f21]"
+                >
+                  <i className="fa fa-arrow-down" aria-hidden="true"></i>
+                  Syllabus
+                </a>
+              </div>
             </div>
           ))}
         </div>
-        <div className="my-10 text-center">
-          <button className="border group px-3 py-1.5 rounded-full">
-            <Link to="/advance"> View All Advanced Courses <i className="fa fa-arrow-right ml-2 border  rounded-full p-2 group-hover:translate-x-1 ease-linear duration-300 " aria-hidden="true"></i></Link>
-          </button>
+
+        <div className="mt-7 text-center">
+          <Link to="/advance" className="inline-flex items-center gap-2 rounded-full bg-[#f15b29] px-5 py-2.5 font-semibold text-white shadow-[0_10px_24px_rgba(241,91,41,0.25)] transition hover:bg-[#d94f21]">
+            View All Advanced Courses
+            <i className="fa fa-arrow-right" aria-hidden="true"></i>
+          </Link>
         </div>
       </div>
 
@@ -233,22 +307,22 @@ const AdvanceCounses = () => {
         </ul>
       </div> */}
       <div>
-        <h1 className="text-2xl font-bold my-10">
+        <h1 className="my-10 text-2xl font-bold">
           | Why Choose Our Advanced Courses?
         </h1>
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-center">
           {Difference.map((Difference, index) => (
             <div
               key={index}
-              className="provide1 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition"
+              className="provide1 rounded-2xl border border-[#f0dfd6] bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
             >
               <div className="text-[#f15b29] text-4xl mb-4">
                 {Difference.icon}
               </div>
-              <h3 className="text-lg text-[#f15b29] font-bold  mb-3">
+              <h3 className="mb-3 text-lg font-bold text-[#f15b29]">
                 {Difference.title}
               </h3>
-              <p className="text-white  ">{Difference.description}</p>
+              <p className="text-[#334155]">{Difference.description}</p>
             </div>
           ))}
         </div>

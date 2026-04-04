@@ -1,10 +1,6 @@
 import React, { useState } from "react";
-import fullStack from "../../assets/mentorshipcourses/full stack.png";
-import artificial from "../../assets/mentorshipcourses/AI.png";
-import dataanalytics from "../../assets/mentorshipcourses/DA.jpg";
-import cloudcomputing from "../../assets/mentorshipcourses/cloud computing.png";
-import datascience from "../../assets/mentorshipcourses/Data science.png";
-import digitalmarketing from "../../assets/mentorshipcourses/digital marketing.png";
+
+const thumbnail = (fileName) => `/course_thumbnails/${encodeURIComponent(fileName)}`;
 
 
 const PopularCourse = () => {
@@ -17,7 +13,7 @@ const PopularCourse = () => {
       description: "Building and managing both the front-end and back-end of websites",
       rating: 4.7,
       studentsTaken: 2298,
-      image: `${fullStack}`,
+      image: thumbnail("Full Stack Web.jpg"),
       },
     {
       id: 2,
@@ -25,7 +21,7 @@ const PopularCourse = () => {
       description: "Creating systems that simulate human intelligence for tasks like decision-making.",
         rating: 4.8,
         studentsTaken: 2340,
-      image: `${artificial}`,
+      image: thumbnail("Artificial Intelligence.jpg"),
       },
     {
       id: 3,
@@ -33,7 +29,7 @@ const PopularCourse = () => {
       description: "Interpreting data to help businesses improve performance and make decisions.",
         rating: 4.7,
         studentsTaken: 2690,
-      image: `${dataanalytics}`,
+      image: thumbnail("Data Analytics.jpg"),
       },
     {
       id: 4,
@@ -41,7 +37,7 @@ const PopularCourse = () => {
       description: "Providing scalable computing resources and storage via the internet.",
         rating: 4.8,
         studentsTaken: 2156,
-      image: `${cloudcomputing}`,
+      image: thumbnail("Cloud Computing.jpg"),
       },
     {
       id: 5,
@@ -49,7 +45,7 @@ const PopularCourse = () => {
       description: "Analyzing large data sets to extract insights and inform decisions.",
       rating: 4.8,
       studentsTaken: 2699,
-      image: `${datascience}`,
+      image: thumbnail("Data Science.jpg"),
       },
     {
       id: 6,
@@ -57,7 +53,7 @@ const PopularCourse = () => {
       description: "Promoting products and services through digital channels like social media and search engines.",
         rating: 4.7,
         studentsTaken: 2257,
-      image: `${digitalmarketing}`,
+      image: thumbnail("Digital Marketing.jpg"),
       },
   ];
 
@@ -77,7 +73,7 @@ const PopularCourse = () => {
           {popularCourses.map((course) => (
             <div
               key={course.id}
-              className={` bg-[#080808] shadow-sm shadow-slate-50 rounded-lg overflow-hidden group transition duration-300 ${
+              className={`bg-white text-[#101522] border border-[#d8deea] shadow-md shadow-slate-300/40 rounded-xl overflow-hidden group transition duration-300 ${
                 hoveredId && hoveredId !== course.id
                   ? "lg:filter lg:blur-sm"
                   : ""
@@ -85,18 +81,20 @@ const PopularCourse = () => {
               onMouseEnter={() => setHoveredId(course.id)}
               onMouseLeave={() => setHoveredId(null)}
             >
-              <img
-                src={course.image}
-                alt={course.title}
-                loading="lazy"
-                className="w-full h-48 object-cover"
-              />
-              <div className="px-2 py-3">
-                <h3 className="text-xl font-semibold mb-2">
+              <div className="relative">
+                <img
+                  src={course.image}
+                  alt={course.title}
+                  loading="lazy"
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <div className="px-3 py-3">
+                <h3 className="text-xl font-semibold mb-2 text-[#111827]">
                   {course.title}
                 </h3>
-                <p className="text-gray-300">{course.description}</p>
-                <p className="mb-2">{course.rating} <span className="text-[#f15b29]">★★★★</span>★ ({course.studentsTaken}) </p>
+                <p className="text-[#475467]">{course.description}</p>
+                <p className="mb-2 text-[#344054]">{course.rating} <span className="text-[#f15b29]">★★★★</span>★ ({course.studentsTaken}) </p>
               </div>
             </div>
           ))}

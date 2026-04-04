@@ -1,1346 +1,1174 @@
-import React, { useState, useEffect } from "react";
-import "swiper/css";
-import "swiper/css/effect-cube";
-import "swiper/css/pagination";
-import AOS from "aos";
-import "aos/dist/aos.css";
-
-import axios from "axios";
-import { RiCustomerService2Fill } from "react-icons/ri";
+import React, { useState } from "react";
+import PMHero from "../../../krutanic/images/pmad1.jpg";
+import PMOutcomes from "../../../krutanic/images/pmad2.jpg";
+import Flashaidlogo from "../../assets/Flashaidlogo.jpg";
 import pdfpmm from "../../../krutanic/Product management Advanced program.pdf";
-
 import BenefitsofLearning from "./Components/BenefitsofLearning";
 import Certification from "./Components/Certification";
 import ClientsCarousel from "../../Components/our_alumni";
 import StoreSection from "./Components/StoreSection";
-
-import PM from "../../assets/Advanced Course Images/Product management/prdtman.png";
-import curriculumimage from "../../assets/Advanced Course Images/Product management/pm.jpg";
-import Flashaidlogo from "../../assets/Flashaidlogo.jpg";
-import API from '../../API';
-import toast ,{Toaster} from 'react-hot-toast';
 import ApplyNowButton from "./Components/ApplyNowButton";
 import ApplyForm from "./Components/ApplyForm";
+
+const heroStats = [
+  { label: "Duration", value: "24 Weeks" },
+  { label: "Program Rating", value: "4.9/5" },
+];
+
+const curriculum = [
+  {
+    week: "Weeks 1-2",
+    title: "Introduction to Product Management",
+    objectives:
+      "Build foundational PM thinking around product lifecycle, user pain points, and business impact metrics.",
+    topics: [
+      "PM Role and Scope",
+      "Product Lifecycle",
+      "User Needs Mapping",
+      "PM Metrics",
+      "Stakeholder Context",
+    ],
+  },
+  {
+    week: "Weeks 3-4",
+    title: "Market Research and Competitive Analysis",
+    objectives:
+      "Use market intelligence frameworks to prioritize opportunities and position products effectively.",
+    topics: [
+      "Customer Discovery",
+      "Competitive Analysis",
+      "Trend Mapping",
+      "Opportunity Sizing",
+      "SWOT Application",
+    ],
+  },
+  {
+    week: "Week 5-6",
+    title: "Product Vision and Strategy",
+    objectives:
+      "Define product vision and convert strategic goals into clear roadmap initiatives.",
+    topics: [
+      "Vision Crafting",
+      "Strategic Frameworks",
+      "Goal Alignment",
+      "Roadmap Planning",
+      "Prioritization",
+    ],
+  },
+  {
+    week: "Week 7-8",
+    title: "Agile Product Development",
+    objectives:
+      "Execute agile product cycles with cross-functional teams using iterative delivery systems.",
+    topics: [
+      "Agile Principles",
+      "Scrum and Kanban",
+      "User Stories",
+      "Backlog Grooming",
+      "Sprint Rituals",
+    ],
+  },
+  {
+    week: "Week 9-10",
+    title: "Product Design and UX",
+    objectives:
+      "Translate user insight into usable product experiences through testing and design collaboration.",
+    topics: [
+      "Design Thinking",
+      "Wireframing",
+      "Usability Testing",
+      "User Research",
+      "Feedback Loops",
+    ],
+  },
+  {
+    week: "Week 11-12",
+    title: "Data-Driven Decision Making",
+    objectives:
+      "Use analytics and experimentation to validate hypotheses and optimize product outcomes.",
+    topics: [
+      "Product Analytics",
+      "KPI Frameworks",
+      "A/B Testing",
+      "Experiment Design",
+      "Data Visualization",
+    ],
+  },
+  {
+    week: "Week 13-14",
+    title: "Pricing and Monetization",
+    objectives:
+      "Develop monetization models and pricing strategy aligned with product value and market dynamics.",
+    topics: [
+      "Pricing Models",
+      "Revenue Design",
+      "Price Sensitivity",
+      "Unit Economics",
+      "Monetization Metrics",
+    ],
+  },
+  {
+    week: "Week 15-16",
+    title: "Stakeholder Management",
+    objectives:
+      "Drive alignment across business, design, engineering, and GTM teams through structured communication.",
+    topics: [
+      "Stakeholder Mapping",
+      "Executive Communication",
+      "Conflict Resolution",
+      "Alignment Frameworks",
+      "Decision Hygiene",
+    ],
+  },
+  {
+    week: "Week 17-18",
+    title: "Product Launch and Go-to-Market",
+    objectives:
+      "Plan launch strategy from positioning to execution with measurable launch success metrics.",
+    topics: [
+      "Launch Planning",
+      "Positioning",
+      "Messaging",
+      "GTM Channels",
+      "Launch Measurement",
+    ],
+  },
+  {
+    week: "Week 19-20",
+    title: "Scaling Products",
+    objectives:
+      "Manage growth-stage product operations while balancing technical constraints and user outcomes.",
+    topics: [
+      "Scaling Operations",
+      "Portfolio Management",
+      "Continuous Improvement",
+      "Technical Debt",
+      "Growth Trade-offs",
+    ],
+  },
+  {
+    week: "Week 21-22",
+    title: "Emerging Trends in PM",
+    objectives:
+      "Integrate AI, PLG, and modern product tooling into your product leadership toolkit.",
+    topics: [
+      "AI in PM",
+      "Product-Led Growth",
+      "No-Code Tooling",
+      "Sustainability Lens",
+      "Future PM Skills",
+    ],
+  },
+  {
+    week: "Week 23-24",
+    title: "Capstone and Placement Preparation",
+    objectives:
+      "Deliver an end-to-end product case and position yourself strongly for PM interviews.",
+    topics: [
+      "Capstone Case",
+      "Resume and Portfolio",
+      "Interview Frameworks",
+      "Networking Strategy",
+      "Career Positioning",
+    ],
+  },
+];
+
+const overviewTopics = [
+  "Product Roadmapping",
+  "Agile and Lean Product Workflows",
+  "User-Centered Product Design",
+  "Market and Competitor Intelligence",
+  "Go-to-Market Execution",
+  "Data-Informed Product Decisions",
+];
+
+const whyChoose = [
+  {
+    title: "High Demand",
+    description:
+      "Companies increasingly rely on strong PM talent to lead product innovation and growth.",
+  },
+  {
+    title: "Competitive Salaries",
+    description:
+      "Product roles are among the highest growth and highest value positions in technology teams.",
+  },
+  {
+    title: "Cross-Functional Leadership",
+    description:
+      "PMs shape outcomes by coordinating design, engineering, marketing, and business teams.",
+  },
+  {
+    title: "Impactful Work",
+    description:
+      "You influence real user experiences and business outcomes through every product decision.",
+  },
+  {
+    title: "Strategic + Execution Blend",
+    description:
+      "The role combines big-picture strategy with practical day-to-day problem solving.",
+  },
+  {
+    title: "Strong Career Progression",
+    description:
+      "Career paths expand into leadership roles like Head of Product, VP Product, and CPO.",
+  },
+];
+
+const keyTakeaways = [
+  "Develop product sense through user, market, and business understanding.",
+  "Build roadmaps that align strategy with execution and measurable outcomes.",
+  "Lead agile product teams with clear priorities and communication discipline.",
+  "Use analytics and experiments to validate product decisions with confidence.",
+  "Design product launches with positioning, messaging, and GTM alignment.",
+  "Create a portfolio-grade capstone case for interviews and career growth.",
+];
+
+const roles = [
+  {
+    title: "Product Manager",
+    text: "Own product direction, prioritization, and cross-functional execution.",
+    avg: "Avg. package Rs 24 LPA",
+  },
+  {
+    title: "Product Marketing Manager",
+    text: "Lead product positioning, messaging, and go-to-market strategy.",
+    avg: "Avg. package Rs 21 LPA",
+  },
+  {
+    title: "Product Owner",
+    text: "Manage backlog quality and align delivery with user and business outcomes.",
+    avg: "Avg. package Rs 20 LPA",
+  },
+  {
+    title: "Product Analyst",
+    text: "Use behavioral and product data to guide prioritization and improvements.",
+    avg: "Avg. package Rs 18 LPA",
+  },
+  {
+    title: "Growth Product Manager",
+    text: "Drive growth loops and retention strategy through product experimentation.",
+    avg: "Avg. package Rs 25 LPA",
+  },
+  {
+    title: "UX Product Strategist",
+    text: "Bridge user research, design quality, and product outcomes.",
+    avg: "Avg. package Rs 19 LPA",
+  },
+  {
+    title: "Product Development Lead",
+    text: "Coordinate full product lifecycle from problem definition to launch.",
+    avg: "Avg. package Rs 23 LPA",
+  },
+  {
+    title: "VP Product",
+    text: "Lead portfolio strategy and product organization alignment.",
+    avg: "Avg. package Rs 38 LPA",
+  },
+  {
+    title: "Chief Product Officer",
+    text: "Own company-wide product vision, innovation, and strategic direction.",
+    avg: "Avg. package Rs 50 LPA",
+  },
+];
+
+const faqData = {
+  Program: [
+    {
+      question: "What topics are covered in the Product Management program?",
+      answer:
+        "The program covers product strategy, agile execution, UX, analytics, GTM, and product leadership fundamentals.",
+    },
+    {
+      question: "How is the course delivered?",
+      answer:
+        "The course includes live sessions, recordings, practical assignments, and capstone-oriented learning.",
+    },
+    {
+      question: "Will I get hands-on experience?",
+      answer:
+        "Yes, through product cases, strategy exercises, and an end-to-end capstone project.",
+    },
+    {
+      question: "How long is the program?",
+      answer: "The program runs for 24 weeks.",
+    },
+  ],
+  Eligibility: [
+    {
+      question: "What are the prerequisites for this program?",
+      answer:
+        "No strict prerequisites. Curiosity, problem-solving mindset, and consistency are key.",
+    },
+    {
+      question: "Do I need prior PM experience?",
+      answer:
+        "No, the curriculum supports both beginners and professionals transitioning into PM roles.",
+    },
+    {
+      question: "Can beginners apply?",
+      answer: "Yes, beginners can apply and build from fundamentals to advanced PM execution.",
+    },
+    {
+      question: "Is there any age restriction?",
+      answer: "No, there is no age restriction.",
+    },
+  ],
+  Community: [
+    {
+      question: "How can I interact with other participants?",
+      answer:
+        "Through cohort groups, peer review sessions, project collaboration, and networking touchpoints.",
+    },
+    {
+      question: "Is mentorship available?",
+      answer:
+        "Yes, mentors guide product thinking, case quality, and career preparation.",
+    },
+    {
+      question: "Can I access support after completion?",
+      answer: "Yes, alumni channels and support resources remain available.",
+    },
+    {
+      question: "How diverse is the community?",
+      answer:
+        "Learners come from engineering, business, design, and operations backgrounds.",
+    },
+  ],
+  Lectures: [
+    {
+      question: "Are sessions live or recorded?",
+      answer: "Both live and recorded content are included for flexibility.",
+    },
+    {
+      question: "How interactive are the sessions?",
+      answer:
+        "Sessions include case-based discussions, framework drills, and practical feedback.",
+    },
+    {
+      question: "Can I replay missed lectures?",
+      answer: "Yes, recordings are available for review.",
+    },
+    {
+      question: "How often are live sessions held?",
+      answer: "Live sessions are conducted weekly.",
+    },
+  ],
+  Certification: [
+    {
+      question: "Will I receive a certificate on completion?",
+      answer: "Yes, successful learners receive a professional completion certificate.",
+    },
+    {
+      question: "Is the certification recognized by employers?",
+      answer:
+        "It demonstrates product execution capability and portfolio-backed readiness.",
+    },
+    {
+      question: "Can I add the certification to resume or LinkedIn?",
+      answer: "Yes, it is intended for professional showcase.",
+    },
+    {
+      question: "Is certification included in the fee?",
+      answer: "Yes, certification is included for successful completion.",
+    },
+  ],
+  Opportunities: [
+    {
+      question: "What roles can I target after the program?",
+      answer:
+        "You can target PM, Product Analyst, Product Owner, PMM, and growth-focused product roles.",
+    },
+    {
+      question: "Is placement support included?",
+      answer: "Yes, placement assistance and interview prep are included.",
+    },
+    {
+      question: "Are internships available?",
+      answer:
+        "Selected learners may get internship and project opportunities based on partner openings.",
+    },
+    {
+      question: "How does this help career growth?",
+      answer:
+        "You build strategic and execution depth with a strong capstone portfolio for PM interviews.",
+    },
+  ],
+};
+
 const ProductManagement = () => {
+  const [openModule, setOpenModule] = useState(0);
   const [activeCategory, setActiveCategory] = useState("Program");
   const [openFAQ, setOpenFAQ] = useState(null);
-  const [isExpanded, setIsExpanded] = useState(false);
 
-  const [isVisible, setIsVisible] = useState(false);
-  const [lastScrollPos, setLastScrollPos] = useState(0);
-  const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    number: "",
-    currentRole: "",
-    experience: "",
-    goal: "",
-    goalOther: "",
-    domain: "",
-    domainOther: "",
-    interestedDomain: "",
-    reason: "",
-  });
-
-    const [otpSent, setOtpSent] = useState(false);
-    const [otp, setOtp] = useState("");
-    const [emailVerified, setEmailVerified] = useState(false);
-
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
-
-  const courseTopics = [
-    { title: "Product Development and Roadmap Creation", icon: "🌐" },
-    { title: "Agile and Lean Product Management", icon: "🎣" },
-    { title: "User-Centered Design and UX/UI Principles", icon: "⚡" },
-    { title: "Market Research and Competitive Analysis", icon: "🛣️" },
-    { title: "Product Marketing and Launch Strategies", icon: "🗃️" },
-    { title: "Data-Driven Decision Making", icon: "🗃️" },
-  ];
-
-  const modules = [
-    {
-      week: "Weeks 1-2",
-      title: "Introduction to Product Management",
-      objectives:
-        "Develop a strong foundation in product management concepts, understanding the product lifecycle, and identifying customer pain points.",
-      topics: [
-        "Role and Responsibilities of a Product Manager",
-        "Product Lifecycle Management",
-        "Understanding Customer Needs and Market Research",
-        "Key Metrics in Product Management",
-      ],
-    },
-    {
-      week: "Weeks 3-4",
-      title: "Market Research and Competitive Analysis",
-      objectives:
-        "Gain expertise in conducting market research and competitive analysis to support informed product decisions.",
-      topics: [
-        "Conducting Market Research",
-        "Analyzing Competitive Landscapes",
-        "Identifying Market Trends and Opportunities",
-        "SWOT Analysis for Product Strategy",
-      ],
-    },
-    {
-      week: "Week 5-6",
-      title: "Product Vision and Strategy",
-      objectives:
-        "Create a product vision and strategy that aligns with organizational objectives and customer needs.",
-      topics: [
-        "Defining Product Vision",
-        "Strategic Frameworks (OKRs, Vision Boards)",
-        "Aligning Product Strategy with Business Goals",
-        "Roadmap Planning",
-      ],
-    },
-    {
-      week: "Week 7-8",
-      title: "Agile Methodologies for Product Development",
-      objectives:
-        "Implement Agile methodologies to manage product development efficiently and deliver customer-centric solutions.",
-      topics: [
-        "Agile Principles and Practices",
-        "Scrum and Kanban Frameworks",
-        "Writing User Stories and Backlog Grooming",
-        "Sprint Planning and Retrospectives",
-      ],
-    },
-    {
-      week: "Week 9-10",
-      title: "Product Design and User Experience",
-      objectives:
-        "Design products that provide an exceptional user experience, integrating feedback from usability testing.",
-      topics: [
-        "Design Thinking Process",
-        "Wireframing and Prototyping",
-        "User Research and Usability Testing",
-        "UX Metrics and Feedback Loops",
-      ],
-    },
-    {
-      week: "Week 11-12",
-      title: "Data-Driven Decision Making",
-      objectives:
-        "Use data effectively to make informed product decisions, measure performance, and validate hypotheses.",
-      topics: [
-        "Product Analytics Tools (Google Analytics, Mixpanel)",
-        "Key Performance Indicators (KPIs)",
-        "A/B Testing and Experimentation",
-        "Data Visualization for Insights",
-      ],
-    },
-    {
-      week: "Week 13-14",
-      title: "Pricing and Monetization Strategies",
-      objectives:
-        "Develop effective pricing and monetization strategies to achieve financial objectives for your product.",
-      topics: [
-        "Pricing Strategies: Freemium, Subscription, Tiered Pricing",
-        "Revenue Models: SaaS, Pay-Per-Use, Licensing",
-        "Price Sensitivity and Elasticity Analysis",
-        "Monetization Metrics and Goals",
-      ],
-    },
-    {
-      week: "Week 15-16",
-      title: "Stakeholder Management and Communication",
-      objectives:
-        "Build strong relationships with stakeholders and facilitate clear, effective communication to drive product success.",
-      topics: [
-        "Stakeholder Identification and Mapping",
-        "Effective Communication Strategies",
-        "Conflict Resolution Techniques",
-        "Building Consensus Across Teams",
-      ],
-    },
-    {
-      week: "Week 17-18",
-      title: "Product Launch and Go-to-Market Strategies",
-      objectives:
-        "Successfully plan and execute product launches with impactful go-to-market strategies.",
-      topics: [
-        "Launch Planning and Execution",
-        "Positioning and Messaging",
-        "Marketing Channels and Campaigns",
-        "Measuring Launch Success",
-      ],
-    },
-    {
-      week: "Week 19-20",
-      title: "Scaling Products",
-      objectives:
-        "Manage and scale products effectively, balancing growth with sustainability and technical excellence.",
-      topics: [
-        "Scaling Product Operations",
-        "Managing Product Portfolios",
-        "Continuous Improvement Practices",
-        "Dealing with Technical Debt",
-      ],
-    },
-    {
-      week: "Week 21-22",
-      title: "Emerging Trends in Product Management",
-      objectives:
-        "Stay updated with emerging trends and integrate innovative practices into your product management toolkit.",
-      topics: [
-        "AI and Machine Learning in Product Management",
-        "Product-Led Growth Strategies",
-        "Sustainability and ESG in Product Development",
-        "No-Code/Low-Code Product Tools",
-      ],
-    },
-    {
-      week: "Week 23-24",
-      title: "Capstone Project and Placement Preparation",
-      objectives:
-        "Complete a comprehensive project to showcase your skills and prepare for career success in product management.",
-      topics: [
-        "Capstone Project: End-to-End Product Management Case",
-        "Resume Building and Portfolio Development",
-        "Mock Interviews and Networking Tips",
-        "Job Search and Career Guidance",
-      ],
-    },
-  ];
-
-  const jobRoles = [
-    {
-      title: "Product Manager",
-      description: "Oversees product development, strategy, and launch.",
-    },
-    {
-      title: "Product Marketing Manager",
-      description:
-        "Focuses on market research, positioning, and go-to-market strategies.",
-    },
-    {
-      title: "UX/UI Designer",
-      description: "Designs intuitive user experiences and interfaces.",
-    },
-    {
-      title: "Product Owner",
-      description:
-        "Prioritizes product backlog and ensures the product meets user needs.",
-    },
-    {
-      title: "Product Analyst",
-      description:
-        "Analyzes product performance and user feedback to recommend improvements.",
-    },
-    {
-      title: "Growth Product Manager",
-      description:
-        "Leads the team through the development process, from ideation to delivery.",
-    },
-    {
-      title: "Product Development Lead",
-      description:
-        "Oversees product design, development, and delivery to meet market needs",
-    },
-    {
-      title: "VP of Product Management",
-      description:
-        "Leads product strategy, development, and team alignment with business goals.",
-    },
-    {
-      title: "Chief Product Officer (CPO)",
-      description:
-        "Shapes vision, innovation, and execution of company-wide product strategy.",
-    },
-  ];
-
-  const Difference = [
-    {
-      title: "High Demand",
-      description:
-        "Product managers are in high demand as companies focus on developing and optimizing products that meet market needs.",
-      icon: "👥",
-    },
-    {
-      title: " Competitive Salaries",
-      description:
-        "Product management roles offer lucrative pay, reflecting the critical nature of the position in driving product success.",
-      icon: "📘",
-    },
-    {
-      title: "Diverse Roles",
-      description:
-        "Product managers work in various industries and can specialize in different aspects like product strategy, user experience, or growth.",
-      icon: "📦",
-    },
-    {
-      title: "Impactful Work",
-      description:
-        "Product managers play a key role in shaping products that directly impact customers and the company’s bottom line.",
-      icon: "💼",
-    },
-    {
-      title: "Cross-Functional Collaboration",
-      description:
-        "Product management requires working closely with teams across marketing, design, engineering, and sales, offering a dynamic work environment.",
-      icon: "💻",
-    },
-    {
-      title: "Growth Opportunities",
-      description:
-        "Explore growth opportunities in product management: develop leadership skills, embrace innovation, drive user-focused strategies, and expand market impact.",
-      icon: "🔗",
-    },
-  ];
-
-  const faqData = {
-    Program: [
-      {
-        question: "What topics are covered in the Product Management program?",
-        answer:
-          "The program covers product development, Agile and Lean methodologies, market research, product marketing, and data-driven decision-making.",
-      },
-      {
-        question: "How is the course delivered?",
-        answer:
-          "The course is delivered online with live sessions, recorded lectures, hands-on workshops, and real-world projects.",
-      },
-      {
-        question: "Will I get hands-on experience?",
-        answer:
-          "Yes, the program includes real-world case studies, product development simulations, and project-based learning.",
-      },
-      {
-        question: "How long is the program?",
-        answer:
-          "The program is 6 months long, with flexible learning options designed for professionals.",
-      },
-    ],
-    Eligibility: [
-      {
-        question: "What are the prerequisites for the program?",
-        answer:
-          "Basic knowledge of business management or a background in product development is recommended.",
-      },
-      {
-        question: "Do I need prior experience in product management?",
-        answer:
-          "No, this course is suitable for both beginners and those looking to enhance their product management skills.",
-      },
-      {
-        question: "Can beginners apply?",
-        answer:
-          "Yes, the program is designed for beginners with an interest in learning product management.",
-      },
-      {
-        question: "Is there an age restriction?",
-        answer:
-          "No, the program is open to individuals of all ages who meet the basic eligibility criteria.",
-      },
-    ],
-    Community: [
-      {
-        question: "How can I interact with other participants?",
-        answer:
-          "You can engage with peers through discussion forums, group projects, and networking events.",
-      },
-      {
-        question: "Is mentorship available?",
-        answer:
-          "Yes, personalized mentoring from industry professionals will guide you throughout the course.",
-      },
-      {
-        question: "Can I access support after the course ends?",
-        answer:
-          "Yes, you’ll have continued access to community forums, alumni events, and ongoing support.",
-      },
-      {
-        question: "How diverse is the community?",
-        answer:
-          "Our community is global, with professionals from various industries and backgrounds.",
-      },
-    ],
-    Lectures: [
-      {
-        question: "Are the lectures pre-recorded or live?",
-        answer:
-          "The program includes both live sessions and pre-recorded lectures for flexibility.",
-      },
-      {
-        question: "How interactive are the sessions?",
-        answer:
-          "The live sessions are highly interactive, with Q&A sessions, hands-on exercises, and real-time feedback from instructors.",
-      },
-      {
-        question: "Can I replay the lectures if I miss one?",
-        answer:
-          "Yes, all recorded lectures are available on-demand for you to catch up at your convenience.",
-      },
-      {
-        question: "How often are live sessions held?",
-        answer:
-          "Live sessions are scheduled weekly and designed to accommodate multiple time zones.",
-      },
-    ],
-    Certification: [
-      {
-        question: "Will I receive a certificate upon completion?",
-        answer:
-          "Yes, you will receive an official Product Management Certification from Krutanic Solutions upon completing the program.",
-      },
-      {
-        question: "Is the certification recognized by employers?",
-        answer:
-          "Yes, the certification is recognized in the industry and demonstrates your proficiency in product management.",
-      },
-      {
-        question:
-          "Can I add this certification to my resume or LinkedIn profile?",
-        answer:
-          "Yes, you can showcase your certification on your resume and LinkedIn profile.",
-      },
-      {
-        question: "Is the certification free?",
-        answer: "Yes, the certification is included in the course fee.",
-      },
-    ],
-    Opportunities: [
-      {
-        question: "What career opportunities will this course open for me?",
-        answer:
-          "The program prepares you for roles like Product Manager, Product Marketing Manager, UX/UI Specialist, and more.",
-      },
-      {
-        question: "Will I receive job placement assistance?",
-        answer:
-          "Yes, we offer job placement assistance, including resume reviews, interview coaching, and job search support.",
-      },
-      {
-        question: "Are internships available through this program?",
-        answer:
-          "Yes, internships with partner companies are available to provide real-world experience.",
-      },
-      {
-        question: "How will this course help in advancing my career?",
-        answer:
-          "By mastering product management skills, you will be equipped to take on leadership roles in product development and strategy.",
-      },
-    ],
-  };
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollPos = window.scrollY;
-      if (currentScrollPos > lastScrollPos) {
-        setIsVisible(true); // Show on scroll down
-      } else {
-        setIsVisible(false); // Hide on scroll up
-      }
-      setLastScrollPos(currentScrollPos);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollPos]);
-
-  useEffect(() => {
-    AOS.init({ duration: 1000, once: false });
-  }, []);
-  const handleBrochureClick = () => {
-    setShowForm(true);
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-  
-const [actionType, setActionType] = useState();
-  
-    const sendOTP = async () => {
-        if (!formData.email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/)) {
-            toast.error("Please enter a valid email address.");
-            return;
-        }
-        try {
-            await axios.post(`${API}/advance-send-otp`, { email: formData.email });
-            toast.success("OTP sent to your email!");
-            setOtpSent(true);
-        } catch (error) {
-            toast.error("Failed to send OTP. Try again.");
-        }
-    };
-
-    const verifyOTP = async () => {
-        try {
-            const response = await axios.post(`${API}/advance-verify-otp`, { email: formData.email, otp });
-            if (response.data.success) {
-                toast.success("Email verified successfully!");
-                setEmailVerified(true);
-                setOtp("");
-                setOtpSent(false);
-            } else {
-                toast.error("Invalid OTP. Try again.");
-            }
-        } catch (error) {
-            toast.error("Verification failed or Invalid OTP.");
-        }
-    };
-
-  const handleFormSubmit = async (e , actionType) => {
-    e.preventDefault();
-    try {
-      await axios.post(`${API}/advance/register`, {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.number,
-        currentRole: formData.currentRole,
-        experience: formData.experience,
-        goal: formData.goal,
-        goalOther: formData.goal === "Other" ? formData.goalOther : undefined,
-        domain: formData.domain,
-        domainOther: formData.domain === "Other" ? formData.domainOther : undefined,
-        interestedDomain: "Product Management",
-        reason: formData.reason,
-      });
-      toast.success("Registration successful! Opening the brochure...");
-      setTimeout(() => {
-        window.open(pdfpmm, "_blank");
-        setShowForm(false);
-      }, 1500);
-    } catch (error) {
-      toast.error(
-        error.response?.data?.error || "Something went wrong. Please try again."
-      );
-    }
-    setFormData({
-      name: "",
-      email: "",
-      number: "",
-      currentRole: "",
-      experience: "",
-      goal: "",
-      goalOther: "",
-      domain: "",
-      domainOther: "",
-      interestedDomain: "",
-      reason: "",
-    });
-  };
-  const OffForm = () =>{
-    setShowForm(false);
-    setFormData({
-      name: "",
-      email: "",
-      number: "",
-      currentRole: "",
-      experience: "",
-      goal: "",
-      goalOther: "",
-      domain: "",
-      domainOther: "",
-      interestedDomain: "",
-      reason: "",
-    });
-  }
-
-
-   const [activeModule, setActiveModule] = useState(null);
-  
-    const toggleModule = (index) => {
-      setActiveModule(activeModule === index ? null : index);
-    };
-  
-    const today = new Date();
-    const currentMonth = today.getMonth(); // Get the current month (0-based, so 0 = January)
-    const currentDay = today.getDate(); // Get the current day of the month
-    const displayDate = currentDay > 10 || currentMonth > 1 // Past February 15th
-      ? `10th ${new Date(today.setMonth(currentMonth + 1)).toLocaleString('en', { month: 'long' })} 2025`
-      : "10th February 2025";
-      // const randomNumber = Math.floor(Math.random() * 6) + 20;
   return (
-    <div>
-      <div className="bg-black text-white">
-          <Toaster position="top-center" reverseOrder={false}/>
-        {/*1  hero part */}
-        <section
-          id="advanceproductbg"
-          className="py-[60px] px-[10px] shadow-lg shadow-[#f15b29] min-h-screen flex items-center justify-center"
-        >
-          <div className="container mx-auto">
-            <div className="">
-              <h1
-                data-aos="fade-up"
-                className="text-4xl text-center font-bold mb-3"
-              >
-                <span className="before:block m-2 p-1 before:absolute before:-inset-1 before:-skew-y-2 before:bg-[#f15b29] relative inline-block">
-                  <i className="relative text-white ">
-                    {" "}
-                    Take Your Career to the Next Level with{" "}
-                  </i>
-                </span>
+    <div className="pm-page">
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap');
 
-                <span className="before:block m-2 p-1 before:absolute before:-inset-1 before:-skew-y-2 before:bg-[#000] relative inline-block">
-                  <i className="relative text-white ">Product Management</i>
-                </span>
-              </h1>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                <div
-                  data-aos="fade-up"
-                  className="flex flex-col backdrop-blur-md bg-[#ffffff59] text-black items-center p-6 border border-gray-700 rounded-md"
-                >
-                  <div className="bg-[#f15b29] p-3 rounded-full">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="white"
-                      viewBox="0 0 24 24"
-                      className="h-8 w-8"
-                    >
-                      <path d="M16 10V7a4 4 0 10-8 0v3H5v10h14V10h-3zm-6 0V7a2 2 0 114 0v3H10z" />
-                    </svg>
-                  </div>
+        :root {
+          --bg: #f3f1f1;
+          --panel: #ffffff;
+          --ink: #171717;
+          --muted: #626262;
+          --line: #ded8d5;
+          --accent: #c43609;
+          --radius: 18px;
+          --shadow: 0 20px 40px rgba(29, 20, 13, 0.08);
+        }
 
-                  <p className="mt-4 font-semibold text-lg">Batch Starting</p>
-                  <p>{displayDate}</p>
-                  <p className="mt-2 text-md border border-[#f15b29] rounded-lg px-2 py-1">
-                    {" "}
-                    Available Cohort{" "}
-                  </p>
-                  <p className="mt-2 text-md"><span className="line-through">60/60</span> Batch Closed </p>
-                  <p>26/60</p>
-                </div>
+        * { box-sizing: border-box; }
 
-                <div
-                  data-aos="fade-up"
-                  className="flex flex-col backdrop-blur-md bg-[#ffffff59] text-black items-center p-6 border  border-gray-700 rounded-md"
-                >
-                  <div className="bg-[#f15b29] p-3 rounded-full">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="white"
-                      viewBox="0 0 24 24"
-                      className="h-8 w-8"
-                    >
-                      <path d="M5 3v18l7-3 7 3V3H5zm12 13l-5-2.18L7 16V5h10v11z" />
-                    </svg>
-                  </div>
-                  <p className="mt-4 font-semibold text-lg">Duration</p>
-                  <p> 6 Months </p>
-                </div>
+        .pm-page {
+          background:
+            radial-gradient(circle at 8% 8%, rgba(196, 54, 9, 0.08), transparent 34%),
+            radial-gradient(circle at 95% 55%, rgba(15, 77, 98, 0.09), transparent 28%),
+            var(--bg);
+          color: var(--ink);
+          font-family: "Sora", "Segoe UI", sans-serif;
+        }
 
-                <div
-                  data-aos="fade-up"
-                  className="flex flex-col backdrop-blur-md bg-[#ffffff59] text-black items-center p-6 border border-gray-700 rounded-md"
-                >
-                  <div className="bg-[#f15b29] p-3 rounded-full">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="white"
-                      viewBox="0 0 24 24"
-                      className="h-8 w-8"
-                    >
-                      <path d="M12 2a10 10 0 1010 10A10 10 0 0012 2zm0 18a8 8 0 118-8 8 8 0 01-8 8zm1-13h-2v5h5v-2h-3z" />
-                    </svg>
-                  </div>
-                  <p className="mt-4 font-semibold text-lg">Program Rating</p>
-                  <p>
-                    <span className="text-[#f15b29]">★★★★</span>☆ (4.7/5)
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center justify-center mt-3">
-              <ApplyNowButton courseValue="Product Management"/>
-            </div>
-            </div>
-          </div>
-        </section>
-        <hr className=" opacity-10" />
+        .pm-shell {
+          width: min(1140px, calc(100% - 32px));
+          margin: 0 auto;
+        }
 
+        .pm-btn {
+          background: linear-gradient(180deg, #d64d1d 0%, #af2f06 100%);
+          border: 0;
+          border-radius: 10px;
+          color: #fff;
+          cursor: pointer;
+          font-size: 12px;
+          font-weight: 700;
+          letter-spacing: 0.3px;
+          padding: 10px 18px;
+          text-transform: uppercase;
+        }
 
-          {/* 4 Curriculum Section */}
-          <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto">
-            <h1
-              data-aos="fade-up"
-              className=" font-bold text-center mb-5 text-[#f15b29]"
-            >
-              | Curriculum
-            </h1>
-            <div className="lg:flex lg:gap-8">
-             
-            <div className="lg:w-1/2 w-full">
-                <div className="space-y-4">
-                  {modules.map((module, index) => (
-                    <div key={index} className="pb-5">
-                      <button
-                        className="w-full text-left hover:text-[#f15b29] transition-colors duration-300 focus:outline-none"
-                        onClick={() => toggleModule(index)}
-                      >
-                        <h3 className="text-xl font-semibold">
-                          {module.week}: {module.title}
-                        </h3>
-                        <p className="text-sm text-gray-400">
-                          {module.objectives}
-                        </p>
-                      </button>
-                      {activeModule === index && (
-                        <div className="mt-4">
-                          <ul className="list-disc pl-9 text-gray-300">
-                            {module.topics.map((topic, topicIndex) => (
-                              <li key={topicIndex} className="mb-2">
-                                {topic}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="lg:w-1/2 w-full rounded-lg overflow-hidden mb-5 lg:mb-0">
-                <ApplyForm courseValue="Product Management" />
-              </div>
-            </div>
-          </div>
-        </section>
-        <hr className=" opacity-10" />
+        .pm-section { padding: 52px 0; }
+        .pm-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 12px; }
+        .pm-section p.lead {
+          color: var(--muted);
+          line-height: 1.7;
+          margin: 0 0 26px;
+          max-width: 760px;
+        }
 
-        {/* 14 why choose us */}
-        <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto text-center">
-            <h1 data-aos="fade-up" className="text-[#f15b29]  font-bold mb-6">
-              | Why Choose{" "}
-              <span className="text-white">Product Management ? </span>
-            </h1>
-            <p data-aos="fade-up" className="text-gray-400 mb-12">
-              Learn how to lead teams, develop innovative solutions, and bring
-              exceptional products to market by mastering the principles of
-              product management
+        .pm-hero {
+          border-top: 1px solid var(--line);
+          display: grid;
+          gap: 32px;
+          grid-template-columns: 1fr 1fr;
+          padding: 26px 0 28px;
+        }
+
+        .pm-chip {
+          background: #f0e0db;
+          border-radius: 999px;
+          color: #8a4f40;
+          display: inline-flex;
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+          padding: 6px 12px;
+          text-transform: uppercase;
+        }
+
+        .pm-hero h1 {
+          font-size: clamp(42px, 5vw, 74px);
+          line-height: 0.98;
+          margin: 16px 0;
+        }
+
+        .pm-hero h1 span {
+          color: var(--accent);
+          font-family: "Fraunces", Georgia, serif;
+          font-style: italic;
+          font-weight: 800;
+        }
+
+        .pm-sub {
+          color: var(--muted);
+          font-size: 17px;
+          line-height: 1.6;
+          max-width: 520px;
+          margin-bottom: 22px;
+        }
+
+        .pm-stats {
+          display: grid;
+          gap: 12px;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          max-width: 420px;
+          margin-bottom: 18px;
+        }
+
+        .pm-stat {
+          background: var(--panel);
+          border: 1px solid #eadeda;
+          border-radius: 16px;
+          box-shadow: var(--shadow);
+          padding: 16px 14px;
+        }
+
+        .pm-stat-label {
+          color: #8a8a8a;
+          font-size: 11px;
+          letter-spacing: 0.6px;
+          margin-bottom: 6px;
+          text-transform: uppercase;
+        }
+
+        .pm-stat-value { font-size: 18px; font-weight: 700; }
+
+        .pm-hero-media { position: relative; }
+
+        .pm-media-box {
+          background: radial-gradient(circle at 25% 20%, #17627c 0%, #0d1826 70%);
+          border-radius: 22px;
+          box-shadow: 0 24px 46px rgba(0, 0, 0, 0.28);
+          overflow: hidden;
+          padding: 18px;
+        }
+
+        .pm-media-box img {
+          border-radius: 16px;
+          display: block;
+          height: 100%;
+          min-height: 330px;
+          object-fit: cover;
+          width: 100%;
+        }
+
+        .pm-floating-card {
+          background: rgba(255, 255, 255, 0.92);
+          border-radius: 16px;
+          box-shadow: 0 12px 32px rgba(19, 16, 11, 0.18);
+          left: -20px;
+          max-width: 300px;
+          padding: 16px;
+          position: absolute;
+          bottom: -20px;
+        }
+
+        .pm-curr-grid {
+          display: grid;
+          gap: 20px;
+          grid-template-columns: 2fr 1fr;
+        }
+
+        .pm-accordion { display: grid; gap: 14px; }
+
+        .pm-module {
+          background: var(--panel);
+          border: 1px solid #e7e0dc;
+          border-radius: var(--radius);
+          padding: 18px;
+        }
+
+        .pm-module.open { border-color: #d05b36; }
+
+        .pm-module-head {
+          align-items: center;
+          cursor: pointer;
+          display: flex;
+          justify-content: space-between;
+        }
+
+        .pm-module-week {
+          color: #9b9b9b;
+          font-size: 10px;
+          letter-spacing: 0.5px;
+          text-transform: uppercase;
+        }
+
+        .pm-module-title { font-size: 24px; font-weight: 600; margin-top: 5px; }
+        .pm-module-toggle { color: #7b7b7b; font-size: 24px; line-height: 1; }
+
+        .pm-module-body {
+          border-top: 1px solid #eee4de;
+          margin-top: 16px;
+          padding-top: 15px;
+        }
+
+        .pm-module-objective {
+          color: #4b4b4b;
+          font-size: 14px;
+          line-height: 1.6;
+          margin-bottom: 10px;
+        }
+
+        .pm-tag-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+        .pm-tag {
+          background: #f3e7e1;
+          border-radius: 999px;
+          color: #8d4d3b;
+          font-size: 11px;
+          padding: 5px 11px;
+        }
+
+        .pm-side-panel {
+          background: var(--panel);
+          border: 1px solid #e8e0dc;
+          border-radius: var(--radius);
+          box-shadow: var(--shadow);
+          height: fit-content;
+          padding: 20px;
+        }
+
+        .pm-side-panel h3 { font-size: 28px; margin: 0 0 6px; }
+        .pm-side-panel p { color: #6f6f6f; font-size: 14px; margin: 0 0 16px; }
+
+        .pm-overview-grid,
+        .pm-why-grid,
+        .pm-role-grid,
+        .pm-metric-grid,
+        .pm-faq-grid {
+          display: grid;
+          gap: 16px;
+        }
+
+        .pm-overview-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .pm-why-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .pm-role-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .pm-metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .pm-faq-grid { grid-template-columns: 250px 1fr; }
+
+        .pm-card {
+          background: #f7f5f4;
+          border: 1px solid #e6dfdc;
+          border-radius: 16px;
+          padding: 20px;
+        }
+
+        .pm-card h4 { margin: 0 0 8px; font-size: 20px; }
+        .pm-card p { margin: 0; color: #5f5f5f; line-height: 1.6; }
+
+        .pm-takeaway-grid {
+          align-items: center;
+          display: grid;
+          gap: 22px;
+          grid-template-columns: 1.3fr 1fr;
+        }
+
+        .pm-list {
+          margin: 0;
+          padding: 0;
+          display: grid;
+          gap: 10px;
+        }
+
+        .pm-list li {
+          list-style: none;
+          padding-left: 16px;
+          position: relative;
+          color: #454545;
+          line-height: 1.55;
+        }
+
+        .pm-list li::before {
+          background: #cb4213;
+          border-radius: 50%;
+          content: "";
+          height: 6px;
+          left: 0;
+          position: absolute;
+          top: 9px;
+          width: 6px;
+        }
+
+        .pm-image {
+          border-radius: 16px;
+          box-shadow: var(--shadow);
+          overflow: hidden;
+        }
+
+        .pm-image img {
+          display: block;
+          width: 100%;
+          height: 100%;
+          min-height: 320px;
+          object-fit: cover;
+        }
+
+        .pm-center { text-align: center; }
+
+        .pm-brochure {
+          align-items: center;
+          border: 2px solid #ca3f12;
+          border-radius: 18px;
+          display: flex;
+          justify-content: space-between;
+          gap: 20px;
+          padding: 20px;
+          background: #fff;
+        }
+
+        .pm-career { background: #eceaea; border-top: 1px solid #ddd8d5; border-bottom: 1px solid #ddd8d5; }
+
+        .pm-role-card {
+          background: #f7f5f4;
+          border: 1px solid #e6dfdc;
+          border-radius: 16px;
+          min-height: 190px;
+          padding: 22px;
+          position: relative;
+        }
+
+        .pm-role-dot {
+          background: #be3a10;
+          border-radius: 50%;
+          height: 10px;
+          margin-bottom: 16px;
+          width: 10px;
+        }
+
+        .pm-role-card strong {
+          color: #b12e03;
+          display: block;
+          margin-top: 12px;
+          font-size: 12px;
+          text-transform: uppercase;
+        }
+
+        .pm-metric {
+          text-align: center;
+          padding: 16px;
+          border: 1px solid #e6dfdc;
+          border-radius: 14px;
+          background: #fff;
+        }
+
+        .pm-metric h4 { margin: 0; color: #bf390d; font-size: 30px; }
+        .pm-metric p { margin: 6px 0 0; color: #5f5f5f; }
+
+        .pm-invest {
+          background: #fdfcfc;
+          border: 2px solid #ca3f12;
+          border-radius: 18px;
+          box-shadow: var(--shadow);
+          padding: 28px;
+        }
+
+        .pm-invest h3 { font-size: 40px; margin: 6px 0; }
+        .pm-invest-sub { color: #7a7a7a; font-size: 13px; text-transform: uppercase; }
+
+        .pm-invest-grid {
+          border-top: 1px solid #ece4e0;
+          display: grid;
+          gap: 18px;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          margin-top: 20px;
+          padding-top: 16px;
+        }
+
+        .pm-invest-item strong { color: #bf390d; display: block; margin-bottom: 6px; }
+        .pm-invest-item span { color: #5e5e5e; font-size: 13px; line-height: 1.5; }
+
+        .pm-pay-grid {
+          display: grid;
+          gap: 18px;
+          grid-template-columns: 1fr 1fr;
+          margin-top: 16px;
+        }
+
+        .pm-fee-box {
+          background: linear-gradient(145deg, #df5a2c 0%, #b73b14 100%);
+          border-radius: 26px;
+          color: #fff;
+          padding: 24px;
+          text-align: center;
+        }
+
+        .pm-fee-box .fee { font-size: 48px; font-weight: 800; line-height: 1.1; }
+
+        .pm-breakdown {
+          background: #fff;
+          border: 1px solid #e8e0dc;
+          border-radius: 16px;
+          padding: 16px;
+        }
+
+        .pm-break-row {
+          border-bottom: 1px solid #ebe3df;
+          display: flex;
+          justify-content: space-between;
+          font-size: 14px;
+          padding: 11px 0;
+        }
+
+        .pm-break-row:last-child { border-bottom: 0; }
+
+        .pm-partner {
+          align-items: center;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          margin-top: 16px;
+        }
+
+        .pm-partner img { height: 76px; object-fit: contain; }
+
+        .pm-faq-menu {
+          border: 1px solid #e5deda;
+          border-radius: 14px;
+          background: #fff;
+          padding: 12px;
+          height: fit-content;
+        }
+
+        .pm-faq-menu button {
+          background: #fff;
+          border: 1px solid #e7e0dc;
+          border-radius: 10px;
+          cursor: pointer;
+          display: block;
+          font-family: inherit;
+          font-size: 13px;
+          font-weight: 700;
+          margin-bottom: 8px;
+          padding: 10px 12px;
+          text-align: left;
+          width: 100%;
+        }
+
+        .pm-faq-menu button.active {
+          border-color: #d35e39;
+          color: #b9380f;
+        }
+
+        .pm-faq-item {
+          border: 1px solid #e7e0dc;
+          border-radius: 12px;
+          margin-bottom: 10px;
+          overflow: hidden;
+        }
+
+        .pm-faq-head {
+          align-items: center;
+          background: #fff;
+          cursor: pointer;
+          display: flex;
+          justify-content: space-between;
+          padding: 12px 14px;
+          width: 100%;
+          border: 0;
+          font-family: inherit;
+          text-align: left;
+        }
+
+        .pm-faq-body {
+          background: #f8f5f4;
+          color: #4f4f4f;
+          padding: 12px 14px;
+          border-top: 1px solid #e7e0dc;
+        }
+
+        @media (max-width: 1080px) {
+          .pm-hero,
+          .pm-curr-grid,
+          .pm-overview-grid,
+          .pm-why-grid,
+          .pm-role-grid,
+          .pm-metric-grid,
+          .pm-pay-grid,
+          .pm-faq-grid,
+          .pm-takeaway-grid,
+          .pm-invest-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .pm-floating-card { left: 14px; }
+          .pm-brochure { flex-direction: column; align-items: flex-start; }
+        }
+
+        @media (max-width: 780px) {
+          .pm-section { padding: 42px 0; }
+          .pm-module-title { font-size: 21px; }
+        }
+      `}</style>
+
+      <div className="pm-shell">
+        <section className="pm-hero">
+          <div>
+            <div className="pm-chip">Advanced Program 2026</div>
+            <h1>Master the <span>Craft</span> of Product.</h1>
+            <p className="pm-sub">
+              A premium learning path for modern product leaders to build, launch, and scale products with strategic clarity.
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Difference.map((Difference, index) => (
-                <div
-                  data-aos="fade-up"
-                  key={index}
-                  className="bg-[#080810] p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition"
-                >
-                  <div className="text-[#f15b29] text-4xl mb-4">
-                    {Difference.icon}
-                  </div>
-                  <h3 className="text-lg text-[#f15b29] font-bold  mb-3">
-                    {Difference.title}
-                  </h3>
-                  <p className="text-white  ">{Difference.description}</p>
-                </div>
+
+            <div className="pm-stats">
+              {heroStats.map((item) => (
+                <article className="pm-stat" key={item.label}>
+                  <div className="pm-stat-label">{item.label}</div>
+                  <div className="pm-stat-value">{item.value}</div>
+                </article>
               ))}
             </div>
+
+            <ApplyNowButton courseValue="Product Management" />
+          </div>
+
+          <div className="pm-hero-media">
+            <div className="pm-media-box">
+              <img src={PMHero} alt="Product management mentor" />
+            </div>
+            <aside className="pm-floating-card">
+              <h4>Outcome Focused</h4>
+              <p>Build portfolio-ready product cases and strategic execution depth for top PM roles.</p>
+            </aside>
           </div>
         </section>
-        <hr className=" opacity-10" />
 
-        {/* 15 why learn with us */}
-        <section className="py-[60px] px-[10px]">
+        <section className="pm-section">
+          <h2>Curriculum</h2>
+          <p className="lead">
+            A rigorous pathway from product foundations to strategic execution and leadership-ready decision making.
+          </p>
+
+          <div className="pm-curr-grid">
+            <div className="pm-accordion">
+              {curriculum.map((module, index) => {
+                const isOpen = openModule === index;
+                return (
+                  <article className={`pm-module ${isOpen ? "open" : ""}`} key={module.title}>
+                    <div
+                      className="pm-module-head"
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => setOpenModule(isOpen ? -1 : index)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          setOpenModule(isOpen ? -1 : index);
+                        }
+                      }}
+                    >
+                      <div>
+                        <div className="pm-module-week">{module.week}</div>
+                        <div className="pm-module-title">{module.title}</div>
+                      </div>
+                      <span className="pm-module-toggle">{isOpen ? "-" : "+"}</span>
+                    </div>
+
+                    {isOpen && (
+                      <div className="pm-module-body">
+                        <p className="pm-module-objective">{module.objectives}</p>
+                        <div className="pm-tag-wrap">
+                          {module.topics.map((topic) => (
+                            <span className="pm-tag" key={topic}>{topic}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </article>
+                );
+              })}
+            </div>
+
+            <aside className="pm-side-panel">
+              <h3>Speak with an Advisor</h3>
+              <p>Get a personalized roadmap to transition into high-impact product roles.</p>
+              <ApplyForm />
+            </aside>
+          </div>
+        </section>
+
+        <section className="pm-section">
+          <h2>Program Overview</h2>
+          <div className="pm-overview-grid">
+            {overviewTopics.map((topic) => (
+              <article className="pm-card" key={topic}>
+                <h4>{topic}</h4>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="pm-section">
+          <h2>Why Choose Product Management?</h2>
+          <p className="lead">Build strategic leverage by solving the right product problems with execution excellence.</p>
+          <div className="pm-why-grid">
+            {whyChoose.map((item) => (
+              <article className="pm-card" key={item.title}>
+                <h4>{item.title}</h4>
+                <p>{item.description}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="pm-section">
+          <h2>Key Takeaways</h2>
+          <div className="pm-takeaway-grid">
+            <ul className="pm-list">
+              {keyTakeaways.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+            <div className="pm-image">
+              <img src={PMOutcomes} alt="Key outcomes" />
+            </div>
+          </div>
+        </section>
+
+        <section className="pm-section">
           <BenefitsofLearning />
         </section>
-        <hr className=" opacity-10" />
 
-        {/* 2 Course Overview Section */}
-        <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto">
-            <h1
-              data-aos="fade-up"
-              className=" font-bold text-center mb-12 text-[#f15b29]"
-            >
-              |Program Overview
-            </h1>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-              {courseTopics.map((topic, index) => (
-                <div
-                  data-aos="fade-up"
-                  key={index}
-                  className="bg-[#080810] p-6 rounded-lg text-center transition-transform duration-300 hover:scale-105"
-                >
-                  <div className="text-4xl mb-4">{topic.icon}</div>
-                  <h3 className="text-xl font-bold uppercase text-white hover:text-[#f15b29] transition-colors duration-300">
-                    {topic.title}
-                  </h3>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-        <hr className=" opacity-10" />
-
-        {/* 3 key outcome section  */}
-        <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto lg:flex flex-col lg:flex-row">
-            <div className=" w-full mb-3 lg:mb-0">
-              <h1 data-aos="fade-up" className=" font-bold mb-4 text-[#f15b29]">
-                | Key Takeaways
-              </h1>
-              <ul data-aos="fade-up" className="space-y-4">
-                <li>
-                  <span className="font-semibold text-[#f15b29]">
-                    Master Product Management Frameworks{"  "}
-                  </span>
-                  Learn to design, develop, and launch successful products using
-                  frameworks like Agile, Scrum, and Lean methodologies.
-                </li>
-                <li>
-                  <span className="font-semibold text-[#f15b29]">
-                    Develop Expertise in Product Development{"  "}
-                  </span>
-
-                  {isExpanded && (
-                    <span>
-                      &nbsp;Gain hands-on experience in product lifecycle
-                      management, from ideation to market launch, focusing on
-                      user-centric product design.
-                    </span>
-                  )}
-                </li>
-                <li>
-                  <span className="font-semibold text-[#f15b29]">
-                    Leverage Data for Product Strategy{"  "}
-                  </span>
-                  Use data analytics tools to drive product decisions, measure
-                  success, and improve customer experience.
-                </li>
-                <span className="font-semibold text-[#f15b29]">
-                  Launch and Scale Products Effectively{"  "}
-                </span>
-                Learn to market, launch, and scale products using strategies
-                that ensure adoption and long-term success. Learn to apply A/B
-                testing methodologies to refine campaigns, improve performance,
-                and increase conversion rates.
-                <li>
-                  <span className="font-semibold text-[#f15b29]">
-                    Agile Development Process.
-                  </span>
-                </li>
-                {/* Hidden additional content */}
-                {isExpanded && (
-                  <>
-                    <li>
-                      <span className="font-semibold text-[#f15b29]">
-                        Measure and Optimize Product Performance.
-                      </span>
-                    </li>
-                    <li>
-                      <span className="font-semibold text-[#f15b29]">
-                        Product Performance Optimization.
-                      </span>
-                    </li>
-                  </>
-                )}
-              </ul>
-              <button
-                data-aos="fade-up"
-                onClick={toggleExpand}
-                className="mt-4 px-4 py-2 text-white font-medium border  rounded"
-              >
-                {isExpanded ? "Read Less" : "Read More"}
-              </button>
-            </div>
-
-            {/* Right side: Image */}
-            <div
-              data-aos="fade-up"
-              className="lg:w-1/2 w-full h-[300px] rounded-lg shadow-lg shadow-[#f15b29] overflow-hidden"
-            >
-              <img
-                src={PM}
-                alt="Curriculum"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-        </section>
-        <hr className=" opacity-10" />
-
-      
-
-        {/* 5 download curriculum section */}
-
-        <section className="py-[60px] px-[10px]">
-          <div
-            data-aos="fade-up"
-            className="container mx-auto p-5 flex flex-col md:flex-row justify-between items-center flex-wrap gap-5 rounded-lg shadow-lg border-2 border-[#f15b29]"
-          >
-            <div className="text-center md:text-left">
-              <h2 className="text-xl font-bold mb-2 text-[#f15b29]">
-                | Get the Full Course Breakdown
-              </h2>
-              <p className="text-gray-400 text-sm">
-                Access the detailed curriculum with key modules and learning
-                outcomes of the Product Management program.
+        <section className="pm-section">
+          <div className="pm-brochure">
+            <div>
+              <h2 style={{ margin: "0 0 6px", fontSize: "32px" }}>Get the Full Course Breakdown</h2>
+              <p className="lead" style={{ margin: 0 }}>
+                Access the detailed curriculum, product templates, and capstone structure.
               </p>
             </div>
-            <div className="flex flex-col lg:flex-row items-center justify-center gap-3">
-              <button
-                className="bg-[#f15b29] hover:bg-[#f15b29] text-white font-semibold py-2 px-6 rounded flex items-center gap-2"
-                onClick={handleBrochureClick} // Open the form when clicked
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M3 8a1 1 0 011-1h12a1 1 0 011 1v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm9 4a1 1 0 10-2 0V9.707l-.293.293a1 1 0 11-1.414-1.414l2-2a1 1 0 011.414 0l2 2a1 1 0 11-1.414 1.414L12 9.707V12z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Download
-              </button>
-            </div>
-          </div>
-
-          {/* Dialog Box for Form */}
-          {showForm && (
-                     <div className="fixed top-8 inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-[999]">
-                       <div className="bg-white text-black p-3 rounded-lg shadow-lg w-96">
-                         <span className="text-md float-end mb-2 font-bold border rounded-full px-2 cursor-pointer"  onClick={OffForm}>X</span>
-                         <h3 className="text-md text-center font-semibold mb-2">
-                           Register to Download Brochure
-                         </h3>
-                         <form className="space-y-2" onSubmit={(e) => handleFormSubmit(e, actionType)}>
-                           <input
-                             type="text"
-                             id="name"
-                             name="name"
-                             placeholder="Enter your name"
-                             value={formData.name}
-                             onChange={handleInputChange}
-                             className="w-full border border-gray-300 p-1.5 rounded-md"
-                             required
-                           />
-                           <input
-                             type="email"
-                             id="email"
-                             name="email"
-                             placeholder="Enter your email"
-                             value={formData.email}
-                             onChange={handleInputChange}
-                             className="w-full border border-gray-300 p-1.5 rounded-md"
-                             disabled={emailVerified}
-                  required
-                           />
-                {!emailVerified ? (
-                    !otpSent ? (
-                        <button
-                            type="button"
-                            onClick={sendOTP}
-                            className="w-full bg-[#f15b29] text-white p-1.5 rounded-md text-sm mt-2 transition"
-                        >
-                            Verify Email
-                        </button>
-                    ) : (
-                        <div className="flex gap-2 mt-2">
-                            <input
-                                type="text"
-                                value={otp}
-                                onChange={(e) => setOtp(e.target.value)}
-                                placeholder="Enter OTP"
-                                className="w-full border border-gray-300 p-1.5 rounded-md text-black"
-                            />
-                            <button
-                                type="button"
-                                onClick={verifyOTP}
-                                className="bg-green-600 text-white px-3 py-1.5 rounded-md text-sm whitespace-nowrap"
-                            >
-                                Submit OTP
-                            </button>
-                        </div>
-                    )
-                ) : (
-                    <div className="bg-green-100 border border-green-400 text-green-700 px-3 py-1.5 rounded-md mt-2 text-center text-sm">
-                        ✅ Email Verified
-                    </div>
-                )}
-                           <input
-                             type="text"
-                             id="number"
-                             name="number"
-                             placeholder="Enter your phone number"
-                             value={formData.number}
-                             onChange={handleInputChange}
-                             className="w-full border border-gray-300 p-1.5 rounded-md"
-                             required
-                           />
-                           <select
-                             id="currentRole"
-                             name="currentRole"
-                             value={formData.currentRole}
-                             onChange={handleInputChange}
-                             className="w-full border border-gray-300 p-1.5 rounded-md"
-                             required
-                           >
-                             <option disabled value="">What do you currently do?</option>
-                             <option value="Founder">Founder</option>
-                             <option value="Student">Student</option>
-                             <option value="Working Professional">
-                               Working Professional
-                             </option>
-                             <option value="Self Employed">Self Employed</option>
-                           </select>
-                           <select
-                             id="experience"
-                             name="experience"
-                             value={formData.experience}
-                             onChange={handleInputChange}
-                             className="w-full border border-gray-300 p-1.5 rounded-md"
-                             required
-                           >
-                             <option disabled value="">Select Experience</option>
-                             <option value="0 year">0 year (Fresher)</option>
-                             <option value="1-2 years">1-2 years</option>
-                             <option value="3-5 years">3-5 years</option>
-                             <option value="5+ years">5+ years</option>
-                           </select>
-                           <select
-                             id="goal"
-                             name="goal"
-                             value={formData.goal}
-                             onChange={handleInputChange}
-                             className="w-full border border-gray-300 p-1.5 rounded-md"
-                             required
-                           >
-                             <option disabled value="">Goal of taking this program</option>
-                             <option value="Career Transition">Career Transition</option>
-                             <option value="Kickstart Career">Kickstart Career</option>
-                             <option value="Upskilling">Upskilling</option>
-                             <option value="Other">Other</option>
-                           </select>
-                           {formData.goal === "Other" && (
-                             <input
-                               type="text"
-                               name="goalOther"
-                               value={formData.goalOther}
-                               onChange={handleInputChange}
-                               placeholder="Please specify your goal"
-                               className="w-full border border-gray-300 p-1.5 rounded-md mt-2"
-                               required
-                             />
-                           )}
-                           <select
-                             id="reason"
-                             name="reason"
-                             value={formData.reason}
-                             onChange={handleInputChange}
-                             className="w-full border border-gray-300 p-1.5 rounded-md"
-                             required
-                           >
-                             <option disabled value="">Reason for taking this program</option>
-                             <option value="I Want to Know More About the Program">I Want to Know More About the Program</option>
-                             <option value="I've Reviewed the Program – Need Career Guidance">I've Reviewed the Program – Need Career Guidance</option>
-                             <option value="I'm Ready to Enroll">I'm Ready to Enroll</option>
-                             <option value="I'm Already Enrolled – Need Support">I'm Already Enrolled – Need Support</option>
-                           </select>
-                           <select
-                             id="domain"
-                             name="domain"
-                             value={formData.domain}
-                             onChange={handleInputChange}
-                             className="w-full border border-gray-300 p-1.5 rounded-md"
-                             required
-                           >
-                             <option disabled value="">Domain currently working in</option>
-                             <option value="Digital Marketing/Performance marketing">
-                               Digital Marketing/Performance Marketing
-                             </option>
-                             <option value="Marketing/Sales">Marketing/Sales</option>
-                             <option value="Management/Operations">
-                               Management/Operations
-                             </option>
-                             <option value="IT/Tech/Product">IT/Tech/Product</option>
-                             <option value="Other">Other</option>
-                           </select>
-                           {formData.domain === "Other" && (
-                             <input
-                               type="text"
-                               name="domainOther"
-                               value={formData.domainOther}
-                               onChange={handleInputChange}
-                               placeholder="Please specify your domain"
-                               className="w-full border border-gray-300 p-1.5 rounded-md mt-2"
-                               required
-                             />
-                           )}
-                          <div className="flex justify-center gap-2">
-                                              <button
-                                                type="submit" disabled={!emailVerified}
-                                                onClick={(e) => setActionType("Only Download Brochure")}
-                                                className="px-4 py-2 w-full bg-[#f15b29] text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-                                              >
-                                                <i className="fa fa-download"></i>
-                                              </button>
-                                              <button
-                                                type="submit" disabled={!emailVerified}
-                                                onClick={(e) => setActionType("Requested To Call Back")}
-                                                className="px-4 py-2 w-full bg-[#f15b29] flex items-center justify-center gap-1 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-                                              >
-                                                <i className="fa fa-download"></i> +{" "}
-                                                <RiCustomerService2Fill />
-                                              </button>
-                                            </div>
-                         </form>
-                       </div>
-                     </div>
-                   )}
-        </section>
-
-        {/* 7 alumni section  */}
-        <hr className=" opacity-10" />
-
-        {/* 13 job roles section  */}
-        <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto">
-            <h1
-              data-aos="fade-up"
-              className="text-[#f15b29] text-center  font-bold mb-8"
-            >
-              | Career Opportunities in{" "}
-              <span className="text-white font-bold">Data Science</span>
-            </h1>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {jobRoles.map((role, index) => (
-                <div
-                  data-aos="fade-up"
-                  key={index}
-                  className="border-l-4 border-[#f15b29] bg-[#080810] rounded-md p-4 text-white shadow-lg"
-                >
-                  <h3 className="text-xl font-semibold mb-4">{role.title}</h3>
-                  <p>{role.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-        <hr className=" opacity-10" />
-
-        {/* Clients Carousel */}
-        <div className="workat">
-          <div className="alumni">
-            <h1 className="text-[#f15b29] font-bold mb-6 text-center">
-              | Our alumni at top Brands
-            </h1>
-            <p className="text-gray-400 mb-12 text-center">
-              Their success stories inspire current students to aim for global
-              excellence in their careers.
-            </p>
-            <ClientsCarousel />
-          </div>
-        </div>
-        <hr className=" opacity-10" />
-
-        {/* 12 key highlight section */}
-        <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto">
-            <div className=" gap-5">
-              <div className=" w-full mb-8 lg:mb-0">
-                <h1
-                  data-aos="fade-up"
-                  className=" text-center font-bold mb-6 text-[#f15b29]"
-                >
-                  | Course Benefits at a Glance
-                </h1>
-                <p data-aos="fade-up" className="text-lg text-center mb-8">
-                  Master advanced{" "}
-                  <span className="text-[#f15b29] font-bold">
-                    Product Management
-                  </span>{" "}
-                  techniques with hands-on projects, expert-led sessions, and
-                  real-world applications.
-                </p>
-                <div
-                  data-aos="fade-up"
-                  className="grid grid-cols-2 md:grid-cols-4 gap-4"
-                >
-                  <div className=" p-6 rounded-lg text-center">
-                    <h3 className="text-3xl font-bold text-[#f15b29]">200+</h3>
-                    <p className="mt-2 text-gray-300">Mentees Placed</p>
-                  </div>
-                  <div className=" p-6 rounded-lg text-center">
-                    <h3 className="text-3xl font-bold text-[#f15b29]">
-                      10+ LPA
-                    </h3>
-                    <p className="mt-2 text-gray-300">Average CTC</p>
-                  </div>
-                  <div className=" p-6 rounded-lg text-center">
-                    <h3 className="text-3xl font-bold text-[#f15b29]">93%</h3>
-                    <p className="mt-2 text-gray-300">Placement Rate</p>
-                  </div>
-                  <div className=" p-6 rounded-lg text-center">
-                    <h3 className="text-3xl font-bold text-[#f15b29]">450+</h3>
-                    <p className="mt-2 text-gray-300">Hiring Partners</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-        <hr className=" opacity-10" />
-
-        {/* 8 Certification section */}
-        <section className="py-[60px] px-[10px]">
-          <div data-aos="fade-up">
-            <Certification />
-          </div>
-        </section>
-        <hr className=" opacity-10" />
-
-        {/* Flexible Payment Options */}
-        <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto max-w-4xl">
-            <h1 className="text-center font-extrabold text-[#f15b29] mb-12 text-3xl md:text-4xl">
-              Our Flexible Payment Options
-            </h1>
-            
-            {/* Payment Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-              {/* Left: Total Fee Box */}
-              <div className="bg-gradient-to-br from-[#f15b29] to-[#b5401f] rounded-l-[80px] rounded-r-lg p-8 md:p-12 flex flex-col justify-center items-center shadow-2xl">
-                <p className="text-white text-lg md:text-xl mb-4 font-medium">Total program fee</p>
-                <p className="text-white text-5xl md:text-6xl font-bold">₹70,800</p>
-                <p className="text-white text-sm mt-3 opacity-90">Inclusive of taxes</p>
-              </div>
-              
-              {/* Right: Payment Breakdown */}
-              <div className="flex flex-col justify-center space-y-4">
-                <div className="flex justify-between items-center py-3 border-b border-gray-600">
-                  <span className="text-[#eee] text-lg">Registration</span>
-                  <span className="text-[#eee] text-lg font-semibold">₹10,000</span>
-                </div>
-                <div className="py-3 border-b border-gray-600">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[#eee] text-lg">Installment 1</span>
-                    <span className="text-[#eee] text-lg font-semibold">₹30,400</span>
-                  </div>
-                  <p className="text-[#aaa] text-xs mt-1">*First installment must be paid within 15 days from the date of registration</p>
-                </div>
-                <div className="py-3 border-b border-gray-600">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[#eee] text-lg">Installment 2</span>
-                    <span className="text-[#eee] text-lg font-semibold">₹30,400</span>
-                  </div>
-                  <p className="text-[#aaa] text-xs mt-1">*Second installment must be paid within 15 days of first installment</p>
-                </div>
-              </div>
-            </div>
-            
-    
-            
-            {/* Financial Partner */}
-            <div className="flex flex-col justify-center items-center mt-12">
-              <p className="mb-2 text-[#f15b29]">| Our Financial Partner</p>
-              <img src={Flashaidlogo} alt="Financial Partner" className="h-[80px]"/>
-            </div>
-          </div>
-        </section>
-
-        {/* 9 mentors section  */}
-        {/* <section className="py-[60px] px-[10px]">
-          <div data-aos="fade-up" className="container mx-auto">
-            <MentorSection />
-          </div>
-        </section>
-        <hr className=" opacity-10" /> */}
-
-        {/* 16 store section  */}
-        <section className="py-[60px] px-[10px] bg-white">
-          <StoreSection />
-        </section>
-
-        {/* 17 new FAQ section */}
-        <section className="py-[60px] px-[10px] bg-white">
-          <div data-aos="fade-up" className="container mx-auto">
-            <h1 className="text-center mb-2  font-bold text-[#f15b29]">
-              | Ask Us Anything
-            </h1>
-            <div className="flex justify-center   flex-col md:flex-row">
-              {/* Sidebar */}
-              <div className="md:w-1/6 w-full p-3 border-r border-b md:border-b-0 text-black border-[#f15b29]">
-                <ul className="space-y-2">
-                  {Object.keys(faqData).map((category) => (
-                    <li
-                      key={category}
-                      onClick={() => {
-                        setActiveCategory(category);
-                        setOpenFAQ(null); // Reset any open question
-                      }}
-                      className={`cursor-pointer border font-bold text-black py-2 px-4 rounded-lg ${
-                        activeCategory === category ? " text-[#f15b29]" : ""
-                      }`}
-                    >
-                      {category}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* FAQ Content */}
-              <div className="md:w-3/4 w-full p-3">
-                <h2 className="text-2xl font-bold mb-4 text-[#f15b29]">
-                  {activeCategory} :
-                </h2>
-                <ul className="space-y-4 ">
-                  {faqData[activeCategory].map((faq, index) => (
-                    <li
-                      className="border  overflow-hidden rounded-lg "
-                      key={index}
-                    >
-                      <button
-                        onClick={() =>
-                          setOpenFAQ(openFAQ === index ? null : index)
-                        }
-                        className="w-full text-left text-black py-3 px-5  flex justify-between items-center"
-                      >
-                        {faq.question}
-                        <span className="text-[#f15b29] font-bold text-2xl">
-                          {openFAQ === index ? "-" : "+"}
-                        </span>
-                      </button>
-                      {openFAQ === index && (
-                        <div className="p-4 border-t bg-slate-100 text-black">
-                          <p>{faq.answer}</p>
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 11 scrolling section */}
-        <section className="">
-          <div
-            className={`fixed bottom-0 left-0 w-full bg-white z-10 shadow-md flex justify-between items-center p-4   transition-transform duration-300 ${
-              isVisible ? "translate-y-0" : "translate-y-full"
-            }`}
-          >
-            <p className="text-lg font-semibold text-black">
-              Program fees 60,000/- + 18% GST
-            </p>
-            <div className="flex space-x-4">
-              <button className="flex items-center px-3 py-2 border rounded-md text-white bg-black  hover:text-[#f15b29]">
-                <a
-                   href="https://rzp.io/rzp/Advanced_Program_Slot_Booking"
-                  target="blank"
-                  className="text-[#f15b29] whitespace-nowrap"
-                >
-                  Enroll Now
-                </a>
-              </button>
-            </div>
+            <a href={pdfpmm} target="_blank" rel="noreferrer" className="pm-btn" style={{ textDecoration: "none" }}>
+              Download
+            </a>
           </div>
         </section>
       </div>
+
+      <section className="pm-section pm-career">
+        <div className="pm-shell">
+          <div className="pm-center">
+            <h2>Career Opportunities in Product Management</h2>
+            <p className="lead" style={{ margin: "0 auto", maxWidth: "640px" }}>
+              Build readiness for strategic product, growth, and leadership-oriented PM roles.
+            </p>
+          </div>
+
+          <div className="pm-role-grid">
+            {roles.map((role) => (
+              <article className="pm-role-card" key={role.title}>
+                <div className="pm-role-dot" />
+                <h4>{role.title}</h4>
+                <p>{role.text}</p>
+                <strong>{role.avg}</strong>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="pm-section">
+        <div className="pm-shell">
+          <h2 className="pm-center">Our Alumni at Top Brands</h2>
+          <p className="lead pm-center" style={{ margin: "0 auto 18px", maxWidth: "760px" }}>
+            Their success stories inspire current students to aim for global excellence.
+          </p>
+          <ClientsCarousel />
+        </div>
+      </section>
+
+      <section className="pm-section">
+        <div className="pm-shell">
+          <h2 className="pm-center">Course Benefits at a Glance</h2>
+          <div className="pm-metric-grid">
+            <article className="pm-metric"><h4>250+</h4><p>Mentees Placed</p></article>
+            <article className="pm-metric"><h4>12+ LPA</h4><p>Average CTC</p></article>
+            <article className="pm-metric"><h4>91%</h4><p>Placement Rate</p></article>
+            <article className="pm-metric"><h4>420+</h4><p>Hiring Partners</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section className="pm-section">
+        <div className="pm-shell">
+          <Certification />
+        </div>
+      </section>
+
+      <section className="pm-section">
+        <div className="pm-shell">
+          <div className="pm-invest">
+            <div className="pm-invest-sub">Program Investment</div>
+            <h3>Rs 47,200</h3>
+            <div className="pm-invest-sub">Total fee (incl. GST)</div>
+
+            <div className="pm-invest-grid">
+              <div className="pm-invest-item">
+                <strong>Rs 10,000</strong>
+                <span>Registration fee to reserve your seat in this premium cohort.</span>
+              </div>
+              <div className="pm-invest-item">
+                <strong>Installment 1: Rs 18,600</strong>
+                <span>Payable within 15 days from date of registration.</span>
+              </div>
+              <div className="pm-invest-item">
+                <strong>Installment 2: Rs 18,600</strong>
+                <span>Payable within 15 days after installment 1.</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="pm-pay-grid">
+            <div className="pm-fee-box">
+              <div>Total Program Fee</div>
+              <div className="fee">Rs 47,200</div>
+              <div>Inclusive of taxes</div>
+            </div>
+            <div className="pm-breakdown">
+              <div className="pm-break-row"><span>Registration</span><strong>Rs 10,000</strong></div>
+              <div className="pm-break-row"><span>Installment 1</span><strong>Rs 18,600</strong></div>
+              <div className="pm-break-row"><span>Installment 2</span><strong>Rs 18,600</strong></div>
+            </div>
+          </div>
+
+          <div className="pm-partner">
+            <p className="pm-invest-sub">Our Financial Partner</p>
+            <img src={Flashaidlogo} alt="Financial partner" />
+          </div>
+        </div>
+      </section>
+
+      <section className="pm-section" style={{ background: "#fff" }}>
+        <div className="pm-shell">
+          <StoreSection />
+        </div>
+      </section>
+
+      <section className="pm-section" style={{ background: "#fff" }}>
+        <div className="pm-shell">
+          <h2 className="pm-center">Ask Us Anything</h2>
+          <div className="pm-faq-grid">
+            <aside className="pm-faq-menu">
+              {Object.keys(faqData).map((category) => (
+                <button
+                  key={category}
+                  className={activeCategory === category ? "active" : ""}
+                  type="button"
+                  onClick={() => {
+                    setActiveCategory(category);
+                    setOpenFAQ(null);
+                  }}
+                >
+                  {category}
+                </button>
+              ))}
+            </aside>
+
+            <div>
+              {faqData[activeCategory].map((faq, index) => (
+                <article className="pm-faq-item" key={faq.question}>
+                  <button
+                    className="pm-faq-head"
+                    type="button"
+                    onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
+                  >
+                    <span>{faq.question}</span>
+                    <strong>{openFAQ === index ? "-" : "+"}</strong>
+                  </button>
+                  {openFAQ === index && <div className="pm-faq-body">{faq.answer}</div>}
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };

@@ -17,12 +17,12 @@ import LoginWithOtp from "./page/LoginWithOtp";
 import EventRegister from "./page/EventRegister";
 import EventLogin from "./page/EventLogin";
 import ScrollToTop from "./Components/ScrollToTop";
-import Advance from "./page/Advance";
 import Mentorship from "./page/Mentorship";
 import DataScience from "./page/AdvanceCourse/DataScience";
 import DataAnalytics from "./page/AdvanceCourse/DataAnalytics";
 import DigitalMarket from "./page/AdvanceCourse/DigitalMarket";
 import MernStack from "./page/AdvanceCourse/MernStack";
+import UIUXDesign from "./page/AdvanceCourse/UIUXDesign";
 import Investmentbanking from "./page/AdvanceCourse/Investmentbanking";
 import ProductManagement from "./page/AdvanceCourse/ProductManagement";
 import SmoothScroll from "./SmoothScroll";
@@ -526,13 +526,16 @@ const AppContent = () => {
         <Route path="/FeeStructure" element={<FeeStructure />} />
         <Route path="/events" element={<TalentHunt />} />
         <Route path="/EventRegister" element={<EventRegister />} />
-        <Route path="/Advance" element={<Advance />} />
+        <Route path="/Advance" element={<AdvanceCourses />} />
         <Route path="/Mentorship" element={<Mentorship />} />
         <Route path="/DataScience" element={<DataScience />} />
         <Route path="/DataAnalytics" element={<DataAnalytics />} />
         <Route path="/DigitalMarket" element={<DigitalMarket />} />
         <Route path="/Performancemarket" element={<Performancemarket />} />
         <Route path="/MernStack" element={<MernStack />} />
+        <Route path="/UIUX" element={<UIUXDesign />} />
+        <Route path="/UIUXDesign" element={<UIUXDesign />} />
+        <Route path="/ui-ux" element={<UIUXDesign />} />
         <Route path="/Investmentbanking" element={<Investmentbanking />} />
         <Route path="/ProductManagement" element={<ProductManagement />} />
         <Route path="/AutomationTesting" element={<AutomationTesting />} />

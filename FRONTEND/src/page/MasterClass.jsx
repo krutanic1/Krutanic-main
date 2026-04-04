@@ -5,23 +5,16 @@ import HomePopup from "../Components/HomePopup";
 // import { useNavigate } from "react-router-dom";
 import API from "../API";
 import axios from "axios";
-import AOS from "aos";
-import "aos/dist/aos.css";
 import toast, { Toaster } from "react-hot-toast";
 // import { FaEye, FaEyeSlash } from "react-icons/fa";
 import img from "../assets/masterclasscertificate.jpg";
 import imghero from "../assets/masterclass.jpeg";
-import imgmentor from "../assets/Advanced Course Images/Product management/pm.jpg";
-import imgadvance from "../assets/courses/feesimg.jpeg";
 import imgalt from "../assets/defaultmasterclass.jpg";
 import Popularcourse from "../Components/popularcourse";
-import logo from "../User/playerlogo.jpg";
 
 const MasterClass = () => {
   const [showPopup, setShowPopup] = useState(false);
   useEffect(() => {
-    AOS.init({ duration: 1000, once: false });
-
     let interval;
     const timer = setTimeout(() => {
       setShowPopup(true);
@@ -48,12 +41,6 @@ const MasterClass = () => {
     email: "",
     clgemail: "",
     collegename: "",
-    phone: "",
-  });
-  const [certificateData, setCertificateData] = useState({
-    name: "",
-    email: "",
-    clgemail: "",
     phone: "",
   });
   const faqs = [
@@ -209,6 +196,31 @@ const MasterClass = () => {
     }
   };
 
+  const activeMasterClasses = [...allMasterClass].sort(
+    (a, b) => new Date(a.start) - new Date(b.start)
+  );
+
+  const latestCompletedMasterClass = [...completedMasterClass]
+    .sort((a, b) => new Date(b.end) - new Date(a.end))
+    .slice(0, 2);
+
+  const formatClassDate = (dateValue) =>
+    new Date(dateValue).toLocaleDateString("en-US", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+
+  const formatClassDateTime = (dateValue) =>
+    new Date(dateValue).toLocaleString("en-US", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+
   return (
     <div id="MasterClass">
       {showPopup && <HomePopup onClose={() => setShowPopup(false)} />}
@@ -259,321 +271,311 @@ const MasterClass = () => {
       </Helmet>
 
       <Toaster position="top-center" reverseOrder={false} />
-      <div className="masterclassherosection">
-        <img src={imghero} alt="" />
-      </div>
-
-      {/* Three Sections: Upcoming, Ongoing, Completed */}
-      <div className="masterclass-categories">
-        <div className="category-section">
-          <h2 className="category-title">Upcoming Masterclasses</h2>
-          <div className="category-count">{upcomingMasterClass.length}</div>
-          <p className="category-description">Register for upcoming sessions and get ahead in your learning journey</p>
-        </div>
-        <div className="category-section">
-          <h2 className="category-title">Ongoing Masterclasses</h2>
-          <div className="category-count">{ongoingMasterClass.length}</div>
-          <p className="category-description">Join live sessions in progress and learn from industry experts</p>
-        </div>
-        <div className="category-section">
-          <h2 className="category-title">Completed Masterclasses</h2>
-          <div className="category-count">{completedMasterClass.length}</div>
-          <p className="category-description">Access certificates from masterclasses you've attended</p>
-        </div>
-      </div>
-
-      {/* <div className="masterclasshero">
-        <input
-          className="radio"
-          type="radio"
-          name="card"
-          id="cardUno"
-          defaultChecked
-        />
-        <label
-          className="content"
-          htmlFor="cardUno"
+      <div className="mc-shell">
+        <section
+          className="mc-hero"
           style={{ backgroundImage: `url(${imghero})` }}
         >
-          <h1 className="title-card">
-            Masterclasses to Boost Your Skills
+          <span className="mc-eyebrow">Elevate your career</span>
+          <h1>
+            Masterclasses <span>to Boost</span> Your Skills
           </h1>
-          <h3 className="card-title subsubtitle">
-            <span>Join our comprehensive masterclass and take your expertise to the next level. Learn from industry experts and transform your career.</span>
-          </h3>
-        </label>
-        <input className="radio" type="radio" name="card" id="cardDos" />
-        <label
-          className="content"
-          htmlFor="cardDos"
-          style={{ backgroundImage: `url(${imgmentor})` }}
-        >
-          <h1 className="title-card">
-            <span className="marg-bott">EXAMPLE TITLE OF MY CARD</span>
-            <span className="subtitle">EXAMPLE SOME SUBTITLE OR HEADER</span>
-          </h1>
-          <h3 className="card-title subsubtitle">
-            <span>EXAMPLE SOME ADDITIONS</span>
-          </h3>
-        </label>
-        <input className="radio" type="radio" name="card" id="cardTres" />
-        <label
-          className="content"
-          htmlFor="cardTres"
-          style={{ backgroundImage: `url(${imgadvance})` }}
-        >
-
-        </label>
-      </div>  */}
-      <div className="aboutwhy">
-        <div className="about">
-          <h1>| About Masterclass</h1> <br />
           <p>
-            Krutanic MasterClass is an interactive online learning platform
-            where students learn directly from industry experts and top
-            educators through free, career-focused masterclasses in Data
-            Science, AI, Full Stack Development, Digital Marketing, Cyber
-            Security and more. <br />
-            <br /> Whether you aim to upskill, explore new fields, or prepare
-            for internships and job opportunities, our online courses help you
-            build practical skills and gain a competitive edge.
+            Gain exclusive access to industry giants and transformative
+            learning experiences.
           </p>
-        </div>
-        <div className="why">
-          <h1>| Why Join Krutanic Masterclass ? </h1> <br />
-          <div>
-            <div className="item">
-              <i className="fa fa-certificate"></i>
-              <h2>Certificate</h2>
-            </div>
-            <div className="item">
-              <i className="	fa fa-mortar-board"></i>
-              <h2>Expert Mentor</h2>
-            </div>
-            <div className="item">
-              <i className="fa fa-line-chart"></i>
-              <h2>Career Guidance</h2>
-            </div>
-            <div className="item">
-              <i className="fa fa-video-camera"></i>
-              <h2>Live Interactive</h2>
-            </div>
-            <div className="item">
-              <i className="fa fa-briefcase"></i>
-              <h2>Industrial Topic</h2>
-            </div>
-            <div className="item">
-              <i className="fa fa-rupee"></i>
-              <h2>Free of Cost</h2>
-            </div>
+          <button
+            onClick={() => {
+              const target = document.getElementById("active-classes");
+              if (target) target.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            Explore Now
+          </button>
+        </section>
+
+        <section className="mc-status-strip">
+          <div className="mc-status-card">
+            <strong>{upcomingMasterClass.length}</strong>
+            <span>Upcoming</span>
           </div>
-        </div>
-      </div>
-      <div className="classess">
-        <div>
-          {allMasterClass?.map((masterclass, index) => (
-            <div className="item">
-              <img
-                src={masterclass.image}
-                alt="masterclass"
-                onError={(e) => (e.target.src = imgalt)}
-              />
-              <div className="text" key={masterclass._id || index}>
-                <div className="content">
-                  <h2>{masterclass.title}</h2>
-                  <h3>
-                    Start time:{" "}
-                    {new Date(masterclass.start).toLocaleString("en-US", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                      hour: "numeric",
-                      minute: "2-digit",
-                      hour12: true,
-                    })}
-                  </h3>
-                  <h3>
-                    End time:{" "}
-                    {new Date(masterclass.end).toLocaleString("en-US", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                      hour: "numeric",
-                      minute: "2-digit",
-                      hour12: true,
-                    })}
-                  </h3>
-                </div>
-                {masterclass.status === "upcoming" ? (
-                  <div className="register">
-                    <p>Registration will start soon !</p>
-                  </div>
-                ) : (
-                  <div className="register">
-                    <span>
-                      {masterclass.applications} learners have registered
-                    </span>
-                    <button onClick={() => handleApply(masterclass)}>
-                      Register Now
-                    </button>
-                    {/* <button onClick={() => handleDownload(masterclass)} className="fa fa-download" > Certificate</button> */}
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="benifits">
-        <h1>| Benefits of the Masterclass</h1> <br />
-        <div>
-          <div className="item">
-            <i className="fa fa-certificate"></i>
-            <h2>Industry-Recognized Certification</h2>
+          <div className="mc-status-card">
+            <strong>{ongoingMasterClass.length}</strong>
+            <span>Ongoing</span>
+          </div>
+          <div className="mc-status-card">
+            <strong>{completedMasterClass.length}</strong>
+            <span>Completed</span>
+          </div>
+        </section>
+
+        <div className="mc-web-intro">
+          <section className="mc-about">
+            <h2>About Krutanic</h2>
             <p>
-              Receive a certificate upon completion to boost your credentials.
+              Krutanic MasterClass is an interactive learning platform where
+              students learn directly from industry experts and top educators
+              through free, career-focused sessions in Data Science, AI, Full
+              Stack Development, Marketing, Cyber Security, and more.
             </p>
-          </div>
-          <div className="item">
-            <i className="fa fa-line-chart"></i>
-            <h2>Career Guidance </h2>
-            <p> Get personalized advice to navigate your career path.</p>
-          </div>
-          <div className="item">
-            <i className="fa fa-globe"></i>
-            <h2>Networking Opportunities</h2>
-            <p>Connect with like-minded professionals and industry leaders.</p>
-          </div>
-        </div>
-      </div>
+          </section>
 
-      <div className="industrialtalk">
-        <h1>| Industrial Talks</h1>
-        <div>
-          <div className="item">
-            <iframe
-              src="https://drive.google.com/file/d/15rAhofL6ei6Gxy9fHRrkcjXB4SMGMzft/preview"
-              width="640"
-              height="360"
-              allow="autoplay"
-              allowFullScreen
-              title="Industrial Talk Video"
-              style={{ border: 0 }}
-            ></iframe>
-            <div className="text">
-              <div className="content">
-                <h3>Podcast on Career Advancement with</h3>
-                <h2>Karam Dharmanandra Singh</h2>
-                <h3>
-                  Manager at <span>BOSCH</span>
-                </h3>
+          <section className="mc-benefit-grid">
+            <article>
+              <i className="fa fa-certificate"></i>
+              <h3>Certificate</h3>
+            </article>
+            <article>
+              <i className="fa fa-mortar-board"></i>
+              <h3>Expert Mentors</h3>
+            </article>
+            <article>
+              <i className="fa fa-video-camera"></i>
+              <h3>Live Networking</h3>
+            </article>
+            <article>
+              <i className="fa fa-handshake-o"></i>
+              <h3>Hands-on Labs</h3>
+            </article>
+            <article>
+              <i className="fa fa-briefcase"></i>
+              <h3>Lifetime Access</h3>
+            </article>
+            <article>
+              <i className="fa fa-users"></i>
+              <h3>24/7 Support</h3>
+            </article>
+          </section>
+        </div>
+
+        <section className="mc-classes" id="active-classes">
+          <div className="mc-section-head">
+            <h2>Active Classes</h2>
+            <span>View all</span>
+          </div>
+          <div className="mc-classes-strip">
+            {activeMasterClasses.map((masterclass) => (
+              <article className="mc-class-card" key={masterclass._id}>
+                <div className="mc-class-thumb">
+                  <img
+                    src={masterclass.image}
+                    alt={masterclass.title}
+                    onError={(e) => (e.target.src = imgalt)}
+                  />
+                  <span className={`mc-badge mc-${masterclass.status}`}>
+                    {masterclass.status}
+                  </span>
+                </div>
+                <div className="mc-class-body">
+                  <h3>{masterclass.title}</h3>
+                  <p>{formatClassDate(masterclass.start)}</p>
+                  <button
+                    onClick={() =>
+                      masterclass.status === "completed"
+                        ? handleDownload(masterclass)
+                        : handleApply(masterclass)
+                    }
+                  >
+                    {masterclass.status === "completed"
+                      ? "Get Certificate"
+                      : "Register Now"}
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <div className="mc-web-media">
+          <section className="mc-industrial">
+            <h2>Industrial Talks EP. 12</h2>
+            <div className="mc-industrial-card">
+              <div className="mc-play-button">
+                <i className="fa fa-play"></i>
               </div>
+              <h3>#Precision in Engineering</h3>
+              <p>
+                Join Karam Dharmanandra Singh from BOSCH and discover modern
+                product practices.
+              </p>
+            </div>
+          </section>
+
+          <section className="mc-certificate">
+            <div className="mc-section-head">
+              <h2>Certified Excellence</h2>
+            </div>
+            <p>
+              Validate your expertise with industry-recognized certifications.
+            </p>
+            <img src={img} alt="Certificate preview" />
+          </section>
+        </div>
+
+        <section className="mc-industrial-video">
+          <div className="mc-section-head">
+            <h2>Industrial Talk Session</h2>
+          </div>
+          <div className="mc-industrial-video-card">
+            <a
+              className="mc-industrial-thumb-link"
+              href="https://drive.google.com/file/d/15rAhofL6ei6Gxy9fHRrkcjXB4SMGMzft/preview"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Open industrial talk session"
+            >
+              <img
+                src="/course_thumbnails/industrytalksession.jpg"
+                alt="Industrial Talk Session Thumbnail"
+                className="mc-industrial-thumb"
+              />
+              <span className="mc-industrial-thumb-play">
+                <i className="fa fa-play"></i>
+              </span>
+            </a>
+            <div className="mc-industrial-video-text">
+              <h3>Podcast on Career Advancement</h3>
+              <p>
+                With Karam Dharmanandra Singh, manager at BOSCH. Learn how
+                product teams operate and how to prepare for industry projects.
+              </p>
             </div>
           </div>
-        </div>
-      </div>
+        </section>
 
-      <div className="certificateparticipate">
-        <div className="text">
-          <h1>| Certificate of Participation</h1> <br />
-          <p>
-            After attending the Krutanic masterclass, you'll receive a
-            certificate of participation. <br />
-            <br /> This certificate acknowledges your commitment to professional
-            development and can be shared on LinkedIn and other professional
-            platforms to highlight your expertise and showcase your continuous
-            learning.
-          </p>
-        </div>
-        <div className="image">
-          <img src={img} alt="" />
-        </div>
-      </div>
+        <div className="mc-web-trust">
+          <section className="mc-why">
+            <article>
+              <i className="fa fa-certificate"></i>
+              <div>
+                <h3>Industry Certification</h3>
+                <p>Accepted by recruiters and organizations worldwide.</p>
+              </div>
+            </article>
+            <article>
+              <i className="fa fa-line-chart"></i>
+              <div>
+                <h3>Career Guidance</h3>
+                <p>Personalized internship tracks and practical mentorship.</p>
+              </div>
+            </article>
+            <article>
+              <i className="fa fa-globe"></i>
+              <div>
+                <h3>Networking</h3>
+                <p>
+                  Connect with thousands of peers and mentors in our groups.
+                </p>
+              </div>
+            </article>
+          </section>
 
-      {/* completed course section */}
-      <div className="classess">
-        <div>
-          {completedMasterClass
-            ?.slice()
-            .reverse()
-            .map((masterclass, index) => (
-              <div className="item">
-                <img
-                  src={masterclass.image}
-                  alt="masterclass"
-                  onError={(e) => (e.target.src = imgalt)}
-                />
-                <div className="text" key={masterclass._id || index}>
-                  <div className="content">
-                    <h2>{masterclass.title}</h2>
-                    <h3>
-                      Start time:{" "}
-                      {new Date(masterclass.start).toLocaleString("en-US", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                        hour: "numeric",
-                        minute: "2-digit",
-                        hour12: true,
-                      })}
-                    </h3>
-                    <h3>
-                      End time:{" "}
-                      {new Date(masterclass.end).toLocaleString("en-US", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                        hour: "numeric",
-                        minute: "2-digit",
-                        hour12: true,
-                      })}
-                    </h3>
-                  </div>
-                  <div className="register">
-                    <span>
-                      {masterclass.applications} learners have participated
-                    </span>
+          {latestCompletedMasterClass.length > 0 && (
+            <section className="mc-completed">
+              <div className="mc-section-head">
+                <h2>Recently Completed</h2>
+              </div>
+              <div className="mc-completed-list">
+                {latestCompletedMasterClass.map((masterclass) => (
+                  <article className="mc-completed-item" key={masterclass._id}>
+                    <img
+                      src={masterclass.image}
+                      alt={masterclass.title}
+                      onError={(e) => (e.target.src = imgalt)}
+                    />
+                    <div>
+                      <h3>{masterclass.title}</h3>
+                      <p>{formatClassDate(masterclass.end)}</p>
+                    </div>
                     {masterclass.pdfstatus && (
-                      <button
-                        onClick={() => handleDownload(masterclass)}
-                        className="fa fa-download"
-                      >
-                        {" "}
+                      <button onClick={() => handleDownload(masterclass)}>
+                        <i className="fa fa-download"></i>
+                      </button>
+                    )}
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+
+        <section className="mc-popular">
+          <div className="mc-section-head">
+            <h2>Popular Courses</h2>
+          </div>
+          <Popularcourse />
+        </section>
+
+        {completedMasterClass.length > 0 && (
+          <section className="mc-completed-catalog">
+            <div className="mc-section-head">
+              <h2>All Completed Masterclasses</h2>
+            </div>
+            <div className="mc-completed-cards">
+              {[...completedMasterClass]
+                .reverse()
+                .map((masterclass) => (
+                  <article className="mc-completed-card" key={masterclass._id}>
+                    <img
+                      src={masterclass.image}
+                      alt={masterclass.title}
+                      onError={(e) => (e.target.src = imgalt)}
+                    />
+                    <div>
+                      <h3>{masterclass.title}</h3>
+                      <p>Start: {formatClassDateTime(masterclass.start)}</p>
+                      <p>End: {formatClassDateTime(masterclass.end)}</p>
+                      <span>
+                        {masterclass.applications?.length ||
+                          masterclass.applications ||
+                          0}{" "}
+                        learners participated
+                      </span>
+                    </div>
+                    {masterclass.pdfstatus && (
+                      <button onClick={() => handleDownload(masterclass)}>
                         Certificate
                       </button>
                     )}
-                  </div>
-                </div>
-              </div>
-            ))}
-        </div>
-      </div>
+                  </article>
+                ))}
+            </div>
+          </section>
+        )}
 
-      <div className="popularcourse">
-        <h1 data-aos="zoom-in">| Popular Courses</h1>
-        <Popularcourse />
-      </div>
-
-      <div className="faqsection">
-        <div className="max-w-[1200px] mx-auto p-4 border rounded-lg shadow-lg bg-white">
-          <h2 className="text-2xl font-bold mb-4 text-center">
-            Frequently Asked Questions
-          </h2>
+        <section className="mc-faq">
+          <div className="mc-section-head">
+            <h2>Frequently Asked</h2>
+          </div>
           {faqs.map((faq, index) => (
-            <div key={index} className="border-b py-2">
-              <button
-                className="w-full text-left font-semibold text-lg flex justify-between"
-                onClick={() => toggleFAQ(index)}
-              >
-                {faq.question}
-                <span>{openIndex === index ? "▲" : "▼"}</span>
+            <div key={index} className="mc-faq-item">
+              <button onClick={() => toggleFAQ(index)}>
+                <span>{faq.question}</span>
+                <i className={`fa ${openIndex === index ? "fa-minus" : "fa-plus"}`}></i>
               </button>
-              {openIndex === index && (
-                <p className="text-gray-700 mt-2">{faq.answer}</p>
-              )}
+              {openIndex === index && <p>{faq.answer}</p>}
             </div>
           ))}
-        </div>
+        </section>
+
+        <nav className="mc-bottom-nav">
+          <button className="active">
+            <i className="fa fa-compass"></i>
+            <span>Explore</span>
+          </button>
+          <button>
+            <i className="fa fa-users"></i>
+            <span>Community</span>
+          </button>
+          <button>
+            <i className="fa fa-briefcase"></i>
+            <span>Jobs</span>
+          </button>
+          <button>
+            <i className="fa fa-user"></i>
+            <span>Profile</span>
+          </button>
+        </nav>
       </div>
       {/* Registration Form */}
       {isRegisterForm && selectedMasterClass && (

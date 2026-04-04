@@ -48,21 +48,21 @@ const FAQMentor = () => {
             {faqs.map((faq, index) => (
               <div
                 key={index}
-                className=" rounded-lg overflow-hidden ease-linear duration-500"
+                className="rounded-lg overflow-hidden ease-linear duration-500"
               >
                 <button
-                  className="flex justify-between items-center w-full p-4 text-left bg-[#080808]"
+                  className="flex justify-between items-center w-full p-4 text-left bg-[#111827] hover:bg-[#0f172a] transition-colors"
                   onClick={() => toggleFAQ(index)}
                   aria-expanded={openIndex === index}
                 >
-                  <h3 className="text-lg font-semibold pr-8">{faq.question}</h3>
-                  <span className="text-2xl bg-black px-2 rounded-full text-[#f15b29]">
+                  <h3 className="text-lg font-semibold pr-8 text-white">{faq.question}</h3>
+                  <span className="text-2xl bg-[#0b1220] px-2 rounded-full text-[#f15b29]">
                     {openIndex === index ? "−" : "+"}
                   </span>
                 </button>
                 {openIndex === index && (
-                  <div className="p-4 bg-[rgb(255,255,255,0.2)] ">
-                    <p className="text-gray-300">{faq.answer}</p>
+                  <div className="p-4 bg-white border border-[#e5e7eb]">
+                    <p className="text-[#475467]">{faq.answer}</p>
                   </div>
                 )}
               </div>

@@ -108,7 +108,6 @@ const EventDetails = () => {
                         </button>
                     </div>
                 </div>
-                <Footer />
             </div>
         );
     }

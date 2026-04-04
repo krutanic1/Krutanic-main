@@ -1,62 +1,83 @@
 import React from "react";
 
 const EnrollMentor = () => {
-  const slides = [
+  const steps = [
     {
       title: "Register with us",
       description:
-        "Explore pro courses and register for the interested course by filling out the form.",
-      icon: "🔍", // Replace with actual icon
+        "Explore our mentorship tracks and submit your application form for the course you are interested in.",
+      icon: "fa-search",
+      tag: "Step 1",
     },
     {
       title: "You will get a call",
       description:
-        "You will soon get a call from one of our senior executives regarding a few details.",
-      icon: "💡", // Replace with actual icon
+        "Our senior executive connects with you to understand your profile, goals, and preferred learning path.",
+      icon: "fa-phone",
+      tag: "Step 2",
     },
     {
-      title: "Provide the  details",
+      title: "Provide the details",
       description:
-        "Simply provide the required information to the senior executive.",
-      icon: "🚀", // Replace with actual icon
+        "Share the required documents and profile details so your enrollment can be processed smoothly.",
+      icon: "fa-file-text-o",
+      tag: "Step 3",
     },
     {
-      title: "Pay  course fee",
-      description: "Complete the payment process to enroll in the course.",
-      icon: "💳", // Replace with actual icon
+      title: "Pay course fee",
+      description: "Complete the payment and secure your seat to begin your mentorship journey.",
+      icon: "fa-credit-card",
+      tag: "Step 4",
     },
   ];
+
   return (
-    <div>
-      <div className="container mx-auto">
-        <h1
-          data-aos='fade-up'
-          className="text-center text-[#f15b29]"
-        >
-          | How to Enroll with us.
-        </h1>
-        <div
-          data-aos='fade-up'
-          className="relative w-full p-4 text-white flex items-center justify-center"
-        >
-          <div className="flex items-center justify-center flex-wrap text-center gap-10  sm:flex-col md:flex-row">
-            {slides.map((slide, index) => (
-              <div
-                key={index}
-                className={`flex flex-col items-center transition-all hover:scale-110 duration-300 ease-linear`}
-              >
-                <div className="text-4xl">{slide.icon}</div>
-                <h3 className="text-xl font-semibold mt-4">
-                  <span className="mr-2">{index + 1}.</span>
-                  {slide.title}
-                </h3>
-                <p className="text-sm mt-2">{slide.description}</p>
+    <section className="container mx-auto" data-aos="fade-up">
+      <div className="rounded-[24px] border border-[#e6e9f1] bg-white p-6 md:p-8 lg:p-10 shadow-[0_12px_28px_rgba(15,23,42,0.08)]">
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="inline-flex rounded-full bg-[#f15b29]/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-[#ff9b78]">
+            Enrollment Guide
+          </p>
+          <h2 className="mt-4 text-3xl font-bold leading-tight text-[#111827] md:text-4xl">
+            How to Enroll with us
+          </h2>
+          <p className="mt-3 text-sm leading-relaxed text-[#5b6475] md:text-base">
+            A simple 4-step process designed to get you from application to your first mentorship session quickly.
+          </p>
+        </div>
+
+        <div className="mt-8 grid gap-4 md:grid-cols-2">
+          {steps.map((step, index) => (
+            <article
+              key={step.title}
+              className="group relative rounded-2xl border border-[#e3e7f0] bg-white p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:border-[#f15b29]/55 hover:shadow-[0_10px_20px_rgba(15,23,42,0.08)]"
+            >
+              <div className="absolute left-0 top-0 h-[3px] w-full bg-gradient-to-r from-[#f15b29] via-[#ff8c61] to-transparent opacity-85" />
+
+              <div className="relative flex items-start gap-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[#f15b29]/35 bg-[#f15b29]/14 text-[#ff9b78]">
+                  <i className={`fa ${step.icon} text-lg`} aria-hidden="true" />
+                </div>
+
+                <div className="min-w-0">
+                  <span className="inline-flex rounded-full border border-[#f15b29]/30 bg-[#f15b29]/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#ffab89]">
+                    {step.tag}
+                  </span>
+
+                  <h3 className="mt-2 text-[1.65rem] font-semibold leading-snug text-[#111827]">
+                    {index + 1}. {step.title}
+                  </h3>
+
+                  <p className="mt-2 text-sm leading-relaxed text-[#4f596d] md:text-[15px]">
+                    {step.description}
+                  </p>
+                </div>
               </div>
-            ))}
-          </div>
+            </article>
+          ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

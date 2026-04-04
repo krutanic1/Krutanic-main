@@ -1,49 +1,29 @@
 import { Helmet } from "react-helmet";
 import React, { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import AOS from "aos";
-import "aos/dist/aos.css";
+import { Link } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import API from "../API";
-import logo from '../assets/LOGO3.png';
 import Header from "../Components/Header";
 
-import Typed from 'typed.js';
+const fallbackEventImage =
+  "https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=2070&auto=format&fit=crop";
 
 const TalentHunt = () => {
   const [events, setEvents] = useState([]);
   const [topEarners, setTopEarners] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-  const el = React.useRef(null);
 
   useEffect(() => {
-    const typed = new Typed(el.current, {
-      strings: ['Upcoming Events'],
-      typeSpeed: 100,
-      backSpeed: 100,
-      backDelay: 1000,
-      loop: true,
-      showCursor: true,
-      cursorChar: '|',
-    });
-
-    return () => {
-      typed.destroy();
-    };
-  }, []);
-
-  useEffect(() => {
-    AOS.init({ duration: 1000, once: false });
     fetchEvents();
     fetchTopEarners();
   }, []);
 
   const fetchEvents = async () => {
     try {
-      const response = await axios.get(`${API}/events/summary`);
-      setEvents(response.data);
+      const response = await axios.get(`${API}/allevents`);
+      const rows = Array.isArray(response.data) ? response.data : [];
+      setEvents(rows);
     } catch (error) {
       console.error("Error fetching events:", error);
       toast.error("Failed to load events.");
@@ -61,269 +41,203 @@ const TalentHunt = () => {
     }
   };
 
-  const handleJoinNow = (eventId) => {
-    const token = localStorage.getItem("eventToken");
-    if (token) {
-      // User is logged in, redirect to dashboard
-      navigate("/EventDashboard");
-    } else {
-      // User not logged in, redirect to login
-      navigate("/EventLogin", { state: { message: "Please login to join this event", from: { pathname: "/EventDashboard" } } });
-    }
+  const normalizeStatus = (status) => {
+    const value = (status || "").toLowerCase();
+    if (value.includes("ongoing") || value.includes("live")) return "ongoing";
+    if (value.includes("complete") || value.includes("ended")) return "completed";
+    return "upcoming";
   };
 
+  const formatDate = (value) => {
+    if (!value) return "Date announced soon";
+    return new Date(value).toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  const eventsByStatus = {
+    upcoming: events.filter((item) => normalizeStatus(item.status) === "upcoming"),
+    ongoing: events.filter((item) => normalizeStatus(item.status) === "ongoing"),
+    completed: events.filter((item) => normalizeStatus(item.status) === "completed"),
+  };
+
+  const leadEvent =
+    eventsByStatus.ongoing[0] ||
+    eventsByStatus.upcoming[0] ||
+    eventsByStatus.completed[0] ||
+    null;
+
+  const topThree = topEarners.slice(0, 3);
+
+  const eventColumns = [
+    {
+      title: "Upcoming",
+      tone: "upcoming",
+      items: eventsByStatus.upcoming,
+      emptyText: "No upcoming events right now.",
+      countLabel: `${eventsByStatus.upcoming.length} soon`,
+    },
+    {
+      title: "Ongoing",
+      tone: "ongoing",
+      items: eventsByStatus.ongoing,
+      emptyText: "No ongoing events currently.",
+      countLabel: `${eventsByStatus.ongoing.length} live`,
+    },
+    {
+      title: "Completed",
+      tone: "completed",
+      items: eventsByStatus.completed,
+      emptyText: "No completed events yet.",
+      countLabel: `${eventsByStatus.completed.length} archived`,
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-white font-sans">
+    <div id="talenthunt" className="talent-events">
       <Helmet>
-        <title>Krutanic Talent Hunt | Discover Top Tech Talent</title>
+        <title>Krutanic Events | Discover Top Tech Talent</title>
         <meta name="description" content="Participate in Krutanic Talent Hunt events and showcase your skills." />
       </Helmet>
       <Toaster position="top-center" />
 
       <Header />
 
-      {/* Events Section */}
-      <div className="bg-black py-16">
-        <div className="max-w-7xl mx-auto px-6">
-          {/* Section Header */}
-          <div className="mb-12">
-            <div className="flex items-center mb-3">
-              <div className="h-10 w-1.5 bg-orange-600 mr-4 rounded-full"></div>
-              <h2 className="text-3xl md:text-4xl font-bold text-orange-600">
-                <span ref={el}></span>
-              </h2>
+      <main className="events-page-shell">
+        <section className="events-hero">
+          <div className="events-hero-copy">
+            <span className="events-chip">The Kinetic Curator</span>
+            <h1>
+              Krutanic
+              <span>Events</span>
+            </h1>
+            <p>
+              Compete, collaborate, and level up through curated challenges, practical workshops, and high-impact masterclasses.
+            </p>
+            <div className="events-hero-metrics">
+              <article>
+                <strong>{eventsByStatus.upcoming.length}</strong>
+                <span>Upcoming</span>
+              </article>
+              <article>
+                <strong>{eventsByStatus.ongoing.length}</strong>
+                <span>Live</span>
+              </article>
+              <article>
+                <strong>{eventsByStatus.completed.length}</strong>
+                <span>Completed</span>
+              </article>
             </div>
-            <p className="text-orange-600 text-lg ml-6">Browse our latest training programs and workshops</p>
           </div>
 
+          <div className="events-hero-visual">
+            <img src={leadEvent?.image || fallbackEventImage} alt={leadEvent?.title || "Featured Krutanic event"} />
+            <div className="events-hero-overlay">
+              <span>Now spotlighting</span>
+              <strong>{leadEvent?.title || "New workshops launching weekly"}</strong>
+            </div>
+          </div>
+        </section>
+
+        <section className="events-streams">
           {loading ? (
-            <div className="flex flex-col justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600 mb-4"></div>
-              <p className="text-gray-600 font-medium">Loading events...</p>
-            </div>
-          ) : events.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {events.map((event, index) => (
-                <div
-                  key={event._id}
-                  data-aos="fade-up"
-                  data-aos-delay={index * 100}
-                  className="bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col overflow-hidden group"
-                >
-                  {/* Event Image */}
-                  <div className="h-56 overflow-hidden relative p-3">
-                    <Link to={`/register/${event.slug}`}>
-                      <img
-                        src={event.image || "https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=2070&auto=format&fit=crop"}
-                        alt={event.title}
-                        className="w-full h-full object-cover rounded-lg transition-transform duration-500 group-hover:scale-110 cursor-pointer"
-                      />
-                    </Link>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent m-3 rounded-lg pointer-events-none"></div>
-                    <div className="absolute top-7 right-7 bg-blue-600 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-lg z-10">
-                      {event.type || "Workshop"}
-                    </div>
-                  </div>
-
-                  {/* Card Content */}
-                  <div className="p-6 flex-grow flex flex-col">
-                    <Link to={`/register/${event.slug}`}>
-                      <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 min-h-[3.5rem] hover:text-orange-600 transition-colors">
-                        {event.title}
-                      </h3>
-                    </Link>
-
-                    {/* Date & Time */}
-                    {(event.startDate || event.start || event.date) && (
-                      <div className="flex items-center text-sm text-gray-600 mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        <span className="font-medium">
-                          {new Date(event.startDate || event.start || event.date).toLocaleDateString(undefined, {
-                            year: 'numeric', month: 'short', day: 'numeric'
-                          })}
-                        </span>
-                      </div>
-                    )}
-
-                    <p className="text-gray-600 text-sm mb-6 line-clamp-3 flex-grow leading-relaxed">
-                      {event.shortDescription || event.fullDescription || event.description || "Enhance your skills with our comprehensive training program designed by industry experts."}
-                    </p>
-
-                    {/* Footer with CTA */}
-                    <div className="mt-auto pt-4 border-t border-gray-100">
-                      <div className="flex justify-between items-center mb-4">
-                        <div className="text-sm font-semibold">
-                          {event.coin ? (
-                            <span className="flex items-center text-yellow-600 bg-yellow-50 px-3 py-1 rounded-full">
-                              <span className="mr-1">🏆</span> {event.coin} Coins
-                            </span>
-                          ) : (
-                            <span className="text-blue-600 bg-blue-50 px-3 py-1 rounded-full">Free Entry</span>
-                          )}
-                        </div>
-                      </div>
-                      <Link
-                        to={`/register/${event.slug}`}
-                        className="block w-full text-center px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold rounded-lg hover:shadow-xl transition-all transform hover:scale-105"
-                      >
-                        View Details →
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <div className="events-loading">Loading events...</div>
           ) : (
-            <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-gray-100">
-              <div className="text-7xl mb-6">📅</div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">No Active Events</h3>
-              <p className="text-gray-600 text-lg mb-6">Check back soon for upcoming training programs and workshops!</p>
-              <Link
-                to="/ContactUs"
-                className="inline-block px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Contact Us for Updates
-              </Link>
-            </div>
+            eventColumns.map((column) => (
+              <article key={column.title} className={`events-column is-${column.tone}`}>
+                <div className="events-column-head">
+                  <h2>{column.title}</h2>
+                  <span>{column.countLabel}</span>
+                </div>
+                <p className="events-column-copy">
+                  {column.tone === "upcoming" && "Plan your next sprint and register before slots fill up."}
+                  {column.tone === "ongoing" && "Jump in now and keep your momentum running."}
+                  {column.tone === "completed" && "Replay highlights and celebrate top performers."}
+                </p>
+
+                <div className="events-column-scroll-wrapper">
+                  <div className="events-column-list">
+                    {column.items.length > 0 ? (
+                      column.items.map((item) => (
+                        <article key={item._id} className="event-tile">
+                          <div className="event-tile-image-wrap">
+                            <img src={item.image || fallbackEventImage} alt={item.title} />
+                            <span className="event-tile-tag">{item.type || item.category || "Event"}</span>
+                          </div>
+                          <div className="event-tile-body">
+                            <h3>{item.title}</h3>
+                            <p>
+                              {item.shortDescription || item.fullDescription || item.description || "Skill-first event designed to sharpen execution and communication."}
+                            </p>
+                            <div className="event-tile-meta">
+                              <span>{formatDate(item.startDate || item.start || item.date)}</span>
+                              <span>{item.coin ? `${item.coin} coins` : "Free entry"}</span>
+                            </div>
+                            {item.slug ? (
+                              <Link to={`/register/${item.slug}`} className="event-tile-cta">
+                                {column.tone === "completed" ? "View Recap" : "Join Event"}
+                              </Link>
+                            ) : (
+                              <button type="button" className="event-tile-cta is-disabled" disabled>
+                                Coming Soon
+                              </button>
+                            )}
+                          </div>
+                        </article>
+                      ))
+                    ) : (
+                      <div className="events-empty">{column.emptyText}</div>
+                    )}
+                  </div>
+                </div>
+              </article>
+            ))
           )}
-        </div>
-      </div>
+        </section>
 
-      {/* Top Winners Section */}
-      {topEarners.length > 0 && (
-        <div className="bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 py-8 md:py-16">
-          <div className="max-w-7xl mx-auto px-4 md:px-6">
-            {/* Section Header */}
-            <div className="text-center mb-8 md:mb-12">
-              <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-2 md:mb-3">
-                🏆 Previous Top Winners
-              </h2>
-              <p className="text-purple-200 text-sm md:text-lg">Champions who won prizes across all events</p>
-
-              {/* Total Distributed Prizes Banner */}
-              <div className="mt-4 md:mt-6 inline-block">
-                <div className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 px-4 py-2 md:px-8 md:py-4 rounded-full shadow-2xl border-2 md:border-4 border-green-300 transform hover:scale-105 transition-all duration-300">
-                  <div className="flex items-center gap-2 md:gap-3">
-                    <span className="text-xl md:text-3xl">💰</span>
-                    <div className="text-left">
-                      <p className="text-white/80 text-xs font-semibold uppercase tracking-wide">Distributed Prizes Till Now</p>
-                      <p className="text-white font-bold text-xl md:text-2xl lg:text-3xl">₹30,000</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        {topThree.length > 0 && (
+          <section className="events-hall">
+            <div className="events-hall-head">
+              <h2>Hall Of Fame</h2>
+              <p>Recognizing top performers who turned consistent effort into standout results.</p>
             </div>
 
-            {/* Podium Display */}
-            <div className="flex justify-center items-end gap-2 md:gap-4 lg:gap-8 max-w-4xl mx-auto">
-              {/* Second Place */}
-              {topEarners[1] && (
-                <div className="flex flex-col items-center" data-aos="fade-up" data-aos-delay="100">
-                  <div className="relative mb-2 md:mb-4">
-                    <div className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center border-2 md:border-4 border-gray-400 shadow-2xl">
-                      {topEarners[1].profilePhoto ? (
-                        <img src={topEarners[1].profilePhoto} alt={topEarners[1].name} className="w-full h-full rounded-full object-cover" />
-                      ) : (
-                        <span className="text-2xl md:text-3xl lg:text-4xl font-bold text-white">2</span>
-                      )}
-                    </div>
-                    <div className="absolute -top-1 -right-1 md:-top-2 md:-right-2 w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-gray-200 to-gray-400 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
-                      <span className="text-sm md:text-xl font-bold text-gray-700">2</span>
-                    </div>
-                  </div>
-                  <div className="bg-gradient-to-br from-gray-400 to-gray-600 rounded-t-2xl px-3 py-4 md:px-6 md:py-8 lg:py-12 w-28 md:w-40 lg:w-48 text-center shadow-2xl transform hover:scale-105 transition-all duration-300">
-                    <p className="text-white font-bold text-xs md:text-base lg:text-lg mb-1 md:mb-2 line-clamp-1">{topEarners[1].name || 'Gaurav Singh'}</p>
-                    <div className="bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 md:px-3 md:py-2 mb-1 md:mb-2">
-                      <p className="text-yellow-300 font-bold text-base md:text-xl lg:text-2xl">₹{topEarners[1].totalPrizeMoney || 0}</p>
-                      <p className="text-gray-200 text-xs hidden md:block">Total Prize Won</p>
-                    </div>
-                    <p className="text-gray-200 text-xs hidden md:block">🪙 {topEarners[1].totalCoins || 0} coins • {topEarners[1].eventsWon || 0} events</p>
-                  </div>
-                </div>
-              )}
+            <div className="events-podium">
+              <article className="podium-card is-second">
+                <div className="podium-avatar">{topThree[1]?.name?.charAt(0) || "2"}</div>
+                <strong>{topThree[1]?.name || "Second Place"}</strong>
+                <span>{topThree[1]?.totalCoins || 0} coins</span>
+              </article>
 
-              {/* First Place */}
-              {topEarners[0] && (
-                <div className="flex flex-col items-center" data-aos="fade-up">
-                  <div className="relative mb-2 md:mb-4">
-                    <div className="w-20 h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 rounded-full bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-600 flex items-center justify-center border-2 md:border-4 border-yellow-500 shadow-2xl animate-pulse">
-                      {topEarners[0].profilePhoto ? (
-                        <img src={topEarners[0].profilePhoto} alt={topEarners[0].name} className="w-full h-full rounded-full object-cover" />
-                      ) : (
-                        <span className="text-3xl md:text-4xl lg:text-5xl font-bold text-white">1</span>
-                      )}
-                    </div>
-                    <div className="absolute -top-2 -right-2 md:-top-3 md:-right-3 w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
-                      <span className="text-xl md:text-2xl font-bold text-yellow-900">👑</span>
-                    </div>
-                  </div>
-                  <div className="bg-gradient-to-br from-yellow-500 via-yellow-600 to-orange-600 rounded-t-2xl px-3 py-6 md:px-6 md:py-12 lg:py-16 w-32 md:w-48 lg:w-56 text-center shadow-2xl transform hover:scale-105 transition-all duration-300 relative">
-                    <div className="absolute -top-4 md:-top-6 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-yellow-900 px-2 py-0.5 md:px-4 md:py-1 rounded-full text-xs font-bold shadow-lg">
-                      CHAMPION
-                    </div>
-                    <p className="text-white font-bold text-sm md:text-lg lg:text-xl mb-2 md:mb-3 line-clamp-1">{topEarners[0].name || 'Preeti Shinde'}</p>
-                    <div className="bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 md:px-4 md:py-2 mb-1 md:mb-2">
-                      <p className="text-yellow-100 font-bold text-lg md:text-2xl lg:text-3xl">₹{topEarners[0].totalPrizeMoney || 0}</p>
-                      <p className="text-yellow-200 text-xs hidden md:block">Total Prize Won</p>
-                    </div>
-                    <p className="text-yellow-100 text-xs hidden md:block">🪙 {topEarners[0].totalCoins || 0} coins • {topEarners[0].eventsWon || 0} events</p>
-                  </div>
-                </div>
-              )}
+              <article className="podium-card is-first">
+                <div className="podium-avatar large">{topThree[0]?.name?.charAt(0) || "1"}</div>
+                <small>Top Performer</small>
+                <strong>{topThree[0]?.name || "Champion"}</strong>
+                <span>{topThree[0]?.totalCoins || 0} coins</span>
+              </article>
 
-              {/* Third Place */}
-              {topEarners[2] && (
-                <div className="flex flex-col items-center" data-aos="fade-up" data-aos-delay="200">
-                  <div className="relative mb-2 md:mb-4">
-                    <div className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full bg-gradient-to-br from-orange-300 to-orange-600 flex items-center justify-center border-2 md:border-4 border-orange-500 shadow-2xl">
-                      {topEarners[2].profilePhoto ? (
-                        <img src={topEarners[2].profilePhoto} alt={topEarners[2].name} className="w-full h-full rounded-full object-cover" />
-                      ) : (
-                        <span className="text-2xl md:text-3xl lg:text-4xl font-bold text-white">3</span>
-                      )}
-                    </div>
-                    <div className="absolute -top-1 -right-1 md:-top-2 md:-right-2 w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-orange-300 to-orange-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
-                      <span className="text-sm md:text-xl font-bold text-orange-900">3</span>
-                    </div>
-                  </div>
-                  <div className="bg-gradient-to-br from-orange-400 to-orange-600 rounded-t-2xl px-3 py-4 md:px-6 md:py-8 lg:py-12 w-28 md:w-40 lg:w-48 text-center shadow-2xl transform hover:scale-105 transition-all duration-300">
-                    <p className="text-white font-bold text-xs md:text-base lg:text-lg mb-1 md:mb-2 line-clamp-1">{topEarners[2].name || 'Saloni Pal'}</p>
-                    <div className="bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 md:px-3 md:py-2 mb-1 md:mb-2">
-                      <p className="text-yellow-300 font-bold text-base md:text-xl lg:text-2xl">₹{topEarners[2].totalPrizeMoney || 0}</p>
-                      <p className="text-orange-100 text-xs hidden md:block">Total Prize Won</p>
-                    </div>
-                    <p className="text-orange-100 text-xs hidden md:block">🪙 {topEarners[2].totalCoins || 0} coins • {topEarners[2].eventsWon || 0} events</p>
-                  </div>
-                </div>
-              )}
+              <article className="podium-card is-third">
+                <div className="podium-avatar">{topThree[2]?.name?.charAt(0) || "3"}</div>
+                <strong>{topThree[2]?.name || "Third Place"}</strong>
+                <span>{topThree[2]?.totalCoins || 0} coins</span>
+              </article>
             </div>
+          </section>
+        )}
 
-            {/* Additional mentees if any */}
-            {topEarners.length > 3 && (
-              <div className="text-center mt-8">
-                <div className="flex justify-center items-center gap-2">
-                  {topEarners.slice(3, 7).map((earner, index) => (
-                    <div key={earner._id} className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-white shadow-lg overflow-hidden">
-                      {earner.profilePhoto ? (
-                        <img src={earner.profilePhoto} alt={earner.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full bg-purple-600 flex items-center justify-center text-white font-bold">
-                          {earner.name?.charAt(0) || '?'}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                  <span className="text-purple-200 font-semibold ml-2">+{topEarners.length - 3}k Mentees</span>
-                </div>
-              </div>
-            )}
+        <section className="events-cta">
+          <div>
+            <h2>Don&apos;t Miss The Next Big Momentum.</h2>
+            <p>Get event drops, registration links, and challenge updates directly in your inbox.</p>
           </div>
-        </div>
-      )}
-
-
+          <form className="events-cta-form" onSubmit={(eventObj) => eventObj.preventDefault()}>
+            <input type="email" placeholder="Enter your email" aria-label="Enter your email" />
+            <button type="submit">Notify Me</button>
+          </form>
+        </section>
+      </main>
     </div>
   );
 };

@@ -15,7 +15,6 @@ import './style/TalentHunt.css'
 import './style/footermain.css'
 import './style/Adance.css';
 import './style/Style.scss'
-import './style/Mentorship.css'
 import './style/FeesStructure.css'
 import './Admin/AdminPanel.css'
 import './User/UserPanel.css'
@@ -29,6 +28,7 @@ import "./style/verify.css";
 import './style/Linkedin.css'
 import "./style/ReferAndEarn.css"
 import "./style/CreateMarketingTeam.css"
+import './style/Mentorship.css'
 import ReactPixel from 'react-facebook-pixel';
 
 const options = {

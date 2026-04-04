@@ -1,1315 +1,1168 @@
-import React, { useState, useEffect } from "react";
-import "swiper/css";
-import "swiper/css/effect-cube";
-import "swiper/css/pagination";
-import AOS from "aos";
-import API from "../../API";
-import "aos/dist/aos.css";
-import axios from "axios";
-import { RiCustomerService2Fill } from "react-icons/ri";
+import React, { useState } from "react";
+import DSHero from "../../../krutanic/images/dsad1.jpg";
+import DSOutcomes from "../../../krutanic/images/dsad2.jpg";
+import Flashaidlogo from "../../assets/Flashaidlogo.jpg";
+import pdfds from "../../../krutanic/DataScienceAdvancedProgram.pdf";
 import BenefitsofLearning from "./Components/BenefitsofLearning";
 import Certification from "./Components/Certification";
 import StoreSection from "./Components/StoreSection";
 import ClientsCarousel from "../../Components/our_alumni";
-
-import pdfds from "../../../krutanic/DataScienceAdvancedProgram.pdf";
-
-import DS from "../../assets/Advanced Course Images/Data science/DS.jpg";
-// import curriculumimage from "../../assets/Advanced Course Images/Data science/DS 4.jpg";
-import toast, { Toaster } from "react-hot-toast";
 import ApplyNowButton from "./Components/ApplyNowButton";
 import ApplyForm from "./Components/ApplyForm";
-import Flashaidlogo from "../../assets/Flashaidlogo.jpg";
+
+const heroStats = [
+
+  { label: "Duration", value: "24 Weeks" },
+  { label: "Program Rating", value: "4.9/5" },
+];
+
+const curriculum = [
+  {
+    week: "Weeks 1-2",
+    title: "Advanced Machine Learning Techniques",
+    objectives:
+      "Learn advanced supervised and unsupervised algorithms, ensemble models, evaluation, and hyperparameter tuning with practical model optimization.",
+    topics: [
+      "Supervised and Unsupervised Learning",
+      "Ensemble Methods",
+      "Model Evaluation and Metrics",
+      "Cross Validation",
+      "Hyperparameter Optimization",
+    ],
+  },
+  {
+    week: "Weeks 3-4",
+    title: "Deep Learning with TensorFlow and Keras",
+    objectives:
+      "Train deeper neural architectures for image, sequence, and NLP tasks while understanding optimization and deployment tradeoffs.",
+    topics: [
+      "Neural Network Fundamentals",
+      "CNN",
+      "RNN and LSTM",
+      "TensorFlow and Keras",
+      "Fine Tuning",
+    ],
+  },
+  {
+    week: "Week 5",
+    title: "Big Data Analytics",
+    objectives:
+      "Work with Hadoop and Spark for distributed processing, large dataset analytics, and real-time pipelines.",
+    topics: [
+      "Hadoop Ecosystem",
+      "Spark Processing",
+      "NoSQL",
+      "Data Pipelines",
+      "Kafka and Streaming",
+    ],
+  },
+  {
+    week: "Week 6-7",
+    title: "Feature Engineering and Model Optimization",
+    objectives:
+      "Design features, apply dimensionality reduction, and improve model reliability with regularization and tuning workflows.",
+    topics: [
+      "Feature Extraction",
+      "Feature Selection",
+      "PCA and t-SNE",
+      "Regularization",
+      "Grid and Random Search",
+    ],
+  },
+  {
+    week: "Week 8",
+    title: "AI Applications and Real-World Case Studies",
+    objectives:
+      "Use AI to solve real business problems across healthcare, finance, and retail with end-to-end applied case studies.",
+    topics: [
+      "Industry AI Use Cases",
+      "Fraud Detection",
+      "Predictive Analytics",
+      "Case Study Reviews",
+      "Deployment Strategies",
+    ],
+  },
+  {
+    week: "Week 9-10",
+    title: "Natural Language Processing",
+    objectives:
+      "Master NLP pipelines, text representation, and transformer model workflows for modern language applications.",
+    topics: [
+      "Text Preprocessing",
+      "Sentiment Analysis",
+      "Named Entity Recognition",
+      "Embeddings",
+      "Transformers",
+    ],
+  },
+  {
+    week: "Week 11-12",
+    title: "Data Visualization and Communication",
+    objectives:
+      "Present complex findings with dashboards and visual narratives that help teams make faster, better decisions.",
+    topics: [
+      "Matplotlib and Seaborn",
+      "Plotly Dashboards",
+      "Power BI and Tableau",
+      "Data Storytelling",
+      "Stakeholder Communication",
+    ],
+  },
+  {
+    week: "Week 13-14",
+    title: "Cloud Computing for Data Science",
+    objectives:
+      "Deploy and scale models on cloud platforms using production-oriented data and model lifecycle practices.",
+    topics: [
+      "AWS, Azure, GCP",
+      "Cloud Model Deployment",
+      "Scalable Processing",
+      "Cloud Storage",
+      "Monitoring",
+    ],
+  },
+  {
+    week: "Week 15-16",
+    title: "Ethical AI and Responsible Data Science",
+    objectives:
+      "Build ethical systems that account for fairness, privacy, bias, and governance requirements.",
+    topics: [
+      "Bias in ML",
+      "Fairness and Ethics",
+      "Privacy and Compliance",
+      "Transparency",
+      "Responsible AI",
+    ],
+  },
+  {
+    week: "Week 17-20",
+    title: "Capstone Project and Career Preparation",
+    objectives:
+      "Execute a full capstone project with project documentation, model delivery, and portfolio presentation.",
+    topics: [
+      "Capstone Project",
+      "ML and AI Integration",
+      "End-to-End Delivery",
+      "Documentation",
+      "Portfolio Building",
+    ],
+  },
+  {
+    week: "Week 21-24",
+    title: "Placement Preparation",
+    objectives:
+      "Prepare with resume strategy, mock interviews, and placement support for data and AI roles.",
+    topics: [
+      "Resume Building",
+      "Interview Preparation",
+      "Communication",
+      "Portfolio Review",
+      "Placement Assistance",
+    ],
+  },
+];
+
+const overviewTopics = [
+  "Advanced Machine Learning Algorithms",
+  "Big Data Analytics with Hadoop and Spark",
+  "Deep Learning with TensorFlow and Keras",
+  "Feature Engineering and Model Optimization",
+  "AI Applications and Real-World Case Studies",
+  "Natural Language Processing Methodology",
+];
+
+const whyChoose = [
+  {
+    title: "High Demand",
+    description:
+      "Data science demand continues to rise across product, analytics, and AI-first teams.",
+  },
+  {
+    title: "Lucrative Salaries",
+    description:
+      "Specialized practitioners command strong compensation with high growth potential.",
+  },
+  {
+    title: "Industry Versatility",
+    description:
+      "Apply your skills in finance, healthcare, retail, SaaS, and enterprise operations.",
+  },
+  {
+    title: "Impactful Work",
+    description:
+      "Solve decisions that materially improve customer outcomes and business growth.",
+  },
+  {
+    title: "In-Demand Skills",
+    description:
+      "Master Python, model building, deployment, and experimentation workflows.",
+  },
+  {
+    title: "Continuous Innovation",
+    description:
+      "Stay relevant through fast-moving developments in LLMs, tooling, and infrastructure.",
+  },
+];
+
+const keyTakeaways = [
+  "Master advanced machine learning and deep learning techniques for real use-cases.",
+  "Develop big data expertise with Hadoop, Spark, and scalable pipeline architecture.",
+  "Build strong visualization and storytelling capability with business dashboards.",
+  "Apply predictive analytics to forecasting, risk, and decision intelligence.",
+  "Design robust data preparation and feature workflows that improve model quality.",
+  "Solve real business problems with capstone-style projects and portfolio outcomes.",
+];
+
+const roles = [
+  {
+    title: "Data Scientist",
+    text: "Lead analytical decisions and discover non-obvious business patterns.",
+    avg: "Avg. package Rs 24 LPA",
+  },
+  {
+    title: "Data Analyst",
+    text: "Interpret data and build reporting systems to support decision-making.",
+    avg: "Avg. package Rs 15 LPA",
+  },
+  {
+    title: "Machine Learning Engineer",
+    text: "Deploy and optimize machine learning systems for production scale.",
+    avg: "Avg. package Rs 28 LPA",
+  },
+  {
+    title: "Data Engineer",
+    text: "Build high-throughput data pipelines and resilient infrastructure.",
+    avg: "Avg. package Rs 22 LPA",
+  },
+  {
+    title: "Business Intelligence Analyst",
+    text: "Transform business data into strategic, executable insights.",
+    avg: "Avg. package Rs 16 LPA",
+  },
+  {
+    title: "AI Engineer",
+    text: "Build AI-driven products and intelligent automation systems.",
+    avg: "Avg. package Rs 26 LPA",
+  },
+  {
+    title: "Big Data Specialist",
+    text: "Work with large-scale processing and high-volume data ecosystems.",
+    avg: "Avg. package Rs 20 LPA",
+  },
+  {
+    title: "Data Science Consultant",
+    text: "Guide organizations with data strategy and model-led business execution.",
+    avg: "Avg. package Rs 23 LPA",
+  },
+  {
+    title: "Quantitative Analyst",
+    text: "Build statistical and mathematical models for complex forecasting.",
+    avg: "Avg. package Rs 25 LPA",
+  },
+];
+
+const faqData = {
+  Program: [
+    {
+      question: "What topics are covered in the Data Science program?",
+      answer:
+        "The program covers machine learning, deep learning, big data technologies, NLP, cloud deployment, and industry use-cases.",
+    },
+    {
+      question: "How is the course delivered?",
+      answer:
+        "The course is delivered with a blend of live sessions, recordings, practical tasks, and structured projects.",
+    },
+    {
+      question: "Will I get hands-on experience?",
+      answer:
+        "Yes, hands-on projects and case studies are integrated throughout the curriculum.",
+    },
+    {
+      question: "How long is the program?",
+      answer:
+        "The program runs for 24 weeks with a progressive module structure.",
+    },
+  ],
+  Eligibility: [
+    {
+      question: "What are the prerequisites for the program?",
+      answer:
+        "Basic programming familiarity and comfort with analytical thinking are recommended.",
+    },
+    {
+      question: "Do I need prior data science experience?",
+      answer:
+        "Prior experience helps, but the learning path is designed to build up progressively.",
+    },
+    {
+      question: "Can beginners apply?",
+      answer:
+        "Learners with a strong commitment and basic technical foundation can apply.",
+    },
+    {
+      question: "Is there any age restriction?",
+      answer: "No, there is no age restriction.",
+    },
+  ],
+  Community: [
+    {
+      question: "How can I interact with other participants?",
+      answer:
+        "Through group sessions, cohort channels, collaborative assignments, and alumni events.",
+    },
+    {
+      question: "Is there mentorship available?",
+      answer: "Yes, mentor support is available throughout the program journey.",
+    },
+    {
+      question: "Can I access support after the course ends?",
+      answer:
+        "Yes, alumni and support channels remain available after completion.",
+    },
+    {
+      question: "How diverse is the community?",
+      answer:
+        "The cohort includes professionals and learners from diverse backgrounds and industries.",
+    },
+  ],
+  Lectures: [
+    {
+      question: "Are the lectures pre-recorded or live?",
+      answer:
+        "Both, so you can learn with flexibility while still attending live mentor sessions.",
+    },
+    {
+      question: "How interactive are the sessions?",
+      answer:
+        "Live sessions are discussion-heavy and include interactive problem solving.",
+    },
+    {
+      question: "Can I replay missed lectures?",
+      answer: "Yes, recordings are available for review.",
+    },
+    {
+      question: "How often are live sessions held?",
+      answer: "Live sessions are held weekly with structured support touchpoints.",
+    },
+  ],
+  Certification: [
+    {
+      question: "Will I receive a certificate upon completion?",
+      answer: "Yes, successful participants receive a completion certificate.",
+    },
+    {
+      question: "Is the certification recognized by employers?",
+      answer:
+        "It demonstrates practical capability and project readiness in data roles.",
+    },
+    {
+      question: "Can I add this certification to my resume or LinkedIn profile?",
+      answer: "Yes, it can be added to both.",
+    },
+    {
+      question: "Is the certification free?",
+      answer: "Certification is included with successful program completion.",
+    },
+  ],
+  Opportunities: [
+    {
+      question: "What career opportunities does this open?",
+      answer:
+        "You can target roles across analytics, machine learning, AI engineering, and data infrastructure.",
+    },
+    {
+      question: "Will I receive job placement assistance?",
+      answer: "Yes, career guidance and placement support are included.",
+    },
+    {
+      question: "Are internships available through this program?",
+      answer:
+        "Selected learners may access internship pathways based on partner opportunities.",
+    },
+    {
+      question: "How will this help advance my career?",
+      answer:
+        "You build portfolio-grade work, practical technical depth, and interview readiness.",
+    },
+  ],
+};
 
 const DataScience = () => {
+  const [openModule, setOpenModule] = useState(0);
   const [activeCategory, setActiveCategory] = useState("Program");
   const [openFAQ, setOpenFAQ] = useState(null);
-  const [isExpanded, setIsExpanded] = useState(false);
 
-  const [isVisible, setIsVisible] = useState(false);
-  const [lastScrollPos, setLastScrollPos] = useState(0);
-  const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    number: "",
-    currentRole: "",
-    experience: "",
-    goal: "",
-    goalOther: "",
-    reason: "",
-    domain: "",
-    domainOther: "",
-  });
-
-    const [otpSent, setOtpSent] = useState(false);
-    const [otp, setOtp] = useState("");
-    const [emailVerified, setEmailVerified] = useState(false);
-
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
-
-  const courseTopics = [
-    { title: "Advanced Machine Learning Algorithms", icon: "🌐" },
-    { title: "Big Data Analytics with Hadoop and Spark", icon: "🎣" },
-    { title: "Deep Learning with TensorFlow and Keras", icon: "⚡" },
-    { title: "Feature Engineering and Model Optimization", icon: "🛣️" },
-    { title: "AI Applications and Real-World Case Studies", icon: "🗃️" },
-    { title: "Natural Language Processing(NLP) Methodology", icon: "🗃️" },
-  ];
-
-  const modules = [
-    {
-      week: "Weeks 1-2",
-      title: "Advanced Machine Learning Techniques",
-      objectives:
-        "Students will learn advanced supervised and unsupervised machine learning algorithms, ensemble methods, model evaluation, & hyperparameter tuning, then explore Convolutional Neural Networks (CNNs) and Recurrent Neural Networks (RNNs), along with optimizations such as dropout and learning rate schedules.",
-      topics: [
-        "Supervised and Unsupervised Learning",
-        "Ensemble Methods (Random Forest, XGBoost, etc.)",
-        "Model Evaluation and Metrics",
-        "Cross-Validation Techniques",
-        "Hyperparameter Tuning and Optimization",
-      ],
-    },
-    {
-      week: "Weeks 3-4",
-      title: "Deep Learning with TensorFlow and Keras",
-      objectives:
-        "Train neural networks with many layers to recognize patterns in large datasets for image, speech, and text recognition using TensorFlow—a popular open-source library for building and deploying deep learning models.",
-      topics: [
-        "Neural Networks Fundamentals",
-        "Convolutional Neural Networks (CNNs)",
-        "Recurrent Neural Networks (RNNs) and LSTM",
-        "TensorFlow & Keras Basics",
-        "Model Optimization and Fine-Tuning",
-      ],
-    },
-    {
-      week: "Week 5",
-      title: "Big Data Analytics",
-      objectives:
-        "Students will work with tools like Hadoop and Spark to process and analyze large-scale data, gaining expertise in distributed computing and real-time data analysis.",
-      topics: [
-        "Hadoop Ecosystem Overview",
-        "Apache Spark for Big Data Processing",
-        "NoSQL Databases (MongoDB, Cassandra)",
-        "Building Data Pipelines",
-        "Real-Time Data Processing with Kafka & Spark",
-      ],
-    },
-    {
-      week: "Week 6-7",
-      title: "Feature Engineering and Model Optimization",
-      objectives:
-        "Create new, relevant features from raw data to improve the model's predictive power, and focus on fine-tuning model parameters, adjusting learning rates, choosing the best algorithm, and using techniques like cross-validation to reduce overfitting and improve accuracy.",
-      topics: [
-        "Feature Extraction and Transformation",
-        "Feature Selection Algorithms",
-        "Dimensionality Reduction (PCA, t-SNE)",
-        "Regularization Techniques (L1, L2, ElasticNet)",
-        "Model Tuning with Grid Search and Random Search",
-      ],
-    },
-    {
-      week: "Week 8",
-      title: "AI Applications and Real-World Case Studies",
-      objectives:
-        "Students will apply AI to solve real-world business problems like fraud detection and predictive analytics, gaining insights into industries like healthcare and finance.",
-      topics: [
-        "AI in Healthcare, Finance, Retail, and More",
-        "Fraud Detection and Anomaly Detection Models",
-        "Predictive Analytics for Business Intelligence",
-        "Industry-Specific Case Studies",
-        "Deployment Strategies for AI Models",
-      ],
-    },
-    {
-      week: "Week 9-10",
-      title: "Natural Language Processing",
-      objectives:
-        "Students will master NLP techniques such as sentiment analysis, named entity recognition, and the use of transformer models like BERT for language understanding.",
-      topics: [
-        "Text Preprocessing (Tokenization, Lemmatization)",
-        "Sentiment Analysis and Text Classification",
-        "Named Entity Recognition (NER)",
-        "Word Embeddings (Word2Vec, GloVe, FastText)",
-        "Transformer Models (BERT, GPT)",
-      ],
-    },
-    {
-      week: "Week 11-12",
-      title: "Data Visualization and Communication",
-      objectives:
-        "Students will learn how to visualize data and communicate insights effectively using tools like Tableau and Python libraries, enhancing their ability to present data to stakeholders.",
-      topics: [
-        "Advanced Visualization Tools (Matplotlib, Seaborn)",
-        "Interactive Dashboards with Plotly/Dash",
-        "Building Business Dashboards (PowerBI, Tableau)",
-        "Data Storytelling and Reporting",
-        "Presenting Results to Stakeholders",
-      ],
-    },
-    {
-      week: "Week 13-14",
-      title: "Cloud Computing for Data Science",
-      objectives:
-        "Students will learn how to deploy data science models on cloud platforms, utilizing services like AWS, Azure, and Google Cloud for scalable and efficient data processing.",
-      topics: [
-        "Introduction to Cloud Computing (AWS, Azure, GCP)",
-        "Deploying Models on Cloud Platforms",
-        "Scalable Data Processing with Cloud Services",
-        "Managing Data Storage in the Cloud",
-        "Monitoring and Optimizing Cloud-Based Models",
-      ],
-    },
-    {
-      week: "Week 15-16",
-      title: "Ethical AI and Responsible Data Science",
-      objectives:
-        "Students will explore ethical challenges in AI, including bias, fairness, privacy, and transparency, learning to build responsible AI solutions that consider societal impact.",
-      topics: [
-        "Bias in Machine Learning Models",
-        "Ethical Implications and Fairness in AI",
-        "Privacy and Data Protection (GDPR, CCPA)",
-        "AI Transparency and Accountability",
-        "Building Responsible AI Solutions",
-      ],
-    },
-    {
-      week: "Week 17-20",
-      title: "Capstone Project and Career Preparation",
-      objectives:
-        "Students will develop fraud detection models using anomaly detection methods, and apply everything learned to a Capstone Project, showcasing their expertise.",
-      topics: [
-        "Capstone Project: Fraud Detection in Financial Transactions",
-        "Applying Advanced ML and AI Techniques",
-        "End-to-End Project Development",
-        "Documentation and Presentation Skills",
-        "Industry-Level Project Portfolio Building",
-      ],
-    },
-    {
-      week: "Week 21-24",
-      title: "Placement Preparation",
-      objectives:
-        "Prepare for a successful job search and interviews with a professional portfolio and job-ready skills.",
-      topics: [
-        "Building a Strong Data Science Portfolio",
-        "ATS friendly Resume Building for Data Science Roles",
-        "Personality Development",
-        "Mock Interviews and Feedback Sessions",
-        "Placement Assistance and Job Search Strategies",
-      ],
-    },
-  ];
-
-  const jobRoles = [
-    {
-      title: "Data Scientist",
-      description:
-        "Analyzes data and builds models to extract insights and make predictions.",
-    },
-    {
-      title: "Data Analyst",
-      description:
-        "Interprets data to help businesses make informed decisions.",
-    },
-    {
-      title: "Machine Learning Engineer",
-      description:
-        "Develops and deploys machine learning models to automate tasks and improve accuracy.",
-    },
-    {
-      title: "Data Engineer",
-      description:
-        "Creates and maintains data pipelines for efficient data processing.",
-    },
-    {
-      title: "Business Intelligence Analyst",
-      description:
-        "Analyzes data to drive business decisions and optimize performance.",
-    },
-    {
-      title: "AI Engineer",
-      description:
-        "Designs AI systems to solve complex problems using machine learning.",
-    },
-    {
-      title: " Big Data Specialist",
-      description:
-        "Expert in analyzing massive datasets for actionable insights..",
-    },
-    {
-      title: "Data Science Consultant",
-      description:
-        "Provides data-driven solutions to optimize business strategies and outcomes.",
-    },
-    {
-      title: "Quantitative Analyst",
-      description:
-        "Builds models to analyze financial data and predict market trends.",
-    },
-  ];
-
-  const Difference = [
-    {
-      title: "High Demand",
-      description:
-        "The need for data scientists is growing rapidly, with job opportunities expected to increase by 35% by 2025.",
-      icon: "👥",
-    },
-    {
-      title: "Lucrative Salaries",
-      description:
-        "Data scientists earn competitive salaries, often exceeding ₹100,000 annually, with further potential as expertise grows.",
-      icon: "📘",
-    },
-    {
-      title: "Industry Versatility",
-      description:
-        "Data science is essential across multiple industries, including healthcare, finance, and marketing, offering diverse career opportunities.",
-      icon: "📦",
-    },
-    {
-      title: "Impactful Work",
-      description:
-        "Data scientists make a difference by solving real-world problems, improving decision-making, and driving innovations.",
-      icon: "💼",
-    },
-    {
-      title: "In-Demand Skills",
-      description:
-        "Proficiency in tools like Python and machine learning algorithms is highly valued, ensuring career longevity and job security.",
-      icon: "💻",
-    },
-    {
-      title: "Continuous Innovation",
-      description:
-        "The field evolves rapidly, offering constant opportunities to learn and grow professionally with emerging technologies",
-      icon: "🔗",
-    },
-  ];
-
-  const faqData = {
-    Program: [
-      {
-        question: "What topics are covered in the Data Science program?",
-        answer:
-          "The program covers advanced machine learning, deep learning, big data technologies, and industry-specific applications like business forecasting, fraud detection, and customer 	segmentation.",
-      },
-      {
-        question: "How is the course delivered?",
-        answer:
-          "The course is delivered online with a blend of live sessions, recorded lectures, hands-on workshops, and practical projects.",
-      },
-      {
-        question: "Will I get hands-on experience?",
-        answer:
-          "Yes, the course includes real-world case studies and hands-on projects to apply your skills in solving industry-specific problems.",
-      },
-      {
-        question: "How long is the program?",
-        answer:
-          "The program is 6 months long, with flexible learning options designed for professionals.",
-      },
-    ],
-    Eligibility: [
-      {
-        question: "What are the prerequisites for the program?",
-        answer:
-          "Basic programming knowledge (preferably Python) and a foundational understanding of statistics and machine learning concepts are recommended.",
-      },
-      {
-        question: "Do I need a background in data science?",
-        answer:
-          "While prior experience in data science is helpful, it's not mandatory. We provide foundational support to help you succeed in the advanced topics.",
-      },
-      {
-        question: "Can beginners apply?",
-        answer:
-          "This course is designed for learners with a basic understanding of data analysis and programming. Beginners in data science should be prepared to grasp complex topics quickly.",
-      },
-      {
-        question: "Is there any age restriction?",
-        answer:
-          "No, the program is open to anyone who meets the basic eligibility criteria, regardless of age.",
-      },
-    ],
-    Community: [
-      {
-        question: " How can I interact with other participants?",
-        answer:
-          "Engage with peers through discussion forums, collaborative projects, and networking opportunities designed to foster connections within the global data science community.",
-      },
-      {
-        question: "Is there mentorship available?",
-        answer:
-          "Yes, personalized mentoring from industry professionals will be provided throughout the course to guide you and offer real-time feedback.",
-      },
-      {
-        question: "Can I access support after the course ends?",
-        answer:
-          "Absolutely! Graduates gain continued access to community forums, alumni events, and ongoing support.",
-      },
-      {
-        question: "How diverse is the community?",
-        answer:
-          "Our community is international, bringing together a diverse group of professionals from various industries and backgrounds.",
-      },
-    ],
-    Lectures: [
-      {
-        question: "Are the lectures pre-recorded or live?",
-        answer:
-          "The program includes both live sessions and pre-recorded lectures, allowing for flexibility in learning while ensuring direct interaction with instructors.",
-      },
-      {
-        question: "How interactive are the sessions?",
-        answer:
-          "The live sessions are interactive, with opportunities to ask questions, engage in hands-on exercises, and receive personalized feedback.",
-      },
-      {
-        question: "Can I replay the lectures if I miss one?",
-        answer:
-          "Yes, all recorded lectures are available for on-demand viewing, so you can catch up at your convenience.",
-      },
-      {
-        question: "How often are live sessions held?",
-        answer:
-          "Live sessions are scheduled weekly and are designed to accommodate learners in various time zones.",
-      },
-    ],
-    Certification: [
-      {
-        question: "Will I receive a certificate upon completion?",
-        answer:
-          "Yes, after completing the program, you will receive an official Data Science certification from Krutanic Solutions.",
-      },
-      {
-        question: "Is the certification recognized by employers?",
-        answer:
-          "Yes, the certification is recognized in the industry and demonstrates your proficiency in advanced data science techniques.",
-      },
-      {
-        question:
-          "Can I add this certification to my resume or LinkedIn profile?",
-        answer:
-          "Yes, you can add your certification to your resume and LinkedIn profile to showcase your new skills to potential employers.",
-      },
-      {
-        question: "Is the certification free?",
-        answer:
-          "The certification is awarded upon successful completion of the course and is included as part of the program fee.",
-      },
-    ],
-    Opportunities: [
-      {
-        question: "What career opportunities will this course open for me?",
-        answer:
-          "This program prepares you for roles such as Data Scientist, Machine Learning Engineer, AI Specialist, and Data Analyst across various industries like finance, healthcare, and tech.",
-      },
-      {
-        question: "Will I receive job placement assistance?",
-        answer:
-          "Yes, we provide career support, including job placement assistance, resume reviews, and interview preparation.",
-      },
-      {
-        question: "Are internships available through this program?",
-        answer:
-          "We offer internship opportunities through our partnerships with top companies, providing real-world experience to help you kick-start your career.",
-      },
-      {
-        question: "How will this course help in advancing my career?",
-        answer:
-          "By mastering advanced data science skills, you will become a highly competitive candidate for senior-level roles, equipped with practical, industry-relevant knowledge.",
-      },
-    ],
-  };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollPos = window.scrollY;
-      if (currentScrollPos > lastScrollPos) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
-      setLastScrollPos(currentScrollPos);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollPos]);
-
-  useEffect(() => {
-    AOS.init({ duration: 2000, once: false });
-  }, []);
-
-  const handleBrochureClick = () => {
-    setShowForm(true);
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const OffForm = () =>{
-    setShowForm(false);
-    setFormData({
-      name: "",
-      email: "",
-      number: "",
-      currentRole: "",
-      experience: "",
-      goal: "",
-      goalOther: "",
-      domain: "",
-      domainOther: "",
-    });
-  }
-const [actionType , setActionType] = useState();
-  
-    const sendOTP = async () => {
-        if (!formData.email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/)) {
-            toast.error("Please enter a valid email address.");
-            return;
-        }
-        try {
-            await axios.post(`${API}/advance-send-otp`, { email: formData.email });
-            toast.success("OTP sent to your email!");
-            setOtpSent(true);
-        } catch (error) {
-            toast.error("Failed to send OTP. Try again.");
-        }
-    };
-
-    const verifyOTP = async () => {
-        try {
-            const response = await axios.post(`${API}/advance-verify-otp`, { email: formData.email, otp });
-            if (response.data.success) {
-                toast.success("Email verified successfully!");
-                setEmailVerified(true);
-                setOtp("");
-                setOtpSent(false);
-            } else {
-                toast.error("Invalid OTP. Try again.");
-            }
-        } catch (error) {
-            toast.error("Verification failed or Invalid OTP.");
-        }
-    };
-
-  const handleFormSubmit = async (e , actionType) => {
-    e.preventDefault();
-    try {
-      await axios.post(`${API}/advance/register`, {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.number,
-        currentRole: formData.currentRole,
-        experience: formData.experience,
-        goal: formData.goal,
-        goalOther: formData.goal === "Other" ? formData.goalOther : undefined,
-        reason: formData.reason,
-        domain: formData.domain,
-        domainOther:formData.domain === "Other" ? formData.domainOther : undefined,
-        interestedDomain: "Data Science",
-      });
-      toast.success("Registration successful! Opening the brochure...");
-      setTimeout(() => {
-        window.open(pdfds, "_blank");
-        OffForm();
-      }, 1500);
-    } catch (error) {
-      toast.error(
-        error.response?.data?.error || "Something went wrong. Please try again."
-      );
-    }
-  };
-  const [activeModule, setActiveModule] = useState(null);
-
-  const toggleModule = (index) => {
-    setActiveModule(activeModule === index ? null : index);
-  };
-
-  const today = new Date();
-  const currentMonth = today.getMonth();
-  const currentDay = today.getDate();
-  const displayDate = currentDay > 10 || currentMonth > 1 
-    ? `10th ${new Date(today.setMonth(currentMonth + 1)).toLocaleString('en', { month: 'long' })} 2025`
-    : "10th February 2025";
-    // const randomNumber = Math.floor(Math.random() * 6) + 20;
-    
   return (
-    <div>
-      <div className="bg-black text-white">
-        <Toaster position="top-center" reverseOrder={false} />
-        {/* 1 hero part */}
-        <section
-          id="advancedatabg"
-          className="py-[60px] shadow-lg shadow-[#f15b29]  px-[10px] min-h-screen flex items-center justify-center"
-        >
-          <div className="container mx-auto ">
-            <div className="">
-              <h1 data-aos="fade-up" className="text-4xl text-center font-bold mb-3">
-                <span className="before:block m-2 p-1 before:absolute before:-inset-1 before:-skew-y-2 before:bg-[#f15b29] relative inline-block">
-                  <i className="relative text-white ">
-                    {" "}
-                    Take Your Career to the Next Level with{" "}
-                  </i>
-                </span>
+    <div className="ds-page">
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap');
 
-                <span className="before:block m-2 p-1 before:absolute before:-inset-1 before:-skew-y-2 before:bg-[#000] relative inline-block">
-                  <i className="relative text-white ">Data Science</i>
-                </span>
-              </h1>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-              <div
-                data-aos="fade-up"
-                className=" border border-gray-700 p-6 flex flex-col backdrop-blur-md  bg-[#ffffff59] text-black items-center  rounded-md"
-              >
-                <div className="bg-[#f15b29] p-3 rounded-full">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="white"
-                    viewBox="0 0 24 24"
-                    className="h-8 w-8"
-                  >
-                    <path d="M16 10V7a4 4 0 10-8 0v3H5v10h14V10h-3zm-6 0V7a2 2 0 114 0v3H10z" />
-                  </svg>
-                </div>
-                <p className="mt-4 font-semibold text-lg">Batch Starting</p>
-                {/* <p className="">{displayDate}</p> */}
-                <p className="">25 March</p>
+        :root {
+          --bg: #f3f1f1;
+          --panel: #ffffff;
+          --ink: #171717;
+          --muted: #626262;
+          --line: #ded8d5;
+          --accent: #c43609;
+          --accent-dark: #8f2100;
+          --radius: 18px;
+          --shadow: 0 20px 40px rgba(29, 20, 13, 0.08);
+        }
 
-                <p className="mt-2 text-md border border-[#f15b29] rounded-lg px-2 py-1">
-                  {" "}
-                  Available Cohort{" "}
-                </p>
-                <p className="mt-2 text-md"><span className="line-through">60/60</span> Batch Closed </p>
-                <p>55/60</p>
-              </div>
-              <div
-                data-aos="fade-up"
-                className=" border border-gray-700 p-6 flex flex-col backdrop-blur-md bg-[#ffffff59] text-black items-center   rounded-md"
-              >
-                <div className="bg-[#f15b29] p-3 rounded-full">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="white"
-                    viewBox="0 0 24 24"
-                    className="h-8 w-8"
-                  >
-                    <path d="M5 3v18l7-3 7 3V3H5zm12 13l-5-2.18L7 16V5h10v11z" />
-                  </svg>
-                </div>
-                <p className="mt-4 font-semibold text-lg">Duration</p>
-                <p className="">6 Months</p>
-              </div>
-              <div
-                data-aos="fade-up"
-                className=" border border-gray-700 p-6 flex flex-col backdrop-blur-md bg-[#ffffff59] text-black items-center   rounded-md"
-              >
-                <div className="bg-[#f15b29] p-3 rounded-full">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="white"
-                    viewBox="0 0 24 24"
-                    className="h-8 w-8"
-                  >
-                    <path d="M12 2a10 10 0 1010 10A10 10 0 0012 2zm0 18a8 8 0 118-8 8 8 0 01-8 8zm1-13h-2v5h5v-2h-3z" />
-                  </svg>
-                </div>
-                <p className="mt-4 font-semibold text-lg">Program Rating</p>
-                <p className="">
-                  <span className="text-[#f15b29]">★★★★</span>☆ (4.8/5)
-                </p>
-              </div>
-            </div>
-            <div className=" flex items-center justify-center mt-6">
-              <ApplyNowButton courseValue="Data Science"/>
-            </div>
-          </div>
-        </section>
-        <hr className=" opacity-10" />
+        * { box-sizing: border-box; }
 
-        {/* circulum section updated  */}
+        .ds-page {
+          background:
+            radial-gradient(circle at 8% 8%, rgba(196, 54, 9, 0.08), transparent 34%),
+            radial-gradient(circle at 95% 55%, rgba(15, 77, 98, 0.09), transparent 28%),
+            var(--bg);
+          color: var(--ink);
+          font-family: "Sora", "Segoe UI", sans-serif;
+        }
 
-        <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto">
-            <h1
-              data-aos="fade-up"
-              className=" font-bold text-center mb-8 text-[#f15b29]"
-            >
-              | Curriculum
-            </h1>
-            <div className="lg:flex lg:gap-8">
-             
-            <div className="lg:w-1/2 w-full">
-                <div className="space-y-4">
-                  {modules.map((module, index) => (
-                    <div key={index} className="pb-5">
-                      <button
-                        className="w-full text-left hover:text-[#f15b29] transition-colors duration-300 focus:outline-none"
-                        onClick={() => toggleModule(index)}
-                      >
-                        <h3 className="text-xl font-semibold">
-                          {module.week}: {module.title}
-                        </h3>
-                        <p className="text-sm text-gray-400">
-                          {module.objectives}
-                        </p>
-                      </button>
-                      {activeModule === index && (
-                        <div className="mt-4">
-                          <ul className="list-disc pl-9 text-gray-300">
-                            {module.topics.map((topic, topicIndex) => (
-                              <li key={topicIndex} className="mb-2">
-                                {topic}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
+        .ds-shell {
+          width: min(1140px, calc(100% - 32px));
+          margin: 0 auto;
+        }
 
-              <div className="lg:w-1/2 w-full rounded-lg overflow-hidden mb-5 lg:mb-0">
-                <ApplyForm />
-              </div>
-            </div>
-          </div>
-        </section>
-        <hr className=" opacity-10" />
-        {/* 14 why choose us */}
-        <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto  text-center">
-            <h1 data-aos="fade-up" className="text-[#f15b29] font-bold mb-6">
-              | Why Choose <span className="text-white">Data Science ? </span>
-            </h1>
-            <p data-aos="fade-up" className="text-gray-400 mb-12">
-              Discover the potential of data by learning advanced analytical
-              skills and unlocking insights that can drive innovation and shape
-              the future of industries
+        .ds-btn {
+          background: linear-gradient(180deg, #d64d1d 0%, #af2f06 100%);
+          border: 0;
+          border-radius: 10px;
+          color: #fff;
+          cursor: pointer;
+          font-size: 12px;
+          font-weight: 700;
+          letter-spacing: 0.3px;
+          padding: 10px 18px;
+          text-transform: uppercase;
+        }
+
+        .ds-section { padding: 52px 0; }
+        .ds-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 12px; }
+        .ds-section p.lead {
+          color: var(--muted);
+          line-height: 1.7;
+          margin: 0 0 26px;
+          max-width: 760px;
+        }
+
+        .ds-hero {
+          border-top: 1px solid var(--line);
+          display: grid;
+          gap: 32px;
+          grid-template-columns: 1fr 1fr;
+          padding: 26px 0 28px;
+        }
+
+        .ds-chip {
+          background: #f0e0db;
+          border-radius: 999px;
+          color: #8a4f40;
+          display: inline-flex;
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+          padding: 6px 12px;
+          text-transform: uppercase;
+        }
+
+        .ds-hero h1 {
+          font-size: clamp(42px, 5vw, 74px);
+          line-height: 0.98;
+          margin: 16px 0;
+        }
+
+        .ds-hero h1 span {
+          color: var(--accent);
+          font-family: "Fraunces", Georgia, serif;
+          font-style: italic;
+          font-weight: 800;
+        }
+
+        .ds-sub {
+          color: var(--muted);
+          font-size: 17px;
+          line-height: 1.6;
+          max-width: 520px;
+          margin-bottom: 22px;
+        }
+
+        .ds-stats {
+          display: grid;
+          gap: 12px;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          max-width: 560px;
+          margin-bottom: 18px;
+        }
+
+        .ds-stat {
+          background: var(--panel);
+          border: 1px solid #eadeda;
+          border-radius: 16px;
+          box-shadow: var(--shadow);
+          padding: 16px 14px;
+        }
+
+        .ds-stat-label {
+          color: #8a8a8a;
+          font-size: 11px;
+          letter-spacing: 0.6px;
+          margin-bottom: 6px;
+          text-transform: uppercase;
+        }
+
+        .ds-stat-value { font-size: 18px; font-weight: 700; }
+
+        .ds-hero-media { position: relative; }
+
+        .ds-media-box {
+          background: radial-gradient(circle at 25% 20%, #17627c 0%, #0d1826 70%);
+          border-radius: 22px;
+          box-shadow: 0 24px 46px rgba(0, 0, 0, 0.28);
+          overflow: hidden;
+          padding: 18px;
+        }
+
+        .ds-media-box img {
+          border-radius: 16px;
+          display: block;
+          height: 100%;
+          min-height: 330px;
+          object-fit: cover;
+          width: 100%;
+        }
+
+        .ds-floating-card {
+          background: rgba(255, 255, 255, 0.92);
+          border-radius: 16px;
+          box-shadow: 0 12px 32px rgba(19, 16, 11, 0.18);
+          left: -20px;
+          max-width: 300px;
+          padding: 16px;
+          position: absolute;
+          bottom: -20px;
+        }
+
+        .ds-curr-grid {
+          display: grid;
+          gap: 20px;
+          grid-template-columns: 2fr 1fr;
+        }
+
+        .ds-accordion { display: grid; gap: 14px; }
+
+        .ds-module {
+          background: var(--panel);
+          border: 1px solid #e7e0dc;
+          border-radius: var(--radius);
+          padding: 18px;
+        }
+
+        .ds-module.open { border-color: #d05b36; }
+
+        .ds-module-head {
+          align-items: center;
+          cursor: pointer;
+          display: flex;
+          justify-content: space-between;
+        }
+
+        .ds-module-week {
+          color: #9b9b9b;
+          font-size: 10px;
+          letter-spacing: 0.5px;
+          text-transform: uppercase;
+        }
+
+        .ds-module-title { font-size: 24px; font-weight: 600; margin-top: 5px; }
+        .ds-module-toggle { color: #7b7b7b; font-size: 24px; line-height: 1; }
+
+        .ds-module-body {
+          border-top: 1px solid #eee4de;
+          margin-top: 16px;
+          padding-top: 15px;
+        }
+
+        .ds-module-objective {
+          color: #4b4b4b;
+          font-size: 14px;
+          line-height: 1.6;
+          margin-bottom: 10px;
+        }
+
+        .ds-tag-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+        .ds-tag {
+          background: #f3e7e1;
+          border-radius: 999px;
+          color: #8d4d3b;
+          font-size: 11px;
+          padding: 5px 11px;
+        }
+
+        .ds-side-panel {
+          background: var(--panel);
+          border: 1px solid #e8e0dc;
+          border-radius: var(--radius);
+          box-shadow: var(--shadow);
+          height: fit-content;
+          padding: 20px;
+        }
+
+        .ds-side-panel h3 { font-size: 28px; margin: 0 0 6px; }
+        .ds-side-panel p { color: #6f6f6f; font-size: 14px; margin: 0 0 16px; }
+
+        .ds-overview-grid,
+        .ds-why-grid,
+        .ds-role-grid,
+        .ds-metric-grid,
+        .ds-faq-grid {
+          display: grid;
+          gap: 16px;
+        }
+
+        .ds-overview-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .ds-why-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .ds-role-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .ds-metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .ds-faq-grid { grid-template-columns: 250px 1fr; }
+
+        .ds-card {
+          background: #f7f5f4;
+          border: 1px solid #e6dfdc;
+          border-radius: 16px;
+          padding: 20px;
+        }
+
+        .ds-card h4 { margin: 0 0 8px; font-size: 20px; }
+        .ds-card p { margin: 0; color: #5f5f5f; line-height: 1.6; }
+
+        .ds-takeaway-grid {
+          align-items: center;
+          display: grid;
+          gap: 22px;
+          grid-template-columns: 1.3fr 1fr;
+        }
+
+        .ds-list {
+          margin: 0;
+          padding: 0;
+          display: grid;
+          gap: 10px;
+        }
+
+        .ds-list li {
+          list-style: none;
+          padding-left: 16px;
+          position: relative;
+          color: #454545;
+          line-height: 1.55;
+        }
+
+        .ds-list li::before {
+          background: #cb4213;
+          border-radius: 50%;
+          content: "";
+          height: 6px;
+          left: 0;
+          position: absolute;
+          top: 9px;
+          width: 6px;
+        }
+
+        .ds-image {
+          border-radius: 16px;
+          box-shadow: var(--shadow);
+          overflow: hidden;
+        }
+
+        .ds-image img {
+          display: block;
+          width: 100%;
+          height: 100%;
+          min-height: 320px;
+          object-fit: cover;
+        }
+
+        .ds-center { text-align: center; }
+
+        .ds-brochure {
+          align-items: center;
+          border: 2px solid #ca3f12;
+          border-radius: 18px;
+          display: flex;
+          justify-content: space-between;
+          gap: 20px;
+          padding: 20px;
+          background: #fff;
+        }
+
+        .ds-career { background: #eceaea; border-top: 1px solid #ddd8d5; border-bottom: 1px solid #ddd8d5; }
+
+        .ds-role-card {
+          background: #f7f5f4;
+          border: 1px solid #e6dfdc;
+          border-radius: 16px;
+          min-height: 190px;
+          padding: 22px;
+          position: relative;
+        }
+
+        .ds-role-dot {
+          background: #be3a10;
+          border-radius: 50%;
+          height: 10px;
+          margin-bottom: 16px;
+          width: 10px;
+        }
+
+        .ds-role-card strong {
+          color: #b12e03;
+          display: block;
+          margin-top: 12px;
+          font-size: 12px;
+          text-transform: uppercase;
+        }
+
+        .ds-metric {
+          text-align: center;
+          padding: 16px;
+          border: 1px solid #e6dfdc;
+          border-radius: 14px;
+          background: #fff;
+        }
+
+        .ds-metric h4 { margin: 0; color: #bf390d; font-size: 30px; }
+        .ds-metric p { margin: 6px 0 0; color: #5f5f5f; }
+
+        .ds-invest {
+          background: #fdfcfc;
+          border: 2px solid #ca3f12;
+          border-radius: 18px;
+          box-shadow: var(--shadow);
+          padding: 28px;
+        }
+
+        .ds-invest h3 { font-size: 40px; margin: 6px 0; }
+        .ds-invest-sub { color: #7a7a7a; font-size: 13px; text-transform: uppercase; }
+
+        .ds-invest-grid {
+          border-top: 1px solid #ece4e0;
+          display: grid;
+          gap: 18px;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          margin-top: 20px;
+          padding-top: 16px;
+        }
+
+        .ds-invest-item strong { color: #bf390d; display: block; margin-bottom: 6px; }
+        .ds-invest-item span { color: #5e5e5e; font-size: 13px; line-height: 1.5; }
+
+        .ds-pay-grid {
+          display: grid;
+          gap: 18px;
+          grid-template-columns: 1fr 1fr;
+          margin-top: 16px;
+        }
+
+        .ds-fee-box {
+          background: linear-gradient(145deg, #df5a2c 0%, #b73b14 100%);
+          border-radius: 26px;
+          color: #fff;
+          padding: 24px;
+          text-align: center;
+        }
+
+        .ds-fee-box .fee { font-size: 48px; font-weight: 800; line-height: 1.1; }
+
+        .ds-breakdown {
+          background: #fff;
+          border: 1px solid #e8e0dc;
+          border-radius: 16px;
+          padding: 16px;
+        }
+
+        .ds-break-row {
+          border-bottom: 1px solid #ebe3df;
+          display: flex;
+          justify-content: space-between;
+          font-size: 14px;
+          padding: 11px 0;
+        }
+
+        .ds-break-row:last-child { border-bottom: 0; }
+
+        .ds-partner {
+          align-items: center;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          margin-top: 16px;
+        }
+
+        .ds-partner img { height: 76px; object-fit: contain; }
+
+        .ds-faq-menu {
+          border: 1px solid #e5deda;
+          border-radius: 14px;
+          background: #fff;
+          padding: 12px;
+          height: fit-content;
+        }
+
+        .ds-faq-menu button {
+          background: #fff;
+          border: 1px solid #e7e0dc;
+          border-radius: 10px;
+          cursor: pointer;
+          display: block;
+          font-family: inherit;
+          font-size: 13px;
+          font-weight: 700;
+          margin-bottom: 8px;
+          padding: 10px 12px;
+          text-align: left;
+          width: 100%;
+        }
+
+        .ds-faq-menu button.active {
+          border-color: #d35e39;
+          color: #b9380f;
+        }
+
+        .ds-faq-item {
+          border: 1px solid #e7e0dc;
+          border-radius: 12px;
+          margin-bottom: 10px;
+          overflow: hidden;
+        }
+
+        .ds-faq-head {
+          align-items: center;
+          background: #fff;
+          cursor: pointer;
+          display: flex;
+          justify-content: space-between;
+          padding: 12px 14px;
+          width: 100%;
+          border: 0;
+          font-family: inherit;
+          text-align: left;
+        }
+
+        .ds-faq-body {
+          background: #f8f5f4;
+          color: #4f4f4f;
+          padding: 12px 14px;
+          border-top: 1px solid #e7e0dc;
+        }
+
+        @media (max-width: 1080px) {
+          .ds-hero,
+          .ds-curr-grid,
+          .ds-overview-grid,
+          .ds-why-grid,
+          .ds-role-grid,
+          .ds-metric-grid,
+          .ds-pay-grid,
+          .ds-faq-grid,
+          .ds-takeaway-grid,
+          .ds-invest-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .ds-floating-card { left: 14px; }
+          .ds-brochure { flex-direction: column; align-items: flex-start; }
+        }
+
+        @media (max-width: 780px) {
+          .ds-section { padding: 42px 0; }
+          .ds-module-title { font-size: 21px; }
+        }
+      `}</style>
+
+      <div className="ds-shell">
+        <section className="ds-hero">
+          <div>
+            <div className="ds-chip">Advanced Program 2026</div>
+            <h1>Master the <span>Science</span> of Data.</h1>
+            <p className="ds-sub">
+              A high-end editorial learning experience designed for elite practitioners.
+              Build production intelligence systems with clarity, precision, and speed.
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Difference.map((Difference, index) => (
-                <div
-                  data-aos="fade-up"
-                  key={index}
-                  className="bg-[#080810] p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition"
-                >
-                  <div className="text-[#f15b29] text-4xl mb-4">
-                    {Difference.icon}
-                  </div>
-                  <h3 className="text-lg text-[#f15b29] font-bold  mb-3">
-                    {Difference.title}
-                  </h3>
-                  <p className="text-white  ">{Difference.description}</p>
-                </div>
+
+            <div className="ds-stats">
+              {heroStats.map((item) => (
+                <article className="ds-stat" key={item.label}>
+                  <div className="ds-stat-label">{item.label}</div>
+                  <div className="ds-stat-value">{item.value}</div>
+                </article>
               ))}
             </div>
+
+            <ApplyNowButton courseValue="Data Science" />
+          </div>
+
+          <div className="ds-hero-media">
+            <div className="ds-media-box">
+              <img src={DSHero} alt="Data science mentor" />
+            </div>
+            <aside className="ds-floating-card">
+              <h4>Outcome Focused</h4>
+              <p>Graduates have built teams at Google, Meta, and Netflix.</p>
+            </aside>
           </div>
         </section>
-        <hr className=" opacity-10" />
 
-        {/* 15 why learn with us */}
-        <section className="py-[60px] px-[10px]">
+        <section className="ds-section">
+          <h2>Curriculum</h2>
+          <p className="lead">
+            A rigorous path from fundamentals to neural architectures and modern LLM systems.
+            Curated for serious practitioners building at industry scale.
+          </p>
+
+          <div className="ds-curr-grid">
+            <div className="ds-accordion">
+              {curriculum.map((module, index) => {
+                const isOpen = openModule === index;
+                return (
+                  <article className={`ds-module ${isOpen ? "open" : ""}`} key={module.title}>
+                    <div
+                      className="ds-module-head"
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => setOpenModule(isOpen ? -1 : index)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          setOpenModule(isOpen ? -1 : index);
+                        }
+                      }}
+                    >
+                      <div>
+                        <div className="ds-module-week">{module.week}</div>
+                        <div className="ds-module-title">{module.title}</div>
+                      </div>
+                      <span className="ds-module-toggle">{isOpen ? "-" : "+"}</span>
+                    </div>
+
+                    {isOpen && (
+                      <div className="ds-module-body">
+                        <p className="ds-module-objective">{module.objectives}</p>
+                        <div className="ds-tag-wrap">
+                          {module.topics.map((topic) => (
+                            <span className="ds-tag" key={topic}>{topic}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </article>
+                );
+              })}
+            </div>
+
+            <aside className="ds-side-panel">
+              <h3>Speak with an Advisor</h3>
+              <p>Get a personalized curriculum walkthrough and career roadmap.</p>
+              <ApplyForm />
+            </aside>
+          </div>
+        </section>
+
+        <section className="ds-section">
+          <h2>Program Overview</h2>
+          <div className="ds-overview-grid">
+            {overviewTopics.map((topic) => (
+              <article className="ds-card" key={topic}>
+                <h4>{topic}</h4>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="ds-section">
+          <h2>Why Choose Data Science?</h2>
+          <p className="lead">Build one of the most future-proof skillsets across analytics, AI, and modern product organizations.</p>
+          <div className="ds-why-grid">
+            {whyChoose.map((item) => (
+              <article className="ds-card" key={item.title}>
+                <h4>{item.title}</h4>
+                <p>{item.description}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="ds-section">
+          <h2>Key Takeaways</h2>
+          <div className="ds-takeaway-grid">
+            <ul className="ds-list">
+              {keyTakeaways.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+            <div className="ds-image">
+              <img src={DSOutcomes} alt="Key outcomes" />
+            </div>
+          </div>
+        </section>
+
+        <section className="ds-section">
           <BenefitsofLearning />
         </section>
-        <hr className=" opacity-10" />
 
-        {/* 2 Course Overview Section */}
-        <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto">
-            <h1
-              data-aos="fade-up"
-              className=" font-bold text-center mb-12 text-[#f15b29]"
-            >
-              | Program Overview
-            </h1>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-              {courseTopics.map((topic, index) => (
-                <div
-                  data-aos="fade-up"
-                  key={index}
-                  className="bg-[#080810] p-6 rounded-lg text-center transition-transform duration-300 hover:scale-105"
-                >
-                  <div className="text-4xl mb-4">{topic.icon}</div>
-                  <h3 className="text-xl font-bold uppercase text-white hover:text-[#f15b29] transition-colors duration-300">
-                    {topic.title}
-                  </h3>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-        <hr className=" opacity-10" />
-
-        {/* 3 key outcome section  */}
-        <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto lg:flex lg:gap-10 flex-col lg:flex-row">
-            {/* Left side: Key Outcomes */}
-            <div className="w-full mb-3 lg:mb-0">
-              <h1 data-aos="fade-up" className=" font-bold mb-4 text-[#f15b29]">
-                | Key Takeaways
-              </h1>
-              <ul data-aos="fade-up" className="space-y-4">
-                <li>
-                  <span className="font-semibold text-[#f15b29]">
-                    Master Advanced Machine Learning and AI Techniques
-                  </span>
-                 Gain expertise with  deep learning models through the best AI and machine learning training in India. Solve industry-specific problems with hands-on projects.
-                </li>
-                <li>
-                  <li>
-                    <span className="font-semibold text-[#f15b29]">
-                      Develop Big Data Expertise{" "}
-                    </span>
-                   Work with Hadoop, Spark, and NoSQL databases in our big data certification courses to process and analyze large-scale datasets efficiently.
-                  </li>
-                  <span className="font-semibold text-[#f15b29]">
-                    Enhance Data Visualization Skills
-                  </span>
-                  Build dashboards with Tableau and Power BI in our data visualization training programs to communicate insights effectively.
-                  <li>
-                    <span className="font-semibold text-[#f15b29]">
-                      Learn Predictive Analytics{"  "}
-                    </span>
-                    Apply predictive analytics training and statistical models to forecast business trends and outcomes from real data.
-                  </li>
-                  <li>
-                    <span className="font-semibold text-[#f15b29]">
-                      Optimize Data Pipelines{"  "}
-                    </span>
-                    Design workflows to collect, clean, and prepare data using tools taught in our advanced data science courses in India.
-                  </li>
-                  {isExpanded && (
-                    <>
-                      <li>
-                        <span className="font-semibold text-[#f15b29]">
-                          Solve Business Problems with Data{"  "}
-                        </span>
-                        Use data science internship projects in Bangalore to uncover patterns, deliver insights, and support decision-making with real-time data.
-                      </li>
-                    </>
-                  )}
-                </li>
-
-                {/* Hidden additional content */}
-                {isExpanded && (
-                  <>
-                    {/* Paragraphs */}
-                    <p className="mt-4">
-                      <span className="font-semibold text-[#f15b29]">Create Effective Content Marketing Campaigns </span> 
-Join our digital marketing training in India to design strategies that attract, engage, and convert target audiences. 
-                    </p>
-                    <p>
-                      <span className="font-semibold text-[#f15b29]">Leverage Automation for Campaign Optimization </span>
-Learn to use marketing automation tools to streamline campaigns, nurture leads, and drive higher ROI through advanced digital marketing courses. 
-                    </p>
-                  </>
-                )}
-              </ul>
-              <button
-                data-aos="fade-up"
-                onClick={toggleExpand}
-                className="mt-4 px-4 py-2 text-white font-medium border rounded"
-              >
-                {isExpanded ? "Read Less" : "Read More"}
-              </button>
-            </div>
-
-            {/* Right side: Image */}
-            <div
-              data-aos="fade-up"
-              className="lg:w-1/2 w-full h-[300px] rounded-lg shadow-lg shadow-slate-700 overflow-hidden"
-            >
-              <img
-                src={DS}
-                alt="Curriculum"
-                className="object-cover h-full w-full"
-              />
-            </div>
-          </div>
-        </section>
-        <hr className=" opacity-10" />
-
-        {/* 4 Curriculum Section */}
-
-
-        {/* 5 download curriculum section */}
-        <section className="py-[60px] px-[10px]">
-          <div data-aos="fade-up" className="container mx-auto p-5 flex flex-col md:flex-row justify-between items-center flex-wrap gap-5 rounded-lg shadow-lg border-2 border-[#f15b29]">
-            <div className="text-center md:text-left">
-              <h2 className="text-xl font-bold mb-2 text-[#f15b29]">
-                | Get the Full Course Breakdown
-              </h2>
-              <p className="text-gray-400 text-sm">
-                Access the detailed curriculum with key modules and learning
-                outcomes of the Data Science program.
+        <section className="ds-section">
+          <div className="ds-brochure">
+            <div>
+              <h2 style={{ margin: "0 0 6px", fontSize: "32px" }}>Get the Full Course Breakdown</h2>
+              <p className="lead" style={{ margin: 0 }}>
+                Access the detailed curriculum with modules, outcomes, and execution roadmap.
               </p>
             </div>
-            <div className="flex flex-col lg:flex-row items-center justify-center gap-3">
-              <button
-                className="bg-[#f15b29] hover:bg-[#f15b29] text-white font-semibold py-2 px-6 rounded flex items-center gap-2"
-                onClick={handleBrochureClick}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M3 8a1 1 0 011-1h12a1 1 0 011 1v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm9 4a1 1 0 10-2 0V9.707l-.293.293a1 1 0 11-1.414-1.414l2-2a1 1 0 011.414 0l2 2a1 1 0 11-1.414 1.414L12 9.707V12z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Download
-              </button>
-            </div>
-          </div>
-          {/* Dialog Box for Form */}
-          {showForm && (
-            <div className="fixed top-8 inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-[999]">
-              <div className="bg-white text-black p-3 rounded-lg shadow-lg w-96">
-                <span className="text-md float-end mb-2 font-bold border rounded-full px-2 cursor-pointer"  onClick={OffForm}>X</span>
-                <h3 className="text-md text-center font-semibold mb-2">
-                  Register to Download Brochure
-                </h3>
-                <form className="space-y-2" onSubmit={(e) => handleFormSubmit(e, actionType)}>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    placeholder="Enter your name"
-                    required
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-300 p-1.5 rounded-md"
-                    
-                  />
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-300 p-1.5 rounded-md"
-                    disabled={emailVerified}
-                  required
-                  />
-                {!emailVerified ? (
-                    !otpSent ? (
-                        <button
-                            type="button"
-                            onClick={sendOTP}
-                            className="w-full bg-[#f15b29] text-white p-1.5 rounded-md text-sm mt-2 transition"
-                        >
-                            Verify Email
-                        </button>
-                    ) : (
-                        <div className="flex gap-2 mt-2">
-                            <input
-                                type="text"
-                                value={otp}
-                                onChange={(e) => setOtp(e.target.value)}
-                                placeholder="Enter OTP"
-                                className="w-full border border-gray-300 p-1.5 rounded-md text-black"
-                            />
-                            <button
-                                type="button"
-                                onClick={verifyOTP}
-                                className="bg-green-600 text-white px-3 py-1.5 rounded-md text-sm whitespace-nowrap"
-                            >
-                                Submit OTP
-                            </button>
-                        </div>
-                    )
-                ) : (
-                    <div className="bg-green-100 border border-green-400 text-green-700 px-3 py-1.5 rounded-md mt-2 text-center text-sm">
-                        ✅ Email Verified
-                    </div>
-                )}
-                  <input
-                    type="text"
-                    id="number"
-                    name="number"
-                    placeholder="Enter your phone number"
-                    value={formData.number}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-300 p-1.5 rounded-md"
-                    required
-                  />
-                  <select
-                    id="currentRole"
-                    name="currentRole"
-                    value={formData.currentRole}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-300 p-1.5 rounded-md"
-                    required
-                  >
-                    <option disabled value="">What do you currently do?</option>
-                    <option value="Founder">Founder</option>
-                    <option value="Student">Student</option>
-                    <option value="Working Professional">
-                      Working Professional
-                    </option>
-                    <option value="Self Employed">Self Employed</option>
-                  </select>
-                  <select
-                    id="experience"
-                    name="experience"
-                    value={formData.experience}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-300 p-1.5 rounded-md"
-                    required
-                  >
-                    <option disabled value="">Select Experience</option>
-                    <option value="0 year">0 year (Fresher)</option>
-                    <option value="1-2 years">1-2 years</option>
-                    <option value="3-5 years">3-5 years</option>
-                    <option value="5+ years">5+ years</option>
-                  </select>
-                  <select
-                    id="goal"
-                    name="goal"
-                    value={formData.goal}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-300 p-1.5 rounded-md"
-                    required
-                  >
-                    <option disabled value="">Goal of taking this program</option>
-                    <option value="Career Transition">Career Transition</option>
-                    <option value="Kickstart Career">Kickstart Career</option>
-                    <option value="Upskilling">Upskilling</option>
-                    <option value="Other">Other</option>
-                  </select>
-                  {formData.goal === "Other" && (
-                    <input
-                      type="text"
-                      name="goalOther"
-                      value={formData.goalOther}
-                      onChange={handleInputChange}
-                      placeholder="Please specify your goal"
-                      className="w-full border border-gray-300 p-1.5 rounded-md mt-2"
-                      required
-                    />
-                  )}
-                  <select
-                    id="reason"
-                    name="reason"
-                    value={formData.reason}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-300 p-1.5 rounded-md"
-                    required
-                  >
-                    <option disabled value="">Reason to take this program</option>
-                    <option value="I Want to Know More About the Program">I Want to Know More About the Program</option>
-                    <option value="I've Reviewed the Program – Need Career Guidance">I've Reviewed the Program – Need Career Guidance</option>
-                    <option value="I'm Ready to Enroll">I'm Ready to Enroll</option>
-                    <option value="I'm Already Enrolled – Need Support">I'm Already Enrolled – Need Support</option>
-                  </select>
-                  <select
-                    id="domain"
-                    name="domain"
-                    value={formData.domain}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-300 p-1.5 rounded-md"
-                    required
-                  >
-                    <option disabled value="">Domain currently working in</option>
-                    <option value="Digital Marketing/Performance marketing">
-                      Digital Marketing/Performance Marketing
-                    </option>
-                    <option value="Marketing/Sales">Marketing/Sales</option>
-                    <option value="Management/Operations">
-                      Management/Operations
-                    </option>
-                    <option value="IT/Tech/Product">IT/Tech/Product</option>
-                    <option value="Other">Other</option>
-                  </select>
-                  {formData.domain === "Other" && (
-                    <input
-                      type="text"
-                      name="domainOther"
-                      value={formData.domainOther}
-                      onChange={handleInputChange}
-                      placeholder="Please specify your domain"
-                      className="w-full border border-gray-300 p-1.5 rounded-md mt-2"
-                      required
-                    />
-                  )}
-                  <div className="flex justify-center gap-2">
-                    <button
-                      type="submit" disabled={!emailVerified}
-                      onClick={(e) => setActionType('Only Download Brochure')}
-                      className="px-4 py-2 w-full bg-[#f15b29] text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                     <i className="fa fa-download"></i>
-                    </button>
-                    <button
-                      type="submit" disabled={!emailVerified}
-                      onClick={(e) => setActionType('Requested To Call Back')}
-                      className="px-4 py-2 w-full bg-[#f15b29] flex items-center justify-center gap-1 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                   <i className="fa fa-download"></i> + <RiCustomerService2Fill />
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
-        </section>
-
-        {/* 7 alumni section  */}
-        <hr className=" opacity-10" />
-        {/* 13 job roles section  */}
-        <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto">
-            <h1
-              data-aos="fade-up"
-              className="text-[#f15b29] text-center  font-bold mb-8"
-            >
-              | Career Opportunities in{" "}
-              <span className="text-white font-bold">Data Science</span>
-            </h1>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {jobRoles.map((role, index) => (
-                <div
-                  data-aos="fade-up"
-                  key={index}
-                  className="border-l-4 border-[#f15b29] bg-[#080810] rounded-md p-4 text-white shadow-lg"
-                >
-                  <h3 className="text-xl font-semibold mb-4">{role.title}</h3>
-                  <p>{role.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-        <hr className=" opacity-10" />
-
-        {/* Clients Carousel */}
-        <div className="workat">
-          <div className="alumni">
-            <h1 className="text-[#f15b29] font-bold mb-6 text-center">
-              | Our alumni at top Brands
-            </h1>
-            <p className="text-gray-400 mb-12 text-center">
-              Their success stories inspire current students to aim for global
-              excellence in their careers.
-            </p>
-            <ClientsCarousel />
-          </div>
-        </div>
-        <hr className=" opacity-10" />
-
-        {/* 12 key highlight section */}
-        <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto">
-            <div className="">
-              <div className=" w-full mb-8 lg:mb-0">
-                <h1
-                  data-aos="fade-up"
-                  className=" text-center font-bold mb-6 text-[#f15b29]"
-                >
-                  | Course Benefits at a Glance
-                </h1>
-                <p data-aos="fade-up" className="text-lg text-center mb-8">
-                  Master advanced{" "}
-                  <span className="text-[#f15b29] font-bold">Data Science</span>{" "}
-                  techniques with hands-on projects, expert-led sessions, and
-                  real-world applications.
-                </p>
-                <div
-                  data-aos="fade-up"
-                  className="grid grid-cols-2 md:grid-cols-4 gap-2 lg:px-20"
-                >
-                  <div className=" inline-block p-6 rounded-lg text-center">
-                    <h3 className="text-3xl font-bold text-[#f15b29]">200+</h3>
-                    <p className="mt-2 text-gray-300">Mentees Placed</p>
-                  </div>
-                  <div className=" inline-block p-6 rounded-lg text-center">
-                    <h3 className="text-3xl font-bold text-[#f15b29]">
-                      10+ LPA
-                    </h3>
-                    <p className="mt-2 text-gray-300">Average CTC</p>
-                  </div>
-                  <div className=" inline-block p-6 rounded-lg text-center">
-                    <h3 className="text-3xl font-bold text-[#f15b29]">93%</h3>
-                    <p className="mt-2 text-gray-300">Placement Rate</p>
-                  </div>
-                  <div className=" inline-block p-6 rounded-lg text-center">
-                    <h3 className="text-3xl font-bold text-[#f15b29]">450+</h3>
-                    <p className="mt-2 text-gray-300">Hiring Partners</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-        <hr className=" opacity-10" />
-
-        {/* 8 Certification section */}
-        <section className="py-[60px] px-[10px]">
-          <div data-aos="fade-up">
-            <Certification />
-          </div>
-        </section>
-        <hr className=" opacity-10" />
-
-        {/* Flexible Payment Options */}
-        <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto max-w-4xl">
-            <h1 className="text-center font-extrabold text-[#f15b29] mb-12 text-3xl md:text-4xl">
-              Our Flexible Payment Options
-            </h1>
-            
-            {/* Payment Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-              {/* Left: Total Fee Box */}
-              <div className="bg-gradient-to-br from-[#f15b29] to-[#b5401f] rounded-l-[80px] rounded-r-lg p-8 md:p-12 flex flex-col justify-center items-center shadow-2xl">
-                <p className="text-white text-lg md:text-xl mb-4 font-medium">Total program fee</p>
-                <p className="text-white text-5xl md:text-6xl font-bold">₹47,200</p>
-                <p className="text-white/80 text-sm mt-2">Inclusive of taxes</p>
-              </div>
-              
-              {/* Right: Payment Breakdown */}
-              <div className="flex flex-col justify-center space-y-4">
-                <div className="flex justify-between items-center py-3 border-b border-gray-600">
-                  <span className="text-[#eee] text-lg">Registration</span>
-                  <span className="text-[#eee] text-lg font-semibold">₹10,000</span>
-                </div>
-                <div className="py-3 border-b border-gray-600">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[#eee] text-lg">Installment 1</span>
-                    <span className="text-[#eee] text-lg font-semibold">₹18,600</span>
-                  </div>
-                  <p className="text-[#aaa] text-xs mt-1">First installment must be paid within 15 days from the date of registration</p>
-                </div>
-                <div className="py-3 border-b border-gray-600">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[#eee] text-lg">Installment 2</span>
-                    <span className="text-[#eee] text-lg font-semibold">₹18,600</span>
-                  </div>
-                  <p className="text-[#aaa] text-xs mt-1">Second installment must be paid within 15 days of first installment</p>
-                </div>
-              </div>
-            </div>
-
-            
-            
-            {/* Financial Partner */}
-            <div className="flex flex-col justify-center items-center mt-12">
-              <p className="mb-2 text-[#f15b29]">| Our Financial Partner</p>
-              <img src={Flashaidlogo} alt="Financial Partner" className="h-[80px]"/>
-            </div>
-          </div>
-        </section>
-
-        {/* 16 store section  */}
-        <section className="py-[60px] px-[10px] bg-white">
-          <StoreSection />
-        </section>
-
-        {/* 17 new FAQ section */}
-        <section className="py-[60px] px-[10px] bg-white">
-          <div data-aos="fade-up" className="container mx-auto">
-            <h1 className="text-center mb-2  font-bold text-[#f15b29]">
-              | Ask Us Anything
-            </h1>
-            <div className="flex justify-center   flex-col md:flex-row">
-              {/* Sidebar */}
-              <div className="md:w-1/6 w-full p-3 lg:border-r border-b md:border-b-0 text-black border-[#f15b29]">
-                <ul className="space-y-2">
-                  {Object.keys(faqData).map((category) => (
-                    <li
-                      key={category}
-                      onClick={() => {
-                        setActiveCategory(category);
-                        setOpenFAQ(null); // Reset any open question
-                      }}
-                      className={`cursor-pointer border font-bold text-black py-2 px-4 rounded-lg ${
-                        activeCategory === category ? " text-[#f15b29]" : ""
-                      }`}
-                    >
-                      {category}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* FAQ Content */}
-              <div className="md:w-3/4 w-full p-3">
-                <h2 className="text-2xl font-bold mb-4 text-[#f15b29]">
-                  {activeCategory} :
-                </h2>
-                <ul className="space-y-4 ">
-                  {faqData[activeCategory].map((faq, index) => (
-                    <li
-                      className="border  overflow-hidden rounded-lg "
-                      key={index}
-                    >
-                      <button
-                        onClick={() =>
-                          setOpenFAQ(openFAQ === index ? null : index)
-                        }
-                        className="w-full text-left text-black py-3 px-5  flex justify-between items-center"
-                      >
-                        {faq.question}
-                        <span className="text-[#f15b29] font-bold text-2xl">
-                          {openFAQ === index ? "-" : "+"}
-                        </span>
-                      </button>
-                      {openFAQ === index && (
-                        <div className="p-4 border-t bg-slate-100 text-black">
-                          <p>{faq.answer}</p>
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 11 scrolling section */}
-        <section className=" relative">
-          <div
-            className={`fixed bottom-0 left-0 w-full bg-white border-t border-black z-10 shadow-md flex justify-between items-center p-4   transition-transform duration-300 ${
-              isVisible ? "translate-y-0" : "translate-y-full"
-            }`}
-          >
-            <p className="text-lg font-semibold text-black">
-              Program fees 40,000/- + 18% GST
-            </p>
-            <div className=" relative flex space-x-4">
-              <button className="flex items-center px-3 py-2 border rounded-md text-white bg-black  hover:text-[#f15b29]">
-                <a
-                  href="https://rzp.io/rzp/Advanced_Program_Slot_Booking"
-                  target="blank"
-                  className="text-[#f15b29] whitespace-nowrap"
-                >
-                  Enroll Now
-                </a>
-              </button>
-            </div>
+            <a href={pdfds} target="_blank" rel="noreferrer" className="ds-btn" style={{ textDecoration: "none" }}>
+              Download
+            </a>
           </div>
         </section>
       </div>
+
+      <section className="ds-section ds-career">
+        <div className="ds-shell">
+          <div className="ds-center">
+            <h2>Career Opportunities in Data Science</h2>
+            <p className="lead" style={{ margin: "0 auto", maxWidth: "640px" }}>
+              The program prepares you for high-impact roles across product, platform, and applied AI teams.
+            </p>
+          </div>
+
+          <div className="ds-role-grid">
+            {roles.map((role) => (
+              <article className="ds-role-card" key={role.title}>
+                <div className="ds-role-dot" />
+                <h4>{role.title}</h4>
+                <p>{role.text}</p>
+                <strong>{role.avg}</strong>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="ds-section">
+        <div className="ds-shell">
+          <h2 className="ds-center">Our Alumni at Top Brands</h2>
+          <p className="lead ds-center" style={{ margin: "0 auto 18px", maxWidth: "760px" }}>
+            Their success stories inspire current students to aim for global excellence.
+          </p>
+          <ClientsCarousel />
+        </div>
+      </section>
+
+      <section className="ds-section">
+        <div className="ds-shell">
+          <h2 className="ds-center">Course Benefits at a Glance</h2>
+          <div className="ds-metric-grid">
+            <article className="ds-metric"><h4>200+</h4><p>Mentees Placed</p></article>
+            <article className="ds-metric"><h4>10+ LPA</h4><p>Average CTC</p></article>
+            <article className="ds-metric"><h4>93%</h4><p>Placement Rate</p></article>
+            <article className="ds-metric"><h4>450+</h4><p>Hiring Partners</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section className="ds-section">
+        <div className="ds-shell">
+          <Certification />
+        </div>
+      </section>
+
+      <section className="ds-section">
+        <div className="ds-shell">
+          <div className="ds-invest">
+            <div className="ds-invest-sub">Program Investment</div>
+            <h3>Rs 47,200</h3>
+            <div className="ds-invest-sub">Total fee (incl. GST)</div>
+
+            <div className="ds-invest-grid">
+              <div className="ds-invest-item">
+                <strong>Rs 10,000</strong>
+                <span>Registration fee to reserve your seat in this premium cohort.</span>
+              </div>
+              <div className="ds-invest-item">
+                <strong>Installment 1: Rs 18,600</strong>
+                <span>Payable within 15 days from date of registration.</span>
+              </div>
+              <div className="ds-invest-item">
+                <strong>Installment 2: Rs 18,600</strong>
+                <span>Payable within 15 days after installment 1.</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="ds-pay-grid">
+            <div className="ds-fee-box">
+              <div>Total Program Fee</div>
+              <div className="fee">Rs 47,200</div>
+              <div>Inclusive of taxes</div>
+            </div>
+            <div className="ds-breakdown">
+              <div className="ds-break-row"><span>Registration</span><strong>Rs 10,000</strong></div>
+              <div className="ds-break-row"><span>Installment 1</span><strong>Rs 18,600</strong></div>
+              <div className="ds-break-row"><span>Installment 2</span><strong>Rs 18,600</strong></div>
+            </div>
+          </div>
+
+          <div className="ds-partner">
+            <p className="ds-invest-sub">Our Financial Partner</p>
+            <img src={Flashaidlogo} alt="Financial partner" />
+          </div>
+        </div>
+      </section>
+
+      <section className="ds-section" style={{ background: "#fff" }}>
+        <div className="ds-shell">
+          <StoreSection />
+        </div>
+      </section>
+
+      <section className="ds-section" style={{ background: "#fff" }}>
+        <div className="ds-shell">
+          <h2 className="ds-center">Ask Us Anything</h2>
+          <div className="ds-faq-grid">
+            <aside className="ds-faq-menu">
+              {Object.keys(faqData).map((category) => (
+                <button
+                  key={category}
+                  className={activeCategory === category ? "active" : ""}
+                  type="button"
+                  onClick={() => {
+                    setActiveCategory(category);
+                    setOpenFAQ(null);
+                  }}
+                >
+                  {category}
+                </button>
+              ))}
+            </aside>
+
+            <div>
+              {faqData[activeCategory].map((faq, index) => (
+                <article className="ds-faq-item" key={faq.question}>
+                  <button
+                    className="ds-faq-head"
+                    type="button"
+                    onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
+                  >
+                    <span>{faq.question}</span>
+                    <strong>{openFAQ === index ? "-" : "+"}</strong>
+                  </button>
+                  {openFAQ === index && <div className="ds-faq-body">{faq.answer}</div>}
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };

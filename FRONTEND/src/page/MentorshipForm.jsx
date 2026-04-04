@@ -175,30 +175,30 @@ const MentorshipForm = ({ isPopup, onClose }) => {
                     <button
                       type="button"
                       onClick={sendOTP}
-                      className="w-full bg-[#f15b29] text-white py-2 rounded-xl text-sm font-semibold mb-3 hover:bg-[#e04a1b] transition shadow-md"
+                      className="shared-form-verify mb-3"
                     >
                       Verify Email
                     </button>
                   ) : (
-                    <div className="flex gap-2 mb-3">
+                    <div className="shared-form-otp mb-3">
                        <input
                         type="text"
                         value={otp}
                         onChange={(e) => setOtp(e.target.value)}
                         placeholder="Enter OTP"
-                        className="p-2 w-full border-2 border-slate-200 rounded-xl text-black focus:border-[#f15b29] outline-none"
+                        className=""
                       />
                       <button
                         type="button"
                         onClick={verifyOTP}
-                        className="bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap hover:bg-green-700 transition shadow-md"
+                        className="shared-form-submit !bg-emerald-600 !shadow-none whitespace-nowrap"
                       >
                         Submit OTP
                       </button>
                     </div>
                   )
                 ) : (
-                  <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-xl mb-3 text-center text-sm font-semibold">
+                  <div className="shared-form-status mb-3">
                     ✅ Email Verified
                   </div>
                 )}

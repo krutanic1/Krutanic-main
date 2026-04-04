@@ -1,116 +1,560 @@
-#mentorship{
-
-    .brandlogo{
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 20px;
-      padding-top: 30px;
-      img{
-        height: 5vw;
-      }
-    }
-    @media (max-width:600px) {
-         .brandlogo{
-          img{
-            height: 10vw;
-          }
-         }
-    }
-
-
-     #mentorshipbg{
-      background-image: url("../assets/Collaboration pics/college collab 2.jpg");
-      background-position: center;
-      background-size: cover;
-      background-repeat: no-repeat;
-     }
-
-
-
-
-    .testimonial {
-
-        padding: 50px 10px;
-        margin: auto;
-        max-width: 1440px;
-        overflow: auto;
-        scrollbar-width: none;
-    
-        h1 {
-          font-size: 30px;
-          font-weight: 600;
-          color: #f15b29;
-          margin-bottom: 30px;
-        }
-    
-        .container {
-          max-width: 1390px;
-          min-width: 1390px;
-    
-          padding: 0 20px;
-    
-        }
-    
-        .box {
-          padding: 5px;
-          cursor: grab;
-        }
-    
-        .box>div {
-    
-          padding: 10px;
-          /* margin: 10px; */
-    
-          border-radius: 10px;
-          border: solid 1px rgb(255, 255, 255, 0.1);
-          transition: transform 0.5s ease-in;
-    
-          .upr {
-            margin-top: 20px;
-            display: flex;
-    
-            >div {
-              margin-left: auto;
-              text-align: right;
-            }
-          }
-    
-          img {
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-    
-          }
-    
-          h2 {
-            font-weight: 600;
-          }
-          h3{
-            font-size: 14px;
-            font-style: italic;
-          }
-    
-          p {
-            text-align: justify;
-            font-style: italic;
-    
-           
-          }
-    
-        }
-    
-        .slick-prev:before,
-        .slick-next:before {
-          display: none;
-        }
-    
-      }
+body.mentorship-theme-active {
+  background: #f3f3f3;
 }
 
+#mentorship.mentorship-page {
+  --m-bg: #f3f3f3;
+  --m-surface: #ffffff;
+  --m-surface-soft: #fbfbfb;
+  --m-text: #151821;
+  --m-muted: #6b7283;
+  --m-accent: #f15b29;
+  --m-accent-soft: rgba(241, 91, 41, 0.12);
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 92% 8%, rgba(241, 91, 41, 0.12), transparent 26%),
+    radial-gradient(circle at 8% 14%, rgba(49, 130, 246, 0.08), transparent 24%),
+    linear-gradient(180deg, #f6f6f7 0%, #f1f2f4 100%);
+  color: var(--m-text);
+  overflow-x: clip;
+}
 
+#mentorship .container {
+  width: min(1280px, calc(100% - 32px));
+  margin: 0 auto;
+}
 
-#talktoadvisor{
+#mentorship .section-space {
+  padding: 56px 0;
+}
+
+#mentorship .section-last {
+  padding-top: 24px;
+  padding-bottom: 0;
+}
+
+#mentorship .mentorship-divider {
+  width: min(1280px, calc(100% - 32px));
+  height: 1px;
+  margin: 0 auto;
+  background: linear-gradient(90deg, transparent, rgba(107, 114, 131, 0.22), transparent);
+}
+
+#mentorship #mentorshipbg.mentorship-hero {
+  background-image:
+    linear-gradient(120deg, rgba(242, 242, 244, 0.9), rgba(239, 240, 243, 0.66)),
+    url("../assets/Collaboration pics/college collab 2.jpg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+#mentorship .mentorship-hero-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: 24px;
+  border-radius: 28px;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 20px 40px rgba(16, 24, 39, 0.08);
+  backdrop-filter: blur(6px);
+  padding: clamp(18px, 4vw, 34px);
+}
+
+#mentorship .mentorship-hero-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  justify-content: center;
+}
+
+#mentorship .mentorship-chip {
+  width: fit-content;
+  padding: 8px 12px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  background: var(--m-accent-soft);
+  color: #bb441b;
+}
+
+#mentorship .mentorship-hero-content h1 {
+  margin: 0;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-size: clamp(2rem, 4.8vw, 4.4rem);
+}
+
+#mentorship .mentorship-hero-content h1 span {
+  display: block;
+  color: var(--m-accent);
+}
+
+#mentorship .mentorship-hero-content p {
+  margin: 0;
+  line-height: 1.72;
+  max-width: 760px;
+  color: #5a6070;
+}
+
+#mentorship .mentorship-primary-btn {
+  width: fit-content;
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(135deg, #f15b29, #ff7c4f);
+  color: #fff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 12px 22px rgba(241, 91, 41, 0.24);
+}
+
+#mentorship .mentorship-primary-btn:hover {
+  transform: translateY(-2px);
+}
+
+#mentorship .mentorship-hero-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+#mentorship .mentorship-hero-stats article {
+  border-radius: 14px;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  background: rgba(255, 255, 255, 0.88);
+  padding: 10px 12px;
+}
+
+#mentorship .mentorship-hero-stats strong {
+  display: block;
+  line-height: 1;
+  font-size: 1.42rem;
+}
+
+#mentorship .mentorship-hero-stats span {
+  display: block;
+  margin-top: 5px;
+  color: var(--m-muted);
+  font-size: 0.82rem;
+}
+
+#mentorship .mentorship-hero-form-wrap {
+  border-radius: 20px;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  background: #ffffff;
+  padding: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#mentorship .mentorship-hero-image {
+  width: 100%;
+  height: 100%;
+  min-height: 520px;
+  object-fit: cover;
+  border-radius: 14px;
+  display: block;
+}
+
+#mentorship .mentorship-surface {
+  border-radius: 24px;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  background: linear-gradient(180deg, var(--m-surface), var(--m-surface-soft));
+  padding: 26px;
+  box-shadow: 0 10px 24px rgba(16, 24, 39, 0.06);
+}
+
+#mentorship .mentorship-certifications {
+  border-radius: 24px;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  background: linear-gradient(180deg, #f8f8f9, #ffffff);
+  padding: 26px;
+}
+
+#mentorship .mentorship-dark-band {
+  background: #12151e;
+}
+
+#mentorship .mentorship-dark-band .container {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+#mentorship .mentorship-surface.is-dark-surface {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+#mentorship .mentorship-surface.is-dark-surface,
+#mentorship .mentorship-surface.is-dark-surface .section-head h2,
+#mentorship .mentorship-surface.is-dark-surface .section-head span {
+  color: #f3f4f7;
+}
+
+#mentorship .section-head {
+  margin-bottom: 18px;
+}
+
+#mentorship .section-head.center {
+  text-align: center;
+}
+
+#mentorship .section-head span {
+  display: inline-block;
+  padding: 6px 11px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #bb441b;
+  background: var(--m-accent-soft);
+}
+
+#mentorship .section-head h2 {
+  margin: 10px 0 0;
+  font-size: clamp(1.5rem, 3vw, 2.3rem);
+}
+
+#mentorship .section-head h2 span {
+  color: var(--m-accent);
+}
+
+#mentorship .certification-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+#mentorship .certification-points {
+  display: flex;
+  flex-direction: column;
+  align-self: start;
+}
+
+#mentorship .certification-points h2 {
+  margin: 14px 0 0;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  letter-spacing: -0.03em;
+  line-height: 0.98;
+}
+
+#mentorship .certification-points h2 span {
+  color: var(--m-accent);
+}
+
+#mentorship .credential-chip {
+  margin: 0;
+  width: fit-content;
+  padding: 7px 14px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  font-weight: 800;
+  color: #31457a;
+  background: #dce5ff;
+}
+
+#mentorship .credential-bar {
+  width: 78px;
+  height: 6px;
+  border-radius: 999px;
+  margin-top: 14px;
+  background: linear-gradient(135deg, #b83c11, #f15b29);
+}
+
+#mentorship .credential-feature-wrap {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+#mentorship .point-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  border-radius: 16px;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  background: rgba(255, 255, 255, 0.94);
+  padding: 16px;
+  min-height: 94px;
+}
+
+#mentorship .point-icon {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--m-accent);
+  font-size: 1.1rem;
+}
+
+#mentorship .point-item h3 {
+  margin: 0;
+  font-size: 1.08rem;
+}
+
+#mentorship .point-item p {
+  margin: 4px 0 0;
+  color: #303749;
+  line-height: 1.44;
+}
+
+#mentorship .credential-stat-wrap {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+#mentorship .credential-stat {
+  border-radius: 16px;
+  border: 1px solid rgba(17, 24, 39, 0.07);
+  background: #fff;
+  padding: 14px;
+  text-align: center;
+}
+
+#mentorship .credential-stat-icon {
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+}
+
+#mentorship .credential-stat strong {
+  display: block;
+  font-size: 1.9rem;
+  line-height: 1;
+}
+
+#mentorship .credential-stat span {
+  display: block;
+  margin-top: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+}
+
+#mentorship .credential-stat.orange .credential-stat-icon,
+#mentorship .credential-stat.orange strong {
+  color: var(--m-accent);
+}
+
+#mentorship .credential-stat.blue .credential-stat-icon,
+#mentorship .credential-stat.blue strong {
+  color: #3359b9;
+}
+
+#mentorship .credential-heading-row {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+#mentorship .credential-heading-row h4 {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+#mentorship .credential-heading-row p {
+  margin: 4px 0 0;
+  color: #6b7283;
+}
+
+#mentorship .credential-heading-row a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #b83c11;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+#mentorship .credential-cta {
+  margin-top: 14px;
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+  font-size: 1.05rem;
+}
+
+#mentorship .credential-note {
+  margin: 10px 0 0;
+  text-align: center;
+  font-size: 0.92rem;
+  color: #6b7283;
+}
+
+#mentorship .certification-images {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  align-self: start;
+}
+
+#mentorship .credential-card {
+  border-radius: 18px;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(17, 24, 39, 0.08);
+}
+
+#mentorship .certification-images img {
+  width: 100%;
+  height: auto;
+  min-height: 230px;
+  object-fit: cover;
+  display: block;
+}
+
+#mentorship .credential-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+}
+
+#mentorship .credential-card-footer span {
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-size: 0.84rem;
+}
+
+#mentorship .credential-card-footer a {
+  color: #b83c11;
+  font-size: 1rem;
+}
+
+#mentorship .testimonial {
+  padding: 8px 0;
+  margin: auto;
+  max-width: 1440px;
+  overflow: auto;
+  scrollbar-width: none;
+}
+
+#mentorship .testimonial .container {
+  max-width: 1390px;
+  min-width: 1390px;
+  padding: 0 20px;
+}
+
+#mentorship .testimonial .box {
+  padding: 5px;
+  cursor: grab;
+}
+
+#mentorship .testimonial .box > div {
+  padding: 10px;
+  border-radius: 10px;
+  border: solid 1px rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  transition: transform 0.5s ease-in;
+}
+
+#mentorship .testimonial .box > div .upr {
+  margin-top: 20px;
+  display: flex;
+}
+
+#mentorship .testimonial .box > div .upr > div {
+  margin-left: auto;
+  text-align: right;
+}
+
+#mentorship .testimonial .box > div img {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+}
+
+#mentorship .testimonial .box > div h2 {
+  font-weight: 600;
+}
+
+#mentorship .testimonial .box > div h3 {
+  font-size: 14px;
+  font-style: italic;
+}
+
+#mentorship .testimonial .box > div p {
+  text-align: justify;
+  font-style: italic;
+}
+
+#mentorship .testimonial .slick-prev:before,
+#mentorship .testimonial .slick-next:before {
+  display: none;
+}
+
+#mentorship .mentorship-pricing-cta {
+  width: min(920px, calc(100% - 32px));
+  margin: 0 auto;
+  border-radius: 22px;
+  border: 1px solid rgba(241, 91, 41, 0.28);
+  background: linear-gradient(135deg, #f15b29, #ff7d17);
+  text-align: center;
+  padding: 28px 20px;
+  color: #fff;
+}
+
+#mentorship .mentorship-pricing-cta h2 {
+  margin: 0;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+}
+
+#mentorship .mentorship-pricing-cta p {
+  margin: 10px auto 18px;
+  max-width: 650px;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+#mentorship .mentorship-pricing-cta .mentorship-primary-btn {
+  background: #ffffff;
+  color: #ca4a1d;
+  box-shadow: none;
+}
+
+#mentorship .mentorship-whatsapp {
+  position: fixed;
+  bottom: 22px;
+  right: 20px;
+  z-index: 50;
+}
+
+#mentorship .mentorship-whatsapp a {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  background: #22c55e;
+  color: #fff;
+  font-size: 2rem;
+  box-shadow: 0 14px 22px rgba(34, 197, 94, 0.3);
+  animation: mentorship-bounce 1.8s infinite;
+}
+
+#mentorship .section-last {
+  background: #ffffff;
+  border-top: 1px solid rgba(17, 24, 39, 0.08);
+}
+
+#talktoadvisor {
   padding: 10px;
   position: fixed;
   z-index: 50;
@@ -123,44 +567,119 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  >div{
-    padding: 8px;
-    color: rgb(0, 0, 0);
-    background-color: rgba(255, 255, 255, 0.95);
-    margin: auto auto;
-    border: 1px solid #000000;
-    border-radius: 16px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-    text-align: center;
-    -webkit-animation: animatezoom 0.6s;
-    animation: animatezoom 0.6s;
-    >div{
-      flex: 1 1 45%;
-      margin-top: 10px;
-    }
-    img{
-      width: 400px;
-      height: auto;
-      border-radius: 10px;
-    }
+}
+
+#talktoadvisor > div {
+  padding: 8px;
+  color: rgb(0, 0, 0);
+  background-color: rgba(255, 255, 255, 0.95);
+  margin: auto auto;
+  border: 1px solid #000000;
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  text-align: center;
+  -webkit-animation: animatezoom 0.6s;
+  animation: animatezoom 0.6s;
+}
+
+#talktoadvisor > div > div {
+  flex: 1 1 45%;
+  margin-top: 10px;
+}
+
+#talktoadvisor > div img {
+  width: 400px;
+  height: auto;
+  border-radius: 10px;
+}
+
+@media (max-width: 1100px) {
+  #mentorship .mentorship-hero-card,
+  #mentorship .certification-grid {
+    grid-template-columns: 1fr;
   }
-  @media (max-width: 750px){
-    .advisor{
-      background-image: url('../assets/courses/suryansh.jpg');
-      background-size: cover;
-      opacity: 1;
-    }
-    .advisor img{
-display: none;
-    }
-     .advisor>div{
-      flex: 1 1 100%;
-      padding: 10px;
-     }
-    
+
+  #mentorship .certification-points h2 {
+    max-width: 12ch;
+  }
+
+  #mentorship .mentorship-hero-form-wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+@media (max-width: 750px) {
+  #mentorship .container {
+    width: min(1280px, calc(100% - 22px));
+  }
+
+  #mentorship .section-space {
+    padding: 34px 0;
+  }
+
+  #mentorship .mentorship-hero-card,
+  #mentorship .mentorship-surface,
+  #mentorship .mentorship-certifications,
+  #mentorship .mentorship-pricing-cta {
+    border-radius: 16px;
+    padding: 16px;
+  }
+
+  #mentorship .mentorship-hero-stats {
+    grid-template-columns: 1fr;
+  }
+
+  #mentorship .mentorship-whatsapp a {
+    width: 52px;
+    height: 52px;
+    font-size: 1.7rem;
+  }
+
+  #mentorship .credential-feature-wrap,
+  #mentorship .credential-stat-wrap {
+    grid-template-columns: 1fr;
+  }
+
+  #mentorship .certification-points h2 {
+    font-size: 3rem;
+  }
+
+  #mentorship .credential-heading-row h4 {
+    font-size: 2rem;
+  }
+
+  #mentorship .credential-heading-row {
+    align-items: flex-end;
+  }
+
+  #talktoadvisor .advisor {
+    background-image: url('../assets/courses/suryansh.jpg');
+    background-size: cover;
+    opacity: 1;
+  }
+
+  #talktoadvisor .advisor img {
+    display: none;
+  }
+
+  #talktoadvisor .advisor > div {
+    flex: 1 1 100%;
+    padding: 10px;
+  }
+}
+
+@keyframes mentorship-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
   }
 }

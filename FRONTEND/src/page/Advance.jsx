@@ -10,6 +10,7 @@ import "swiper/css";
 import "swiper/css/effect-cube";
 import "swiper/css/pagination";
 import { EffectCube, Pagination, Autoplay } from "swiper/modules";
+import { FaBullhorn, FaChartLine, FaDollarSign, FaFileAlt, FaBoxes } from "react-icons/fa";
 
 import img1 from "../assets/Advanced Course Images/Mern Stack Development/MSD 2.jpg";
 import img2 from "../assets/Advanced Course Images/Digital Markting/DM 4.jpg";
@@ -66,6 +67,35 @@ const faqs = [
     answer:
       "Yes, all recorded sessions, course materials, and resources will be available to you even after the course ends for continued learning.",
   },
+];
+
+const capstoneSteps = [
+  {
+    step: "1",
+    title: "Bring Your Employer's Business Problem",
+    description:
+      "Go back and impress your boss and colleagues with the Data & AI solutions you come up with.",
+  },
+  {
+    step: "2",
+    title: "Bring a Future Employer's Problem",
+    description:
+      "Work on a challenge that helps you build a stronger portfolio for hiring managers.",
+  },
+  {
+    step: "3",
+    title: "Choose a Problem From Your Domain",
+    description:
+      "Pick a project from your career track and showcase practical problem-solving skills.",
+  },
+];
+
+const capstoneTracks = [
+  { title: "Marketing", icon: FaBullhorn },
+  { title: "Finance", icon: FaDollarSign },
+  { title: "Sales", icon: FaChartLine },
+  { title: "Human Resources", icon: FaFileAlt },
+  { title: "Operations and Supply chain", icon: FaBoxes },
 ];
 
 const Advance = () => {
@@ -336,6 +366,65 @@ const Advance = () => {
             </Swiper>
           </div>
 
+        </div>
+      </section>
+
+      <section className="px-[10px] py-[30px] md:py-[60px]">
+        <div className="width rounded-[28px] bg-white px-4 py-8 md:px-8 md:py-10 text-black shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
+          <h2 className="text-center text-[2rem] md:text-[3.2rem] font-extrabold tracking-tight text-black">
+            Choose Your Capstone Project
+          </h2>
+
+          <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_1.15fr] lg:items-center">
+            <div className="relative pl-10">
+              <div className="absolute left-[18px] top-3 bottom-0 w-px bg-[#e5e7eb]" aria-hidden="true" />
+              <div className="space-y-8">
+                {capstoneSteps.map((item, index) => (
+                  <div key={item.step} className="relative">
+                    <div className={`absolute -left-10 top-0 flex h-10 w-10 items-center justify-center rounded-full text-base font-bold ${index === 0 ? 'bg-[#f2293f] text-white shadow-[0_10px_24px_rgba(242,41,63,0.25)]' : 'bg-white text-[#6b7280] border border-[#d1d5db]'}`}>
+                      {item.step}
+                    </div>
+                    <div className="pt-1">
+                      <h3 className="text-[1.15rem] md:text-[1.45rem] font-bold leading-snug text-[#111827]">
+                        {item.title}
+                      </h3>
+                      {index === 0 && (
+                        <p className="mt-4 max-w-[36rem] text-[1rem] md:text-[1.1rem] leading-8 text-[#374151] flex items-start gap-3">
+                          <span className="mt-2 inline-flex h-6 w-6 flex-none items-center justify-center rounded-full border border-[#f2293f] text-[#f2293f]">
+                            <span className="h-2.5 w-2.5 rounded-full bg-[#f2293f]" />
+                          </span>
+                          <span>{item.description}</span>
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid gap-6 sm:grid-cols-2">
+              {capstoneTracks.map((track, index) => {
+                const Icon = track.icon;
+                const isWide = index === 4;
+                return (
+                  <article
+                    key={track.title}
+                    className={`flex items-center gap-4 rounded-[22px] border border-[#ef4444] bg-white px-4 py-4 shadow-[0_8px_18px_rgba(15,23,42,0.04)] ${isWide ? 'sm:col-span-2 sm:max-w-[34rem] sm:justify-self-center' : ''}`}
+                  >
+                    <div className="flex h-[84px] w-[84px] flex-none items-center justify-center rounded-[16px] border border-[#ef4444] bg-[#f5f5f5] text-[#ef4444] text-[2rem]">
+                      <Icon />
+                    </div>
+                    <div className="relative flex-1">
+                      <div className="inline-block rounded-full border border-[#ef4444] px-5 py-3 text-[1.15rem] font-medium leading-none text-[#3f3f46]">
+                        {track.title}
+                      </div>
+                      <span className="absolute left-6 top-full mt-2 h-3 w-3 rounded-full bg-[#ef4444]" aria-hidden="true" />
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </section>
       <hr className=" opacity-10" />

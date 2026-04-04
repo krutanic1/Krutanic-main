@@ -1,27 +1,8 @@
 import React, { useState } from "react";
-import fullStack from "../../assets/mentorshipcourses/full stack.png";
-import android from "../../assets/mentorshipcourses/android.png";
-import artificial from "../../assets/mentorshipcourses/AI.png";
-import machine from "../../assets/mentorshipcourses/Machine learning.png";
-import cyber from "../../assets/mentorshipcourses/cyber.png";
-import datascience from "../../assets/mentorshipcourses/Data science.png";
-import cloudcomputing from "../../assets/mentorshipcourses/cloud computing.png";
-import embeddedsystem from "../../assets/mentorshipcourses/embedded.png";
-import iotandrobotics from "../../assets/mentorshipcourses/robotics.png";
-import autocad from "../../assets/mentorshipcourses/Autocad.png";
-import uiux from "../../assets/mentorshipcourses/ui & ux.png";
-import graphicdesign from "../../assets/mentorshipcourses/graphic.png";
-import bussinessanalytics from "../../assets/mentorshipcourses/buis.. analytics.png";
-import digitalmarketing from "../../assets/mentorshipcourses/digital marketing.png";
-import finance from "../../assets/mentorshipcourses/finance.png";
-import hr from "../../assets/mentorshipcourses/HR.png";
-import stockmarketing from "../../assets/mentorshipcourses/stock market.png";
 //import supplychainmanagement from "../../assets/mentorshipcourses/supply.png";
 // import psycho from "../../assets/mentorshipcourses/psyc.png";
 // import fintech from "../../assets/mentorshipcourses/fintech.png";
 // import nano from "../../assets/mentorshipcourses/genetic.png";
-import dataanalytics from "../../assets/mentorshipcourses/DA.jpg";
-import devops from "../../assets/mentorshipcourses/DEVOPS.jpg";
 // import automationtesting from "../../assets/mentorshipcourses/automatingtestingmin.avif";
 import { RiCustomerService2Fill } from "react-icons/ri";
 import pdf1 from "../../../krutanic/Android Development.pdf";
@@ -53,6 +34,8 @@ import axios from "axios";
 import API from "../../API";
 import toast, { Toaster } from "react-hot-toast";
 
+const thumbnail = (fileName) => `/course_thumbnails/${encodeURIComponent(fileName)}`;
+
 const CourseMentor = ({ }) => {
   const [showForm, setShowForm] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -79,7 +62,7 @@ const CourseMentor = ({ }) => {
       {
         id: 1,
         title: "Full Stack Web Development",
-        image: `${fullStack}`,
+        image: thumbnail("Full Stack Web.jpg"),
         pdf: `${pdf14}`,
         description:
           "Building and managing both the front-end and back-end of websites.",
@@ -89,7 +72,7 @@ const CourseMentor = ({ }) => {
       {
         id: 2,
         title: "Android App Development",
-        image: `${android}`,
+        image: thumbnail("Android App.jpg"),
         pdf: `${pdf1}`,
         description:
           "Designing and developing mobile apps for Android devices.",
@@ -99,7 +82,7 @@ const CourseMentor = ({ }) => {
       {
         id: 3,
         title: "Artificial Intelligence",
-        image: `${artificial}`,
+        image: thumbnail("Artificial Intelligence.jpg"),
         pdf: `${pdf2}`,
         description:
           "Creating systems that simulate human intelligence for tasks like decision-making.",
@@ -109,7 +92,7 @@ const CourseMentor = ({ }) => {
       {
         id: 4,
         title: "Machine Learning",
-        image: `${machine}`,
+        image: thumbnail("Machine Learning.jpg"),
         pdf: `${pdf18}`,
         description:
           "Teaching machines to recognize patterns and make predictions from data.",
@@ -119,7 +102,7 @@ const CourseMentor = ({ }) => {
       {
         id: 5,
         title: "Cyber Security",
-        image: `${cyber}`,
+        image: thumbnail("Cyber Security.jpg"),
         pdf: `${pdf6}`,
         description:
           "Protecting networks, systems, and data from cyber attacks.",
@@ -129,7 +112,7 @@ const CourseMentor = ({ }) => {
       {
         id: 6,
         title: "Data Science",
-        image: `${datascience}`,
+        image: thumbnail("Data Science.jpg"),
         pdf: `${pdf8}`,
         description:
           "Analyzing large data sets to extract insights and inform decisions.",
@@ -139,7 +122,7 @@ const CourseMentor = ({ }) => {
       {
         id: 7,
         title: "Data Analytics",
-        image: `${dataanalytics}`,
+        image: thumbnail("Data Analytics.jpg"),
         pdf: `${pdf7}`,
         description:
           "Interpreting data to help businesses improve performance and make decisions.",
@@ -149,7 +132,7 @@ const CourseMentor = ({ }) => {
       {
         id: 8,
         title: "UI/UX Design",
-        image: `${uiux}`,
+        image: thumbnail("ui-ux-design.jpg"),
         pdf: `${pdf23}`,
         description:
           "Designing intuitive user interfaces and ensuring a positive experience.",
@@ -159,7 +142,7 @@ const CourseMentor = ({ }) => {
       {
         id: 9,
         title: "DevOps",
-        image: `${devops}`,
+        image: thumbnail("DevOps.jpg"),
         pdf: `${pdf9}`,
         description: "Implement DevOps practices for software development.",
         rating: 4.8,
@@ -179,7 +162,7 @@ const CourseMentor = ({ }) => {
       {
         id: 10,
         title: "Business Analytics",
-        image: `${bussinessanalytics}`,
+        image: thumbnail("Business Analytics.jpg"),
         pdf: `${pdf4}`,
         description: "Using data to optimize business decisions and strategies",
         rating: 4.7,
@@ -188,7 +171,7 @@ const CourseMentor = ({ }) => {
       {
         id: 11,
         title: "Finance",
-        image: `${finance}`,
+        image: thumbnail("FinTech.jpg"),
         pdf: `${pdf12}`,
         description:
           "Managing money, investments, and financial planning for individuals or companies.",
@@ -198,7 +181,7 @@ const CourseMentor = ({ }) => {
       {
         id: 12,
         title: "Human Resource",
-        image: `${hr}`,
+        image: thumbnail("Human Resource.jpg"),
         pdf: `${pdf16}`,
         description:
           "Overseeing recruitment, employee development, and organizational culture.",
@@ -208,7 +191,7 @@ const CourseMentor = ({ }) => {
       {
         id: 13,
         title: "Digital Marketing",
-        image: `${digitalmarketing}`,
+        image: thumbnail("Digital Marketing.jpg"),
         pdf: `${pdf10}`,
         description:
           " Promoting products and services through digital channels like social media and search engines.",
@@ -218,7 +201,7 @@ const CourseMentor = ({ }) => {
       {
         id: 14,
         title: "Stock Marketing",
-        image: `${stockmarketing}`,
+        image: thumbnail("Stock Marketing.jpg"),
         pdf: `${pdf21}`,
         description:
           "Trading stocks, bonds, and other securities in financial markets.",
@@ -238,7 +221,7 @@ const CourseMentor = ({ }) => {
       {
         id: 16,
         title: "Graphics Design",
-        image: `${graphicdesign}`,
+        image: thumbnail("Graphic Designing.jpg"),
         pdf: `${pdf15}`,
         description: "Creating visual content for digital and print media.",
         rating: 4.9,
@@ -259,7 +242,7 @@ const CourseMentor = ({ }) => {
       {
         id: 18,
         title: "Embedded System",
-        image: `${embeddedsystem}`,
+        image: thumbnail("Embedded System.jpg"),
         pdf: `${pdf11}`,
         description:
           "Designing computer systems integrated into devices for specific functions.",
@@ -269,7 +252,7 @@ const CourseMentor = ({ }) => {
       {
         id: 19,
         title: "Cloud Computing",
-        image: `${cloudcomputing}`,
+        image: thumbnail("Cloud Computing.jpg"),
         pdf: `${pdf5}`,
         description:
           "Providing scalable computing resources and storage via the internet.",
@@ -279,7 +262,7 @@ const CourseMentor = ({ }) => {
       {
         id: 20,
         title: "IOT & Robotics",
-        image: `${iotandrobotics}`,
+        image: thumbnail("iot-robotics.jpg"),
         pdf: `${pdf17}`,
         description:
           "Developing robots and devices that communicate over the internet to perform tasks.",
@@ -289,7 +272,7 @@ const CourseMentor = ({ }) => {
       {
         id: 24,
         title: "VLSI Design",
-        image: `${embeddedsystem}`,
+        image: thumbnail("Embedded System.jpg"),
         pdf: `${pdf24}`,
         description:
           "Designing integrated circuits and semiconductor chips for electronic devices.",
@@ -323,7 +306,7 @@ const CourseMentor = ({ }) => {
       {
         id: 23,
         title: "Auto Cad",
-        image: `${autocad}`,
+        image: thumbnail("Auto Cad.jpg"),
         pdf: `${pdf3}`,
         description:
           "Using software to create detailed 2D and 3D designs for engineering and architecture.",
@@ -455,7 +438,7 @@ const CourseMentor = ({ }) => {
     <div>
       <div className="container mx-auto">
         <Toaster position="top-center" reverseOrder={false} />
-        <h1 className="font-bold text-center text-[#f15b29] mb-10">
+        <h1 className="font-bold text-center text-[#f15b29] mb-10 text-2xl">
           | Our Mentorship Courses
         </h1>
         <div className="flex justify-center flex-wrap mb-8 gap-3 ">
@@ -480,28 +463,28 @@ const CourseMentor = ({ }) => {
               <div
                 data-aos="fade-in"
                 key={course.id}
-                className="bg-[#080808] shadow-sm shadow-slate-50 relative rounded-lg overflow-hidden">
+                className="bg-white text-[#101522] border border-[#d8deea] shadow-md shadow-slate-300/40 relative rounded-xl overflow-hidden">
                 <img
                   src={course.image}
                   alt={course.title}
                   className="h-[220px] w-full object-cover hover:scale-110 ease-linear duration-700"
                   loading="lazy"
                 />
-                <div className="px-2 py-2">
-                  <h3 className="font-bold text-md mb-2">
+                <div className="px-3 py-3">
+                  <h3 className="font-bold text-[1.75rem] mb-2 text-[#111827] leading-tight">
                     {course.title}
                     {course.title === "Automation Testing" ? (
                       <span> ( Career Advancement Only )</span>
                     ) : null}
                   </h3>
-                  <p className="mb-2">{course.description}</p>
-                  <p className="mb-2">
+                  <p className="mb-2 text-[#475467]">{course.description}</p>
+                  <p className="mb-2 text-[#344054]">
                     {course.rating} <span className="text-[#f15b29]">★★★★</span>
                     ★ ({course.studentsTaken}){" "}
                   </p>
                   <div className="flex space-x-2">
                     <button
-                      className="px-4 py-2 bg-[#000] shadow-sm shadow-slate-50 border-gray-800 text-[#eee] flex items-center justify-center font-semibold rounded transition"
+                      className="px-5 py-2 bg-white border border-[#c6cede] text-[#1f2937] hover:bg-[#f15b29] hover:text-white hover:border-[#f15b29] flex items-center justify-center font-semibold rounded-lg transition"
                       onClick={() => handleBrochureClick(course)}
                     >
                       Brochure

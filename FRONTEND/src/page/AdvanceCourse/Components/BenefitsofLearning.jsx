@@ -34,23 +34,23 @@ const BenefitsofLearning = () => {
        <div className="container mx-auto">
             <h1
               data-aos="fade-up"
-              className="text-center  font-bold mb-8 text-orange-700"
+              className="text-center font-bold mb-8 text-[#c43609] text-3xl md:text-4xl"
             >
               | Discover the Benefits of Learning with{" "}
-              <span className="text-white font-bold">Krutanic</span>
+              <span className="text-[#c43609] font-bold">Krutanic</span>
             </h1>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 lg:px-20">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:px-20">
               {learn.map((learn, index) => (
                 <div
                 data-aos="fade-up" 
                   key={index}
-                  className="flex flex-col items-center text-center bg-[#080810]  p-6 rounded-lg hover:shadow-lg transition duration-300"
+                  className="flex flex-col items-center text-center bg-white border border-[#efcfc2] p-6 rounded-xl shadow-md hover:shadow-xl transition duration-300"
                 >
-                  <div className="text-orange-500 text-4xl mb-4 hover:text-white">
+                  <div className="text-orange-500 text-4xl mb-4">
                     {learn.icon}
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">{learn.title}</h3>
-                  <p className="text-gray-400">{learn.description}</p>
+                  <h3 className="text-xl font-semibold mb-2 text-[#c43609]">{learn.title}</h3>
+                  <p className="text-[#4b4b4b] text-lg leading-relaxed">{learn.description}</p>
                 </div>
               ))}
             </div>

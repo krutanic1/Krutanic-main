@@ -3,11 +3,11 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import axios from "axios";
 import API from "../../../API";
+import "../../../page/MentorshipForm.css";
 import toast, { Toaster } from "react-hot-toast";
 
-const ApplyForm = () => {
-     const [loading, setLoading] = useState(false);
-  // const [showForm, setShowForm] = useState(false);
+const ApplyForm = ({ courseValue = "this program" }) => {
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -16,6 +16,7 @@ const ApplyForm = () => {
     experience: "",
     goal: "",
     goalOther: "",
+    reason: "",
     domain: "",
     domainOther: "",
   });
@@ -23,13 +24,11 @@ const ApplyForm = () => {
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
   const [emailVerified, setEmailVerified] = useState(false);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-  // const handleBrochureClick = () => {
-  //   setShowForm(true);
-  // };
 
   const handleFormSubmit = async (e) => {
     setLoading(true);
@@ -77,7 +76,7 @@ const ApplyForm = () => {
       toast.error(
         error.response?.data?.error || "Something went wrong. Please try again."
       );
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -98,7 +97,10 @@ const ApplyForm = () => {
 
   const verifyOTP = async () => {
     try {
-      const response = await axios.post(`${API}/advance-verify-otp`, { email: formData.email, otp });
+      const response = await axios.post(`${API}/advance-verify-otp`, {
+        email: formData.email,
+        otp,
+      });
       if (response.data.success) {
         toast.success("Email verified successfully!");
         setEmailVerified(true);
@@ -113,7 +115,6 @@ const ApplyForm = () => {
   };
 
   const FormOff = () => {
-    // setShowForm(false);
     setFormData({
       name: "",
       email: "",
@@ -122,6 +123,7 @@ const ApplyForm = () => {
       experience: "",
       goal: "",
       goalOther: "",
+      reason: "",
       domain: "",
       domainOther: "",
     });
@@ -133,213 +135,242 @@ const ApplyForm = () => {
   useEffect(() => {
     AOS.init({ duration: 1000, once: false });
   }, []);
+
   return (
     <div>
       <Toaster position="top-center" reverseOrder={false} />
-      {/* <button
-       data-aos="fade-up"
-        onClick={handleBrochureClick}
-        className="bg-[#f15b29] border text-white font-semibold  ease-linear duration-500 px-6 py-2 hover:rounded-xl hover:text-black rounded-sm">
-        Apply Now
-      </button> */}
-      {/* {showForm && ( */}
-      <div className=" flex justify-center items-center">
-        <div className="bg-white text-black p-3 rounded-lg shadow-lg w-96">
-          <h3 className="text-md text-center font-semibold mb-2">
-            Apply Now
-          </h3>
-          <form onSubmit={handleFormSubmit} className="space-y-3">
-            <input
-              type="text"
-              id="name"
-              name="name"
-              placeholder="Enter your name"
-              value={formData.name}
-              onChange={handleInputChange}
-              className="w-full border border-gray-300 p-1.5 rounded-md"
-              required
-            />
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Enter your email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className="w-full border border-gray-300 p-1.5 rounded-md"
-              disabled={emailVerified}
-              required
-            />
-            {!emailVerified ? (
+      <div className="flex justify-center px-4 py-6">
+        <div className="shared-form-shell w-full max-w-xl">
+          <div className="shared-form-header">
+            <div className="shared-form-chip">Apply now</div>
+            <button
+              type="button"
+              className="shared-form-close opacity-0 pointer-events-none"
+              aria-hidden="true"
+            >
+              <i className="fa fa-times"></i>
+            </button>
+            <h2>Apply for {courseValue}</h2>
+            <p>
+              Share your details and verify your email once. We will connect
+              you with the right counselor for the next step.
+            </p>
+          </div>
+
+          <div className="shared-form-body">
+            <form onSubmit={handleFormSubmit} className="shared-form-grid">
+              <div className="shared-form-field">
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  placeholder="Enter your name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+
+              <div className="shared-form-field">
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  disabled={emailVerified}
+                  required
+                />
+              </div>
+
+              {!emailVerified ? (
                 !otpSent ? (
-                    <button
-                        type="button"
-                        onClick={sendOTP}
-                        className="w-full bg-[#f15b29] text-white p-1.5 rounded-md text-sm transition"
-                    >
-                        Verify Email
-                    </button>
+                  <button
+                    type="button"
+                    onClick={sendOTP}
+                    className="shared-form-verify"
+                  >
+                    Verify Email
+                  </button>
                 ) : (
-                    <div className="flex gap-2">
-                        <input
-                            type="text"
-                            value={otp}
-                            onChange={(e) => setOtp(e.target.value)}
-                            placeholder="Enter OTP"
-                            className="w-full border border-gray-300 p-1.5 rounded-md text-black"
-                        />
-                        <button
-                            type="button"
-                            onClick={verifyOTP}
-                            className="bg-green-600 text-white px-3 py-1.5 rounded-md text-sm whitespace-nowrap"
-                        >
-                            Submit OTP
-                        </button>
-                    </div>
-                )
-            ) : (
-                <div className="bg-green-100 border border-green-400 text-green-700 px-3 py-1.5 rounded-md text-center text-sm">
-                    ✅ Email Verified
-                </div>
-            )}
-            <input
-              type="text"
-              id="number"
-              name="number"
-              placeholder="Enter your phone number"
-              value={formData.number}
-              onChange={handleInputChange}
-              className="w-full border border-gray-300 p-1.5 rounded-md"
-              required
-            />
-            <select
-              id="currentRole"
-              name="currentRole"
-              value={formData.currentRole}
-              onChange={handleInputChange}
-              className="w-full border border-gray-300 p-1.5 rounded-md"
-              required
-            >
-              <option disabled value="">
-                {" "}
-                What do you currently do?
-              </option>
-              <option value="Founder">Founder</option>
-              <option value="Student">Student</option>
-              <option value="Working Professional">Working Professional</option>
-              <option value="Self Employed">Self Employed</option>
-            </select>
-            <select
-              id="experience"
-              name="experience"
-              value={formData.experience}
-              onChange={handleInputChange}
-              className="w-full border border-gray-300 p-1.5 rounded-md"
-              required
-            >
-              <option disabled value="">
-                Select Experience
-              </option>
-              <option value="0 year">0 year (Fresher)</option>
-              <option value="1-2 years">1-2 years</option>
-              <option value="3-5 years">3-5 years</option>
-              <option value="5+ years">5+ years</option>
-            </select>
-            <select
-              id="goal"
-              name="goal"
-              value={formData.goal}
-              onChange={handleInputChange}
-              className="w-full border border-gray-300 p-1.5 rounded-md"
-              required
-            >
-              <option disabled value="">
-                Goal of taking this program
-              </option>
-              <option value="Career Transition">Career Transition</option>
-              <option value="Kickstart Career">Kickstart Career</option>
-              <option value="Upskilling">Upskilling</option>
-              <option value="Other">Other</option>
-            </select>
-            {formData.goal === "Other" && (
-              <input
-                type="text"
-                name="goalOther"
-                value={formData.goalOther}
-                onChange={handleInputChange}
-                placeholder="Please specify your goal"
-                className="w-full border border-gray-300 p-1.5 rounded-md mt-2"
-                required
-              />
-            )}
-            <select
-              id="reason"
-              name="reason"
-              value={formData.reason}
-              onChange={handleInputChange}
-              className="w-full border border-gray-300 p-1.5 rounded-md"
-              required
-            >
-              <option disabled value="">
-                Reason to take this program
-              </option>
-              <option value="I Want to Know More About the Program">I Want to Know More About the Program</option>
-              <option value="I've Reviewed the Program – Need Career Guidance">I've Reviewed the Program – Need Career Guidance</option>
-              <option value="I'm Ready to Enroll">I'm Ready to Enroll</option>
-              <option value="I'm Already Enrolled – Need Support">I'm Already Enrolled – Need Support</option>
-            </select>
-            <select
-              id="domain"
-              name="domain"
-              value={formData.domain}
-              onChange={handleInputChange}
-              className="w-full border border-gray-300 p-1.5 rounded-md"
-              required
-            >
-              <option disabled value="">
-                Domain currently working in
-              </option>
-              <option value="Digital Marketing/Performance marketing">
-                Digital Marketing/Performance Marketing
-              </option>
-              <option value="Marketing/Sales">Marketing/Sales</option>
-              <option value="Management/Operations">
-                Management/Operations
-              </option>
-              <option value="IT/Tech/Product">IT/Tech/Product</option>
-              <option value="Other">Other</option>
-            </select>
-            {formData.domain === "Other" && (
-              <input
-                type="text"
-                name="domainOther"
-                value={formData.domainOther}
-                onChange={handleInputChange}
-                placeholder="Please specify your domain"
-                className="w-full border border-gray-300 p-1.5 rounded-md mt-2"
-                required
-              />
-            )}
-            <div className="flex justify-center gap-2">
-              {/* <button
+                  <div className="shared-form-otp">
+                    <input
+                      type="text"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      placeholder="Enter OTP"
+                    />
+                    <button
                       type="button"
-                      onClick={FormOff}
-                      className="px-4 py-1 text-gray-500 border border-gray-300 rounded-md"
+                      onClick={verifyOTP}
+                      className="shared-form-submit !w-auto !px-5 !min-h-[48px] !bg-emerald-600 !shadow-none"
                     >
-                      Cancel
-                    </button> */}
-              <button
-                type="submit"
-                disabled={loading || !emailVerified}
-                className="px-4 py-1 bg-[#f15b29] text-white rounded-md disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {loading ? "Loading..." : "Submit"}
-              </button>
-            </div>
-          </form>
+                      Submit OTP
+                    </button>
+                  </div>
+                )
+              ) : (
+                <div className="shared-form-status">Email verified successfully</div>
+              )}
+
+              <div className="shared-form-field">
+                <input
+                  type="text"
+                  id="number"
+                  name="number"
+                  placeholder="Enter your phone number"
+                  value={formData.number}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+
+              <div className="shared-form-field">
+                <select
+                  id="currentRole"
+                  name="currentRole"
+                  value={formData.currentRole}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option disabled value="">
+                    What do you currently do?
+                  </option>
+                  <option value="Founder">Founder</option>
+                  <option value="Student">Student</option>
+                  <option value="Working Professional">Working Professional</option>
+                  <option value="Self Employed">Self Employed</option>
+                </select>
+              </div>
+
+              <div className="shared-form-field">
+                <select
+                  id="experience"
+                  name="experience"
+                  value={formData.experience}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option disabled value="">
+                    Select Experience
+                  </option>
+                  <option value="0 year">0 year (Fresher)</option>
+                  <option value="1-2 years">1-2 years</option>
+                  <option value="3-5 years">3-5 years</option>
+                  <option value="5+ years">5+ years</option>
+                </select>
+              </div>
+
+              <div className="shared-form-field">
+                <select
+                  id="goal"
+                  name="goal"
+                  value={formData.goal}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option disabled value="">
+                    Goal of taking this program
+                  </option>
+                  <option value="Career Transition">Career Transition</option>
+                  <option value="Kickstart Career">Kickstart Career</option>
+                  <option value="Upskilling">Upskilling</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              {formData.goal === "Other" && (
+                <div className="shared-form-field">
+                  <input
+                    type="text"
+                    name="goalOther"
+                    value={formData.goalOther}
+                    onChange={handleInputChange}
+                    placeholder="Please specify your goal"
+                    required
+                  />
+                </div>
+              )}
+
+              <div className="shared-form-field">
+                <select
+                  id="reason"
+                  name="reason"
+                  value={formData.reason}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option disabled value="">
+                    Reason to take this program
+                  </option>
+                  <option value="I Want to Know More About the Program">
+                    I Want to Know More About the Program
+                  </option>
+                  <option value="I've Reviewed the Program – Need Career Guidance">
+                    I've Reviewed the Program - Need Career Guidance
+                  </option>
+                  <option value="I'm Ready to Enroll">I'm Ready to Enroll</option>
+                  <option value="I'm Already Enrolled – Need Support">
+                    I'm Already Enrolled - Need Support
+                  </option>
+                </select>
+              </div>
+
+              <div className="shared-form-field">
+                <select
+                  id="domain"
+                  name="domain"
+                  value={formData.domain}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option disabled value="">
+                    Domain currently working in
+                  </option>
+                  <option value="Digital Marketing/Performance marketing">
+                    Digital Marketing/Performance Marketing
+                  </option>
+                  <option value="Marketing/Sales">Marketing/Sales</option>
+                  <option value="Management/Operations">Management/Operations</option>
+                  <option value="IT/Tech/Product">IT/Tech/Product</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              {formData.domain === "Other" && (
+                <div className="shared-form-field">
+                  <input
+                    type="text"
+                    name="domainOther"
+                    value={formData.domainOther}
+                    onChange={handleInputChange}
+                    placeholder="Please specify your domain"
+                    required
+                  />
+                </div>
+              )}
+
+              <div className="shared-form-actions">
+                <button
+                  type="submit"
+                  disabled={loading || !emailVerified}
+                  className="shared-form-primary disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {loading ? (
+                    <>
+                      <div className="shared-form-loader"></div>
+                      Loading...
+                    </>
+                  ) : (
+                    "Submit Application"
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-      {/* )} */}
     </div>
   );
 };

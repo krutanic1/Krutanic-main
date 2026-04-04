@@ -304,6 +304,7 @@ const Events = () => {
         }
       `}</style>
     </div>
+    
   );
 };
 

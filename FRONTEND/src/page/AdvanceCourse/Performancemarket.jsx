@@ -1,1369 +1,1173 @@
-import React, { useState, useEffect } from "react";
-import "swiper/css";
-import "swiper/css/effect-cube";
-import "swiper/css/pagination";
-import AOS from "aos";
-import "aos/dist/aos.css";
-import axios from "axios";
-import API from '../../API';
-import { RiCustomerService2Fill } from "react-icons/ri";
+import React, { useState } from "react";
+import PM from "../../assets/Advanced Course Images/Performance marketing/PM.png";
+import Flashaidlogo from "../../assets/Flashaidlogo.jpg";
+import pdfpm from "../../../krutanic/Performance marketing Advanced Program.pdf";
 import BenefitsofLearning from "./Components/BenefitsofLearning";
 import ClientsCarousel from "../../Components/our_alumni";
-
 import Certification from "./Components/Certification";
 import StoreSection from "./Components/StoreSection";
-
-import PM from "../../assets/Advanced Course Images/Performance marketing/PM.png";
-import curriculumimage from "../../assets/Advanced Course Images/Performance marketing/pm.jpg";
-import Flashaidlogo from "../../assets/Flashaidlogo.jpg";
-
-import pdfpm from "../../../krutanic/Performance marketing Advanced Program.pdf";
-import toast ,{Toaster} from 'react-hot-toast';
 import ApplyNowButton from "./Components/ApplyNowButton";
 import ApplyForm from "./Components/ApplyForm";
+
+const heroStats = [
+  { label: "Duration", value: "24 Weeks" },
+  { label: "Program Rating", value: "4.9/5" },
+];
+
+const curriculum = [
+  {
+    week: "Weeks 1-2",
+    title: "Advanced SEO and SEM",
+    objectives:
+      "Build search strategy with technical SEO, keyword systems, and paid search fundamentals for measurable growth.",
+    topics: [
+      "On-page and Off-page SEO",
+      "Keyword Intelligence",
+      "SEO Tooling",
+      "SEM Basics",
+      "Landing Page Alignment",
+    ],
+  },
+  {
+    week: "Weeks 3-4",
+    title: "Campaign Planning and Strategy",
+    objectives:
+      "Design high-performance campaigns with clear objectives, KPI frameworks, and audience-led planning.",
+    topics: [
+      "Objective Setting",
+      "Audience Segmentation",
+      "Budget Planning",
+      "KPI Design",
+      "Competitive Benchmarking",
+    ],
+  },
+  {
+    week: "Week 5",
+    title: "Google Ads and SEM Execution",
+    objectives:
+      "Create and optimize paid search campaigns through bid strategy, ad quality improvements, and testing loops.",
+    topics: [
+      "Account Setup",
+      "Bidding Strategy",
+      "Ad Copy",
+      "Quality Score",
+      "Search Testing",
+    ],
+  },
+  {
+    week: "Week 6-7",
+    title: "Social Media Advertising",
+    objectives:
+      "Deploy social ad campaigns across major platforms with creative optimization and retargeting workflows.",
+    topics: [
+      "Meta Ads",
+      "LinkedIn Ads",
+      "Lookalike Audiences",
+      "Creative Strategy",
+      "Social Insights",
+    ],
+  },
+  {
+    week: "Week 8",
+    title: "Display and Retargeting",
+    objectives:
+      "Drive re-engagement and conversion efficiency with display strategy and dynamic retargeting frameworks.",
+    topics: [
+      "Display Networks",
+      "Banner Systems",
+      "Retargeting",
+      "Audience Signals",
+      "Optimization Tools",
+    ],
+  },
+  {
+    week: "Week 9-10",
+    title: "Conversion Rate Optimization",
+    objectives:
+      "Improve conversion quality using user behavior insights, funnel analysis, and experiment-driven optimization.",
+    topics: [
+      "Landing Page CRO",
+      "Heatmap Analysis",
+      "A/B and Multivariate Tests",
+      "Funnel Diagnostics",
+      "CRO Tooling",
+    ],
+  },
+  {
+    week: "Week 11",
+    title: "Performance Email Marketing",
+    objectives:
+      "Build automated email sequences that improve engagement, conversion, and retention outcomes.",
+    topics: [
+      "Segmentation",
+      "Automation Flows",
+      "Open and CTR Tracking",
+      "Email Sequences",
+      "Lifecycle Journeys",
+    ],
+  },
+  {
+    week: "Week 12",
+    title: "Marketing Analytics and AI",
+    objectives:
+      "Use analytics and attribution to evaluate performance and prioritize profitable campaign actions.",
+    topics: [
+      "GA Tracking",
+      "Attribution Models",
+      "ROAS Analysis",
+      "Data Dashboards",
+      "Actionable Insights",
+    ],
+  },
+  {
+    week: "Week 13-14",
+    title: "Affiliate and Influencer Performance",
+    objectives:
+      "Scale performance through affiliate and creator channels with trackable ROI frameworks.",
+    topics: [
+      "Affiliate Programs",
+      "Influencer Partnerships",
+      "ROI Tracking",
+      "Campaign Compliance",
+      "Performance Reporting",
+    ],
+  },
+  {
+    week: "Week 15-16",
+    title: "Advanced Optimization and Scaling",
+    objectives:
+      "Scale winning campaigns with channel reallocation, automation, and high-confidence reporting.",
+    topics: [
+      "Campaign Scaling",
+      "Automation Workflows",
+      "Budget Reallocation",
+      "Channel Testing",
+      "Performance Reports",
+    ],
+  },
+  {
+    week: "Week 17-20",
+    title: "Capstone Project",
+    objectives:
+      "Deliver an end-to-end full-funnel performance campaign with measurable business impact.",
+    topics: [
+      "Campaign Blueprint",
+      "KPI Mapping",
+      "Creative and Copy",
+      "Cross-channel Execution",
+      "Result Presentation",
+    ],
+  },
+  {
+    week: "Week 21-24",
+    title: "Placement Preparation",
+    objectives:
+      "Prepare for interviews and hiring processes with strong portfolio evidence and role positioning.",
+    topics: [
+      "Resume Strategy",
+      "Mock Interviews",
+      "LinkedIn Positioning",
+      "Networking",
+      "Portfolio Storytelling",
+    ],
+  },
+];
+
+const overviewTopics = [
+  "Paid Media Strategy",
+  "Conversion Rate Optimization",
+  "Data-Driven Analytics",
+  "Social and Search Campaigns",
+  "A/B Testing Systems",
+  "Attribution and ROI Modeling",
+];
+
+const whyChoose = [
+  {
+    title: "Measurable Impact",
+    description:
+      "Performance marketing is outcome-driven with direct links to growth and revenue.",
+  },
+  {
+    title: "High Earning Potential",
+    description:
+      "Roles tied to campaign outcomes and ROI often offer strong compensation.",
+  },
+  {
+    title: "Cross-Channel Expertise",
+    description:
+      "Build capability across search, social, display, email, and affiliate ecosystems.",
+  },
+  {
+    title: "Continuous Optimization",
+    description:
+      "Every campaign can be improved through data, testing, and strategic iteration.",
+  },
+  {
+    title: "Business Visibility",
+    description:
+      "Your work directly affects CAC, conversions, revenue, and profitability metrics.",
+  },
+  {
+    title: "Fast Growth Path",
+    description:
+      "High-performance marketers quickly progress into strategic growth leadership roles.",
+  },
+];
+
+const keyTakeaways = [
+  "Plan and execute high-performance paid campaigns across key digital channels.",
+  "Optimize conversion journeys using CRO principles and experimentation systems.",
+  "Build strong reporting frameworks using attribution and ROI analysis.",
+  "Use audience segmentation and creative strategy to improve ad efficiency.",
+  "Scale campaigns responsibly with budget reallocation and performance controls.",
+  "Showcase portfolio-grade campaign execution for hiring and role transitions.",
+];
+
+const roles = [
+  {
+    title: "Performance Marketing Manager",
+    text: "Lead paid growth strategy and channel performance optimization.",
+    avg: "Avg. package Rs 22 LPA",
+  },
+  {
+    title: "PPC Specialist",
+    text: "Manage paid search and display campaigns for efficient acquisition.",
+    avg: "Avg. package Rs 15 LPA",
+  },
+  {
+    title: "Social Ads Specialist",
+    text: "Build and optimize paid campaigns across social ecosystems.",
+    avg: "Avg. package Rs 14 LPA",
+  },
+  {
+    title: "CRO Specialist",
+    text: "Improve conversion rates through funnel and landing page optimization.",
+    avg: "Avg. package Rs 16 LPA",
+  },
+  {
+    title: "Marketing Analyst",
+    text: "Analyze campaign performance and recommend high-impact optimizations.",
+    avg: "Avg. package Rs 13 LPA",
+  },
+  {
+    title: "Campaign Manager",
+    text: "Own campaign execution from strategy through reporting and scale.",
+    avg: "Avg. package Rs 17 LPA",
+  },
+  {
+    title: "Paid Media Manager",
+    text: "Drive paid media direction and channel-wise growth outcomes.",
+    avg: "Avg. package Rs 20 LPA",
+  },
+  {
+    title: "Biddable Media Specialist",
+    text: "Optimize bids and budgets to maximize return across paid platforms.",
+    avg: "Avg. package Rs 16 LPA",
+  },
+  {
+    title: "Programmatic Specialist",
+    text: "Automate and optimize digital ad delivery for precision targeting.",
+    avg: "Avg. package Rs 18 LPA",
+  },
+];
+
+const faqData = {
+  Program: [
+    {
+      question: "What topics are covered in this Performance Marketing program?",
+      answer:
+        "The program covers paid media, CRO, analytics, attribution, campaign testing, and growth execution.",
+    },
+    {
+      question: "How is the course delivered?",
+      answer:
+        "The course includes live sessions, recordings, practical projects, and performance campaign simulations.",
+    },
+    {
+      question: "Will I get hands-on experience?",
+      answer:
+        "Yes, learners work on practical campaign plans, optimization drills, and capstone execution.",
+    },
+    {
+      question: "How long is the program?",
+      answer: "The program runs for 24 weeks.",
+    },
+  ],
+  Eligibility: [
+    {
+      question: "What are the prerequisites?",
+      answer:
+        "No strict prerequisites. Basic understanding of digital channels is helpful.",
+    },
+    {
+      question: "Do I need prior performance marketing experience?",
+      answer:
+        "No, beginners and upskillers can both use this path effectively.",
+    },
+    {
+      question: "Can beginners apply?",
+      answer: "Yes, the curriculum starts from core concepts and scales to advanced execution.",
+    },
+    {
+      question: "Is there any age restriction?",
+      answer: "No, there is no age restriction.",
+    },
+  ],
+  Community: [
+    {
+      question: "How can I interact with other participants?",
+      answer:
+        "Through cohort groups, peer review activities, and structured networking sessions.",
+    },
+    {
+      question: "Is mentorship available?",
+      answer:
+        "Yes, mentors provide campaign feedback, strategic input, and career guidance.",
+    },
+    {
+      question: "Can I access support after completion?",
+      answer: "Yes, alumni and support channels remain available.",
+    },
+    {
+      question: "How diverse is the community?",
+      answer:
+        "Learners come from varied backgrounds including agencies, ecommerce, SaaS, and startups.",
+    },
+  ],
+  Lectures: [
+    {
+      question: "Are sessions live or recorded?",
+      answer: "Both live and recorded content are available for flexible learning.",
+    },
+    {
+      question: "How interactive are the sessions?",
+      answer:
+        "Sessions include tactical breakdowns, campaign critiques, and real-time Q&A.",
+    },
+    {
+      question: "Can I replay missed lectures?",
+      answer: "Yes, recordings are available for all modules.",
+    },
+    {
+      question: "How often are live sessions held?",
+      answer: "Live sessions are held weekly.",
+    },
+  ],
+  Certification: [
+    {
+      question: "Will I receive a certificate upon completion?",
+      answer: "Yes, successful learners receive a professional completion certificate.",
+    },
+    {
+      question: "Is the certification recognized by employers?",
+      answer:
+        "It validates applied campaign execution and performance analytics readiness.",
+    },
+    {
+      question: "Can I add this certification to resume or LinkedIn?",
+      answer: "Yes, it can be showcased on both.",
+    },
+    {
+      question: "Is certification included in the fee?",
+      answer: "Yes, certification is included after successful completion.",
+    },
+  ],
+  Opportunities: [
+    {
+      question: "What career opportunities does this open?",
+      answer:
+        "You can target PPC, paid media, performance marketing, CRO, and campaign management roles.",
+    },
+    {
+      question: "Will I receive placement assistance?",
+      answer: "Yes, placement and interview preparation support are included.",
+    },
+    {
+      question: "Are internships available?",
+      answer:
+        "Selected learners may access internship and project pathways through partner networks.",
+    },
+    {
+      question: "How does this help in career advancement?",
+      answer:
+        "You develop measurable growth execution depth and portfolio-ready campaign outcomes.",
+    },
+  ],
+};
+
 const Performancemarket = () => {
+  const [openModule, setOpenModule] = useState(0);
   const [activeCategory, setActiveCategory] = useState("Program");
   const [openFAQ, setOpenFAQ] = useState(null);
-  const [isExpanded, setIsExpanded] = useState(false);
 
-  const [isVisible, setIsVisible] = useState(false);
-  const [lastScrollPos, setLastScrollPos] = useState(0);
-  const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    number: "",
-    currentRole: "",
-    experience: "",
-    goal: "",
-    goalOther: "",
-    domain: "",
-    domainOther: "",
-    interestedDomain: "",
-    reason: "",
-  });
-
-    const [otpSent, setOtpSent] = useState(false);
-    const [otp, setOtp] = useState("");
-    const [emailVerified, setEmailVerified] = useState(false);
-
-
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
-
-  const courseTopics = [
-    { title: "Advanced Paid Media Campaign Strategiescs", icon: "🌐" },
-    { title: "Conversion Rate Optimization (CRO)", icon: "🎣" },
-    { title: "Data-Driven Marketing Analytics", icon: "⚡" },
-    { title: "Social Media Ads and PPC Management", icon: "🛣️" },
-    { title: "A/B Testing and Campaign Optimization", icon: "🗃️" },
-    { title: "Attribution Models and ROI Measurement", icon: "🗃️" },
-  ];
-
-  const modules = [
-    {
-      week: "Weeks 1-2",
-      title: "Advanced SEO and SEM Techniques",
-      objectives:
-        "Master off-page SEO techniques including link building, backlinks, and external citations. Analyze and track SEO performance using tools like Google Analytics and keyword ranking trackers.",
-      topics: [
-        "On-Page and Off-Page SEO",
-        "Keyword Research and Analysis",
-        "SEO Tools (SEMrush, Ahrefs)",
-        "Google Ads and Bing Ads Campaigns",
-        "Landing Page Optimization",
-      ],
-    },
-    {
-      week: "Weeks 3-4",
-      title: "Campaign Planning and Strategy",
-      objectives:
-        "Understand the fundamentals of performance marketing. Identify key metrics and their significance. Analyze conversion funnels and optimize user journeys.",
-      topics: [
-        "Setting Campaign Objectives",
-        "Audience Targeting and Segmentation",
-        "Budget Allocation Strategies",
-        "Defining Key Performance Indicators (KPIs)",
-        "Competitive Research and Benchmarking",
-      ],
-    },
-    {
-      week: "Week 5",
-      title: "Google Ads and Search Engine Marketing (SEM)",
-      objectives:
-        "Set up and manage high-performing Google Ads campaigns. Develop effective keyword strategies and compelling ad copy. Use A/B testing to refine and improve campaign outcomes.",
-      topics: [
-        "Google Ads Account Setup and Management",
-        "Keyword Research and Bidding Strategies",
-        "Ad Copywriting Best Practices",
-        "Quality Score Optimization",
-        "A/B Testing in Search Campaigns",
-      ],
-    },
-    {
-      week: "Week 6-7",
-      title: "Social Media Advertising",
-      objectives:
-        "Create and manage engaging social media content tailored to each platform's audience and algorithms. Utilize analytics tools to track engagement, reach, and conversions, adjusting strategies based on data insights. Build and maintain relationships with followers through interaction, feedback, and community management.",
-      topics: [
-        "Facebook Ads Manager Setup",
-        "Instagram and LinkedIn Ads",
-        "Retargeting and Lookalike Audiences",
-        "Ad Creative Design and Copy",
-        "Social Media Analytics and Insights",
-      ],
-    },
-    {
-      week: "Week 8",
-      title: "Display Advertising and Retargeting",
-      objectives:
-        "Design effective banner ads for display networks. Implement dynamic retargeting strategies. Optimize display campaigns for better reach and engagement.",
-      topics: [
-        "Google Display Network (GDN) Overview",
-        "Designing Effective Banner Ads",
-        "Dynamic Retargeting Campaigns",
-        "Targeting Techniques: Behavioral, Contextual",
-        "Tools for Display Ad Optimization",
-      ],
-    },
-    {
-      week: "Week 9-10",
-      title: "Conversion Rate Optimization (CRO)",
-      objectives:
-        "Design optimized landing pages for higher conversions. Use heatmaps to analyze user behavior and identify areas of improvement. Conduct A/B testing to refine campaigns effectively.",
-      topics: [
-        "Landing Page Design Best Practices",
-        "User Behavior Analysis (Heatmaps, Clickmaps)",
-        "A/B Testing and Multivariate Testing",
-        "Funnel Analysis and Optimization",
-        "Tools for CRO (Optimizely, Google Optimize)",
-      ],
-    },
-    {
-      week: "Week 11",
-      title: "Email Marketing for Performance",
-      objectives:
-        "Create effective and personalized email campaigns. Use automation tools to streamline workflows. Measure and improve email campaign metrics.",
-      topics: [
-        "Email Campaign Strategy Segmentation and Personalization",
-        "Email Automation Tools (Mailchimp, HubSpot)",
-        "Tracking Open Rates, CTR, and Conversions",
-        "Building Effective Email Sequences",
-      ],
-    },
-    {
-      week: "Week 12",
-      title: "Data-Driven Marketing and Analytics with AI",
-      objectives:
-        "Track the percentage of users who take a desired action. Measure the cost of acquiring a new customer through marketing efforts. Estimate the total revenue a customer will generate over the lifetime of their relationship with a brand.",
-      topics: [
-        "Google Analytics for Campaign Tracking",
-        "Performance Metrics and Reporting",
-        "Attribution Models for Conversions",
-        "Tools for Data Visualization (Tableau, Power BI)",
-        "Generating Actionable Insights",
-      ],
-    },
-    {
-      week: "Week 13-14",
-      title: "Affiliate and Influencer Marketing for Performance",
-      objectives:
-        "Focus on performance-based marketing where affiliates earn commissions for driving traffic or sales through their promotions. Key metrics include conversion rate, click-through rate, and average order value. Collaborate with influencers who have a dedicated and engaged audience to promote products or services. Metrics include engagement rate, reach, and overall return on investment (ROI) from influencer campaigns.",
-      topics: [
-        "Affiliate Program Setup and Management",
-        "Finding and Collaborating with Influencers",
-        "Tracking Affiliate and Influencer ROI",
-        "Creating Engaging Campaigns",
-        "Compliance and Disclosure Best Practices",
-      ],
-    },
-    {
-      week: "Week 15-16",
-      title: "Advanced Campaign Optimization",
-      objectives:
-        "Track and optimize the ROI of partnerships. Reallocate budgets to maximize ROI. Analyze and present campaign performance with comprehensive reports.",
-      topics: [
-        "Scaling Campaigns Effectively",
-        "AI and Automation in Performance Marketing",
-        "Budget Reallocation for High-Performing Channels",
-        "Testing New Platforms and Formats",
-        "Building a Comprehensive Campaign Report",
-      ],
-    },
-    {
-      week: "Week 17-20",
-      title: "Capstone Project",
-      objectives:
-        "Showcase a complete marketing project, from strategy to execution, as part of your portfolio.",
-      topics: [
-        "Designing a Full-Funnel Marketing Campaign",
-        "Setting Campaign Objectives and KPIs",
-        "Budget Allocation and Target Audience Selection",
-        "Creating Ad Creatives and Copy for Multiple Channels",
-        "Analyzing the Campaign Performance and Generating Reports",
-      ],
-    },
-    {
-      week: "Week 21-24",
-      title: "Placement Preparation",
-      objectives:
-        "Prepare for a successful job search and interviews with a professional portfolio and job-ready skills.",
-      topics: [
-        "Resume Building and LinkedIn Optimization",
-        "Interview Tips and Mock Interviews with industry professionals",
-        "Job Search Strategies, Networking, and Building a Professional Portfolio",
-        "Presentation skills for job interviews and client pitches",
-      ],
-    },
-  ];
-
-  const jobRoles = [
-    {
-      title: "Performance Marketing Manager",
-      description:
-        "Leads paid campaigns and optimizes performance across platforms.",
-    },
-    {
-      title: "PPC Specialist",
-      description:
-        "Manages paid search and display advertising campaigns to maximize conversions.",
-    },
-    {
-      title: "Social Media Ads Specialist",
-      description:
-        "Creates and optimizes paid ad campaigns on social media platforms like Facebook, Instagram, and LinkedIn.",
-    },
-    {
-      title: "Conversion Rate Optimization (CRO) Specialist",
-      description:
-        "Focuses on improving the conversion rates of landing pages and websites.",
-    },
-    {
-      title: "Marketing Analyst",
-      description:
-        "Analyzes data and campaign performance to optimize marketing strategies.",
-    },
-    {
-      title: "Campaign Manager",
-      description:
-        "Oversees digital marketing campaigns, including strategy development, execution, and optimization.",
-    },
-    {
-      title: "Biddable Media Specialist",
-      description:
-        "Manages paid advertising campaigns across platforms to maximize ROI.",
-    },
-    {
-      title: "Paid Media Manager",
-      description:
-        "Oversees and optimizes paid media strategies to drive brand growth.",
-    },
-    {
-      title: " Programmatic Advertising Specialist",
-      description:
-        "Automates and manages digital ad placements for targeted audience reach.",
-    },
-  ];
-
-  const Difference = [
-    {
-      title: "Data-Driven Results",
-      description:
-        "Focuses on measurable outcomes, using metrics like CTR, CPC, and ROAS to optimize campaigns.",
-      icon: "👥",
-    },
-    {
-      title: "High Earnings",
-      description:
-        "Performance-based pay leads to lucrative compensation tied to campaign success.",
-      icon: "📘",
-    },
-    {
-      title: "Constant Optimization",
-      description:
-        "The role is dynamic, requiring ongoing adjustments to campaigns for improved performance.",
-      icon: "📦",
-    },
-    {
-      title: "Cross-Channel Expertise",
-      description:
-        "Involves working with multiple channels like PPC and social media to drive conversions.",
-      icon: "💼",
-    },
-    {
-      title: "Impactful Outcomes",
-      description:
-        "Directly contributes to a company’s revenue growth through optimized campaigns.",
-      icon: "💻",
-    },
-    {
-      title: "Fast-Paced Growth",
-      description:
-        "The need for constant analysis and refinement ensures you’re always learning and improving.",
-      icon: "🔗",
-    },
-  ];
-
-  const faqData = {
-    Program: [
-      {
-        question:
-          "What topics are covered in the Performance Marketing program?",
-        answer:
-          "The program covers advanced paid media campaigns, conversion rate optimization (CRO), A/B testing, social media ads, and performance marketing analytics.",
-      },
-      {
-        question: "How is the course delivered?",
-        answer:
-          "The course is delivered online with a mix of live sessions, recorded lectures, hands-on workshops, and real-world projects.",
-      },
-      {
-        question: "Will I get hands-on experience?",
-        answer:
-          "Yes, the course includes live projects, case studies, and campaign management, providing real-world experience in performance marketing.",
-      },
-      {
-        question: "How long is the program?",
-        answer:
-          "The program runs for 6 months, with flexible schedules suitable for working professionals.",
-      },
-    ],
-    Eligibility: [
-      {
-        question: "What are the prerequisites for the program?",
-        answer:
-          "Basic knowledge of digital marketing or familiarity with online platforms is recommended but not mandatory.",
-      },
-      {
-        question: "Do I need a background in performance marketing?",
-        answer:
-          "No, this course is suitable for both beginners and individuals looking to expand their marketing skills.",
-      },
-      {
-        question: "Can beginners apply?",
-        answer:
-          "Yes, the program is designed for beginners who want to master performance marketing strategies.",
-      },
-      {
-        question: "Is there any age restriction?",
-        answer:
-          "No, the course is open to learners of all ages who meet the basic eligibility criteria.",
-      },
-    ],
-    Community: [
-      {
-        question: "How can I interact with other participants?",
-        answer:
-          "Engage with peers through discussion forums, group projects, and networking opportunities designed to foster collaboration and learning.",
-      },
-      {
-        question: "Is mentorship available?",
-        answer:
-          "Yes, personalized mentoring from industry professionals will guide you through the course and provide valuable insights.",
-      },
-      {
-        question: "Can I access support after the course ends?",
-        answer:
-          "Absolutely! Graduates have continued access to community forums, alumni events, and ongoing learning resources.",
-      },
-      {
-        question: "How diverse is the community?",
-        answer:
-          "Our community is global, consisting of learners and professionals from various industries and countries.",
-      },
-    ],
-    Lectures: [
-      {
-        question: "Are the lectures pre-recorded or live?",
-        answer:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      },
-      {
-        question: "How interactive are the sessions?",
-        answer:
-          "The live sessions are highly interactive, with opportunities for Q&A, hands-on exercises, and real-time feedback.",
-      },
-      {
-        question: "Can I replay the lectures if I miss one?",
-        answer:
-          "Yes, all recorded lectures are available for on-demand viewing, so you can catch up at your convenience.",
-      },
-      {
-        question: "How often are live sessions held?",
-        answer:
-          "Live sessions are scheduled weekly and are designed to accommodate learners in multiple time zones.",
-      },
-    ],
-    Certification: [
-      {
-        question: "Will I receive a certificate upon completion?",
-        answer:
-          "Yes, you will receive an official Performance Marketing Certification from Krutanic Solutions after completing the program.",
-      },
-      {
-        question: "Is the certification recognized by employers?",
-        answer:
-          "Yes, the certification is recognized within the industry and validates your expertise in performance marketing.",
-      },
-      {
-        question:
-          "Can I add this certification to my resume or LinkedIn profile?",
-        answer:
-          "Yes, you can add the certification to your resume and LinkedIn profile to showcase your new skills.",
-      },
-      {
-        question: "Is the certification free?",
-        answer:
-          "The certification is awarded after successful completion of the course and is included in the program fee.",
-      },
-    ],
-    Opportunities: [
-      {
-        question: "What career opportunities will this course open for me?",
-        answer:
-          "The program prepares you for roles such as Performance Marketing Manager, PPC Specialist, Social Media Ads Manager, and Campaign Manager.",
-      },
-      {
-        question: "Will I receive job placement assistance?",
-        answer:
-          "Yes, we provide career support, including job placement assistance, resume reviews, and interview coaching.",
-      },
-      {
-        question: "Are internships available through this program?",
-        answer:
-          "Yes, we offer internship opportunities with top companies to help you gain hands-on experience.",
-      },
-      {
-        question: "How will this course help in advancing my career?",
-        answer:
-          "By mastering advanced performance marketing techniques, you’ll become a competitive candidate for senior-level roles in the digital marketing field.",
-      },
-    ],
-  };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollPos = window.scrollY;
-      if (currentScrollPos > lastScrollPos) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
-      setLastScrollPos(currentScrollPos);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollPos]);
-
-  useEffect(() => {
-    AOS.init({ duration: 1000, once: false });
-  }, []);
-  const handleBrochureClick = () => {
-    setShowForm(true);
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-const [actionType, setActionType] = useState();
-  
-    const sendOTP = async () => {
-        if (!formData.email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/)) {
-            toast.error("Please enter a valid email address.");
-            return;
-        }
-        try {
-            await axios.post(`${API}/advance-send-otp`, { email: formData.email });
-            toast.success("OTP sent to your email!");
-            setOtpSent(true);
-        } catch (error) {
-            toast.error("Failed to send OTP. Try again.");
-        }
-    };
-
-    const verifyOTP = async () => {
-        try {
-            const response = await axios.post(`${API}/advance-verify-otp`, { email: formData.email, otp });
-            if (response.data.success) {
-                toast.success("Email verified successfully!");
-                setEmailVerified(true);
-                setOtp("");
-                setOtpSent(false);
-            } else {
-                toast.error("Invalid OTP. Try again.");
-            }
-        } catch (error) {
-            toast.error("Verification failed or Invalid OTP.");
-        }
-    };
-
-  const handleFormSubmit = async (e , actionType) => {
-    e.preventDefault();
-    try {
-      await axios.post(`${API}/advance/register`, {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.number,
-        currentRole: formData.currentRole,
-        experience: formData.experience,
-        goal: formData.goal,
-        goalOther: formData.goal === "Other" ? formData.goalOther : undefined,
-        domain: formData.domain,
-        domainOther: formData.domain === "Other" ? formData.domainOther : undefined,
-        interestedDomain:"Performance Marketing",
-        reason: formData.reason,
-      });
-      toast.success("Registration successful! Opening the brochure...");
-      setTimeout(() => {
-        window.open(pdfpm, "_blank");
-        setShowForm(false);
-      }, 1500);
-    } catch (error) {
-      toast.error(
-        error.response?.data?.error || "Something went wrong. Please try again."
-      );
-    }
-    setFormData({
-      name: "",
-      email: "",
-      number: "",
-      currentRole: "",
-      experience: "",
-      goal: "",
-      goalOther: "",
-      domain: "",
-      domainOther: "",
-      interestedDomain: "",
-      reason: "",
-    });
-  };
-  const OffForm = () =>{
-    setShowForm(false);
-    setFormData({
-      name: "",
-      email: "",
-      number: "",
-      currentRole: "",
-      experience: "",
-      goal: "",
-      goalOther: "",
-      domain: "",
-      domainOther: "",
-      interestedDomain: "",
-      reason: "",
-    });
-  }
-   const [activeModule, setActiveModule] = useState(null);
-  
-    const toggleModule = (index) => {
-      setActiveModule(activeModule === index ? null : index);
-    };
-
-    const today = new Date();
-    const currentMonth = today.getMonth(); // Get the current month (0-based, so 0 = January)
-    const currentDay = today.getDate(); // Get the current day of the month
-    const displayDate = currentDay > 10 || currentMonth > 1 // Past February 15th
-      ? `10th ${new Date(today.setMonth(currentMonth + 1)).toLocaleString('en', { month: 'long' })} 2025`
-      : "10th February 2025";
-      // const randomNumber = Math.floor(Math.random() * 6) + 20;
   return (
-    <div>
-      <div className="bg-black text-white">
-          <Toaster position="top-center" reverseOrder={false}/>
-        {/* 1 hero part */}
-        <section
-          id="advanceperformancebg"
-          className=" py-[60px] px-[10px] shadow-lg shadow-[#f15b29] min-h-screen flex items-center justify-center"
-        >
-          <div className="container mx-auto">
-            <div className="">
-              <h1
-                data-aos="fade-up"
-                className="text-4xl text-center font-bold mb-4"
-              >
-                <span className="before:block m-2 p-1 before:absolute before:-inset-1 before:-skew-y-2 before:bg-[#f15b29] relative inline-block">
-                  <i className="relative text-white ">
-                    {" "}
-                    Take Your Career to the Next Level with{" "}
-                  </i>
-                </span>
+    <div className="pf-page">
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap');
 
-                <span className="before:block m-2 p-1 before:absolute before:-inset-1 before:-skew-y-2 before:bg-[#000] relative inline-block">
-                  <i className="relative text-white "> Performance Marketing</i>
-                </span>
-              </h1>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                <div
-                  data-aos="fade-up"
-                  className="flex flex-col backdrop-blur-md bg-[#ffffff59] text-black items-center p-6 border border-gray-700 rounded-md"
-                >
-                  <div className="bg-[#f15b29] p-3 rounded-full">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="white"
-                      viewBox="0 0 24 24"
-                      className="h-8 w-8"
-                    >
-                      <path d="M16 10V7a4 4 0 10-8 0v3H5v10h14V10h-3zm-6 0V7a2 2 0 114 0v3H10z" />
-                    </svg>
-                  </div>
+        :root {
+          --bg: #f3f1f1;
+          --panel: #ffffff;
+          --ink: #171717;
+          --muted: #626262;
+          --line: #ded8d5;
+          --accent: #c43609;
+          --radius: 18px;
+          --shadow: 0 20px 40px rgba(29, 20, 13, 0.08);
+        }
 
-                  <p className="mt-4 font-semibold text-lg">Batch Starting</p>
-                  {/* <p>{displayDate}</p> */}
-                  <p>25 March</p>
-                  <p className="mt-2 text-md border border-[#f15b29] rounded-lg px-2 py-1">
-                    {" "}
-                    Available Cohort{" "}
-                  </p>
-                  <p className="mt-2 text-md"><span className="line-through">60/60</span> Batch Closed </p>
-                  <p>58/60</p>
-                </div>
-                <div
-                  data-aos="fade-up"
-                  className="flex flex-col backdrop-blur-md bg-[#ffffff59] text-black items-center p-6 border  border-gray-700 rounded-md"
-                >
-                  <div className="bg-[#f15b29] p-3 rounded-full">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="white"
-                      viewBox="0 0 24 24"
-                      className="h-8 w-8"
-                    >
-                      <path d="M5 3v18l7-3 7 3V3H5zm12 13l-5-2.18L7 16V5h10v11z" />
-                    </svg>
-                  </div>
-                  <p className="mt-4 font-semibold text-lg">Duration</p>
-                  <p>6 Months </p>
-                </div>
+        * { box-sizing: border-box; }
 
-                <div
-                  data-aos="fade-up"
-                  className="flex flex-col backdrop-blur-md bg-[#ffffff59] text-black items-center p-6 border border-gray-700 rounded-md"
-                >
-                  <div className="bg-[#f15b29] p-3 rounded-full">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="white"
-                      viewBox="0 0 24 24"
-                      className="h-8 w-8"
-                    >
-                      <path d="M12 2a10 10 0 1010 10A10 10 0 0012 2zm0 18a8 8 0 118-8 8 8 0 01-8 8zm1-13h-2v5h5v-2h-3z" />
-                    </svg>
-                  </div>
-                  <p className="mt-4 font-semibold text-lg">Program Rating</p>
-                  <p>
-                    <span className="text-[#f15b29]">★★★★</span>☆ (4.9/5)
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center justify-center mt-3">
-              <ApplyNowButton courseValue="Peformance Market"/>
-            </div>
-            </div>
-          </div>
-        </section>
-        <hr className=" opacity-10" />
+        .pf-page {
+          background:
+            radial-gradient(circle at 8% 8%, rgba(196, 54, 9, 0.08), transparent 34%),
+            radial-gradient(circle at 95% 55%, rgba(15, 77, 98, 0.09), transparent 28%),
+            var(--bg);
+          color: var(--ink);
+          font-family: "Sora", "Segoe UI", sans-serif;
+        }
 
-          {/* 4 Curriculum Section */}
-          <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto">
-            <h1
-              data-aos="fade-up"
-              className=" font-bold text-center mb-5 text-[#f15b29]"
-            >
-              | Curriculum
-            </h1>
-            <div className="lg:flex lg:gap-8">
-              
-            <div className="lg:w-1/2 w-full">
-                <div className="space-y-4">
-                  {modules.map((module, index) => (
-                    <div key={index} className="pb-5">
-                      <button
-                        className="w-full text-left hover:text-[#f15b29] transition-colors duration-300 focus:outline-none"
-                        onClick={() => toggleModule(index)}
-                      >
-                        <h3 className="text-xl font-semibold">
-                          {module.week}: {module.title}
-                        </h3>
-                        <p className="text-sm text-gray-400">
-                          {module.objectives}
-                        </p>
-                      </button>
-                      {activeModule === index && (
-                        <div className="mt-4">
-                          <ul className="list-disc pl-9 text-gray-300">
-                            {module.topics.map((topic, topicIndex) => (
-                              <li key={topicIndex} className="mb-2">
-                                {topic}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="lg:w-1/2 w-full rounded-lg overflow-hidden mb-5 lg:mb-0">
-                <ApplyForm courseValue="Performance Marketing" />
-              </div>
-            </div>
-          </div>
-        </section>
+        .pf-shell {
+          width: min(1140px, calc(100% - 32px));
+          margin: 0 auto;
+        }
 
-        <hr className=" opacity-10" />
+        .pf-btn {
+          background: linear-gradient(180deg, #d64d1d 0%, #af2f06 100%);
+          border: 0;
+          border-radius: 10px;
+          color: #fff;
+          cursor: pointer;
+          font-size: 12px;
+          font-weight: 700;
+          letter-spacing: 0.3px;
+          padding: 10px 18px;
+          text-transform: uppercase;
+        }
 
+        .pf-section { padding: 52px 0; }
+        .pf-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 12px; }
+        .pf-section p.lead {
+          color: var(--muted);
+          line-height: 1.7;
+          margin: 0 0 26px;
+          max-width: 760px;
+        }
 
-        {/* 14 why choose us */}
-        <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto  text-center">
-            <h1 data-aos="fade-up" className="text-[#f15b29]  font-bold mb-6">
-              | Why Choose{" "}
-              <span className="text-white">Performance Marketing ? </span>
-            </h1>
-            <p data-aos="fade-up" className="text-gray-400 mb-12">
-              Develop the skills to create and optimize marketing campaigns that
-              deliver measurable results and maximize return on investment for
-              businesses
+        .pf-hero {
+          border-top: 1px solid var(--line);
+          display: grid;
+          gap: 32px;
+          grid-template-columns: 1fr 1fr;
+          padding: 26px 0 28px;
+        }
+
+        .pf-chip {
+          background: #f0e0db;
+          border-radius: 999px;
+          color: #8a4f40;
+          display: inline-flex;
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+          padding: 6px 12px;
+          text-transform: uppercase;
+        }
+
+        .pf-hero h1 {
+          font-size: clamp(42px, 5vw, 74px);
+          line-height: 0.98;
+          margin: 16px 0;
+        }
+
+        .pf-hero h1 span {
+          color: var(--accent);
+          font-family: "Fraunces", Georgia, serif;
+          font-style: italic;
+          font-weight: 800;
+        }
+
+        .pf-sub {
+          color: var(--muted);
+          font-size: 17px;
+          line-height: 1.6;
+          max-width: 520px;
+          margin-bottom: 22px;
+        }
+
+        .pf-stats {
+          display: grid;
+          gap: 12px;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          max-width: 420px;
+          margin-bottom: 18px;
+        }
+
+        .pf-stat {
+          background: var(--panel);
+          border: 1px solid #eadeda;
+          border-radius: 16px;
+          box-shadow: var(--shadow);
+          padding: 16px 14px;
+        }
+
+        .pf-stat-label {
+          color: #8a8a8a;
+          font-size: 11px;
+          letter-spacing: 0.6px;
+          margin-bottom: 6px;
+          text-transform: uppercase;
+        }
+
+        .pf-stat-value { font-size: 18px; font-weight: 700; }
+
+        .pf-hero-media { position: relative; }
+
+        .pf-media-box {
+          background: radial-gradient(circle at 25% 20%, #17627c 0%, #0d1826 70%);
+          border-radius: 22px;
+          box-shadow: 0 24px 46px rgba(0, 0, 0, 0.28);
+          overflow: hidden;
+          padding: 18px;
+        }
+
+        .pf-media-box img {
+          border-radius: 16px;
+          display: block;
+          height: 100%;
+          min-height: 330px;
+          object-fit: cover;
+          width: 100%;
+        }
+
+        .pf-floating-card {
+          background: rgba(255, 255, 255, 0.92);
+          border-radius: 16px;
+          box-shadow: 0 12px 32px rgba(19, 16, 11, 0.18);
+          left: -20px;
+          max-width: 300px;
+          padding: 16px;
+          position: absolute;
+          bottom: -20px;
+        }
+
+        .pf-curr-grid {
+          display: grid;
+          gap: 20px;
+          grid-template-columns: 2fr 1fr;
+        }
+
+        .pf-accordion { display: grid; gap: 14px; }
+
+        .pf-module {
+          background: var(--panel);
+          border: 1px solid #e7e0dc;
+          border-radius: var(--radius);
+          padding: 18px;
+        }
+
+        .pf-module.open { border-color: #d05b36; }
+
+        .pf-module-head {
+          align-items: center;
+          cursor: pointer;
+          display: flex;
+          justify-content: space-between;
+        }
+
+        .pf-module-week {
+          color: #9b9b9b;
+          font-size: 10px;
+          letter-spacing: 0.5px;
+          text-transform: uppercase;
+        }
+
+        .pf-module-title { font-size: 24px; font-weight: 600; margin-top: 5px; }
+        .pf-module-toggle { color: #7b7b7b; font-size: 24px; line-height: 1; }
+
+        .pf-module-body {
+          border-top: 1px solid #eee4de;
+          margin-top: 16px;
+          padding-top: 15px;
+        }
+
+        .pf-module-objective {
+          color: #4b4b4b;
+          font-size: 14px;
+          line-height: 1.6;
+          margin-bottom: 10px;
+        }
+
+        .pf-tag-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+        .pf-tag {
+          background: #f3e7e1;
+          border-radius: 999px;
+          color: #8d4d3b;
+          font-size: 11px;
+          padding: 5px 11px;
+        }
+
+        .pf-side-panel {
+          background: var(--panel);
+          border: 1px solid #e8e0dc;
+          border-radius: var(--radius);
+          box-shadow: var(--shadow);
+          height: fit-content;
+          padding: 20px;
+        }
+
+        .pf-side-panel h3 { font-size: 28px; margin: 0 0 6px; }
+        .pf-side-panel p { color: #6f6f6f; font-size: 14px; margin: 0 0 16px; }
+
+        .pf-overview-grid,
+        .pf-why-grid,
+        .pf-role-grid,
+        .pf-metric-grid,
+        .pf-faq-grid {
+          display: grid;
+          gap: 16px;
+        }
+
+        .pf-overview-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .pf-why-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .pf-role-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .pf-metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .pf-faq-grid { grid-template-columns: 250px 1fr; }
+
+        .pf-card {
+          background: #f7f5f4;
+          border: 1px solid #e6dfdc;
+          border-radius: 16px;
+          padding: 20px;
+        }
+
+        .pf-card h4 { margin: 0 0 8px; font-size: 20px; }
+        .pf-card p { margin: 0; color: #5f5f5f; line-height: 1.6; }
+
+        .pf-takeaway-grid {
+          align-items: center;
+          display: grid;
+          gap: 22px;
+          grid-template-columns: 1.3fr 1fr;
+        }
+
+        .pf-list {
+          margin: 0;
+          padding: 0;
+          display: grid;
+          gap: 10px;
+        }
+
+        .pf-list li {
+          list-style: none;
+          padding-left: 16px;
+          position: relative;
+          color: #454545;
+          line-height: 1.55;
+        }
+
+        .pf-list li::before {
+          background: #cb4213;
+          border-radius: 50%;
+          content: "";
+          height: 6px;
+          left: 0;
+          position: absolute;
+          top: 9px;
+          width: 6px;
+        }
+
+        .pf-image {
+          border-radius: 16px;
+          box-shadow: var(--shadow);
+          overflow: hidden;
+        }
+
+        .pf-image img {
+          display: block;
+          width: 100%;
+          height: 100%;
+          min-height: 320px;
+          object-fit: cover;
+        }
+
+        .pf-center { text-align: center; }
+
+        .pf-brochure {
+          align-items: center;
+          border: 2px solid #ca3f12;
+          border-radius: 18px;
+          display: flex;
+          justify-content: space-between;
+          gap: 20px;
+          padding: 20px;
+          background: #fff;
+        }
+
+        .pf-career { background: #eceaea; border-top: 1px solid #ddd8d5; border-bottom: 1px solid #ddd8d5; }
+
+        .pf-role-card {
+          background: #f7f5f4;
+          border: 1px solid #e6dfdc;
+          border-radius: 16px;
+          min-height: 190px;
+          padding: 22px;
+          position: relative;
+        }
+
+        .pf-role-dot {
+          background: #be3a10;
+          border-radius: 50%;
+          height: 10px;
+          margin-bottom: 16px;
+          width: 10px;
+        }
+
+        .pf-role-card strong {
+          color: #b12e03;
+          display: block;
+          margin-top: 12px;
+          font-size: 12px;
+          text-transform: uppercase;
+        }
+
+        .pf-metric {
+          text-align: center;
+          padding: 16px;
+          border: 1px solid #e6dfdc;
+          border-radius: 14px;
+          background: #fff;
+        }
+
+        .pf-metric h4 { margin: 0; color: #bf390d; font-size: 30px; }
+        .pf-metric p { margin: 6px 0 0; color: #5f5f5f; }
+
+        .pf-invest {
+          background: #fdfcfc;
+          border: 2px solid #ca3f12;
+          border-radius: 18px;
+          box-shadow: var(--shadow);
+          padding: 28px;
+        }
+
+        .pf-invest h3 { font-size: 40px; margin: 6px 0; }
+        .pf-invest-sub { color: #7a7a7a; font-size: 13px; text-transform: uppercase; }
+
+        .pf-invest-grid {
+          border-top: 1px solid #ece4e0;
+          display: grid;
+          gap: 18px;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          margin-top: 20px;
+          padding-top: 16px;
+        }
+
+        .pf-invest-item strong { color: #bf390d; display: block; margin-bottom: 6px; }
+        .pf-invest-item span { color: #5e5e5e; font-size: 13px; line-height: 1.5; }
+
+        .pf-pay-grid {
+          display: grid;
+          gap: 18px;
+          grid-template-columns: 1fr 1fr;
+          margin-top: 16px;
+        }
+
+        .pf-fee-box {
+          background: linear-gradient(145deg, #df5a2c 0%, #b73b14 100%);
+          border-radius: 26px;
+          color: #fff;
+          padding: 24px;
+          text-align: center;
+        }
+
+        .pf-fee-box .fee { font-size: 48px; font-weight: 800; line-height: 1.1; }
+
+        .pf-breakdown {
+          background: #fff;
+          border: 1px solid #e8e0dc;
+          border-radius: 16px;
+          padding: 16px;
+        }
+
+        .pf-break-row {
+          border-bottom: 1px solid #ebe3df;
+          display: flex;
+          justify-content: space-between;
+          font-size: 14px;
+          padding: 11px 0;
+        }
+
+        .pf-break-row:last-child { border-bottom: 0; }
+
+        .pf-partner {
+          align-items: center;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          margin-top: 16px;
+        }
+
+        .pf-partner img { height: 76px; object-fit: contain; }
+
+        .pf-faq-menu {
+          border: 1px solid #e5deda;
+          border-radius: 14px;
+          background: #fff;
+          padding: 12px;
+          height: fit-content;
+        }
+
+        .pf-faq-menu button {
+          background: #fff;
+          border: 1px solid #e7e0dc;
+          border-radius: 10px;
+          cursor: pointer;
+          display: block;
+          font-family: inherit;
+          font-size: 13px;
+          font-weight: 700;
+          margin-bottom: 8px;
+          padding: 10px 12px;
+          text-align: left;
+          width: 100%;
+        }
+
+        .pf-faq-menu button.active {
+          border-color: #d35e39;
+          color: #b9380f;
+        }
+
+        .pf-faq-item {
+          border: 1px solid #e7e0dc;
+          border-radius: 12px;
+          margin-bottom: 10px;
+          overflow: hidden;
+        }
+
+        .pf-faq-head {
+          align-items: center;
+          background: #fff;
+          cursor: pointer;
+          display: flex;
+          justify-content: space-between;
+          padding: 12px 14px;
+          width: 100%;
+          border: 0;
+          font-family: inherit;
+          text-align: left;
+        }
+
+        .pf-faq-body {
+          background: #f8f5f4;
+          color: #4f4f4f;
+          padding: 12px 14px;
+          border-top: 1px solid #e7e0dc;
+        }
+
+        @media (max-width: 1080px) {
+          .pf-hero,
+          .pf-curr-grid,
+          .pf-overview-grid,
+          .pf-why-grid,
+          .pf-role-grid,
+          .pf-metric-grid,
+          .pf-pay-grid,
+          .pf-faq-grid,
+          .pf-takeaway-grid,
+          .pf-invest-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .pf-floating-card { left: 14px; }
+          .pf-brochure { flex-direction: column; align-items: flex-start; }
+        }
+
+        @media (max-width: 780px) {
+          .pf-section { padding: 42px 0; }
+          .pf-module-title { font-size: 21px; }
+        }
+      `}</style>
+
+      <div className="pf-shell">
+        <section className="pf-hero">
+          <div>
+            <div className="pf-chip">Advanced Program 2026</div>
+            <h1>Master <span>Performance</span> that Scales Revenue.</h1>
+            <p className="pf-sub">
+              A premium program for performance marketers who want to plan, execute, and optimize campaigns with measurable business impact.
             </p>
-            <div
-              data-aos="fade-up"
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-            >
-              {Difference.map((Difference, index) => (
-                <div
-                  data-aos="fade-up"
-                  key={index}
-                  className="bg-[#080810] p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition"
-                >
-                  <div className="text-[#f15b29] text-4xl mb-4">
-                    {Difference.icon}
-                  </div>
-                  <h3 className="text-lg text-[#f15b29] font-bold  mb-3">
-                    {Difference.title}
-                  </h3>
-                  <p className="text-white  ">{Difference.description}</p>
-                </div>
+
+            <div className="pf-stats">
+              {heroStats.map((item) => (
+                <article className="pf-stat" key={item.label}>
+                  <div className="pf-stat-label">{item.label}</div>
+                  <div className="pf-stat-value">{item.value}</div>
+                </article>
               ))}
             </div>
-          </div>
-        </section>
-        <hr className=" opacity-10" />
 
-        {/* 15 why learn with us */}
-        <section className="py-[60px] px-[10px]">
-          <BenefitsofLearning />
-        </section>
-        <hr className=" opacity-10" />
-
-        {/* 2 Course Overview Section */}
-        <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto">
-            <h1
-              data-aos="fade-up"
-              className=" font-bold text-center mb-12 text-[#f15b29]"
-            >
-              | Program Overview
-            </h1>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-              {courseTopics.map((topic, index) => (
-                <div
-                  data-aos="fade-up"
-                  key={index}
-                  className="bg-[#080810] p-6 rounded-lg text-center transition-transform duration-300 hover:scale-105"
-                >
-                  <div className="text-4xl mb-4">{topic.icon}</div>
-                  <h3 className="text-xl font-bold uppercase text-white hover:text-[#f15b29] transition-colors duration-300">
-                    {topic.title}
-                  </h3>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-        <hr className=" opacity-10" />
-
-        {/* 3 key outcome section  */}
-        <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto lg:flex flex-col lg:flex-row gap-3">
-            <div className="w-full mb-3 lg:mb-0">
-              <h1 data-aos="fade-up" className=" font-bold mb-4 text-[#f15b29]">
-                | Key Takeaways
-              </h1>
-              <ul data-aos="fade-up" className="space-y-4">
-                <li>
-                  <span className="font-semibold text-[#f15b29]">
-                    Master Performance Marketing Campaigns
-                  </span>
-                  Learn to plan, execute, and optimize paid campaigns across
-                  platforms like Google Ads, Facebook, and more to maximize ROI.
-                </li>
-                <li>
-                  <span className="font-semibold text-[#f15b29]">
-                    Develop Expertise in Conversion Rate Optimization
-                  </span>
-
-                  {isExpanded && (
-                    <span>
-                      &nbsp;Gain hands-on experience with CRO techniques to
-                      increase conversions and improve campaign performance.
-                    </span>
-                  )}
-                </li>
-                <li>
-                  <span className="font-semibold text-[#f15b29]">
-                    Leverage Data-Driven Marketing Analytics
-                  </span>
-                  Use data analytics tools to track campaign performance,
-                  optimize results, and drive targeted traffic.
-                </li>
-                <span className="font-semibold text-[#f15b29]">
-                  Enhance Campaigns with A/B Testing and Optimization
-                </span>
-                Learn to apply A/B testing methodologies to refine campaigns,
-                improve performance, and increase conversion rates.
-                <li>
-                  <span className="font-semibold text-[#f15b29]">
-                    -- : Optimize Campaign Performance
-                  </span>
-                  Continuously monitor and tweak campaigns to improve key
-                  metrics such as CPC, CPA, and ROI.
-                </li>
-                {/* Hidden additional content */}
-                {isExpanded && (
-                  <>
-                    {/* Paragraphs */}
-                    {/* <p className="mt-4">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Fuga libero velit autem deleniti dignissimos hic, labore
-                    esse iusto earum repellat?
-                  </p> */}
-
-                    <li>
-                      <span className="font-semibold text-[#f15b29]">
-                        -- : Leverage Data Analytics for Insights
-                      </span>
-                    </li>
-                    <li>
-                      <span className="font-semibold text-[#f15b29]">
-                        -- : Focus on Conversion Rate Optimization (CRO)
-                      </span>
-                      Implement strategies to enhance user experience and
-                      increase conversion rates on websites and landing pages.
-                    </li>
-                  </>
-                )}
-              </ul>
-              <button
-                data-aos="fade-up"
-                onClick={toggleExpand}
-                className="mt-4 px-4 py-2 text-white font-medium border  rounded"
-              >
-                {isExpanded ? "Read Less" : "Read More"}
-              </button>
-            </div>
-
-            <div
-              data-aos="fade-up"
-              className="lg:w-1/2 w-full h-[300px] rounded-lg shadow-lg shadow-[#f15b29] overflow-hidden"
-            >
-              <img
-                src={PM}
-                alt="Curriculum"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-        </section>
-        <hr className=" opacity-10" />
-
-      
-
-        {/* 5 download curriculum section */}
-
-        <section className="py-[60px] px-[10px]">
-          <div
-            data-aos="fade-up"
-            className="container mx-auto p-5 flex flex-col md:flex-row justify-between items-center flex-wrap gap-5 rounded-lg shadow-lg border-2 border-[#f15b29]"
-          >
-            <div className="text-center md:text-left">
-              <h2 className="text-xl font-bold mb-2 text-[#f15b29]">
-                | Get the Full Course Breakdown
-              </h2>
-              <p className="text-gray-400 text-sm">
-                Access the detailed curriculum with key modules and learning
-                outcomes of the Performance Marketing program.
-              </p>
-            </div>
-            <div className="flex flex-col lg:flex-row items-center justify-center gap-3">
-              <button
-                className="bg-[#f15b29] hover:bg-[#f15b29] text-white font-semibold py-2 px-6 rounded flex items-center gap-2"
-                onClick={handleBrochureClick} // Open the form when clicked
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M3 8a1 1 0 011-1h12a1 1 0 011 1v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm9 4a1 1 0 10-2 0V9.707l-.293.293a1 1 0 11-1.414-1.414l2-2a1 1 0 011.414 0l2 2a1 1 0 11-1.414 1.414L12 9.707V12z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Download
-              </button>
-            </div>
+            <ApplyNowButton courseValue="Performance Marketing" />
           </div>
 
-          {/* Dialog Box for Form */}
-           {showForm && (
-                      <div className="fixed top-8 inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-[999]">
-                        <div className="bg-white text-black p-3 rounded-lg shadow-lg w-96">
-                          <span className="text-md float-end mb-2 font-bold border rounded-full px-2 cursor-pointer"  onClick={OffForm}>X</span>
-                          <h3 className="text-md text-center font-semibold mb-2">
-                            Register to Download Brochure
-                          </h3>
-                          <form className="space-y-2" onSubmit={(e) => handleFormSubmit(e, actionType)}>
-                            <input
-                              type="text"
-                              id="name"
-                              name="name"
-                              placeholder="Enter your name"
-                              value={formData.name}
-                              onChange={handleInputChange}
-                              className="w-full border border-gray-300 p-1.5 rounded-md"
-                              required
-                            />
-                            <input
-                              type="email"
-                              id="email"
-                              name="email"
-                              placeholder="Enter your email"
-                              value={formData.email}
-                              onChange={handleInputChange}
-                              className="w-full border border-gray-300 p-1.5 rounded-md"
-                              disabled={emailVerified}
-                  required
-                            />
-                {!emailVerified ? (
-                    !otpSent ? (
-                        <button
-                            type="button"
-                            onClick={sendOTP}
-                            className="w-full bg-[#f15b29] text-white p-1.5 rounded-md text-sm mt-2 transition"
-                        >
-                            Verify Email
-                        </button>
-                    ) : (
-                        <div className="flex gap-2 mt-2">
-                            <input
-                                type="text"
-                                value={otp}
-                                onChange={(e) => setOtp(e.target.value)}
-                                placeholder="Enter OTP"
-                                className="w-full border border-gray-300 p-1.5 rounded-md text-black"
-                            />
-                            <button
-                                type="button"
-                                onClick={verifyOTP}
-                                className="bg-green-600 text-white px-3 py-1.5 rounded-md text-sm whitespace-nowrap"
-                            >
-                                Submit OTP
-                            </button>
-                        </div>
-                    )
-                ) : (
-                    <div className="bg-green-100 border border-green-400 text-green-700 px-3 py-1.5 rounded-md mt-2 text-center text-sm">
-                        ✅ Email Verified
+          <div className="pf-hero-media">
+            <div className="pf-media-box">
+              <img src={PM} alt="Performance marketing mentor" />
+            </div>
+            <aside className="pf-floating-card">
+              <h4>Outcome Focused</h4>
+              <p>Design high-ROI growth systems with data-backed execution and optimization frameworks.</p>
+            </aside>
+          </div>
+        </section>
+
+        <section className="pf-section">
+          <h2>Curriculum</h2>
+          <p className="lead">
+            A tactical progression from campaign foundations to multi-channel scaling and performance leadership.
+          </p>
+
+          <div className="pf-curr-grid">
+            <div className="pf-accordion">
+              {curriculum.map((module, index) => {
+                const isOpen = openModule === index;
+                return (
+                  <article className={`pf-module ${isOpen ? "open" : ""}`} key={module.title}>
+                    <div
+                      className="pf-module-head"
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => setOpenModule(isOpen ? -1 : index)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          setOpenModule(isOpen ? -1 : index);
+                        }
+                      }}
+                    >
+                      <div>
+                        <div className="pf-module-week">{module.week}</div>
+                        <div className="pf-module-title">{module.title}</div>
+                      </div>
+                      <span className="pf-module-toggle">{isOpen ? "-" : "+"}</span>
                     </div>
-                )}
-                            <input
-                              type="text"
-                              id="number"
-                              name="number"
-                              placeholder="Enter your phone number"
-                              value={formData.number}
-                              onChange={handleInputChange}
-                              className="w-full border border-gray-300 p-1.5 rounded-md"
-                              required
-                            />
-                            <select
-                              id="currentRole"
-                              name="currentRole"
-                              value={formData.currentRole}
-                              onChange={handleInputChange}
-                              className="w-full border border-gray-300 p-1.5 rounded-md"
-                              required
-                            >
-                              <option disabled value="">What do you currently do?</option>
-                              <option value="Founder">Founder</option>
-                              <option value="Student">Student</option>
-                              <option value="Working Professional">
-                                Working Professional
-                              </option>
-                              <option value="Self Employed">Self Employed</option>
-                            </select>
-                            <select
-                              id="experience"
-                              name="experience"
-                              value={formData.experience}
-                              onChange={handleInputChange}
-                              className="w-full border border-gray-300 p-1.5 rounded-md"
-                              required
-                            >
-                              <option disabled value="">Select Experience</option>
-                              <option value="0 year">0 year (Fresher)</option>
-                              <option value="1-2 years">1-2 years</option>
-                              <option value="3-5 years">3-5 years</option>
-                              <option value="5+ years">5+ years</option>
-                            </select>
-                            <select
-                              id="goal"
-                              name="goal"
-                              value={formData.goal}
-                              onChange={handleInputChange}
-                              className="w-full border border-gray-300 p-1.5 rounded-md"
-                              required
-                            >
-                              <option disabled value="">Goal of taking this program</option>
-                              <option value="Career Transition">Career Transition</option>
-                              <option value="Kickstart Career">Kickstart Career</option>
-                              <option value="Upskilling">Upskilling</option>
-                              <option value="Other">Other</option>
-                            </select>
-                            {formData.goal === "Other" && (
-                              <input
-                                type="text"
-                                name="goalOther"
-                                value={formData.goalOther}
-                                onChange={handleInputChange}
-                                placeholder="Please specify your goal"
-                                className="w-full border border-gray-300 p-1.5 rounded-md mt-2"
-                                required
-                              />
-                            )}
-                            <select
-                              id="reason"
-                              name="reason"
-                              value={formData.reason}
-                              onChange={handleInputChange}
-                              className="w-full border border-gray-300 p-1.5 rounded-md"
-                              required
-                            >
-                              <option disabled value="">Reason for taking this program</option>
-                              <option value="I Want to Know More About the Program">I Want to Know More About the Program</option>
-                              <option value="I've Reviewed the Program – Need Career Guidance">I've Reviewed the Program – Need Career Guidance</option>
-                              <option value="I'm Ready to Enroll">I'm Ready to Enroll</option>
-                              <option value="I'm Already Enrolled – Need Support">I'm Already Enrolled – Need Support</option>
-                            </select>
-                            <select
-                              id="domain"
-                              name="domain"
-                              value={formData.domain}
-                              onChange={handleInputChange}
-                              className="w-full border border-gray-300 p-1.5 rounded-md"
-                              required
-                            >
-                              <option disabled value="">Domain currently working in</option>
-                              <option value="Digital Marketing/Performance marketing">
-                                Digital Marketing/Performance Marketing
-                              </option>
-                              <option value="Marketing/Sales">Marketing/Sales</option>
-                              <option value="Management/Operations">
-                                Management/Operations
-                              </option>
-                              <option value="IT/Tech/Product">IT/Tech/Product</option>
-                              <option value="Other">Other</option>
-                            </select>
-                            {formData.domain === "Other" && (
-                              <input
-                                type="text"
-                                name="domainOther"
-                                value={formData.domainOther}
-                                onChange={handleInputChange}
-                                placeholder="Please specify your domain"
-                                className="w-full border border-gray-300 p-1.5 rounded-md mt-2"
-                                required
-                              />
-                            )}
-                           <div className="flex justify-center gap-2">
-                                               <button
-                                                 type="submit" disabled={!emailVerified}
-                                                 onClick={(e) => setActionType("Only Download Brochure")}
-                                                 className="px-4 py-2 w-full bg-[#f15b29] text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-                                               >
-                                                 <i className="fa fa-download"></i>
-                                               </button>
-                                               <button
-                                                 type="submit" disabled={!emailVerified}
-                                                 onClick={(e) => setActionType("Requested To Call Back")}
-                                                 className="px-4 py-2 w-full bg-[#f15b29] flex items-center justify-center gap-1 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-                                               >
-                                                 <i className="fa fa-download"></i> +{" "}
-                                                 <RiCustomerService2Fill />
-                                               </button>
-                                             </div>
-                          </form>
+
+                    {isOpen && (
+                      <div className="pf-module-body">
+                        <p className="pf-module-objective">{module.objectives}</p>
+                        <div className="pf-tag-wrap">
+                          {module.topics.map((topic) => (
+                            <span className="pf-tag" key={topic}>{topic}</span>
+                          ))}
                         </div>
                       </div>
                     )}
+                  </article>
+                );
+              })}
+            </div>
+
+            <aside className="pf-side-panel">
+              <h3>Speak with an Advisor</h3>
+              <p>Get a personalized roadmap for performance marketing roles and growth tracks.</p>
+              <ApplyForm />
+            </aside>
+          </div>
         </section>
 
-        <hr className=" opacity-10" />
+        <section className="pf-section">
+          <h2>Program Overview</h2>
+          <div className="pf-overview-grid">
+            {overviewTopics.map((topic) => (
+              <article className="pf-card" key={topic}>
+                <h4>{topic}</h4>
+              </article>
+            ))}
+          </div>
+        </section>
 
-        {/* 13 job roles section  */}
-        <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto">
-            <h1 className="text-[#f15b29] text-center  font-bold mb-8">
-              | Career Opportunities in{" "}
-              <span className="text-white font-bold">
-                Performance Marketing{" "}
-              </span>
-            </h1>
-            <div
-              data-aos="fade-up"
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-            >
-              {jobRoles.map((role, index) => (
-                <div
-                  key={index}
-                  className="border-l-4 border-[#f15b29] bg-[#080810] rounded-md p-4 text-white shadow-lg"
-                >
-                  <h3 className="text-xl font-semibold mb-4">{role.title}</h3>
-                  <p>{role.description}</p>
-                </div>
+        <section className="pf-section">
+          <h2>Why Choose Performance Marketing?</h2>
+          <p className="lead">Build one of the most measurable and business-critical skillsets in modern marketing.</p>
+          <div className="pf-why-grid">
+            {whyChoose.map((item) => (
+              <article className="pf-card" key={item.title}>
+                <h4>{item.title}</h4>
+                <p>{item.description}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="pf-section">
+          <h2>Key Takeaways</h2>
+          <div className="pf-takeaway-grid">
+            <ul className="pf-list">
+              {keyTakeaways.map((item) => (
+                <li key={item}>{item}</li>
               ))}
-            </div>
-          </div>
-        </section>
-        <hr className=" opacity-10" />
-
-        {/* Clients Carousel */}
-        <div className="workat">
-          <div className="alumni">
-            <h1 className="text-[#f15b29] font-bold mb-6 text-center">
-              | Our alumni at top Brands
-            </h1>
-            <p className="text-gray-400 mb-12 text-center">
-              Their success stories inspire current students to aim for global
-              excellence in their careers.
-            </p>
-            <ClientsCarousel />
-          </div>
-        </div>
-        <hr className=" opacity-10" />
-
-        {/* 12 key highlight section */}
-        <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto">
-            <div className="">
-              <div className=" w-full mb-8 lg:mb-0">
-                <h1
-                  data-aos="fade-up"
-                  className=" text-center font-bold mb-6 text-[#f15b29]"
-                >
-                  | Course Benefits at a Glance
-                </h1>
-                <p data-aos="fade-up" className="text-lg text-center mb-8">
-                  Master advanced{" "}
-                  <span className="text-[#f15b29] font-bold">
-                    Performance Marketing
-                  </span>{" "}
-                  techniques with hands-on projects, expert-led sessions, and
-                  real-world applications.
-                </p>
-                <div
-                  data-aos="fade-up"
-                  className="grid grid-cols-2 md:grid-cols-4 gap-2"
-                >
-                  <div className=" p-6 rounded-lg text-center">
-                    <h3 className="text-3xl font-bold text-[#f15b29]">200+</h3>
-                    <p className="mt-2 text-gray-300">Mentees Placed</p>
-                  </div>
-                  <div className=" p-6 rounded-lg text-center">
-                    <h3 className="text-3xl font-bold text-[#f15b29]">
-                      12+ LPA
-                    </h3>
-                    <p className="mt-2 text-gray-300">Average CTC</p>
-                  </div>
-                  <div className=" p-6 rounded-lg text-center">
-                    <h3 className="text-3xl font-bold text-[#f15b29]">95%</h3>
-                    <p className="mt-2 text-gray-300">Placement Rate</p>
-                  </div>
-                  <div className=" p-6 rounded-lg text-center">
-                    <h3 className="text-3xl font-bold text-[#f15b29]">450+</h3>
-                    <p className="mt-2 text-gray-300">Hiring Partners</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-        <hr className=" opacity-10" />
-
-        {/* 8 Certification section */}
-        <section className="py-[60px] px-[10px]">
-          <div data-aos="fade-up">
-            <Certification />
-          </div>
-        </section>
-        <hr className=" opacity-10" />
-
-        {/* Flexible Payment Options */}
-        <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto max-w-4xl">
-            <h1 className="text-center font-extrabold text-[#f15b29] mb-12 text-3xl md:text-4xl">
-              Our Flexible Payment Options
-            </h1>
-            
-            {/* Payment Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-              {/* Left: Total Fee Box */}
-              <div className="bg-gradient-to-br from-[#f15b29] to-[#b5401f] rounded-l-[80px] rounded-r-lg p-8 md:p-12 flex flex-col justify-center items-center shadow-2xl">
-                <p className="text-white text-lg md:text-xl mb-4 font-medium">Total program fee</p>
-                <p className="text-white text-5xl md:text-6xl font-bold">₹47,200</p>
-                <p className="text-white text-sm mt-3 opacity-90">Inclusive of taxes</p>
-              </div>
-              
-              {/* Right: Payment Breakdown */}
-              <div className="flex flex-col justify-center space-y-4">
-                <div className="flex justify-between items-center py-3 border-b border-gray-600">
-                  <span className="text-[#eee] text-lg">Registration</span>
-                  <span className="text-[#eee] text-lg font-semibold">₹10,000</span>
-                </div>
-                <div className="py-3 border-b border-gray-600">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[#eee] text-lg">Installment 1</span>
-                    <span className="text-[#eee] text-lg font-semibold">₹18,600</span>
-                  </div>
-                  <p className="text-[#aaa] text-xs mt-1">*First installment must be paid within 15 days from the date of registration</p>
-                </div>
-                <div className="py-3 border-b border-gray-600">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[#eee] text-lg">Installment 2</span>
-                    <span className="text-[#eee] text-lg font-semibold">₹18,600</span>
-                  </div>
-                  <p className="text-[#aaa] text-xs mt-1">*Second installment must be paid within 15 days of first installment</p>
-                </div>
-              </div>
-            </div>
-            
-           
-            
-            {/* Financial Partner */}
-            <div className="flex flex-col justify-center items-center mt-12">
-              <p className="mb-2 text-[#f15b29]">| Our Financial Partner</p>
-              <img src={Flashaidlogo} alt="Financial Partner" className="h-[80px]"/>
+            </ul>
+            <div className="pf-image">
+              <img src={PM} alt="Key outcomes" />
             </div>
           </div>
         </section>
 
-        {/* 9 mentors section  */}
-        {/* <section className="py-[60px] px-[10px]">
-          <div data-aos="fade-up" className="container mx-auto">
-            <MentorSection />
-          </div>
-        </section>
-        <hr className=" opacity-10" /> */}
-
-        {/* 16 store section  */}
-        <section className="py-[60px] px-[10px] bg-white">
-          <StoreSection />
+        <section className="pf-section">
+          <BenefitsofLearning />
         </section>
 
-        {/* 17 new FAQ section */}
-        <section className="py-[60px] px-[10px] bg-white">
-          <div data-aos="fade-up" className="container mx-auto">
-            <h1 className="text-center mb-2  font-bold text-[#f15b29]">
-              | Ask Us Anything
-            </h1>
-            <div className="flex justify-center   flex-col md:flex-row">
-              {/* Sidebar */}
-              <div className="md:w-1/6 w-full p-3 border-r border-b md:border-b-0 text-black border-[#f15b29]">
-                <ul className="space-y-2">
-                  {Object.keys(faqData).map((category) => (
-                    <li
-                      key={category}
-                      onClick={() => {
-                        setActiveCategory(category);
-                        setOpenFAQ(null); // Reset any open question
-                      }}
-                      className={`cursor-pointer border font-bold text-black py-2 px-4 rounded-lg ${
-                        activeCategory === category ? " text-[#f15b29]" : ""
-                      }`}
-                    >
-                      {category}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* FAQ Content */}
-              <div className="md:w-3/4 w-full p-3">
-                <h2 className="text-2xl font-bold mb-4 text-[#f15b29]">
-                  {activeCategory} :
-                </h2>
-                <ul className="space-y-4 ">
-                  {faqData[activeCategory].map((faq, index) => (
-                    <li
-                      className="border  overflow-hidden rounded-lg "
-                      key={index}
-                    >
-                      <button
-                        onClick={() =>
-                          setOpenFAQ(openFAQ === index ? null : index)
-                        }
-                        className="w-full text-left text-black py-3 px-5  flex justify-between items-center"
-                      >
-                        {faq.question}
-                        <span className="text-[#f15b29] font-bold text-2xl">
-                          {openFAQ === index ? "-" : "+"}
-                        </span>
-                      </button>
-                      {openFAQ === index && (
-                        <div className="p-4 border-t bg-slate-100 text-black">
-                          <p>{faq.answer}</p>
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+        <section className="pf-section">
+          <div className="pf-brochure">
+            <div>
+              <h2 style={{ margin: "0 0 6px", fontSize: "32px" }}>Get the Full Course Breakdown</h2>
+              <p className="lead" style={{ margin: 0 }}>
+                Access detailed curriculum, campaign frameworks, and optimization playbooks.
+              </p>
             </div>
-          </div>
-        </section>
-
-        {/* 11 scrolling section */}
-        <section className="">
-          <div
-            className={`fixed bottom-0 left-0 w-full bg-white z-10 shadow-md flex justify-between items-center gap-[20px] p-4   transition-transform duration-300 ${
-              isVisible ? "translate-y-0" : "translate-y-full"
-            }`}
-          >
-            <p className="text-xl font-semibold text-black">
-              {" "}
-              Program fees 40,000/- + 18% GST
-            </p>
-            <button className="flex items-center justify-center px-3 py-2 border rounded-md text-white bg-black  hover:text-[#f15b29]">
-              <a
-                 href="https://rzp.io/rzp/Advanced_Program_Slot_Booking"
-                target="blank"
-                className="text-[#f15b29] whitespace-nowrap"
-              >
-                Enroll Now
-              </a>
-            </button>
+            <a href={pdfpm} target="_blank" rel="noreferrer" className="pf-btn" style={{ textDecoration: "none" }}>
+              Download
+            </a>
           </div>
         </section>
       </div>
+
+      <section className="pf-section pf-career">
+        <div className="pf-shell">
+          <div className="pf-center">
+            <h2>Career Opportunities in Performance Marketing</h2>
+            <p className="lead" style={{ margin: "0 auto", maxWidth: "640px" }}>
+              The program prepares you for high-impact paid media, analytics, and growth marketing roles.
+            </p>
+          </div>
+
+          <div className="pf-role-grid">
+            {roles.map((role) => (
+              <article className="pf-role-card" key={role.title}>
+                <div className="pf-role-dot" />
+                <h4>{role.title}</h4>
+                <p>{role.text}</p>
+                <strong>{role.avg}</strong>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="pf-section">
+        <div className="pf-shell">
+          <h2 className="pf-center">Our Alumni at Top Brands</h2>
+          <p className="lead pf-center" style={{ margin: "0 auto 18px", maxWidth: "760px" }}>
+            Their success stories inspire current students to aim for global excellence.
+          </p>
+          <ClientsCarousel />
+        </div>
+      </section>
+
+      <section className="pf-section">
+        <div className="pf-shell">
+          <h2 className="pf-center">Course Benefits at a Glance</h2>
+          <div className="pf-metric-grid">
+            <article className="pf-metric"><h4>320+</h4><p>Mentees Placed</p></article>
+            <article className="pf-metric"><h4>9+ LPA</h4><p>Average CTC</p></article>
+            <article className="pf-metric"><h4>93%</h4><p>Placement Rate</p></article>
+            <article className="pf-metric"><h4>520+</h4><p>Hiring Partners</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section className="pf-section">
+        <div className="pf-shell">
+          <Certification />
+        </div>
+      </section>
+
+      <section className="pf-section">
+        <div className="pf-shell">
+          <div className="pf-invest">
+            <div className="pf-invest-sub">Program Investment</div>
+            <h3>Rs 47,200</h3>
+            <div className="pf-invest-sub">Total fee (incl. GST)</div>
+
+            <div className="pf-invest-grid">
+              <div className="pf-invest-item">
+                <strong>Rs 10,000</strong>
+                <span>Registration fee to reserve your seat in this premium cohort.</span>
+              </div>
+              <div className="pf-invest-item">
+                <strong>Installment 1: Rs 18,600</strong>
+                <span>Payable within 15 days from date of registration.</span>
+              </div>
+              <div className="pf-invest-item">
+                <strong>Installment 2: Rs 18,600</strong>
+                <span>Payable within 15 days after installment 1.</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="pf-pay-grid">
+            <div className="pf-fee-box">
+              <div>Total Program Fee</div>
+              <div className="fee">Rs 47,200</div>
+              <div>Inclusive of taxes</div>
+            </div>
+            <div className="pf-breakdown">
+              <div className="pf-break-row"><span>Registration</span><strong>Rs 10,000</strong></div>
+              <div className="pf-break-row"><span>Installment 1</span><strong>Rs 18,600</strong></div>
+              <div className="pf-break-row"><span>Installment 2</span><strong>Rs 18,600</strong></div>
+            </div>
+          </div>
+
+          <div className="pf-partner">
+            <p className="pf-invest-sub">Our Financial Partner</p>
+            <img src={Flashaidlogo} alt="Financial partner" />
+          </div>
+        </div>
+      </section>
+
+      <section className="pf-section" style={{ background: "#fff" }}>
+        <div className="pf-shell">
+          <StoreSection />
+        </div>
+      </section>
+
+      <section className="pf-section" style={{ background: "#fff" }}>
+        <div className="pf-shell">
+          <h2 className="pf-center">Ask Us Anything</h2>
+          <div className="pf-faq-grid">
+            <aside className="pf-faq-menu">
+              {Object.keys(faqData).map((category) => (
+                <button
+                  key={category}
+                  className={activeCategory === category ? "active" : ""}
+                  type="button"
+                  onClick={() => {
+                    setActiveCategory(category);
+                    setOpenFAQ(null);
+                  }}
+                >
+                  {category}
+                </button>
+              ))}
+            </aside>
+
+            <div>
+              {faqData[activeCategory].map((faq, index) => (
+                <article className="pf-faq-item" key={faq.question}>
+                  <button
+                    className="pf-faq-head"
+                    type="button"
+                    onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
+                  >
+                    <span>{faq.question}</span>
+                    <strong>{openFAQ === index ? "-" : "+"}</strong>
+                  </button>
+                  {openFAQ === index && <div className="pf-faq-body">{faq.answer}</div>}
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
