@@ -30,15 +30,6 @@ const AdvDefaultPayment = () => {
     setMonths(getPastMonths());
   }, []);
 
-  if (!advEnrolls) {
-    return <div id="loader">
-      <div className="three-body">
-        <div className="three-body__dot"></div>
-        <div className="three-body__dot"></div>
-        <div className="three-body__dot"></div>
-      </div>
-    </div>;
-  }
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredStudents, setFilteredStudents] = useState([]);
@@ -140,6 +131,18 @@ const AdvDefaultPayment = () => {
   const prevPage = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
+
+  if (!advEnrolls || advEnrolls.length === 0) {
+    return (
+      <div id="loader">
+        <div className="three-body">
+          <div className="three-body__dot"></div>
+          <div className="three-body__dot"></div>
+          <div className="three-body__dot"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div id="AdminAddCourse">

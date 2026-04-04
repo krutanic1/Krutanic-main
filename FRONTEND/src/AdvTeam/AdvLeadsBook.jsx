@@ -588,52 +588,53 @@ const AdvLeadsBook = () => {
                 </div>
 
                 <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-                        <div style={styles.filterRow} className="filter-row">
-                             {/* Date Picker Section */}
-                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0 12px', borderRight: `1px solid ${designTokens.colors.border}` }}>
-                                <span className="material-symbols-outlined" style={{ fontSize: '20px', color: designTokens.colors.textSecondary }}>event</span>
-                                <input 
-                                    type="date" 
-                                    value={dateFilter} 
-                                    onChange={e => { setDateFilter(e.target.value); setCurrentPage(1); }} 
-                                    style={{ 
-                                        border: 'none', 
-                                        background: 'transparent', 
-                                        fontSize: '13px', 
-                                        fontWeight: '700', 
-                                        color: designTokens.colors.textPrimary,
-                                        outline: 'none',
-                                        cursor: 'pointer'
-                                    }} 
-                                />
-                            </div>
-
-                            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                                <button
-                                    onClick={() => setSelectedOutcome("")}
-                                    style={styles.filterBtn(selectedOutcome === "", designTokens.colors.primary)}
-                                >
-                                    <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>list_alt</span>
-                                    <span>All Records</span>
-                                </button>
-                                {CALL_OUTCOMES.map(o => (
-                                    <button
-                                        key={o.value}
-                                        onClick={() => setSelectedOutcome(o.value)}
-                                        style={styles.filterBtn(selectedOutcome === o.value, o.color)}
-                                    >
-                                        <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>{o.icon}</span>
-                                        <span>{o.label.split(' ').slice(1).join(' ')}</span>
-                                    </button>
-                                ))}
-                            </div>
+                    <div style={styles.filterRow} className="filter-row">
+                         {/* Date Picker Section */}
+                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0 12px', borderRight: `1px solid ${designTokens.colors.border}` }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: '20px', color: designTokens.colors.textSecondary }}>event</span>
+                            <input 
+                                type="date" 
+                                value={dateFilter} 
+                                onChange={e => { setDateFilter(e.target.value); setCurrentPage(1); }} 
+                                style={{ 
+                                    border: 'none', 
+                                    background: 'transparent', 
+                                    fontSize: '13px', 
+                                    fontWeight: '700', 
+                                    color: designTokens.colors.textPrimary,
+                                    outline: 'none',
+                                    cursor: 'pointer'
+                                }} 
+                            />
                         </div>
-                        <div style={styles.statsRow}>
-                            <div style={styles.statCard}>
-                                <span style={{ fontSize: '20px', fontWeight: '800', color: designTokens.colors.primary }}>{totalCount}</span>
-                                <span style={{ fontSize: '9px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Group</span>
-                            </div>
+
+                        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                             <button
+                                onClick={() => setSelectedOutcome("")}
+                                style={styles.filterBtn(selectedOutcome === "", designTokens.colors.primary)}
+                            >
+                                <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>list_alt</span>
+                                <span>All Records</span>
+                            </button>
+                            {CALL_OUTCOMES.map(o => (
+                                <button
+                                    key={o.value}
+                                    onClick={() => setSelectedOutcome(o.value)}
+                                    style={styles.filterBtn(selectedOutcome === o.value, o.color)}
+                                >
+                                    <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>{o.icon}</span>
+                                    <span>{o.label.split(' ').slice(1).join(' ')}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    
+                    <div style={styles.statsRow}>
+                        <div style={styles.statCard}>
+                            <span style={{ fontSize: '20px', fontWeight: '800', color: designTokens.colors.primary }}>{totalCount}</span>
+                            <span style={{ fontSize: '9px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Group</span>
+                        </div>
+                        <button
                             onClick={() => fetchMyLeads(1)}
                             className={`material-symbols-outlined ${loading ? 'spinning' : ''}`}
                             style={{ 
