@@ -37,15 +37,15 @@ const Footer = () => {
             <p className="text-sm text-gray-500 group-hover:text-gray-700 font-medium">support@krutanic.com</p>
           </a>
 
-          <a href="tel:+917022812878" className="bg-white hover:bg-orange-50/30 border border-gray-100/80 hover:border-orange-100 rounded-[28px] p-6 transition-all duration-300 group flex flex-col items-center text-center shadow-[0_8px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(241,91,41,0.06)] hover:-translate-y-1">
+          <a href="tel:+917829104024" className="bg-white hover:bg-orange-50/30 border border-gray-100/80 hover:border-orange-100 rounded-[28px] p-6 transition-all duration-300 group flex flex-col items-center text-center shadow-[0_8px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(241,91,41,0.06)] hover:-translate-y-1">
             <div className="w-14 h-14 rounded-full bg-orange-50 flex items-center justify-center text-[#F15B29] group-hover:scale-110 group-hover:bg-[#F15B29] group-hover:text-white transition-all duration-300 mb-4 shadow-sm border border-orange-100/50">
               <FaPhoneAlt size={18} />
             </div>
             <h3 className="text-gray-900 font-bold tracking-wide mb-1">Call Us</h3>
-            <p className="text-sm text-gray-500 group-hover:text-gray-700 font-medium">+91 70228 12878</p>
+            <p className="text-sm text-gray-500 group-hover:text-gray-700 font-medium">+91 7829104024</p>
           </a>
 
-          <a href="https://wa.me/7022812878" target="_blank" rel="noreferrer" className="bg-white hover:bg-green-50/30 border border-gray-100/80 hover:border-green-100 rounded-[28px] p-6 transition-all duration-300 group flex flex-col items-center text-center shadow-[0_8px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(34,197,94,0.06)] hover:-translate-y-1">
+          <a href="https://wa.me/7829104024" target="_blank" rel="noreferrer" className="bg-white hover:bg-green-50/30 border border-gray-100/80 hover:border-green-100 rounded-[28px] p-6 transition-all duration-300 group flex flex-col items-center text-center shadow-[0_8px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(34,197,94,0.06)] hover:-translate-y-1">
             <div className="w-14 h-14 rounded-full bg-green-50 flex items-center justify-center text-green-500 group-hover:scale-110 group-hover:bg-green-500 group-hover:text-white transition-all duration-300 mb-4 shadow-sm border border-green-100/50">
               <FaWhatsapp size={22} />
             </div>

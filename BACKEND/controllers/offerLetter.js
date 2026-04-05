@@ -64,8 +64,8 @@ const createOfferLetterPDF = async (pdfword1, pdfword2) => {
         maxWidth: 495,
         lineHeight: 14,
     });
-    page1.drawText("Bangalore, Karnataka |7022812878 | support@krutanic.com", {
-        x: (a4Width - timesRomanFont.widthOfTextAtSize("Bangalore, Karnataka |7022812878 | support@krutanic.com", 12)) / 2, // Center text
+    page1.drawText("Bangalore, Karnataka |7829104024 | support@krutanic.com", {
+        x: (a4Width - timesRomanFont.widthOfTextAtSize("Bangalore, Karnataka |7829104024 | support@krutanic.com", 12)) / 2, // Center text
         y: 200,
         size: 12,
         font: timesRomanFont,
@@ -89,8 +89,8 @@ const createOfferLetterPDF = async (pdfword1, pdfword2) => {
         maxWidth: 495,
         lineHeight: 14,
     });
-    page2.drawText("Bangalore, Karnataka |7022812878 | support@krutanic.com", {
-        x: (a4Width - timesRomanFont.widthOfTextAtSize("Bangalore, Karnataka |7022812878 | support@krutanic.com", 12)) / 2, // Center text
+    page2.drawText("Bangalore, Karnataka |7829104024 | support@krutanic.com", {
+        x: (a4Width - timesRomanFont.widthOfTextAtSize("Bangalore, Karnataka |7829104024 | support@krutanic.com", 12)) / 2, // Center text
         y: 200,
         size: 12,
         font: timesRomanFont,
