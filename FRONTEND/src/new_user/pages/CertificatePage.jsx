@@ -68,20 +68,6 @@ const CertificatePage = () => {
             return;
         }
 
-        const createdAt = new Date(enrollment.createdAt || new Date());
-        const currentDate = new Date();
-        const eligibleDate = new Date(createdAt);
-        // Assuming 2 months duration for eligibility based on the previous code
-        eligibleDate.setMonth(createdAt.getMonth() + 2);
-
-        const options = { year: "numeric", month: "long", day: "numeric" };
-        const eligibleDateFormatted = eligibleDate.toLocaleDateString("en-US", options);
-
-        if (currentDate < eligibleDate) {
-            toast.error(`You can apply for a certificate after ${eligibleDateFormatted}.`);
-            return;
-        }
-
         if (!window.confirm("Are you sure your internship is complete? If not, please cancel. If it's complete, click 'OK' to proceed.")) {
             return;
         }

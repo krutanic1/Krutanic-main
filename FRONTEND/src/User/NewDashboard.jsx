@@ -63,18 +63,6 @@ const NewDashboard = () => {
   }, 500);
 
   const handleSubmit = async (data) => {
-    const createdAt = new Date(data.createdAt);
-    const currentDate = new Date();
-    const eligibleDate = new Date(createdAt);
-    eligibleDate.setMonth(createdAt.getMonth() + 2);
-    const options = { year: "numeric", month: "long", day: "numeric" };
-    const eligibleDateFormatted = eligibleDate.toLocaleDateString("en-US", options);
-
-    if (currentDate < eligibleDate) {
-      toast.error(`You can apply for a certificate after ${eligibleDateFormatted}.`);
-      return;
-    }
-
     if (!window.confirm("Are you sure your internship is complete? If not, please cancel. If it's complete, click 'ok' to proceed.")) {
       return;
     }

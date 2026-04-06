@@ -47,6 +47,8 @@ const AdminAnalytics = () => {
     const [logsLoading, setLogsLoading] = useState(false);
     const [sourceFilter, setSourceFilter] = useState('');
     const [uniqueSources, setUniqueSources] = useState([]);
+    const [logsPage, setLogsPage] = useState(1);
+    const [totalLogsPages, setTotalLogsPages] = useState(1);
 
     const months = [
         "January", "February", "March", "April", "May", "June",
@@ -103,31 +105,31 @@ const AdminAnalytics = () => {
         return () => document.removeEventListener('mousedown', handler);
     }, [drawerOpen]);
 
-    const fetchOutcomeLogs = async (member, outcome, source = '') => {
-        // If clicking same outcome with no source filter, toggle close
-        if (selectedOutcome === outcome && source === sourceFilter && source === '') {
+    const fetchOutcomeLogs = async (member, outcome, source = '', page = 1) => {
+        // If clicking same outcome with no source filter and on page 1, toggle close
+        if (selectedOutcome === outcome && source === sourceFilter && source === '' && page === 1) {
             setSelectedOutcome(null);
             setOutcomeLogs([]);
             setSourceFilter('');
+            setLogsPage(1);
             return;
         }
 
         setSelectedOutcome(outcome);
         setSourceFilter(source);
+        setLogsPage(page);
         setLogsLoading(true);
 
         try {
             const res = await axios.get(
-                `${API}/api/adv-reports/member-outcome-logs?memberId=${member._id}&outcome=${outcome}&month=${selectedMonth}&year=${selectedYear}${source ? `&source=${encodeURIComponent(source)}` : ''}`
+                `${API}/api/adv-reports/member-outcome-logs?memberId=${member._id}&outcome=${outcome}&month=${selectedMonth}&year=${selectedYear}${source ? `&source=${encodeURIComponent(source)}` : ''}&page=${page}&limit=20`
             );
             const logs = res.data?.logs || [];
             setOutcomeLogs(logs);
+            setTotalLogsPages(res.data?.pages || 1);
 
             // Extract unique raw source values (as stored in DB) for filter dropdown
-            // The backend returns source already formatted; we fetch raw from the full unfiltered load
-            if (source === '') {
-                // Get raw sources: extract from logs before formatting was applied
-                // We store uniqueSources as raw DB values (underscored) so the backend can match
+            if (source === '' && page === 1) {
                 const rawSources = [...new Set(
                     logs.map(l => l.sourceRaw || l.source?.replace(/\s+/g, '_').toLowerCase()).filter(Boolean)
                 )].sort();
@@ -741,64 +743,102 @@ const AdminAnalytics = () => {
                                                 <p style={{ margin: 0, fontSize: '13px', fontWeight: '600' }}>No call logs found for this outcome</p>
                                             </div>
                                         ) : (
-                                            <div style={{ maxHeight: '380px', overflowY: 'auto' }}>
-                                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-                                                    <thead>
-                                                        <tr style={{ background: '#f8fafc', position: 'sticky', top: 0, zIndex: 1 }}>
-                                                            {['#', 'Lead Name', 'Phone', 'Source', 'Domain', 'Date', 'Summary', 'Action'].map(h => (
-                                                                <th key={h} style={{ padding: '10px 12px', textAlign: 'left', fontWeight: '700', fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap', borderBottom: '1px solid #e2e8f0' }}>{h}</th>
-                                                            ))}
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {outcomeLogs.map((log, i) => (
-                                                            <tr key={log._id} style={{ borderBottom: '1px solid #f1f5f9', transition: 'background 0.15s' }}
-                                                                onMouseOver={e => e.currentTarget.style.background = '#f8fafc'}
-                                                                onMouseOut={e => e.currentTarget.style.background = 'transparent'}
-                                                            >
-                                                                <td style={{ padding: '10px 12px', color: '#94a3b8', fontWeight: '700', fontSize: '12px' }}>{i + 1}</td>
-                                                                <td style={{ padding: '10px 12px', fontWeight: '700', color: '#1e293b', whiteSpace: 'nowrap' }}>{log.name}</td>
-                                                                <td style={{ padding: '10px 12px', color: '#64748b', fontFamily: 'monospace', fontSize: '12px' }}>
-                                                                    {log.phone ? log.phone.slice(0, -4) + '••••' : '—'}
-                                                                </td>
-                                                                <td style={{ padding: '10px 12px' }}>
-                                                                    <span style={{ padding: '3px 8px', borderRadius: '6px', background: '#f1f5f9', fontSize: '11px', fontWeight: '600', color: '#475569', whiteSpace: 'nowrap' }}>
-                                                                        {log.source || '—'}
-                                                                    </span>
-                                                                </td>
-                                                                <td style={{ padding: '10px 12px', color: '#6366f1', fontWeight: '600', fontSize: '12px', whiteSpace: 'nowrap' }}>{log.domain}</td>
-                                                                <td style={{ padding: '10px 12px', color: '#64748b', fontSize: '12px', whiteSpace: 'nowrap' }}>
-                                                                    {log.date ? new Date(log.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: '2-digit' }) : '—'}
-                                                                </td>
-                                                                <td style={{ padding: '10px 12px', color: '#475569', fontSize: '13px', minWidth: '180px', lineHeight: '1.5' }}>
-                                                                    {log.summary || '—'}
-                                                                </td>
-                                                                <td style={{ padding: '10px 12px' }}>
-                                                                    <button
-                                                                        onClick={() => handleMarkDialed(log._id)}
-                                                                        style={{
-                                                                            padding: '6px 14px',
-                                                                            borderRadius: '8px',
-                                                                            border: 'none',
-                                                                            background: '#8b5cf6',
-                                                                            color: '#fff',
-                                                                            fontSize: '11px',
-                                                                            fontWeight: '700',
-                                                                            cursor: 'pointer',
-                                                                            display: 'flex',
-                                                                            alignItems: 'center',
-                                                                            gap: '6px',
-                                                                            boxShadow: '0 2px 4px rgba(139, 92, 246, 0.2)'
-                                                                        }}
-                                                                    >
-                                                                        <RotateCw size={12} /> Dialed
-                                                                    </button>
-                                                                </td>
+                                            <>
+                                                <div style={{ maxHeight: '380px', overflowY: 'auto' }}>
+                                                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                                                        <thead>
+                                                            <tr style={{ background: '#f8fafc', position: 'sticky', top: 0, zIndex: 1 }}>
+                                                                {['#', 'Lead Name', 'Phone', 'Source', 'Domain', 'Date', 'Summary', 'Action'].map(h => (
+                                                                    <th key={h} style={{ padding: '10px 12px', textAlign: 'left', fontWeight: '700', fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap', borderBottom: '1px solid #e2e8f0' }}>{h}</th>
+                                                                ))}
                                                             </tr>
-                                                        ))}
-                                                    </tbody>
-                                                </table>
-                                            </div>
+                                                        </thead>
+                                                        <tbody>
+                                                            {outcomeLogs.map((log, i) => (
+                                                                <tr key={log._id} style={{ borderBottom: '1px solid #f1f5f9', transition: 'background 0.15s' }}
+                                                                    onMouseOver={e => e.currentTarget.style.background = '#f8fafc'}
+                                                                    onMouseOut={e => e.currentTarget.style.background = 'transparent'}
+                                                                >
+                                                                    <td style={{ padding: '10px 12px', color: '#94a3b8', fontWeight: '700', fontSize: '12px' }}>{(logsPage - 1) * 20 + i + 1}</td>
+                                                                    <td style={{ padding: '10px 12px', fontWeight: '700', color: '#1e293b', whiteSpace: 'nowrap' }}>{log.name}</td>
+                                                                    <td style={{ padding: '10px 12px', color: '#64748b', fontFamily: 'monospace', fontSize: '12px' }}>
+                                                                        {log.phone ? log.phone.slice(0, -4) + '••••' : '—'}
+                                                                    </td>
+                                                                    <td style={{ padding: '10px 12px' }}>
+                                                                        <span style={{ padding: '3px 8px', borderRadius: '6px', background: '#f1f5f9', fontSize: '11px', fontWeight: '600', color: '#475569', whiteSpace: 'nowrap' }}>
+                                                                            {log.source || '—'}
+                                                                        </span>
+                                                                    </td>
+                                                                    <td style={{ padding: '10px 12px', color: '#6366f1', fontWeight: '600', fontSize: '12px', whiteSpace: 'nowrap' }}>{log.domain}</td>
+                                                                    <td style={{ padding: '10px 12px', color: '#64748b', fontSize: '12px', whiteSpace: 'nowrap' }}>
+                                                                        {log.date ? new Date(log.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: '2-digit' }) : '—'}
+                                                                    </td>
+                                                                    <td style={{ padding: '10px 12px', color: '#475569', fontSize: '13px', minWidth: '180px', lineHeight: '1.5' }}>
+                                                                        {log.summary || '—'}
+                                                                    </td>
+                                                                    <td style={{ padding: '10px 12px' }}>
+                                                                        <button
+                                                                            onClick={() => handleMarkDialed(log._id)}
+                                                                            style={{
+                                                                                padding: '6px 14px',
+                                                                                borderRadius: '8px',
+                                                                                border: 'none',
+                                                                                background: '#8b5cf6',
+                                                                                color: '#fff',
+                                                                                fontSize: '11px',
+                                                                                fontWeight: '700',
+                                                                                cursor: 'pointer',
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                gap: '6px',
+                                                                                boxShadow: '0 2px 4px rgba(139, 92, 246, 0.2)'
+                                                                            }}
+                                                                        >
+                                                                            <RotateCw size={12} /> Dialed
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                {/* Pagination Controls */}
+                                                {totalLogsPages > 1 && (
+                                                    <div style={{ padding: '12px 16px', background: '#f8fafc', borderTop: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                        <div style={{ fontSize: '13px', color: '#64748b', fontWeight: '600' }}>
+                                                            Page <span style={{ color: '#1e293b' }}>{logsPage}</span> of {totalLogsPages}
+                                                        </div>
+                                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                                            <button 
+                                                                disabled={logsPage === 1 || logsLoading}
+                                                                onClick={() => fetchOutcomeLogs(selectedMember, selectedOutcome, sourceFilter, logsPage - 1)}
+                                                                style={{
+                                                                    padding: '6px 12px', borderRadius: '6px', border: '1px solid #e2e8f0',
+                                                                    background: logsPage === 1 ? '#f1f5f9' : '#fff',
+                                                                    color: logsPage === 1 ? '#94a3b8' : '#475569',
+                                                                    fontSize: '12px', fontWeight: '700', cursor: logsPage === 1 ? 'not-allowed' : 'pointer',
+                                                                    display: 'flex', alignItems: 'center', gap: '4px'
+                                                                }}
+                                                            >
+                                                                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>chevron_left</span> Previous
+                                                            </button>
+                                                            <button 
+                                                                disabled={logsPage >= totalLogsPages || logsLoading}
+                                                                onClick={() => fetchOutcomeLogs(selectedMember, selectedOutcome, sourceFilter, logsPage + 1)}
+                                                                style={{
+                                                                    padding: '6px 12px', borderRadius: '6px', border: '1px solid #e2e8f0',
+                                                                    background: logsPage >= totalLogsPages ? '#f1f5f9' : '#fff',
+                                                                    color: logsPage >= totalLogsPages ? '#94a3b8' : '#475569',
+                                                                    fontSize: '12px', fontWeight: '700', cursor: logsPage >= totalLogsPages ? 'not-allowed' : 'pointer',
+                                                                    display: 'flex', alignItems: 'center', gap: '4px', textAlign: 'center'
+                                                                }}
+                                                            >
+                                                                Next <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>chevron_right</span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </>
                                         )}
                                     </div>
                                 )}

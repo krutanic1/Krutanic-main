@@ -673,10 +673,16 @@ router.get("/member-outcome-logs", async (req, res) => {
 
         // Get leads with this outcome assigned to this member in the month
         // ⚠️ Note: We explicitly include needed fields and exclude META via BLACKLIST_PROJECTION
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const skip = (page - 1) * limit;
+
+        const total = await AdvLead.countDocuments(query);
         const leads = await AdvLead.find(query)
             .select(`full_name phone_number source opted_domain created_at assigned_at last_outcome status`)
             .sort({ created_at: -1 })
-            .limit(200)
+            .skip(skip)
+            .limit(limit)
             .lean();
 
         // Get the latest call activity for each lead
@@ -720,7 +726,12 @@ router.get("/member-outcome-logs", async (req, res) => {
             calledAt:   callMap[String(lead._id)]?.calledAt || null,
         }));
 
-        res.status(200).json({ logs: result, total: result.length });
+        res.status(200).json({ 
+            logs: result, 
+            total, 
+            page, 
+            pages: Math.ceil(total / limit) 
+        });
     } catch (err) {
         console.error("member-outcome-logs error:", err);
         res.status(500).json({ message: err.message });
