@@ -674,7 +674,7 @@ router.get("/member-outcome-logs", async (req, res) => {
         // Get leads with this outcome assigned to this member in the month
         // ⚠️ Note: We explicitly include needed fields and exclude META via BLACKLIST_PROJECTION
         const leads = await AdvLead.find(query)
-            .select(`full_name phone_number source opted_domain created_at assigned_at last_outcome status ${BLACKLIST_PROJECTION}`)
+            .select(`full_name phone_number source opted_domain created_at assigned_at last_outcome status`)
             .sort({ created_at: -1 })
             .limit(200)
             .lean();
