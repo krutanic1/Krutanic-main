@@ -6,6 +6,9 @@ import Header from "./Components/Header";
 import HomePage from "./page/landing";
 import ContactUs from "./page/ContactUs";
 import AboutUs from "./page/AboutUs";
+import Terms from "./page/Terms";
+import Privacy from "./page/Privacy";
+import RefundPolicy from "./page/RefundPolicy";
 import Login from "./page/Login";
 import Collabration from "./page/Collabration";
 import Career from "./page/Career";
@@ -315,6 +318,9 @@ const AppContent = () => {
     "/career",
     "/collabration",
     "/advancecourses",
+    "/terms",
+    "/privacy",
+    "/refundpolicy",
     "/feestructure",
     // "/events", // Hidden for custom navbar in TalentHunt/Events page
     "/advance",
@@ -527,6 +533,9 @@ const AppContent = () => {
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/ContactUs" element={<ContactUs />} />
         <Route path="/AboutUs" element={<AboutUs />} />
+        <Route path="/Terms" element={<Terms />} />
+        <Route path="/Privacy" element={<Privacy />} />
+        <Route path="/RefundPolicy" element={<RefundPolicy />} />
         <Route path="/Career" element={<Career />} />
         <Route path="/Collabration" element={<Collabration />} />
         <Route path="/AdvanceCourses" element={<AdvanceCourses />} />

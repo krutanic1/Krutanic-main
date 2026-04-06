@@ -69,8 +69,10 @@ const Footer = () => {
           <div className="md:col-span-4 pr-0 md:pr-10">
             <div className="flex items-center gap-3 mb-6 bg-white w-fit px-3 py-2 rounded-[14px] shadow-[0_0_15px_rgba(0,0,0,0.02)] border border-gray-50">
               <img src={logo} alt="Krutanic" className="h-10 w-auto" />
-              
             </div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#f15b29] mb-3">
+              Learn. Build. Grow.
+            </p>
             <p className="text-gray-500 text-sm leading-relaxed mb-8 max-w-sm font-medium">
               Accelerate your career with industry-ready learning. Master coding, design, and data with top-tier mentorship globally.
             </p>
@@ -128,9 +130,10 @@ const Footer = () => {
         {/* Bottom copyright block */}
         <div className="flex flex-col md:flex-row justify-between items-center mt-8 text-xs text-gray-400 font-bold tracking-wider uppercase">
           <p>&copy; {new Date().getFullYear()} KRUTANIC. All rights reserved.</p>
-          <div className="flex gap-6 mt-4 md:mt-0 px-2">
+          <div className="flex flex-wrap gap-6 mt-4 md:mt-0 px-2 justify-center md:justify-end">
             <Link to="/Terms" className="hover:text-[#F15B29] transition-colors">Terms of Service</Link>
             <Link to="/Privacy" className="hover:text-[#F15B29] transition-colors">Privacy Policy</Link>
+            <Link to="/RefundPolicy" className="hover:text-[#F15B29] transition-colors">Refund Policy</Link>
           </div>
         </div>
       </div>

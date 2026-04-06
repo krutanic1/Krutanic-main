@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import ClientsCarousel from "../Components/our_alumni";
+import AdvancedApplyPopup from "../Components/AdvancedApplyPopup";
 import birendraImg from "../assets/alumini/birendra.jpg";
 import rajaImg from "../assets/alumini/raja.jpg";
 import mithunImg from "../assets/alumini/mithun.jpg";
@@ -169,6 +170,8 @@ const capstoneTracks = [
 ];
 
 const AdvanceCourses = () => {
+  const [showApplyForm, setShowApplyForm] = useState(false);
+  
   return (
     <div className="min-h-screen bg-[#fafafa] font-sans selection:bg-orange-200">
       <main className="max-w-[1240px] mx-auto px-6 py-16 lg:px-8">
@@ -207,6 +210,27 @@ const AdvanceCourses = () => {
             </div>
           </div>
         </div>
+
+        {/* Lead Generation Banner */}
+        <div className="my-20 bg-gradient-to-r from-orange-500 to-orange-600 rounded-[40px] p-8 md:p-16 shadow-lg">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">
+              Ready to Transform Your Career?
+            </h2>
+            <p className="text-white/90 mb-8 text-lg">
+              Apply now and get access to hands-on learning, expert mentorship, and personalized career guidance.
+            </p>
+            <button
+              onClick={() => setShowApplyForm(true)}
+              className="inline-block bg-white text-orange-600 font-bold py-3 px-8 rounded-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl"
+            >
+              Request Callback
+            </button>
+          </div>
+        </div>
+
+        {/* Apply Form Modal */}
+        {showApplyForm && <AdvancedApplyPopup onClose={() => setShowApplyForm(false)} />}
 
         {/* Grid Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -444,5 +468,7 @@ const AdvanceCourses = () => {
     </div>
   );
 };
+
+
 
 export default AdvanceCourses;
