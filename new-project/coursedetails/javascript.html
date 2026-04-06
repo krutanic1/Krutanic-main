@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript for iOS/Android (React Native) in 2 Weeks | 1hr/day + Sunday Projects</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+      background: #f4f7fc;
+      padding: 40px 20px;
+      color: #0a1c2f;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 32px;
+      box-shadow: 0 20px 35px -10px rgba(0,0,0,0.1);
+      padding: 40px 48px;
+    }
+    h1 {
+      font-size: 2.3rem;
+      background: linear-gradient(120deg, #0f2b4d, #1e6f9f);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .badge {
+      background: #0f2b4d;
+      color: white;
+      display: inline-block;
+      padding: 4px 16px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin: 12px 0 20px 0;
+    }
+    .week-card {
+      background: #ffffff;
+      border-radius: 28px;
+      border: 1px solid #dce7f0;
+      margin-bottom: 40px;
+      padding: 24px 28px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .week-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+      color: #155e7e;
+      border-left: 5px solid #2c7da0;
+      padding-left: 16px;
+    }
+    .day-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .day-item {
+      background: #fefefe;
+      border-radius: 20px;
+      padding: 12px 20px;
+      border-left: 6px solid #2c7da0;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .sunday {
+      border-left-color: #f4a261;
+      background: #fffaf3;
+    }
+    .day-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .day-name {
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: #1e4663;
+    }
+    .topic {
+      font-weight: 600;
+      background: #e6f3ff;
+      padding: 2px 12px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      color: #0c6b8e;
+    }
+    .learning {
+      margin-top: 8px;
+      color: #2c3e4e;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+    .learning span {
+      font-weight: 700;
+      color: #0f5b7a;
+    }
+    .project-badge {
+      background: #e9ecef;
+      border-radius: 20px;
+      padding: 10px 16px;
+      margin-top: 12px;
+      font-size: 0.85rem;
+      display: inline-block;
+      width: 100%;
+    }
+    .footer {
+      background: #eef3fa;
+      border-radius: 24px;
+      padding: 24px;
+      margin-top: 32px;
+      text-align: center;
+    }
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .container {
+        padding: 20px;
+        max-width: 100%;
+        box-shadow: none;
+      }
+      .day-item {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>📱 JavaScript for iOS/Android (React Native)</h1>
+  <div class="badge">⏱️ 1 hour/day (Mon–Sat) + Sunday assessments & projects</div>
+  <p style="margin-bottom: 28px; color: #2c5a7a;">Build cross‑platform mobile apps for iOS and Android using JavaScript and React Native – essential for frontend and mobile development roles.</p>
+
+  <!-- WEEK 1 – JavaScript & React Fundamentals -->
+  <div class="week-card">
+    <div class="week-title">📅 Week 1 – JavaScript & React Foundations</div>
+    <div class="day-grid">
+
+      <!-- Monday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Monday</span><span class="topic">Modern JavaScript (ES6+) Recap</span></div>
+        <div class="learning"><span>🎯 1h:</span> Variables (let, const), arrow functions, template literals, destructuring, spread/rest operators. Practice writing small ES6+ snippets in a REPL or browser console. (Modern JS is the foundation of React Native[reference:0].)</div>
+      </div>
+      <!-- Tuesday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Tuesday</span><span class="topic">Async JS: Promises & Async/Await</span></div>
+        <div class="learning"><span>🎯 1h:</span> Fetch data from a public API using fetch(). Understand Promises, then/catch, and async/await. Mobile apps heavily rely on async operations for network calls and device APIs.[reference:1]</div>
+      </div>
+      <!-- Wednesday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Wednesday</span><span class="topic">React Basics: Components & JSX</span></div>
+        <div class="learning"><span>🎯 1h:</span> Functional components, JSX syntax, props, and basic state with useState. Build a simple interactive counter component.[reference:2]</div>
+      </div>
+      <!-- Thursday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Thursday</span><span class="topic">React Hooks: useEffect & More</span></div>
+        <div class="learning"><span>🎯 1h:</span> useEffect for side effects (data fetching, subscriptions). Understand the dependency array. Also introduce useRef and useCallback briefly.</div>
+      </div>
+      <!-- Friday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Friday</span><span class="topic">React Native Setup & Core Components</span></div>
+        <div class="learning"><span>🎯 1h:</span> Install Node.js, watchman, and set up Expo Go on your phone. Create a new Expo project. Explore core components: View, Text, Image, ScrollView, FlatList.[reference:3]</div>
+      </div>
+      <!-- Saturday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Saturday</span><span class="topic">Styling & Flexbox in React Native</span></div>
+        <div class="learning"><span>🎯 1h:</span> Use StyleSheet.create, inline styles, Flexbox layout (justifyContent, alignItems, flexDirection). Build a simple profile card UI with image, text, and button.[reference:4]</div>
+      </div>
+
+      <!-- SUNDAY Assessment & Project -->
+      <div class="day-item sunday">
+        <div class="day-header"><span class="day-name">🌿 SUNDAY – Project 1: Personal Portfolio App</span><span class="topic">Basic UI + Data Fetching</span></div>
+        <div class="learning"><strong>✅ Build a simple mobile portfolio app:</strong><br>
+          ➤ Create a new Expo project.<br>
+          ➤ Design a profile screen with avatar, name, bio, and social links using Flexbox.<br>
+          ➤ Fetch a list of your GitHub repositories (or any public data) using fetch() and display them in a FlatList.<br>
+          ➤ Add a loading indicator while data loads.<br>
+          ➤ Deliver: Expo project folder (or GitHub repo) + a short screen recording of the app running on a simulator or physical device.</div>
+        <div class="project-badge">📝 Assessment: 15 MCQs (ES6+, async JS, React hooks, React Native core components, Flexbox).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEEK 2 – Navigation, State Management & Device Features -->
+  <div class="week-card">
+    <div class="week-title">⚡ Week 2 – Navigation, State Management & Native APIs</div>
+    <div class="day-grid">
+
+      <!-- Monday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Monday</span><span class="topic">React Navigation (Stack & Tab)</span></div>
+        <div class="learning"><span>🎯 1h:</span> Install @react-navigation/native and stack/tab navigators. Create a multi‑screen app with navigation between Home, Details, and Profile screens.</div>
+      </div>
+      <!-- Tuesday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Tuesday</span><span class="topic">Global State Management (Context API)</span></div>
+        <div class="learning"><span>🎯 1h:</span> Create a simple Theme or User context using React Context API. Consume context in multiple components to manage shared state without prop drilling.</div>
+      </div>
+      <!-- Wednesday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Wednesday</span><span class="topic">Device Features: Camera & Image Picker</span></div>
+        <div class="learning"><span>🎯 1h:</span> Install expo-image-picker. Implement a button that opens the device camera or gallery and displays the selected image on screen.</div>
+      </div>
+      <!-- Thursday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Thursday</span><span class="topic">Local Storage: AsyncStorage</span></div>
+        <div class="learning"><span>🎯 1h:</span> Store and retrieve simple key‑value data (e.g., user preferences or a list of saved items) using AsyncStorage. Persist data across app restarts.</div>
+      </div>
+      <!-- Friday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Friday</span><span class="topic">Forms & Input Handling</span></div>
+        <div class="learning"><span>🎯 1h:</span> Build a simple login/signup form with TextInput, validation (email, password), and form submission. Manage form state with useState.</div>
+      </div>
+      <!-- Saturday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Saturday</span><span class="topic">Building & Publishing (APK/IPA)</span></div>
+        <div class="learning"><span>🎯 1h:</span> Overview of generating a signed APK for Android using Expo EAS Build. Understand the process for iOS (requires Apple Developer account).[reference:5]</div>
+      </div>
+
+      <!-- SUNDAY Final Project & Assessment -->
+      <div class="day-item sunday">
+        <div class="day-header"><span class="day-name">🌿 SUNDAY – Final Project: Note‑Taking or Task Manager App</span><span class="topic">Full CRUD with Navigation & Storage</span></div>
+        <div class="learning"><strong>✅ Build a complete app with the following features:</strong><br>
+          ➤ User can add, edit, delete, and view notes/tasks.<br>
+          ➤ Use React Navigation with at least two screens (list screen + add/edit screen).<br>
+          ➤ Persist data locally using AsyncStorage (or SQLite if you want a challenge).<br>
+          ➤ Add at least one device feature (camera to add photo to note, or image picker for avatar).<br>
+          ➤ Implement a simple theme toggle (light/dark) using Context API.<br>
+          ➤ Deliver: Full Expo project, a short video demo, and a README explaining how to run the app.</div>
+        <div class="project-badge">📝 Final Assessment: 20 questions (navigation, Context API, device APIs, AsyncStorage, forms, build process).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    🧭 <strong>How to succeed in 2 weeks (1h/day + Sunday projects)</strong><br><br>
+    ✅ Daily: 20 min concept + 40 min coding (use Expo Go on your phone for instant preview).<br>
+    ✅ Sunday projects take ~2–3 hours – they become portfolio pieces for mobile developer roles.<br>
+    ✅ After this curriculum, you can build and deploy real cross‑platform mobile apps using JavaScript.<br>
+    📌 Recommended: React Native official docs, “The Road to React Native” (by Robin Wieruch), Expo documentation.
+  </div>
+</div>
+</body>

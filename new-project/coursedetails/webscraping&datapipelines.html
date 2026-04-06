@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Scraping & Data Pipelines in 2 Weeks | 1hr/day + Sunday Projects</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+      background: #f4f7fc;
+      padding: 40px 20px;
+      color: #0a1c2f;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 32px;
+      box-shadow: 0 20px 35px -10px rgba(0,0,0,0.1);
+      padding: 40px 48px;
+    }
+    h1 {
+      font-size: 2.3rem;
+      background: linear-gradient(120deg, #0f2b4d, #1e6f9f);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .badge {
+      background: #0f2b4d;
+      color: white;
+      display: inline-block;
+      padding: 4px 16px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin: 12px 0 20px 0;
+    }
+    .week-card {
+      background: #ffffff;
+      border-radius: 28px;
+      border: 1px solid #dce7f0;
+      margin-bottom: 40px;
+      padding: 24px 28px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .week-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+      color: #155e7e;
+      border-left: 5px solid #2c7da0;
+      padding-left: 16px;
+    }
+    .day-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .day-item {
+      background: #fefefe;
+      border-radius: 20px;
+      padding: 12px 20px;
+      border-left: 6px solid #2c7da0;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .sunday {
+      border-left-color: #f4a261;
+      background: #fffaf3;
+    }
+    .day-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .day-name {
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: #1e4663;
+    }
+    .topic {
+      font-weight: 600;
+      background: #e6f3ff;
+      padding: 2px 12px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      color: #0c6b8e;
+    }
+    .learning {
+      margin-top: 8px;
+      color: #2c3e4e;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+    .learning span {
+      font-weight: 700;
+      color: #0f5b7a;
+    }
+    .project-badge {
+      background: #e9ecef;
+      border-radius: 20px;
+      padding: 10px 16px;
+      margin-top: 12px;
+      font-size: 0.85rem;
+      display: inline-block;
+      width: 100%;
+    }
+    .footer {
+      background: #eef3fa;
+      border-radius: 24px;
+      padding: 24px;
+      margin-top: 32px;
+      text-align: center;
+    }
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .container {
+        padding: 20px;
+        max-width: 100%;
+        box-shadow: none;
+      }
+      .day-item {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>🕷️ Web Scraping & Data Pipelines in 2 Weeks</h1>
+  <div class="badge">⏱️ 1 hour/day (Mon–Sat) + Sunday assessments & projects</div>
+  <p style="margin-bottom: 28px; color: #2c5a7a;">Learn to extract data from websites, build ETL pipelines, schedule jobs, and store data – essential for data engineering, analytics, and automation roles.</p>
+
+  <!-- WEEK 1 – Web Scraping Fundamentals -->
+  <div class="week-card">
+    <div class="week-title">📅 Week 1 – Web Scraping (Python)</div>
+    <div class="day-grid">
+
+      <!-- Monday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Monday</span><span class="topic">HTTP, HTML, & Requests</span></div>
+        <div class="learning"><span>🎯 1h:</span> How web servers work. GET/POST requests. Use `requests` library to fetch a webpage. Inspect HTML structure (Chrome DevTools).</div>
+      </div>
+      <!-- Tuesday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Tuesday</span><span class="topic">BeautifulSoup Basics</span></div>
+        <div class="learning"><span>🎯 1h:</span> Parse HTML with BeautifulSoup. Find elements by tag, class, id. Extract text, attributes. Navigate the parse tree.</div>
+      </div>
+      <!-- Wednesday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Wednesday</span><span class="topic">Extracting Tables & Lists</span></div>
+        <div class="learning"><span>🎯 1h:</span> Scrape data from Wikipedia tables. Use `find_all('table')`, convert to pandas DataFrame. Save as CSV.</div>
+      </div>
+      <!-- Thursday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Thursday</span><span class="topic">Handling Pagination & Dynamic Content</span></div>
+        <div class="learning"><span>🎯 1h:</span> Loop through multiple pages (changing URL parameters). Identify AJAX calls (Network tab). Use `requests` with query strings.</div>
+      </div>
+      <!-- Friday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Friday</span><span class="topic">Scrapy Framework Intro</span></div>
+        <div class="learning"><span>🎯 1h:</span> Install Scrapy, create a project, define a spider. Extract items and export as JSON/CSV. Scrapy shell for testing.</div>
+      </div>
+      <!-- Saturday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Saturday</span><span class="topic">Respecting robots.txt & User‑Agent</span></div>
+        <div class="learning"><span>🎯 1h:</span> Ethics and legality of scraping. Set custom headers, delay between requests. Use `time.sleep` or Scrapy `DOWNLOAD_DELAY`.</div>
+      </div>
+
+      <!-- SUNDAY Assessment & Project -->
+      <div class="day-item sunday">
+        <div class="day-header"><span class="day-name">🌿 SUNDAY – Project 1: Scrape Bookstore / Job Listings</span><span class="topic">Full scraping pipeline</span></div>
+        <div class="learning"><strong>✅ Build a scraper for a public website (e.g., books.toscrape.com or a job board):</strong><br>
+          ➤ Scrape all book titles, prices, ratings from at least 5 pages.<br>
+          ➤ Handle pagination automatically.<br>
+          ➤ Save output to CSV and JSON.<br>
+          ➤ Add a 1‑second delay between requests.<br>
+          ➤ Deliver: Python script + CSV/JSON files + a short readme.
+        </div>
+        <div class="project-badge">📝 Assessment: 15 MCQs (HTTP methods, BeautifulSoup selectors, Scrapy vs requests, scraping ethics).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEEK 2 – Data Pipelines (ETL + Automation) -->
+  <div class="week-card">
+    <div class="week-title">⚡ Week 2 – Data Pipelines (ETL, Orchestration, Storage)</div>
+    <div class="day-grid">
+
+      <!-- Monday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Monday</span><span class="topic">ETL Concepts & Data Cleaning</span></div>
+        <div class="learning"><span>🎯 1h:</span> Extract, Transform, Load. Use pandas to clean scraped data: handle missing values, change data types, remove duplicates.</div>
+      </div>
+      <!-- Tuesday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Tuesday</span><span class="topic">Storing Data: SQLite & PostgreSQL</span></div>
+        <div class="learning"><span>🎯 1h:</span> Create tables, insert scraped data into SQLite (or PostgreSQL). Use `sqlalchemy` and `pandas.to_sql`.</div>
+      </div>
+      <!-- Wednesday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Wednesday</span><span class="topic">Incremental Loading & Upserts</span></div>
+        <div class="learning"><span>🎯 1h:</span> Avoid duplicates when scraping daily. Use `ON CONFLICT` or check existing records before insert.</div>
+      </div>
+      <!-- Thursday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Thursday</span><span class="topic">Scheduling Pipelines (Cron / Apache Airflow basics)</span></div>
+        <div class="learning"><span>🎯 1h:</span> Schedule a Python script with cron (Linux/macOS) or Task Scheduler (Windows). Introduction to Airflow DAGs (one simple DAG).</div>
+      </div>
+      <!-- Friday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Friday</span><span class="topic">Error Handling & Logging</span></div>
+        <div class="learning"><span>🎯 1h:</span> Try‑except for network failures. Retry logic. Python logging module to record pipeline runs and errors.</div>
+      </div>
+      <!-- Saturday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Saturday</span><span class="topic">Wrap‑up: Full Pipeline Example</span></div>
+        <div class="learning"><span>🎯 1h:</span> Scrape → clean → store in DB → schedule daily. End‑to‑end script with functions for each stage.</div>
+      </div>
+
+      <!-- SUNDAY Final Project & Assessment -->
+      <div class="day-item sunday">
+        <div class="day-header"><span class="day-name">🌿 SUNDAY – Final Project: Automated News/Weather Pipeline</span><span class="topic">Scraping + ETL + Scheduling</span></div>
+        <div class="learning"><strong>✅ Build a complete automated data pipeline:</strong><br>
+          ➤ Scrape a news site or weather forecast every hour (or daily).<br>
+          ➤ Clean and transform the data (extract headlines, temperature, etc.).<br>
+          ➤ Store in a SQLite database with timestamps.<br>
+          ➤ Implement incremental loading (no duplicates).<br>
+          ➤ Schedule the script to run automatically (cron or Task Scheduler).<br>
+          ➤ Deliver: Python script, database schema, scheduler configuration, and a log file showing 3 successful runs.
+        </div>
+        <div class="project-badge">📝 Final Assessment: 20 questions (ETL steps, incremental loading, scheduling tools, error handling) + design a pipeline for a given scenario.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    🧭 <strong>How to complete Web Scraping & Data Pipelines in 2 weeks (1h/day + Sunday projects)</strong><br><br>
+    ✅ Daily: 20 min theory + 40 min coding (use Jupyter Notebook or VS Code).<br>
+    ✅ Sunday projects take ~2–3 hours – they become portfolio pieces.<br>
+    ✅ After this curriculum, you can apply for junior data engineer, analytics engineer, or automation specialist roles.<br>
+    📌 Keep a GitHub repo with all scrapers, pipeline scripts, and scheduling examples.
+  </div>
+</div>
+</body>
+</html>

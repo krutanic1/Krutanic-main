@@ -1,0 +1,237 @@
+   .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 32px;
+      box-shadow: 0 20px 35px -10px rgba(0,0,0,0.1);
+      padding: 40px 48px;
+    }
+    h1 {
+      font-size: 2.3rem;
+      background: linear-gradient(120deg, #0f2b4d, #1e6f9f);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .badge {
+      background: #0f2b4d;
+      color: white;
+      display: inline-block;
+      padding: 4px 16px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin: 12px 0 20px 0;
+    }
+    .week-card {
+      background: #ffffff;
+      border-radius: 28px;
+      border: 1px solid #dce7f0;
+      margin-bottom: 40px;
+      padding: 24px 28px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .week-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+      color: #155e7e;
+      border-left: 5px solid #2c7da0;
+      padding-left: 16px;
+    }
+    .day-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .day-item {
+      background: #fefefe;
+      border-radius: 20px;
+      padding: 12px 20px;
+      border-left: 6px solid #2c7da0;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .sunday {
+      border-left-color: #f4a261;
+      background: #fffaf3;
+    }
+    .day-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .day-name {
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: #1e4663;
+    }
+    .topic {
+      font-weight: 600;
+      background: #e6f3ff;
+      padding: 2px 12px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      color: #0c6b8e;
+    }
+    .learning {
+      margin-top: 8px;
+      color: #2c3e4e;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+    .learning span {
+      font-weight: 700;
+      color: #0f5b7a;
+    }
+    .project-badge {
+      background: #e9ecef;
+      border-radius: 20px;
+      padding: 10px 16px;
+      margin-top: 12px;
+      font-size: 0.85rem;
+      display: inline-block;
+      width: 100%;
+    }
+    .footer {
+      background: #eef3fa;
+      border-radius: 24px;
+      padding: 24px;
+      margin-top: 32px;
+      text-align: center;
+    }
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .container {
+        padding: 20px;
+        max-width: 100%;
+        box-shadow: none;
+      }
+      .day-item {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>📊 Statistics for AI & Machine Learning</h1>
+  <div class="badge">⏱️ 1 hour/day (Mon–Sat) + Sunday assessments & projects</div>
+  <p style="margin-bottom: 28px; color: #2c5a7a;">Master the statistical foundations required for data science, ML model interpretation, and AI research – essential for aspiring data scientists and ML engineers.</p>
+
+  <!-- WEEK 1 – Descriptive Statistics & Probability -->
+  <div class="week-card">
+    <div class="week-title">📅 Week 1 – Descriptive Stats & Probability Theory</div>
+    <div class="day-grid">
+
+      <!-- Monday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Monday</span><span class="topic">Measures of Central Tendency & Dispersion</span></div>
+        <div class="learning"><span>🎯 1h:</span> Mean, median, mode. Variance, standard deviation, range, IQR. Use Python (NumPy/pandas) to compute on a dataset.</div>
+      </div>
+      <!-- Tuesday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Tuesday</span><span class="topic">Data Visualization for EDA</span></div>
+        <div class="learning"><span>🎯 1h:</span> Histograms, box plots, scatter plots, bar charts. Use matplotlib/seaborn. Identify skewness, outliers.</div>
+      </div>
+      <!-- Wednesday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Wednesday</span><span class="topic">Probability Basics & Axioms</span></div>
+        <div class="learning"><span>🎯 1h:</span> Sample space, events, conditional probability, Bayes' theorem. Mutually exclusive vs independent events.</div>
+      </div>
+      <!-- Thursday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Thursday</span><span class="topic">Random Variables & PMF/PDF</span></div>
+        <div class="learning"><span>🎯 1h:</span> Discrete vs continuous random variables. Probability mass function, probability density function. Expected value and variance.</div>
+      </div>
+      <!-- Friday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Friday</span><span class="topic">Common Probability Distributions</span></div>
+        <div class="learning"><span>🎯 1h:</span> Binomial, Poisson, Normal (Gaussian), Exponential. Properties and real‑world use cases (e.g., Normal in ML).</div>
+      </div>
+      <!-- Saturday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Saturday</span><span class="topic">Central Limit Theorem (CLT)</span></div>
+        <div class="learning"><span>🎯 1h:</span> Statement and intuition. Why CLT enables confidence intervals and hypothesis testing. Simulate in Python.</div>
+      </div>
+
+      <!-- SUNDAY Assessment & Project -->
+      <div class="day-item sunday">
+        <div class="day-header"><span class="day-name">🌿 SUNDAY – Project 1: Exploratory Data Analysis</span><span class="topic">Descriptive stats + visualisation</span></div>
+        <div class="learning"><strong>✅ Take a real dataset (e.g., Iris, housing, or any Kaggle dataset):</strong><br>
+          ➤ Compute mean, median, mode, variance, standard deviation for each numeric column.<br>
+          ➤ Identify outliers using IQR.<br>
+          ➤ Create histograms, box plots, and a scatter plot matrix.<br>
+          ➤ Write a short summary of distributions and skewness.<br>
+          ➤ Deliver: Jupyter Notebook with code and markdown explanations.
+        </div>
+        <div class="project-badge">📝 Assessment: 15 MCQs (central tendency, variance, probability rules, CLT, distribution properties).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEEK 2 – Inferential Statistics & ML Relevance -->
+  <div class="week-card">
+    <div class="week-title">⚡ Week 2 – Inferential Stats, Hypothesis Testing, Regression</div>
+    <div class="day-grid">
+
+      <!-- Monday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Monday</span><span class="topic">Sampling & Confidence Intervals</span></div>
+        <div class="learning"><span>🎯 1h:</span> Population vs sample. Sampling distribution. Construct and interpret 95% confidence interval for mean/proportion.</div>
+      </div>
+      <!-- Tuesday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Tuesday</span><span class="topic">Hypothesis Testing Basics</span></div>
+        <div class="learning"><span>🎯 1h:</span> Null vs alternative hypothesis, p‑value, significance level (α). Type I and Type II errors. One‑tailed vs two‑tailed tests.</div>
+      </div>
+      <!-- Wednesday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Wednesday</span><span class="topic">Parametric Tests (t‑test, ANOVA)</span></div>
+        <div class="learning"><span>🎯 1h:</span> One‑sample t‑test, two‑sample t‑test, paired t‑test. ANOVA for comparing multiple groups. Use Python (scipy.stats).</div>
+      </div>
+      <!-- Thursday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Thursday</span><span class="topic">Correlation & Covariance</span></div>
+        <div class="learning"><span>🎯 1h:</span> Pearson correlation coefficient, Spearman rank correlation. Covariance matrix. Interpret correlation in feature selection for ML.</div>
+      </div>
+      <!-- Friday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Friday</span><span class="topic">Linear Regression & R‑squared</span></div>
+        <div class="learning"><span>🎯 1h:</span> Simple linear regression: slope, intercept, R², residuals. Assumptions. Connection to correlation.</div>
+      </div>
+      <!-- Saturday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Saturday</span><span class="topic">Bayesian Statistics Intro for ML</span></div>
+        <div class="learning"><span>🎯 1h:</span> Prior, likelihood, posterior. Naïve Bayes classifier intuition. Comparison with frequentist approach.</div>
+      </div>
+
+      <!-- SUNDAY Final Project & Assessment -->
+      <div class="day-item sunday">
+        <div class="day-header"><span class="day-name">🌿 SUNDAY – Final Project: A/B Testing & Regression Analysis</span><span class="topic">Real‑world statistical decision</span></div>
+        <div class="learning"><strong>✅ Choose a business problem (e.g., website conversion A/B test or house price prediction):</strong><br>
+          ➤ Perform hypothesis testing (t‑test) on two groups – report p‑value and conclusion.<br>
+          ➤ Build a simple linear regression model using sklearn/statsmodels.<br>
+          ➤ Interpret coefficients, R², and p‑values for features.<br>
+          ➤ Write a one‑page report: “Did the treatment have a statistically significant effect?”<br>
+          ➤ Deliver: Python script/notebook + PDF report.
+        </div>
+        <div class="project-badge">📝 Final Assessment: 20 questions (CI, hypothesis testing, p‑value, t‑test, correlation, regression, Bayesian basics) + case study interpretation.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    🧭 <strong>How to succeed in 2 weeks (1h/day + Sunday projects)</strong><br><br>
+    ✅ Daily: 20 min theory (videos/reading) + 40 min coding exercises (use free datasets).<br>
+    ✅ Sunday projects take ~2–3 hours – they directly mirror data science interview tasks.<br>
+    ✅ After this curriculum, you will understand statistics behind ML metrics, hypothesis tests, and regression – critical for AI/ML roles.<br>
+    📌 Recommended resources: “Naked Statistics” (book), StatQuest YouTube, Kaggle Stats courses.
+  </div>
+</div>
+</body>
+</html>

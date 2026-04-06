@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kubernetes in 2 Weeks | 1hr/day + Sunday Projects</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+      background: #f4f7fc;
+      padding: 40px 20px;
+      color: #0a1c2f;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 32px;
+      box-shadow: 0 20px 35px -10px rgba(0,0,0,0.1);
+      padding: 40px 48px;
+    }
+    h1 {
+      font-size: 2.3rem;
+      background: linear-gradient(120deg, #0f2b4d, #1e6f9f);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .badge {
+      background: #0f2b4d;
+      color: white;
+      display: inline-block;
+      padding: 4px 16px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin: 12px 0 20px 0;
+    }
+    .week-card {
+      background: #ffffff;
+      border-radius: 28px;
+      border: 1px solid #dce7f0;
+      margin-bottom: 40px;
+      padding: 24px 28px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .week-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+      color: #155e7e;
+      border-left: 5px solid #2c7da0;
+      padding-left: 16px;
+    }
+    .day-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .day-item {
+      background: #fefefe;
+      border-radius: 20px;
+      padding: 12px 20px;
+      border-left: 6px solid #2c7da0;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .sunday {
+      border-left-color: #f4a261;
+      background: #fffaf3;
+    }
+    .day-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .day-name {
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: #1e4663;
+    }
+    .topic {
+      font-weight: 600;
+      background: #e6f3ff;
+      padding: 2px 12px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      color: #0c6b8e;
+    }
+    .learning {
+      margin-top: 8px;
+      color: #2c3e4e;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+    .learning span {
+      font-weight: 700;
+      color: #0f5b7a;
+    }
+    .project-badge {
+      background: #e9ecef;
+      border-radius: 20px;
+      padding: 10px 16px;
+      margin-top: 12px;
+      font-size: 0.85rem;
+      display: inline-block;
+      width: 100%;
+    }
+    hr {
+      margin: 20px 0;
+    }
+    .footer {
+      background: #eef3fa;
+      border-radius: 24px;
+      padding: 24px;
+      margin-top: 32px;
+      text-align: center;
+    }
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .container {
+        padding: 20px;
+        max-width: 100%;
+        box-shadow: none;
+      }
+      .day-item {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>⚙️ Kubernetes in 2 Weeks</h1>
+  <div class="badge">⏱️ 1 hour/day (Mon–Sat) + Sunday assessments & projects</div>
+  <p style="margin-bottom: 28px; color: #2c5a7a;">Hands‑on, job‑ready track — no prior K8s experience needed, but basic Docker & Linux helps.</p>
+
+  <!-- WEEK 1 -->
+  <div class="week-card">
+    <div class="week-title">📅 Week 1 – Core Concepts</div>
+    <div class="day-grid">
+
+      <!-- Mon -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Monday</span><span class="topic">Architecture & kubectl</span></div>
+        <div class="learning"><span>🎯 1h:</span> What is Kubernetes? Control Plane vs Worker Nodes. Install Minikube & kubectl. Run <code>kubectl get nodes</code>.</div>
+      </div>
+      <!-- Tue -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Tuesday</span><span class="topic">Pods & YAML</span></div>
+        <div class="learning"><span>🎯 1h:</span> Pod as smallest unit. Write first pod.yaml, apply, inspect (<code>kubectl get pods -o wide</code>). Port‑forward to see app.</div>
+      </div>
+      <!-- Wed -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Wednesday</span><span class="topic">Deployments & ReplicaSets</span></div>
+        <div class="learning"><span>🎯 1h:</span> Create Deployment with 2 replicas. Scale to 3. Perform rolling update (change image). Rollback.</div>
+      </div>
+      <!-- Thu -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Thursday</span><span class="topic">Services (Networking)</span></div>
+        <div class="learning"><span>🎯 1h:</span> ClusterIP, NodePort, LoadBalancer. Expose deployment via NodePort and curl from outside.</div>
+      </div>
+      <!-- Fri -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Friday</span><span class="topic">Namespaces & Labels</span></div>
+        <div class="learning"><span>🎯 1h:</span> Create namespace, switch context. Use labels to filter pods (<code>-l app=myapp</code>). Resource quotas intro.</div>
+      </div>
+      <!-- Sat -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Saturday</span><span class="topic">Revision & mini lab</span></div>
+        <div class="learning"><span>🎯 1h:</span> Deploy nginx + custom web app. Expose via NodePort. Simulate a rolling update. Verify replicas.</div>
+      </div>
+
+      <!-- SUNDAY (assessment + project) -->
+      <div class="day-item sunday">
+        <div class="day-header"><span class="day-name">🌿 SUNDAY – Assessment & Project</span><span class="topic">No new lessons</span></div>
+        <div class="learning"><strong>✅ Project 1 – Zero‑downtime web app</strong><br>
+          ➤ Deploy a simple “Hello K8s” app (any image) with 3 replicas.<br>
+          ➤ Expose via NodePort service.<br>
+          ➤ Perform two rolling updates (change text/version) without downtime.<br>
+          ➤ Submit: YAML files + screenshot of rollout history.
+        </div>
+        <div class="project-badge">📝 Assessment: Short quiz (10 questions on pods, deployments, services).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEEK 2 -->
+  <div class="week-card">
+    <div class="week-title">⚡ Week 2 – Production Skills</div>
+    <div class="day-grid">
+
+      <!-- Mon -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Monday</span><span class="topic">ConfigMap & Secrets</span></div>
+        <div class="learning"><span>🎯 1h:</span> Store config as ConfigMap, inject into pod as env. Create Secret (base64), mount as volume.</div>
+      </div>
+      <!-- Tue -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Tuesday</span><span class="topic">Persistent Storage (PV/PVC)</span></div>
+        <div class="learning"><span>🎯 1h:</span> Create PersistentVolume and PersistentVolumeClaim. Deploy MySQL with PVC – data survives pod deletion.</div>
+      </div>
+      <!-- Wed -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Wednesday</span><span class="topic">Health Probes & Resources</span></div>
+        <div class="learning"><span>🎯 1h:</span> livenessProbe & readinessProbe. Set CPU/memory requests/limits. Observe pod behaviour under stress.</div>
+      </div>
+      <!-- Thu -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Thursday</span><span class="topic">Ingress Controller</span></div>
+        <div class="learning"><span>🎯 1h:</span> Install NGINX Ingress (Minikube addon). Route traffic to two services using path‑based rules.</div>
+      </div>
+      <!-- Fri -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Friday</span><span class="topic">Helm basics</span></div>
+        <div class="learning"><span>🎯 1h:</span> Install Helm, add repo (bitnami). Deploy a chart (e.g. WordPress), customize with values.yaml.</div>
+      </div>
+      <!-- Sat -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Saturday</span><span class="topic">RBAC + troubleshooting</span></div>
+        <div class="learning"><span>🎯 1h:</span> Create ServiceAccount, Role, RoleBinding. Practice debug: <code>kubectl describe, logs, events</code>.</div>
+      </div>
+
+      <!-- SUNDAY – final project + assessment -->
+      <div class="day-item sunday">
+        <div class="day-header"><span class="day-name">🌿 SUNDAY – Final Project & Certification Readiness</span><span class="topic">Project + Quiz</span></div>
+        <div class="learning"><strong>✅ Final Project – Multi‑tier app on Kubernetes</strong><br>
+          ➤ Deploy a frontend (React/Nginx) + backend (Node.js/Python) + MongoDB with persistent storage.<br>
+          ➤ Use ConfigMap for backend config, Secret for DB password.<br>
+          ➤ Expose frontend via Ingress.<br>
+          ➤ Implement liveness/readiness probes for backend.<br>
+          ➤ Deliver: All YAML manifests + a short deployment guide.
+        </div>
+        <div class="project-badge">📝 Final Assessment: 20 multiple‑choice questions + 2 troubleshooting scenarios (kubectl debug).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    🧭 <strong>How to succeed with 1h/day + Sunday projects</strong><br><br>
+    ✅ Each day: 20 min video/docs + 40 min hands‑on (Minikube/Killercoda).<br>
+    ✅ Sunday projects take ~2–3 hours – treat them as real interview tasks.<br>
+    ✅ After 2 weeks you’ll be ready for CKA/CKAD prep or an entry‑level K8s role.<br>
+    📌 Keep a GitHub repo with all YAML files and project outputs.
+  </div>
+</div>
+</body>
+</html> 

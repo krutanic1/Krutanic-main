@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory Control & Management in 2 Weeks | 1hr/day + Sunday Projects</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+      background: #f4f7fc;
+      padding: 40px 20px;
+      color: #0a1c2f;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 32px;
+      box-shadow: 0 20px 35px -10px rgba(0,0,0,0.1);
+      padding: 40px 48px;
+    }
+    h1 {
+      font-size: 2.3rem;
+      background: linear-gradient(120deg, #0f2b4d, #1e6f9f);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .badge {
+      background: #0f2b4d;
+      color: white;
+      display: inline-block;
+      padding: 4px 16px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin: 12px 0 20px 0;
+    }
+    .week-card {
+      background: #ffffff;
+      border-radius: 28px;
+      border: 1px solid #dce7f0;
+      margin-bottom: 40px;
+      padding: 24px 28px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .week-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+      color: #155e7e;
+      border-left: 5px solid #2c7da0;
+      padding-left: 16px;
+    }
+    .day-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .day-item {
+      background: #fefefe;
+      border-radius: 20px;
+      padding: 12px 20px;
+      border-left: 6px solid #2c7da0;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .sunday {
+      border-left-color: #f4a261;
+      background: #fffaf3;
+    }
+    .day-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .day-name {
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: #1e4663;
+    }
+    .topic {
+      font-weight: 600;
+      background: #e6f3ff;
+      padding: 2px 12px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      color: #0c6b8e;
+    }
+    .learning {
+      margin-top: 8px;
+      color: #2c3e4e;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+    .learning span {
+      font-weight: 700;
+      color: #0f5b7a;
+    }
+    .project-badge {
+      background: #e9ecef;
+      border-radius: 20px;
+      padding: 10px 16px;
+      margin-top: 12px;
+      font-size: 0.85rem;
+      display: inline-block;
+      width: 100%;
+    }
+    .footer {
+      background: #eef3fa;
+      border-radius: 24px;
+      padding: 24px;
+      margin-top: 32px;
+      text-align: center;
+    }
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .container {
+        padding: 20px;
+        max-width: 100%;
+        box-shadow: none;
+      }
+      .day-item {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>📦 Inventory Control & Management for Supply Chain</h1>
+  <div class="badge">⏱️ 1 hour/day (Mon–Sat) + Sunday assessments & projects</div>
+  <p style="margin-bottom: 28px; color: #2c5a7a;">Master inventory fundamentals, EOQ, safety stock, ABC analysis, and modern supply chain techniques – essential for operations, logistics, and SCM roles.</p>
+
+  <!-- WEEK 1 – Foundations & Classic Models -->
+  <div class="week-card">
+    <div class="week-title">📅 Week 1 – Inventory Fundamentals & Deterministic Models</div>
+    <div class="day-grid">
+
+      <!-- Monday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Monday</span><span class="topic">Inventory Basics & Costs</span></div>
+        <div class="learning"><span>🎯 1h:</span> What is inventory? Types: raw material, WIP, finished goods. Holding cost, ordering cost, shortage cost. Inventory turnover ratio.</div>
+      </div>
+      <!-- Tuesday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Tuesday</span><span class="topic">Economic Order Quantity (EOQ)</span></div>
+        <div class="learning"><span>🎯 1h:</span> EOQ formula derivation and assumptions. Calculate optimal order quantity, total cost, reorder point (constant demand). Solve 2 problems.</div>
+      </div>
+      <!-- Wednesday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Wednesday</span><span class="topic">Reorder Point (ROP) & Safety Stock</span></div>
+        <div class="learning"><span>🎯 1h:</span> Deterministic ROP. Lead time demand. Basic safety stock formula (service level approach). Use normal distribution table.</div>
+      </div>
+      <!-- Thursday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Thursday</span><span class="topic">ABC Analysis (Pareto Principle)</span></div>
+        <div class="learning"><span>🎯 1h:</span> Classify inventory into A (high value), B, C items based on annual consumption value. Policy differences for each class.</div>
+      </div>
+      <!-- Friday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Friday</span><span class="topic">Periodic vs Perpetual Review Systems</span></div>
+        <div class="learning"><span>🎯 1h:</span> P‑system (fixed interval) vs Q‑system (fixed quantity). Advantages and trade‑offs. When to use each.</div>
+      </div>
+      <!-- Saturday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Saturday</span><span class="topic">EOQ with Quantity Discounts</span></div>
+        <div class="learning"><span>🎯 1h:</span> All‑units quantity discounts. Calculate optimal order quantity when price breaks exist. Step‑by‑step procedure.</div>
+      </div>
+
+      <!-- SUNDAY Assessment & Project -->
+      <div class="day-item sunday">
+        <div class="day-header"><span class="day-name">🌿 SUNDAY – Project 1: EOQ & ABC Implementation</span><span class="topic">Excel / Python case study</span></div>
+        <div class="learning"><strong>✅ Given historical demand, costs, and item list for a warehouse:</strong><br>
+          ➤ Calculate EOQ and total annual inventory cost for top 5 SKUs.<br>
+          ➤ Perform ABC analysis on 20 items (compute annual usage value, sort, classify).<br>
+          ➤ Recommend reorder policy (Q‑system or P‑system) for each class.<br>
+          ➤ Deliver: Excel workbook or Python notebook with calculations + one‑page summary.
+        </div>
+        <div class="project-badge">📝 Assessment: 15 MCQs (inventory costs, EOQ, ROP, ABC, quantity discounts).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEEK 2 – Stochastic Models & Modern SCM -->
+  <div class="week-card">
+    <div class="week-title">⚡ Week 2 – Uncertainty, Service Levels & Modern Techniques</div>
+    <div class="day-grid">
+
+      <!-- Monday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Monday</span><span class="topic">Service Level & Fill Rate</span></div>
+        <div class="learning"><span>🎯 1h:</span> Cycle service level (CSL) vs fill rate. Calculate safety stock for desired CSL. Newsvendor model intuition.</div>
+      </div>
+      <!-- Tuesday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Tuesday</span><span class="topic">Demand Forecasting for Inventory</span></div>
+        <div class="learning"><span>🎯 1h:</span> Moving average, exponential smoothing. Forecast error (MAD, MSE). Use forecast to set ROP.</div>
+      </div>
+      <!-- Wednesday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Wednesday</span><span class="topic">Bullwhip Effect & Supply Chain Coordination</span></div>
+        <div class="learning"><span>🎯 1h:</span> Causes of bullwhip effect (demand signal processing, order batching). Countermeasures: VMI, information sharing.</div>
+      </div>
+      <!-- Thursday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Thursday</span><span class="topic">Vendor Managed Inventory (VMI) & JIT</span></div>
+        <div class="learning"><span>🎯 1h:</span> VMI concept, benefits, risks. Just‑in‑Time inventory – lean philosophy, Kanban, reduced waste.</div>
+      </div>
+      <!-- Friday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Friday</span><span class="topic">Multi‑Echelon Inventory & Distribution</span></div>
+        <div class="learning"><span>🎯 1h:</span> Centralised vs decentralised. Safety stock pooling effect. Echelon vs installation stock.</div>
+      </div>
+      <!-- Saturday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Saturday</span><span class="topic">Inventory KPIs & Software Tools</span></div>
+        <div class="learning"><span>🎯 1h:</span> Key metrics: inventory turns, days of inventory, obsolete %, service level. Introduction to ERP (SAP MM) and WMS.</div>
+      </div>
+
+      <!-- SUNDAY Final Project & Assessment -->
+      <div class="day-item sunday">
+        <div class="day-header"><span class="day-name">🌿 SUNDAY – Final Project: Inventory Policy Design</span><span class="topic">Stochastic demand + service level</span></div>
+        <div class="learning"><strong>✅ Design an inventory control policy for a retailer with uncertain demand:</strong><br>
+          ➤ Given daily demand (normal distribution) and lead time of 5 days.<br>
+          ➤ Calculate safety stock for 95% service level.<br>
+          ➤ Determine reorder point and order quantity (EOQ with uncertainty).<br>
+          ➤ Simulate 50 days of inventory (use Excel or Python) and report stockout frequency.<br>
+          ➤ Deliver: simulation spreadsheet/script + a policy recommendation memo.
+        </div>
+        <div class="project-badge">📝 Final Assessment: 20 questions (service level, safety stock, bullwhip, VMI, JIT, multi‑echelon) + case analysis on a real supply chain.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    🧭 <strong>How to complete Inventory Control in 2 weeks (1h/day + Sunday projects)</strong><br><br>
+    ✅ Daily: 20 min concept + 40 min calculations or Excel modelling.<br>
+    ✅ Sunday projects take ~2–3 hours – they build a portfolio for supply chain roles.<br>
+    ✅ After this curriculum, you can confidently discuss inventory policies, safety stock, and KPIs in operations interviews.<br>
+    📌 Recommended resources: “Inventory Management” by Axsäter, or MITx Supply Chain MicroMasters (free audit).
+  </div>
+</div>
+</body>
+</html>

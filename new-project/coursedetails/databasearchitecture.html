@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Database Architecture in 2 Weeks | 1hr/day + Sunday Projects</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+      background: #f4f7fc;
+      padding: 40px 20px;
+      color: #0a1c2f;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 32px;
+      box-shadow: 0 20px 35px -10px rgba(0,0,0,0.1);
+      padding: 40px 48px;
+    }
+    h1 {
+      font-size: 2.3rem;
+      background: linear-gradient(120deg, #0f2b4d, #1e6f9f);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .badge {
+      background: #0f2b4d;
+      color: white;
+      display: inline-block;
+      padding: 4px 16px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin: 12px 0 20px 0;
+    }
+    .week-card {
+      background: #ffffff;
+      border-radius: 28px;
+      border: 1px solid #dce7f0;
+      margin-bottom: 40px;
+      padding: 24px 28px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .week-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+      color: #155e7e;
+      border-left: 5px solid #2c7da0;
+      padding-left: 16px;
+    }
+    .day-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .day-item {
+      background: #fefefe;
+      border-radius: 20px;
+      padding: 12px 20px;
+      border-left: 6px solid #2c7da0;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .sunday {
+      border-left-color: #f4a261;
+      background: #fffaf3;
+    }
+    .day-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .day-name {
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: #1e4663;
+    }
+    .topic {
+      font-weight: 600;
+      background: #e6f3ff;
+      padding: 2px 12px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      color: #0c6b8e;
+    }
+    .learning {
+      margin-top: 8px;
+      color: #2c3e4e;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+    .learning span {
+      font-weight: 700;
+      color: #0f5b7a;
+    }
+    .project-badge {
+      background: #e9ecef;
+      border-radius: 20px;
+      padding: 10px 16px;
+      margin-top: 12px;
+      font-size: 0.85rem;
+      display: inline-block;
+      width: 100%;
+    }
+    hr {
+      margin: 20px 0;
+    }
+    .footer {
+      background: #eef3fa;
+      border-radius: 24px;
+      padding: 24px;
+      margin-top: 32px;
+      text-align: center;
+    }
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .container {
+        padding: 20px;
+        max-width: 100%;
+        box-shadow: none;
+      }
+      .day-item {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>🗄️ Database Architecture in 2 Weeks</h1>
+  <div class="badge">⏱️ 1 hour/day (Mon–Sat) + Sunday assessments & projects</div>
+  <p style="margin-bottom: 28px; color: #2c5a7a;">From relational design to indexing, transactions, and NoSQL — job‑ready skills for backend, data engineering, and DBA roles.</p>
+
+  <!-- WEEK 1 – Relational Core -->
+  <div class="week-card">
+    <div class="week-title">📅 Week 1 – Relational Database Architecture</div>
+    <div class="day-grid">
+
+      <!-- Monday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Monday</span><span class="topic">DB Fundamentals & Architecture</span></div>
+        <div class="learning"><span>🎯 1h:</span> What is a database? DBMS vs file system. Components: query processor, storage manager, buffer manager. Client‑server vs embedded.</div>
+      </div>
+      <!-- Tuesday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Tuesday</span><span class="topic">Relational Model & Schema Design</span></div>
+        <div class="learning"><span>🎯 1h:</span> Relations, attributes, tuples, keys (primary, foreign, candidate). ER diagrams → relational schema. Practical: draw ER for “library” system.</div>
+      </div>
+      <!-- Wednesday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Wednesday</span><span class="topic">Normalization (1NF, 2NF, 3NF, BCNF)</span></div>
+        <div class="learning"><span>🎯 1h:</span> Anomalies (update/insert/delete). Functional dependencies. Normalize a denormalized table to 3NF. Avoid redundancy.</div>
+      </div>
+      <!-- Thursday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Thursday</span><span class="topic">SQL Deep Dive (DDL, DML, Joins)</span></div>
+        <div class="learning"><span>🎯 1h:</span> CREATE, ALTER, DROP. INSERT, UPDATE, DELETE. INNER/LEFT/RIGHT/FULL JOIN. Practice on sample schema (employees, departments).</div>
+      </div>
+      <!-- Friday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Friday</span><span class="topic">Indexing & Performance</span></div>
+        <div class="learning"><span>🎯 1h:</span> Clustered vs non‑clustered indexes. B‑tree vs hash. When indexes hurt performance. EXPLAIN plan basics.</div>
+      </div>
+      <!-- Saturday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Saturday</span><span class="topic">Views & Stored Procedures</span></div>
+        <div class="learning"><span>🎯 1h:</span> Create and manage views (security & simplicity). Stored procedures vs functions. Write a simple procedure with parameters.</div>
+      </div>
+
+      <!-- SUNDAY Assessment & Project -->
+      <div class="day-item sunday">
+        <div class="day-header"><span class="day-name">🌿 SUNDAY – Project 1: Library Database</span><span class="topic">Normalization + SQL</span></div>
+        <div class="learning"><strong>✅ Build a normalized library management schema</strong><br>
+          ➤ Create ER diagram → tables: Books, Members, Loans, Authors.<br>
+          ➤ Ensure 3NF. Define primary/foreign keys.<br>
+          ➤ Write 5 SQL queries: list overdue books, most active member, etc.<br>
+          ➤ Create an index on “loan_date”.<br>
+          ➤ Deliver: SQL script + screenshot of query results.
+        </div>
+        <div class="project-badge">📝 Assessment: 15 MCQs (normal forms, indexes, joins, keys).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEEK 2 – Advanced & Modern DB Architecture -->
+  <div class="week-card">
+    <div class="week-title">⚡ Week 2 – Transactions, NoSQL, Warehousing</div>
+    <div class="day-grid">
+
+      <!-- Monday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Monday</span><span class="topic">ACID & Transactions</span></div>
+        <div class="learning"><span>🎯 1h:</span> Atomicity, Consistency, Isolation, Durability. BEGIN/COMMIT/ROLLBACK. Concurrency problems (dirty read, phantom read).</div>
+      </div>
+      <!-- Tuesday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Tuesday</span><span class="topic">Isolation Levels & Locking</span></div>
+        <div class="learning"><span>🎯 1h:</span> Read Uncommitted, Read Committed, Repeatable Read, Serializable. Optimistic vs pessimistic locking. Deadlock handling.</div>
+      </div>
+      <!-- Wednesday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Wednesday</span><span class="topic">NoSQL Architecture Overview</span></div>
+        <div class="learning"><span>🎯 1h:</span> When to use NoSQL. Document stores (MongoDB), key‑value (Redis), column‑family (Cassandra), graph (Neo4j). CAP theorem (Consistency, Availability, Partition tolerance).</div>
+      </div>
+      <!-- Thursday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Thursday</span><span class="topic">Data Warehousing & Star Schema</span></div>
+        <div class="learning"><span>🎯 1h:</span> OLTP vs OLAP. Fact table, dimension table. Star schema vs snowflake. Basic ETL concepts.</div>
+      </div>
+      <!-- Friday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Friday</span><span class="topic">Database Sharding & Replication</span></div>
+        <div class="learning"><span>🎯 1h:</span> Horizontal vs vertical sharding. Master‑slave replication. Read replicas for scalability. Trade‑offs and consistency issues.</div>
+      </div>
+      <!-- Saturday -->
+      <div class="day-item">
+        <div class="day-header"><span class="day-name">Saturday</span><span class="topic">Backup, Recovery & Security</span></div>
+        <div class="learning"><span>🎯 1h:</span> Backup types (full, incremental). Point‑in‑time recovery. Role‑based access control, encryption at rest/in transit. Audit logs.</div>
+      </div>
+
+      <!-- SUNDAY Final Project & Assessment -->
+      <div class="day-item sunday">
+        <div class="day-header"><span class="day-name">🌿 SUNDAY – Final Project: E‑Commerce Database Architecture</span><span class="topic">Full design + NoSQL integration</span></div>
+        <div class="learning"><strong>✅ Design a hybrid database solution for an online store</strong><br>
+          ➤ Relational part (PostgreSQL): users, orders, products, inventory (3NF).<br>
+          ➤ Write transactions for order placement (ACID).<br>
+          ➤ Add a Redis cache for product views (key‑value).<br>
+          ➤ Propose a sharding strategy for orders table.<br>
+          ➤ Deliver: schema diagram, SQL transaction scripts, and a 300‑word explanation of trade‑offs.
+        </div>
+        <div class="project-badge">📝 Final Assessment: 20 questions (ACID, isolation, NoSQL, sharding, warehousing) + 2 real‑world design scenarios.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    🧭 <strong>How to complete Database Architecture in 2 weeks (1h/day + Sunday projects)</strong><br><br>
+    ✅ Daily: 15 min theory (videos/docs) + 45 min hands‑on (SQLite/PostgreSQL + MongoDB free tier).<br>
+    ✅ Sunday projects take ~2–3 hours – simulate real interview tasks or take‑home assignments.<br>
+    ✅ After this curriculum, you’ll be ready for entry‑level DB design interviews, data engineering roles, or backend developer positions.<br>
+    📌 Keep a GitHub repo with all SQL scripts, ER diagrams, and project reports.
+  </div>
+</div>
+</body>
+</html>
