@@ -7,10 +7,13 @@ export default function AdminReferrals() {
   const [referrals, setReferrals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [config, setConfig] = useState({ commonPaymentLink: '' });
+  const [isUpdatingConfig, setIsUpdatingConfig] = useState(false);
   const [newReferral, setNewReferral] = useState({
     code: '',
     discountPercentage: 40,
-    usageLimit: 100
+    usageLimit: 100,
+    paymentLink: ''
   });
 
   const fetchReferrals = async () => {
@@ -18,10 +21,25 @@ export default function AdminReferrals() {
     try {
       const res = await axios.get('/admin/microcourses/referrals');
       setReferrals(res.data);
+      
+      const configRes = await axios.get('/admin/microcourses/config');
+      setConfig(configRes.data);
     } catch (err) {
       console.error('Failed to fetch referrals', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const updateConfig = async () => {
+    setIsUpdatingConfig(true);
+    try {
+      await axios.patch('/admin/microcourses/config', config);
+      alert('Global configuration updated');
+    } catch (err) {
+      alert('Failed to update config');
+    } finally {
+      setIsUpdatingConfig(false);
     }
   };
 
@@ -35,7 +53,7 @@ export default function AdminReferrals() {
     try {
       await axios.post('/admin/microcourses/referrals', newReferral);
       setIsFormOpen(false);
-      setNewReferral({ code: '', discountPercentage: 40, usageLimit: 100 });
+      setNewReferral({ code: '', discountPercentage: 40, usageLimit: 100, paymentLink: '' });
       fetchReferrals();
     } catch (err) {
       alert('Failed to create referral code');
@@ -69,6 +87,32 @@ export default function AdminReferrals() {
           <Plus size={16} /> New Code
         </button>
       </div>
+
+      {/* Global Config Section */}
+      <div className="bg-surface editorial-shadow p-8 mb-12 border-t-4 border-metallic-blue">
+        <h3 className="text-xl text-primary mb-2 uppercase tracking-wider font-serif">Global Payment Settings</h3>
+        <p className="text-[10px] text-outline uppercase tracking-widest mb-6 italic">Set the default payment link used when no specific referral link is available.</p>
+        
+        <div className="flex flex-col md:flex-row gap-4 max-w-2xl">
+          <div className="flex-1 space-y-2">
+            <label className="text-[9px] font-bold tracking-widest uppercase text-outline">Common Payment Link</label>
+            <input 
+              value={config.commonPaymentLink}
+              onChange={(e) => setConfig({...config, commonPaymentLink: e.target.value})}
+              placeholder="e.g. https://rzp.io/..."
+              className="w-full border-b border-outline-variant py-2 outline-none focus:border-primary transition-colors bg-transparent text-sm"
+            />
+          </div>
+          <button 
+            onClick={updateConfig}
+            disabled={isUpdatingConfig}
+            className="md:self-end bg-primary text-white px-6 py-2 rounded text-[10px] font-bold tracking-widest uppercase hover:opacity-90 disabled:opacity-50 h-10"
+          >
+            {isUpdatingConfig ? <Loader2 className="animate-spin" size={14} /> : 'Save Default'}
+          </button>
+        </div>
+      </div>
+
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <AnimatePresence>
@@ -117,6 +161,13 @@ export default function AdminReferrals() {
                     />
                   </div>
                 </div>
+
+                {r.paymentLink && (
+                  <div className="mt-4 pt-4 border-t border-outline-variant/10">
+                    <span className="text-[9px] font-bold tracking-widest uppercase text-outline block mb-1">Custom Payment Link</span>
+                    <p className="text-[10px] text-primary truncate italic">{r.paymentLink}</p>
+                  </div>
+                )}
               </div>
 
               <div className="mt-8 pt-6 border-t border-outline-variant/10 flex items-center gap-2 text-xs text-on-surface-variant font-medium">
@@ -152,7 +203,7 @@ export default function AdminReferrals() {
                     required 
                     value={newReferral.code}
                     onChange={(e) => setNewReferral({...newReferral, code: e.target.value})}
-                    placeholder="e.g. KRUTANIC40"
+                    placeholder="e.g. DIKSHANNT40"
                     className="w-full border-b border-outline-variant py-3 outline-none focus:border-primary transition-colors bg-transparent uppercase font-mono text-xl text-primary"
                   />
                 </div>
@@ -176,6 +227,16 @@ export default function AdminReferrals() {
                     value={newReferral.usageLimit}
                     onChange={(e) => setNewReferral({...newReferral, usageLimit: parseInt(e.target.value)})}
                     className="w-full border-b border-outline-variant py-3 outline-none focus:border-primary transition-colors bg-transparent font-bold text-primary"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold tracking-widest uppercase text-outline">Custom Payment Link (Optional)</label>
+                  <input 
+                    value={newReferral.paymentLink}
+                    onChange={(e) => setNewReferral({...newReferral, paymentLink: e.target.value})}
+                    placeholder="Overrides the common link"
+                    className="w-full border-b border-outline-variant py-3 outline-none focus:border-primary transition-colors bg-transparent text-sm"
                   />
                 </div>
 

@@ -2,7 +2,9 @@ const express = require("express");
 const router = express.Router();
 const MicroCourseEnroll = require("../models/MicroCourseEnroll");
 const MicroCourse = require("../models/MicroCourse");
+const MicroUser = require("../models/MicroUser");
 const Referral = require("../models/Referral");
+const MicroCourseConfig = require("../models/MicroCourseConfig");
 const FakeRegistration = require("../models/FakeRegistration");
 
 // 0. Get All Courses (Public for Landing Page)
@@ -32,7 +34,8 @@ router.post("/microcourses/check-referral", async (req, res) => {
         res.status(200).json({
             message: "Referral code applied!",
             discountPercentage: referral.discountPercentage,
-            code: referral.code
+            code: referral.code,
+            paymentLink: referral.paymentLink
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -98,12 +101,41 @@ router.post("/microcourses/submit-transaction", async (req, res) => {
 router.get("/microcourses/my-courses", async (req, res) => {
     try {
         const { email } = req.query; // Simple email-based lookup for now
-        const enrollments = await MicroCourseEnroll.find({ 
+        
+        // Find user by email
+        const user = await MicroUser.findOne({ email }).populate({
+          path: 'enrolledCourses',
+          model: 'MicroCourse'
+        });
+
+        // Current dashboard expects an array of enrollment objects which have a 'courseId' property
+        // We'll map the user's enrolledCourses to this format
+        const userEnrollments = user?.enrolledCourses?.map(course => ({
+          _id: course._id, // Using course ID as enrollment ID for college students
+          courseId: course,
+          courseName: course.title,
+          status: "accepted", // College students are pre-accepted
+          amount: 0,
+          isCollegeEnrolled: !!user.collegeId
+        })) || [];
+
+        // Also fetch from MicroCourseEnroll for backward compatibility/legacy direct enrollments
+        const directEnrollments = await MicroCourseEnroll.find({ 
             email, 
             status: "accepted" 
         }).populate("courseId");
 
-        res.status(200).json(enrollments);
+        // Merge them, prioritizing unique course IDs
+        const allEnrollments = [...userEnrollments];
+        const existingIds = new Set(allEnrollments.map(e => e.courseId._id.toString()));
+
+        directEnrollments.forEach(de => {
+          if (de.courseId && !existingIds.has(de.courseId._id.toString())) {
+            allEnrollments.push(de);
+          }
+        });
+
+        res.status(200).json(allEnrollments);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -113,6 +145,19 @@ router.get("/microcourses/fake-registrations", async (req, res) => {
     try {
         const registrations = await FakeRegistration.find().limit(20);
         res.status(200).json(registrations);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// 6. Get Global Config (Public)
+router.get("/microcourses/config", async (req, res) => {
+    try {
+        let config = await MicroCourseConfig.findOne();
+        if (!config) {
+            config = new MicroCourseConfig();
+        }
+        res.status(200).json(config);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

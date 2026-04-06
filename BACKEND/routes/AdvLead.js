@@ -1306,7 +1306,7 @@ router.get("/check-remote-dial", async (req, res) => {
 
     try {
         const pendingRequest = await RemoteDialQueue.findOne({ specialistId, status: "pending" })
-            .populate("leadId", "full_name phone_number opted_domain email " + BLACKLIST_PROJECTION)
+            .populate("leadId", "full_name phone_number opted_domain email")
             .sort({ createdAt: -1 });
 
         if (pendingRequest) {
@@ -1397,7 +1397,7 @@ router.get("/upcoming-followups", async (req, res) => {
             followUpDate: { $gte: now },
             followUpStatus: "pending"
         })
-            .populate("leadId", "full_name phone_number opted_domain " + BLACKLIST_PROJECTION)
+            .populate("leadId", "full_name phone_number opted_domain")
             .sort({ followUpDate: 1 });
 
         res.status(200).json({ followUps });
@@ -1472,7 +1472,7 @@ router.get("/get-adv-record", async (req, res) => {
 
         const totalCount = await AdvCallActivity.countDocuments(query);
         const activities = await AdvCallActivity.find(query)
-            .populate("leadId", "full_name phone_number opted_domain company_name " + BLACKLIST_PROJECTION)
+            .populate("leadId", "full_name phone_number opted_domain company_name")
             .populate("specialistId", "name")
             .sort({ createdAt: -1 })
             .skip(skip)

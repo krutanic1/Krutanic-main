@@ -11,7 +11,8 @@ const MicroUserSchema = new mongoose.Schema(
             of: [Number], 
             default: {} 
         }, // Map of courseId strings to arrays of watched session indices
-        isActive: { type: Boolean, default: true }
+        isActive: { type: Boolean, default: true },
+        collegeId: { type: mongoose.Schema.Types.ObjectId, ref: "College" }
     },
     {
         timestamps: true

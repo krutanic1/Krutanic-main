@@ -1,41 +1,51 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { 
-  Play, 
-  LogOut, 
-  Video, 
   BookOpen, 
   Clock, 
-  ChevronRight, 
-  User, 
-  Award, 
-  Search, 
-  Layout, 
-  CheckCircle,
-  Menu,
-  X,
-  Bell,
+  Calendar, 
+  CheckCircle, 
+  PlayCircle, 
+  Loader2, 
+  Trophy, 
+  Target, 
+  ArrowRight, 
+  Library,
+  Play,
+  Award,
   ArrowLeft,
   Book,
   Lock,
-  Calendar,
   Save,
   Check,
-  Loader2
+  Download,
+  FileCheck,
+  History
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+import html2canvas from 'html2canvas';
+import DikshanntLoader from '../components/DikshanntLoader';
+import StudentLayout from '../components/StudentLayout';
+import ProfessionalCertificate from '../components/ProfessionalCertificate';
 
 export default function StudentDashboard() {
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
   const [activeSession, setActiveSession] = useState<any>(null);
-  const [view, setView] = useState<'syllabus' | 'session' | 'project'>('syllabus');
   const [userEmail, setUserEmail] = useState('');
+  const [userFullName, setUserFullName] = useState('');
   const [userProgress, setUserProgress] = useState<any>({});
-  const [currentProject, setCurrentProject] = useState<any>(null);
-  const [currentDiary, setCurrentDiary] = useState<any>(null);
+  const [projectsMap, setProjectsMap] = useState<any>({});
+  const [diariesMap, setDiariesMap] = useState<any>({});
+  const [certEligibilities, setCertEligibilities] = useState<any>({});
   const [isSubmittingDiary, setIsSubmittingDiary] = useState(false);
+  const [isApplyingCert, setIsApplyingCert] = useState<string | null>(null);
+  const [isDownloading, setIsDownloading] = useState<string | null>(null);
+  
+  const certRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('studentToken');
@@ -56,6 +66,7 @@ export default function StudentDashboard() {
         headers: { Authorization: `Bearer ${localStorage.getItem('studentToken')}` }
       });
       setUserProgress(res.data.courseProgress || {});
+      setUserFullName(res.data.fullName);
     } catch (err) {
       console.error('Failed to fetch user info', err);
     }
@@ -68,6 +79,10 @@ export default function StudentDashboard() {
       setCourses(res.data);
       if (res.data.length > 0) {
         setSelectedCourse(res.data[0]);
+        res.data.forEach((enroll: any) => {
+          fetchProjectStatus(enroll.courseId._id);
+          fetchCertEligibility(enroll.courseId._id);
+        });
       }
     } catch (err) {
       console.error('Failed to fetch courses', err);
@@ -81,64 +96,103 @@ export default function StudentDashboard() {
       const res = await axios.get(`/microcourses/my-project/${courseId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('studentToken')}` }
       });
-      setCurrentProject(res.data.project);
-      setCurrentDiary(res.data.diary);
+      setProjectsMap((prev: any) => ({ ...prev, [courseId]: res.data.project }));
+      setDiariesMap((prev: any) => ({ ...prev, [courseId]: res.data.diary }));
     } catch (err) {
-      setCurrentProject(null);
-      setCurrentDiary(null);
+      setProjectsMap((prev: any) => ({ ...prev, [courseId]: null }));
+      setDiariesMap((prev: any) => ({ ...prev, [courseId]: null }));
     }
   };
 
-  useEffect(() => {
-    if (selectedCourse) {
-      fetchProjectStatus(selectedCourse.courseId._id);
+  const fetchCertEligibility = async (courseId: string) => {
+    try {
+      const res = await axios.get(`/microcourses/cert-eligibility/${courseId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('studentToken')}` }
+      });
+      setCertEligibilities((prev: any) => ({ ...prev, [courseId]: res.data }));
+    } catch (err) {
+      console.error('Cert check failed', err);
     }
-  }, [selectedCourse]);
+  };
+
+  const handleApplyEarly = async (courseId: string, courseTitle: string) => {
+    setIsApplyingCert(courseId);
+    try {
+      await axios.post('/microcourses/apply-early', { courseId, courseTitle }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('studentToken')}` }
+      });
+      await fetchCertEligibility(courseId);
+      alert('Application submitted for Admin review!');
+    } catch (err) {
+      alert('Failed to submit application');
+    } finally {
+      setIsApplyingCert(null);
+    }
+  };
+
+  const downloadCertificate = async (courseId: string, studentName: string, courseTitle: string, certId: string) => {
+    setIsDownloading(courseId);
+    // Give time for component to render in the hidden div if needed (not needed for absolute positioning usually)
+    setTimeout(async () => {
+      if (certRef.current) {
+        try {
+          const canvas = await html2canvas(certRef.current, {
+            scale: 2, // High resolution
+            useCORS: true,
+            logging: false,
+          });
+          const link = document.createElement('a');
+          link.download = `Dikshannt_Certificate_${courseTitle.replace(/\s+/g, '_')}.png`;
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+        } catch (err) {
+          console.error('Snapshot failed', err);
+        }
+      }
+      setIsDownloading(null);
+    }, 500);
+  };
 
   const handleTrackSession = async (courseId: string, sessionIndex: number) => {
     try {
       await axios.post('/microcourses/track-session', { courseId, sessionIndex }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('studentToken')}` }
       });
-      fetchUserInfo(); // Refresh progress
+      fetchUserInfo();
     } catch (err) {
       console.error('Failed to track progress', err);
     }
   };
 
   const isSessionLocked = (courseId: string, sessionIndex: number) => {
-    if (!currentProject) return false;
-    
-    // If the student hasn't watched enough sessions to trigger the project, it's not locked yet
-    if (sessionIndex < currentProject.lockAfterSessions) return false;
-
-    // If they ARE at or beyond the lock threshold, they must have completed the project
-    const isProjectDone = currentDiary?.isCompleted;
-    return !isProjectDone;
+    const project = projectsMap[courseId];
+    if (!project) return false;
+    if (sessionIndex < project.lockAfterSessions) return false;
+    const diary = diariesMap[courseId];
+    return !diary?.isCompleted;
   };
 
   const handleStartSession = (course: any, session: any, index: number) => {
     const courseId = course.courseId._id;
     if (isSessionLocked(courseId, index)) {
       setSelectedCourse(course);
-      setView('project');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      navigate('/dashboard/projects');
       return;
     }
     
     setSelectedCourse(course);
     setActiveSession({...session, index});
-    setView('session');
     handleTrackSession(courseId, index);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigate('/dashboard/session');
   };
 
   const submitDiary = async (entries: any[]) => {
-    if (!currentProject || !selectedCourse) return;
+    const project = projectsMap[selectedCourse?.courseId?._id];
+    if (!project || !selectedCourse) return;
     setIsSubmittingDiary(true);
     try {
       await axios.post('/microcourses/submit-diary', {
-        projectId: currentProject._id,
+        projectId: project._id,
         courseId: selectedCourse.courseId._id,
         entries
       }, {
@@ -153,93 +207,30 @@ export default function StudentDashboard() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('studentToken');
-    localStorage.removeItem('studentEmail');
-    localStorage.removeItem('studentName');
-    window.location.href = '/';
-  };
-
   if (loading && courses.length === 0) {
-    return (
-      <div className="min-h-screen bg-surface flex items-center justify-center">
-        <motion.div 
-          animate={{ rotate: 360 }} 
-          transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }} 
-          className="text-academic-dark"
-        >
-          <LoaderIcon />
-        </motion.div>
-      </div>
-    );
+    return <DikshanntLoader overlay />;
   }
 
   return (
-    <div className="min-h-screen bg-white text-on-surface font-sans selection:bg-academic-dark/10">
-      {/* More Vibrant Metallic Shining Navigation Header */}
-      <nav className="h-20 lg:h-24 bg-gradient-to-r from-[#003d33] via-[#00897B] to-[#003d33] border-b border-white/20 px-8 lg:px-12 flex justify-between items-center sticky top-0 z-[100] shadow-[0_4px_30px_rgba(0,121,107,0.3)] relative overflow-hidden group">
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/brushed-alum.png')] opacity-30 pointer-events-none mix-blend-overlay"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none"></div>
-        <div className="absolute inset-x-0 bottom-0 h-[1.5px] bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_-2px_15px_rgba(52,211,153,0.6)]"></div>
-        
-        <div className="flex items-center gap-4 relative z-10">
-          <a href="/" className="text-2xl lg:text-3xl font-serif font-bold italic tracking-tighter text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
-            Krutanic
-          </a>
-        </div>
-        
-        <div className="flex items-center gap-6 lg:gap-10 relative z-10">
-          <button className="p-2 text-white/70 hover:text-white transition-colors relative group/bell">
-            <Bell size={20} />
-            <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-red-500 rounded-full border border-academic-dark group-hover/bell:scale-110 transition-transform"></span>
-          </button>
-          
-          <div className="flex items-center gap-4 border-l border-white/10 pl-6 lg:pl-10">
-            <div className="hidden sm:block text-right">
-              <div className="text-[10px] font-bold text-white uppercase tracking-widest leading-none mb-1">
-                {localStorage.getItem('studentName') || userEmail.split('@')[0]}
-              </div>
-              <div className="text-[9px] text-white/50 uppercase font-medium tracking-tight">
-                Premium Scholar
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <button 
-                onClick={handleLogout}
-                className="w-10 h-10 rounded-full bg-white/5 border border-white/20 flex items-center justify-center text-white hover:bg-white/10 hover:border-white/40 transition-all shadow-inner group/user"
-                title="Sign Out"
-              >
-                <User size={18} className="group-hover/user:scale-110 transition-transform" />
-              </button>
-              <button 
-                onClick={handleLogout}
-                className="text-white/40 hover:text-white/80 transition-colors"
-                title="Logout"
-              >
-                <LogOut size={16} />
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      <main className="min-h-[calc(100vh-80px)]">
-        <AnimatePresence mode="wait">
-          {view === 'syllabus' ? (
-            <motion.div
-              key="syllabus"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className="max-w-7xl mx-auto p-8 lg:p-16"
-            >
-              <header className="mb-16">
-                <h1 className="text-5xl font-serif text-academic-dark mb-4">Your Syllabus</h1>
-                <p className="text-academic-gray font-serif italic italic font-light italic">Continue your scholarly pursuit across certified curricula.</p>
+    <StudentLayout>
+      <AnimatePresence mode="wait">
+        <Routes>
+          <Route index element={<Navigate to="overview" replace />} />
+          <Route path="overview" element={
+            <StudentOverview 
+              courses={courses} 
+              userProgress={userProgress} 
+              onStartCourse={(c: any) => { setSelectedCourse(c); navigate('/dashboard/courses'); }} 
+            />
+          } />
+          <Route path="courses" element={
+            <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <header className="mb-12">
+                <h1 className="text-4xl font-serif text-slate-800 mb-4 drop-shadow-sm">Your Enrolled Curricula</h1>
+                <p className="text-slate-500 font-serif italic font-light flex items-center gap-2">
+                  <BookOpen size={14} /> Master the disciplines of antiquity and the future.
+                </p>
               </header>
-
               <div className="grid grid-cols-1 gap-12">
                 {courses.length > 0 ? (
                   courses.map((enrollment) => (
@@ -248,113 +239,283 @@ export default function StudentDashboard() {
                       enrollment={enrollment} 
                       onStartSession={handleStartSession} 
                       userProgress={userProgress}
-                      currentProject={currentProject}
-                      currentDiary={currentDiary}
+                      project={projectsMap[enrollment.courseId._id]}
+                      diary={diariesMap[enrollment.courseId._id]}
                     />
                   ))
                 ) : (
-                  <div className="py-32 text-center border-2 border-dashed border-outline-variant/50 rounded-lg">
-                    <BookOpen size={48} className="mx-auto text-academic-gray/20 mb-6" />
-                    <h2 className="text-2xl font-serif text-academic-dark mb-2 font-light italic">No Active Enrollments</h2>
-                    <p className="text-academic-gray max-w-sm mx-auto italic font-light">Visit our course catalog to begin your learning journey.</p>
-                  </div>
+                  <NoData placeholder="No Courses Found" />
                 )}
               </div>
-            </motion.div>
-          ) : view === 'session' ? (
-            <motion.div
-              key="session"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              className="bg-white"
-            >
-              <SessionView 
+            </div>
+          } />
+          <Route path="projects" element={
+            <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+               <header className="mb-12">
+                <h1 className="text-4xl font-serif text-slate-800 mb-4 drop-shadow-sm">Research & Scholarly Projects</h1>
+                <p className="text-slate-500 font-serif italic font-light">Complete your daily research diaries to unlock deeper knowledge.</p>
+              </header>
+              {Object.keys(projectsMap).length > 0 ? (
+                <div className="space-y-12">
+                  {courses.map(enroll => {
+                    const project = projectsMap[enroll.courseId._id];
+                    if (!project) return null;
+                    return (
+                      <div key={enroll._id} className="bg-white p-8 rounded-2xl border border-emerald-50 shadow-sm mb-12">
+                        <ProjectDiaryView 
+                          project={project} 
+                          diary={diariesMap[enroll.courseId._id]} 
+                          onSubmit={submitDiary}
+                          hideBack
+                          onBack={() => {}}
+                          isSubmitting={isSubmittingDiary}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <NoData placeholder="No Research Projects Found" />
+              )}
+            </div>
+          } />
+          <Route path="certificates" element={
+            <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+               <header className="mb-12">
+                <h1 className="text-4xl font-serif text-slate-800 mb-4 drop-shadow-sm">Honorifics & Certifications</h1>
+                <p className="text-slate-500 font-serif italic font-light">The culmination of your scholarly journey.</p>
+              </header>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                 {courses.map(enroll => {
+                    const eligibility = certEligibilities[enroll.courseId._id];
+                    if (!eligibility) {
+                      return (
+                        <div key={enroll._id} className="bg-slate-50 p-8 rounded-3xl border border-slate-100 shadow-sm animate-pulse h-80 flex flex-col justify-between">
+                           <div className="space-y-4">
+                              <div className="size-12 bg-slate-200 rounded-xl" />
+                              <div className="h-6 bg-slate-200 rounded-lg w-3/4" />
+                              <div className="h-4 bg-slate-200 rounded-lg w-1/2" />
+                           </div>
+                           <div className="h-12 bg-slate-200 rounded-2xl w-full" />
+                        </div>
+                      );
+                    }
+
+                    const title = enroll.courseId.title;
+                    const cId = enroll.courseId._id;
+                    const daysRemaining = 14 - eligibility.diffDays;
+                    const isFullyWatched = userProgress[cId]?.length === enroll.courseId.sessions?.length;
+                    const isProjectDone = diariesMap[cId]?.isCompleted;
+                    const readyToIssue = eligibility.isEligible && isFullyWatched && isProjectDone;
+
+                    return (
+                      <div key={enroll._id} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden group">
+                         <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                         
+                         <div className="relative z-10 space-y-6">
+                            <div className="flex justify-between items-start">
+                               <div className="size-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
+                                  <Award size={24} />
+                               </div>
+                               <div className="text-right">
+                                  {readyToIssue ? (
+                                    <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-[9px] font-bold tracking-widest uppercase rounded-full">Issued</span>
+                                  ) : (
+                                    <span className="px-3 py-1 bg-slate-50 text-slate-400 text-[9px] font-bold tracking-widest uppercase rounded-full">Locked</span>
+                                  )}
+                               </div>
+                            </div>
+
+                            <div>
+                               <h3 className="text-xl font-serif text-slate-800 mb-1">{title}</h3>
+                               <p className="text-xs text-slate-400 font-medium">Verify through the Academic Archives</p>
+                            </div>
+
+                            <div className="space-y-3 py-4 border-y border-slate-50">
+                               <div className="flex items-center justify-between text-[10px] font-bold tracking-widest uppercase">
+                                  <span className="text-slate-400 flex items-center gap-1.5"><FileCheck size={12}/> Video Progress</span>
+                                  <span className={isFullyWatched ? 'text-emerald-600' : 'text-slate-400'}>{isFullyWatched ? 'Completed' : 'Incomplete'}</span>
+                               </div>
+                               <div className="flex items-center justify-between text-[10px] font-bold tracking-widest uppercase">
+                                  <span className="text-slate-400 flex items-center gap-1.5"><Save size={12}/> Research Project</span>
+                                  <span className={isProjectDone ? 'text-emerald-600' : 'text-slate-400'}>{isProjectDone ? 'Completed' : 'Incomplete'}</span>
+                               </div>
+                               <div className="flex items-center justify-between text-[10px] font-bold tracking-widest uppercase">
+                                  <span className="text-slate-400 flex items-center gap-1.5"><History size={12}/> 14-Day Rule</span>
+                                  <span className={eligibility.isEligible ? 'text-emerald-600' : 'text-slate-400'}>
+                                    {eligibility.isEligible ? 'Passed' : daysRemaining > 0 ? `${daysRemaining} Days Left` : 'Checking...'}
+                                  </span>
+                               </div>
+                            </div>
+
+                            {readyToIssue ? (
+                              <>
+                                <button 
+                                  onClick={() => downloadCertificate(cId, userFullName, title, eligibility.certificate?.certificateId || 'VERIFYING')}
+                                  disabled={!!isDownloading}
+                                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-emerald-100 transition-all flex items-center justify-center gap-3"
+                                >
+                                  {isDownloading === cId ? <Loader2 className="animate-spin" size={14}/> : <Download size={14} />}
+                                  Download Scholar Certificate
+                                </button>
+                                {/* Invisible Template for Snapshot */}
+                                <ProfessionalCertificate 
+                                  containerRef={certRef}
+                                  studentName={userFullName}
+                                  courseTitle={title}
+                                  certificateId={eligibility.certificate?.certificateId || 'VERIFYING'}
+                                  date={new Date().toLocaleDateString()}
+                                />
+                              </>
+                            ) : eligibility.status === 'pending' ? (
+                               <button disabled className="w-full bg-slate-50 text-slate-400 py-4 rounded-2xl font-bold uppercase tracking-widest text-[10px] border border-slate-100 cursor-not-allowed">
+                                  Under Scholarly Review
+                               </button>
+                            ) : (
+                               <button 
+                                onClick={() => handleApplyEarly(cId, title)}
+                                disabled={!!isApplyingCert}
+                                className="w-full bg-slate-900 hover:bg-black text-white py-4 rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-xl transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                              >
+                                {isApplyingCert === cId ? <Loader2 className="animate-spin" size={14}/> : <Check size={14} />}
+                                Apply for Early Excellence
+                              </button>
+                            )}
+                         </div>
+                      </div>
+                    );
+                 })}
+              </div>
+
+              {courses.length === 0 && <NoData placeholder="No Certifications Found" />}
+            </div>
+          } />
+          <Route path="session" element={
+            activeSession && selectedCourse ? (
+               <SessionView 
                 course={selectedCourse} 
                 session={activeSession} 
-                onBack={() => setView('syllabus')}
+                onBack={() => navigate('/dashboard/courses')}
               />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="project"
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.98 }}
-              className="max-w-5xl mx-auto p-8 lg:p-16"
-            >
-              <ProjectDiaryView 
-                project={currentProject} 
-                diary={currentDiary} 
-                onSubmit={submitDiary}
-                onBack={() => setView('syllabus')}
-                isSubmitting={isSubmittingDiary}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </main>
-      
-      {/* Global Footer (Subtle) */}
-      <footer className="py-12 px-8 lg:px-16 border-t border-outline-variant/20 flex flex-col md:flex-row justify-between items-center gap-6 bg-academic-light-gray/30">
-        <div className="flex gap-8 text-[9px] font-bold tracking-widest text-academic-gray uppercase">
-          <a href="#" className="hover:text-academic-dark">Honor Code</a>
-          <a href="#" className="hover:text-academic-dark">Terms of Inquiry</a>
-          <a href="#" className="hover:text-academic-dark">Library Access</a>
+            ) : <Navigate to="/dashboard/courses" replace />
+          } />
+        </Routes>
+      </AnimatePresence>
+    </StudentLayout>
+  );
+}
+
+function StudentOverview({ courses, userProgress, onStartCourse }: any) {
+  const totalSessions: number = courses.reduce((acc: number, c: any) => acc + (c.courseId.sessions?.length || 0), 0);
+  const watchedSessions: number = (Object.values(userProgress) as any[]).reduce((acc: number, p: any) => acc + (p.length || 0), 0);
+  const progressPercent: number = totalSessions > 0 ? Math.round((watchedSessions / totalSessions) * 100) : 0;
+
+  return (
+    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 mb-12">
+        <div>
+          <h1 className="text-5xl font-serif text-slate-800 mb-4">Academic Overview</h1>
+          <p className="text-slate-500 font-serif italic italic font-light italic flex items-center gap-4">
+             <Clock size={16} /> Welcome back to your scholarly sanctuary.
+          </p>
         </div>
-        <div className="text-[9px] font-bold tracking-widest text-academic-gray/60 uppercase">
-          © 2024 KRUTANIC. ALL RIGHTS RESERVED.
+        <div className="flex gap-4">
+           <div className="bg-white px-8 py-4 rounded-2xl shadow-sm border border-emerald-50 text-center ring-1 ring-emerald-50/50">
+              <p className="text-[10px] font-bold tracking-[0.25em] text-emerald-600 mb-1 uppercase">Cumulative Knowledge</p>
+              <p className="text-3xl font-serif text-slate-800">{progressPercent}%</p>
+           </div>
         </div>
-      </footer>
+      </header>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+        {[
+          { label: 'Active Curricula', val: courses.length, icon: BookOpen, color: 'text-emerald-700' },
+          { label: 'Milestones Reached', val: watchedSessions, icon: Target, color: 'text-indigo-700' },
+          { label: 'Pending Research', val: '02', icon: Library, color: 'text-amber-700' },
+          { label: 'Honorifics Earned', val: '00', icon: Trophy, color: 'text-rose-700' },
+        ].map((s, i) => (
+          <div key={i} className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all hover:-translate-y-1 group">
+            <div className={`size-12 rounded-xl bg-slate-50 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform ${s.color}`}>
+              <s.icon size={24} />
+            </div>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{s.label}</p>
+            <p className="text-3xl font-serif text-slate-900">{s.val}</p>
+          </div>
+        ))}
+      </div>
+      <div className="space-y-8">
+        <h2 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.4em]">Resuming Curricula</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {courses.map(c => (
+             <button 
+              key={c._id}
+              onClick={() => onStartCourse(c)}
+              className="bg-white p-8 rounded-2xl border border-emerald-50 shadow-sm hover:border-emerald-600 transition-all text-left flex flex-col justify-between group h-64"
+             >
+               <div>
+                 <div className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest mb-3">Module Insight</div>
+                 <h3 className="text-xl font-serif text-slate-800 mb-4 leading-snug group-hover:text-emerald-800 transition-colors line-clamp-2">{c.courseId.title}</h3>
+               </div>
+               <div className="flex items-center justify-between text-slate-400">
+                 <span className="text-[10px] font-bold uppercase tracking-widest">Enter Classroom</span>
+                 <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
+               </div>
+             </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
 
-function CourseCard({ enrollment, onStartSession, userProgress, currentProject, currentDiary }: any) {
-  const course = enrollment.courseId;
-  const [isExpanded, setIsExpanded] = useState(false);
-
+function NoData({ placeholder }: { placeholder: string }) {
   return (
-    <div className="bg-white border-l-4 border-[#00897B] shadow-[0_10px_40px_rgba(0,121,107,0.1)] p-8 lg:p-12 transition-all hover:border-[#00BFA5]">
+    <div className="py-32 text-center border-2 border-dashed border-slate-200 rounded-3xl bg-slate-50/50">
+      <Library size={48} className="mx-auto text-slate-200 mb-6" />
+      <h2 className="text-2xl font-serif text-slate-400 mb-2 font-light italic">{placeholder}</h2>
+      <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">The archives appear to be awaiting your contribution.</p>
+    </div>
+  );
+}
+
+function CourseCard({ enrollment, onStartSession, userProgress, project, diary }: any) {
+  const course = enrollment.courseId;
+  return (
+    <div className="bg-white border-l-4 border-emerald-600 shadow-lg p-8 lg:p-12 transition-all hover:border-emerald-400 rounded-r-2xl border-y border-r border-slate-100">
       <div className="flex flex-col lg:flex-row justify-between items-start gap-8 mb-10">
         <div className="flex-grow">
           <div className="flex items-center gap-3 mb-4">
-             <span className="px-4 py-1 bg-emerald-50 text-[#00897B] text-[10px] font-bold tracking-[0.2em] uppercase rounded-full">Course ID: {course._id.slice(-6).toUpperCase()}</span>
+             <span className="px-4 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold tracking-[0.2em] uppercase rounded-full">Course ID: {course._id.slice(-6).toUpperCase()}</span>
           </div>
-          <h2 className="text-4xl font-serif text-academic-dark mb-4">{course.title}</h2>
-          <p className="text-academic-gray max-w-2xl font-serif italic font-light">"{course.description}"</p>
+          <h2 className="text-4xl font-serif text-slate-800 mb-4">{course.title}</h2>
+          <p className="text-slate-500 max-w-2xl font-serif italic font-light italic">"{course.description}"</p>
         </div>
         <div className="flex flex-col items-end gap-2 text-right">
-          <div className="text-[10px] font-bold text-emerald-600 uppercase tracking-[0.25em] mb-1">Certification Module</div>
-          <div className="text-2xl font-serif text-[#00897B] uppercase tracking-tight">Active</div>
+          <div className="text-[10px] font-bold text-emerald-600 uppercase tracking-[0.25em] mb-1">Certification Progress</div>
+          <div className="text-2xl font-serif text-emerald-700 uppercase tracking-tight">Active Scholar</div>
         </div>
       </div>
-
       <div className="space-y-4">
-        <div className="flex items-center justify-between border-b border-emerald-100 pb-4 mb-6">
+        <div className="flex items-center justify-between border-b border-emerald-50 pb-4 mb-6">
            <h3 className="text-[10px] font-bold tracking-[0.3em] text-emerald-800 uppercase">Curriculum Modules</h3>
-           <span className="text-[10px] font-bold text-[#00897B] uppercase">{course.sessions?.length || 0} Total</span>
+           <span className="text-[10px] font-bold text-emerald-600 uppercase">{course.sessions?.length || 0} Total</span>
         </div>
-        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {course.sessions?.map((s: any, i: number) => {
             const isCompleted = userProgress[course._id]?.includes(i);
-            const isLocked = !isCompleted && i >= (currentProject?.lockAfterSessions ?? 999) && !currentDiary?.isCompleted;
-
+            const isLocked = !isCompleted && i >= (project?.lockAfterSessions ?? 999) && !diary?.isCompleted;
             return (
               <button 
                 key={i}
                 onClick={() => onStartSession(enrollment, s, i)}
-                className={`group p-6 border transition-all text-left flex items-center justify-between ${isLocked ? 'border-gray-200 bg-gray-50/50 cursor-not-allowed' : 'border-emerald-50 hover:border-[#00BFA5] hover:bg-emerald-50/30'}`}
-                disabled={false} // We handle the lock in handleStartSession for better UX (showing Project view)
+                className={`group p-6 border transition-all text-left flex items-center justify-between rounded-xl ${isLocked ? 'border-slate-100 bg-slate-50/50 cursor-not-allowed grayscale' : 'border-emerald-50 hover:border-emerald-400 hover:bg-emerald-50/30'}`}
               >
-                <div className={isLocked ? 'opacity-40' : ''}>
-                  <div className="text-[8px] font-bold text-emerald-600 uppercase tracking-widest mb-1 text-opacity-70">Module {String(i + 1).padStart(2, '0')}</div>
-                  <div className="text-xs font-bold text-academic-dark uppercase group-hover:text-[#00897B] transition-colors">{s.sessionName}</div>
+                <div>
+                  <div className="text-[8px] font-bold text-emerald-600 uppercase tracking-widest mb-1">Module {String(i + 1).padStart(2, '0')}</div>
+                  <div className="text-xs font-bold text-slate-800 uppercase group-hover:text-emerald-700 transition-colors">{s.sessionName}</div>
                 </div>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${isLocked ? 'text-gray-300' : isCompleted ? 'bg-emerald-100 text-emerald-600' : 'text-emerald-200 group-hover:text-[#00897B] group-hover:bg-emerald-100'}`}>
-                  {isLocked ? <Lock size={12} /> : isCompleted ? <CheckCircle size={14} /> : <Play size={14} fill="currentColor" className="ml-0.5" />}
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${isLocked ? 'text-slate-300' : isCompleted ? 'bg-emerald-100 text-emerald-600' : 'text-emerald-200 group-hover:text-emerald-600'}`}>
+                  {isLocked ? <Lock size={12} /> : isCompleted ? <CheckCircle size={14} /> : <Play size={14} fill="currentColor" />}
                 </div>
               </button>
             );
@@ -367,61 +528,35 @@ function CourseCard({ enrollment, onStartSession, userProgress, currentProject, 
 
 function SessionView({ course, session, onBack }: any) {
   return (
-    <div className="bg-white min-h-[calc(100vh-80px)] flex flex-col items-center">
-      <div className="max-w-6xl w-full px-8 py-12 lg:py-20 flex flex-col items-center text-center">
-        <div className="mb-8">
-          <span className="academic-pill">Current Module</span>
+    <div className="bg-white min-h-[calc(100vh-80px)] p-8 lg:p-16 animate-in fade-in duration-500">
+      <button onClick={onBack} className="flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase text-slate-400 hover:text-emerald-600 mb-12 transition-colors group">
+        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back to Dashboard
+      </button>
+      <div className="max-w-6xl mx-auto space-y-12">
+        <header className="text-center space-y-4">
+          <span className="text-[10px] font-bold tracking-[0.4em] text-emerald-600 uppercase">Interactive Session</span>
+          <h1 className="text-5xl lg:text-6xl font-serif text-slate-800 leading-tight">{session.sessionName}</h1>
+          <p className="text-lg text-slate-500 font-serif italic italic font-light italic">{course.courseId.title}</p>
+        </header>
+        <div className="aspect-video bg-black rounded-3xl overflow-hidden shadow-2xl ring-8 ring-slate-50">
+          <iframe
+            src={`https://drive.google.com/file/d/${session.driveFileId}/preview`}
+            className="w-full h-full border-0"
+            allow="autoplay"
+          ></iframe>
         </div>
-        
-        <h1 className="text-5xl lg:text-7xl font-serif text-[#004D40] mb-6 leading-tight max-w-4xl font-light">
-          {session.sessionName}
-        </h1>
-        
-        <p className="text-xl font-serif text-emerald-700 italic font-light mb-16 max-w-2xl bg-emerald-50/50 px-6 py-2 rounded-full border border-emerald-100">
-          {course.courseId.title}
-        </p>
-
-        {/* Video Player Container with Green Glow */}
-        <div className="w-full relative group mb-20">
-          <div className="absolute -inset-4 bg-emerald-400/20 blur-3xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
-          <div className="relative bg-white p-2 sm:p-4 lg:p-6 shadow-[0_15px_50px_rgba(0,121,107,0.15)] ring-1 ring-emerald-100/50">
-            <div className="aspect-video bg-[#002D24] relative overflow-hidden">
-              <iframe
-                src={`https://drive.google.com/file/d/${session.driveFileId}/preview`}
-                className="w-full h-full border-0 contrast-[1.05]"
-                allow="autoplay; fullscreen"
-                allowFullScreen
-              ></iframe>
-            </div>
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row items-center gap-6 mb-20">
-          <button 
-            onClick={onBack}
-            className="academic-button-outline w-full sm:w-auto flex items-center justify-center gap-3 border-emerald-200 text-emerald-800 hover:bg-emerald-50"
-          >
-            <ArrowLeft size={16} />
-            Return to Syllabus
+        <div className="flex flex-col sm:flex-row justify-center gap-6 pt-12">
+          <button className="px-12 py-4 bg-emerald-700 text-white rounded-full font-bold uppercase tracking-widest text-xs hover:bg-emerald-800 transition-all shadow-xl shadow-emerald-200 flex items-center gap-3">
+             <PlayCircle size={18} /> Complete This Module
           </button>
-          <button className="academic-button-filled w-full sm:w-auto bg-[#00897B] hover:bg-[#00796B] shadow-emerald-200">
-            Complete Session
-          </button>
-        </div>
-
-        <div className="flex items-center gap-3 text-emerald-600/40">
-           <Book size={14} />
-           <span className="text-[10px] font-bold tracking-[0.4em] uppercase">The Scholarly Pursuit Continues</span>
         </div>
       </div>
     </div>
   );
 }
 
-function ProjectDiaryView({ project, diary, onSubmit, onBack, isSubmitting }: any) {
+function ProjectDiaryView({ project, diary, onSubmit, onBack, isSubmitting, hideBack }: any) {
   const [entries, setEntries] = useState<any[]>(diary?.entries || project.days.map((d: any) => ({ dayNumber: d.dayNumber, report: '' })));
-
   const handleEntryChange = (dayNumber: number, report: string) => {
     const updated = [...entries];
     const index = updated.findIndex(e => e.dayNumber === dayNumber);
@@ -432,49 +567,41 @@ function ProjectDiaryView({ project, diary, onSubmit, onBack, isSubmitting }: an
     }
     setEntries(updated);
   };
-
   const isFullyFilled = project.days.every((d: any) => 
     entries.find(e => e.dayNumber === d.dayNumber && e.report?.trim().length > 10)
   );
-
   return (
-    <div className="w-full">
-      <button 
-        onClick={onBack}
-        className="flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase text-academic-gray hover:text-academic-dark mb-12 transition-colors"
-      >
-        <ArrowLeft size={14} /> Back to Syllabus
-      </button>
-
-      <div className="bg-white border border-emerald-100 p-10 lg:p-16 shadow-[0_30px_100px_rgba(0,121,107,0.1)] relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 opacity-50"></div>
-        
-        <header className="relative z-10 mb-16">
-          <div className="flex items-center gap-3 mb-6">
-            <span className="px-4 py-1 bg-emerald-600 text-white text-[10px] font-bold tracking-[0.3em] uppercase rounded-full shadow-lg shadow-emerald-200">Compulsory Project</span>
-          </div>
-          <h1 className="text-5xl lg:text-7xl font-serif text-academic-dark mb-6 leading-tight">{project.projectName}</h1>
-          <p className="text-xl text-academic-gray font-serif italic font-light italic max-w-2xl">Your scholarly sessions are temporarily suspended. To resume, please document your daily research and practical findings in the diary below.</p>
+    <div className="w-full space-y-12 animate-in fade-in duration-500">
+      {!hideBack && (
+        <button onClick={onBack} className="flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase text-slate-400 hover:text-emerald-600 mb-12 transition-colors">
+          <ArrowLeft size={14} /> Back to Dashboard
+        </button>
+      )}
+      <div className="space-y-16">
+        <header className="space-y-4 border-b border-emerald-50 pb-12">
+          <span className="px-4 py-1 bg-emerald-600 text-white text-[9px] font-bold tracking-[0.3em] uppercase rounded-full">Compulsory Academic Challenge</span>
+          <h2 className="text-5xl font-serif text-slate-800">{project.projectName}</h2>
+          <p className="text-xl text-slate-500 font-serif italic font-light italic italic">Complete the following research modules to advance your certification.</p>
         </header>
-
-        <div className="space-y-12 relative z-10">
+        <div className="space-y-12">
           {project.days.map((day: any) => {
             const entry = entries.find(e => e.dayNumber === day.dayNumber);
             return (
-              <div key={day.dayNumber} className="group">
-                <div className="flex items-start gap-8 mb-4">
-                  <div className="w-12 h-12 bg-emerald-50 text-emerald-700 rounded-full flex items-center justify-center font-serif text-xl border border-emerald-100 flex-shrink-0">
+              <div key={day.dayNumber} className="bg-slate-50/50 p-8 rounded-2xl border border-slate-100">
+                <div className="flex flex-col md:flex-row gap-8">
+                  <div className="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center font-serif text-xl shadow-lg shadow-emerald-100 flex-shrink-0">
                     {day.dayNumber}
                   </div>
-                  <div className="pt-2">
-                    <h3 className="text-lg font-bold text-academic-dark uppercase tracking-tight mb-1">{day.topic}</h3>
-                    <p className="text-sm text-academic-gray font-serif italic mb-6">"{day.description}"</p>
-                    
+                  <div className="flex-grow space-y-6">
+                    <div>
+                      <h3 className="text-lg font-bold text-slate-800 uppercase tracking-tight mb-2">{day.topic}</h3>
+                      <p className="text-sm text-slate-500 font-serif italic">"{day.description}"</p>
+                    </div>
                     <textarea 
                       value={entry?.report || ''}
                       onChange={(e) => handleEntryChange(day.dayNumber, e.target.value)}
-                      placeholder="Enter your daily progress report here (minimum 10 characters)..."
-                      className="w-full bg-academic-light-gray/20 border border-emerald-50 p-6 text-sm font-sans italic outline-none focus:border-emerald-500 focus:bg-white transition-all h-32 resize-none rounded-sm shadow-inner"
+                      placeholder="Enter research findings (min 10 characters)..."
+                      className="w-full bg-white border border-slate-100 p-6 text-sm italic outline-none focus:ring-2 focus:ring-emerald-500/20 rounded-2xl shadow-inner min-h-[150px]"
                     />
                   </div>
                 </div>
@@ -482,42 +609,17 @@ function ProjectDiaryView({ project, diary, onSubmit, onBack, isSubmitting }: an
             );
           })}
         </div>
-
-        <div className="mt-20 pt-10 border-t border-emerald-50 flex flex-col md:flex-row justify-between items-center gap-8 relative z-10">
-          <div className="flex items-center gap-3 text-academic-gray">
-             <Calendar size={18} />
-             <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Documenting Excellence</span>
-          </div>
-
+        <div className="flex justify-end pt-8">
           <button 
             onClick={() => onSubmit(entries)}
             disabled={!isFullyFilled || isSubmitting}
-            className={`academic-button-filled px-12 h-14 flex items-center gap-3 transition-all ${isFullyFilled ? 'bg-emerald-700 hover:bg-emerald-800' : 'bg-gray-200 cursor-not-allowed opacity-50 text-gray-500'}`}
+            className={`px-12 py-4 rounded-full font-bold uppercase tracking-widest text-xs transition-all flex items-center gap-3 ${isFullyFilled ? 'bg-emerald-700 text-white shadow-xl shadow-emerald-200 hover:scale-105' : 'bg-slate-100 text-slate-400 cursor-not-allowed grayscale'}`}
           >
-            {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : diary?.isCompleted ? <Check size={18} /> : <Save size={18} />}
-            {diary?.isCompleted ? 'Update Scholarly Diary' : 'Submit & Unlock Sessions'}
+            {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
+            {diary?.isCompleted ? 'Update Research Diary' : 'Submit & Unlock Modules'}
           </button>
         </div>
-        
-        {!isFullyFilled && (
-           <p className="text-[9px] text-red-400 font-bold tracking-widest uppercase mt-4 text-right">Provide a detailed report for all days to unlock content.</p>
-        )}
       </div>
     </div>
-  );
-}
-
-function LoaderIcon() {
-  return (
-    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 2v4" />
-      <path d="M12 18v4" />
-      <path d="M4.93 4.93l2.83 2.83" />
-      <path d="M16.24 16.24l2.83 2.83" />
-      <path d="M2 12h4" />
-      <path d="M18 12h4" />
-      <path d="M4.93 19.07l2.83-2.83" />
-      <path d="M16.24 7.76l2.83-2.83" />
-    </svg>
   );
 }

@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Mail, ArrowRight, Loader2, ShieldCheck, GraduationCap, Lock, Eye, EyeOff } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Mail, ArrowRight, ShieldCheck, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
+import Logo from '../components/Logo';
+import DikshanntLoader from '../components/DikshanntLoader';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -9,6 +12,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [loginType, setLoginType] = useState<'student' | 'college'>('student');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,13 +21,20 @@ export default function Login() {
     setError('');
     
     try {
-      const res = await axios.post('/microcourses/login', { email, password });
-      localStorage.setItem('studentToken', res.data.token);
-      localStorage.setItem('studentEmail', res.data.user.email);
-      localStorage.setItem('studentName', res.data.user.fullName);
-      window.location.href = '/dashboard';
+      if (loginType === 'student') {
+        const res = await axios.post('/microcourses/login', { email, password });
+        localStorage.setItem('studentToken', res.data.token);
+        localStorage.setItem('studentEmail', res.data.user.email);
+        localStorage.setItem('studentName', res.data.user.fullName);
+        window.location.href = '/dashboard';
+      } else {
+        const res = await axios.post('/college/login', { email, password });
+        localStorage.setItem('collegeId', res.data.college._id);
+        localStorage.setItem('collegeName', res.data.college.collegeName);
+        window.location.href = '/college/dashboard';
+      }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      setError(err.response?.data?.message || 'Invalid credentials');
     } finally {
       setLoading(false);
     }
@@ -31,20 +42,23 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-surface flex items-center justify-center p-8 relative overflow-hidden">
+      <AnimatePresence>
+        {loading && <DikshanntLoader overlay />}
+      </AnimatePresence>
       <div className="absolute top-0 left-0 w-full h-1 bg-[#FE4323]"></div>
       
       <div className="container max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-16 relative z-10">
         {/* Branding Info */}
         <div className="flex-1 space-y-8">
           <div className="flex items-center gap-4">
-            <GraduationCap className="text-[#FE4323] w-12 h-12" strokeWidth={1} />
-            <h1 className="text-5xl font-serif text-primary tracking-tighter italic">Krutanic</h1>
+            <Logo height={48} />
+            <h1 className="text-5xl font-serif text-primary tracking-tighter italic">Dikshannt</h1>
           </div>
           <h2 className="text-4xl lg:text-6xl text-primary leading-tight mb-8">Access Your <br/>Premium Curriculum.</h2>
-          <p className="text-lg text-on-surface-variant font-light leading-relaxed max-w-md">Log in to your student portal to access certifications, live sessions, and industry-grade learning modules.</p>
+          <p className="text-lg text-on-surface-variant font-light leading-relaxed max-w-md">Log in to your {loginType} portal to access certifications, live sessions, and industry-grade learning modules.</p>
           
           <div className="flex items-center gap-4 text-[10px] font-bold tracking-widest uppercase text-outline">
-            <ShieldCheck className="text-primary" size={16} /> Secure Student Authentication
+            <ShieldCheck className="text-primary" size={16} /> Secure {loginType === 'student' ? 'Student' : 'Institutional'} Authentication
           </div>
         </div>
 
@@ -55,13 +69,30 @@ export default function Login() {
           className="w-full max-w-md bg-white p-12 editorial-shadow border-t-8 border-primary"
         >
           <div className="mb-10 text-center md:text-left">
+            <Link to="/" className="inline-block mb-6">
+               <Logo height={48} />
+            </Link>
             <h3 className="text-2xl text-primary mb-2">Welcome Back</h3>
-            <p className="text-xs text-on-surface-variant uppercase tracking-widest font-bold">Use the email you used for enrollment.</p>
+            <div className="flex gap-4 mb-6 p-1 bg-surface-container-low rounded">
+              <button 
+                onClick={() => setLoginType('student')}
+                className={`flex-1 py-2 text-[10px] font-bold tracking-widest uppercase rounded transition-all ${loginType === 'student' ? 'bg-white text-primary shadow-sm' : 'text-outline hover:text-primary'}`}
+              >
+                Student
+              </button>
+              <button 
+                onClick={() => setLoginType('college')}
+                className={`flex-1 py-2 text-[10px] font-bold tracking-widest uppercase rounded transition-all ${loginType === 'college' ? 'bg-white text-primary shadow-sm' : 'text-outline hover:text-primary'}`}
+              >
+                College
+              </button>
+            </div>
+            <p className="text-xs text-on-surface-variant uppercase tracking-widest font-bold">Access your {loginType === 'student' ? 'learning' : 'institutional'} portal</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-8">
             <div className="space-y-3">
-              <label className="text-[10px] font-bold tracking-widest uppercase text-outline">Student Email Address</label>
+              <label className="text-[10px] font-bold tracking-widest uppercase text-outline">{loginType === 'student' ? 'Student' : 'Admin'} Email Address</label>
               <div className="relative">
                 <Mail className="absolute left-0 top-1/2 -translate-y-1/2 text-outline" size={18} />
                 <input 

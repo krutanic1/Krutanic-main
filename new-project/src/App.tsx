@@ -7,7 +7,11 @@ import AdminEnrolls from './admin/AdminEnrolls';
 import AdminReferrals from './admin/AdminReferrals';
 import CourseCreator from './admin/CourseCreator';
 import AdminProjectCreator from './admin/AdminProjectCreator';
-import { Layout, Users, Ticket, Video, LogOut, ChevronRight, BookOpen } from 'lucide-react';
+import AdminColleges from './admin/AdminColleges';
+import AdminCertificates from './admin/AdminCertificates';
+import CollegeDashboard from './pages/CollegeDashboard';
+import { Layout, Users, Ticket, Video, LogOut, ChevronRight, BookOpen, GraduationCap, Award } from 'lucide-react';
+import Logo from './components/Logo';
 
 function AdminLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
@@ -17,6 +21,8 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
     { label: 'Referrals', path: '/admin/referrals', icon: Ticket },
     { label: 'Manage Courses', path: '/admin/courses', icon: Video },
     { label: 'Manage Projects', path: '/admin/projects', icon: BookOpen },
+    { label: 'Manage Colleges', path: '/admin/colleges', icon: GraduationCap },
+    { label: 'Certificates', path: '/admin/certificates', icon: Award },
   ];
 
   return (
@@ -24,7 +30,9 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
       {/* Admin Sidebar */}
       <aside className="w-64 bg-primary text-white p-8 flex flex-col fixed inset-y-0 z-50">
         <div className="mb-12">
-          <Link to="/" className="text-2xl font-serif tracking-tighter text-white">Krutanic</Link>
+          <Link to="/" className="flex items-center">
+            <Logo height={28} />
+          </Link>
           <div className="text-[10px] font-bold tracking-[0.2em] opacity-40 mt-2 uppercase">Root Admin</div>
         </div>
 
@@ -68,13 +76,18 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/dashboard" element={<StudentDashboard />} />
+      <Route path="/dashboard/*" element={<StudentDashboard />} />
       
       {/* Admin Protected Routes */}
       <Route path="/admin/enrolls" element={<AdminLayout><AdminEnrolls /></AdminLayout>} />
       <Route path="/admin/referrals" element={<AdminLayout><AdminReferrals /></AdminLayout>} />
       <Route path="/admin/courses" element={<AdminLayout><CourseCreator /></AdminLayout>} />
       <Route path="/admin/projects" element={<AdminLayout><AdminProjectCreator /></AdminLayout>} />
+      <Route path="/admin/colleges" element={<AdminLayout><AdminColleges /></AdminLayout>} />
+      <Route path="/admin/certificates" element={<AdminLayout><AdminCertificates /></AdminLayout>} />
+      
+      {/* College Portal */}
+      <Route path="/college/*" element={<CollegeDashboard />} />
       
       {/* Fallback to Admin Enrolls for /admin */}
       <Route path="/admin" element={<AdminLayout><AdminEnrolls /></AdminLayout>} />

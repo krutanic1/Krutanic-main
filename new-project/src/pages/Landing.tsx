@@ -19,6 +19,7 @@ import {
 import { motion } from 'motion/react';
 import axios from 'axios';
 import EnrollModal from '../components/EnrollModal';
+import Logo from '../components/Logo';
 
 const faculties = [
   { icon: Brain, title: "Technology & AI", desc: "Master the future of computation and machine intelligence." },
@@ -41,7 +42,7 @@ const courses = [
 ];
 
 const credentials = [
-  { title: "Krutanic Career Launch", desc: "Entry-level mastery in high-growth digital sectors.", volume: "5 Courses", effort: "10-12 hrs/week" },
+  { title: "Dikshannt Career Launch", desc: "Entry-level mastery in high-growth digital sectors.", volume: "5 Courses", effort: "10-12 hrs/week" },
   { title: "College Employability Accelerator", desc: "Holistic readiness for Fortune 500 recruitment.", volume: "8 Courses", effort: "15 hrs/week" },
   { title: "Digital Skills Certification", desc: "Validated technical fluency for modern workflows.", volume: "4 Courses", effort: "8 hrs/week" },
 ];
@@ -84,13 +85,15 @@ export default function Landing() {
       {/* Navigation */}
       <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 px-8 py-4 flex justify-between items-center ${scrolled ? 'bg-surface/90 backdrop-blur-md editorial-shadow' : 'bg-transparent'}`}>
         <div className="flex items-center gap-12">
-          <a href="#" className="text-2xl font-serif tracking-tighter text-primary">Krutanic</a>
+          <a href="#" className="flex items-center">
+            <Logo height={32} />
+          </a>
           <div className="hidden lg:flex gap-8">
             <a href="#" className="text-primary font-bold border-b-2 border-primary pb-1 text-xs tracking-[0.05em] uppercase">Courses & Programs</a>
             <a href="#" className="text-on-surface-variant font-medium hover:text-primary transition-colors text-xs tracking-[0.05em] uppercase">College Collaboration</a>
             <a href="#" className="text-on-surface-variant font-medium hover:text-primary transition-colors text-xs tracking-[0.05em] uppercase">For Institutions</a>
             <a href="#" className="text-on-surface-variant font-medium hover:text-primary transition-colors text-xs tracking-[0.05em] uppercase">Insights</a>
-            <a href="#" className="text-on-surface-variant font-medium hover:text-primary transition-colors text-xs tracking-[0.05em] uppercase">Why Krutanic</a>
+            <a href="#" className="text-on-surface-variant font-medium hover:text-primary transition-colors text-xs tracking-[0.05em] uppercase">Why Dikshannt</a>
           </div>
         </div>
         <div className="flex items-center gap-6">
@@ -113,13 +116,14 @@ export default function Landing() {
             </h1>
             <p className="text-lg text-on-surface-variant mb-10 font-light leading-relaxed max-w-lg">
               Krutanic offers flexible online courses, certificate programs, and institution collaboration models for modern learners and colleges.
+              Dikshannt offers flexible online courses, certificate programs, and institution collaboration models for modern learners and colleges.
             </p>
             <div className="flex flex-wrap gap-4">
               <button className="premium-gradient text-white px-8 py-4 rounded text-xs font-bold tracking-[0.05em] uppercase shadow-lg hover:opacity-90 transition-opacity">
                 Explore Courses & Programs
               </button>
               <button className="bg-transparent border border-outline-variant text-primary px-8 py-4 rounded text-xs font-bold tracking-[0.05em] uppercase hover:bg-surface-container-low transition-colors">
-                Partner With Krutanic
+                Partner With Dikshannt
               </button>
             </div>
           </motion.div>
@@ -306,7 +310,7 @@ export default function Landing() {
         <div className="container mx-auto px-8 relative z-10 text-center max-w-4xl">
           <Quote className="w-16 h-16 mx-auto mb-8 text-white/30" />
           <blockquote className="text-3xl md:text-5xl leading-tight mb-12 italic">
-            "Krutanic has redefined how our institution views career readiness. Their curriculum integration was seamless, and the impact on student employability was immediate."
+            "Dikshannt has redefined how our institution views career readiness. Their curriculum integration was seamless, and the impact on student employability was immediate."
           </blockquote>
           <div className="h-px w-24 bg-white/30 mx-auto mb-8"></div>
           <div className="font-bold tracking-widest uppercase text-xs">Dr. Alistair Vance</div>
@@ -375,7 +379,7 @@ export default function Landing() {
       {/* Footer */}
       <footer className="bg-stone-100 py-16 px-8 border-t border-stone-200">
          <div className="max-w-7xl mx-auto text-center">
-          <p className="text-[10px] font-bold tracking-widest uppercase text-outline">© 2024 Krutanic. The Digital Chancellor Framework.</p>
+          <p className="text-[10px] font-bold tracking-widest uppercase text-outline">© 2024 Dikshannt. The Digital Chancellor Framework.</p>
         </div>
       </footer>
 

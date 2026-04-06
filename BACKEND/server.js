@@ -48,6 +48,7 @@ const Scraper = require("./routes/Scraper");
 const microCourseRoutes = require("./routes/microCourseRoutes");
 const microCourseAdminRoutes = require("./routes/microCourseAdminRoutes");
 const microCourseAuthRoutes = require("./routes/microCourseAuthRoutes");
+const collegeRoutes = require("./routes/collegeRoutes");
 const cookieParser = require("cookie-parser");
 const os = require("os");
 
@@ -173,6 +174,9 @@ app.use("/", AddEvent);
 app.use("/api", microCourseRoutes);
 app.use("/api", microCourseAdminRoutes);
 app.use("/api", microCourseAuthRoutes);
+app.use("/api", collegeRoutes);
+const microCertRoutes = require("./routes/MicroCert");
+app.use("/api", microCertRoutes);
 
 //send mail with attchement
 app.use("/", sendMailWithAttchement);

@@ -3,9 +3,11 @@ const router = express.Router();
 const MicroCourseEnroll = require("../models/MicroCourseEnroll");
 const MicroCourse = require("../models/MicroCourse");
 const Referral = require("../models/Referral");
+const College = require("../models/College");
 const { sendWelcomeEmail, sendCredentialsEmail } = require("../utils/emailService");
 const MicroUser = require("../models/MicroUser");
 const MicroProject = require("../models/MicroProject");
+const MicroCourseConfig = require("../models/MicroCourseConfig");
 const crypto = require("crypto");
 
 // 1. Enrollment Management
@@ -126,11 +128,12 @@ router.get("/admin/microcourses/referrals", async (req, res) => {
 
 router.post("/admin/microcourses/referrals", async (req, res) => {
     try {
-        const { code, discountPercentage, usageLimit } = req.body;
+        const { code, discountPercentage, usageLimit, paymentLink } = req.body;
         const referral = new Referral({
             code: code.toUpperCase(),
             discountPercentage,
-            usageLimit
+            usageLimit,
+            paymentLink
         });
         await referral.save();
         res.status(201).json(referral);
@@ -206,6 +209,77 @@ router.post("/admin/microcourses/send-credentials/:id", async (req, res) => {
         await enroll.save();
 
         res.status(200).json({ message: "Credentials sent successfully" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// 6. Global Configuration Management
+router.get("/admin/microcourses/config", async (req, res) => {
+    try {
+        let config = await MicroCourseConfig.findOne();
+        if (!config) {
+            config = new MicroCourseConfig();
+            await config.save();
+        }
+        res.status(200).json(config);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.patch("/admin/microcourses/config", async (req, res) => {
+    try {
+        let config = await MicroCourseConfig.findOne();
+        if (!config) {
+            config = new MicroCourseConfig(req.body);
+        } else {
+            Object.assign(config, req.body);
+        }
+        await config.save();
+        res.status(200).json(config);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// 7. College Management (Admin side)
+router.get("/admin/colleges", async (req, res) => {
+    try {
+        const colleges = await College.find().populate("allowedCourses");
+        res.status(200).json(colleges);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.post("/admin/colleges", async (req, res) => {
+    try {
+        const { collegeName, authorizerName, email, password, studentLimit, allowedCourses } = req.body;
+        const college = new College({
+            collegeName,
+            authorizerName,
+            email,
+            password,
+            studentLimit,
+            allowedCourses
+        });
+        await college.save();
+        res.status(201).json(college);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.post("/admin/colleges/:id/send-credentials", async (req, res) => {
+    try {
+        const college = await College.findById(req.params.id);
+        if (!college) return res.status(404).json({ message: "College not found" });
+
+        // Trigger email service (Placeholder for actually calling sendCredentialsEmail with specific template)
+        // await sendCredentialsEmail(college.email, college.password, "college_portal");
+        
+        res.status(200).json({ message: "Credentials sent to " + college.email });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

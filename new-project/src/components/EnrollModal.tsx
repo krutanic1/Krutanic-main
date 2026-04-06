@@ -33,6 +33,8 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
   const [price, setPrice] = useState(course.price || 5000);
   const [discountApplied, setDiscountApplied] = useState(false);
   const [error, setError] = useState('');
+  const [commonPaymentLink, setCommonPaymentLink] = useState('');
+  const [customReferralLink, setCustomReferralLink] = useState('');
   const [fakeRegs, setFakeRegs] = useState<any[]>([]);
   const [currentRegIndex, setCurrentRegIndex] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
@@ -40,11 +42,24 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
   useEffect(() => {
     if (isOpen) {
       fetchFakeRegs();
+      fetchGlobalConfig();
       setPrice(course.price || 5000);
       setDiscountApplied(false);
+      setCustomReferralLink('');
       setFormData(prev => ({ ...prev, referralCode: '' }));
     }
   }, [isOpen, course]);
+
+  const fetchGlobalConfig = async () => {
+    try {
+      const res = await axios.get('/microcourses/config');
+      if (res.data.commonPaymentLink) {
+        setCommonPaymentLink(res.data.commonPaymentLink);
+      }
+    } catch (err) {
+      console.error('Failed to fetch global config', err);
+    }
+  };
 
   useEffect(() => {
     if (!isOpen || fakeRegs.length === 0) return;
@@ -89,6 +104,9 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
         const basePrice = course.price || 5000;
         setPrice(basePrice * (1 - res.data.discountPercentage / 100));
         setDiscountApplied(true);
+        if (res.data.paymentLink) {
+          setCustomReferralLink(res.data.paymentLink);
+        }
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Invalid referral code');
@@ -332,7 +350,8 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
                 onClick={() => {
                   if (step === 0) setStep(1);
                   else if (step === 1) {
-                    window.open('https://rzp.io/rzp/Instructor_Led_Slot_Booking', '_blank');
+                    const finalPaymentLink = customReferralLink || commonPaymentLink || 'https://rzp.io/rzp/Instructor_Led_Slot_Booking';
+                    window.open(finalPaymentLink, '_blank');
                     initEnrollment();
                   }
                   else if (step === 2) submitTransaction();

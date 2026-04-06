@@ -5,7 +5,7 @@ import axios from 'axios';
 import App from './App.tsx';
 import './index.css';
 
-axios.defaults.baseURL = 'http://localhost:5000/api';
+axios.defaults.baseURL = '/api'; // Use /api prefix for Vite proxy
 axios.defaults.withCredentials = true;
 
 createRoot(document.getElementById('root')!).render(
