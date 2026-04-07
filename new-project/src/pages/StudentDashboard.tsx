@@ -11,14 +11,21 @@ import {
   Target, 
   ArrowRight, 
   Library,
-  Play,
+  Download, 
+  Check, 
+  X, 
+  Printer,
+  Play, 
+  ChevronRight, 
+  Search, 
+  Bell, 
   Award,
+  Video,
+  FileText,
   ArrowLeft,
   Book,
   Lock,
   Save,
-  Check,
-  Download,
   FileCheck,
   History
 } from 'lucide-react';
@@ -43,6 +50,8 @@ export default function StudentDashboard() {
   const [isSubmittingDiary, setIsSubmittingDiary] = useState(false);
   const [isApplyingCert, setIsApplyingCert] = useState<string | null>(null);
   const [isDownloading, setIsDownloading] = useState<string | null>(null);
+  const [downloadData, setDownloadData] = useState<any>(null);
+  const [showCertModal, setShowCertModal] = useState(false);
   
   const certRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -130,28 +139,71 @@ export default function StudentDashboard() {
     }
   };
 
-  const downloadCertificate = async (courseId: string, studentName: string, courseTitle: string, certId: string) => {
-    setIsDownloading(courseId);
-    // Give time for component to render in the hidden div if needed (not needed for absolute positioning usually)
-    setTimeout(async () => {
-      if (certRef.current) {
-        try {
-          const canvas = await html2canvas(certRef.current, {
-            scale: 2, // High resolution
-            useCORS: true,
-            logging: false,
-          });
-          const link = document.createElement('a');
-          link.download = `Dikshannt_Certificate_${courseTitle.replace(/\s+/g, '_')}.png`;
-          link.href = canvas.toDataURL('image/png');
-          link.click();
-        } catch (err) {
-          console.error('Snapshot failed', err);
-        }
-      }
-      setIsDownloading(null);
-    }, 500);
+  const downloadCertificate = (courseId: string, studentName: string, courseTitle: string, certId: string) => {
+    setDownloadData({ studentName, courseTitle, certId, courseId });
+    setShowCertModal(true);
   };
+
+  const performCapture = async () => {
+    if (!downloadData || !certRef.current) return;
+    
+    setIsDownloading(downloadData.courseId);
+    try {
+      if (document.fonts) await document.fonts.ready;
+      await new Promise(r => setTimeout(r, 600));
+      
+      const canvas = await html2canvas(certRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: "#ffffff",
+        width: 1123,
+        height: 794,
+        scrollX: 0,
+        scrollY: 0,
+      });
+      
+      const link = document.createElement('a');
+      const fileName = `Dikshannt_Certificate_${downloadData.courseTitle.replace(/\s+/g, '_')}.png`;
+      link.download = fileName;
+      link.href = canvas.toDataURL('image/png', 1.0);
+      link.click();
+    } catch (err) {
+      console.error('Snapshot failed', err);
+      alert('Automatic download failed. Please use "Print / Save as PDF" instead.');
+    } finally {
+      setIsDownloading(null);
+    }
+  };
+
+  const handlePrint = () => {
+    if (!certRef.current) return;
+    const printWin = window.open('', '_blank');
+    if (printWin) {
+      printWin.document.write(`
+        <html>
+          <head>
+            <title>Scholarly Certificate - ${downloadData.courseTitle}</title>
+            <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+            <style>
+              @media print { @page { size: landscape; margin: 0; } body { margin: 0; } }
+              body { background: #fff; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+            </style>
+          </head>
+          <body>
+            ${certRef.current.innerHTML}
+          </body>
+        </html>
+      `);
+      printWin.document.close();
+      printWin.focus();
+      setTimeout(() => {
+        printWin.print();
+      }, 1000);
+    }
+  };
+
+  // Remove the old useEffect-based trigger
 
   const handleTrackSession = async (courseId: string, sessionIndex: number) => {
     try {
@@ -250,34 +302,98 @@ export default function StudentDashboard() {
             </div>
           } />
           <Route path="projects" element={
-            <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-               <header className="mb-12">
-                <h1 className="text-4xl font-serif text-slate-800 mb-4 drop-shadow-sm">Research & Scholarly Projects</h1>
-                <p className="text-slate-500 font-serif italic font-light">Complete your daily research diaries to unlock deeper knowledge.</p>
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-10"
+            >
+              <header className="py-10 px-8 rounded-3xl bg-white border border-slate-200 shadow-sm relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-1/3 h-full bg-emerald-50/30 -skew-x-12 translate-x-1/2"></div>
+                <div className="relative z-10 flex flex-col md:flex-row justify-between items-end gap-6 text-slate-800">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                       <span className="w-8 h-px bg-emerald-600"></span>
+                       <span className="text-[11px] font-bold tracking-[0.2em] text-emerald-600 uppercase">Scholarly Archives</span>
+                    </div>
+                    <h1 className="text-4xl font-serif">Research Laboratory</h1>
+                    <p className="text-sm text-slate-500 font-serif italic max-w-md">Document your scholarly journey and research findings to certify.</p>
+                  </div>
+                  <div className="flex gap-4">
+                     <div className="px-6 py-3 bg-slate-50 rounded-2xl border border-slate-100 text-center">
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Active Modules</p>
+                        <p className="text-xl font-serif text-slate-800">{Object.keys(projectsMap).length || 0}</p>
+                     </div>
+                  </div>
+                </div>
               </header>
+
               {Object.keys(projectsMap).length > 0 ? (
                 <div className="space-y-12">
-                  {courses.map(enroll => {
+                  {courses.map((enroll, idx) => {
                     const project = projectsMap[enroll.courseId._id];
                     if (!project) return null;
+                    const diary = diariesMap[enroll.courseId._id];
+                    const completedDays = diary?.entries?.filter((e: any) => e.report?.trim().length > 10).length || 0;
+                    const totalDays = project.days.length;
+                    const progress = Math.round((completedDays / totalDays) * 100);
+
                     return (
-                      <div key={enroll._id} className="bg-white p-8 rounded-2xl border border-emerald-50 shadow-sm mb-12">
-                        <ProjectDiaryView 
-                          project={project} 
-                          diary={diariesMap[enroll.courseId._id]} 
-                          onSubmit={submitDiary}
-                          hideBack
-                          onBack={() => {}}
-                          isSubmitting={isSubmittingDiary}
-                        />
-                      </div>
+                      <motion.div 
+                        key={enroll._id}
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.05 }}
+                        className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm hover:border-emerald-600/30 transition-all duration-300"
+                      >
+                         <div className="flex flex-col lg:flex-row justify-between items-start gap-8 mb-10 pb-10 border-b border-slate-50">
+                            <div className="flex items-center gap-5">
+                               <div className="size-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-700">
+                                  <Library size={24} />
+                               </div>
+                               <div>
+                                  <div className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mb-0.5">Assigned Research</div>
+                                  <h2 className="text-2xl font-serif text-slate-800">{project.projectName}</h2>
+                               </div>
+                            </div>
+                            
+                            <div className="flex items-center gap-6 bg-slate-50/80 px-6 py-4 rounded-2xl border border-slate-100 min-w-[280px]">
+                               <div className="flex-grow">
+                                  <div className="flex justify-between items-end mb-1.5">
+                                     <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Journal Status</span>
+                                     <span className="text-lg font-serif text-emerald-700">{progress}%</span>
+                                  </div>
+                                  <div className="h-1.5 w-full bg-slate-200/50 rounded-full overflow-hidden">
+                                     <motion.div 
+                                      initial={{ width: 0 }}
+                                      animate={{ width: `${progress}%` }}
+                                      transition={{ duration: 0.8, ease: "easeOut" }}
+                                      className="h-full bg-emerald-600"
+                                     />
+                                  </div>
+                               </div>
+                               <div className="text-right border-l border-slate-200 pl-6">
+                                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Modules</p>
+                                  <p className="text-lg font-serif text-slate-800 leading-none">{completedDays}/{totalDays}</p>
+                               </div>
+                            </div>
+                         </div>
+
+                         <ProjectDiaryView 
+                           project={project} 
+                           diary={diary} 
+                           onSubmit={submitDiary}
+                           hideBack
+                           onBack={() => {}}
+                           isSubmitting={isSubmittingDiary}
+                         />
+                      </motion.div>
                     );
                   })}
                 </div>
               ) : (
                 <NoData placeholder="No Research Projects Found" />
               )}
-            </div>
+            </motion.div>
           } />
           <Route path="certificates" element={
             <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -307,7 +423,8 @@ export default function StudentDashboard() {
                     const daysRemaining = 14 - eligibility.diffDays;
                     const isFullyWatched = userProgress[cId]?.length === enroll.courseId.sessions?.length;
                     const isProjectDone = diariesMap[cId]?.isCompleted;
-                    const readyToIssue = eligibility.isEligible && isFullyWatched && isProjectDone;
+                    // Allow issue if all criteria met OR if admin already delivered it
+                    const readyToIssue = (eligibility.isEligible && (isFullyWatched || isProjectDone)) || eligibility.status === 'delivered';
 
                     return (
                       <div key={enroll._id} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden group">
@@ -359,14 +476,6 @@ export default function StudentDashboard() {
                                   {isDownloading === cId ? <Loader2 className="animate-spin" size={14}/> : <Download size={14} />}
                                   Download Scholar Certificate
                                 </button>
-                                {/* Invisible Template for Snapshot */}
-                                <ProfessionalCertificate 
-                                  containerRef={certRef}
-                                  studentName={userFullName}
-                                  courseTitle={title}
-                                  certificateId={eligibility.certificate?.certificateId || 'VERIFYING'}
-                                  date={new Date().toLocaleDateString()}
-                                />
                               </>
                             ) : eligibility.status === 'pending' ? (
                                <button disabled className="w-full bg-slate-50 text-slate-400 py-4 rounded-2xl font-bold uppercase tracking-widest text-[10px] border border-slate-100 cursor-not-allowed">
@@ -388,7 +497,60 @@ export default function StudentDashboard() {
                  })}
               </div>
 
-              {courses.length === 0 && <NoData placeholder="No Certifications Found" />}
+               {courses.length === 0 && <NoData placeholder="No Certifications Found" />}
+            
+               {/* Certificate Preview Modal */}
+               {showCertModal && downloadData && (
+                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md overflow-y-auto">
+                   <div className="bg-white rounded-3xl w-full max-w-7xl overflow-hidden shadow-2xl relative my-auto">
+                     {/* Header */}
+                     <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                       <div>
+                         <h2 className="text-xl font-bold text-slate-800">Certificate Preview</h2>
+                         <p className="text-sm text-slate-500">Review your distinguished achievement</p>
+                       </div>
+                       <button 
+                         onClick={() => { setShowCertModal(false); setDownloadData(null); }}
+                         className="p-3 hover:bg-white hover:shadow-md rounded-full transition-all text-slate-400 hover:text-rose-500"
+                       >
+                         <X size={24} />
+                       </button>
+                     </div>
+ 
+                     {/* Preview Area */}
+                     <div className="p-12 bg-slate-100/50 flex justify-center overflow-x-auto min-h-[600px] items-center">
+                       <div className="transform scale-[0.6] lg:scale-[0.65] xl:scale-[0.8] origin-center shadow-2xl">
+                         <ProfessionalCertificate 
+                           containerRef={certRef}
+                           studentName={downloadData.studentName}
+                           courseTitle={downloadData.courseTitle}
+                           certificateId={downloadData.certId}
+                           date={new Date().toLocaleDateString()}
+                         />
+                       </div>
+                     </div>
+ 
+                     {/* Actions */}
+                     <div className="p-8 border-t border-slate-100 bg-white flex flex-col sm:flex-row items-center justify-center gap-4">
+                       <button 
+                         onClick={performCapture}
+                         disabled={!!isDownloading}
+                         className="w-full sm:w-auto px-10 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-bold uppercase tracking-widest text-xs shadow-lg shadow-emerald-100 transition-all flex items-center justify-center gap-3"
+                       >
+                         {isDownloading ? <Loader2 className="animate-spin" size={18}/> : <Download size={18} />}
+                         Save as Image (PNG)
+                       </button>
+                       <button 
+                         onClick={handlePrint}
+                         className="w-full sm:w-auto px-10 py-4 bg-slate-800 hover:bg-slate-900 text-white rounded-2xl font-bold uppercase tracking-widest text-xs shadow-lg shadow-slate-200 transition-all flex items-center justify-center gap-3"
+                       >
+                         <Printer size={18} />
+                         Print / Save as PDF
+                       </button>
+                     </div>
+                   </div>
+                 </div>
+               )}
             </div>
           } />
           <Route path="session" element={
@@ -557,6 +719,7 @@ function SessionView({ course, session, onBack }: any) {
 
 function ProjectDiaryView({ project, diary, onSubmit, onBack, isSubmitting, hideBack }: any) {
   const [entries, setEntries] = useState<any[]>(diary?.entries || project.days.map((d: any) => ({ dayNumber: d.dayNumber, report: '' })));
+  
   const handleEntryChange = (dayNumber: number, report: string) => {
     const updated = [...entries];
     const index = updated.findIndex(e => e.dayNumber === dayNumber);
@@ -567,58 +730,100 @@ function ProjectDiaryView({ project, diary, onSubmit, onBack, isSubmitting, hide
     }
     setEntries(updated);
   };
+
   const isFullyFilled = project.days.every((d: any) => 
     entries.find(e => e.dayNumber === d.dayNumber && e.report?.trim().length > 10)
   );
+
   return (
-    <div className="w-full space-y-12 animate-in fade-in duration-500">
+    <div className="w-full space-y-8">
       {!hideBack && (
-        <button onClick={onBack} className="flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase text-slate-400 hover:text-emerald-600 mb-12 transition-colors">
+        <button onClick={onBack} className="flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase text-slate-400 hover:text-emerald-600 mb-10 transition-colors">
           <ArrowLeft size={14} /> Back to Dashboard
         </button>
       )}
-      <div className="space-y-16">
-        <header className="space-y-4 border-b border-emerald-50 pb-12">
-          <span className="px-4 py-1 bg-emerald-600 text-white text-[9px] font-bold tracking-[0.3em] uppercase rounded-full">Compulsory Academic Challenge</span>
-          <h2 className="text-5xl font-serif text-slate-800">{project.projectName}</h2>
-          <p className="text-xl text-slate-500 font-serif italic font-light italic italic">Complete the following research modules to advance your certification.</p>
-        </header>
-        <div className="space-y-12">
-          {project.days.map((day: any) => {
-            const entry = entries.find(e => e.dayNumber === day.dayNumber);
-            return (
-              <div key={day.dayNumber} className="bg-slate-50/50 p-8 rounded-2xl border border-slate-100">
-                <div className="flex flex-col md:flex-row gap-8">
-                  <div className="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center font-serif text-xl shadow-lg shadow-emerald-100 flex-shrink-0">
-                    {day.dayNumber}
-                  </div>
-                  <div className="flex-grow space-y-6">
+      
+      <div className="grid grid-cols-1 gap-6">
+        {project.days.map((day: any, idx: number) => {
+          const entry = entries.find(e => e.dayNumber === day.dayNumber);
+          const isFilled = entry?.report?.trim().length > 10;
+
+          return (
+            <motion.div 
+              key={day.dayNumber}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.03 }}
+              className={`rounded-2xl border transition-all duration-200 ${
+                isFilled 
+                  ? 'bg-emerald-50/20 border-emerald-100 shadow-sm' 
+                  : 'bg-white border-slate-100 hover:border-slate-200'
+              }`}
+            >
+              <div className="flex flex-col md:flex-row">
+                <div className={`md:w-16 flex flex-col items-center justify-center p-5 border-b md:border-b-0 md:border-r border-slate-100 ${
+                  isFilled ? 'text-emerald-600 bg-emerald-50/50' : 'text-slate-400 bg-slate-50/50'
+                }`}>
+                  <span className="text-[8px] font-bold uppercase tracking-widest opacity-60 mb-1">Day</span>
+                  <span className="text-xl font-serif leading-none">{day.dayNumber}</span>
+                  {isFilled && <Check size={14} className="mt-3 text-emerald-600" />}
+                </div>
+
+                <div className="flex-grow p-6 space-y-4">
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                      <h3 className="text-lg font-bold text-slate-800 uppercase tracking-tight mb-2">{day.topic}</h3>
-                      <p className="text-sm text-slate-500 font-serif italic">"{day.description}"</p>
+                      <h3 className="text-[11px] font-bold text-slate-800 uppercase tracking-wider mb-1 line-clamp-1">
+                        {day.topic}
+                      </h3>
+                      <p className="text-[11px] text-slate-400 font-serif italic truncate max-w-md">
+                        "{day.description}"
+                      </p>
                     </div>
-                    <textarea 
-                      value={entry?.report || ''}
-                      onChange={(e) => handleEntryChange(day.dayNumber, e.target.value)}
-                      placeholder="Enter research findings (min 10 characters)..."
-                      className="w-full bg-white border border-slate-100 p-6 text-sm italic outline-none focus:ring-2 focus:ring-emerald-500/20 rounded-2xl shadow-inner min-h-[150px]"
-                    />
+                    {isFilled && (
+                      <span className="px-3 py-1 bg-emerald-600 text-white text-[8px] font-bold uppercase tracking-widest rounded-full">Recorded</span>
+                    )}
                   </div>
+                  
+                  <textarea 
+                    value={entry?.report || ''}
+                    onChange={(e) => handleEntryChange(day.dayNumber, e.target.value)}
+                    placeholder="Transcribe findings..."
+                    className="w-full bg-white border border-slate-100 p-4 text-xs italic outline-none focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500/20 rounded-xl transition-all resize-none font-serif min-h-[100px]"
+                  />
                 </div>
               </div>
-            );
-          })}
+            </motion.div>
+          );
+        })}
+      </div>
+
+      <div className="flex flex-col sm:flex-row justify-between items-center bg-slate-50/50 p-6 rounded-2xl border border-slate-100 mt-8 gap-4">
+        <div className="flex items-center gap-4">
+           <div className={`size-10 rounded-full flex items-center justify-center ${isFullyFilled ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-200 text-slate-400'}`}>
+              <Award size={20} />
+           </div>
+           <div className="text-left">
+              <p className="text-[10px] font-bold text-slate-800 uppercase tracking-widest">Certification Requirement</p>
+              <p className="text-[9px] text-slate-400 font-bold uppercase">All modules must be documented</p>
+           </div>
         </div>
-        <div className="flex justify-end pt-8">
-          <button 
-            onClick={() => onSubmit(entries)}
-            disabled={!isFullyFilled || isSubmitting}
-            className={`px-12 py-4 rounded-full font-bold uppercase tracking-widest text-xs transition-all flex items-center gap-3 ${isFullyFilled ? 'bg-emerald-700 text-white shadow-xl shadow-emerald-200 hover:scale-105' : 'bg-slate-100 text-slate-400 cursor-not-allowed grayscale'}`}
-          >
-            {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
-            {diary?.isCompleted ? 'Update Research Diary' : 'Submit & Unlock Modules'}
-          </button>
-        </div>
+        
+        <button 
+          onClick={() => onSubmit(entries)}
+          disabled={!isFullyFilled || isSubmitting}
+          className={`px-10 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] transition-all flex items-center gap-3 ${
+            isFullyFilled 
+              ? 'bg-slate-900 text-white hover:bg-black shadow-lg' 
+              : 'bg-slate-100 text-slate-300 cursor-not-allowed'
+          }`}
+        >
+          {isSubmitting ? (
+            <Loader2 className="animate-spin" size={14} />
+          ) : (
+            <Save size={14} />
+          )}
+          {diary?.isCompleted ? 'Update Documentation' : 'Submit Research Journal'}
+        </button>
       </div>
     </div>
   );
