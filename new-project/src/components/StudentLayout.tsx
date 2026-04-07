@@ -11,7 +11,9 @@ import {
   Library,
   Bell,
   User,
-  Search
+  Search,
+  Menu,
+  X
 } from 'lucide-react';
 import Logo from './Logo';
 
@@ -20,6 +22,7 @@ interface StudentLayoutProps {
 }
 
 export default function StudentLayout({ children }: StudentLayoutProps) {
+  const [isOpen, setIsOpen] = React.useState(false);
   const location = useLocation();
   const studentName = localStorage.getItem('studentName') || 'Scholar';
   
@@ -38,9 +41,25 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex font-sans">
+    <div className="min-h-screen bg-slate-50 flex font-sans overflow-x-hidden">
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[45] lg:hidden animate-in fade-in duration-300"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-72 bg-gradient-to-b from-[#003d33] to-[#00251a] text-white flex flex-col fixed inset-y-0 z-50 shadow-2xl">
+      <aside className={`w-72 bg-gradient-to-b from-[#003d33] to-[#00251a] text-white flex flex-col fixed inset-y-0 z-50 shadow-2xl transition-transform duration-500 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+        {/* Mobile Close Button */}
+        <button 
+          onClick={() => setIsOpen(false)}
+          className="lg:hidden absolute top-6 right-6 p-2 text-white/40 hover:text-white transition-colors"
+        >
+          <X size={24} />
+        </button>
+
         {/* Logo Section */}
         <div className="p-8 pb-12">
           <Link to="/" className="block group">
@@ -103,16 +122,26 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 ml-72 min-h-screen relative">
+      <main className="flex-1 lg:ml-72 min-h-screen relative w-full">
         {/* Top Header Bar */}
-        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-12 flex justify-between items-center">
-          <div className="flex items-center gap-4 bg-slate-100 px-4 py-2 rounded-full border border-slate-200 w-96 transition-all focus-within:ring-2 focus-within:ring-emerald-500/20">
-            <Search size={16} className="text-slate-400" />
-            <input 
-              type="text" 
-              placeholder="Search curricula or research..." 
-              className="bg-transparent border-none outline-none text-sm font-serif italic text-slate-600 w-full"
-            />
+        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-6 lg:px-12 flex justify-between items-center">
+          <div className="flex items-center gap-4 flex-grow lg:flex-none">
+            {/* Mobile Toggle */}
+            <button 
+              onClick={() => setIsOpen(true)}
+              className="lg:hidden p-2 text-slate-400 hover:text-emerald-600 transition-colors"
+            >
+              <Menu size={24} />
+            </button>
+
+            <div className="flex items-center gap-4 bg-slate-100 px-4 py-2 rounded-full border border-slate-200 w-full lg:w-96 transition-all focus-within:ring-2 focus-within:ring-emerald-500/20">
+              <Search size={16} className="text-slate-400" />
+              <input 
+                type="text" 
+                placeholder="Search curricula or research..." 
+                className="bg-transparent border-none outline-none text-sm font-serif italic text-slate-600 w-full"
+              />
+            </div>
           </div>
 
           <div className="flex items-center gap-6">
@@ -134,7 +163,7 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
         </header>
 
         {/* Content */}
-        <div className="p-12 pb-24 max-w-7xl mx-auto">
+        <div className="p-6 lg:p-12 pb-24 max-w-7xl mx-auto">
           {children}
         </div>
 

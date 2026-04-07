@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Plus, Trash2, Building2, Users, BookOpen, Loader2, X, GraduationCap, Mail, Lock, ShieldCheck, Send } from 'lucide-react';
+import { Plus, Trash2, Building2, Users, BookOpen, Loader2, X, GraduationCap, Mail, Lock, ShieldCheck, Send, Edit, Trash } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AdminColleges() {
@@ -8,6 +8,7 @@ export default function AdminColleges() {
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingCollege, setEditingCollege] = useState<any>(null);
   const [newCollege, setNewCollege] = useState({
     collegeName: '',
     authorizerName: '',
@@ -48,15 +49,43 @@ export default function AdminColleges() {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post('/admin/colleges', newCollege);
+      if (editingCollege) {
+        await axios.put(`/admin/colleges/${editingCollege._id}`, newCollege);
+      } else {
+        await axios.post('/admin/colleges', newCollege);
+      }
       setIsFormOpen(false);
+      setEditingCollege(null);
       setNewCollege({ collegeName: '', authorizerName: '', email: '', password: '', studentLimit: 100, allowedCourses: [] });
       fetchData();
     } catch (err) {
-      alert('Failed to create college');
+      alert('Failed to save college');
     } finally {
       setLoading(false);
     }
+  };
+
+  const deleteCollege = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this college? All associated students will also be removed.')) return;
+    try {
+      await axios.delete(`/admin/colleges/${id}`);
+      fetchData();
+    } catch (err) {
+      alert('Failed to delete college');
+    }
+  };
+
+  const handleEdit = (college: any) => {
+    setEditingCollege(college);
+    setNewCollege({
+      collegeName: college.collegeName,
+      authorizerName: college.authorizerName,
+      email: college.email,
+      password: college.password,
+      studentLimit: college.studentLimit,
+      allowedCourses: college.allowedCourses.map((c: any) => c._id || c)
+    });
+    setIsFormOpen(true);
   };
 
   const sendCredentials = async (id: string) => {
@@ -105,12 +134,28 @@ export default function AdminColleges() {
                 <div className="bg-primary/5 p-3 rounded-lg text-primary">
                   <Building2 size={24} />
                 </div>
-                <button 
-                  onClick={() => sendCredentials(c._id)}
-                  className="flex items-center gap-2 bg-surface hover:bg-primary/10 text-primary px-4 py-2 rounded text-[9px] font-bold tracking-widest uppercase transition-all border border-primary/20"
-                >
-                  <Send size={14} /> Send Credentials
-                </button>
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => handleEdit(c)}
+                    className="p-3 text-slate-400 hover:text-primary hover:bg-slate-50 rounded-full transition-all"
+                    title="Edit College"
+                  >
+                    <Edit size={18} />
+                  </button>
+                  <button 
+                    onClick={() => deleteCollege(c._id)}
+                    className="p-3 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-all"
+                    title="Delete College"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                  <button 
+                    onClick={() => sendCredentials(c._id)}
+                    className="flex items-center gap-2 bg-primary/5 hover:bg-primary text-primary hover:text-white px-5 py-3 rounded text-[10px] font-bold tracking-widest uppercase transition-all border border-primary/10 ml-2"
+                  >
+                    <Send size={14} /> Send Credentials
+                  </button>
+                </div>
               </div>
 
               <div>
@@ -157,8 +202,10 @@ export default function AdminColleges() {
                   <GraduationCap size={24} />
                 </div>
                 <div>
-                  <h2 className="text-3xl text-primary">New Institution</h2>
-                  <p className="text-[10px] uppercase tracking-widest text-outline font-bold">Register a new college partnership</p>
+                  <h2 className="text-3xl text-primary">{editingCollege ? 'Modify Institution' : 'New Institution'}</h2>
+                  <p className="text-[10px] uppercase tracking-widest text-outline font-bold">
+                    {editingCollege ? `Updating authority for ${editingCollege.collegeName}` : 'Register a new college partnership'}
+                  </p>
                 </div>
               </div>
 
@@ -252,7 +299,7 @@ export default function AdminColleges() {
                   disabled={loading}
                   className="w-full bg-[#FE4323] text-white py-5 rounded text-xs font-bold tracking-widest uppercase hover:bg-[#E03A1C] transition-all shadow-xl active:scale-[0.98] disabled:opacity-50 mt-4"
                 >
-                  {loading ? <Loader2 className="animate-spin" size={20} /> : 'Register Institution & Courses'}
+                  {loading ? <Loader2 className="animate-spin" size={20} /> : editingCollege ? 'Save Institutional Changes' : 'Register Institution & Courses'}
                 </button>
               </form>
             </motion.div>

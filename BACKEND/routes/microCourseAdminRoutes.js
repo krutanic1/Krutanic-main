@@ -98,7 +98,7 @@ router.delete("/admin/microcourses/courses/:id", async (req, res) => {
     }
 });
 
-// Add a session to a course
+// 2.1 Session Management
 router.post("/admin/microcourses/courses/:id/session", async (req, res) => {
     try {
         const { id } = req.params;
@@ -111,6 +111,45 @@ router.post("/admin/microcourses/courses/:id/session", async (req, res) => {
         await course.save();
 
         res.status(201).json(course);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.patch("/admin/microcourses/courses/:courseId/session/:sessionId", async (req, res) => {
+    try {
+        const { courseId, sessionId } = req.params;
+        const { sessionName, driveFileId } = req.body;
+
+        const course = await MicroCourse.findOneAndUpdate(
+            { _id: courseId, "sessions._id": sessionId },
+            { 
+                $set: { 
+                    "sessions.$.sessionName": sessionName, 
+                    "sessions.$.driveFileId": driveFileId 
+                } 
+            },
+            { new: true }
+        );
+
+        if (!course) return res.status(404).json({ message: "Course or session not found" });
+        res.status(200).json(course);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.delete("/admin/microcourses/courses/:courseId/session/:sessionId", async (req, res) => {
+    try {
+        const { courseId, sessionId } = req.params;
+        const course = await MicroCourse.findByIdAndUpdate(
+            courseId,
+            { $pull: { sessions: { _id: sessionId } } },
+            { new: true }
+        );
+
+        if (!course) return res.status(404).json({ message: "Course not found" });
+        res.status(200).json(course);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -280,6 +319,48 @@ router.post("/admin/colleges/:id/send-credentials", async (req, res) => {
         // await sendCredentialsEmail(college.email, college.password, "college_portal");
         
         res.status(200).json({ message: "Credentials sent to " + college.email });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.put("/admin/microcourses/projects/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatedProject = await MicroProject.findByIdAndUpdate(id, req.body, { new: true });
+        res.status(200).json(updatedProject);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.delete("/admin/microcourses/projects/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        await MicroProject.findByIdAndDelete(id);
+        res.status(200).json({ message: "Project deleted successfully." });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.put("/admin/colleges/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatedCollege = await College.findByIdAndUpdate(id, req.body, { new: true });
+        res.status(200).json(updatedCollege);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.delete("/admin/colleges/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        await College.findByIdAndDelete(id);
+        // Also delete associated students for data integrity
+        await MicroUser.deleteMany({ collegeId: id });
+        res.status(200).json({ message: "College and associated members deleted." });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

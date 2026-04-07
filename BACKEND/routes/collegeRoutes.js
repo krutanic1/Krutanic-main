@@ -71,16 +71,68 @@ router.get("/college/:collegeId/students", async (req, res) => {
     }
 });
 
+const nodemailer = require("nodemailer");
+
 // 5. Send credentials to student
 router.post("/college/students/:id/send-credentials", async (req, res) => {
     try {
         const student = await MicroUser.findById(req.params.id);
         if (!student) return res.status(404).json({ message: "Student not found" });
 
-        // Trigger email service placeholder
-        res.status(200).json({ message: "Credentials sent to " + student.email });
+        const emailMessage = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                <div style="background-color: #FE4323; color: #fff; text-align: center; padding: 30px;">
+                    <h1 style="margin: 0; font-size: 24px;">Welcome to Dikshannt</h1>
+                    <p style="margin: 10px 0 0; opacity: 0.9;">Your scholarly research hub</p>
+                </div>
+                <div style="padding: 40px; color: #333;">
+                    <p style="font-size: 16px;">Dear <strong>${student.fullName}</strong>,</p>
+                    <p style="line-height: 1.6; color: #555;">Your institution has enrolled you in the Dikshannt portal. You now have access to your premium academic curriculum and research laboratory.</p>
+                    
+                    <div style="background-color: #f9f9f9; padding: 25px; border-radius: 8px; margin: 30px 0; border: 1px solid #eee;">
+                        <h2 style="margin: 0 0 15px; font-size: 14px; text-transform: uppercase; color: #888; letter-spacing: 1px;">Access Credentials</h2>
+                        <p style="margin: 5px 0;"><strong>Portal URL:</strong> <a href="https://micro-wine.vercel.app/login" style="color: #FE4323; text-decoration: none;">micro-wine.vercel.app/login</a></p>
+                        <p style="margin: 5px 0;"><strong>Username:</strong> ${student.email}</p>
+                        <p style="margin: 5px 0;"><strong>Access Password:</strong> ${student.password}</p>
+                    </div>
+
+                    <p style="line-height: 1.6; color: #555;">Please log in to complete your profile and begin your research journey.</p>
+                    <p style="margin-top: 40px; font-size: 14px; color: #333;">Best regards,<br>The Dikshannt Academic Team</p>
+                </div>
+                <div style="background-color: #f4f4f4; text-align: center; padding: 15px; font-size: 11px; color: #999;">
+                    &copy; 2026 Dikshannt Research Hub. All Rights Reserved.
+                </div>
+            </div>
+        `;
+
+        const transporter = nodemailer.createTransport({
+            host: process.env.SMTP_HOST,
+            port: process.env.SMTP_PORT,
+            secure: false,
+            auth: {
+                user: process.env.SMTP_MAIL,
+                pass: process.env.SMTP_PASSWORD,
+            },
+            tls: {
+                rejectUnauthorized: false,
+            },
+            pool: true,
+        });
+
+        const mailOptions = {
+            from: process.env.SMTP_MAIL,
+            to: student.email,
+            subject: "Your Login Credentials for Dikshannt",
+            html: emailMessage,
+            priority: "high",
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        res.status(200).json({ message: "Credentials sent successfully to " + student.email });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error("Email Error:", error);
+        res.status(500).json({ error: "Failed to send credentials: " + error.message });
     }
 });
 

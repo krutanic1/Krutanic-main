@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Plus, Trash2, PlusCircle, Save, Loader2, BookOpen, Clock, Layout, ChevronRight } from 'lucide-react';
+import { Plus, Trash2, PlusCircle, Save, Loader2, BookOpen, Clock, Layout, ChevronRight, Edit, Trash, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AdminProjectCreator() {
@@ -8,9 +8,11 @@ export default function AdminProjectCreator() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCourseId, setSelectedCourseId] = useState('');
+  const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   
   const [projectData, setProjectData] = useState({
     projectName: '',
+    description: '',
     lockAfterSessions: 2,
     days: [
       { dayNumber: 1, topic: '', description: '' }
@@ -18,11 +20,14 @@ export default function AdminProjectCreator() {
   });
 
   const fetchCourses = async () => {
+    setLoading(true);
     try {
       const res = await axios.get('/admin/microcourses/courses');
       setCourses(res.data);
     } catch (err) {
       console.error('Failed to fetch courses', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -72,13 +77,23 @@ export default function AdminProjectCreator() {
     if (!selectedCourseId) return alert('Select a course first');
     setLoading(true);
     try {
-      await axios.post('/admin/microcourses/projects', {
-        ...projectData,
-        courseId: selectedCourseId
-      });
-      alert('Project created successfully');
+      if (editingProjectId) {
+        await axios.put(`/admin/microcourses/projects/${editingProjectId}`, {
+          ...projectData,
+          courseId: selectedCourseId
+        });
+        alert('Project updated successfully');
+      } else {
+        await axios.post('/admin/microcourses/projects', {
+          ...projectData,
+          courseId: selectedCourseId
+        });
+        alert('Project created successfully');
+      }
+      setEditingProjectId(null);
       setProjectData({
         projectName: '',
+        description: '',
         lockAfterSessions: 2,
         days: [{ dayNumber: 1, topic: '', description: '' }]
       });
@@ -88,6 +103,31 @@ export default function AdminProjectCreator() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const deleteProject = async (id: string) => {
+    if (!window.confirm('Delete this project? This will affect all enrolled students.')) return;
+    try {
+      await axios.delete(`/admin/microcourses/projects/${id}`);
+      fetchProjects(selectedCourseId);
+    } catch (err) {
+      alert('Failed to delete project');
+    }
+  };
+
+  const handleEdit = (project: any) => {
+    setEditingProjectId(project._id);
+    setProjectData({
+      projectName: project.projectName,
+      description: project.description || '',
+      lockAfterSessions: project.lockAfterSessions,
+      days: project.days.map((d: any) => ({
+        dayNumber: d.dayNumber,
+        topic: d.topic,
+        description: d.description
+      }))
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -100,8 +140,23 @@ export default function AdminProjectCreator() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Creation Form */}
         <div className="bg-white p-10 border border-outline-variant/10 shadow-[0_15px_50px_rgba(0,121,107,0.05)] ring-1 ring-emerald-50 rounded-sm">
-          <h2 className="text-2xl font-serif text-academic-dark mb-8 flex items-center gap-3">
-            <PlusCircle className="text-emerald-600" size={24} /> Create New Project
+          <h2 className="text-2xl font-serif text-academic-dark mb-8 flex items-center justify-between">
+            <span className="flex items-center gap-3">
+              <PlusCircle className={editingProjectId ? "text-blue-600" : "text-emerald-600"} size={24} /> 
+              {editingProjectId ? 'Modify Project' : 'Create New Project'}
+            </span>
+            {editingProjectId && (
+               <button 
+                type="button"
+                onClick={() => {
+                  setEditingProjectId(null);
+                  setProjectData({ projectName: '', lockAfterSessions: 2, days: [{ dayNumber: 1, topic: '', description: '' }] });
+                }}
+                className="text-[9px] font-bold uppercase tracking-widest text-rose-500 hover:text-rose-700 flex items-center gap-1"
+               >
+                 <X size={14} /> Cancel Edit
+               </button>
+            )}
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-8">
@@ -197,10 +252,10 @@ export default function AdminProjectCreator() {
             <button 
               type="submit" 
               disabled={loading} 
-              className="w-full academic-button-filled mt-8 flex items-center justify-center gap-3 bg-emerald-700 hover:bg-emerald-800"
+              className={`w-full academic-button-filled mt-8 flex items-center justify-center gap-3 ${editingProjectId ? 'bg-blue-700 hover:bg-blue-800' : 'bg-emerald-700 hover:bg-emerald-800'}`}
             >
               {loading ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
-              Publish Project Requirements
+              {editingProjectId ? 'Update Project Requirements' : 'Publish Project Requirements'}
             </button>
           </form>
         </div>
@@ -228,7 +283,24 @@ export default function AdminProjectCreator() {
                   <div className="flex justify-between items-start mb-6">
                     <div>
                       <h3 className="text-xl font-serif text-academic-dark">{p.projectName}</h3>
-                      <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mt-1">Compulsory after {p.lockAfterSessions} sessions</p>
+                      {p.description && <p className="text-xs text-academic-gray italic line-clamp-1 mt-1">"{p.description}"</p>}
+                      <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mt-2">Compulsory after {p.lockAfterSessions} sessions</p>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <button 
+                        onClick={() => handleEdit(p)}
+                        className="p-2 text-academic-gray opacity-30 hover:opacity-100 hover:text-emerald-600 transition-all"
+                        title="Edit Project"
+                      >
+                        <Edit size={16} />
+                      </button>
+                      <button 
+                         onClick={() => deleteProject(p._id)}
+                         className="p-2 text-academic-gray opacity-30 hover:opacity-100 hover:text-rose-500 transition-all"
+                         title="Delete Project"
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     </div>
                   </div>
                   

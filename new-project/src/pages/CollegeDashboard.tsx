@@ -83,6 +83,8 @@ function CollegeOverview() {
   const [loading, setLoading] = useState(true);
   const collegeId = localStorage.getItem('collegeId');
 
+  const collegeName = localStorage.getItem('collegeName') || 'Institutional Portal';
+
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -100,6 +102,10 @@ function CollegeOverview() {
   return (
     <div className="p-12 max-w-6xl mx-auto font-sans">
       <div className="mb-16">
+        <div className="flex items-center gap-2 mb-4">
+           <Building2 size={16} className="text-primary/40" />
+           <span className="text-[10px] font-bold tracking-[0.3em] text-outline uppercase">{collegeName}</span>
+        </div>
         <h1 className="text-5xl text-primary font-serif italic mb-3">Academic Overview</h1>
         <p className="text-[11px] uppercase tracking-[0.2em] text-outline font-bold">Manage your institutional curriculum and students</p>
       </div>

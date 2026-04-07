@@ -9,6 +9,8 @@ export default function CollegeStudents() {
   const [loading, setLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const collegeId = localStorage.getItem('collegeId');
+  const collegeName = localStorage.getItem('collegeName');
+  const [sendingId, setSendingId] = useState<string | null>(null);
   const [newStudent, setNewStudent] = useState({
     fullName: '',
     email: '',
@@ -63,11 +65,14 @@ export default function CollegeStudents() {
   };
 
   const sendCredentials = async (id: string) => {
+    setSendingId(id);
     try {
       const res = await axios.post(`/college/students/${id}/send-credentials`);
       alert(res.data.message);
     } catch (err) {
       alert('Failed to send credentials');
+    } finally {
+      setSendingId(null);
     }
   };
 
@@ -76,7 +81,9 @@ export default function CollegeStudents() {
       <div className="flex justify-between items-center mb-16">
         <div>
           <h1 className="text-5xl text-primary font-serif italic mb-3">Student Roster</h1>
-          <p className="text-[11px] uppercase tracking-[0.2em] text-outline font-bold">Manage enrollments and access credentials</p>
+          <p className="text-[11px] uppercase tracking-[0.2em] text-[#FE4323] font-bold">
+            {collegeName || 'Institution'} Portal • Access Credentials Management
+          </p>
         </div>
         
         <button 
@@ -131,9 +138,11 @@ export default function CollegeStudents() {
                   <td className="p-6 text-right">
                     <button 
                       onClick={() => sendCredentials(s._id)}
-                      className="inline-flex items-center gap-2 bg-[#FE4323]/5 text-[#FE4323] hover:bg-[#FE4323] hover:text-white px-4 py-2 rounded text-[9px] font-bold tracking-widest uppercase transition-all border border-[#FE4323]/20"
+                      disabled={sendingId === s._id}
+                      className="inline-flex items-center gap-2 bg-[#FE4323]/5 text-[#FE4323] hover:bg-[#FE4323] hover:text-white px-4 py-2 rounded text-[9px] font-bold tracking-widest uppercase transition-all border border-[#FE4323]/20 disabled:opacity-50"
                     >
-                      <Send size={14} /> Send Credentials
+                      {sendingId === s._id ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                      {sendingId === s._id ? 'Sending...' : 'Send Credentials'}
                     </button>
                   </td>
                 </tr>

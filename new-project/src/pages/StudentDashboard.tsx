@@ -27,7 +27,8 @@ import {
   Lock,
   Save,
   FileCheck,
-  History
+  History,
+  Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
@@ -60,6 +61,7 @@ export default function StudentDashboard() {
   const [hasFetchedCerts, setHasFetchedCerts] = useState(false);
   
   const certRef = useRef<HTMLDivElement>(null);
+  const [expandedProjectId, setExpandedProjectId] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -277,6 +279,17 @@ export default function StudentDashboard() {
     navigate('/dashboard/session');
   };
 
+  const handleNextSession = () => {
+    if (!selectedCourse || !activeSession) return;
+    const sessions = selectedCourse.courseId.sessions;
+    const currentIndex = activeSession.index;
+    
+    if (currentIndex + 1 < sessions.length) {
+      const nextSession = sessions[currentIndex + 1];
+      handleStartSession(selectedCourse, nextSession, currentIndex + 1);
+    }
+  };
+
   const submitDiary = async (entries: any[]) => {
     const project = projectsMap[selectedCourse?.courseId?._id];
     if (!project || !selectedCourse) return;
@@ -391,6 +404,7 @@ export default function StudentDashboard() {
                     const completedDays = diary?.entries?.filter((e: any) => e.report?.trim().length > 10).length || 0;
                     const totalDays = project.days.length;
                     const progress = Math.round((completedDays / totalDays) * 100);
+                    const isExpanded = expandedProjectId === project._id;
 
                     return (
                       <motion.div 
@@ -398,24 +412,30 @@ export default function StudentDashboard() {
                         initial={{ opacity: 0, y: 15 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: idx * 0.05 }}
-                        className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm hover:border-emerald-600/30 transition-all duration-300"
+                        className={`bg-white border text-left cursor-pointer transition-all duration-500 overflow-hidden ${isExpanded ? 'border-emerald-600/30 ring-1 ring-emerald-500/5 rounded-3xl p-8 shadow-xl' : 'border-slate-100 rounded-2xl p-6 shadow-sm hover:border-emerald-600/20 hover:shadow-md'}`}
+                        onClick={() => setExpandedProjectId(isExpanded ? null : project._id)}
                       >
-                         <div className="flex flex-col lg:flex-row justify-between items-start gap-8 mb-10 pb-10 border-b border-slate-50">
-                            <div className="flex items-center gap-5">
-                               <div className="size-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-700">
+                         {/* Header / Compact View */}
+                         <div className={`flex flex-col lg:flex-row justify-between items-start gap-6 ${isExpanded ? 'mb-10 pb-10 border-b border-slate-50' : ''}`}>
+                            <div className="flex items-center gap-5 flex-grow">
+                               <div className={`size-12 rounded-xl flex items-center justify-center transition-colors ${isExpanded ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-50 text-slate-400 group-hover:bg-emerald-50 group-hover:text-emerald-600'}`}>
                                   <Library size={24} />
                                </div>
-                               <div>
+                               <div className="flex-grow">
                                   <div className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mb-0.5">Assigned Research</div>
-                                  <h2 className="text-2xl font-serif text-slate-800">{project.projectName}</h2>
+                                  <h2 className={`font-serif text-slate-800 transition-all ${isExpanded ? 'text-2xl' : 'text-lg'}`}>{project.projectName}</h2>
+                                  {!isExpanded && project.description && (
+                                     <p className="text-xs text-slate-400 mt-1 line-clamp-1 italic">"{project.description}"</p>
+                                  )}
                                </div>
                             </div>
                             
-                            <div className="flex items-center gap-6 bg-slate-50/80 px-6 py-4 rounded-2xl border border-slate-100 min-w-[280px]">
-                               <div className="flex-grow">
+                            {/* Summary Stats (Always shown) */}
+                            <div className={`flex items-center gap-6 rounded-2xl transition-all ${isExpanded ? 'bg-slate-50/80 px-6 py-4 border border-slate-100 min-w-[280px]' : 'bg-transparent'}`}>
+                               <div className="flex-grow min-w-[120px]">
                                   <div className="flex justify-between items-end mb-1.5">
                                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Journal Status</span>
-                                     <span className="text-lg font-serif text-emerald-700">{progress}%</span>
+                                     <span className={`font-serif text-emerald-700 ${isExpanded ? 'text-lg' : 'text-sm'}`}>{progress}%</span>
                                   </div>
                                   <div className="h-1.5 w-full bg-slate-200/50 rounded-full overflow-hidden">
                                      <motion.div 
@@ -425,22 +445,47 @@ export default function StudentDashboard() {
                                       className="h-full bg-emerald-600"
                                      />
                                   </div>
-                               </div>
-                               <div className="text-right border-l border-slate-200 pl-6">
-                                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Modules</p>
-                                  <p className="text-lg font-serif text-slate-800 leading-none">{completedDays}/{totalDays}</p>
-                               </div>
+                                </div>
+                                <div className={`text-right ${isExpanded ? 'border-l border-slate-200 pl-6' : ''}`}>
+                                   <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Modules</p>
+                                   <p className={`font-serif text-slate-800 leading-none ${isExpanded ? 'text-lg' : 'text-sm'}`}>{completedDays}/{totalDays}</p>
+                                </div>
                             </div>
                          </div>
 
-                         <ProjectDiaryView 
-                           project={project} 
-                           diary={diary} 
-                           onSubmit={submitDiary}
-                           hideBack
-                           onBack={() => {}}
-                           isSubmitting={isSubmittingDiary}
-                         />
+                         {/* Full Content (Expanded only) */}
+                         <AnimatePresence>
+                           {isExpanded && (
+                             <motion.div
+                               initial={{ opacity: 0, height: 0 }}
+                               animate={{ opacity: 1, height: 'auto' }}
+                               exit={{ opacity: 0, height: 0 }}
+                               transition={{ duration: 0.4, ease: "easeInOut" }}
+                               onClick={(e) => e.stopPropagation()} // Prevent collapse when interacting with diary
+                             >
+                                <div className="mt-4">
+                                  {project.description && (
+                                     <div className="mb-10 bg-emerald-50/30 p-6 rounded-2xl border border-emerald-100/50 relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 p-4 opacity-10">
+                                           <Sparkles size={40} className="text-emerald-700" />
+                                        </div>
+                                        <h4 className="text-[10px] uppercase tracking-widest font-bold text-emerald-800 mb-2">Research Objectives</h4>
+                                        <p className="text-sm text-slate-600 font-serif leading-relaxed italic">"{project.description}"</p>
+                                     </div>
+                                  )}
+
+                                  <ProjectDiaryView 
+                                    project={project} 
+                                    diary={diary} 
+                                    onSubmit={submitDiary}
+                                    hideBack
+                                    onBack={() => {}}
+                                    isSubmitting={isSubmittingDiary}
+                                  />
+                                </div>
+                             </motion.div>
+                           )}
+                         </AnimatePresence>
                       </motion.div>
                     );
                   })}
@@ -626,6 +671,8 @@ export default function StudentDashboard() {
                 course={selectedCourse} 
                 session={activeSession} 
                 onBack={() => navigate('/dashboard/courses')}
+                onNext={handleNextSession}
+                hasNext={activeSession.index + 1 < (selectedCourse.courseId.sessions?.length || 0)}
               />
             ) : <Navigate to="/dashboard/courses" replace />
           } />
@@ -766,17 +813,17 @@ function CourseCard({ enrollment, onStartSession, userProgress, project, diary }
   );
 }
 
-function SessionView({ course, session, onBack }: any) {
+function SessionView({ course, session, onBack, onNext, hasNext }: any) {
   return (
-    <div className="bg-white min-h-[calc(100vh-80px)] p-8 lg:p-16 animate-in fade-in duration-500">
-      <button onClick={onBack} className="flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase text-slate-400 hover:text-emerald-600 mb-12 transition-colors group">
+    <div className="bg-white min-h-[calc(100vh-80px)] p-6 lg:p-10 animate-in fade-in duration-500 overflow-y-auto">
+      <button onClick={onBack} className="flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase text-slate-400 hover:text-emerald-600 mb-6 transition-colors group">
         <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back to Dashboard
       </button>
-      <div className="max-w-6xl mx-auto space-y-12">
-        <header className="text-center space-y-4">
+      <div className="max-w-5xl mx-auto space-y-8">
+        <header className="text-center space-y-2">
           <span className="text-[10px] font-bold tracking-[0.4em] text-emerald-600 uppercase">Interactive Session</span>
-          <h1 className="text-5xl lg:text-6xl font-serif text-slate-800 leading-tight">{session.sessionName}</h1>
-          <p className="text-lg text-slate-500 font-serif italic italic font-light italic">{course.courseId.title}</p>
+          <h1 className="text-4xl lg:text-5xl font-serif text-slate-800 leading-tight">{session.sessionName}</h1>
+          <p className="text-sm text-slate-500 font-serif italic font-light italic">{course.courseId.title}</p>
         </header>
         <div className="aspect-video bg-black rounded-3xl overflow-hidden shadow-2xl ring-8 ring-slate-50">
           <iframe
@@ -786,9 +833,19 @@ function SessionView({ course, session, onBack }: any) {
           ></iframe>
         </div>
         <div className="flex flex-col sm:flex-row justify-center gap-6 pt-12">
-          <button className="px-12 py-4 bg-emerald-700 text-white rounded-full font-bold uppercase tracking-widest text-xs hover:bg-emerald-800 transition-all shadow-xl shadow-emerald-200 flex items-center gap-3">
-             <PlayCircle size={18} /> Complete This Module
-          </button>
+          {hasNext && (
+            <button 
+              onClick={onNext}
+              className="px-12 py-4 bg-emerald-700 text-white rounded-full font-bold uppercase tracking-widest text-xs hover:bg-emerald-800 transition-all shadow-xl shadow-emerald-200 flex items-center gap-3 group"
+            >
+               Next Session <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            </button>
+          )}
+          {!hasNext && (
+             <div className="px-12 py-4 bg-slate-50 text-slate-400 rounded-full font-bold uppercase tracking-widest text-xs border border-slate-100 flex items-center gap-3">
+               <CheckCircle size={18} className="text-emerald-500" /> Curriculum Completed
+             </div>
+          )}
         </div>
       </div>
     </div>

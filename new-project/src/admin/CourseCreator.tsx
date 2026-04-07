@@ -10,6 +10,7 @@ export default function CourseCreator() {
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [isSessionFormOpen, setIsSessionFormOpen] = useState(false);
+  const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
   
   const [courseData, setCourseData] = useState({
@@ -84,8 +85,13 @@ export default function CourseCreator() {
     if (!selectedCourse) return;
     setLoading(true);
     try {
-      await axios.post(`/admin/microcourses/courses/${selectedCourse._id}/session`, newSession);
+      if (editingSessionId) {
+        await axios.patch(`/admin/microcourses/courses/${selectedCourse._id}/session/${editingSessionId}`, newSession);
+      } else {
+        await axios.post(`/admin/microcourses/courses/${selectedCourse._id}/session`, newSession);
+      }
       setIsSessionFormOpen(false);
+      setEditingSessionId(null);
       setNewSession({ sessionName: '', driveFileId: '' });
       fetchCourses();
       // Re-select course to show updated sessions
@@ -93,10 +99,35 @@ export default function CourseCreator() {
       const updated = res.data.find((c: any) => c._id === selectedCourse._id);
       setSelectedCourse(updated);
     } catch (err) {
-      alert('Failed to add session');
+      alert('Failed to save session');
     } finally {
       setLoading(false);
     }
+  };
+
+  const deleteSession = async (sessionId: string) => {
+    if (!window.confirm('Are you sure you want to delete this session?')) return;
+    setLoading(true);
+    try {
+      await axios.delete(`/admin/microcourses/courses/${selectedCourse._id}/session/${sessionId}`);
+      fetchCourses();
+      const res = await axios.get('/admin/microcourses/courses');
+      const updated = res.data.find((c: any) => c._id === selectedCourse._id);
+      setSelectedCourse(updated);
+    } catch (err) {
+      alert('Failed to delete session');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditSession = (session: any) => {
+    setEditingSessionId(session._id);
+    setNewSession({
+      sessionName: session.sessionName,
+      driveFileId: session.driveFileId
+    });
+    setIsSessionFormOpen(true);
   };
 
   const deleteCourse = async (id: string) => {
@@ -126,7 +157,7 @@ export default function CourseCreator() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 gap-6">
           {loading && courses.length === 0 ? (
             <div className="col-span-full h-40 flex items-center justify-center text-outline italic">
               <Loader2 className="animate-spin mr-2" size={20} /> Loading courses...
@@ -134,44 +165,64 @@ export default function CourseCreator() {
           ) : courses.map((c) => (
             <motion.div 
               key={c._id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`bg-surface editorial-shadow group relative overflow-hidden flex flex-col h-full border ${selectedCourse?._id === c._id ? 'border-primary ring-1 ring-primary/20' : 'border-outline-variant/10'}`}
+              className={`bg-white editorial-shadow group relative overflow-hidden flex flex-col md:flex-row h-auto md:h-48 border transition-all hover:border-primary/20 ${selectedCourse?._id === c._id ? 'border-primary ring-1 ring-primary/20 bg-primary/[0.02]' : 'border-outline-variant/10'}`}
             >
-              <div className="aspect-video bg-stone-100 overflow-hidden relative">
-                <img src={c.thumbnail} alt={c.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80" />
-                <div className="absolute top-4 right-4 flex gap-2">
-                  <button 
-                    onClick={() => handleEditClick(c)}
-                    className="bg-black/60 backdrop-blur-md text-white p-2 rounded-full hover:bg-primary transition-colors opacity-0 group-hover:opacity-100"
-                    title="Edit Details"
-                  >
-                    <Edit2 size={14} />
-                  </button>
-                  <button 
-                    onClick={() => deleteCourse(c._id)}
-                    className="bg-black/60 backdrop-blur-md text-white p-2 rounded-full hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
-                    title="Delete Course"
-                  >
-                    <Trash2 size={14} />
-                  </button>
+              {/* Compact Thumbnail */}
+              <div className="w-full md:w-72 h-40 md:h-full bg-stone-100 overflow-hidden relative border-r border-outline-variant/5">
+                <img src={c.thumbnail} alt={c.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                   <div className="flex gap-2">
+                      <button 
+                        onClick={() => handleEditClick(c)}
+                        className="bg-white/90 text-primary p-2 rounded hover:bg-primary hover:text-white transition-colors"
+                        title="Edit Details"
+                      >
+                        <Edit2 size={12} />
+                      </button>
+                      <button 
+                        onClick={() => deleteCourse(c._id)}
+                        className="bg-white/90 text-red-600 p-2 rounded hover:bg-red-600 hover:text-white transition-colors"
+                        title="Delete Course"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                   </div>
                 </div>
               </div>
-              <div className="p-8 flex flex-col flex-grow">
-                <div className="flex justify-between items-start mb-3">
-                    <span className="text-[9px] font-bold tracking-[0.2em] text-primary uppercase">{c.sessions?.length || 0} Sessions</span>
-                    <span className="text-[10px] font-bold text-metallic-green uppercase">₹{c.price || 5000}</span>
+
+              {/* Course Info - Horizontal layout */}
+              <div className="p-6 flex flex-col md:flex-row flex-grow items-center gap-6">
+                <div className="flex-grow">
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3 className="text-xl text-primary font-bold leading-tight">{c.title}</h3>
+                    <div className="flex items-center gap-1 text-[10px] text-primary font-bold px-2 py-0.5 bg-primary/5 rounded">
+                      {c.rating || 4.8}★
+                    </div>
+                  </div>
+                  <p className="text-xs text-on-surface-variant font-light italic line-clamp-1 mb-4 opacity-70">
+                    "{c.description}"
+                  </p>
+                  
+                  <div className="flex items-center gap-8">
+                    <div className="flex flex-col">
+                      <span className="text-[8px] uppercase tracking-widest text-outline font-bold">Curriculum</span>
+                      <span className="text-xs font-bold text-primary">{c.sessions?.length || 0} Sessions</span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[8px] uppercase tracking-widest text-outline font-bold">Investment</span>
+                      <span className="text-xs font-bold text-metallic-green">₹{c.price || 5000}</span>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-2xl text-primary leading-tight mb-2">{c.title}</h3>
-                <div className="text-[10px] text-outline mb-4">Rating: <span className="text-primary font-bold">{c.rating || 4.8}★</span></div>
-                <p className="text-sm text-on-surface-variant font-light mb-8 italic line-clamp-2">"{c.description}"</p>
                 
-                <div className="mt-auto">
+                <div className="w-full md:w-auto shrink-0">
                   <button 
                     onClick={() => setSelectedCourse(c)}
-                    className={`w-full py-4 rounded text-xs font-bold tracking-widest uppercase transition-all flex items-center justify-center gap-2 ${selectedCourse?._id === c._id ? 'bg-primary text-white' : 'bg-surface-container-low text-primary hover:bg-primary/5'}`}
+                    className={`px-8 py-3 rounded text-[10px] font-bold tracking-widest uppercase transition-all flex items-center justify-center gap-2 ${selectedCourse?._id === c._id ? 'bg-primary text-white shadow-md' : 'bg-surface-container-low text-primary hover:bg-primary hover:text-white'}`}
                   >
-                    Manage Curriculum <Play size={14} />
+                    Manage Curriculum <Play size={12} />
                   </button>
                 </div>
               </div>
@@ -220,14 +271,30 @@ export default function CourseCreator() {
                         <Video size={10} /> {s.driveFileId.substring(0, 15)}...
                       </div>
                     </div>
-                    <a 
-                      href={`https://drive.google.com/file/d/${s.driveFileId}/view`} 
-                      target="_blank" 
-                      rel="noreferrer"
-                      className="text-primary opacity-40 group-hover:opacity-100 transition-opacity"
-                    >
-                      <Play size={16} fill="currentColor" />
-                    </a>
+                      <div className="flex items-center gap-1">
+                        <button 
+                          onClick={() => handleEditSession(s)}
+                          className="text-slate-400 hover:text-primary p-2 transition-colors"
+                          title="Edit Session"
+                        >
+                          <Edit2 size={12} />
+                        </button>
+                        <button 
+                          onClick={() => deleteSession(s._id)}
+                          className="text-slate-400 hover:text-red-500 p-2 transition-colors"
+                          title="Delete Session"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                        <a 
+                          href={`https://drive.google.com/file/d/${s.driveFileId}/view`} 
+                          target="_blank" 
+                          rel="noreferrer"
+                          className="text-primary opacity-40 group-hover:opacity-100 transition-opacity p-2"
+                        >
+                          <Play size={16} fill="currentColor" />
+                        </a>
+                      </div>
                   </div>
                 </div>
               ))}
@@ -310,8 +377,10 @@ export default function CourseCreator() {
                 <X size={20} />
               </button>
 
-              <h2 className="text-3xl text-primary mb-2">Add New Session</h2>
-              <p className="text-[10px] uppercase tracking-widest text-outline mb-10 italic">Attach a Google Drive video to this course.</p>
+              <h2 className="text-3xl text-primary mb-2">{editingSessionId ? 'Edit Session' : 'Add New Session'}</h2>
+              <p className="text-[10px] uppercase tracking-widest text-outline mb-10 italic">
+                {editingSessionId ? 'Update your Google Drive video link.' : 'Attach a Google Drive video to this course.'}
+              </p>
 
               <form onSubmit={addSession} className="space-y-6">
                 <div className="space-y-2">
