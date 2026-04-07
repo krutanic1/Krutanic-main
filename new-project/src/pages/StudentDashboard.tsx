@@ -284,8 +284,8 @@ export default function StudentDashboard() {
                 </p>
               </header>
               <div className="grid grid-cols-1 gap-12">
-                {courses.length > 0 ? (
-                  courses.map((enrollment) => (
+                {(courses || []).length > 0 ? (
+                  (courses || []).map((enrollment) => (
                     <CourseCard 
                       key={enrollment._id} 
                       enrollment={enrollment} 
@@ -329,7 +329,7 @@ export default function StudentDashboard() {
 
               {Object.keys(projectsMap).length > 0 ? (
                 <div className="space-y-12">
-                  {courses.map((enroll, idx) => {
+                  {(courses || []).map((enroll, idx) => {
                     const project = projectsMap[enroll.courseId._id];
                     if (!project) return null;
                     const diary = diariesMap[enroll.courseId._id];
@@ -403,7 +403,7 @@ export default function StudentDashboard() {
               </header>
               
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                 {courses.map(enroll => {
+                 {(courses || []).map(enroll => {
                     const eligibility = certEligibilities[enroll.courseId._id];
                     if (!eligibility) {
                       return (
@@ -608,7 +608,7 @@ function StudentOverview({ courses, userProgress, onStartCourse }: any) {
       <div className="space-y-8">
         <h2 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.4em]">Resuming Curricula</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {courses.map(c => (
+          {(courses || []).map(c => (
              <button 
               key={c._id}
               onClick={() => onStartCourse(c)}
@@ -718,7 +718,7 @@ function SessionView({ course, session, onBack }: any) {
 }
 
 function ProjectDiaryView({ project, diary, onSubmit, onBack, isSubmitting, hideBack }: any) {
-  const [entries, setEntries] = useState<any[]>(diary?.entries || project.days.map((d: any) => ({ dayNumber: d.dayNumber, report: '' })));
+  const [entries, setEntries] = useState<any[]>(diary?.entries || (project?.days || []).map((d: any) => ({ dayNumber: d.dayNumber, report: '' })));
   
   const handleEntryChange = (dayNumber: number, report: string) => {
     const updated = [...entries];
@@ -731,7 +731,7 @@ function ProjectDiaryView({ project, diary, onSubmit, onBack, isSubmitting, hide
     setEntries(updated);
   };
 
-  const isFullyFilled = project.days.every((d: any) => 
+  const isFullyFilled = (project?.days || []).every((d: any) => 
     entries.find(e => e.dayNumber === d.dayNumber && e.report?.trim().length > 10)
   );
 
@@ -744,7 +744,7 @@ function ProjectDiaryView({ project, diary, onSubmit, onBack, isSubmitting, hide
       )}
       
       <div className="grid grid-cols-1 gap-6">
-        {project.days.map((day: any, idx: number) => {
+        {(project?.days || []).map((day: any, idx: number) => {
           const entry = entries.find(e => e.dayNumber === day.dayNumber);
           const isFilled = entry?.report?.trim().length > 10;
 
