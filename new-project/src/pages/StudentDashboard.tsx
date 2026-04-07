@@ -298,9 +298,7 @@ export default function StudentDashboard() {
     }
   };
 
-  if (loading && courses.length === 0) {
-    return <DikshanntLoader overlay />;
-  }
+
 
   return (
     <StudentLayout>
@@ -311,6 +309,7 @@ export default function StudentDashboard() {
             <StudentOverview 
               courses={courses} 
               userProgress={userProgress} 
+              loading={loading}
               onStartCourse={(c: any) => { setSelectedCourse(c); navigate('/dashboard/courses'); }} 
             />
           } />
@@ -636,9 +635,9 @@ export default function StudentDashboard() {
   );
 }
 
-function StudentOverview({ courses, userProgress, onStartCourse }: any) {
-  const totalSessions: number = courses.reduce((acc: number, c: any) => acc + (c.courseId.sessions?.length || 0), 0);
-  const watchedSessions: number = (Object.values(userProgress) as any[]).reduce((acc: number, p: any) => acc + (p.length || 0), 0);
+function StudentOverview({ courses, userProgress, onStartCourse, loading }: any) {
+  const totalSessions: number = (courses || []).reduce((acc: number, c: any) => acc + (c.courseId.sessions?.length || 0), 0);
+  const watchedSessions: number = (Object.values(userProgress || {}) as any[]).reduce((acc: number, p: any) => acc + (p.length || 0), 0);
   const progressPercent: number = totalSessions > 0 ? Math.round((watchedSessions / totalSessions) * 100) : 0;
 
   return (
@@ -647,7 +646,8 @@ function StudentOverview({ courses, userProgress, onStartCourse }: any) {
         <div>
           <h1 className="text-5xl font-serif text-slate-800 mb-4">Academic Overview</h1>
           <p className="text-slate-500 font-serif italic italic font-light italic flex items-center gap-4">
-             <Clock size={16} /> Welcome back to your scholarly sanctuary.
+             {loading ? <Loader2 className="animate-spin" size={16} /> : <Clock size={16} />} 
+             {loading ? 'Retrieving your scholarly archives...' : 'Welcome back to your scholarly sanctuary.'}
           </p>
         </div>
         <div className="flex gap-4">
@@ -676,22 +676,32 @@ function StudentOverview({ courses, userProgress, onStartCourse }: any) {
       <div className="space-y-8">
         <h2 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.4em]">Resuming Curricula</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {(courses || []).map(c => (
-             <button 
-              key={c._id}
-              onClick={() => onStartCourse(c)}
-              className="bg-white p-8 rounded-2xl border border-emerald-50 shadow-sm hover:border-emerald-600 transition-all text-left flex flex-col justify-between group h-64"
-             >
-               <div>
-                 <div className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest mb-3">Module Insight</div>
-                 <h3 className="text-xl font-serif text-slate-800 mb-4 leading-snug group-hover:text-emerald-800 transition-colors line-clamp-2">{c.courseId.title}</h3>
-               </div>
-               <div className="flex items-center justify-between text-slate-400">
-                 <span className="text-[10px] font-bold uppercase tracking-widest">Enter Classroom</span>
-                 <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
-               </div>
-             </button>
-          ))}
+          {loading ? (
+            Array(3).fill(0).map((_, i) => (
+              <div key={i} className="h-64 bg-slate-50 rounded-2xl animate-pulse" />
+            ))
+          ) : (courses || []).length > 0 ? (
+            (courses || []).map(c => (
+              <button 
+                key={c._id}
+                onClick={() => onStartCourse(c)}
+                className="bg-white p-8 rounded-2xl border border-emerald-50 shadow-sm hover:border-emerald-600 transition-all text-left flex flex-col justify-between group h-64"
+              >
+                <div>
+                  <div className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest mb-3">Module Insight</div>
+                  <h3 className="text-xl font-serif text-slate-800 mb-4 leading-snug group-hover:text-emerald-800 transition-colors line-clamp-2">{c.courseId.title}</h3>
+                </div>
+                <div className="flex items-center justify-between text-slate-400">
+                  <span className="text-[10px] font-bold uppercase tracking-widest">Enter Classroom</span>
+                  <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
+                </div>
+              </button>
+            ))
+          ) : (
+             <div className="col-span-full">
+                <NoData placeholder="No Curricula Found" />
+             </div>
+          )}
         </div>
       </div>
     </div>

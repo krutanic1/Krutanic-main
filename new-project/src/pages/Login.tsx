@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, ArrowRight, ShieldCheck, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Logo from '../components/Logo';
 import DikshanntLoader from '../components/DikshanntLoader';
@@ -13,6 +13,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [loginType, setLoginType] = useState<'student' | 'college'>('student');
+  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,12 +27,12 @@ export default function Login() {
         localStorage.setItem('studentToken', res.data.token);
         localStorage.setItem('studentEmail', res.data.user.email);
         localStorage.setItem('studentName', res.data.user.fullName);
-        window.location.href = '/dashboard';
+        navigate('/dashboard');
       } else {
         const res = await axios.post('/college/login', { email, password });
         localStorage.setItem('collegeId', res.data.college._id);
         localStorage.setItem('collegeName', res.data.college.collegeName);
-        window.location.href = '/college/dashboard';
+        navigate('/college/dashboard');
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Invalid credentials');
@@ -42,9 +43,6 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-surface flex items-center justify-center p-8 relative overflow-hidden">
-      <AnimatePresence>
-        {loading && <DikshanntLoader overlay />}
-      </AnimatePresence>
       <div className="absolute top-0 left-0 w-full h-1 bg-[#FE4323]"></div>
       
       <div className="container max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-16 relative z-10">
