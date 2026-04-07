@@ -5,7 +5,9 @@ import axios from 'axios';
 import App from './App.tsx';
 import './index.css';
 
-axios.defaults.baseURL = import.meta.env.VITE_API_URL || '/api'; // Use env var for production or /api for local dev proxy
+// Ensure VITE_API_URL includes /api if it doesn't already, or fallback to /api for local dev proxy
+const apiBase = import.meta.env.VITE_API_URL || '';
+axios.defaults.baseURL = apiBase ? (apiBase.endsWith('/api') ? apiBase : `${apiBase.replace(/\/$/, '')}/api`) : '/api';
 axios.defaults.withCredentials = true;
 
 createRoot(document.getElementById('root')!).render(
