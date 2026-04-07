@@ -28,7 +28,9 @@ import {
   Save,
   FileCheck,
   History,
-  Sparkles
+  Sparkles,
+  Maximize,
+  Minimize
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
@@ -814,6 +816,29 @@ function CourseCard({ enrollment, onStartSession, userProgress, project, diary }
 }
 
 function SessionView({ course, session, onBack, onNext, hasNext }: any) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const toggleFullscreen = () => {
+    if (!containerRef.current) return;
+    
+    if (!document.fullscreenElement) {
+      containerRef.current.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+      });
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  };
+
+  useEffect(() => {
+    const handleFsChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', handleFsChange);
+    return () => document.removeEventListener('fullscreenchange', handleFsChange);
+  }, []);
+
   return (
     <div className="bg-white min-h-[calc(100vh-80px)] p-6 lg:p-10 animate-in fade-in duration-500 overflow-y-auto">
       <button onClick={onBack} className="flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase text-slate-400 hover:text-emerald-600 mb-6 transition-colors group">
@@ -825,13 +850,33 @@ function SessionView({ course, session, onBack, onNext, hasNext }: any) {
           <h1 className="text-4xl lg:text-5xl font-serif text-slate-800 leading-tight">{session.sessionName}</h1>
           <p className="text-sm text-slate-500 font-serif italic font-light italic">{course.courseId.title}</p>
         </header>
-        <div className="aspect-video bg-black rounded-3xl overflow-hidden shadow-2xl ring-8 ring-slate-50">
-          <iframe
-            src={`https://drive.google.com/file/d/${session.driveFileId}/preview`}
-            className="w-full h-full border-0"
-            allow="autoplay"
-          ></iframe>
+
+        {/* Video Container with Fullscreen & Stealth Masking */}
+        <div 
+          ref={containerRef}
+          className={`relative aspect-video bg-black rounded-3xl overflow-hidden shadow-2xl ring-8 ring-slate-50 transition-all duration-500 ${isFullscreen ? 'w-screen h-screen rounded-none ring-0' : ''}`}
+        >
+          {/* Main Player Iframe with Clipping */}
+          <div className="absolute inset-0 scale-[1.05] translate-y-[-5%] overflow-hidden pointer-events-none sm:pointer-events-auto">
+             <iframe
+               src={`https://drive.google.com/file/d/${session.driveFileId}/preview`}
+               className="w-full h-[120%] border-0 absolute top-[-10%]"
+               allow="autoplay; fullscreen"
+             ></iframe>
+          </div>
+
+          {/* Fullscreen Overlay Controls */}
+          <div className="absolute top-6 right-6 z-50">
+             <button 
+              onClick={toggleFullscreen}
+              className="p-4 bg-black/40 backdrop-blur-md rounded-full text-white hover:bg-black/60 transition-all border border-white/20"
+              title="Toggle Fullscreen"
+             >
+                {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
+             </button>
+          </div>
         </div>
+
         <div className="flex flex-col sm:flex-row justify-center gap-6 pt-12">
           {hasNext && (
             <button 
