@@ -49,6 +49,7 @@ const microCourseRoutes = require("./routes/microCourseRoutes");
 const microCourseAdminRoutes = require("./routes/microCourseAdminRoutes");
 const microCourseAuthRoutes = require("./routes/microCourseAuthRoutes");
 const collegeRoutes = require("./routes/collegeRoutes");
+const microadmin = require("./routes/microadmin");
 const cookieParser = require("cookie-parser");
 const os = require("os");
 
@@ -175,6 +176,7 @@ app.use("/api", microCourseRoutes);
 app.use("/api", microCourseAdminRoutes);
 app.use("/api", microCourseAuthRoutes);
 app.use("/api", collegeRoutes);
+app.use("/api/microadmin", microadmin);
 const microCertRoutes = require("./routes/MicroCert");
 app.use("/api", microCertRoutes);
 

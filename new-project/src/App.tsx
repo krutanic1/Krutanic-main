@@ -1,5 +1,6 @@
 import React from 'react';
-import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import StudentDashboard from './pages/StudentDashboard';
@@ -12,9 +13,25 @@ import AdminCertificates from './admin/AdminCertificates';
 import CollegeDashboard from './pages/CollegeDashboard';
 import { Layout, Users, Ticket, Video, LogOut, ChevronRight, BookOpen, GraduationCap, Award } from 'lucide-react';
 import Logo from './components/Logo';
+import AdminProtectedRoute from './components/AdminProtectedRoute';
+import AdminLogin from './pages/AdminLogin';
 
 function AdminLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
+  const navigate = useNavigate();
+  
+  const handleLogout = async () => {
+    try {
+      await axios.post('/microadmin/logout');
+      localStorage.removeItem('adminId');
+      localStorage.removeItem('adminName');
+      navigate('/adminlogin');
+    } catch (err) {
+      console.error('Logout failed:', err);
+      // Fallback
+      window.location.href = '/adminlogin';
+    }
+  };
   
   const navItems = [
     { label: 'Enrolls', path: '/admin/enrolls', icon: Users },
@@ -57,7 +74,10 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
         </nav>
 
         <div className="mt-auto pt-8 border-t border-white/10">
-          <button onClick={() => window.location.href = '/'} className="flex items-center gap-3 text-xs font-bold tracking-widest uppercase text-white/40 hover:text-white transition-colors">
+          <button 
+            onClick={handleLogout} 
+            className="flex items-center gap-3 text-xs font-bold tracking-widest uppercase text-white/40 hover:text-white transition-colors w-full"
+          >
             <LogOut size={16} /> Log Out
           </button>
         </div>
@@ -76,21 +96,22 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/adminlogin" element={<AdminLogin />} />
       <Route path="/dashboard/*" element={<StudentDashboard />} />
       
       {/* Admin Protected Routes */}
-      <Route path="/admin/enrolls" element={<AdminLayout><AdminEnrolls /></AdminLayout>} />
-      <Route path="/admin/referrals" element={<AdminLayout><AdminReferrals /></AdminLayout>} />
-      <Route path="/admin/courses" element={<AdminLayout><CourseCreator /></AdminLayout>} />
-      <Route path="/admin/projects" element={<AdminLayout><AdminProjectCreator /></AdminLayout>} />
-      <Route path="/admin/colleges" element={<AdminLayout><AdminColleges /></AdminLayout>} />
-      <Route path="/admin/certificates" element={<AdminLayout><AdminCertificates /></AdminLayout>} />
+      <Route path="/admin/enrolls" element={<AdminProtectedRoute><AdminLayout><AdminEnrolls /></AdminLayout></AdminProtectedRoute>} />
+      <Route path="/admin/referrals" element={<AdminProtectedRoute><AdminLayout><AdminReferrals /></AdminLayout></AdminProtectedRoute>} />
+      <Route path="/admin/courses" element={<AdminProtectedRoute><AdminLayout><CourseCreator /></AdminLayout></AdminProtectedRoute>} />
+      <Route path="/admin/projects" element={<AdminProtectedRoute><AdminLayout><AdminProjectCreator /></AdminLayout></AdminProtectedRoute>} />
+      <Route path="/admin/colleges" element={<AdminProtectedRoute><AdminLayout><AdminColleges /></AdminLayout></AdminProtectedRoute>} />
+      <Route path="/admin/certificates" element={<AdminProtectedRoute><AdminLayout><AdminCertificates /></AdminLayout></AdminProtectedRoute>} />
       
       {/* College Portal */}
       <Route path="/college/*" element={<CollegeDashboard />} />
       
       {/* Fallback to Admin Enrolls for /admin */}
-      <Route path="/admin" element={<AdminLayout><AdminEnrolls /></AdminLayout>} />
+      <Route path="/admin" element={<AdminProtectedRoute><AdminLayout><AdminEnrolls /></AdminLayout></AdminProtectedRoute>} />
     </Routes>
   );
 }
