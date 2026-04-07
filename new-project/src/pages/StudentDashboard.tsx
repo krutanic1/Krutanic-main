@@ -30,7 +30,7 @@ import {
   History
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import html2canvas from 'html2canvas';
 import DikshanntLoader from '../components/DikshanntLoader';
 import StudentLayout from '../components/StudentLayout';
@@ -53,8 +53,15 @@ export default function StudentDashboard() {
   const [downloadData, setDownloadData] = useState<any>(null);
   const [showCertModal, setShowCertModal] = useState(false);
   
+  // High-Speed Lazy Loading States
+  const [projectsLoading, setProjectsLoading] = useState(false);
+  const [certsLoading, setCertsLoading] = useState(false);
+  const [hasFetchedProjects, setHasFetchedProjects] = useState(false);
+  const [hasFetchedCerts, setHasFetchedCerts] = useState(false);
+  
   const certRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const token = localStorage.getItem('studentToken');
@@ -68,6 +75,39 @@ export default function StudentDashboard() {
     fetchUserInfo();
     fetchMyCourses(email);
   }, []);
+
+  // Optimized Lazy Loading: Fetch specialized data only when the route is active
+  useEffect(() => {
+    const path = location.pathname;
+    
+    if (path.endsWith('/projects') && !hasFetchedProjects && courses.length > 0) {
+      setProjectsLoading(true);
+      Promise.all(courses.map(enroll => fetchProjectStatus(enroll.courseId._id)))
+        .then(() => {
+          setHasFetchedProjects(true);
+          setProjectsLoading(false);
+        });
+    }
+
+    if (path.endsWith('/certificates') && !hasFetchedCerts && courses.length > 0) {
+      setCertsLoading(true);
+      Promise.all(courses.map(enroll => fetchCertEligibility(enroll.courseId._id)))
+        .then(() => {
+          setHasFetchedCerts(true);
+          setCertsLoading(false);
+        });
+    }
+
+    // Courses page also needs project status for session locking
+    if (path.endsWith('/courses') && !hasFetchedProjects && courses.length > 0) {
+      setProjectsLoading(true);
+      Promise.all(courses.map(enroll => fetchProjectStatus(enroll.courseId._id)))
+        .then(() => {
+          setHasFetchedProjects(true);
+          setProjectsLoading(false);
+        });
+    }
+  }, [location.pathname, courses.length, hasFetchedProjects, hasFetchedCerts]);
 
   const fetchUserInfo = async () => {
     try {
@@ -88,10 +128,9 @@ export default function StudentDashboard() {
       setCourses(res.data);
       if (res.data.length > 0) {
         setSelectedCourse(res.data[0]);
-        res.data.forEach((enroll: any) => {
-          fetchProjectStatus(enroll.courseId._id);
-          fetchCertEligibility(enroll.courseId._id);
-        });
+        // LAZY LOADING: We no longer fetch projects/certs for all courses here
+        // This makes the initial "login to overview" transition high-speed.
+        // Specialized data will be fetched by the location-aware useEffect instead.
       }
     } catch (err) {
       console.error('Failed to fetch courses', err);
@@ -276,12 +315,17 @@ export default function StudentDashboard() {
             />
           } />
           <Route path="courses" element={
-            <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className={`space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 ${projectsLoading ? 'opacity-50' : 'opacity-100'}`}>
               <header className="mb-12">
                 <h1 className="text-4xl font-serif text-slate-800 mb-4 drop-shadow-sm">Your Enrolled Curricula</h1>
                 <p className="text-slate-500 font-serif italic font-light flex items-center gap-2">
                   <BookOpen size={14} /> Master the disciplines of antiquity and the future.
                 </p>
+                {projectsLoading && (
+                   <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mt-4 flex items-center gap-2">
+                     <Loader2 size={12} className="animate-spin" /> Retrieving locking criteria...
+                   </p>
+                )}
               </header>
               <div className="grid grid-cols-1 gap-12">
                 {(courses || []).length > 0 ? (
@@ -305,7 +349,7 @@ export default function StudentDashboard() {
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="space-y-10"
+              className={`space-y-10 ${projectsLoading ? 'opacity-50' : 'opacity-100'}`}
             >
               <header className="py-10 px-8 rounded-3xl bg-white border border-slate-200 shadow-sm relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-1/3 h-full bg-emerald-50/30 -skew-x-12 translate-x-1/2"></div>
@@ -319,15 +363,27 @@ export default function StudentDashboard() {
                     <p className="text-sm text-slate-500 font-serif italic max-w-md">Document your scholarly journey and research findings to certify.</p>
                   </div>
                   <div className="flex gap-4">
-                     <div className="px-6 py-3 bg-slate-50 rounded-2xl border border-slate-100 text-center">
-                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Active Modules</p>
-                        <p className="text-xl font-serif text-slate-800">{Object.keys(projectsMap).length || 0}</p>
-                     </div>
+                     {projectsLoading ? (
+                        <div className="px-6 py-3 bg-slate-50 rounded-2xl border border-slate-100 flex items-center gap-3">
+                           <Loader2 size={14} className="animate-spin text-emerald-600" />
+                           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Entering Lab...</span>
+                        </div>
+                     ) : (
+                        <div className="px-6 py-3 bg-slate-50 rounded-2xl border border-slate-100 text-center">
+                           <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Active Modules</p>
+                           <p className="text-xl font-serif text-slate-800">{Object.keys(projectsMap).length || 0}</p>
+                        </div>
+                     )}
                   </div>
                 </div>
               </header>
 
-              {Object.keys(projectsMap).length > 0 ? (
+              {projectsLoading ? (
+                <div className="h-64 flex flex-col items-center justify-center text-slate-300">
+                  <Loader2 size={40} className="animate-spin mb-4" />
+                  <p className="text-[10px] font-bold uppercase tracking-widest">Initializing Archive Data...</p>
+                </div>
+              ) : Object.keys(projectsMap).length > 0 ? (
                 <div className="space-y-12">
                   {(courses || []).map((enroll, idx) => {
                     const project = projectsMap[enroll.courseId._id];
@@ -396,14 +452,25 @@ export default function StudentDashboard() {
             </motion.div>
           } />
           <Route path="certificates" element={
-            <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className={`space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 ${certsLoading ? 'opacity-50' : 'opacity-100'}`}>
                <header className="mb-12">
                 <h1 className="text-4xl font-serif text-slate-800 mb-4 drop-shadow-sm">Honorifics & Certifications</h1>
                 <p className="text-slate-500 font-serif italic font-light">The culmination of your scholarly journey.</p>
+                {certsLoading && (
+                   <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mt-4 flex items-center gap-2">
+                     <Loader2 size={12} className="animate-spin" /> Consulting the registrars...
+                   </p>
+                )}
               </header>
               
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                 {(courses || []).map(enroll => {
+              {certsLoading ? (
+                <div className="h-64 flex flex-col items-center justify-center text-slate-300">
+                  <Loader2 size={40} className="animate-spin mb-4" />
+                  <p className="text-[10px] font-bold uppercase tracking-widest">Validating Qualifications...</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {(courses || []).map(enroll => {
                     const eligibility = certEligibilities[enroll.courseId._id];
                     if (!eligibility) {
                       return (
@@ -493,11 +560,12 @@ export default function StudentDashboard() {
                             )}
                          </div>
                       </div>
-                    );
-                 })}
-              </div>
+                  );
+               })}
+                </div>
+              )}
 
-               {courses.length === 0 && <NoData placeholder="No Certifications Found" />}
+               {(courses || []).length === 0 && !certsLoading && <NoData placeholder="No Certifications Found" />}
             
                {/* Certificate Preview Modal */}
                {showCertModal && downloadData && (
