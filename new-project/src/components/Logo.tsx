@@ -1,5 +1,5 @@
 import React from 'react';
-import dikshanntLogo from '../assets/dikshannt-logo-final.png';
+import dikshanntLogo from '../../assets/logo.png';
 
 interface LogoProps {
   className?: string;

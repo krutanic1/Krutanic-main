@@ -198,7 +198,7 @@ export default function AdminColleges() {
               </button>
 
               <div className="flex items-center gap-3 mb-8">
-                <div className="bg-[#FE4323]/10 text-[#FE4323] p-2 rounded">
+                <div className="bg-primary/10 text-primary p-2 rounded">
                   <GraduationCap size={24} />
                 </div>
                 <div>
@@ -217,7 +217,7 @@ export default function AdminColleges() {
                       required 
                       value={newCollege.collegeName}
                       onChange={(e) => setNewCollege({...newCollege, collegeName: e.target.value})}
-                      className="w-full border-b border-outline-variant py-3 outline-none focus:border-[#FE4323] transition-colors"
+                      className="w-full border-b border-outline-variant py-3 outline-none focus:border-primary transition-colors"
                       placeholder="e.g. Stanford University"
                     />
                   </div>
@@ -227,7 +227,7 @@ export default function AdminColleges() {
                       required 
                       value={newCollege.authorizerName}
                       onChange={(e) => setNewCollege({...newCollege, authorizerName: e.target.value})}
-                      className="w-full border-b border-outline-variant py-3 outline-none focus:border-[#FE4323] transition-colors"
+                      className="w-full border-b border-outline-variant py-3 outline-none focus:border-primary transition-colors"
                       placeholder="Full Name"
                     />
                   </div>
@@ -235,7 +235,7 @@ export default function AdminColleges() {
 
                 <div className="grid md:grid-cols-2 gap-8">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold tracking-widest uppercase text-outline underline decoration-[#FE4323]/30 decoration-2">Official Email ID</label>
+                    <label className="text-[10px] font-bold tracking-widest uppercase text-outline underline decoration-primary/30 decoration-2">Official Email ID</label>
                     <div className="relative">
                       <Mail className="absolute left-0 top-1/2 -translate-y-1/2 text-outline" size={16} />
                       <input 
@@ -243,7 +243,7 @@ export default function AdminColleges() {
                         required 
                         value={newCollege.email}
                         onChange={(e) => setNewCollege({...newCollege, email: e.target.value})}
-                        className="w-full border-b border-outline-variant pl-6 py-3 outline-none focus:border-[#FE4323]"
+                        className="w-full border-b border-outline-variant pl-6 py-3 outline-none focus:border-primary"
                         placeholder="admin@college.edu"
                       />
                     </div>
@@ -257,7 +257,7 @@ export default function AdminColleges() {
                         required 
                         value={newCollege.password}
                         onChange={(e) => setNewCollege({...newCollege, password: e.target.value})}
-                        className="w-full border-b border-outline-variant pl-6 py-3 outline-none focus:border-[#FE4323]"
+                        className="w-full border-b border-outline-variant pl-6 py-3 outline-none focus:border-primary"
                         placeholder="Set strong password"
                       />
                     </div>
@@ -268,12 +268,12 @@ export default function AdminColleges() {
                    <label className="text-[10px] font-bold tracking-widest uppercase text-outline block mb-4">Select Courses for Admission</label>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-48 overflow-y-auto p-4 bg-surface-container-low rounded border border-outline-variant/10">
                       {courses.map(course => (
-                        <label key={course._id} className="flex items-center gap-3 p-3 bg-white border border-outline-variant/10 rounded cursor-pointer hover:border-[#FE4323]/30 transition-all">
+                        <label key={course._id} className="flex items-center gap-3 p-3 bg-white border border-outline-variant/10 rounded cursor-pointer hover:border-primary/30 transition-all">
                            <input 
                              type="checkbox"
                              checked={newCollege.allowedCourses.includes(course._id)}
                              onChange={() => handleCourseToggle(course._id)}
-                             className="w-4 h-4 accent-[#FE4323]"
+                             className="w-4 h-4 accent-primary"
                            />
                            <span className="text-xs font-medium text-primary line-clamp-1">{course.title}</span>
                         </label>
@@ -283,21 +283,21 @@ export default function AdminColleges() {
 
                 <div className="space-y-2 max-w-xs">
                     <label className="text-[10px] font-bold tracking-widest uppercase text-outline flex items-center gap-2">
-                       <ShieldCheck size={14} className="text-[#FE4323]" /> Student Enrollment Limit
+                       <ShieldCheck size={14} className="text-primary" /> Student Enrollment Limit
                     </label>
                     <input 
                       type="number"
                       required 
                       value={newCollege.studentLimit}
                       onChange={(e) => setNewCollege({...newCollege, studentLimit: parseInt(e.target.value)})}
-                      className="w-full border-b border-outline-variant py-3 outline-none focus:border-[#FE4323] font-bold text-xl"
+                      className="w-full border-b border-outline-variant py-3 outline-none focus:border-primary font-bold text-xl"
                     />
                 </div>
 
                 <button 
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-[#FE4323] text-white py-5 rounded text-xs font-bold tracking-widest uppercase hover:bg-[#E03A1C] transition-all shadow-xl active:scale-[0.98] disabled:opacity-50 mt-4"
+                  className="w-full bg-primary text-white py-5 rounded text-xs font-bold tracking-widest uppercase hover:bg-primary-container transition-all shadow-xl active:scale-[0.98] disabled:opacity-50 mt-4"
                 >
                   {loading ? <Loader2 className="animate-spin" size={20} /> : editingCollege ? 'Save Institutional Changes' : 'Register Institution & Courses'}
                 </button>

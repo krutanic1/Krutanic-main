@@ -392,7 +392,7 @@ export default function CourseCreator() {
                   <input required value={newSession.driveFileId} onChange={(e) => setNewSession({...newSession, driveFileId: e.target.value})} placeholder="The 33-character ID from the share link" className="w-full border-b border-outline-variant py-3 outline-none focus:border-primary transition-colors bg-transparent font-mono text-sm" />
                 </div>
                 <p className="text-[9px] text-outline italic">Tip: The ID is the long string in the Drive share URL (e.g., 1xYz2A...)</p>
-                <button type="submit" disabled={loading} className="w-full bg-[#FE4323] text-white py-4 rounded text-xs font-bold tracking-widest uppercase hover:bg-[#E03A1C] transition-all shadow-md active:scale-95 disabled:opacity-50 mt-4">
+                <button type="submit" disabled={loading} className="w-full bg-primary text-white py-4 rounded text-xs font-bold tracking-widest uppercase hover:bg-primary-container transition-all shadow-md active:scale-95 disabled:opacity-50 mt-4">
                   {loading ? <Loader2 className="animate-spin" size={18} /> : 'Save Session'}
                 </button>
               </form>

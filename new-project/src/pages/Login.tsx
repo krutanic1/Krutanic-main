@@ -43,7 +43,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-surface flex items-center justify-center p-8 relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-1 bg-[#FE4323]"></div>
+      <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
       
       <div className="container max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-16 relative z-10">
         {/* Branding Info */}
@@ -135,7 +135,7 @@ export default function Login() {
             <button 
               type="submit"
               disabled={loading}
-              className="w-full bg-[#FE4323] text-white py-5 rounded text-xs font-bold tracking-widest uppercase flex items-center justify-center gap-3 hover:bg-[#E03A1C] transition-all shadow-lg active:scale-95 disabled:opacity-50"
+              className="w-full bg-primary text-white py-5 rounded text-xs font-bold tracking-widest uppercase flex items-center justify-center gap-3 hover:bg-primary-container transition-all shadow-lg active:scale-95 disabled:opacity-50"
             >
               {loading ? <Loader2 className="animate-spin" size={18} /> : 'Login to Dashboard'}
               {!loading && <ArrowRight size={18} />}

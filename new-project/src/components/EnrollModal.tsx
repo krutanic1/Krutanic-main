@@ -278,7 +278,7 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
                         {discountApplied ? (
                           <motion.span 
                             key="discounted"
-                            initial={{ scale: 1.5, color: '#FE4323' }}
+                            initial={{ scale: 1.5, color: 'var(--color-primary)' }}
                             animate={{ scale: 1, color: '#000' }}
                             className="text-4xl font-serif"
                           >
@@ -357,7 +357,7 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
                   else if (step === 2) submitTransaction();
                 }}
                 disabled={loading || (step === 0 && (!formData.fullName || !formData.email || !formData.mobile))}
-                className="bg-[#FE4323] text-white px-8 py-4 rounded text-xs font-bold tracking-widest uppercase flex items-center gap-2 hover:bg-[#E03A1C] transition-colors disabled:opacity-50"
+                className="bg-primary text-white px-8 py-4 rounded text-xs font-bold tracking-widest uppercase flex items-center gap-2 hover:bg-primary-container transition-colors disabled:opacity-50"
               >
                 {loading ? <Loader2 className="animate-spin" size={16} /> : (step === 2 ? 'Submit Payment' : (step === 1 ? 'Pay Now' : 'Continue'))}
                 {!loading && <ArrowRight size={16} />}

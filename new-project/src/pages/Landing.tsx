@@ -19,7 +19,8 @@ import {
 import { motion } from 'motion/react';
 import axios from 'axios';
 import EnrollModal from '../components/EnrollModal';
-import Logo from '../components/Logo';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 const faculties = [
   { icon: Brain, title: "Technology & AI", desc: "Master the future of computation and machine intelligence." },
@@ -83,27 +84,10 @@ export default function Landing() {
   return (
     <div className="min-h-screen">
       {/* Navigation */}
-      <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 px-8 py-4 flex justify-between items-center ${scrolled ? 'bg-surface/90 backdrop-blur-md editorial-shadow' : 'bg-transparent'}`}>
-        <div className="flex items-center gap-12">
-          <a href="#" className="flex items-center">
-            <Logo height={32} />
-          </a>
-          <div className="hidden lg:flex gap-8">
-            <a href="#" className="text-primary font-bold border-b-2 border-primary pb-1 text-xs tracking-[0.05em] uppercase">Courses & Programs</a>
-            <a href="#" className="text-on-surface-variant font-medium hover:text-primary transition-colors text-xs tracking-[0.05em] uppercase">College Collaboration</a>
-            <a href="#" className="text-on-surface-variant font-medium hover:text-primary transition-colors text-xs tracking-[0.05em] uppercase">For Institutions</a>
-            <a href="#" className="text-on-surface-variant font-medium hover:text-primary transition-colors text-xs tracking-[0.05em] uppercase">Insights</a>
-            <a href="#" className="text-on-surface-variant font-medium hover:text-primary transition-colors text-xs tracking-[0.05em] uppercase">Why Dikshannt</a>
-          </div>
-        </div>
-        <div className="flex items-center gap-6">
-          <a href="/login" className="text-on-surface-variant hover:text-primary font-medium text-xs tracking-[0.05em] uppercase transition-colors">Log In</a>
-          <button className="premium-gradient text-white px-6 py-2.5 rounded text-xs font-bold tracking-[0.05em] uppercase active:scale-95 transition-transform">Explore Courses</button>
-        </div>
-      </nav>
+      <Header scrolled={scrolled} />
 
       {/* Hero Section */}
-      <section className="relative pt-44 pb-24 lg:pt-60 lg:pb-40 overflow-hidden bg-surface">
+      <section className="relative pt-28 pb-24 lg:pt-36 lg:pb-40 overflow-hidden bg-surface">
         <div className="container mx-auto px-8 grid lg:grid-cols-2 gap-16 items-center relative z-10">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -133,7 +117,7 @@ export default function Landing() {
             transition={{ duration: 1, delay: 0.2 }}
             className="relative hidden lg:block"
           >
-            <div className="aspect-[4/5] bg-surface-container-high rounded-lg overflow-hidden editorial-shadow transform translate-x-8 translate-y-8">
+            <div className="aspect-[4/5] bg-surface-container-high rounded-lg overflow-hidden editorial-shadow">
               <img 
                 src="https://picsum.photos/seed/campus/1200/1500" 
                 alt="Institutional excellence" 
@@ -231,7 +215,7 @@ export default function Landing() {
                     <div className="flex gap-2">
                         <button 
                           onClick={() => handleEnrollClick(c)}
-                          className="flex-1 text-center py-3 bg-[#FE4323] text-white text-[10px] font-bold tracking-widest uppercase hover:bg-[#E03A1C] transition-all duration-300 active:scale-95 shadow-sm"
+                          className="flex-1 text-center py-3 bg-primary text-white text-[10px] font-bold tracking-widest uppercase hover:bg-primary-container transition-all duration-300 active:scale-95 shadow-sm"
                         >
                           Enroll Now
                         </button>
@@ -361,7 +345,7 @@ export default function Landing() {
               <h2 className="text-4xl text-primary mb-8 leading-tight">Empowering Institutions with the Chancellor Framework.</h2>
               <ul className="space-y-8 mb-12">
                 <li className="flex gap-4 items-start">
-                  <CheckCircle2 className="text-[#FE4323] w-6 h-6 mt-1" />
+                  <CheckCircle2 className="text-primary w-6 h-6 mt-1" />
                   <div>
                     <h4 className="font-bold text-sm tracking-tight mb-1 uppercase">Value-Added Certification</h4>
                     <p className="text-sm text-on-surface-variant leading-relaxed">Integrated credentials that complement existing degree pathways.</p>
@@ -377,11 +361,7 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-stone-100 py-16 px-8 border-t border-stone-200">
-         <div className="max-w-7xl mx-auto text-center">
-          <p className="text-[10px] font-bold tracking-widest uppercase text-outline">© 2024 Dikshannt. The Digital Chancellor Framework.</p>
-        </div>
-      </footer>
+      <Footer />
 
       {/* Enrollment Modal */}
       {selectedCourse && (

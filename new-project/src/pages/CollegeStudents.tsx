@@ -81,7 +81,7 @@ export default function CollegeStudents() {
       <div className="flex justify-between items-center mb-16">
         <div>
           <h1 className="text-5xl text-primary font-serif italic mb-3">Student Roster</h1>
-          <p className="text-[11px] uppercase tracking-[0.2em] text-[#FE4323] font-bold">
+          <p className="text-[11px] uppercase tracking-[0.2em] text-primary font-bold">
             {collegeName || 'Institution'} Portal • Access Credentials Management
           </p>
         </div>
@@ -139,7 +139,7 @@ export default function CollegeStudents() {
                     <button 
                       onClick={() => sendCredentials(s._id)}
                       disabled={sendingId === s._id}
-                      className="inline-flex items-center gap-2 bg-[#FE4323]/5 text-[#FE4323] hover:bg-[#FE4323] hover:text-white px-4 py-2 rounded text-[9px] font-bold tracking-widest uppercase transition-all border border-[#FE4323]/20 disabled:opacity-50"
+                      className="inline-flex items-center gap-2 bg-primary/5 text-primary hover:bg-primary hover:text-white px-4 py-2 rounded text-[9px] font-bold tracking-widest uppercase transition-all border border-primary/20"
                     >
                       {sendingId === s._id ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
                       {sendingId === s._id ? 'Sending...' : 'Send Credentials'}
@@ -166,7 +166,7 @@ export default function CollegeStudents() {
               </button>
 
               <div className="flex items-center gap-4 mb-12">
-                <div className="bg-[#FE4323]/10 text-[#FE4323] p-3 rounded-lg">
+                <div className="bg-primary/10 text-primary p-3 rounded-lg">
                   <Plus size={32} />
                 </div>
                 <div>
@@ -188,7 +188,7 @@ export default function CollegeStudents() {
                     />
                   </div>
                   <div className="space-y-3">
-                    <label className="text-[10px] font-bold tracking-widest uppercase text-outline underline decoration-[#FE4323]/30">Academic Email address</label>
+                    <label className="text-[10px] font-bold tracking-widest uppercase text-outline underline decoration-primary/30">Academic Email address</label>
                     <div className="relative">
                       <Mail className="absolute left-0 top-1/2 -translate-y-1/2 text-outline" size={18} />
                       <input 
@@ -220,7 +220,7 @@ export default function CollegeStudents() {
                   </div>
                   <div className="space-y-3">
                      <label className="text-[10px] font-bold tracking-widest uppercase text-outline flex items-center gap-2">
-                        <ShieldCheck size={14} className="text-[#FE4323]" /> Enrollment Status
+                        <ShieldCheck size={14} className="text-primary" /> Enrollment Status
                      </label>
                      <div className="py-3 text-sm text-on-surface-variant font-medium flex items-center gap-2">
                         <CheckCircle2 size={16} className="text-green-500" /> Authorized for Admission
@@ -232,15 +232,15 @@ export default function CollegeStudents() {
                    <label className="text-[10px] font-bold tracking-widest uppercase text-outline block mb-6">Assign Approved Curriculum</label>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-60 overflow-y-auto p-6 bg-surface-container-low rounded-lg border border-outline-variant/10">
                       {courses.map(course => (
-                        <label key={course._id} className="flex items-center gap-4 p-4 bg-white border border-outline-variant/10 rounded-lg cursor-pointer hover:border-[#FE4323]/40 hover:shadow-md transition-all group">
+                        <label key={course._id} className="flex items-center gap-4 p-4 bg-white border border-outline-variant/10 rounded-lg cursor-pointer hover:border-primary/40 hover:shadow-md transition-all group">
                            <input 
                              type="checkbox"
                              checked={newStudent.enrolledCourses.includes(course._id)}
                              onChange={() => handleCourseToggle(course._id)}
-                             className="w-5 h-5 accent-[#FE4323] cursor-pointer"
+                             className="w-5 h-5 accent-primary cursor-pointer"
                            />
                            <div className="flex-1">
-                              <span className="text-xs font-bold text-primary block group-hover:text-[#FE4323] transition-colors">{course.title}</span>
+                              <span className="text-xs font-bold text-primary block group-hover:text-primary transition-colors">{course.title}</span>
                               <span className="text-[9px] uppercase font-bold text-outline tracking-tighter italic">{course.duration} ACCESS</span>
                            </div>
                         </label>
@@ -251,7 +251,7 @@ export default function CollegeStudents() {
                 <button 
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-[#FE4323] text-white py-6 rounded-lg text-xs font-bold tracking-widest uppercase hover:bg-[#E03A1C] transition-all shadow-2xl active:scale-[0.98] disabled:opacity-50 mt-8"
+                  className="w-full bg-primary text-white py-6 rounded-lg text-xs font-bold tracking-widest uppercase hover:bg-primary-container transition-all shadow-2xl active:scale-[0.98] disabled:opacity-50 mt-8"
                 >
                   {loading ? <Loader2 className="animate-spin mx-auto" size={24} /> : 'Finalize Student Enrollment'}
                 </button>

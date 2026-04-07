@@ -243,7 +243,7 @@ export default function AdminReferrals() {
                 <button 
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-[#FE4323] text-white py-4 rounded text-xs font-bold tracking-widest uppercase hover:bg-[#E03A1C] transition-all shadow-md active:scale-95 disabled:opacity-50 mt-4"
+                  className="w-full bg-primary text-white py-4 rounded text-xs font-bold tracking-widest uppercase hover:bg-primary-container transition-all shadow-md active:scale-95 disabled:opacity-50 mt-4"
                 >
                   {loading ? <Loader2 className="animate-spin" size={18} /> : 'Create Referral Code'}
                 </button>
