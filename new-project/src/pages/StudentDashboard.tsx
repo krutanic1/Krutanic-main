@@ -840,54 +840,59 @@ function SessionView({ course, session, onBack, onNext, hasNext }: any) {
   }, []);
 
   return (
-    <div className="bg-white min-h-[calc(100vh-80px)] p-6 lg:p-10 animate-in fade-in duration-500 overflow-y-auto">
-      <button onClick={onBack} className="flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase text-slate-400 hover:text-emerald-600 mb-6 transition-colors group">
-        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back to Dashboard
-      </button>
-      <div className="max-w-5xl mx-auto space-y-8">
-        <header className="text-center space-y-2">
+    <div className="bg-white min-h-[calc(100vh-80px)] p-0 sm:p-6 lg:p-10 animate-in fade-in duration-500 overflow-y-auto">
+      <div className="p-4 sm:p-0">
+        <button onClick={onBack} className="flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase text-slate-400 hover:text-emerald-600 mb-4 sm:mb-6 transition-colors group">
+          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back to Dashboard
+        </button>
+      </div>
+      <div className="max-w-5xl mx-auto space-y-4 sm:space-y-8">
+        <header className="text-center space-y-1 sm:space-y-2 px-4 sm:px-0">
           <span className="text-[10px] font-bold tracking-[0.4em] text-emerald-600 uppercase">Interactive Session</span>
-          <h1 className="text-4xl lg:text-5xl font-serif text-slate-800 leading-tight">{session.sessionName}</h1>
-          <p className="text-sm text-slate-500 font-serif italic font-light italic">{course.courseId.title}</p>
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-serif text-slate-800 leading-tight">{session.sessionName}</h1>
+          <p className="text-xs sm:text-sm text-slate-500 font-serif italic font-light italic truncate">{course.courseId.title}</p>
         </header>
 
         {/* Video Container with Fullscreen & Stealth Masking */}
         <div 
           ref={containerRef}
-          className={`relative aspect-video bg-black rounded-3xl overflow-hidden shadow-2xl ring-8 ring-slate-50 transition-all duration-500 ${isFullscreen ? 'w-screen h-screen rounded-none ring-0' : ''}`}
+          className={`relative aspect-video bg-black sm:rounded-3xl overflow-hidden shadow-2xl sm:ring-8 sm:ring-slate-50 transition-all duration-500 ${isFullscreen ? 'fixed inset-0 w-screen h-screen rounded-none ring-0 z-[100]' : 'w-full'}`}
         >
-          {/* Main Player Iframe with Clipping */}
-          <div className="absolute inset-0 scale-[1.05] translate-y-[-5%] overflow-hidden pointer-events-none sm:pointer-events-auto">
+          {/* Interaction Shield - Blocks Google pop-out icon without hiding content */}
+          <div className="absolute top-0 right-0 w-24 h-16 z-40 bg-transparent pointer-events-auto cursor-default" title="Protected Classroom"></div>
+
+          {/* Main Player Iframe with Aggressive Clipping */}
+          <div className="absolute inset-0 scale-[1.15] translate-y-[-7%] overflow-hidden pointer-events-auto">
              <iframe
                src={`https://drive.google.com/file/d/${session.driveFileId}/preview`}
-               className="w-full h-[120%] border-0 absolute top-[-10%]"
+               className="w-full h-[130%] border-0 absolute top-[-15%]"
                allow="autoplay; fullscreen"
              ></iframe>
           </div>
 
-          {/* Fullscreen Overlay Controls */}
-          <div className="absolute top-6 right-6 z-50">
+          {/* Improved Fullscreen Overlay Controls */}
+          <div className="absolute bottom-4 right-4 z-50">
              <button 
               onClick={toggleFullscreen}
-              className="p-4 bg-black/40 backdrop-blur-md rounded-full text-white hover:bg-black/60 transition-all border border-white/20"
+              className="p-3 sm:p-4 bg-black/60 backdrop-blur-xl rounded-2xl text-white hover:bg-black/80 transition-all border border-white/20 shadow-2xl"
               title="Toggle Fullscreen"
              >
-                {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
+                {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
              </button>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row justify-center gap-6 pt-12">
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-6 pt-8 sm:pt-12 px-4 sm:px-0">
           {hasNext && (
             <button 
               onClick={onNext}
-              className="px-12 py-4 bg-emerald-700 text-white rounded-full font-bold uppercase tracking-widest text-xs hover:bg-emerald-800 transition-all shadow-xl shadow-emerald-200 flex items-center gap-3 group"
+              className="w-full sm:w-auto px-16 py-5 bg-gradient-to-r from-emerald-700 to-teal-800 text-white rounded-2xl font-bold uppercase tracking-[0.2em] text-[10px] hover:shadow-2xl hover:shadow-emerald-200 transition-all flex items-center justify-center gap-4 group"
             >
-               Next Session <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+               Next Session <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </button>
           )}
           {!hasNext && (
-             <div className="px-12 py-4 bg-slate-50 text-slate-400 rounded-full font-bold uppercase tracking-widest text-xs border border-slate-100 flex items-center gap-3">
+             <div className="w-full sm:w-auto px-12 py-5 bg-slate-50 text-slate-400 rounded-2xl font-bold uppercase tracking-widest text-[10px] border border-slate-100 flex items-center justify-center gap-3">
                <CheckCircle size={18} className="text-emerald-500" /> Curriculum Completed
              </div>
           )}
