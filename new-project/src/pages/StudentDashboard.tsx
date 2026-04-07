@@ -697,7 +697,7 @@ function StudentOverview({ courses, userProgress, onStartCourse, loading }: any)
              {loading ? 'Retrieving your scholarly archives...' : 'Welcome back to your scholarly sanctuary.'}
           </p>
         </div>
-        <div className="flex gap-4">
+        <div className="hidden lg:flex gap-4">
            <div className="bg-white px-8 py-4 rounded-2xl shadow-sm border border-emerald-50 text-center ring-1 ring-emerald-50/50">
               <p className="text-[10px] font-bold tracking-[0.25em] text-emerald-600 mb-1 uppercase">Cumulative Knowledge</p>
               <p className="text-3xl font-serif text-slate-800">{progressPercent}%</p>
@@ -706,12 +706,12 @@ function StudentOverview({ courses, userProgress, onStartCourse, loading }: any)
       </header>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
         {[
-          { label: 'Active Curricula', val: courses.length, icon: BookOpen, color: 'text-emerald-700' },
-          { label: 'Milestones Reached', val: watchedSessions, icon: Target, color: 'text-indigo-700' },
-          { label: 'Pending Research', val: '02', icon: Library, color: 'text-amber-700' },
-          { label: 'Honorifics Earned', val: '00', icon: Trophy, color: 'text-rose-700' },
+          { label: 'Active Curricula', val: courses.length, icon: BookOpen, color: 'text-emerald-700', mobile: true },
+          { label: 'Milestones Reached', val: watchedSessions, icon: Target, color: 'text-indigo-700', mobile: true },
+          { label: 'Pending Research', val: '02', icon: Library, color: 'text-amber-700', mobile: false },
+          { label: 'Honorifics Earned', val: '00', icon: Trophy, color: 'text-rose-700', mobile: false },
         ].map((s, i) => (
-          <div key={i} className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all hover:-translate-y-1 group">
+          <div key={i} className={`bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all hover:-translate-y-1 group ${!s.mobile ? 'hidden md:block' : ''}`}>
             <div className={`size-12 rounded-xl bg-slate-50 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform ${s.color}`}>
               <s.icon size={24} />
             </div>

@@ -9,9 +9,7 @@ import {
   ChevronRight, 
   GraduationCap, 
   Library,
-  Bell,
   User,
-  Search,
   Menu,
   X
 } from 'lucide-react';
@@ -133,23 +131,9 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
             >
               <Menu size={24} />
             </button>
-
-            <div className="flex items-center gap-4 bg-slate-100 px-4 py-2 rounded-full border border-slate-200 w-full lg:w-96 transition-all focus-within:ring-2 focus-within:ring-emerald-500/20">
-              <Search size={16} className="text-slate-400" />
-              <input 
-                type="text" 
-                placeholder="Search curricula or research..." 
-                className="bg-transparent border-none outline-none text-sm font-serif italic text-slate-600 w-full"
-              />
-            </div>
           </div>
 
           <div className="flex items-center gap-6">
-            <button className="relative p-2 text-slate-400 hover:text-slate-600 transition-colors">
-              <Bell size={20} />
-              <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-red-500 rounded-full border-2 border-white"></span>
-            </button>
-            <div className="h-8 w-px bg-slate-200"></div>
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
                 <p className="text-[10px] font-bold text-slate-800 tracking-wider">LATEST MILESTONE</p>
