@@ -6,6 +6,7 @@ const MicroUser = require("../models/MicroUser");
 const Referral = require("../models/Referral");
 const MicroCourseConfig = require("../models/MicroCourseConfig");
 const FakeRegistration = require("../models/FakeRegistration");
+const UpcomingCourse = require("../models/UpcomingCourse");
 
 // 0. Get All Courses (Public for Landing Page)
 router.get("/microcourses/all", async (req, res) => {
@@ -158,6 +159,16 @@ router.get("/microcourses/config", async (req, res) => {
             config = new MicroCourseConfig();
         }
         res.status(200).json(config);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// 7. Get Upcoming Courses (Public)
+router.get("/microcourses/upcoming", async (req, res) => {
+    try {
+        const upcoming = await UpcomingCourse.find().populate("courseId");
+        res.status(200).json(upcoming);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

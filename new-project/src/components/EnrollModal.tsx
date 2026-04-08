@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, CheckCircle2, CreditCard, Ticket, ArrowRight, Loader2, QrCode } from 'lucide-react';
 import axios from 'axios';
+import Confetti from 'react-confetti';
 
 interface Course {
   _id?: string;
@@ -158,15 +159,22 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
       <motion.div 
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="bg-surface w-full max-w-2xl overflow-hidden editorial-shadow flex flex-col md:flex-row min-h-[500px]"
+        className="bg-surface w-full max-w-2xl overflow-y-auto max-h-[95vh] md:max-h-[90vh] md:overflow-hidden editorial-shadow flex flex-col md:flex-row min-h-[auto] md:min-h-[500px]"
       >
         {/* Sidebar Info */}
-        <div className="bg-primary p-8 md:w-1/3 text-white flex flex-col justify-between">
+        <div className="bg-primary p-6 md:p-8 md:w-1/3 text-white flex flex-col justify-between shrink-0">
           <div>
-            <div className="text-[10px] font-bold tracking-[0.2em] uppercase opacity-60 mb-2">Selected Course</div>
-            <h2 className="text-2xl font-serif leading-tight mb-6">{course.title}</h2>
+            <div className="flex justify-between items-start">
+              <div>
+                <div className="text-[10px] font-bold tracking-[0.2em] uppercase opacity-60 mb-1 md:mb-2">Selected Course</div>
+                <h2 className="text-xl md:text-2xl font-serif leading-tight mb-0 md:mb-6">{course.title}</h2>
+              </div>
+              <button onClick={onClose} className="md:hidden text-white/70 hover:text-white p-1">
+                <X size={20} />
+              </button>
+            </div>
             
-            <div className="space-y-6">
+            <div className="hidden md:block space-y-6 mt-6">
               {steps.map((s, i) => (
                 <div key={i} className={`flex items-center gap-3 text-xs tracking-widest uppercase transition-opacity ${step >= i ? 'opacity-100 font-bold' : 'opacity-40'}`}>
                   <div className={`w-6 h-6 rounded-full border border-white flex items-center justify-center text-[10px] ${step === i ? 'bg-white text-primary' : ''}`}>
@@ -178,15 +186,19 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
             </div>
           </div>
           
-          <div className="mt-8 pt-8 border-t border-white/10">
+          <div className="hidden md:block mt-8 pt-8 border-t border-white/10">
             <div className="text-[10px] font-bold tracking-widest uppercase opacity-60 mb-1">Final Price</div>
             <div className="text-3xl font-serif">₹{price}</div>
+          </div>
+          <div className="md:hidden mt-4 pt-4 border-t border-white/10 flex justify-between items-center whitespace-nowrap">
+            <span className="text-xs font-bold tracking-widest uppercase opacity-80">Final Price</span>
+            <span className="text-xl font-serif">₹{price}</span>
           </div>
         </div>
 
         {/* Form Content */}
-        <div className="flex-1 p-8 relative flex flex-col">
-          <button onClick={onClose} className="absolute right-6 top-6 text-outline hover:text-primary transition-colors p-2 z-20">
+        <div className="flex-1 p-6 md:p-8 relative flex flex-col md:overflow-y-auto custom-scrollbar">
+          <button onClick={onClose} className="hidden md:block absolute right-6 top-6 text-outline hover:text-primary transition-colors p-2 z-20">
             <X size={20} />
           </button>
 
@@ -196,8 +208,7 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
               <motion.div 
                 initial={{ opacity: 0, x: 50, scale: 0.9 }}
                 animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={{ opacity: 0, x: 20, scale: 0.9 }}
-                className="absolute right-4 bottom-24 p-4 bg-white editorial-shadow border-l-4 border-metallic-green z-50 flex items-center gap-4 max-w-[240px] pointer-events-none"
+                className="hidden md:flex absolute right-4 bottom-24 p-4 bg-white editorial-shadow border-l-4 border-metallic-green z-50 items-center gap-4 max-w-[240px] pointer-events-none"
               >
                 <div className="w-10 h-10 rounded-full bg-metallic-green/5 flex items-center justify-center shrink-0">
                    <CheckCircle2 size={18} className="text-metallic-green" />
@@ -323,6 +334,14 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
                    animate={{ opacity: 1, scale: 1 }}
                    className="text-center py-12 space-y-6"
                 >
+                  <Confetti
+                    width={window.innerWidth}
+                    height={window.innerHeight}
+                    recycle={false}
+                    numberOfPieces={400}
+                    gravity={0.15}
+                    style={{ position: 'fixed', top: 0, left: 0, zIndex: 150, pointerEvents: 'none' }}
+                  />
                   <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto">
                     <CheckCircle2 size={48} />
                   </div>
@@ -337,7 +356,7 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
           </div>
 
           {step < 3 && (
-            <div className="mt-12 flex justify-between items-center bg-white pt-6 border-t border-outline-variant/10">
+            <div className="mt-8 md:mt-12 flex justify-between items-center bg-white pt-6 border-t border-outline-variant/10">
               <button 
                 onClick={() => setStep(s => s - 1)} 
                 disabled={step === 0 || loading}

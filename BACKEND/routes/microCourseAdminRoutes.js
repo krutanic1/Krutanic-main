@@ -8,7 +8,9 @@ const { sendWelcomeEmail, sendCredentialsEmail, sendCollegeCredentialsEmail } = 
 const MicroUser = require("../models/MicroUser");
 const MicroProject = require("../models/MicroProject");
 const MicroCourseConfig = require("../models/MicroCourseConfig");
+const UpcomingCourse = require("../models/UpcomingCourse");
 const crypto = require("crypto");
+
 
 // 1. Enrollment Management
 router.get("/admin/microcourses/enrolls", async (req, res) => {
@@ -374,4 +376,35 @@ router.delete("/admin/colleges/:id", async (req, res) => {
     }
 });
 
+// 8. Upcoming Courses Management
+router.get("/admin/microcourses/upcoming", async (req, res) => {
+    try {
+        const upcoming = await UpcomingCourse.find().populate("courseId");
+        res.status(200).json(upcoming);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.post("/admin/microcourses/upcoming", async (req, res) => {
+    try {
+        const { courseName, isExisting, courseId } = req.body;
+        const upcoming = new UpcomingCourse({ courseName, isExisting, courseId });
+        await upcoming.save();
+        res.status(201).json(upcoming);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.delete("/admin/microcourses/upcoming/:id", async (req, res) => {
+    try {
+        await UpcomingCourse.findByIdAndDelete(req.params.id);
+        res.status(200).json({ message: "Upcoming course removed." });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 module.exports = router;
+

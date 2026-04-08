@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
-import { Search, CheckCircle2, Clock3, Briefcase, Users } from 'lucide-react';
+import { Search, CheckCircle2, Clock3, Briefcase, Users, Calendar } from 'lucide-react';
 import { motion } from 'motion/react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -39,6 +39,7 @@ const journey = [
 
 export default function ExploreCourses() {
   const [coursesList, setCoursesList] = useState<any[]>([]);
+  const [upcomingCourses, setUpcomingCourses] = useState<any[]>([]);
   const [query, setQuery] = useState('');
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
   const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
@@ -51,8 +52,12 @@ export default function ExploreCourses() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await axios.get('/microcourses/all');
+        const [res, upcomingRes] = await Promise.all([
+          axios.get('/microcourses/all'),
+          axios.get('/microcourses/upcoming')
+        ]);
         setCoursesList(res.data || []);
+        setUpcomingCourses(upcomingRes.data || []);
       } catch (err) {
         console.error('Failed to fetch courses', err);
       }
@@ -88,15 +93,17 @@ export default function ExploreCourses() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search by title, skill, duration, or format..."
+                placeholder="Search courses..."
                 className="w-full border-b border-outline-variant focus:border-primary border-t-0 border-x-0 bg-transparent py-4 px-2 outline-none text-on-surface placeholder:text-outline transition-colors"
               />
               <Search className="absolute right-2 top-1/2 -translate-y-1/2 text-outline w-5 h-5" />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredCourses.map((course: any, index: number) => (
+          <div className="flex flex-col lg:flex-row gap-12">
+            <div className="flex-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+                {filteredCourses.map((course: any, index: number) => (
               <motion.div
                 key={course._id || index}
                 whileHover={{ y: -10 }}
@@ -136,12 +143,46 @@ export default function ExploreCourses() {
               </motion.div>
             ))}
 
-            {filteredCourses.length === 0 && (
-              <div className="md:col-span-2 lg:col-span-3 bg-surface-container-low p-8 text-center border border-outline-variant/20">
-                <p className="text-primary text-lg mb-2">No matching courses found</p>
-                <p className="text-on-surface-variant text-sm">Try another keyword like AI, Data, Marketing, or Full Stack.</p>
+                {filteredCourses.length === 0 && (
+                  <div className="md:col-span-2 bg-surface-container-low p-8 text-center border border-outline-variant/20">
+                    <p className="text-primary text-lg mb-2">No matching courses found</p>
+                    <p className="text-on-surface-variant text-sm">Try another keyword like AI, Data, Marketing, or Full Stack.</p>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
+
+            {/* Sidebar content */}
+            <div className="lg:w-80 shrink-0">
+              <div className="bg-white p-6 editorial-shadow sticky top-28 border border-outline-variant/10">
+                <div className="flex items-center gap-3 mb-6 border-b border-outline-variant/10 pb-4">
+                  <Calendar className="text-primary w-5 h-5" />
+                  <h3 className="text-xl text-primary font-bold">Upcoming Courses</h3>
+                </div>
+                
+                <div className="space-y-4">
+                  {upcomingCourses.length === 0 ? (
+                    <p className="text-sm text-outline italic">No upcoming courses scheduled at the moment.</p>
+                  ) : (
+                    upcomingCourses.map((u, i) => (
+                      <div key={u._id || i} className="relative group p-4 bg-surface-container-lowest border border-outline-variant/10 hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-default overflow-hidden rounded-xl">
+                        <div className="absolute inset-0 bg-primary/5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+                        <h4 className="relative z-10 text-sm font-bold text-primary group-hover:text-primary/90 transition-colors flex items-center justify-between">
+                          <span className="pr-2">{u.courseName}</span>
+                          <span className="opacity-0 group-hover:opacity-100 transform -translate-x-4 group-hover:translate-x-0 transition-all duration-300 text-primary text-xs">→</span>
+                        </h4>
+                      </div>
+                    ))
+                  )}
+                </div>
+                
+                <div className="mt-8 pt-6 border-t border-outline-variant/10">
+                  <p className="text-xs text-on-surface-variant leading-relaxed italic">
+                    These topics are currently being developed with our industry partners. Stay tuned for early access announcements.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
 
           <section className="mt-20">

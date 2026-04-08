@@ -12,8 +12,9 @@ import CourseCreator from './admin/CourseCreator';
 import AdminProjectCreator from './admin/AdminProjectCreator';
 import AdminColleges from './admin/AdminColleges';
 import AdminCertificates from './admin/AdminCertificates';
+import AdminUpcomingCourses from './admin/AdminUpcomingCourses';
 import CollegeDashboard from './pages/CollegeDashboard';
-import { Layout, Users, Ticket, Video, LogOut, ChevronRight, BookOpen, GraduationCap, Award } from 'lucide-react';
+import { Layout, Users, Ticket, Video, LogOut, ChevronRight, BookOpen, GraduationCap, Award, Calendar } from 'lucide-react';
 import Logo from './components/Logo';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
 import AdminLogin from './pages/AdminLogin';
@@ -39,6 +40,7 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
     { label: 'Enrolls', path: '/admin/enrolls', icon: Users },
     { label: 'Referrals', path: '/admin/referrals', icon: Ticket },
     { label: 'Manage Courses', path: '/admin/courses', icon: Video },
+    { label: 'Upcoming Courses', path: '/admin/upcoming', icon: Calendar },
     { label: 'Manage Projects', path: '/admin/projects', icon: BookOpen },
     { label: 'Manage Colleges', path: '/admin/colleges', icon: GraduationCap },
     { label: 'Certificates', path: '/admin/certificates', icon: Award },
@@ -107,6 +109,7 @@ export default function App() {
       <Route path="/admin/enrolls" element={<AdminProtectedRoute><AdminLayout><AdminEnrolls /></AdminLayout></AdminProtectedRoute>} />
       <Route path="/admin/referrals" element={<AdminProtectedRoute><AdminLayout><AdminReferrals /></AdminLayout></AdminProtectedRoute>} />
       <Route path="/admin/courses" element={<AdminProtectedRoute><AdminLayout><CourseCreator /></AdminLayout></AdminProtectedRoute>} />
+      <Route path="/admin/upcoming" element={<AdminProtectedRoute><AdminLayout><AdminUpcomingCourses /></AdminLayout></AdminProtectedRoute>} />
       <Route path="/admin/projects" element={<AdminProtectedRoute><AdminLayout><AdminProjectCreator /></AdminLayout></AdminProtectedRoute>} />
       <Route path="/admin/colleges" element={<AdminProtectedRoute><AdminLayout><AdminColleges /></AdminLayout></AdminProtectedRoute>} />
       <Route path="/admin/certificates" element={<AdminProtectedRoute><AdminLayout><AdminCertificates /></AdminLayout></AdminProtectedRoute>} />
