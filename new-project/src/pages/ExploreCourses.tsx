@@ -100,7 +100,7 @@ export default function ExploreCourses() {
             </div>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-12">
+          <div className="flex flex-col-reverse lg:flex-row gap-12">
             <div className="flex-1">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
                 {filteredCourses.map((course: any, index: number) => (

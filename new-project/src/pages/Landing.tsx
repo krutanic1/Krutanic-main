@@ -14,7 +14,8 @@ import {
   Quote,
   CheckCircle2,
   Handshake,
-  Briefcase
+  Briefcase,
+  Calendar
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import axios from 'axios';
@@ -51,16 +52,13 @@ const credentials = [
   { title: "Digital Skills Certification", desc: "Validated technical fluency for modern workflows.", volume: "4 Courses", effort: "8 hrs/week" },
 ];
 
-const insights = [
-  { date: "OCT 12, 2024", title: "The Future of AI in Campus Curriculum", author: "By Academic Board", image: "https://picsum.photos/seed/insight1/800/600" },
-  { date: "SEP 28, 2024", title: "Bridging the Talent Gap: A 2024 Report", author: "By Career Services", image: "https://picsum.photos/seed/insight2/800/600" },
-  { date: "SEP 15, 2024", title: "Designing Outcome-Based Digital Learning", author: "By Dr. Elena Rossi", image: "https://picsum.photos/seed/insight3/800/600" },
-];
+
 
 export default function Landing() {
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [coursesList, setCoursesList] = useState<any[]>([]);
+  const [upcomingCourses, setUpcomingCourses] = useState<any[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
   const [selectedCourseDetails, setSelectedCourseDetails] = useState<any>(null);
   const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
@@ -69,8 +67,12 @@ export default function Landing() {
 
   const fetchCourses = async () => {
     try {
-      const res = await axios.get('/microcourses/all');
-      setCoursesList(res.data);
+      const [res, upcomingRes] = await Promise.all([
+        axios.get('/microcourses/all'),
+        axios.get('/microcourses/upcoming')
+      ]);
+      setCoursesList(res.data || []);
+      setUpcomingCourses(upcomingRes.data || []);
     } catch (err) {
       console.error('Failed to fetch courses', err);
     }
@@ -212,58 +214,94 @@ export default function Landing() {
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredCourses.map((c, i) => (
-              <motion.div 
-                key={i}
-                whileHover={{ y: -10 }}
-                className="bg-surface-container-lowest flex flex-col h-full editorial-shadow group overflow-hidden"
-              >
-                <div className="aspect-video relative overflow-hidden bg-surface-container-highest">
-                  <img 
-                    src={c.thumbnail || c.image} 
-                    alt={c.title} 
-                    className="w-full h-full object-cover grayscale-[0.3] group-hover:scale-105 transition-transform duration-700"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute top-4 left-4 bg-primary text-white text-[10px] font-bold tracking-widest px-3 py-1 uppercase">
-                    {c.tag}
-                  </div>
-                </div>
-                <div className="p-8 flex flex-col flex-grow">
-                  <h3 className="text-xl text-primary mb-2 leading-snug">{c.title}</h3>
-                  <p className="text-xs text-on-surface-variant mb-6">{c.desc}</p>
-                  <div className="mt-auto space-y-4">
-                    <div className="flex justify-between text-[11px] font-bold tracking-widest uppercase text-on-surface-variant border-b border-outline-variant/10 pb-2">
-                      <span className="text-primary font-bold">₹{c.price || 5000}</span>
-                      <span>{c.duration}</span>
-                      <span>{c.format}</span>
+          <div className="flex flex-col-reverse lg:flex-row gap-12">
+            <div className="flex-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+                {filteredCourses.map((c, i) => (
+                  <motion.div 
+                    key={i}
+                    whileHover={{ y: -10 }}
+                    className="bg-surface-container-lowest flex flex-col h-full editorial-shadow group overflow-hidden"
+                  >
+                    <div className="aspect-video relative overflow-hidden bg-surface-container-highest">
+                      <img 
+                        src={c.thumbnail || c.image} 
+                        alt={c.title} 
+                        className="w-full h-full object-cover grayscale-[0.3] group-hover:scale-105 transition-transform duration-700"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="absolute top-4 left-4 bg-primary text-white text-[10px] font-bold tracking-widest px-3 py-1 uppercase">
+                        {c.tag}
+                      </div>
                     </div>
-                    <div className="flex gap-2">
-                        <button 
-                          onClick={() => handleEnrollClick(c)}
-                          className="flex-1 text-center py-3 bg-primary text-white text-[10px] font-bold tracking-widest uppercase hover:bg-primary-container transition-all duration-300 active:scale-95 shadow-sm"
-                        >
-                          Enroll Now
-                        </button>
-                        <button 
-                          onClick={() => handleLearnMoreClick(c)}
-                          className="flex-1 text-center py-3 border border-primary text-primary text-[10px] font-bold tracking-widest uppercase hover:bg-primary hover:text-white transition-all duration-300"
-                        >
-                          Learn More
-                        </button>
+                    <div className="p-8 flex flex-col flex-grow">
+                      <h3 className="text-xl text-primary mb-2 leading-snug">{c.title}</h3>
+                      <p className="text-xs text-on-surface-variant mb-6">{c.desc}</p>
+                      <div className="mt-auto space-y-4">
+                        <div className="flex justify-between text-[11px] font-bold tracking-widest uppercase text-on-surface-variant border-b border-outline-variant/10 pb-2">
+                          <span className="text-primary font-bold">₹{c.price || 5000}</span>
+                          <span>{c.duration}</span>
+                          <span>{c.format}</span>
+                        </div>
+                        <div className="flex gap-2">
+                            <button 
+                              onClick={() => handleEnrollClick(c)}
+                              className="flex-1 text-center py-3 bg-primary text-white text-[10px] font-bold tracking-widest uppercase hover:bg-primary-container transition-all duration-300 active:scale-95 shadow-sm"
+                            >
+                              Enroll Now
+                            </button>
+                            <button 
+                              onClick={() => handleLearnMoreClick(c)}
+                              className="flex-1 text-center py-3 border border-primary text-primary text-[10px] font-bold tracking-widest uppercase hover:bg-primary hover:text-white transition-all duration-300"
+                            >
+                              Learn More
+                            </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+                  </motion.div>
+                ))}
 
-            {filteredCourses.length === 0 && (
-              <div className="md:col-span-2 lg:col-span-3 bg-surface-container-low p-8 text-center border border-outline-variant/20">
-                <p className="text-primary text-lg mb-2">No matching courses found</p>
-                <p className="text-on-surface-variant text-sm">Try a different keyword like AI, Marketing, Data, or Full Stack.</p>
+                {filteredCourses.length === 0 && (
+                  <div className="md:col-span-2 lg:col-span-2 bg-surface-container-low p-8 text-center border border-outline-variant/20">
+                    <p className="text-primary text-lg mb-2">No matching courses found</p>
+                    <p className="text-on-surface-variant text-sm">Try a different keyword like AI, Marketing, Data, or Full Stack.</p>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
+
+            {/* Sidebar content */}
+            <div className="lg:w-80 shrink-0">
+              <div className="bg-white p-6 editorial-shadow sticky top-28 border border-outline-variant/10">
+                <div className="flex items-center gap-3 mb-6 border-b border-outline-variant/10 pb-4">
+                  <Calendar className="text-primary w-5 h-5" />
+                  <h3 className="text-xl text-primary font-bold">Upcoming Courses</h3>
+                </div>
+                
+                <div className="space-y-4">
+                  {upcomingCourses.length === 0 ? (
+                    <p className="text-sm text-outline italic">No upcoming courses scheduled at the moment.</p>
+                  ) : (
+                    upcomingCourses.map((u, i) => (
+                      <div key={u._id || i} className="relative group p-4 bg-surface-container-lowest border border-outline-variant/10 hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-default overflow-hidden rounded-xl">
+                        <div className="absolute inset-0 bg-primary/5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+                        <h4 className="relative z-10 text-sm font-bold text-primary group-hover:text-primary/90 transition-colors flex items-center justify-between">
+                          <span className="pr-2">{u.courseName}</span>
+                          <span className="opacity-0 group-hover:opacity-100 transform -translate-x-4 group-hover:translate-x-0 transition-all duration-300 text-primary text-xs">→</span>
+                        </h4>
+                      </div>
+                    ))
+                  )}
+                </div>
+                
+                <div className="mt-8 pt-6 border-t border-outline-variant/10">
+                  <p className="text-xs text-on-surface-variant leading-relaxed italic">
+                    These topics are currently being developed with our industry partners. Stay tuned for early access announcements.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -338,32 +376,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Academic Insights */}
-      <section className="py-24 bg-surface">
-        <div className="container mx-auto px-8">
-          <div className="flex justify-between items-center mb-16">
-            <h2 className="text-4xl text-primary">Academic Insights</h2>
-            <a href="#" className="text-[11px] font-bold tracking-widest uppercase text-primary border-b border-primary pb-1 hover:opacity-70 transition-opacity">Read All Articles</a>
-          </div>
-          <div className="grid md:grid-cols-3 gap-12">
-            {insights.map((article, i) => (
-              <article key={i} className="group cursor-pointer">
-                <div className="aspect-[4/3] bg-surface-container-high mb-8 overflow-hidden editorial-shadow">
-                  <img 
-                    src={article.image} 
-                    alt={article.title} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 grayscale-[0.5]"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
-                <span className="text-[10px] font-bold tracking-widest text-outline uppercase block mb-3">{article.date}</span>
-                <h3 className="text-2xl text-primary mb-4 group-hover:text-primary/70 transition-colors">{article.title}</h3>
-                <p className="text-sm text-on-surface-variant">{article.author}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       {/* College Collaboration */}
       <section className="py-24 bg-surface-container-low">
