@@ -52,6 +52,9 @@ const AdvLeadManagement = () => {
     const [newTemplateName, setNewTemplateName] = useState("");
     const [isSavingTemplate, setIsSavingTemplate] = useState(false);
 
+    // Lead Details Modal state
+    const [selectedLeadForDetails, setSelectedLeadForDetails] = useState(null);
+
     const [advDomains, setAdvDomains] = useState(["General"]);
 
     // Identify current user
@@ -467,16 +470,7 @@ const AdvLeadManagement = () => {
                                         </span>
                                     )}
                                 </button>
-                                <button
-                                    onClick={() => setShowSMTPModal(true)}
-                                    style={{
-                                        padding: '10px 22px', background: '#fff', color: '#722ed1',
-                                        border: '1px solid #722ed1', borderRadius: '8px', fontSize: '15px',
-                                        fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'
-                                    }}
-                                >
-                                    📧 Email Settings
-                                </button>
+
                             </>
                         ) : (
                             <button
@@ -663,6 +657,10 @@ const AdvLeadManagement = () => {
                                         <th>Source</th>
                                         <th>Domain</th>
                                         <th>Education</th>
+                                        <th style={{ minWidth: '150px' }}>Situation</th>
+                                        <th style={{ minWidth: '150px' }}>Goal</th>
+                                        <th style={{ minWidth: '150px' }}>Challenge</th>
+                                        <th style={{ minWidth: '150px' }}>Willingness</th>
                                         <th>Status Info</th>
                                         <th>Backend Status</th>
                                         <th>Assigned To</th>
@@ -674,7 +672,7 @@ const AdvLeadManagement = () => {
                                     {Object.keys(groupedLeads).map((date) => (
                                         <React.Fragment key={date}>
                                             <tr style={{ background: '#f8f9fa' }}>
-                                                <td colSpan={isManualAssignMode ? "13" : "12"} style={{ fontWeight: '800', textAlign: 'center', padding: '10px', fontSize: '14px', letterSpacing: '1px', borderBottom: '2px solid #ddd' }}>
+                                                <td colSpan={isManualAssignMode ? "17" : "16"} style={{ fontWeight: '800', textAlign: 'center', padding: '10px', fontSize: '14px', letterSpacing: '1px', borderBottom: '2px solid #ddd' }}>
                                                     📅 {date}
                                                 </td>
                                             </tr>
@@ -699,6 +697,18 @@ const AdvLeadManagement = () => {
                                                         <td style={{ fontSize: '12px', color: '#666' }}>{lead.source || '—'}</td>
                                                         <td style={{ fontSize: '13px' }}>{lead.opted_domain || '—'}</td>
                                                         <td style={{ fontSize: '12px', color: '#555' }}>{lead.education_background || '—'}</td>
+                                                        <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={lead.extra_fields?.['what_best_describes_your_current_situation?']}>
+                                                            {lead.extra_fields?.['what_best_describes_your_current_situation?'] || '—'}
+                                                        </td>
+                                                        <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={lead.extra_fields?.['what_is_your_primary_goal_right_now?']}>
+                                                            {lead.extra_fields?.['what_is_your_primary_goal_right_now?'] || '—'}
+                                                        </td>
+                                                        <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={lead.extra_fields?.['what_is_your_biggest_career_challenge?']}>
+                                                            {lead.extra_fields?.['what_is_your_biggest_career_challenge?'] || '—'}
+                                                        </td>
+                                                        <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={lead.upskilling_ready || lead.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+internship+100%_placement_support?'] || lead.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?']}>
+                                                            {lead.upskilling_ready || lead.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+internship+100%_placement_support?'] || lead.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?'] || '—'}
+                                                        </td>
                                                         <td style={{ fontSize: '12px', color: '#555' }}>{lead.current_status || '—'}</td>
                                                         <td>
                                                             <span style={{ padding: '3px 10px', borderRadius: '12px', fontSize: '11px', background: sc.bg, border: `1px solid ${sc.border}`, color: sc.color, whiteSpace: 'nowrap' }}>
@@ -725,15 +735,11 @@ const AdvLeadManagement = () => {
                                                         <td>
                                                             <div style={{ display: 'flex', gap: '5px' }}>
                                                                 <button 
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        const url = `https://wa.me/${lead.phone_number.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${lead.full_name}, Here is the payment link for the Advanced Program Slot Booking: https://pages.razorpay.com/Advanced_Program_Slot_Booking`)}`;
-                                                                        window.open(url, '_blank');
-                                                                    }}
-                                                                    title="Send Payment Link via WhatsApp"
+                                                                    onClick={() => setSelectedLeadForDetails(lead)}
+                                                                    title="View Details"
                                                                     style={{
-                                                                        padding: '6px 10px',
-                                                                        background: '#FF9800', 
+                                                                        padding: '6px 12px',
+                                                                        background: '#1890ff',
                                                                         color: '#fff',
                                                                         border: 'none',
                                                                         borderRadius: '6px',
@@ -745,7 +751,7 @@ const AdvLeadManagement = () => {
                                                                         gap: '4px'
                                                                     }}
                                                                 >
-                                                                    <i className="fa fa-credit-card"></i> Pay Link
+                                                                    <i className="fa fa-eye"></i> View
                                                                 </button>
                                                                 {["callback_requested", "no_answer", "not_interested", "junk"].includes(lead.last_outcome) && (
                                                                     <button 
@@ -768,33 +774,6 @@ const AdvLeadManagement = () => {
                                                                         <i className="fa fa-refresh"></i> Dialed
                                                                     </button>
                                                                 )}
-                                                                <button 
-                                                                    onClick={() => {
-                                                                        setSelectedLeadForEmail(lead);
-                                                                        setEmailRecipient(lead.email || "");
-                                                                        setEmailSubject(`Information regarding ${lead.opted_domain || "Krutanic Advanced Program"}`);
-                                                                        setEmailDomain(lead.opted_domain || "General");
-                                                                        setEmailContent(""); 
-                                                                        setSendBrochure(false);
-                                                                        setShowEmailModal(true);
-                                                                    }}
-                                                                    title="Send Email"
-                                                                    style={{
-                                                                        padding: '6px 12px',
-                                                                        background: '#18d3ff',
-                                                                        color: '#fff',
-                                                                        border: 'none',
-                                                                        borderRadius: '6px',
-                                                                        cursor: 'pointer',
-                                                                        fontSize: '11px',
-                                                                        fontWeight: '600',
-                                                                        display: 'flex',
-                                                                        alignItems: 'center',
-                                                                        gap: '4px'
-                                                                    }}
-                                                                >
-                                                                    <i className="fa fa-envelope"></i> Send Mail
-                                                                </button>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -1157,7 +1136,93 @@ const AdvLeadManagement = () => {
                         </div>
                     </div>
                 )}
+
+                {/* ─── Lead Details Modal ─── */}
+                {selectedLeadForDetails && (
+                    <div style={{
+                        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                        backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex',
+                        justifyContent: 'center', alignItems: 'center', zIndex: 3000,
+                        backdropFilter: 'blur(5px)'
+                    }}>
+                        <div style={{
+                            backgroundColor: '#fff', padding: '30px', borderRadius: '20px',
+                            width: '450px', maxHeight: '90vh', overflowY: 'auto',
+                            boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', border: '1px solid #e2e8f0'
+                        }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                                <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: '#1a202c' }}>Lead Briefing</h2>
+                                <button onClick={() => setSelectedLeadForDetails(null)} style={{ border: 'none', background: '#f7fafc', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', fontSize: '20px', color: '#718096' }}>&times;</button>
+                            </div>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px', background: '#f8fafc', padding: '15px', borderRadius: '12px' }}>
+                                <div>
+                                    <label style={{ fontSize: '11px', fontWeight: '800', color: '#64748b', textTransform: 'uppercase' }}>Email Address</label>
+                                    <div style={{ fontSize: '14px', fontWeight: '600', color: '#1e293b', wordBreak: 'break-all' }}>{selectedLeadForDetails.email || '—'}</div>
+                                </div>
+                                <div>
+                                    <label style={{ fontSize: '11px', fontWeight: '800', color: '#64748b', textTransform: 'uppercase' }}>Phone Number</label>
+                                    <div style={{ fontSize: '14px', fontWeight: '600', color: '#1e293b' }}>{selectedLeadForDetails.phone_number}</div>
+                                </div>
+                            </div>
+
+                            <div style={{ background: '#ffffff', padding: '0px', borderRadius: '0px' }}>
+                                <h3 style={{ marginTop: 0, marginBottom: '16px', fontSize: '14px', fontWeight: '800', color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>🚀 Candidate Screening Questionnaire</h3>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                    {[
+                                        { label: 'Current Situation', value: selectedLeadForDetails.extra_fields?.['what_best_describes_your_current_situation?'] },
+                                        { label: 'Primary Goal', value: selectedLeadForDetails.extra_fields?.['what_is_your_primary_goal_right_now?'] },
+                                        { label: 'Career Challenge', value: selectedLeadForDetails.extra_fields?.['what_is_your_biggest_career_challenge?'] },
+                                        { label: 'Investment Readiness', value: selectedLeadForDetails.upskilling_ready || selectedLeadForDetails.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+internship+100%_placement_support?'] || selectedLeadForDetails.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?'] },
+                                    ].map((item, i) => (
+                                        item.value && (
+                                            <div key={i} style={{ padding: '12px', background: '#f0f9ff', borderRadius: '10px', border: '1px solid #bae6fd' }}>
+                                                <div style={{ fontSize: '10px', fontWeight: '800', color: '#0369a1', textTransform: 'uppercase', marginBottom: '4px', opacity: 0.8 }}>{item.label}</div>
+                                                <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '600', lineHeight: '1.4' }}>{item.value || '—'}</div>
+                                            </div>
+                                        )
+                                    ))}
+
+                                    {Object.entries(selectedLeadForDetails.extra_fields || {})
+                                        .filter(([key]) => ![
+                                            'what_best_describes_your_current_situation?',
+                                            'what_is_your_primary_goal_right_now?',
+                                            'what_is_your_biggest_career_challenge?',
+                                            'are_you_willing_to_invest_in_a_program_that_provides_training_+internship+100%_placement_support?',
+                                            'are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?'
+                                        ].includes(key))
+                                        .map(([key, val]) => (
+                                            <div key={key}>
+                                                <div style={{ fontSize: '10px', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '2px' }}>{key.replace(/_/g, ' ')}</div>
+                                                <div style={{ fontSize: '13px', color: '#475569', fontWeight: '500' }}>{val || '—'}</div>
+                                            </div>
+                                        ))}
+                                    
+                                    {(!selectedLeadForDetails.extra_fields || Object.keys(selectedLeadForDetails.extra_fields).length === 0) && ![
+                                        'what_best_describes_your_current_situation?',
+                                        'what_is_your_primary_goal_right_now?',
+                                        'what_is_your_biggest_career_challenge?',
+                                        'are_you_willing_to_invest_in_a_program_that_provides_training_+internship+100%_placement_support?',
+                                        'are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?'
+                                    ].some(k => selectedLeadForDetails.extra_fields?.[k] || selectedLeadForDetails[k]) && (
+                                        <div style={{ color: '#94a3b8', fontStyle: 'italic', fontSize: '13px', textAlign: 'center', padding: '20px' }}>No questionnaire data available.</div>
+                                    )}
+                                </div>
+                            </div>
+                            
+                            <div style={{ marginTop: '30px' }}>
+                                <button 
+                                    onClick={() => setSelectedLeadForDetails(null)} 
+                                    style={{ width: '100%', padding: '14px', background: '#1e293b', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: '600', cursor: 'pointer', fontSize: '14px' }}
+                                >
+                                    Close Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
+
         </div>
     );
 };

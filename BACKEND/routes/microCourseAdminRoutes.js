@@ -4,7 +4,7 @@ const MicroCourseEnroll = require("../models/MicroCourseEnroll");
 const MicroCourse = require("../models/MicroCourse");
 const Referral = require("../models/Referral");
 const College = require("../models/College");
-const { sendWelcomeEmail, sendCredentialsEmail } = require("../utils/emailService");
+const { sendWelcomeEmail, sendCredentialsEmail, sendCollegeCredentialsEmail } = require("../utils/emailService");
 const MicroUser = require("../models/MicroUser");
 const MicroProject = require("../models/MicroProject");
 const MicroCourseConfig = require("../models/MicroCourseConfig");
@@ -315,10 +315,18 @@ router.post("/admin/colleges/:id/send-credentials", async (req, res) => {
         const college = await College.findById(req.params.id);
         if (!college) return res.status(404).json({ message: "College not found" });
 
-        // Trigger email service (Placeholder for actually calling sendCredentialsEmail with specific template)
-        // await sendCredentialsEmail(college.email, college.password, "college_portal");
+        const success = await sendCollegeCredentialsEmail(
+            college.email, 
+            college.authorizerName, 
+            college.collegeName, 
+            college.password
+        );
         
-        res.status(200).json({ message: "Credentials sent to " + college.email });
+        if (success) {
+            res.status(200).json({ message: "Credentials sent to " + college.email });
+        } else {
+            res.status(500).json({ message: "Failed to dispatch email. Please check SMTP configuration." });
+        }
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

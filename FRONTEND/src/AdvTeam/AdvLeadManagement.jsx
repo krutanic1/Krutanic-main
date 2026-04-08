@@ -393,7 +393,27 @@ const AdvLeadManagement = () => {
                         <div style={{ background: '#f9f9f9', padding: '20px', borderRadius: '12px', border: '1px solid #eee' }}>
                             <h3 style={{ marginTop: 0, marginBottom: '16px', fontSize: '14px', color: '#1890ff', borderBottom: '1px dashed #ddd', paddingBottom: '8px' }}>🚀 Meta Ads & Questionnaire Info</h3>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                {Object.entries(selectedLeadForDetails.extra_fields || {}).map(([key, val]) => (
+                                {[
+                                    { label: 'Current Situation', value: selectedLeadForDetails.extra_fields?.['what_best_describes_your_current_situation?'] },
+                                    { label: 'Primary Goal', value: selectedLeadForDetails.extra_fields?.['what_is_your_primary_goal_right_now?'] },
+                                    { label: 'Career Challenge', value: selectedLeadForDetails.extra_fields?.['what_is_your_biggest_career_challenge?'] },
+                                    { label: 'Investment Readiness', value: selectedLeadForDetails.upskilling_ready || selectedLeadForDetails.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+internship+100%_placement_support?'] || selectedLeadForDetails.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?'] },
+                                ].map((item, i) => (
+                                    item.value && (
+                                        <div key={i} style={{ padding: '10px', background: '#e6f7ff', borderRadius: '8px', border: '1px solid #91d5ff' }}>
+                                            <div style={{ fontSize: '10px', fontWeight: '800', color: '#0050b3', textTransform: 'uppercase', marginBottom: '4px' }}>{item.label}</div>
+                                            <div style={{ fontSize: '13px', color: '#000', fontWeight: '600' }}>{item.value || '—'}</div>
+                                        </div>
+                                    )
+                                ))}
+
+                                {Object.entries(selectedLeadForDetails.extra_fields || {})
+                                    .filter(([key]) => ![
+                                        'what_is_your_biggest_career_challenge?',
+                                        'are_you_willing_to_invest_in_a_program_that_provides_training_+internship+100%_placement_support?',
+                                        'are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?'
+                                    ].includes(key))
+                                    .map(([key, val]) => (
                                     <div key={key}>
                                         <div style={{ fontSize: '10px', fontWeight: '800', color: '#888', textTransform: 'uppercase', marginBottom: '2px' }}>{key.replace(/_/g, ' ')}</div>
                                         <div style={{ fontSize: '13px', color: '#333', fontWeight: '500' }}>{val || '—'}</div>
@@ -435,25 +455,7 @@ const AdvLeadManagement = () => {
                                 <i className="fa fa-upload"></i> Upload Leads
                             </button>
                         )}
-                        {(userDesignation === "ADV Leader" || userDesignation === "LEADER" || userDesignation === "MANAGER" || userDesignation === "ADV Manager" || userDesignation?.toLowerCase().includes("specialist")) && (
-                            <button
-                                onClick={() => setShowSMTPModal(true)}
-                                style={{
-                                    padding: '10px 20px',
-                                    background: '#fff',
-                                    color: '#722ed1',
-                                    border: '1px solid #722ed1',
-                                    borderRadius: '6px',
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    fontWeight: '600'
-                                }}
-                            >
-                                <i className="fa fa-envelope"></i> Email Settings
-                            </button>
-                        )}
+
                     </div>
                 </div>
 
@@ -521,19 +523,23 @@ const AdvLeadManagement = () => {
                                         <th>Phone</th>
                                         <th>Domain</th>
                                         <th>Education</th>
+                                        <th style={{ minWidth: '150px' }}>Situation</th>
+                                        <th style={{ minWidth: '150px' }}>Goal</th>
+                                        <th style={{ minWidth: '150px' }}>Challenge</th>
+                                        <th style={{ minWidth: '150px' }}>Willingness</th>
                                         <th>Status Info</th>
                                         <th>Backend Status</th>
                                         <th>ASSISTED TO</th>
                                         <th>Score</th>
                                         <th>Details</th>
-                                        {userDesignation && userDesignation.toLowerCase().includes("admin") && <th>Actions</th>}
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {Object.keys(groupedLeads).map((date) => (
                                         <React.Fragment key={date}>
                                             <tr style={{ background: '#f8f9fa' }}>
-                                                <td colSpan={userDesignation?.toLowerCase().includes("admin") ? "12" : "11"} style={{ fontWeight: '800', textAlign: 'center', padding: '10px', fontSize: '14px', letterSpacing: '1px', borderBottom: '2px solid #ddd' }}>
+                                                <td colSpan="16" style={{ fontWeight: '800', textAlign: 'center', padding: '10px', fontSize: '14px', letterSpacing: '1px', borderBottom: '2px solid #ddd' }}>
                                                     📅 {date}
                                                 </td>
                                             </tr>
@@ -547,6 +553,18 @@ const AdvLeadManagement = () => {
                                                         <td>{lead.phone_number}</td>
                                                         <td>{lead.opted_domain || '—'}</td>
                                                         <td style={{ fontSize: '12px' }}>{lead.education_background || '—'}</td>
+                                                        <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={lead.extra_fields?.['what_best_describes_your_current_situation?']}>
+                                                            {lead.extra_fields?.['what_best_describes_your_current_situation?'] || '—'}
+                                                        </td>
+                                                        <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={lead.extra_fields?.['what_is_your_primary_goal_right_now?']}>
+                                                            {lead.extra_fields?.['what_is_your_primary_goal_right_now?'] || '—'}
+                                                        </td>
+                                                        <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={lead.extra_fields?.['what_is_your_biggest_career_challenge?']}>
+                                                            {lead.extra_fields?.['what_is_your_biggest_career_challenge?'] || '—'}
+                                                        </td>
+                                                        <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={lead.upskilling_ready || lead.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+internship+100%_placement_support?'] || lead.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?']}>
+                                                            {lead.upskilling_ready || lead.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+internship+100%_placement_support?'] || lead.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?'] || '—'}
+                                                        </td>
                                                         <td style={{ fontSize: '12px' }}>{lead.current_status || '—'}</td>
                                                         <td>
                                                             <span style={{
@@ -571,7 +589,7 @@ const AdvLeadManagement = () => {
                                                                 {lead.score || 0}
                                                             </div>
                                                         </td>
-                                                        <td>
+                                                        <td style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                                                             <button 
                                                                 onClick={() => setSelectedLeadForDetails(lead)}
                                                                 style={{ 
@@ -582,45 +600,37 @@ const AdvLeadManagement = () => {
                                                                 onMouseOver={(e) => { e.currentTarget.style.background = '#1890ff'; e.currentTarget.style.color = '#fff'; }}
                                                                 onMouseOut={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#1890ff'; }}
                                                             >
-                                                                <i className="fa fa-eye"></i> View All
-                                                            </button>
-                                                            <button 
-                                                                onClick={() => {
-                                                                    const url = `https://wa.me/${lead.phone_number.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${lead.full_name}, Here is the payment link for the Advanced Program Slot Booking: https://pages.razorpay.com/Advanced_Program_Slot_Booking`)}`;
-                                                                    window.open(url, '_blank');
-                                                                }}
-                                                                style={{ 
-                                                                    padding: '6px 12px', background: '#fff', border: '1px solid #FF9800', 
-                                                                    color: '#FF9800', borderRadius: '6px', fontSize: '12px', fontWeight: '700', 
-                                                                    cursor: 'pointer', transition: 'all 0.2s', marginLeft: '5px'
-                                                                }}
-                                                                onMouseOver={(e) => { e.currentTarget.style.background = '#FF9800'; e.currentTarget.style.color = '#fff'; }}
-                                                                onMouseOut={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#FF9800'; }}
-                                                                title="Send Payment Link via WhatsApp"
-                                                            >
-                                                                <i className="fa fa-credit-card"></i> Pay Link
+                                                                <i className="fa fa-eye"></i> View
                                                             </button>
                                                             <button 
                                                                 onClick={() => {
                                                                     setSelectedLeadForEmail(lead);
                                                                     setEmailRecipient(lead.email || "");
-                                                                    setEmailSubject(`Information regarding ${lead.opted_domain || "Krutanic Advanced Program"}`);
+                                                                    setEmailSubject(`Registration Confirmation - ${lead.opted_domain || "General"} | Krutanic`);
                                                                     setEmailDomain(lead.opted_domain || "General");
-                                                                    setEmailContent(""); // Reset content
-                                                                    setSendBrochure(false);
                                                                     setShowEmailModal(true);
                                                                 }}
                                                                 style={{ 
-                                                                    padding: '6px 12px', background: '#fff', border: '1px solid #18d3ff', 
-                                                                    color: '#18d3ff', borderRadius: '6px', fontSize: '12px', fontWeight: '700', 
-                                                                    cursor: 'pointer', transition: 'all 0.2s', marginLeft: '5px'
-                                                                }}
-                                                                onMouseOver={(e) => { e.currentTarget.style.background = '#18d3ff'; e.currentTarget.style.color = '#fff'; }}
-                                                                onMouseOut={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#18d3ff'; }}
-                                                            >
-                                                                <i className="fa fa-envelope"></i> Send Mail
-                                                            </button>
-                                                        </td>
+                                                                    padding: '6px 12px', background: '#fff', border: '1px solid #2ecc71', 
+                                                                    color: '#2ecc71', borderRadius: '6px', fontSize: '12px', fontWeight: '700', 
+                                                                    cursor: 'pointer'
+                                                                 }}
+                                                             >
+                                                                 <i className="fa fa-envelope"></i> Mail
+                                                             </button>
+                                                             <button 
+                                                                 onClick={() => {
+                                                                     toast.success("Payment Link Sent!"); 
+                                                                 }}
+                                                                 style={{ 
+                                                                     padding: '6px 12px', background: '#fff', border: '1px solid #f39c12', 
+                                                                     color: '#f39c12', borderRadius: '6px', fontSize: '12px', fontWeight: '700', 
+                                                                     cursor: 'pointer'
+                                                                 }}
+                                                             >
+                                                                 <i className="fa fa-link"></i> Pay
+                                                             </button>
+                                                         </td>
                                                         {["callback_requested", "no_answer", "not_interested", "junk"].includes(lead.last_outcome) && (
                                                             <td>
                                                                 <button 

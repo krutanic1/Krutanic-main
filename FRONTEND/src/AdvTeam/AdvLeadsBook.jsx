@@ -742,72 +742,57 @@ const AdvLeadsBook = () => {
                                                                 <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>call</span>
                                                                 {lead.phone_number}
                                                             </div>
-                                                            <div style={{ display: 'flex', gap: '8px' }}>
-                                                                <a
-                                                                    href={`https://wa.me/${lead.phone_number.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${lead.full_name}, Here is the payment link for the Advanced Program Slot Booking: https://pages.razorpay.com/Advanced_Program_Slot_Booking`)}`}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    title="Send Payment Link (WhatsApp)"
-                                                                    onClick={(e) => e.stopPropagation()}
-                                                                    style={styles.iconBtn('#FF9800')}
-                                                                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
-                                                                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                                                                >
-                                                                    <i className="fa fa-credit-card"></i>
-                                                                </a>
-                                                                <a
-                                                                    href={`https://wa.me/${lead.phone_number.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${lead.full_name}, this is from Krutanic`)}`}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    title="WhatsApp"
-                                                                    onClick={(e) => e.stopPropagation()}
-                                                                    style={styles.iconBtn('#25D366')}
-                                                                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
-                                                                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                                                                >
-                                                                    <i className="fa fa-whatsapp"></i>
-                                                                </a>
-                                                                <button
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        setSelectedLeadForEmail(lead);
-                                                                        setEmailRecipient(lead.email);
-                                                                        setEmailDomain(lead.course_domain || "General");
-                                                                        setShowEmailModal(true);
-                                                                    }}
-                                                                    title="Send Personalized Email"
-                                                                    style={{
-                                                                        ...styles.iconBtn(designTokens.colors.info),
-                                                                        border: 'none',
-                                                                        cursor: 'pointer'
-                                                                    }}
-                                                                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
-                                                                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                                                                >
-                                                                    <i className="fa fa-envelope"></i>
-                                                                </button>
-                                                                <button
-                                                                    title="Dial"
-                                                                    onClick={(e) => { e.stopPropagation(); handleRemoteDial(lead.phone_number); }}
-                                                                    style={styles.iconBtn(designTokens.colors.warning)}
-                                                                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
-                                                                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                                                                >
-                                                                    <i className="fa fa-phone"></i>
-                                                                </button>
-                                                                <a
-                                                                    href="https://meet.google.com/new"
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    title="Video Meet"
-                                                                    onClick={(e) => e.stopPropagation()}
-                                                                    style={styles.iconBtn('#EA4335')}
-                                                                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
-                                                                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                                                                >
-                                                                    <i className="fa fa-video-camera"></i>
-                                                                </a>
-                                                            </div>
+                                                                <div style={{ display: 'flex', gap: '8px' }}>
+                                                                    <a
+                                                                        href={`https://wa.me/${lead.phone_number.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${lead.full_name}, this is from Krutanic`)}`}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        title="WhatsApp"
+                                                                        onClick={(e) => e.stopPropagation()}
+                                                                        style={styles.iconBtn('#25D366')}
+                                                                        onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
+                                                                        onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                                                    >
+                                                                        <i className="fa fa-whatsapp"></i>
+                                                                    </a>
+                                                                    <button
+                                                                        title="Dial"
+                                                                        onClick={(e) => { e.stopPropagation(); handleRemoteDial(lead.phone_number); }}
+                                                                        style={styles.iconBtn(designTokens.colors.warning)}
+                                                                        onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
+                                                                        onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                                                    >
+                                                                        <i className="fa fa-phone"></i>
+                                                                    </button>
+                                                                    <a
+                                                                        href="https://meet.google.com/new"
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        title="Video Meet"
+                                                                        onClick={(e) => e.stopPropagation()}
+                                                                        style={styles.iconBtn('#EA4335')}
+                                                                        onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
+                                                                        onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                                                    >
+                                                                        <i className="fa fa-video-camera"></i>
+                                                                    </a>
+                                                                    <button
+                                                                        title="Send Mail"
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            setSelectedLeadForEmail(lead);
+                                                                            setEmailRecipient(lead.email || "");
+                                                                            setEmailSubject(`Registration Confirmation - ${lead.opted_domain || "General"} | Krutanic`);
+                                                                            setEmailDomain(lead.opted_domain || "General");
+                                                                            setShowEmailModal(true);
+                                                                        }}
+                                                                        style={styles.iconBtn(designTokens.colors.primary)}
+                                                                        onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
+                                                                        onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                                                    >
+                                                                        <i className="fa fa-envelope"></i>
+                                                                    </button>
+                                                                </div>
                                                         </div>
                                                     </div>
 
@@ -865,6 +850,10 @@ const AdvLeadsBook = () => {
                                                                     { label: 'Workplace', value: lead.company_name, icon: 'business' },
                                                                     { label: 'Educational Background', value: lead.education_background, icon: 'school' },
                                                                     { label: 'Growth Readiness', value: lead.upskilling_ready, icon: 'trending_up' },
+                                                                    { label: 'Current Situation', value: lead.extra_fields?.['what_best_describes_your_current_situation?'], icon: 'person' },
+                                                                    { label: 'Primary Goal', value: lead.extra_fields?.['what_is_your_primary_goal_right_now?'], icon: 'ads_click' },
+                                                                    { label: 'Career Challenge', value: lead.extra_fields?.['what_is_your_biggest_career_challenge?'], icon: 'report_problem' },
+                                                                    { label: 'Investment Readiness', value: lead.upskilling_ready || lead.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+internship+100%_placement_support?'] || lead.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?'], icon: 'payments' },
                                                                     { label: 'Source Stream', value: lead.source?.replace(/_/g, ' '), icon: 'hub' },
                                                                 ].map((item, i) => (
                                                                     item.value && (

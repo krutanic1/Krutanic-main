@@ -10,9 +10,11 @@ const MicroCourseSchema = new mongoose.Schema(
         sessions: [
             {
                 sessionName: { type: String },
-                driveFileId: { type: String } // Storing Google Drive File ID
+                driveFileId: { type: String }
             }
-        ]
+        ],
+        curriculum: [mongoose.Schema.Types.Mixed], 
+        longDescription: { type: String } // Clean multi-line description
     },
     {
         timestamps: true,

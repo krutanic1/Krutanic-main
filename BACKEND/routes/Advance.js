@@ -78,8 +78,16 @@ router.put("/advancequery/:id", verifyAnyAuth, async (req, res) => {
                 opted_domain: query.interestedDomain,
                 education_background: query.passedOutYear || "",
                 current_status: query.currentRole,
-                source: "Website Lead", // New source name for shading
-                last_interaction_at: new Date()
+                source: "Website Lead",
+                last_interaction_at: new Date(),
+                extra_fields: {
+                  "what_best_describes_your_current_situation?": query.currentRole,
+                  "what_is_your_primary_goal_right_now?": query.goal === "Other" ? query.goalOther : query.goal,
+                  "what_is_your_biggest_career_challenge?": query.reason,
+                  "experience": query.experience,
+                  "domain": query.domain === "Other" ? query.domainOther : query.domain,
+                  "passed_out_year": query.passedOutYear || ""
+                }
               },
               $setOnInsert: {
                 status: "fresh",

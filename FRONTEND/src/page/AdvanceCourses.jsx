@@ -98,14 +98,14 @@ const columnsData = [
         title: "Product Management Advanced Program",
         desc: "Leading product lifecycle, agile methodologies, and cross-functional teams.",
         link: "/ProductManagement"
-      },
-      {
-        type: "icon",
-        icon: <FaCoins />,
-        title: "Investment Banking Advanced Program",
-        desc: "Advanced financial modeling, valuation, and complex corporate finance.",
-        link: "/Investmentbanking"
       }
+      // {
+      //   type: "icon",
+      //   icon: <FaCoins />,
+      //   title: "Investment Banking Advanced Program",
+      //   desc: "Advanced financial modeling, valuation, and complex corporate finance.",
+      //   link: "/Investmentbanking"
+      // }
     ]
   }
 ];

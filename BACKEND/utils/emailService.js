@@ -74,5 +74,51 @@ const sendCredentialsEmail = async (userEmail, userName, password) => {
         console.error("Credentials email failed:", error);
     }
 };
+const sendCollegeCredentialsEmail = async (collegeEmail, authorizerName, collegeName, password) => {
+    try {
+        const loginUrl = `${process.env.FRONTEND_URL}/login`;
+        await transporter.sendMail({
+            from: `"Dikshannt Institutional Support" <${process.env.EMAIL_USER}>`,
+            to: collegeEmail,
+            subject: "Your Institutional Portal Credentials - Dikshannt",
+            html: `
+                <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 40px; color: #1a1a1a; max-width: 600px; margin: auto; border: 1px solid #eee; background: #fff;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h1 style="color: #FE4323; margin: 0; font-size: 28px; letter-spacing: 2px;">DIKSHANNT</h1>
+                        <p style="margin: 5px 0 0; font-size: 10px; text-transform: uppercase; letter-spacing: 4px; color: #999;">Institutional Partner Access</p>
+                    </div>
 
-module.exports = { sendWelcomeEmail, sendCredentialsEmail };
+                    <h2 style="color: #000; font-weight: 300; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 30px; font-size: 20px;">Portal Authorization Details</h2>
+                    
+                    <p style="font-size: 16px; line-height: 1.6;">Dear <strong>${authorizerName}</strong>,</p>
+                    <p style="font-size: 14px; line-height: 1.6; color: #444;">We are pleased to provide the administrative credentials for the <strong>${collegeName}</strong> portal. Your partnership with Dikshannt is now fully active.</p>
+                    
+                    <div style="background: #fdfdfd; border: 1px solid #f0f0f0; padding: 25px; margin: 30px 0; border-radius: 8px;">
+                        <p style="margin: 0 0 10px 0; font-size: 11px; text-transform: uppercase; color: #FE4323; font-weight: bold; letter-spacing: 1px;">Access Credentials</p>
+                        <p style="margin: 0; font-size: 15px; color: #333;"><strong>Official Email:</strong> ${collegeEmail}</p>
+                        <p style="margin: 8px 0 0 0; font-size: 15px; color: #333;"><strong>Access Password:</strong> <span style="font-family: monospace; font-size: 16px; background: #eee; padding: 2px 6px; border-radius: 3px;">${password}</span></p>
+                    </div>
+
+                    <div style="text-align: center; margin: 40px 0;">
+                        <a href="${loginUrl}" style="display: inline-block; background: #FE4323; color: #fff; padding: 18px 40px; text-decoration: none; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; border-radius: 4px; box-shadow: 0 4px 12px rgba(254, 67, 35, 0.2);">Access Institutional Portal</a>
+                    </div>
+                    
+                    <p style="font-size: 12px; color: #999; line-height: 1.6; border-left: 3px solid #eee; padding-left: 15px;">
+                        <em>Security protocol: Please update your password upon initial entry. These credentials grant root administrative access to your institution's scholarly data.</em>
+                    </p>
+
+                    <div style="margin-top: 50px; border-top: 1px solid #f0f0f0; padding-top: 25px; text-align: center;">
+                        <p style="font-size: 11px; color: #ccc; text-transform: uppercase; letter-spacing: 1px;">© 2024 Dikshannt. Scholarly Excellence.</p>
+                    </div>
+                </div>
+            `,
+        });
+        console.log(`College credentials sent to ${collegeEmail}`);
+        return true;
+    } catch (error) {
+        console.error("College credentials failed:", error);
+        return false;
+    }
+};
+
+module.exports = { sendWelcomeEmail, sendCredentialsEmail, sendCollegeCredentialsEmail };

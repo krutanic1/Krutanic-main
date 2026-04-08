@@ -20,6 +20,7 @@ import { motion } from 'motion/react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import EnrollModal from '../components/EnrollModal';
+import CourseDetailsModal from '../components/CourseDetailsModal';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import landingPic from '../../assets/landingpic.jpg';
@@ -61,8 +62,10 @@ export default function Landing() {
   const [scrolled, setScrolled] = useState(false);
   const [coursesList, setCoursesList] = useState<any[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
+  const [selectedCourseDetails, setSelectedCourseDetails] = useState<any>(null);
   const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
   const [courseQuery, setCourseQuery] = useState('');
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   const fetchCourses = async () => {
     try {
@@ -90,6 +93,11 @@ export default function Landing() {
     const searchable = `${c.title || ''} ${c.desc || ''} ${c.tag || ''} ${c.duration || ''} ${c.format || ''}`.toLowerCase();
     return searchable.includes(normalizedQuery);
   });
+
+  const handleLearnMoreClick = (course: any) => {
+    setSelectedCourseDetails(course);
+    setIsDetailsModalOpen(true);
+  };
 
   useEffect(() => {
     fetchCourses();
@@ -238,7 +246,10 @@ export default function Landing() {
                         >
                           Enroll Now
                         </button>
-                        <button className="flex-1 text-center py-3 border border-primary text-primary text-[10px] font-bold tracking-widest uppercase hover:bg-primary hover:text-white transition-all duration-300">
+                        <button 
+                          onClick={() => handleLearnMoreClick(c)}
+                          className="flex-1 text-center py-3 border border-primary text-primary text-[10px] font-bold tracking-widest uppercase hover:bg-primary hover:text-white transition-all duration-300"
+                        >
                           Learn More
                         </button>
                     </div>
@@ -394,6 +405,14 @@ export default function Landing() {
           isOpen={isEnrollModalOpen} 
           onClose={() => setIsEnrollModalOpen(false)} 
           course={selectedCourse} 
+        />
+      )}
+
+      {selectedCourseDetails && (
+        <CourseDetailsModal
+          isOpen={isDetailsModalOpen}
+          onClose={() => setIsDetailsModalOpen(false)}
+          course={selectedCourseDetails}
         />
       )}
     </div>
