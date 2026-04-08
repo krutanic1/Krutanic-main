@@ -82,7 +82,7 @@ const ProfessionalCertificate: React.FC<CertificateProps> = ({
         </div>
         
         <div className="absolute bottom-8 right-12">
-          <p className="text-[8px] font-mono text-slate-300 uppercase tracking-widest px-2 py-1 border border-slate-100 italic">Authenticity Verified at krutanic.com</p>
+          <p className="text-[8px] font-mono text-slate-300 uppercase tracking-widest px-2 py-1 border border-slate-100 italic">Authenticity Verified at dikshannt.com</p>
         </div>
 
       </div>

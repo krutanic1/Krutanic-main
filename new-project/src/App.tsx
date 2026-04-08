@@ -3,6 +3,8 @@ import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom'
 import axios from 'axios';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
+import ExploreCourses from './pages/ExploreCourses';
+import AboutUs from './pages/AboutUs';
 import StudentDashboard from './pages/StudentDashboard';
 import AdminEnrolls from './admin/AdminEnrolls';
 import AdminReferrals from './admin/AdminReferrals';
@@ -95,6 +97,8 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
+      <Route path="/explore-courses" element={<ExploreCourses />} />
+      <Route path="/about-us" element={<AboutUs />} />
       <Route path="/login" element={<Login />} />
       <Route path="/adminlogin" element={<AdminLogin />} />
       <Route path="/dashboard/*" element={<StudentDashboard />} />

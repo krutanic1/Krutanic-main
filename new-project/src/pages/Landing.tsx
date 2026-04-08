@@ -18,9 +18,11 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import EnrollModal from '../components/EnrollModal';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import landingPic from '../../assets/landingpic.jpg';
 
 const faculties = [
   { icon: Brain, title: "Technology & AI", desc: "Master the future of computation and machine intelligence." },
@@ -55,10 +57,12 @@ const insights = [
 ];
 
 export default function Landing() {
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [coursesList, setCoursesList] = useState<any[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
   const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
+  const [courseQuery, setCourseQuery] = useState('');
 
   const fetchCourses = async () => {
     try {
@@ -73,6 +77,19 @@ export default function Landing() {
     setSelectedCourse(course);
     setIsEnrollModalOpen(true);
   };
+
+  const handleBrowsePrograms = () => {
+    navigate('/explore-courses');
+  };
+
+  const availableCourses = coursesList.length > 0 ? coursesList : courses;
+  const normalizedQuery = courseQuery.trim().toLowerCase();
+  const filteredCourses = availableCourses.filter((c: any) => {
+    if (!normalizedQuery) return true;
+
+    const searchable = `${c.title || ''} ${c.desc || ''} ${c.tag || ''} ${c.duration || ''} ${c.format || ''}`.toLowerCase();
+    return searchable.includes(normalizedQuery);
+  });
 
   useEffect(() => {
     fetchCourses();
@@ -99,11 +116,14 @@ export default function Landing() {
               Learn Online. <br/>Build Real Skills. <br/>Create Career-Ready Campuses.
             </h1>
             <p className="text-lg text-on-surface-variant mb-10 font-light leading-relaxed max-w-lg">
-              Krutanic offers flexible online courses, certificate programs, and institution collaboration models for modern learners and colleges.
+              Dikshannt offers flexible online courses, certificate programs, and institution collaboration models for modern learners and colleges.
               Dikshannt offers flexible online courses, certificate programs, and institution collaboration models for modern learners and colleges.
             </p>
             <div className="flex flex-wrap gap-4">
-              <button className="premium-gradient text-white px-8 py-4 rounded text-xs font-bold tracking-[0.05em] uppercase shadow-lg hover:opacity-90 transition-opacity">
+              <button
+                onClick={() => navigate('/explore-courses')}
+                className="premium-gradient text-white px-8 py-4 rounded text-xs font-bold tracking-[0.05em] uppercase shadow-lg hover:opacity-90 transition-opacity"
+              >
                 Explore Courses & Programs
               </button>
               <button className="bg-transparent border border-outline-variant text-primary px-8 py-4 rounded text-xs font-bold tracking-[0.05em] uppercase hover:bg-surface-container-low transition-colors">
@@ -119,7 +139,7 @@ export default function Landing() {
           >
             <div className="aspect-[4/5] bg-surface-container-high rounded-lg overflow-hidden editorial-shadow">
               <img 
-                src="https://picsum.photos/seed/campus/1200/1500" 
+                src={landingPic}
                 alt="Institutional excellence" 
                 className="w-full h-full object-cover grayscale-[0.2] contrast-[1.1]"
                 referrerPolicy="no-referrer"
@@ -129,33 +149,6 @@ export default function Landing() {
           </motion.div>
         </div>
         <div className="absolute -right-20 top-0 w-1/3 h-full bg-surface-container-low -skew-x-12 z-0 hidden lg:block"></div>
-      </section>
-
-      {/* Search Bar Section */}
-      <section className="py-20 bg-surface-container-low">
-        <div className="container mx-auto px-8">
-          <div className="bg-white p-8 lg:p-12 editorial-shadow flex flex-col lg:flex-row gap-8 items-center justify-between">
-            <div className="w-full lg:w-1/3">
-              <h3 className="text-3xl text-primary mb-2">Refine Your Search</h3>
-              <p className="text-sm text-on-surface-variant">Access our full curriculum of elite certifications.</p>
-            </div>
-            <div className="w-full lg:w-2/3 flex flex-col md:flex-row gap-4 items-end">
-              <div className="flex-grow w-full relative">
-                <input 
-                  type="text" 
-                  placeholder="Search courses, skills, or programs..."
-                  className="w-full border-b border-outline-variant focus:border-primary border-t-0 border-x-0 bg-transparent py-4 px-2 outline-none text-on-surface placeholder:text-outline transition-colors"
-                />
-                <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-outline w-5 h-5" />
-              </div>
-              <div className="flex gap-4 w-full md:w-auto">
-                <button className="premium-gradient text-white px-8 py-4 rounded text-xs font-bold tracking-[0.05em] uppercase whitespace-nowrap hover:opacity-90 transition-opacity">
-                  Browse Programs
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
       </section>
 
       {/* Academic Faculties */}
@@ -182,11 +175,37 @@ export default function Landing() {
       </section>
 
       {/* Signature Curriculum */}
-      <section className="py-24 bg-surface">
+      <section id="signature-curriculum" className="py-24 bg-surface">
         <div className="container mx-auto px-8">
           <h2 className="text-4xl text-primary mb-16 text-center italic">Signature Curriculum</h2>
+          <div className="bg-white p-8 lg:p-12 editorial-shadow flex flex-col lg:flex-row gap-8 items-center justify-between mb-12">
+            <div className="w-full lg:w-1/3">
+              <h3 className="text-3xl text-primary mb-2">Refine Your Search</h3>
+              <p className="text-sm text-on-surface-variant">Access our full curriculum of elite certifications.</p>
+            </div>
+            <div className="w-full lg:w-2/3 flex flex-col md:flex-row gap-4 items-end">
+              <div className="flex-grow w-full relative">
+                <input 
+                  type="text" 
+                  placeholder="Search courses, skills, or programs..."
+                  value={courseQuery}
+                  onChange={(e) => setCourseQuery(e.target.value)}
+                  className="w-full border-b border-outline-variant focus:border-primary border-t-0 border-x-0 bg-transparent py-4 px-2 outline-none text-on-surface placeholder:text-outline transition-colors"
+                />
+                <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-outline w-5 h-5" />
+              </div>
+              <div className="flex gap-4 w-full md:w-auto">
+                <button
+                  onClick={handleBrowsePrograms}
+                  className="premium-gradient text-white px-8 py-4 rounded text-xs font-bold tracking-[0.05em] uppercase whitespace-nowrap hover:opacity-90 transition-opacity"
+                >
+                  Browse Programs
+                </button>
+              </div>
+            </div>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {(coursesList.length > 0 ? coursesList : courses).map((c, i) => (
+            {filteredCourses.map((c, i) => (
               <motion.div 
                 key={i}
                 whileHover={{ y: -10 }}
@@ -227,6 +246,13 @@ export default function Landing() {
                 </div>
               </motion.div>
             ))}
+
+            {filteredCourses.length === 0 && (
+              <div className="md:col-span-2 lg:col-span-3 bg-surface-container-low p-8 text-center border border-outline-variant/20">
+                <p className="text-primary text-lg mb-2">No matching courses found</p>
+                <p className="text-on-surface-variant text-sm">Try a different keyword like AI, Marketing, Data, or Full Stack.</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -297,8 +323,7 @@ export default function Landing() {
             "Dikshannt has redefined how our institution views career readiness. Their curriculum integration was seamless, and the impact on student employability was immediate."
           </blockquote>
           <div className="h-px w-24 bg-white/30 mx-auto mb-8"></div>
-          <div className="font-bold tracking-widest uppercase text-xs">Dr. Alistair Vance</div>
-          <div className="text-white/60 text-xs mt-2">Director of Digital Innovation</div>
+          
         </div>
       </section>
 
