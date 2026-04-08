@@ -52,6 +52,7 @@ const collegeRoutes = require("./routes/collegeRoutes");
 const microadmin = require("./routes/microadmin");
 const cookieParser = require("cookie-parser");
 const os = require("os");
+const activityRoutes = require("./routes/activityRoutes");
 
 const app = express();
 
@@ -150,6 +151,7 @@ app.use("/api/admin", AdvAdminRoutes);
 app.use("/api/admin", adminImpersonation);
 const atdRoutes = require("./routes/atdRoutes");
 app.use("/api/atd", atdRoutes);
+app.use("/api/activity", activityRoutes);
 
 // CREATEJOBS
 app.use("/", CreateJob);

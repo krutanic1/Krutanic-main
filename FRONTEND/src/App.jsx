@@ -78,6 +78,10 @@ import InactiveBda from "./Admin/InactiveBda";
 import ReferAndEarnResponse from "./Admin/ReferAndEarnResponse";
 import CreateMarketingTeam from "./Admin/CreateMarketingTeam";
 import AdminAttendance from "./Admin/AdminAttendance";
+import AdvUserManagement from "./Admin/AdvUserManagement";
+import LiveSalesMonitor from "./Admin/LiveSalesMonitor";
+
+
 
 // Operation Team
 import OperationLogin from "./Operation/OperationLogin";
@@ -409,7 +413,9 @@ const AppContent = () => {
     "/admin/reports",
 
     "/bulkimport",
-    "/admin/attendance"
+    "/admin/attendance",
+    "/advusermanagement",
+    "/admin/livemonitor"
   ];
 
   const operationheaderPaths = [
@@ -596,6 +602,9 @@ const AppContent = () => {
         <Route path="/AdvDefault" element={isAuthenticatedAdmin() ? <AdvDefault /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AllTeamDetail" element={isAuthenticatedAdmin() ? <AllTeamDetail /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AdvTeamDetail" element={isAuthenticatedAdmin() ? <AdvTeamDetail /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/AdvUserManagement" element={isAuthenticatedAdmin() ? <AdvUserManagement /> : <Navigate to="/AdminLogin" />} />
+
+
         <Route path="/CreatePlacementCoordinator" element={isAuthenticatedAdmin() ? (<CreatePlacementCoordinator />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/MasterClasses" element={isAuthenticatedAdmin() ? (<MasterClasses />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/AddEvent" element={isAuthenticatedAdmin() ? (<AddEvent />) : (<Navigate to="/AdminLogin" />)} />
@@ -632,6 +641,7 @@ const AppContent = () => {
 
         <Route path="/BulkImport" element={isAuthenticatedAdmin() ? (<BulkImport />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/Admin/Attendance" element={isAuthenticatedAdmin() ? <AdminAttendance /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/Admin/LiveMonitor" element={isAuthenticatedAdmin() ? <LiveSalesMonitor /> : <Navigate to="/AdminLogin" />} />
 
 
 

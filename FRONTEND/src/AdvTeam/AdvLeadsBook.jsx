@@ -796,18 +796,22 @@ const AdvLeadsBook = () => {
                                                         </div>
                                                     </div>
 
-                                                    <div style={{ flex: 2.5, display: 'flex', alignItems: 'center', gap: '40px' }}>
+                                                    <div style={{ flex: 3.5, display: 'flex', alignItems: 'center', gap: '30px' }}>
                                                         <div style={{ minWidth: '120px' }}>
                                                             <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.05em' }}>Target Domain</div>
                                                             <div style={{ fontSize: '14px', fontWeight: '700', color: designTokens.colors.textPrimary }}>{lead.opted_domain || 'General'}</div>
                                                         </div>
-                                                        <div style={{ minWidth: '120px' }}>
+                                                        <div style={{ minWidth: '110px' }}>
                                                             <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.05em' }}>Entity</div>
                                                             <div style={{ fontSize: '14px', fontWeight: '600', color: designTokens.colors.textSecondary }}>{lead.company_name || 'Individual'}</div>
                                                         </div>
-                                                        <div style={{ minWidth: '130px' }}>
+                                                        <div style={{ minWidth: '120px' }}>
+                                                            <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.05em' }}>Created On</div>
+                                                            <div style={{ fontSize: '13px', fontWeight: '600', color: designTokens.colors.textSecondary }}>{lead.created_at ? new Date(lead.created_at).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}</div>
+                                                        </div>
+                                                        <div style={{ minWidth: '120px' }}>
                                                             <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.05em' }}>Assigned On</div>
-                                                            <div style={{ fontSize: '13px', fontWeight: '600', color: designTokens.colors.textSecondary }}>{lead.assigned_at ? new Date(lead.assigned_at).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : (lead.created_at ? new Date(lead.created_at).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—')}</div>
+                                                            <div style={{ fontSize: '13px', fontWeight: '600', color: designTokens.colors.textSecondary }}>{lead.assigned_at ? new Date(lead.assigned_at).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}</div>
                                                         </div>
                                                     </div>
 

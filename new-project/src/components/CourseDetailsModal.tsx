@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, Clock, BookOpen, ChevronRight, CheckCircle2, Trophy, ArrowRight, Layout, Code2, Layers, Circle, Target, BookMarked } from 'lucide-react';
+import { X, Calendar, Clock, BookOpen, ChevronRight, CheckCircle2, Trophy, ArrowRight, Layout, Code2, Layers, Circle, Target, BookMarked, Star } from 'lucide-react';
 
 interface CourseDetailsModalProps {
   isOpen: boolean;
@@ -13,7 +13,7 @@ const WeekSection = ({ week, index, isExpanded, onToggle }: { week: any, index: 
     <div className="mb-4 last:mb-0">
       <button 
         onClick={onToggle}
-        className={`w-full flex items-center justify-between p-5 border transition-all rounded-none ${isExpanded ? 'bg-surface-container-low border-outline-variant/30 shadow-sm' : 'bg-surface border-outline-variant/10 hover:border-outline-variant/30'}`}
+        className={`w-full flex items-center justify-between p-5 border transition-all rounded-xl ${isExpanded ? 'bg-surface-container-low border-outline-variant/30 shadow-sm' : 'bg-surface border-outline-variant/10 hover:border-outline-variant/30'}`}
       >
         <div className="flex items-center gap-4 text-left">
           <div className={`w-10 h-10 flex items-center justify-center font-bold text-sm ${isExpanded ? 'bg-primary text-white' : 'bg-surface-container-low text-on-surface-variant'}`}>
@@ -98,17 +98,23 @@ export default function CourseDetailsModal({ isOpen, onClose, course }: CourseDe
             initial={{ opacity: 0, scale: 0.98, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.98, y: 10 }}
-            className="relative w-full max-w-5xl h-full md:h-[85vh] bg-surface overflow-hidden flex flex-col editorial-shadow shadow-2xl shadow-black/20"
+            className="relative w-full max-w-5xl h-full md:h-[85vh] bg-surface overflow-hidden flex flex-col editorial-shadow shadow-2xl shadow-black/20 rounded-3xl"
           >
             {/* Professional Header */}
             <div className="px-8 py-6 flex justify-between items-center bg-surface border-b border-outline-variant/10 flex-shrink-0">
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-primary flex items-center justify-center text-white">
+                <div className="w-10 h-10 bg-primary flex items-center justify-center text-white rounded-xl">
                   <BookMarked size={20} />
                 </div>
                 <div>
-                   <h2 className="text-xl font-bold text-primary tracking-tight leading-none mb-1">{course.title}</h2>
-                   <p className="text-[10px] font-bold text-outline uppercase tracking-[0.2em]">{course.tag || 'Institutional Course Library'}</p>
+                    <div className="flex items-center gap-3 mb-1">
+                      <h2 className="text-xl font-bold text-primary tracking-tight leading-none">{course.title}</h2>
+                      <div className="flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-100 shrink-0">
+                        <span>{course.rating || 4.8}</span>
+                        <Star size={10} fill="currentColor" strokeWidth={0} />
+                      </div>
+                    </div>
+                    <p className="text-[10px] font-bold text-outline uppercase tracking-[0.2em]">{course.tag || 'Institutional Course Library'}</p>
                 </div>
               </div>
               
@@ -134,7 +140,7 @@ export default function CourseDetailsModal({ isOpen, onClose, course }: CourseDe
                       {course.description}
                    </p>
                    
-                   <div className="flex flex-wrap gap-8 py-6 px-8 bg-surface-container-low border border-outline-variant/10">
+                   <div className="flex flex-wrap gap-8 py-6 px-8 bg-surface-container-low border border-outline-variant/10 rounded-2xl">
                       <div className="flex items-center gap-3">
                          <Clock className="text-outline" size={16} />
                          <div>
@@ -187,7 +193,7 @@ export default function CourseDetailsModal({ isOpen, onClose, course }: CourseDe
                 )}
                 
                 {/* Enrollment Teaser */}
-                <div className="mt-16 p-8 bg-primary text-center text-white relative flex flex-col items-center">
+                <div className="mt-16 p-8 bg-primary text-center text-white relative flex flex-col items-center rounded-2xl overflow-hidden">
                     <div className="relative z-10 w-full">
                         <h3 className="text-lg font-bold mb-2 text-white">Take the next step in your professional journey</h3>
                         <p className="text-white/60 text-xs mb-8">Enroll today to get full access to course materials and alumni network.</p>

@@ -80,6 +80,7 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
               <Link
                 key={item.path}
                 to={item.path}
+                onClick={() => setIsOpen(false)}
                 className={`flex items-center justify-between p-4 rounded-xl text-xs font-bold tracking-widest uppercase transition-all duration-300 group ${
                   isActive 
                     ? 'bg-white text-[#004D40] shadow-[0_10px_20px_rgba(0,0,0,0.2)] scale-[1.02]' 

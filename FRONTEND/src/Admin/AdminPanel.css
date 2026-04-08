@@ -46,12 +46,18 @@
     }  */
 
     a {
-      font-size: 20px;
-      padding: 05px 10px;
+      font-size: 18px; /* Slightly reduced for better fit */
+      padding: 8px 12px;
       width: 100%;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
       color: black;
       text-decoration: none;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: background 0.2s;
     }
     
     a:hover {

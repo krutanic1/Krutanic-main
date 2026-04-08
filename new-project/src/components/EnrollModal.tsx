@@ -42,7 +42,7 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
 
   useEffect(() => {
     if (isOpen) {
-      fetchFakeRegs();
+      fetchLiveRegs();
       fetchGlobalConfig();
       setPrice(course.price || 5000);
       setDiscountApplied(false);
@@ -82,12 +82,12 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
     };
   }, [isOpen, fakeRegs]);
 
-  const fetchFakeRegs = async () => {
+  const fetchLiveRegs = async () => {
     try {
-      const res = await axios.get('/microcourses/fake-registrations');
+      const res = await axios.get('/microcourses/live-regestraion');
       setFakeRegs(res.data);
     } catch (err) {
-      console.error('Failed to fetch fake regs', err);
+      console.error('Failed to fetch live registrations', err);
     }
   };
 
@@ -159,7 +159,7 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
       <motion.div 
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="bg-surface w-full max-w-2xl overflow-y-auto max-h-[95vh] md:max-h-[90vh] md:overflow-hidden editorial-shadow flex flex-col md:flex-row min-h-[auto] md:min-h-[500px]"
+        className="bg-surface w-full max-w-2xl overflow-y-auto max-h-[95vh] md:max-h-[90vh] md:overflow-hidden editorial-shadow flex flex-col md:flex-row min-h-[auto] md:min-h-[500px] rounded-3xl"
       >
         {/* Sidebar Info */}
         <div className="bg-primary p-6 md:p-8 md:w-1/3 text-white flex flex-col justify-between shrink-0">
@@ -208,7 +208,7 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
               <motion.div 
                 initial={{ opacity: 0, x: 50, scale: 0.9 }}
                 animate={{ opacity: 1, x: 0, scale: 1 }}
-                className="hidden md:flex absolute right-4 bottom-24 p-4 bg-white editorial-shadow border-l-4 border-metallic-green z-50 items-center gap-4 max-w-[240px] pointer-events-none"
+                className="flex absolute right-4 bottom-24 md:bottom-24 p-3 md:p-4 bg-white editorial-shadow border-l-4 border-metallic-green z-50 items-center gap-3 md:gap-4 max-w-[180px] md:max-w-[240px] pointer-events-none rounded-2xl shadow-xl shadow-black/5"
               >
                 <div className="w-10 h-10 rounded-full bg-metallic-green/5 flex items-center justify-center shrink-0">
                    <CheckCircle2 size={18} className="text-metallic-green" />
@@ -266,14 +266,20 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
                 >
                   <h3 className="text-2xl text-primary mb-6">Referral & Payment</h3>
                   
-                  <div className="bg-surface-container-low p-6 space-y-4">
+                  <div className="bg-surface-container-low p-6 space-y-4 rounded-2xl">
                     <label className="text-[10px] font-bold tracking-widest uppercase text-outline">Referral Code</label>
-                    <div className="flex gap-4">
-                      <input name="referralCode" value={formData.referralCode} onChange={handleInputChange} className="flex-1 border-b border-outline-variant py-2 outline-none focus:border-primary transition-colors bg-transparent uppercase font-bold" placeholder="Apply Code" />
+                    <div className="flex gap-2 sm:gap-4 items-end">
+                      <input 
+                        name="referralCode" 
+                        value={formData.referralCode} 
+                        onChange={handleInputChange} 
+                        className="flex-1 min-w-0 border-b border-outline-variant py-2 outline-none focus:border-primary transition-colors bg-transparent uppercase font-bold text-sm md:text-base" 
+                        placeholder="Apply Code" 
+                      />
                       <button 
                         onClick={handleCheckReferral}
                         disabled={loading || !formData.referralCode || discountApplied}
-                        className="bg-primary text-white px-6 py-2 rounded text-[10px] font-bold tracking-widest uppercase disabled:opacity-50"
+                        className="bg-primary text-white px-4 md:px-6 py-2 rounded text-[10px] font-bold tracking-widest uppercase disabled:opacity-50 shrink-0 mb-1"
                       >
                         {loading ? <Loader2 className="animate-spin" size={16} /> : 'Apply'}
                       </button>
@@ -282,7 +288,7 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
                     {discountApplied && <p className="text-green-600 text-[10px] font-bold">✓ 40% Discount Applied Successfully!</p>}
                   </div>
 
-                  <div className="p-6 border border-outline-variant/30 text-center">
+                  <div className="p-6 border border-outline-variant/30 text-center rounded-2xl">
                     <p className="text-sm text-on-surface-variant mb-4">Total amount to pay:</p>
                     <div className="flex items-center justify-center gap-4">
                       <AnimatePresence mode="wait">
@@ -315,7 +321,7 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
                   <h3 className="text-2xl text-primary mb-4">Verify Payment</h3>
                   <p className="text-xs text-on-surface-variant mb-6 italic">Scan the QR code to pay ₹{price}, then enter the Transaction ID below.</p>
                   
-                  <div className="mx-auto w-48 h-48 bg-stone-100 flex items-center justify-center border border-outline-variant/20 mb-8">
+                  <div className="mx-auto w-48 h-48 bg-stone-100 flex items-center justify-center border border-outline-variant/20 mb-8 rounded-2xl overflow-hidden">
                     <QrCode size={120} className="text-primary opacity-80" />
                   </div>
 

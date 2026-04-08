@@ -141,8 +141,8 @@ router.get("/microcourses/my-courses", async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-// 5. Get Fake Registrations (Social Proof)
-router.get("/microcourses/fake-registrations", async (req, res) => {
+// 5. Get Live Registrations (Social Proof)
+router.get("/microcourses/live-regestraion", async (req, res) => {
     try {
         const registrations = await FakeRegistration.find().limit(20);
         res.status(200).json(registrations);

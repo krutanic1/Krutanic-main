@@ -8,6 +8,7 @@ const CreateAdvOperation = new mongoose.Schema({
     mailSended: { type: Boolean, default: false },
     languages: [{ type: String }],
     isOnline: { type: Boolean, default: true },
+    status: { type: String, default: "Active" },
     target: [{ currentMonth: { type: String }, percentage: { type: String }, }],
 });
 

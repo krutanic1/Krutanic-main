@@ -97,6 +97,25 @@ router.put("/toggleadvonlinestatus/:id", async (req, res) => {
   }
 });
 
+// Update Active/Inactive status
+router.put("/updateadvoperationstatus/:id", verifyAdminCookie, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    const operation = await CreateAdvOperation.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    );
+    if (!operation) {
+      return res.status(404).json({ error: "ADV Operation not found" });
+    }
+    res.status(200).json(operation);
+  } catch (error) {
+    res.status(500).json({ error: "Error updating status", details: error.message });
+  }
+});
+
 // DELETE request to delete the ADV operation account
 router.delete("/deleteadvoperation/:id", verifyAdminCookie, async (req, res) => {
   try {

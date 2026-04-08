@@ -331,14 +331,10 @@ export default function StudentDashboard() {
           <Route path="courses" element={
             <div className={`space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 ${projectsLoading ? 'opacity-50' : 'opacity-100'}`}>
               <header className="mb-12">
-                <h1 className="text-4xl font-serif text-slate-800 mb-4 drop-shadow-sm">Your Enrolled Curricula</h1>
-                <p className="text-slate-500 font-serif italic font-light flex items-center gap-2">
-                  <BookOpen size={14} /> Master the disciplines of antiquity and the future.
-                </p>
                 {projectsLoading && (
-                   <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mt-4 flex items-center gap-2">
-                     <Loader2 size={12} className="animate-spin" /> Retrieving locking criteria...
-                   </p>
+                  <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mt-4 flex items-center gap-2">
+                    <Loader2 size={12} className="animate-spin" /> Retrieving locking criteria...
+                  </p>
                 )}
               </header>
               <div className="grid grid-cols-1 gap-12">

@@ -388,10 +388,30 @@ router.get("/admin/microcourses/upcoming", async (req, res) => {
 
 router.post("/admin/microcourses/upcoming", async (req, res) => {
     try {
-        const { courseName, isExisting, courseId } = req.body;
-        const upcoming = new UpcomingCourse({ courseName, isExisting, courseId });
+        const { courseName, isExisting, courseId, startDate, enrolledCount } = req.body;
+        const upcoming = new UpcomingCourse({ 
+            courseName, 
+            isExisting, 
+            courseId,
+            startDate,
+            enrolledCount
+        });
         await upcoming.save();
         res.status(201).json(upcoming);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.put("/admin/microcourses/upcoming/:id", async (req, res) => {
+    try {
+        const { startDate, enrolledCount, courseName } = req.body;
+        const upcoming = await UpcomingCourse.findByIdAndUpdate(
+            req.params.id,
+            { startDate, enrolledCount, courseName },
+            { new: true }
+        );
+        res.status(200).json(upcoming);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

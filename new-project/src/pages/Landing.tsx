@@ -15,7 +15,8 @@ import {
   CheckCircle2,
   Handshake,
   Briefcase,
-  Calendar
+  Calendar,
+  Star
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import axios from 'axios';
@@ -197,7 +198,7 @@ export default function Landing() {
               <div className="flex-grow w-full relative">
                 <input 
                   type="text" 
-                  placeholder="Search courses, skills, or programs..."
+                  placeholder="Search courses..."
                   value={courseQuery}
                   onChange={(e) => setCourseQuery(e.target.value)}
                   className="w-full border-b border-outline-variant focus:border-primary border-t-0 border-x-0 bg-transparent py-4 px-2 outline-none text-on-surface placeholder:text-outline transition-colors"
@@ -221,7 +222,7 @@ export default function Landing() {
                   <motion.div 
                     key={i}
                     whileHover={{ y: -10 }}
-                    className="bg-surface-container-lowest flex flex-col h-full editorial-shadow group overflow-hidden"
+                    className="bg-surface-container-lowest flex flex-col h-full editorial-shadow group overflow-hidden rounded-2xl"
                   >
                     <div className="aspect-video relative overflow-hidden bg-surface-container-highest">
                       <img 
@@ -236,6 +237,12 @@ export default function Landing() {
                     </div>
                     <div className="p-8 flex flex-col flex-grow">
                       <h3 className="text-xl text-primary mb-2 leading-snug">{c.title}</h3>
+                      <div className="flex items-center gap-1.5 mb-4">
+                        <div className="flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-100">
+                          <span>{c.rating || 4.8}</span>
+                          <Star size={10} fill="currentColor" strokeWidth={0} />
+                        </div>
+                      </div>
                       <p className="text-xs text-on-surface-variant mb-6">{c.desc}</p>
                       <div className="mt-auto space-y-4">
                         <div className="flex justify-between text-[11px] font-bold tracking-widest uppercase text-on-surface-variant border-b border-outline-variant/10 pb-2">
@@ -286,10 +293,21 @@ export default function Landing() {
                     upcomingCourses.map((u, i) => (
                       <div key={u._id || i} className="relative group p-4 bg-surface-container-lowest border border-outline-variant/10 hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-default overflow-hidden rounded-xl">
                         <div className="absolute inset-0 bg-primary/5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
-                        <h4 className="relative z-10 text-sm font-bold text-primary group-hover:text-primary/90 transition-colors flex items-center justify-between">
+                        <h4 className="relative z-10 text-sm font-bold text-primary group-hover:text-primary/90 transition-colors flex items-center justify-between mb-2">
                           <span className="pr-2">{u.courseName}</span>
                           <span className="opacity-0 group-hover:opacity-100 transform -translate-x-4 group-hover:translate-x-0 transition-all duration-300 text-primary text-xs">→</span>
                         </h4>
+                        
+                        <div className="relative z-10 flex flex-col gap-1.5">
+                          <div className="flex items-center gap-2 text-[10px] font-bold text-outline uppercase tracking-wider">
+                            <Calendar size={12} className="text-primary/60" />
+                            <span>Starts: {u.startDate || 'TBA'}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-[10px] font-bold text-outline uppercase tracking-wider">
+                            <Users size={12} className="text-primary/60" />
+                            <span>{u.enrolledCount || 0}+ Enrolled</span>
+                          </div>
+                        </div>
                       </div>
                     ))
                   )}

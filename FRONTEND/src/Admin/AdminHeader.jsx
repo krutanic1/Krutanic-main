@@ -159,6 +159,10 @@ const AdminHeader = () => {
             <Link to="/AdvAdminDashboard">
               <i className="fa fa-dashboard mr-2"></i>Admin Dashboard
             </Link>
+            <Link to="/Admin/LiveMonitor" className="flex items-center">
+              <i className="fa fa-heartbeat mr-2" style={{ color: '#10b981' }}></i>Live Monitoring
+              <span className="ml-2 inline-flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            </Link>
             <Link to="/Admin/Agents">
               <i className="fa fa-user-circle mr-2"></i>Manage Agents
             </Link>
@@ -208,6 +212,9 @@ const AdminHeader = () => {
             </Link>
             <Link to="/AdvTeamDetail">
               <i className="fa fa-users mr-2"></i>ADV Team Details
+            </Link>
+            <Link to="/AdvUserManagement">
+              <i className="fa fa-users-cog mr-2"></i>ADV User Management
             </Link>
             <Link to="/AdminAnalytics">
               <i className="fa fa-area-chart mr-2"></i>ADV Analytics

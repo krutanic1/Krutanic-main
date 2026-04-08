@@ -4,6 +4,7 @@ import logo from "../assets/LOGO3.png";
 import axios from "axios";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
+import UserActivityTracker from "../Components/UserActivityTracker";
 
 const AdvTeamHeader = () => {
   const [isMobileVisible, setisMobileVisible] = useState(true);
@@ -112,6 +113,7 @@ const AdvTeamHeader = () => {
 
   return (
     <div id="TeamHeader">
+      <UserActivityTracker userId={advTeamId} />
       <Toaster position="top-center" reverseOrder={false} />
       <div className="navbar">
         <div>

@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Logo from '../components/Logo';
 import DikshanntLoader from '../components/DikshanntLoader';
+import Header from '../components/Header';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -43,6 +44,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-surface-container-low flex flex-col items-center justify-center p-4 relative overflow-hidden">
+      <Header scrolled={true} />
       <div className="absolute top-0 w-full h-1 bg-primary"></div>
       
       <div className="w-full max-w-[420px] relative z-10">
@@ -60,7 +62,7 @@ export default function Login() {
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-full bg-white p-10 editorial-shadow rounded-none border border-outline-variant/10 relative"
+          className="w-full bg-white p-10 editorial-shadow rounded-3xl border border-outline-variant/10 relative overflow-hidden"
         >
           {/* Top subtle accent */}
           <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
