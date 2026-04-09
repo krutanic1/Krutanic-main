@@ -148,7 +148,7 @@ export default function Landing() {
       <Header scrolled={scrolled} />
 
       {/* Hero Section */}
-      <section className="relative pt-28 pb-24 lg:pt-36 lg:pb-40 overflow-hidden bg-surface">
+      <section className="relative pt-28 pb-10 lg:pt-36 lg:pb-14 overflow-hidden bg-surface">
         <div className="container mx-auto px-8 grid lg:grid-cols-2 gap-16 items-center relative z-10">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -197,66 +197,100 @@ export default function Landing() {
           </motion.div>
         </div>
 
-        <div className="container mx-auto px-8 relative z-10 mt-8 lg:mt-12">
-          <h3 className="text-lg md:text-xl text-primary font-bold tracking-[0.06em] uppercase mb-3 text-center max-w-xl mx-auto">
-            Inquiry Form
-          </h3>
-          <form onSubmit={handleHeroFormSubmit} className="bg-white/80 border border-outline-variant/20 rounded-xl p-4 md:p-5 max-w-xl mx-auto editorial-shadow">
-            <div className="grid grid-cols-1 gap-3">
-              <input
-                type="text"
-                name="name"
-                value={heroForm.name}
-                onChange={handleHeroFormChange}
-                placeholder="Name"
-                className="w-full px-3 py-2.5 text-sm border border-outline-variant/30 rounded bg-surface outline-none focus:border-primary transition-colors"
-                required
-              />
-              <input
-                type="tel"
-                name="mobile"
-                value={heroForm.mobile}
-                onChange={handleHeroFormChange}
-                placeholder="Mobile Number"
-                className="w-full px-3 py-2.5 text-sm border border-outline-variant/30 rounded bg-surface outline-none focus:border-primary transition-colors"
-                required
-              />
-              <input
-                type="email"
-                name="email"
-                value={heroForm.email}
-                onChange={handleHeroFormChange}
-                placeholder="Email"
-                className="w-full px-3 py-2.5 text-sm border border-outline-variant/30 rounded bg-surface outline-none focus:border-primary transition-colors"
-                required
-              />
-              <select
-                name="domainInterested"
-                value={heroForm.domainInterested}
-                onChange={handleHeroFormChange}
-                className="w-full px-3 py-2.5 text-sm border border-outline-variant/30 rounded bg-surface outline-none focus:border-primary transition-colors"
-                required
-              >
-                <option value="" disabled>
-                  Interested workshop
-                </option>
-                {domainOptions.map((domain) => (
-                  <option key={domain} value={domain}>
-                    {domain}
-                  </option>
-                ))}
-              </select>
+        <div className="container mx-auto px-8 relative z-10 mt-4 lg:mt-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Form on Left */}
+            <div>
+              <h3 className="text-lg md:text-xl text-primary font-bold tracking-[0.06em] uppercase mb-6 text-left">
+                Inquiry Form
+              </h3>
+              <form onSubmit={handleHeroFormSubmit} className="bg-white/80 border border-outline-variant/20 rounded-xl p-4 md:p-5 editorial-shadow">
+                <div className="grid grid-cols-1 gap-3">
+                  <input
+                    type="text"
+                    name="name"
+                    value={heroForm.name}
+                    onChange={handleHeroFormChange}
+                    placeholder="Name"
+                    className="w-full px-3 py-2.5 text-sm border border-outline-variant/30 rounded bg-surface outline-none focus:border-primary transition-colors"
+                    required
+                  />
+                  <input
+                    type="tel"
+                    name="mobile"
+                    value={heroForm.mobile}
+                    onChange={handleHeroFormChange}
+                    placeholder="Mobile Number"
+                    className="w-full px-3 py-2.5 text-sm border border-outline-variant/30 rounded bg-surface outline-none focus:border-primary transition-colors"
+                    required
+                  />
+                  <input
+                    type="email"
+                    name="email"
+                    value={heroForm.email}
+                    onChange={handleHeroFormChange}
+                    placeholder="Email"
+                    className="w-full px-3 py-2.5 text-sm border border-outline-variant/30 rounded bg-surface outline-none focus:border-primary transition-colors"
+                    required
+                  />
+                  <select
+                    name="domainInterested"
+                    value={heroForm.domainInterested}
+                    onChange={handleHeroFormChange}
+                    className="w-full px-3 py-2.5 text-sm border border-outline-variant/30 rounded bg-surface outline-none focus:border-primary transition-colors"
+                    required
+                  >
+                    <option value="" disabled>
+                      Interested workshop
+                    </option>
+                    {domainOptions.map((domain) => (
+                      <option key={domain} value={domain}>
+                        {domain}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex items-center justify-between gap-3 mt-4">
+                  <button
+                    type="submit"
+                    className="premium-gradient text-white px-5 py-2.5 rounded text-[11px] font-bold tracking-[0.05em] uppercase hover:opacity-90 transition-opacity"
+                  >
+                    Submit
+                  </button>
+                  {heroFormSubmitted && <p className="text-xs text-primary font-semibold">Thanks, we will contact you soon.</p>}
+                </div>
+              </form>
             </div>
-            <div className="flex items-center justify-between gap-3 mt-4">
-              <button
-                type="submit"
-                className="premium-gradient text-white px-5 py-2.5 rounded text-[11px] font-bold tracking-[0.05em] uppercase hover:opacity-90 transition-opacity"
-              >
-                Submit
-              </button>
-              {heroFormSubmitted && <p className="text-xs text-primary font-semibold">Thanks, we will contact you soon.</p>}
-            </div>
-          </form>
+
+            {/* Text Content on Right */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="flex flex-col justify-center"
+            >
+              <h2 className="text-3xl lg:text-4xl text-primary font-bold mb-6 leading-tight">
+                Let's Get You Started
+              </h2>
+              <p className="text-lg text-on-surface-variant mb-6 leading-relaxed font-light">
+                Tell us about your learning goals and interests. Our dedicated team will connect you with the perfect programs and provide personalized guidance for your professional growth.
+              </p>
+              <ul className="space-y-4">
+                <li className="flex gap-3 items-start">
+                  <CheckCircle2 className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" strokeWidth={1.5} />
+                  <span className="text-on-surface-variant">Access to comprehensive course catalogs and learning paths</span>
+                </li>
+                <li className="flex gap-3 items-start">
+                  <CheckCircle2 className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" strokeWidth={1.5} />
+                  <span className="text-on-surface-variant">Personalized recommendations based on your goals</span>
+                </li>
+                <li className="flex gap-3 items-start">
+                  <CheckCircle2 className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" strokeWidth={1.5} />
+                  <span className="text-on-surface-variant">Direct support from our learning advisors</span>
+                </li>
+              </ul>
+            </motion.div>
+          </div>
         </div>
 
         <div className="absolute -right-20 top-0 w-1/3 h-full bg-surface-container-low -skew-x-12 z-0 hidden lg:block"></div>
