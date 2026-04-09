@@ -15,8 +15,10 @@ import AdminProjectCreator from './admin/AdminProjectCreator';
 import AdminColleges from './admin/AdminColleges';
 import AdminCertificates from './admin/AdminCertificates';
 import AdminUpcomingCourses from './admin/AdminUpcomingCourses';
+import AdminCollegeRequests from './admin/AdminCollegeRequests';
+import AdminMicroUsers from './admin/AdminMicroUsers';
 import CollegeDashboard from './pages/CollegeDashboard';
-import { Layout, Users, Ticket, Video, LogOut, ChevronRight, BookOpen, GraduationCap, Award, Calendar } from 'lucide-react';
+import { Layout, Users, Ticket, Video, LogOut, ChevronRight, BookOpen, GraduationCap, Award, Calendar, Building2 } from 'lucide-react';
 import Logo from './components/Logo';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
 import AdminLogin from './pages/AdminLogin';
@@ -46,6 +48,8 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
     { label: 'Manage Projects', path: '/admin/projects', icon: BookOpen },
     { label: 'Manage Colleges', path: '/admin/colleges', icon: GraduationCap },
     { label: 'Certificates', path: '/admin/certificates', icon: Award },
+    { label: 'College Requests', path: '/admin/college-requests', icon: Building2 },
+    { label: 'Micro Students', path: '/admin/micro-students', icon: GraduationCap },
   ];
 
   return (
@@ -154,6 +158,8 @@ export default function App() {
         <Route path="/admin/projects" element={<AdminProtectedRoute><AdminLayout><AdminProjectCreator /></AdminLayout></AdminProtectedRoute>} />
         <Route path="/admin/colleges" element={<AdminProtectedRoute><AdminLayout><AdminColleges /></AdminLayout></AdminProtectedRoute>} />
         <Route path="/admin/certificates" element={<AdminProtectedRoute><AdminLayout><AdminCertificates /></AdminLayout></AdminProtectedRoute>} />
+        <Route path="/admin/college-requests" element={<AdminProtectedRoute><AdminLayout><AdminCollegeRequests /></AdminLayout></AdminProtectedRoute>} />
+        <Route path="/admin/micro-students" element={<AdminProtectedRoute><AdminLayout><AdminMicroUsers /></AdminLayout></AdminProtectedRoute>} />
         
         {/* College Portal */}
         <Route path="/college/*" element={<CollegeDashboard />} />

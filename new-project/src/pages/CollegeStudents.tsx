@@ -11,9 +11,17 @@ export default function CollegeStudents() {
   const collegeId = localStorage.getItem('collegeId');
   const collegeName = localStorage.getItem('collegeName');
   const [sendingId, setSendingId] = useState<string | null>(null);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const itemsPerPage = 30;
+
   const [newStudent, setNewStudent] = useState({
     fullName: '',
     email: '',
+    phone: '',
     password: '',
     enrolledCourses: [] as string[]
   });
@@ -21,8 +29,16 @@ export default function CollegeStudents() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const studRes = await axios.get(`/college/${collegeId}/students`);
-      setStudents(studRes.data);
+      const studRes = await axios.get(`/college/${collegeId}/students`, {
+        params: {
+          page: currentPage,
+          limit: itemsPerPage
+        }
+      });
+      setStudents(studRes.data.students);
+      setTotalPages(studRes.data.pagination.totalPages);
+      setTotalItems(studRes.data.pagination.totalItems);
+
       const courseRes = await axios.get(`/college/${collegeId}/courses`);
       setCourses(courseRes.data);
     } catch (err) {
@@ -34,7 +50,7 @@ export default function CollegeStudents() {
 
   useEffect(() => {
     fetchData();
-  }, [collegeId]);
+  }, [collegeId, currentPage]);
 
   const handleCourseToggle = (courseId: string) => {
     setNewStudent(prev => ({
@@ -55,7 +71,7 @@ export default function CollegeStudents() {
       }
       await axios.post(`/college/${collegeId}/add-student`, newStudent);
       setIsFormOpen(false);
-      setNewStudent({ fullName: '', email: '', password: '', enrolledCourses: [] });
+      setNewStudent({ fullName: '', email: '', phone: '', password: '', enrolledCourses: [] });
       fetchData();
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to enroll student');
@@ -100,7 +116,7 @@ export default function CollegeStudents() {
             <thead>
               <tr className="bg-surface-container-low border-b border-outline-variant/10">
                 <th className="p-6 text-[10px] font-bold uppercase tracking-widest text-outline">Student Details</th>
-                <th className="p-6 text-[10px] font-bold uppercase tracking-widest text-outline">Email Address</th>
+                <th className="p-6 text-[10px] font-bold uppercase tracking-widest text-outline">Email & Phone</th>
                 <th className="p-6 text-[10px] font-bold uppercase tracking-widest text-outline">Course Access</th>
                 <th className="p-6 text-[10px] font-bold uppercase tracking-widest text-outline text-right">Actions</th>
               </tr>
@@ -129,7 +145,12 @@ export default function CollegeStudents() {
                       <span className="font-bold text-primary">{s.fullName}</span>
                     </div>
                   </td>
-                  <td className="p-6 text-sm text-on-surface-variant font-light italic">{s.email}</td>
+                  <td className="p-6">
+                    <div className="flex flex-col gap-1">
+                      <div className="text-sm text-on-surface-variant font-light italic">{s.email}</div>
+                      {s.phone && <div className="text-[10px] text-outline font-bold tracking-widest uppercase">{s.phone}</div>}
+                    </div>
+                  </td>
                   <td className="p-6">
                     <div className="flex flex-wrap gap-2">
                        {s.enrolledCourses?.length} Courses Assigned
@@ -150,6 +171,34 @@ export default function CollegeStudents() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="p-6 border-t border-outline-variant/10 flex justify-between items-center bg-surface-container-low">
+            <div className="text-[10px] font-bold tracking-widest uppercase text-outline">
+              Showing {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}
+            </div>
+            <div className="flex gap-2">
+              <button
+                disabled={currentPage === 1 || loading}
+                onClick={() => setCurrentPage(prev => prev - 1)}
+                className={`px-4 py-2 rounded text-[10px] font-bold tracking-widest uppercase transition-all ${currentPage === 1 ? 'bg-stone-50 text-stone-300 cursor-not-allowed' : 'bg-white border border-outline-variant/30 text-primary hover:bg-primary hover:text-white shadow-sm'}`}
+              >
+                Previous
+              </button>
+              <div className="flex items-center px-4 font-mono text-xs text-primary">
+                {currentPage} / {totalPages}
+              </div>
+              <button
+                disabled={currentPage === totalPages || loading}
+                onClick={() => setCurrentPage(prev => prev + 1)}
+                className={`px-4 py-2 rounded text-[10px] font-bold tracking-widest uppercase transition-all ${currentPage === totalPages ? 'bg-stone-50 text-stone-300 cursor-not-allowed' : 'bg-white border border-outline-variant/30 text-primary hover:bg-primary hover:text-white shadow-sm'}`}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Add Student Modal */}
@@ -188,7 +237,7 @@ export default function CollegeStudents() {
                     />
                   </div>
                   <div className="space-y-3">
-                    <label className="text-[10px] font-bold tracking-widest uppercase text-outline underline decoration-primary/30">Academic Email address</label>
+                    <label className="text-[10px] font-bold tracking-widest uppercase text-outline underline decoration-primary/30">Academic Email Address</label>
                     <div className="relative">
                       <Mail className="absolute left-0 top-1/2 -translate-y-1/2 text-outline" size={18} />
                       <input 
@@ -205,6 +254,20 @@ export default function CollegeStudents() {
 
                 <div className="grid md:grid-cols-2 gap-10">
                   <div className="space-y-3">
+                    <label className="text-[10px] font-bold tracking-widest uppercase text-outline underline decoration-primary/30">Contact number</label>
+                    <div className="relative">
+                      <Send className="absolute left-0 top-1/2 -translate-y-1/2 text-outline" size={18} />
+                      <input 
+                        type="tel"
+                        required 
+                        value={newStudent.phone}
+                        onChange={(e) => setNewStudent({...newStudent, phone: e.target.value})}
+                        className="w-full border-b border-outline-variant pl-8 py-3 outline-none focus:border-primary text-xl font-light"
+                        placeholder="+91 00000 00000"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-3">
                     <label className="text-[10px] font-bold tracking-widest uppercase text-outline">Access Password</label>
                     <div className="relative">
                       <Lock className="absolute left-0 top-1/2 -translate-y-1/2 text-outline" size={18} />
@@ -218,34 +281,35 @@ export default function CollegeStudents() {
                       />
                     </div>
                   </div>
-                  <div className="space-y-3">
-                     <label className="text-[10px] font-bold tracking-widest uppercase text-outline flex items-center gap-2">
-                        <ShieldCheck size={14} className="text-primary" /> Enrollment Status
-                     </label>
-                     <div className="py-3 text-sm text-on-surface-variant font-medium flex items-center gap-2">
-                        <CheckCircle2 size={16} className="text-green-500" /> Authorized for Admission
-                     </div>
+                </div>
+
+                <div className="space-y-3">
+                  <label className="text-[10px] font-bold tracking-widest uppercase text-outline flex items-center gap-2">
+                    <ShieldCheck size={14} className="text-primary" /> Enrollment Status
+                  </label>
+                  <div className="py-3 text-sm text-on-surface-variant font-medium flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-green-500" /> Authorized for Admission
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                   <label className="text-[10px] font-bold tracking-widest uppercase text-outline block mb-6">Assign Approved Curriculum</label>
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-60 overflow-y-auto p-6 bg-surface-container-low rounded-lg border border-outline-variant/10">
-                      {courses.map(course => (
-                        <label key={course._id} className="flex items-center gap-4 p-4 bg-white border border-outline-variant/10 rounded-lg cursor-pointer hover:border-primary/40 hover:shadow-md transition-all group">
-                           <input 
-                             type="checkbox"
-                             checked={newStudent.enrolledCourses.includes(course._id)}
-                             onChange={() => handleCourseToggle(course._id)}
-                             className="w-5 h-5 accent-primary cursor-pointer"
-                           />
-                           <div className="flex-1">
-                              <span className="text-xs font-bold text-primary block group-hover:text-primary transition-colors">{course.title}</span>
-                              <span className="text-[9px] uppercase font-bold text-outline tracking-tighter italic">{course.duration} ACCESS</span>
-                           </div>
-                        </label>
-                      ))}
-                   </div>
+                  <label className="text-[10px] font-bold tracking-widest uppercase text-outline block mb-6">Assign Approved Curriculum</label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-60 overflow-y-auto p-6 bg-surface-container-low rounded-lg border border-outline-variant/10">
+                    {courses.map(course => (
+                      <label key={course._id} className="flex items-center gap-4 p-4 bg-white border border-outline-variant/10 rounded-lg cursor-pointer hover:border-primary/40 hover:shadow-md transition-all group">
+                        <input 
+                          type="checkbox"
+                          checked={newStudent.enrolledCourses.includes(course._id)}
+                          onChange={() => handleCourseToggle(course._id)}
+                          className="w-5 h-5 accent-primary cursor-pointer"
+                        />
+                        <div className="flex-1">
+                          <span className="text-xs font-bold text-primary block group-hover:text-primary transition-colors">{course.title}</span>
+                          <span className="text-[9px] uppercase font-bold text-outline tracking-tighter italic">{course.duration} ACCESS</span>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
                 </div>
 
                 <button 

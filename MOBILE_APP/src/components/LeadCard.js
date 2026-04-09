@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native'
 import { Ionicons } from '@expo/vector-icons';
 import { startCallTracking } from '../utils/callTracker';
 import { COLORS, SPACING, SHADOWS, TYPOGRAPHY } from '../utils/theme';
+import { Audio } from 'expo-av';
 
 const LeadCard = ({ lead, onViewDetails }) => {
     const handleCall = async () => {
@@ -12,6 +13,45 @@ const LeadCard = ({ lead, onViewDetails }) => {
 
     const handleWhatsApp = () => {
         Linking.openURL(`https://wa.me/91${lead.phone_number}`);
+    };
+
+    const [sound, setSound] = React.useState(null);
+    const [isPlaying, setIsPlaying] = React.useState(false);
+
+    React.useEffect(() => {
+        return sound ? () => { sound.unloadAsync(); } : undefined;
+    }, [sound]);
+
+    const handlePlayPause = async () => {
+        try {
+            if (sound) {
+                if (isPlaying) {
+                    await sound.pauseAsync();
+                    setIsPlaying(false);
+                } else {
+                    await sound.playAsync();
+                    setIsPlaying(true);
+                }
+                return;
+            }
+
+            // Create new sound
+            const { sound: newSound } = await Audio.Sound.createAsync(
+                { uri: lead.last_recording_url },
+                { shouldPlay: true }
+            );
+            setSound(newSound);
+            setIsPlaying(true);
+
+            newSound.setOnPlaybackStatusUpdate((status) => {
+                if (status.didJustFinish) {
+                    setIsPlaying(false);
+                    newSound.setPositionAsync(0);
+                }
+            });
+        } catch (error) {
+            console.error('[LEAD_CARD] Playback error:', error);
+        }
     };
 
     const getStatusColor = (status) => {
@@ -72,6 +112,14 @@ const LeadCard = ({ lead, onViewDetails }) => {
                 <TouchableOpacity onPress={handleWhatsApp} style={[styles.actionBtn, { borderColor: '#25D36640' }]}>
                     <Ionicons name="logo-whatsapp" size={18} color="#25D366" />
                 </TouchableOpacity>
+                {lead.last_recording_url && (
+                    <TouchableOpacity 
+                        onPress={handlePlayPause} 
+                        style={[styles.actionBtn, isPlaying && styles.actionBtnActive, { borderColor: COLORS.primary + '40' }]}
+                    >
+                        <Ionicons name={isPlaying ? "pause" : "play"} size={18} color={isPlaying ? "#fff" : COLORS.primary} />
+                    </TouchableOpacity>
+                )}
                 <TouchableOpacity onPress={() => onViewDetails(lead._id)} style={styles.viewDetailsBtn}>
                     <Text style={styles.viewDetailsText}>View Details</Text>
                 </TouchableOpacity>
@@ -144,6 +192,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderWidth: 1.5,
         marginRight: 12,
+    },
+    actionBtnActive: {
+        backgroundColor: COLORS.primary,
+        borderColor: COLORS.primary,
     },
     viewDetailsBtn: {
         flex: 1,

@@ -9,6 +9,13 @@ export default function AdminColleges() {
   const [loading, setLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCollege, setEditingCollege] = useState<any>(null);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const itemsPerPage = 30;
+
   const [newCollege, setNewCollege] = useState({
     collegeName: '',
     authorizerName: '',
@@ -21,8 +28,17 @@ export default function AdminColleges() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const colRes = await axios.get('/admin/colleges');
-      setColleges(colRes.data);
+      const colRes = await axios.get('/admin/colleges', {
+        params: {
+          page: currentPage,
+          limit: itemsPerPage
+        }
+      });
+      setColleges(colRes.data.colleges);
+      setTotalPages(colRes.data.pagination.totalPages);
+      setTotalItems(res => res + colRes.data.pagination.totalItems); // res callback not needed here, simpler:
+      setTotalItems(colRes.data.pagination.totalItems);
+
       const courseRes = await axios.get('/microcourses/all');
       setCourses(courseRes.data);
     } catch (err) {
@@ -34,7 +50,7 @@ export default function AdminColleges() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [currentPage]);
 
   const handleCourseToggle = (courseId: string) => {
     setNewCollege(prev => ({
@@ -183,6 +199,34 @@ export default function AdminColleges() {
           ))}
         </AnimatePresence>
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="mt-12 p-6 bg-white editorial-shadow border-t-4 border-primary flex justify-between items-center">
+          <div className="text-[10px] font-bold tracking-widest uppercase text-outline">
+            Showing {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} Institutions
+          </div>
+          <div className="flex gap-2">
+            <button
+              disabled={currentPage === 1 || loading}
+              onClick={() => setCurrentPage(prev => prev - 1)}
+              className={`px-6 py-3 rounded text-[10px] font-bold tracking-widest uppercase transition-all ${currentPage === 1 ? 'bg-stone-50 text-stone-300 cursor-not-allowed' : 'bg-white border border-outline-variant/30 text-primary hover:bg-primary hover:text-white shadow-sm'}`}
+            >
+              Previous
+            </button>
+            <div className="flex items-center px-4 font-serif italic text-primary">
+              Page {currentPage} of {totalPages}
+            </div>
+            <button
+              disabled={currentPage === totalPages || loading}
+              onClick={() => setCurrentPage(prev => prev + 1)}
+              className={`px-6 py-3 rounded text-[10px] font-bold tracking-widest uppercase transition-all ${currentPage === totalPages ? 'bg-stone-50 text-stone-300 cursor-not-allowed' : 'bg-white border border-outline-variant/30 text-primary hover:bg-primary hover:text-white shadow-sm'}`}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Add College Modal */}
       <AnimatePresence>

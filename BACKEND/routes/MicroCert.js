@@ -86,11 +86,31 @@ router.post("/microcourses/apply-early", verifyStudent, async (req, res) => {
     }
 });
 
-// 3. Admin: Get Pending Certs
+// 3. Admin: Get Pending Certs (with pagination)
 router.get("/admin/certs/pending", async (req, res) => {
     try {
-        const pending = await MicroCert.find({ status: "pending" }).sort({ applyDate: 1 });
-        res.status(200).json(pending);
+        const { page, limit } = req.query;
+        const pageNum = parseInt(page) || 1;
+        const limitNum = parseInt(limit) || 30;
+        const skip = (pageNum - 1) * limitNum;
+
+        const totalItems = await MicroCert.countDocuments({ status: "pending" });
+        const totalPages = Math.ceil(totalItems / limitNum);
+
+        const requests = await MicroCert.find({ status: "pending" })
+            .sort({ applyDate: 1 })
+            .skip(skip)
+            .limit(limitNum);
+
+        res.status(200).json({
+            requests,
+            pagination: {
+                totalItems,
+                totalPages,
+                currentPage: pageNum,
+                limit: limitNum
+            }
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

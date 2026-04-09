@@ -9,11 +9,38 @@ export default function AdminEnrolls() {
   const [filter, setFilter] = useState('pending');
   const [searchTerm, setSearchTerm] = useState('');
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const itemsPerPage = 30;
+
+  // Debounced search state
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setCurrentPage(1); // Reset to page 1 on search
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   const fetchEnrolls = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`/admin/microcourses/enrolls?status=${filter}`);
-      setEnrolls(res.data);
+      const res = await axios.get(`/admin/microcourses/enrolls`, {
+        params: {
+          status: filter,
+          page: currentPage,
+          limit: itemsPerPage,
+          search: debouncedSearch
+        }
+      });
+      setEnrolls(res.data.enrollments);
+      setTotalPages(res.data.pagination.totalPages);
+      setTotalItems(res.data.pagination.totalItems);
     } catch (err) {
       console.error('Failed to fetch enrolls', err);
     } finally {
@@ -23,7 +50,12 @@ export default function AdminEnrolls() {
 
   useEffect(() => {
     fetchEnrolls();
-  }, [filter]);
+  }, [filter, currentPage, debouncedSearch]);
+
+  const handleFilterChange = (newStatus: string) => {
+    setFilter(newStatus);
+    setCurrentPage(1); // Reset to page 1 on filter change
+  };
 
   const verifyEnroll = async (id: string, status: 'accepted' | 'rejected') => {
     if (!window.confirm(`Are you sure you want to ${status} this enrollment?`)) return;
@@ -48,11 +80,9 @@ export default function AdminEnrolls() {
     }
   };
 
-  const filteredEnrolls = enrolls.filter(e => 
-    e.fullName.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    e.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    e.transactionId?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Removed filteredEnrolls since filtering is now server-side
+  // const filteredEnrolls = enrolls.filter(e => ...);
+
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
@@ -66,7 +96,7 @@ export default function AdminEnrolls() {
           {['pending', 'accepted', 'rejected'].map((s) => (
             <button 
               key={s}
-              onClick={() => setFilter(s)}
+              onClick={() => handleFilterChange(s)}
               className={`px-6 py-2 rounded text-[10px] font-bold tracking-widest uppercase transition-all ${filter === s ? 'bg-primary text-white' : 'bg-surface-container-low text-outline hover:text-primary'}`}
             >
               {s}
@@ -104,9 +134,9 @@ export default function AdminEnrolls() {
             <tbody className="divide-y divide-outline-variant/10">
               {loading ? (
                 <tr><td colSpan={6} className="p-20 text-center text-outline italic">Loading applications...</td></tr>
-              ) : filteredEnrolls.length === 0 ? (
+              ) : enrolls.length === 0 ? (
                 <tr><td colSpan={6} className="p-20 text-center text-outline italic">No matching enrollments found.</td></tr>
-              ) : filteredEnrolls.map((e) => (
+              ) : enrolls.map((e) => (
                 <motion.tr 
                   layout
                   key={e._id} 
@@ -181,6 +211,34 @@ export default function AdminEnrolls() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="p-6 border-t border-outline-variant/10 flex justify-between items-center bg-surface-container-low">
+            <div className="text-[10px] font-bold tracking-widest uppercase text-outline">
+              Showing {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}
+            </div>
+            <div className="flex gap-2">
+              <button
+                disabled={currentPage === 1 || loading}
+                onClick={() => setCurrentPage(prev => prev - 1)}
+                className={`px-4 py-2 rounded text-[10px] font-bold tracking-widest uppercase transition-all ${currentPage === 1 ? 'bg-stone-50 text-stone-300 cursor-not-allowed' : 'bg-white border border-outline-variant/30 text-primary hover:bg-primary hover:text-white shadow-sm'}`}
+              >
+                Previous
+              </button>
+              <div className="flex items-center px-4 font-mono text-xs text-primary">
+                {currentPage} / {totalPages}
+              </div>
+              <button
+                disabled={currentPage === totalPages || loading}
+                onClick={() => setCurrentPage(prev => prev + 1)}
+                className={`px-4 py-2 rounded text-[10px] font-bold tracking-widest uppercase transition-all ${currentPage === totalPages ? 'bg-stone-50 text-stone-300 cursor-not-allowed' : 'bg-white border border-outline-variant/30 text-primary hover:bg-primary hover:text-white shadow-sm'}`}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

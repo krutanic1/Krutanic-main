@@ -1166,6 +1166,20 @@ const AdvLeadManagement = () => {
                                 </div>
                             </div>
 
+                            {selectedLeadForDetails.last_recording_url && (
+                                <div style={{ marginBottom: '24px', padding: '15px', background: '#f0f9ff', borderRadius: '12px', border: '1px solid #bae6fd' }}>
+                                    <label style={{ fontSize: '11px', fontWeight: '800', color: '#0369a1', textTransform: 'uppercase', marginBottom: '8px', display: 'block' }}>Latest Interaction Recording</label>
+                                    <audio 
+                                        controls 
+                                        controlsList="nodownload"
+                                        style={{ width: '100%', height: '36px' }}
+                                    >
+                                        <source src={selectedLeadForDetails.last_recording_url} type="audio/mpeg" />
+                                        Your browser does not support the audio element.
+                                    </audio>
+                                </div>
+                            )}
+
                             <div style={{ background: '#ffffff', padding: '0px', borderRadius: '0px' }}>
                                 <h3 style={{ marginTop: 0, marginBottom: '16px', fontSize: '14px', fontWeight: '800', color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>🚀 Candidate Screening Questionnaire</h3>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>

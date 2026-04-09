@@ -9,10 +9,13 @@ import {
     ActivityIndicator,
     ScrollView,
     KeyboardAvoidingView,
-    Platform
+    Platform,
+    Alert
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import * as DocumentPicker from 'expo-document-picker';
+import { uploadToCloudinary } from '../utils/cloudinary';
 
 const CallLogModal = ({ visible, callData, onSave, onCancel }) => {
     const [outcome, setOutcome] = useState('interested');
@@ -24,6 +27,12 @@ const CallLogModal = ({ visible, callData, onSave, onCancel }) => {
     const [followUpDate, setFollowUpDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
+
+    // Recording state
+    const [recordingUri, setRecordingUri] = useState(null);
+    const [recordingName, setRecordingName] = useState('');
+    const [uploading, setUploading] = useState(false);
+    const [recordingUrl, setRecordingUrl] = useState('');
 
     const outcomes = [
         { id: 'interested', label: 'Interested', color: '#4CAF50' },
@@ -55,6 +64,34 @@ const CallLogModal = ({ visible, callData, onSave, onCancel }) => {
         }
     };
 
+    const handlePickDocument = async () => {
+        try {
+            const result = await DocumentPicker.getDocumentAsync({
+                type: 'audio/*',
+                copyToCacheDirectory: true,
+            });
+
+            if (!result.canceled && result.assets && result.assets.length > 0) {
+                const asset = result.assets[0];
+                setRecordingUri(asset.uri);
+                setRecordingName(asset.name);
+                
+                // Start upload immediately
+                setUploading(true);
+                try {
+                    const url = await uploadToCloudinary(asset.uri, asset.name);
+                    setRecordingUrl(url);
+                } catch (error) {
+                    Alert.alert('Upload Failed', 'Could not upload recording to Cloudinary');
+                } finally {
+                    setUploading(false);
+                }
+            }
+        } catch (err) {
+            console.error('Pick Document Error:', err);
+        }
+    };
+
     const handleSave = async () => {
         setLoading(true);
         try {
@@ -64,13 +101,17 @@ const CallLogModal = ({ visible, callData, onSave, onCancel }) => {
                 remark,
                 durationSec: callData?.durationSec,
                 status: callData?.status,
-                followUpDate: outcome === 'callback_requested' ? followUpDate.toISOString() : null
+                followUpDate: outcome === 'callback_requested' ? followUpDate.toISOString() : null,
+                recordingUrl: recordingUrl // Include the Cloudinary URL
             });
             // Reset fields on success
             setSummary('');
             setRemark('');
             setOutcome('interested');
             setFollowUpDate(new Date());
+            setRecordingUri(null);
+            setRecordingName('');
+            setRecordingUrl('');
         } catch (error) {
             console.error('Error saving call log:', error);
         } finally {
@@ -172,6 +213,30 @@ const CallLogModal = ({ visible, callData, onSave, onCancel }) => {
                                 )}
                             </View>
                         )}
+
+                        {/* Recording Section */}
+                        <Text style={styles.sectionTitle}>Call Recording</Text>
+                        <TouchableOpacity 
+                            style={[styles.recordingBtn, recordingUrl && styles.recordingBtnSuccess]} 
+                            onPress={handlePickDocument}
+                            disabled={uploading}
+                        >
+                            {uploading ? (
+                                <ActivityIndicator size="small" color="#F15B29" />
+                            ) : (
+                                <>
+                                    <Ionicons 
+                                        name={recordingUrl ? "checkmark-circle" : "attach-outline"} 
+                                        size={20} 
+                                        color={recordingUrl ? "#4CAF50" : "#F15B29"} 
+                                    />
+                                    <Text style={[styles.recordingBtnText, recordingUrl && { color: "#4CAF50" }]}>
+                                        {recordingUrl ? "Recording Attached" : "Attach Call Recording"}
+                                    </Text>
+                                </>
+                            )}
+                        </TouchableOpacity>
+                        {recordingName ? <Text style={styles.fileNameText}>{recordingName}</Text> : null}
 
                         {/* Summary Section */}
                         <Text style={styles.sectionTitle}>Interaction Summary {outcome === 'callback_requested' && '(Recommended)'}</Text>
@@ -299,6 +364,36 @@ const styles = StyleSheet.create({
         marginBottom: 30,
     },
     submitBtnText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+    recordingBtn: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#FFF5F2',
+        padding: 12,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#FFE0D6',
+        borderStyle: 'dashed',
+        marginBottom: 5,
+    },
+    recordingBtnSuccess: {
+        backgroundColor: '#E8F5E9',
+        borderColor: '#A5D6A7',
+        borderStyle: 'solid',
+    },
+    recordingBtnText: {
+        marginLeft: 8,
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#F15B29',
+    },
+    fileNameText: {
+        fontSize: 11,
+        color: '#888',
+        fontStyle: 'italic',
+        marginTop: 2,
+        marginBottom: 10,
+    },
 });
 
 export default CallLogModal;

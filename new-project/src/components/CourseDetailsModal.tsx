@@ -5,8 +5,8 @@ import { X, Calendar, Clock, BookOpen, ChevronRight, CheckCircle2, Trophy, Arrow
 interface CourseDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  course: any;
   onEnroll: (course: any) => void;
+  course: any;
 }
 
 const WeekSection = ({ week, index, isExpanded, onToggle }: { week: any, index: number, isExpanded: boolean, onToggle: () => void }) => {
@@ -76,7 +76,7 @@ const WeekSection = ({ week, index, isExpanded, onToggle }: { week: any, index: 
   );
 };
 
-export default function CourseDetailsModal({ isOpen, onClose, course, onEnroll }: CourseDetailsModalProps) {
+export default function CourseDetailsModal({ isOpen, onClose, onEnroll, course }: CourseDetailsModalProps) {
   const [expandedWeek, setExpandedWeek] = useState<number | null>(0);
 
   if (!course) return null;
@@ -199,7 +199,10 @@ export default function CourseDetailsModal({ isOpen, onClose, course, onEnroll }
                         <h3 className="text-lg font-bold mb-2 text-white">Take the next step in your professional journey</h3>
                         <p className="text-white/60 text-xs mb-8">Enroll today to get full access to course materials and alumni network.</p>
                         <button 
-                          onClick={() => onEnroll(course)}
+                          onClick={() => {
+                            onClose();
+                            onEnroll(course);
+                          }}
                           className="px-10 py-3.5 bg-white text-primary hover:bg-surface-container-low font-bold text-[11px] uppercase tracking-widest transition-all active:scale-95"
                         >
                           Enroll in this Course

@@ -46,6 +46,7 @@ const AdvLeadSchema = new mongoose.Schema({
     extra_fields: { type: Map, of: String },
     last_interaction_at: { type: Date }, // Track last worked-on time
     assigned_at: { type: Date }, // NEW: Track when the lead was last assigned
+    last_recording_url: { type: String }, // NEW: Store the most recent Cloudinary recording link
     created_at: { type: Date, default: Date.now }
 });
 

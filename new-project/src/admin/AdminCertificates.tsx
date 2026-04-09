@@ -20,15 +20,28 @@ export default function AdminCertificates() {
   const [searchTerm, setSearchTerm] = useState('');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const itemsPerPage = 30;
+
   useEffect(() => {
     fetchRequests();
-  }, []);
+  }, [currentPage]);
 
   const fetchRequests = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('/admin/certs/pending');
-      setRequests(res.data);
+      const res = await axios.get('/admin/certs/pending', {
+        params: {
+          page: currentPage,
+          limit: itemsPerPage
+        }
+      });
+      setRequests(res.data.requests);
+      setTotalPages(res.data.pagination.totalPages);
+      setTotalItems(res.data.pagination.totalItems);
     } catch (err) {
       console.error('Failed to fetch requests', err);
     } finally {
@@ -141,6 +154,34 @@ export default function AdminCertificates() {
            <Award size={64} className="mx-auto text-slate-200 mb-8" />
            <h2 className="text-3xl font-serif text-slate-400 mb-2">No Credentials Pending</h2>
            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.4em]">The repository is currently synchronized.</p>
+        </div>
+      )}
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="mt-12 p-8 bg-white rounded-3xl border border-slate-100 shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="text-[10px] font-bold tracking-[0.3em] uppercase text-slate-400">
+            Showing {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} Entries
+          </div>
+          <div className="flex items-center gap-4">
+            <button
+              disabled={currentPage === 1 || loading}
+              onClick={() => setCurrentPage(prev => prev - 1)}
+              className={`px-8 py-4 rounded-2xl text-[10px] font-bold tracking-widest uppercase transition-all shadow-sm ${currentPage === 1 ? 'bg-slate-50 text-slate-300 cursor-not-allowed' : 'bg-white border border-slate-200 text-emerald-600 hover:bg-emerald-50'}`}
+            >
+              Previous
+            </button>
+            <div className="text-xl font-serif text-slate-800 px-4">
+              {currentPage} <span className="text-slate-300 mx-2">/</span> {totalPages}
+            </div>
+            <button
+              disabled={currentPage === totalPages || loading}
+              onClick={() => setCurrentPage(prev => prev + 1)}
+              className={`px-8 py-4 rounded-2xl text-[10px] font-bold tracking-widest uppercase transition-all shadow-sm ${currentPage === totalPages ? 'bg-slate-50 text-slate-300 cursor-not-allowed' : 'bg-white border border-slate-200 text-emerald-600 hover:bg-emerald-50'}`}
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
     </div>

@@ -23,6 +23,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import EnrollModal from '../components/EnrollModal';
 import CourseDetailsModal from '../components/CourseDetailsModal';
+import PartnerFormModal from '../components/PartnerFormModal';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import landingPic from '../../assets/landingpic.jpg';
@@ -65,6 +66,7 @@ export default function Landing() {
   const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
   const [courseQuery, setCourseQuery] = useState('');
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isPartnerModalOpen, setIsPartnerModalOpen] = useState(false);
 
   const fetchCourses = async () => {
     try {
@@ -143,8 +145,9 @@ export default function Landing() {
               >
                 Explore Courses & Programs
               </button>
-              <button
-                onClick={() => navigate('/institutions')}
+              <button 
+                onClick={() => setIsPartnerModalOpen(true)}
+
                 className="bg-transparent border border-outline-variant text-primary px-8 py-4 rounded text-xs font-bold tracking-[0.05em] uppercase hover:bg-surface-container-low transition-colors"
               >
                 Partner With Dikshannt
@@ -428,7 +431,10 @@ export default function Landing() {
                   </div>
                 </li>
               </ul>
-              <button className="premium-gradient text-white px-10 py-5 rounded text-xs font-bold tracking-[0.05em] uppercase hover:opacity-90 transition-opacity">
+              <button 
+                onClick={() => setIsPartnerModalOpen(true)}
+                className="premium-gradient text-white px-10 py-5 rounded text-xs font-bold tracking-[0.05em] uppercase hover:opacity-90 transition-opacity"
+              >
                 Start a Collaboration
               </button>
             </div>
@@ -452,10 +458,15 @@ export default function Landing() {
         <CourseDetailsModal
           isOpen={isDetailsModalOpen}
           onClose={() => setIsDetailsModalOpen(false)}
-          course={selectedCourseDetails}
           onEnroll={handleEnrollFromDetails}
+          course={selectedCourseDetails}
         />
       )}
+
+      <PartnerFormModal
+        isOpen={isPartnerModalOpen}
+        onClose={() => setIsPartnerModalOpen(false)}
+      />
     </div>
   );
 }

@@ -3,6 +3,8 @@ import { Building2, GraduationCap, Handshake, Briefcase, CheckCircle2 } from 'lu
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import PartnerFormModal from '../components/PartnerFormModal';
+import { useState } from 'react';
 
 const collaborationPillars = [
   {
@@ -30,6 +32,8 @@ const benefits = [
 ];
 
 export default function Institutions() {
+  const [isPartnerModalOpen, setIsPartnerModalOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-surface">
       <Header scrolled={true} />
@@ -45,12 +49,12 @@ export default function Institutions() {
             strengthen placement readiness and bridge the gap between classroom learning and industry expectations.
           </p>
           <div className="mt-8">
-            <Link
-              to="/login"
+            <button
+              onClick={() => setIsPartnerModalOpen(true)}
               className="inline-flex premium-gradient text-white px-6 py-3 text-xs font-bold tracking-[0.06em] uppercase hover:opacity-90 transition-opacity"
             >
               Partner With Dikshannt
-            </Link>
+            </button>
           </div>
         </div>
       </section>
@@ -109,18 +113,23 @@ export default function Institutions() {
               >
                 View Courses
               </Link>
-              <Link
-                to="/about-us#contact-us"
+              <button
+                onClick={() => setIsPartnerModalOpen(true)}
                 className="border border-white/40 text-white px-6 py-3 text-xs font-bold tracking-[0.06em] uppercase hover:bg-white/10 transition-colors"
               >
                 Contact Team
-              </Link>
+              </button>
             </div>
           </div>
         </div>
       </section>
 
       <Footer />
+
+      <PartnerFormModal
+        isOpen={isPartnerModalOpen}
+        onClose={() => setIsPartnerModalOpen(false)}
+      />
     </div>
   );
 }

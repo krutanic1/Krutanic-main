@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CheckCircle2, Target, Eye, Handshake, Briefcase, GraduationCap, Check, X } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import axios from 'axios';
 
 const values = [
   {
@@ -45,23 +46,42 @@ const internshipWorkshopBenefits = [
 
 export default function AboutUs() {
   const [contactForm, setContactForm] = useState({
-    name: '',
+    contactName: '',
     email: '',
     phone: '',
-    institution: '',
+    collegeName: '',
     message: '',
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState('');
 
   const handleContactChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setContactForm((prev) => ({ ...prev, [name]: value }));
+    setError('');
   };
 
-  const handleContactSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitted(true);
-    setContactForm({ name: '', email: '', phone: '', institution: '', message: '' });
+    setIsSubmitting(true);
+    setError('');
+    
+    try {
+      await axios.post('/partner/submit', contactForm);
+      setIsSubmitted(true);
+      setContactForm({ 
+        contactName: '', 
+        email: '', 
+        phone: '', 
+        collegeName: '', 
+        message: '' 
+      });
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to submit inquiry. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -322,12 +342,12 @@ export default function AboutUs() {
             <form onSubmit={handleContactSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label htmlFor="name" className="block text-xs font-bold tracking-[0.08em] uppercase text-primary mb-2">Full Name</label>
+                  <label htmlFor="contactName" className="block text-xs font-bold tracking-[0.08em] uppercase text-primary mb-2">Contact Person Name</label>
                   <input
-                    id="name"
-                    name="name"
+                    id="contactName"
+                    name="contactName"
                     type="text"
-                    value={contactForm.name}
+                    value={contactForm.contactName}
                     onChange={handleContactChange}
                     required
                     className="w-full border border-outline-variant/30 bg-surface px-4 py-3 text-sm outline-none focus:border-primary transition-colors"
@@ -361,12 +381,12 @@ export default function AboutUs() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="institution" className="block text-xs font-bold tracking-[0.08em] uppercase text-primary mb-2">Institution / Company</label>
+                  <label htmlFor="collegeName" className="block text-xs font-bold tracking-[0.08em] uppercase text-primary mb-2">College / Institute Name</label>
                   <input
-                    id="institution"
-                    name="institution"
+                    id="collegeName"
+                    name="collegeName"
                     type="text"
-                    value={contactForm.institution}
+                    value={contactForm.collegeName}
                     onChange={handleContactChange}
                     required
                     className="w-full border border-outline-variant/30 bg-surface px-4 py-3 text-sm outline-none focus:border-primary transition-colors"
@@ -392,10 +412,12 @@ export default function AboutUs() {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-2">
                 <button
                   type="submit"
-                  className="premium-gradient text-white px-8 py-3 text-xs font-bold tracking-[0.08em] uppercase hover:opacity-90 transition-opacity"
+                  disabled={isSubmitting}
+                  className="premium-gradient text-white px-8 py-3 text-xs font-bold tracking-[0.08em] uppercase hover:opacity-90 transition-opacity disabled:opacity-50"
                 >
-                  Submit Inquiry
+                  {isSubmitting ? 'Submitting...' : 'Submit Inquiry'}
                 </button>
+                {error && <p className="text-sm text-red-600 font-medium">{error}</p>}
                 {isSubmitted && (
                   <p className="text-sm text-green-700 font-medium">Thank you. Our team will contact you soon.</p>
                 )}

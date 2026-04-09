@@ -38,8 +38,9 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "af501e34-7776-4886-88b9-c4ac78aa7462"
+        "projectId": "b6316999-491c-4514-b2c8-104e5fad8f31"
       }
-    }
+    },
+    "owner": "tarunsaikola"
   }
 }

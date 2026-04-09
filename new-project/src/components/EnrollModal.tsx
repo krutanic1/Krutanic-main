@@ -165,9 +165,9 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
         <div className="bg-primary p-6 md:p-8 md:w-1/3 text-white flex flex-col justify-between shrink-0">
           <div>
             <div className="flex justify-between items-start">
-              <div>
+              <div className="pr-4">
                 <div className="text-[10px] font-bold tracking-[0.2em] uppercase opacity-60 mb-1 md:mb-2">Selected Course</div>
-                <h2 className="text-xl md:text-2xl font-serif leading-tight mb-0 md:mb-6">{course.title}</h2>
+                <h2 className="text-xl md:text-2xl font-serif leading-tight mb-0 md:mb-6 break-words">{course.title}</h2>
               </div>
               <button onClick={onClose} className="md:hidden text-white/70 hover:text-white p-1">
                 <X size={20} />

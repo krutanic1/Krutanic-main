@@ -1,9 +1,9 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
-// Default to local development URL. 
-// TIP: Update this to your local IP (e.g., 'http://192.168.1.10:5000') for physical device testing.
+// Production Backend URL
 const BASE_URL = 'https://krutanic-main.vercel.app';
+// const BASE_URL = 'http://192.168.0.20:5000'; // Development IP
 
 const api = axios.create({
     baseURL: BASE_URL,

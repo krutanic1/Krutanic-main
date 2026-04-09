@@ -32,7 +32,7 @@ router.get("/college/:id/courses", async (req, res) => {
 // 3. College adds a student
 router.post("/college/:collegeId/add-student", async (req, res) => {
     try {
-        const { fullName, email, password, enrolledCourses } = req.body;
+        const { fullName, email, phone, password, enrolledCourses } = req.body;
         const college = await College.findById(req.params.collegeId);
         if (!college) return res.status(404).json({ message: "College not found" });
 
@@ -45,6 +45,7 @@ router.post("/college/:collegeId/add-student", async (req, res) => {
         const student = new MicroUser({
             fullName,
             email,
+            phone,
             password,
             enrolledCourses,
             collegeId: college._id
@@ -61,11 +62,31 @@ router.post("/college/:collegeId/add-student", async (req, res) => {
     }
 });
 
-// 4. List all students for a college
+// 4. List all students for a college (with pagination)
 router.get("/college/:collegeId/students", async (req, res) => {
     try {
-        const students = await MicroUser.find({ collegeId: req.params.collegeId });
-        res.status(200).json(students);
+        const { page, limit } = req.query;
+        const pageNum = parseInt(page) || 1;
+        const limitNum = parseInt(limit) || 30;
+        const skip = (pageNum - 1) * limitNum;
+
+        const totalItems = await MicroUser.countDocuments({ collegeId: req.params.collegeId });
+        const totalPages = Math.ceil(totalItems / limitNum);
+
+        const students = await MicroUser.find({ collegeId: req.params.collegeId })
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limitNum);
+
+        res.status(200).json({
+            students,
+            pagination: {
+                totalItems,
+                totalPages,
+                currentPage: pageNum,
+                limit: limitNum
+            }
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -133,6 +154,47 @@ router.post("/college/students/:id/send-credentials", async (req, res) => {
     } catch (error) {
         console.error("Email Error:", error);
         res.status(500).json({ error: "Failed to send credentials: " + error.message });
+    }
+});
+
+// 6. Admin: List all micro users (students) from all colleges (with pagination)
+router.get("/admin/microusers", async (req, res) => {
+    try {
+        const { page, limit, search } = req.query;
+        const pageNum = parseInt(page) || 1;
+        const limitNum = parseInt(limit) || 30;
+        const skip = (pageNum - 1) * limitNum;
+
+        let query = {};
+        if (search) {
+            const searchRegex = { $regex: search, $options: "i" };
+            query.$or = [
+                { fullName: searchRegex },
+                { email: searchRegex }
+            ];
+        }
+
+        const totalItems = await MicroUser.countDocuments(query);
+        const totalPages = Math.ceil(totalItems / limitNum);
+
+        const users = await MicroUser.find(query)
+            .populate("enrolledCourses", "title")
+            .populate("collegeId", "collegeName")
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limitNum);
+
+        res.status(200).json({
+            users,
+            pagination: {
+                totalItems,
+                totalPages,
+                currentPage: pageNum,
+                limit: limitNum
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 });
 

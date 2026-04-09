@@ -8,10 +8,10 @@ const MicroCourseConfig = require("../models/MicroCourseConfig");
 const FakeRegistration = require("../models/FakeRegistration");
 const UpcomingCourse = require("../models/UpcomingCourse");
 
-// 0. Get All Courses (Public for Landing Page)
+// 0. Get All Courses (Public for Landing Page - excludes sensitive IDs)
 router.get("/microcourses/all", async (req, res) => {
     try {
-        const courses = await MicroCourse.find();
+        const courses = await MicroCourse.find().select("-sessions");
         res.status(200).json(courses);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -141,9 +141,20 @@ router.get("/microcourses/my-courses", async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-// 5. Get Live Registrations (Social Proof)
+// 5. Get Live Registrations (Social Proof - restricted to 10AM-8PM IST)
 router.get("/microcourses/live-regestraion", async (req, res) => {
     try {
+        const indiaTime = new Intl.DateTimeFormat('en-US', {
+            timeZone: 'Asia/Kolkata',
+            hour: 'numeric',
+            hour12: false
+        }).format(new Date());
+
+        const hour = parseInt(indiaTime);
+        if (hour < 10 || hour >= 20) {
+            return res.status(200).json([]); // Return empty list outside business hours
+        }
+
         const registrations = await FakeRegistration.find().limit(20);
         res.status(200).json(registrations);
     } catch (error) {
@@ -151,9 +162,20 @@ router.get("/microcourses/live-regestraion", async (req, res) => {
     }
 });
 
-// 5B. Get Recent Enrollments (Bottom-right Social Proof)
+// 5B. Get Recent Enrollments (Bottom-right Social Proof - restricted to 10AM-8PM IST)
 router.get("/microcourses/live-enrollments", async (req, res) => {
     try {
+        const indiaTime = new Intl.DateTimeFormat('en-US', {
+            timeZone: 'Asia/Kolkata',
+            hour: 'numeric',
+            hour12: false
+        }).format(new Date());
+
+        const hour = parseInt(indiaTime);
+        if (hour < 10 || hour >= 20) {
+            return res.status(200).json([]); // Return empty list outside business hours
+        }
+
         const enrollments = await MicroCourseEnroll.find({
             status: { $in: ["accepted", "pending"] }
         })

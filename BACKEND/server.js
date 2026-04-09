@@ -51,8 +51,8 @@ const microCourseAuthRoutes = require("./routes/microCourseAuthRoutes");
 const collegeRoutes = require("./routes/collegeRoutes");
 const microadmin = require("./routes/microadmin");
 const cookieParser = require("cookie-parser");
-const os = require("os");
 const activityRoutes = require("./routes/activityRoutes");
+const partnerRoutes = require("./routes/partnerRoutes");
 
 const app = express();
 
@@ -181,6 +181,8 @@ app.use("/api", collegeRoutes);
 app.use("/api/microadmin", microadmin);
 const microCertRoutes = require("./routes/MicroCert");
 app.use("/api", microCertRoutes);
+
+app.use("/api/partner", partnerRoutes);
 
 //send mail with attchement
 app.use("/", sendMailWithAttchement);

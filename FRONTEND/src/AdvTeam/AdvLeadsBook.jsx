@@ -816,6 +816,18 @@ const AdvLeadsBook = () => {
                                                     </div>
 
                                                     <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '24px' }}>
+                                                        {lead.last_recording_url && (
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={e => e.stopPropagation()}>
+                                                                <span className="material-symbols-outlined" style={{ color: designTokens.colors.primary, fontSize: '20px' }}>mic</span>
+                                                                <audio 
+                                                                    controls 
+                                                                    controlsList="nodownload"
+                                                                    style={{ width: '180px', height: '30px' }}
+                                                                >
+                                                                    <source src={lead.last_recording_url} type="audio/mpeg" />
+                                                                </audio>
+                                                            </div>
+                                                        )}
                                                         <StatusBadge status={lead.status} />
                                                         <div className="material-symbols-outlined" style={{
                                                             width: '32px', height: '32px', borderRadius: '10px', background: isOpen ? designTokens.colors.primary : designTokens.colors.background,
@@ -1019,6 +1031,20 @@ const AdvLeadsBook = () => {
                                                                                 <span style={{ fontSize: '11px', color: designTokens.colors.textSecondary, fontWeight: '600' }}>{new Date(h.createdAt).toLocaleDateString()}</span>
                                                                             </div>
                                                                             <p style={{ margin: 0, fontSize: '13px', color: designTokens.colors.textSecondary, display: '-webkit-box', WebkitLineClamp: expandedLogId === h._id ? 'unset' : 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{h.summary || "Archived interactions trace."}</p>
+                                                                            
+                                                                            {h.recordingUrl && (
+                                                                                <div style={{ marginTop: '12px' }} onClick={(e) => e.stopPropagation()}>
+                                                                                    <audio 
+                                                                                        controls 
+                                                                                        controlsList="nodownload"
+                                                                                        style={{ width: '100%', height: '32px', borderRadius: '8px' }}
+                                                                                    >
+                                                                                        <source src={h.recordingUrl} type="audio/mpeg" />
+                                                                                        Your browser does not support the audio element.
+                                                                                    </audio>
+                                                                                </div>
+                                                                            )}
+
                                                                             {expandedLogId === h._id && h.remark && (
                                                                                 <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px dashed #E2E8F0', fontSize: '12px', color: designTokens.colors.textSecondary, fontStyle: 'italic' }}>
                                                                                     Internal Note: {h.remark}

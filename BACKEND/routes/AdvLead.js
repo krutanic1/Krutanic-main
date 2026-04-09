@@ -22,6 +22,7 @@ const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const AdvTemplate = require("../models/AdvTemplate");
 const AdminMail = require("../models/AdminMail");
+const cloudinaryController = require("../controllers/cloudinaryController");
 
 require("dotenv").config();
 
@@ -110,6 +111,9 @@ router.get("/test-meta-lead/:leadId", async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
+// ✅ Cloudinary Signature for Mobile App
+router.get("/cloudinary-signature", cloudinaryController.getCloudinarySignature);
 
 // ✅ Receive Lead Data from Meta (POST request with HMAC Verification)
 router.post("/meta-webhook", async (req, res) => {
@@ -1185,7 +1189,7 @@ router.post("/bulk-import", upload.single("file"), async (req, res) => {
 router.post("/log-call-activity", async (req, res) => {
     const {
         leadId, specialistId, specialistName, remark,
-        summary, callOutcome, demoScheduleDate, followUpDate, duration
+        summary, callOutcome, demoScheduleDate, followUpDate, duration, recordingUrl
     } = req.body;
     if (!leadId || !specialistId || !callOutcome) {
         return res.status(400).json({ message: "leadId, specialistId, and callOutcome are required" });
@@ -1210,6 +1214,7 @@ router.post("/log-call-activity", async (req, res) => {
             summary,
             callOutcome,
             duration,
+            recordingUrl,
             demoScheduleDate: demoScheduleDate || undefined,
             followUpDate: followUpDate || undefined,
             followUpStatus: followUpDate ? "pending" : undefined
@@ -1245,7 +1250,14 @@ router.post("/log-call-activity", async (req, res) => {
         if (demoScheduleDate) newStage = "demo_scheduled";
 
         const newStatus = statusMap[callOutcome];
-        const updateFields = { last_outcome: callOutcome };
+        const updateFields = { 
+            last_outcome: callOutcome,
+            last_interaction_at: new Date()
+        };
+
+        if (recordingUrl) {
+            updateFields.last_recording_url = recordingUrl;
+        }
 
         if (newStatus) updateFields.status = newStatus;
 

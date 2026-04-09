@@ -15,12 +15,40 @@ const crypto = require("crypto");
 // 1. Enrollment Management
 router.get("/admin/microcourses/enrolls", async (req, res) => {
     try {
-        const { status } = req.query;
+        const { status, page, limit, search } = req.query;
         let query = {};
         if (status) query.status = status;
 
-        const enrollments = await MicroCourseEnroll.find(query).sort({ enrollmentDate: -1 });
-        res.status(200).json(enrollments);
+        if (search) {
+            const searchRegex = { $regex: search, $options: "i" };
+            query.$or = [
+                { fullName: searchRegex },
+                { email: searchRegex },
+                { transactionId: searchRegex }
+            ];
+        }
+
+        const pageNum = parseInt(page) || 1;
+        const limitNum = parseInt(limit) || 30;
+        const skip = (pageNum - 1) * limitNum;
+
+        const totalItems = await MicroCourseEnroll.countDocuments(query);
+        const totalPages = Math.ceil(totalItems / limitNum);
+
+        const enrollments = await MicroCourseEnroll.find(query)
+            .sort({ enrollmentDate: -1 })
+            .skip(skip)
+            .limit(limitNum);
+
+        res.status(200).json({
+            enrollments,
+            pagination: {
+                totalItems,
+                totalPages,
+                currentPage: pageNum,
+                limit: limitNum
+            }
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -284,11 +312,32 @@ router.patch("/admin/microcourses/config", async (req, res) => {
     }
 });
 
-// 7. College Management (Admin side)
+// 7. College Management (Admin side with pagination)
 router.get("/admin/colleges", async (req, res) => {
     try {
-        const colleges = await College.find().populate("allowedCourses");
-        res.status(200).json(colleges);
+        const { page, limit } = req.query;
+        const pageNum = parseInt(page) || 1;
+        const limitNum = parseInt(limit) || 30;
+        const skip = (pageNum - 1) * limitNum;
+
+        const totalItems = await College.countDocuments();
+        const totalPages = Math.ceil(totalItems / limitNum);
+
+        const colleges = await College.find()
+            .populate("allowedCourses")
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limitNum);
+
+        res.status(200).json({
+            colleges,
+            pagination: {
+                totalItems,
+                totalPages,
+                currentPage: pageNum,
+                limit: limitNum
+            }
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

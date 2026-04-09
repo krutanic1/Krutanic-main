@@ -83,7 +83,8 @@ const LeadDetailsScreen = ({ route, navigation }) => {
                 remark: logData.remark,
                 duration: logData.durationSec,
                 status: logData.status,
-                followUpDate: logData.followUpDate
+                followUpDate: logData.followUpDate,
+                recordingUrl: logData.recordingUrl
             };
             const logResponse = await leadService.logCall(payload);
 
