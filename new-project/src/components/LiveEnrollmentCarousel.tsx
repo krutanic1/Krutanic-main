@@ -35,6 +35,7 @@ function shuffleNotifications(items: EnrollmentNotification[]) {
 export default function LiveEnrollmentCarousel() {
   const [notifications, setNotifications] = useState<EnrollmentNotification[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [showPopup, setShowPopup] = useState(true);
 
   const current = useMemo(() => {
     if (notifications.length === 0) return null;
@@ -72,11 +73,30 @@ export default function LiveEnrollmentCarousel() {
   useEffect(() => {
     if (notifications.length <= 1) return;
 
-    const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % notifications.length);
-    }, 4500);
+    let hideTimeoutId: ReturnType<typeof setTimeout> | undefined;
+    let showNextTimeoutId: ReturnType<typeof setTimeout> | undefined;
 
-    return () => clearInterval(interval);
+    const runCycle = () => {
+      setShowPopup(true);
+
+      // Keep popup visible for 3 seconds.
+      hideTimeoutId = setTimeout(() => {
+        setShowPopup(false);
+
+        // Show next popup after 1 minute.
+        showNextTimeoutId = setTimeout(() => {
+          setActiveIndex((prev) => (prev + 1) % notifications.length);
+          runCycle();
+        }, 60000);
+      }, 3000);
+    };
+
+    runCycle();
+
+    return () => {
+      if (hideTimeoutId) clearTimeout(hideTimeoutId);
+      if (showNextTimeoutId) clearTimeout(showNextTimeoutId);
+    };
   }, [notifications]);
 
   if (!current) return null;
@@ -84,30 +104,32 @@ export default function LiveEnrollmentCarousel() {
   return (
     <div className="fixed bottom-5 right-5 z-[90] w-[calc(100vw-2.5rem)] max-w-xs pointer-events-none">
       <AnimatePresence mode="wait">
-        <motion.div
-          key={`${current.studentName}-${current.courseName}-${current.amount}`}
-          initial={{ opacity: 0, x: 80, scale: 0.96 }}
-          animate={{ opacity: 1, x: 0, scale: 1 }}
-          exit={{ opacity: 0, x: 80, scale: 0.96 }}
-          transition={{ type: 'spring', stiffness: 260, damping: 24, mass: 0.9 }}
-          className="bg-white/95 backdrop-blur border border-metallic-green/20 rounded-2xl editorial-shadow overflow-hidden shadow-[0_18px_40px_rgba(0,77,64,0.14)] min-h-[150px]"
-        >
-          <div className="h-1 bg-gradient-to-r from-metallic-green via-metallic-green-light to-metallic-accent"></div>
-          <div className="px-4 py-5 flex flex-col justify-between min-h-[150px]">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="w-2.5 h-2.5 rounded-full bg-metallic-green shadow-[0_0_0_6px_rgba(0,77,64,0.08)]"></span>
-              <p className="text-[11px] tracking-[0.16em] uppercase font-bold text-metallic-green">Recent Enrollment</p>
+        {showPopup && (
+          <motion.div
+            key={`${current.studentName}-${current.courseName}-${current.amount}-${activeIndex}`}
+            initial={{ opacity: 0, x: 80, scale: 0.96 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 80, scale: 0.96 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 24, mass: 0.9 }}
+            className="bg-white/95 backdrop-blur border border-metallic-green/20 rounded-2xl editorial-shadow overflow-hidden shadow-[0_18px_40px_rgba(0,77,64,0.14)] min-h-[150px]"
+          >
+            <div className="h-1 bg-gradient-to-r from-metallic-green via-metallic-green-light to-metallic-accent"></div>
+            <div className="px-4 py-5 flex flex-col justify-between min-h-[150px]">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="w-2.5 h-2.5 rounded-full bg-metallic-green shadow-[0_0_0_6px_rgba(0,77,64,0.08)]"></span>
+                <p className="text-[11px] tracking-[0.16em] uppercase font-bold text-metallic-green">Recent Enrollment</p>
+              </div>
+              <p className="text-sm md:text-[0.92rem] text-on-surface-variant leading-relaxed mb-3">
+                <span className="font-semibold text-on-surface">{maskName(current.studentName)}</span>
+                {' '}joined{' '}
+                <span className="font-semibold text-metallic-green">{current.courseName}</span>
+              </p>
+              <p className="text-sm md:text-[0.92rem] text-on-surface-variant">
+                Amount: <span className="font-semibold text-metallic-green">₹{current.amount}</span>
+              </p>
             </div>
-            <p className="text-sm md:text-[0.92rem] text-on-surface-variant leading-relaxed mb-3">
-              <span className="font-semibold text-on-surface">{maskName(current.studentName)}</span>
-              {' '}joined{' '}
-              <span className="font-semibold text-metallic-green">{current.courseName}</span>
-            </p>
-            <p className="text-sm md:text-[0.92rem] text-on-surface-variant">
-              Amount: <span className="font-semibold text-metallic-green">₹{current.amount}</span>
-            </p>
-          </div>
-        </motion.div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );
