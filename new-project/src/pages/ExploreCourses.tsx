@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { Search, CheckCircle2, Clock3, Briefcase, Users, Calendar, Star } from 'lucide-react';
 import { motion } from 'motion/react';
+import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import EnrollModal from '../components/EnrollModal';
@@ -86,6 +87,14 @@ export default function ExploreCourses() {
         <div className="container mx-auto px-8">
           <h1 className="text-5xl lg:text-6xl text-primary mb-6">Explore Courses</h1>
           <p className="text-on-surface-variant max-w-2xl mb-10">Browse all available programs and find the right course for your learning and career goals.</p>
+          <div className="mb-10">
+            <Link
+              to="/about-us#contact-us"
+              className="inline-flex border border-primary text-primary px-6 py-3 text-xs font-bold tracking-[0.06em] uppercase hover:bg-primary hover:text-white transition-colors"
+            >
+              Contact Team
+            </Link>
+          </div>
 
           <div className="bg-white p-6 lg:p-8 editorial-shadow mb-12">
             <div className="relative">

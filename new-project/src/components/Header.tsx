@@ -1,6 +1,6 @@
 import React from 'react';
 import Logo from './Logo';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   scrolled: boolean;
@@ -8,6 +8,11 @@ interface HeaderProps {
 
 export default function Header({ scrolled }: HeaderProps) {
   const navigate = useNavigate();
+
+  const navClass = ({ isActive }: { isActive: boolean }) =>
+    `${isActive
+      ? 'text-primary font-bold border-b-2 border-primary'
+      : 'text-on-surface-variant font-medium hover:text-primary'} transition-colors pb-1 text-xs tracking-[0.05em] uppercase whitespace-nowrap`;
 
   return (
     <nav
@@ -20,18 +25,18 @@ export default function Header({ scrolled }: HeaderProps) {
           <Logo height={80} />
         </Link>
         <div className="hidden lg:flex gap-8">
-          <Link to="/explore-courses" className="text-primary font-bold border-b-2 border-primary pb-1 text-xs tracking-[0.05em] uppercase whitespace-nowrap">
+          <NavLink to="/explore-courses" className={navClass}>
             Courses & Programs
-          </Link>
-          <a href="#" className="text-on-surface-variant font-medium hover:text-primary transition-colors text-xs tracking-[0.05em] uppercase whitespace-nowrap">
+          </NavLink>
+          <NavLink to="/institutions" className={navClass}>
             For Institutions
-          </a>
-          <a href="#" className="text-on-surface-variant font-medium hover:text-primary transition-colors text-xs tracking-[0.05em] uppercase whitespace-nowrap">
+          </NavLink>
+          <NavLink to="/insights" className={navClass}>
             Insights
-          </a>
-          <Link to="/about-us" className="text-on-surface-variant font-medium hover:text-primary transition-colors text-xs tracking-[0.05em] uppercase whitespace-nowrap">
+          </NavLink>
+          <NavLink to="/about-us" className={navClass}>
             Why Dikshannt
-          </Link>
+          </NavLink>
         </div>
       </div>
       <div className="flex items-center gap-4 md:gap-6">

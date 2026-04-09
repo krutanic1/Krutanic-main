@@ -58,7 +58,7 @@ export default function AdminEnrolls() {
     <div className="p-8 max-w-7xl mx-auto">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
         <div>
-          <h1 className="text-4xl text-primary mb-2">MicroCourse Enrolls</h1>
+          <h1 className="text-4xl text-primary mb-2">Program Enrolls</h1>
           <p className="text-on-surface-variant italic">Manage student enrollment requests and verify payments.</p>
         </div>
         

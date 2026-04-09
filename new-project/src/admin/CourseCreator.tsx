@@ -201,7 +201,7 @@ export default function CourseCreator() {
         <div className="flex justify-between items-center mb-12">
           <div>
             <h1 className="text-4xl text-primary mb-2">Manage Courses</h1>
-            <p className="text-on-surface-variant italic font-light">Curate elite micro-learning experiences.</p>
+            <p className="text-on-surface-variant italic font-light">Curate elite internship and workshop experiences.</p>
           </div>
           <button 
             onClick={handleOpenCreate}
@@ -485,7 +485,7 @@ export default function CourseCreator() {
                 <X size={20} />
               </button>
 
-              <h2 className="text-3xl font-bold text-primary mb-2 tracking-tight">{isEditing ? 'Edit MicroCourse' : 'Create MicroCourse'}</h2>
+              <h2 className="text-3xl font-bold text-primary mb-2 tracking-tight">{isEditing ? 'Edit Program' : 'Create Program'}</h2>
               <p className="text-[10px] uppercase tracking-widest text-outline mb-12 italic">{isEditing ? 'Refine your premium instructional content.' : 'Design a new premium learning track.'}</p>
 
               <form onSubmit={handleSubmitCourse} className="space-y-8">

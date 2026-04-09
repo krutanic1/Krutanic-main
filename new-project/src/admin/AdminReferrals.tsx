@@ -77,7 +77,7 @@ export default function AdminReferrals() {
       <div className="flex justify-between items-center mb-12">
         <div>
           <h1 className="text-4xl text-primary mb-2">Referral Management</h1>
-          <p className="text-on-surface-variant italic font-light">Generate and track referral codes for the MicroCourses.</p>
+          <p className="text-on-surface-variant italic font-light">Generate and track referral codes for internship and workshop programs.</p>
         </div>
         
         <button 

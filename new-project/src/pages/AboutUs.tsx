@@ -1,5 +1,5 @@
-import React from 'react';
-import { CheckCircle2, Target, Eye, Handshake, Briefcase, GraduationCap } from 'lucide-react';
+import React, { useState } from 'react';
+import { CheckCircle2, Target, Eye, Handshake, Briefcase, GraduationCap, Check, X } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
@@ -7,17 +7,17 @@ const values = [
   {
     icon: Target,
     title: 'Outcome First',
-    desc: 'Every microcourse is designed to produce measurable skills, portfolio work, and interview readiness.',
+    desc: 'Every internship and workshop track is designed to produce measurable skills, portfolio work, and interview readiness.',
   },
   {
     icon: Eye,
     title: 'Industry Relevance',
-    desc: 'We continuously update microcourse curriculum based on hiring trends, role expectations, and employer feedback.',
+    desc: 'We continuously update internship and workshop curriculum based on hiring trends, role expectations, and employer feedback.',
   },
   {
     icon: Handshake,
     title: 'Institution Collaboration',
-    desc: 'We partner with colleges and organizations to scale employability through compact, practical micro-learning pathways.',
+    desc: 'We partner with colleges and organizations to scale employability through practical internship and workshop pathways.',
   },
 ];
 
@@ -28,22 +28,42 @@ const highlights = [
   'Earn verifiable certificates that strengthen resumes and portfolios',
 ];
 
-const microcourseBenefits = [
+const internshipWorkshopBenefits = [
   {
-    title: 'Faster Learning Cycles',
-    desc: 'Microcourses help learners master one practical skill at a time, making progress visible and motivating.',
+    title: 'Structured Internship Learning',
+    desc: 'Internship-led learning helps learners build one practical skill at a time, making progress visible and motivating.',
   },
   {
-    title: 'Affordable Skill Building',
-    desc: 'Short-format programs keep learning accessible while still delivering high-impact outcomes.',
+    title: 'Accessible Workshop Programs',
+    desc: 'Workshop-led programs keep learning accessible while still delivering high-impact outcomes.',
   },
   {
-    title: 'Career-Specific Paths',
-    desc: 'Learners can combine multiple microcourses to create personalized tracks for data, marketing, design, and more.',
+    title: 'Career-Specific Tracks',
+    desc: 'Learners can combine internships and workshops to create personalized tracks for data, marketing, design, and more.',
   },
 ];
 
 export default function AboutUs() {
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    institution: '',
+    message: '',
+  });
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const handleContactChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setContactForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleContactSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitted(true);
+    setContactForm({ name: '', email: '', phone: '', institution: '', message: '' });
+  };
+
   return (
     <div className="min-h-screen bg-surface">
       <Header scrolled={true} />
@@ -51,11 +71,11 @@ export default function AboutUs() {
       <section className="pt-32 pb-20 bg-surface">
         <div className="container mx-auto px-8">
           <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-outline mb-4">About Dikshannt</p>
-          <h1 className="text-5xl lg:text-6xl text-primary mb-6">Dikshaant: A Microcourse Company for Career Growth</h1>
+          <h1 className="text-5xl lg:text-6xl text-primary mb-6">Dikshaant: Internship and Workshop Programs for Career Growth</h1>
           <p className="text-on-surface-variant max-w-3xl text-lg leading-relaxed">
-            Dikshaant is a career-focused learning company that sells microcourses designed for students and working
-            professionals. Our microcourses are short, practical, and industry-aligned so learners can build
-            in-demand skills quickly, apply them immediately, and grow with confidence.
+            Dikshaant is a career-focused learning company that offers internships and workshops designed for students and
+            working professionals. Our programs are practical and industry-aligned so learners can build in-demand skills
+            quickly, apply them immediately, and grow with confidence.
           </p>
         </div>
       </section>
@@ -65,7 +85,7 @@ export default function AboutUs() {
           <div className="bg-white p-8 lg:p-10 editorial-shadow border border-outline-variant/10">
             <h2 className="text-3xl text-primary mb-4">Our Mission</h2>
             <p className="text-on-surface-variant leading-relaxed">
-              To make high-quality microcourses accessible, structured, and outcome-driven for students,
+              To make high-quality internships and workshops accessible, structured, and outcome-driven for students,
               professionals, and institutions that want real employability outcomes.
             </p>
           </div>
@@ -73,7 +93,7 @@ export default function AboutUs() {
           <div className="bg-white p-8 lg:p-10 editorial-shadow border border-outline-variant/10">
             <h2 className="text-3xl text-primary mb-4">Our Vision</h2>
             <p className="text-on-surface-variant leading-relaxed">
-              To become the most trusted micro-learning brand where short courses create long-term career impact.
+              To become the most trusted internship and workshop brand where practical learning creates long-term career impact.
             </p>
           </div>
         </div>
@@ -81,7 +101,7 @@ export default function AboutUs() {
 
       <section className="pb-20 bg-surface">
         <div className="container mx-auto px-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {microcourseBenefits.map((item, index) => (
+          {internshipWorkshopBenefits.map((item, index) => (
             <div key={index} className="bg-white p-7 editorial-shadow border border-outline-variant/10">
               <h3 className="text-2xl text-primary mb-3">{item.title}</h3>
               <p className="text-on-surface-variant leading-relaxed">{item.desc}</p>
@@ -108,7 +128,7 @@ export default function AboutUs() {
       <section className="py-20 bg-surface">
         <div className="container mx-auto px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           <div>
-            <h2 className="text-4xl text-primary mb-6">How Dikshaant Microcourses Benefit Learners</h2>
+            <h2 className="text-4xl text-primary mb-6">How Dikshaant Internships and Workshops Benefit Learners</h2>
             <div className="space-y-4">
               {highlights.map((item, index) => (
                 <div key={index} className="flex items-start gap-3">
@@ -124,7 +144,7 @@ export default function AboutUs() {
               <Briefcase className="w-5 h-5 text-primary mt-1" />
               <div>
                 <h3 className="text-lg text-primary">Career Alignment</h3>
-                <p className="text-sm text-on-surface-variant">Each microcourse is mapped to real job roles, required tools, and practical outcomes.</p>
+                <p className="text-sm text-on-surface-variant">Each internship and workshop track is mapped to real job roles, required tools, and practical outcomes.</p>
               </div>
             </div>
 
@@ -132,9 +152,255 @@ export default function AboutUs() {
               <GraduationCap className="w-5 h-5 text-primary mt-1" />
               <div>
                 <h3 className="text-lg text-primary">Academic Integration</h3>
-                <p className="text-sm text-on-surface-variant">We help institutions integrate microcourses into academic journeys to improve placement readiness.</p>
+                <p className="text-sm text-on-surface-variant">We help institutions integrate internships and workshops into academic journeys to improve placement readiness.</p>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Comparison Table Section */}
+      <section className="py-20 bg-surface">
+        <div className="container mx-auto px-8">
+          <div className="mb-16 text-center">
+            <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-outline mb-4">Why Choose Dikshannt</p>
+            <h2 className="text-4xl text-primary mb-4">How Dikshannt Compares to Other Programs</h2>
+            <p className="text-on-surface-variant max-w-2xl mx-auto">
+              See how our outcome-focused, industry-aligned internship and workshop programs stand out in the market.
+            </p>
+          </div>
+
+          {/* Comparison Table */}
+          <div className="overflow-x-auto border border-outline-variant/20 editorial-shadow">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-primary text-white">
+                  <th className="px-6 py-4 text-left text-sm font-bold tracking-widest uppercase">Features</th>
+                  <th className="px-6 py-4 text-center text-sm font-bold tracking-widest uppercase">Dikshannt</th>
+                  <th className="px-6 py-4 text-center text-sm font-bold tracking-widest uppercase">Traditional Courses</th>
+                  <th className="px-6 py-4 text-center text-sm font-bold tracking-widest uppercase">Self-Learning</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-outline-variant/10 hover:bg-surface-container-low transition-colors">
+                  <td className="px-6 py-4 text-sm font-bold text-primary">Hands-On Projects</td>
+                  <td className="px-6 py-4 text-center">
+                    <Check size={20} className="text-green-600 mx-auto" />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <X size={20} className="text-red-400 mx-auto" />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <X size={20} className="text-red-400 mx-auto" />
+                  </td>
+                </tr>
+                <tr className="border-b border-outline-variant/10 hover:bg-surface-container-low transition-colors">
+                  <td className="px-6 py-4 text-sm font-bold text-primary">Industry Mentorship</td>
+                  <td className="px-6 py-4 text-center">
+                    <Check size={20} className="text-green-600 mx-auto" />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <X size={20} className="text-red-400 mx-auto" />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <X size={20} className="text-red-400 mx-auto" />
+                  </td>
+                </tr>
+                <tr className="border-b border-outline-variant/10 hover:bg-surface-container-low transition-colors">
+                  <td className="px-6 py-4 text-sm font-bold text-primary">Portfolio-Ready Work</td>
+                  <td className="px-6 py-4 text-center">
+                    <Check size={20} className="text-green-600 mx-auto" />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <X size={20} className="text-red-400 mx-auto" />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <X size={20} className="text-red-400 mx-auto" />
+                  </td>
+                </tr>
+                <tr className="border-b border-outline-variant/10 hover:bg-surface-container-low transition-colors">
+                  <td className="px-6 py-4 text-sm font-bold text-primary">Placement Assistance</td>
+                  <td className="px-6 py-4 text-center">
+                    <Check size={20} className="text-green-600 mx-auto" />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <X size={20} className="text-red-400 mx-auto" />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <X size={20} className="text-red-400 mx-auto" />
+                  </td>
+                </tr>
+                <tr className="border-b border-outline-variant/10 hover:bg-surface-container-low transition-colors">
+                  <td className="px-6 py-4 text-sm font-bold text-primary">Industry-Updated Curriculum</td>
+                  <td className="px-6 py-4 text-center">
+                    <Check size={20} className="text-green-600 mx-auto" />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <X size={20} className="text-red-400 mx-auto" />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <X size={20} className="text-red-400 mx-auto" />
+                  </td>
+                </tr>
+                <tr className="border-b border-outline-variant/10 hover:bg-surface-container-low transition-colors">
+                  <td className="px-6 py-4 text-sm font-bold text-primary">Peer Learning Community</td>
+                  <td className="px-6 py-4 text-center">
+                    <Check size={20} className="text-green-600 mx-auto" />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <Check size={20} className="text-green-600 mx-auto" />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <X size={20} className="text-red-400 mx-auto" />
+                  </td>
+                </tr>
+                <tr className="border-b border-outline-variant/10 hover:bg-surface-container-low transition-colors">
+                  <td className="px-6 py-4 text-sm font-bold text-primary">Flexible Duration</td>
+                  <td className="px-6 py-4 text-center">
+                    <Check size={20} className="text-green-600 mx-auto" />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <X size={20} className="text-red-400 mx-auto" />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <Check size={20} className="text-green-600 mx-auto" />
+                  </td>
+                </tr>
+                <tr className="border-b border-outline-variant/10 hover:bg-surface-container-low transition-colors">
+                  <td className="px-6 py-4 text-sm font-bold text-primary">Verifiable Certification</td>
+                  <td className="px-6 py-4 text-center">
+                    <Check size={20} className="text-green-600 mx-auto" />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <Check size={20} className="text-green-600 mx-auto" />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <X size={20} className="text-red-400 mx-auto" />
+                  </td>
+                </tr>
+                <tr className="border-b border-outline-variant/10 hover:bg-surface-container-low transition-colors">
+                  <td className="px-6 py-4 text-sm font-bold text-primary">Real Job Role Mapping</td>
+                  <td className="px-6 py-4 text-center">
+                    <Check size={20} className="text-green-600 mx-auto" />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <X size={20} className="text-red-400 mx-auto" />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <X size={20} className="text-red-400 mx-auto" />
+                  </td>
+                </tr>
+                <tr className="hover:bg-surface-container-low transition-colors">
+                  <td className="px-6 py-4 text-sm font-bold text-primary">Institution Partnerships</td>
+                  <td className="px-6 py-4 text-center">
+                    <Check size={20} className="text-green-600 mx-auto" />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <X size={20} className="text-red-400 mx-auto" />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <X size={20} className="text-red-400 mx-auto" />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+         
+        </div>
+      </section>
+
+      <section id="contact-us" className="pb-24 bg-surface-container-low scroll-mt-28">
+        <div className="container mx-auto px-8">
+          <div className="max-w-4xl mx-auto bg-white p-8 lg:p-12 editorial-shadow border border-outline-variant/10">
+            <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-outline mb-4">Contact Us</p>
+            <h2 className="text-4xl text-primary mb-4">Let’s Build Career-Ready Learning Together</h2>
+            <p className="text-on-surface-variant mb-8 leading-relaxed">
+              Reach out to partner with Dikshannt for internship and workshop programs. Our team will connect with you shortly.
+            </p>
+
+            <form onSubmit={handleContactSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label htmlFor="name" className="block text-xs font-bold tracking-[0.08em] uppercase text-primary mb-2">Full Name</label>
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    value={contactForm.name}
+                    onChange={handleContactChange}
+                    required
+                    className="w-full border border-outline-variant/30 bg-surface px-4 py-3 text-sm outline-none focus:border-primary transition-colors"
+                    placeholder="Enter your full name"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="email" className="block text-xs font-bold tracking-[0.08em] uppercase text-primary mb-2">Email Address</label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={contactForm.email}
+                    onChange={handleContactChange}
+                    required
+                    className="w-full border border-outline-variant/30 bg-surface px-4 py-3 text-sm outline-none focus:border-primary transition-colors"
+                    placeholder="Enter your email"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="phone" className="block text-xs font-bold tracking-[0.08em] uppercase text-primary mb-2">Phone Number</label>
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    value={contactForm.phone}
+                    onChange={handleContactChange}
+                    required
+                    className="w-full border border-outline-variant/30 bg-surface px-4 py-3 text-sm outline-none focus:border-primary transition-colors"
+                    placeholder="Enter your phone number"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="institution" className="block text-xs font-bold tracking-[0.08em] uppercase text-primary mb-2">Institution / Company</label>
+                  <input
+                    id="institution"
+                    name="institution"
+                    type="text"
+                    value={contactForm.institution}
+                    onChange={handleContactChange}
+                    required
+                    className="w-full border border-outline-variant/30 bg-surface px-4 py-3 text-sm outline-none focus:border-primary transition-colors"
+                    placeholder="Enter institution or company name"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="message" className="block text-xs font-bold tracking-[0.08em] uppercase text-primary mb-2">Message</label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows={5}
+                  value={contactForm.message}
+                  onChange={handleContactChange}
+                  required
+                  className="w-full border border-outline-variant/30 bg-surface px-4 py-3 text-sm outline-none focus:border-primary transition-colors resize-none"
+                  placeholder="Tell us your goals and collaboration requirements"
+                />
+              </div>
+
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-2">
+                <button
+                  type="submit"
+                  className="premium-gradient text-white px-8 py-3 text-xs font-bold tracking-[0.08em] uppercase hover:opacity-90 transition-opacity"
+                >
+                  Submit Inquiry
+                </button>
+                {isSubmitted && (
+                  <p className="text-sm text-green-700 font-medium">Thank you. Our team will contact you soon.</p>
+                )}
+              </div>
+            </form>
           </div>
         </div>
       </section>

@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import ExploreCourses from './pages/ExploreCourses';
 import AboutUs from './pages/AboutUs';
+import Institutions from './pages/Institutions';
+import Insights from './pages/Insights';
 import StudentDashboard from './pages/StudentDashboard';
 import AdminEnrolls from './admin/AdminEnrolls';
 import AdminReferrals from './admin/AdminReferrals';
@@ -95,30 +97,70 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
+function RouteScrollHandler() {
+  const location = useLocation();
+
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+    const scrollToHashTarget = () => {
+      if (!location.hash) return true;
+
+      const targetId = location.hash.replace('#', '');
+      const targetElement = document.getElementById(targetId);
+      if (!targetElement) return false;
+
+      const headerOffset = 96;
+      const top = targetElement.getBoundingClientRect().top + window.scrollY - headerOffset;
+      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+      return true;
+    };
+
+    if (location.hash) {
+      if (!scrollToHashTarget()) {
+        timeoutId = setTimeout(scrollToHashTarget, 120);
+      }
+    } else {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    }
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [location.pathname, location.hash]);
+
+  return null;
+}
+
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Landing />} />
-      <Route path="/explore-courses" element={<ExploreCourses />} />
-      <Route path="/about-us" element={<AboutUs />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/adminlogin" element={<AdminLogin />} />
-      <Route path="/dashboard/*" element={<StudentDashboard />} />
-      
-      {/* Admin Protected Routes */}
-      <Route path="/admin/enrolls" element={<AdminProtectedRoute><AdminLayout><AdminEnrolls /></AdminLayout></AdminProtectedRoute>} />
-      <Route path="/admin/referrals" element={<AdminProtectedRoute><AdminLayout><AdminReferrals /></AdminLayout></AdminProtectedRoute>} />
-      <Route path="/admin/courses" element={<AdminProtectedRoute><AdminLayout><CourseCreator /></AdminLayout></AdminProtectedRoute>} />
-      <Route path="/admin/upcoming" element={<AdminProtectedRoute><AdminLayout><AdminUpcomingCourses /></AdminLayout></AdminProtectedRoute>} />
-      <Route path="/admin/projects" element={<AdminProtectedRoute><AdminLayout><AdminProjectCreator /></AdminLayout></AdminProtectedRoute>} />
-      <Route path="/admin/colleges" element={<AdminProtectedRoute><AdminLayout><AdminColleges /></AdminLayout></AdminProtectedRoute>} />
-      <Route path="/admin/certificates" element={<AdminProtectedRoute><AdminLayout><AdminCertificates /></AdminLayout></AdminProtectedRoute>} />
-      
-      {/* College Portal */}
-      <Route path="/college/*" element={<CollegeDashboard />} />
-      
-      {/* Fallback to Admin Enrolls for /admin */}
-      <Route path="/admin" element={<AdminProtectedRoute><AdminLayout><AdminEnrolls /></AdminLayout></AdminProtectedRoute>} />
-    </Routes>
+    <>
+      <RouteScrollHandler />
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/explore-courses" element={<ExploreCourses />} />
+        <Route path="/about-us" element={<AboutUs />} />
+        <Route path="/institutions" element={<Institutions />} />
+        <Route path="/insights" element={<Insights />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/adminlogin" element={<AdminLogin />} />
+        <Route path="/dashboard/*" element={<StudentDashboard />} />
+        
+        {/* Admin Protected Routes */}
+        <Route path="/admin/enrolls" element={<AdminProtectedRoute><AdminLayout><AdminEnrolls /></AdminLayout></AdminProtectedRoute>} />
+        <Route path="/admin/referrals" element={<AdminProtectedRoute><AdminLayout><AdminReferrals /></AdminLayout></AdminProtectedRoute>} />
+        <Route path="/admin/courses" element={<AdminProtectedRoute><AdminLayout><CourseCreator /></AdminLayout></AdminProtectedRoute>} />
+        <Route path="/admin/upcoming" element={<AdminProtectedRoute><AdminLayout><AdminUpcomingCourses /></AdminLayout></AdminProtectedRoute>} />
+        <Route path="/admin/projects" element={<AdminProtectedRoute><AdminLayout><AdminProjectCreator /></AdminLayout></AdminProtectedRoute>} />
+        <Route path="/admin/colleges" element={<AdminProtectedRoute><AdminLayout><AdminColleges /></AdminLayout></AdminProtectedRoute>} />
+        <Route path="/admin/certificates" element={<AdminProtectedRoute><AdminLayout><AdminCertificates /></AdminLayout></AdminProtectedRoute>} />
+        
+        {/* College Portal */}
+        <Route path="/college/*" element={<CollegeDashboard />} />
+        
+        {/* Fallback to Admin Enrolls for /admin */}
+        <Route path="/admin" element={<AdminProtectedRoute><AdminLayout><AdminEnrolls /></AdminLayout></AdminProtectedRoute>} />
+      </Routes>
+    </>
   );
 }

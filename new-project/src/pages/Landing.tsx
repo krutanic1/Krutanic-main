@@ -102,6 +102,12 @@ export default function Landing() {
     setIsDetailsModalOpen(true);
   };
 
+  const handleEnrollFromDetails = (course: any) => {
+    setSelectedCourse(course);
+    setIsEnrollModalOpen(true);
+    setIsDetailsModalOpen(false);
+  };
+
   useEffect(() => {
     fetchCourses();
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -137,7 +143,10 @@ export default function Landing() {
               >
                 Explore Courses & Programs
               </button>
-              <button className="bg-transparent border border-outline-variant text-primary px-8 py-4 rounded text-xs font-bold tracking-[0.05em] uppercase hover:bg-surface-container-low transition-colors">
+              <button
+                onClick={() => navigate('/institutions')}
+                className="bg-transparent border border-outline-variant text-primary px-8 py-4 rounded text-xs font-bold tracking-[0.05em] uppercase hover:bg-surface-container-low transition-colors"
+              >
                 Partner With Dikshannt
               </button>
             </div>
@@ -387,7 +396,7 @@ export default function Landing() {
         <div className="container mx-auto px-8 relative z-10 text-center max-w-4xl">
           <Quote className="w-16 h-16 mx-auto mb-8 text-white/30" />
           <blockquote className="text-3xl md:text-5xl leading-tight mb-12 italic">
-            "Dikshannt has redefined how our institution views career readiness. Their curriculum integration was seamless, and the impact on student employability was immediate."
+            "Dikshannt has redefined how our institution views career readiness. Their curriculum integration was seamless, and the impact on student employability is almost immediate."
           </blockquote>
           <div className="h-px w-24 bg-white/30 mx-auto mb-8"></div>
           
@@ -444,6 +453,7 @@ export default function Landing() {
           isOpen={isDetailsModalOpen}
           onClose={() => setIsDetailsModalOpen(false)}
           course={selectedCourseDetails}
+          onEnroll={handleEnrollFromDetails}
         />
       )}
     </div>

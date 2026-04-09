@@ -151,6 +151,30 @@ router.get("/microcourses/live-regestraion", async (req, res) => {
     }
 });
 
+// 5B. Get Recent Enrollments (Bottom-right Social Proof)
+router.get("/microcourses/live-enrollments", async (req, res) => {
+    try {
+        const enrollments = await MicroCourseEnroll.find({
+            status: { $in: ["accepted", "pending"] }
+        })
+            .select("fullName courseName amount createdAt")
+            .sort({ createdAt: -1 })
+            .limit(20)
+            .lean();
+
+        const notifications = enrollments.map((e) => ({
+            studentName: e.fullName,
+            courseName: e.courseName,
+            amount: e.amount,
+            createdAt: e.createdAt
+        }));
+
+        res.status(200).json(notifications);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // 6. Get Global Config (Public)
 router.get("/microcourses/config", async (req, res) => {
     try {
