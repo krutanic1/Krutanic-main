@@ -67,6 +67,13 @@ export default function Landing() {
   const [courseQuery, setCourseQuery] = useState('');
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isPartnerModalOpen, setIsPartnerModalOpen] = useState(false);
+  const [heroForm, setHeroForm] = useState({
+    name: '',
+    mobile: '',
+    email: '',
+    domainInterested: '',
+  });
+  const [heroFormSubmitted, setHeroFormSubmitted] = useState(false);
 
   const fetchCourses = async () => {
     try {
@@ -91,6 +98,14 @@ export default function Landing() {
   };
 
   const availableCourses = coursesList.length > 0 ? coursesList : courses;
+  const domainOptions = Array.from(
+    new Set(
+      availableCourses
+        .map((course: any) => course?.title)
+        .filter((title: string | undefined) => Boolean(title))
+    )
+  );
+
   const normalizedQuery = courseQuery.trim().toLowerCase();
   const filteredCourses = availableCourses.filter((c: any) => {
     if (!normalizedQuery) return true;
@@ -108,6 +123,16 @@ export default function Landing() {
     setSelectedCourse(course);
     setIsEnrollModalOpen(true);
     setIsDetailsModalOpen(false);
+  };
+
+  const handleHeroFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setHeroForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleHeroFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setHeroFormSubmitted(true);
   };
 
   useEffect(() => {
@@ -138,7 +163,7 @@ export default function Landing() {
               Dikshannt offers flexible online courses, certificate programs, and institution collaboration models for modern learners and colleges.
               Dikshannt offers flexible online courses, certificate programs, and institution collaboration models for modern learners and colleges.
             </p>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-4 mb-6">
               <button
                 onClick={() => navigate('/explore-courses')}
                 className="premium-gradient text-white px-8 py-4 rounded text-xs font-bold tracking-[0.05em] uppercase shadow-lg hover:opacity-90 transition-opacity"
@@ -171,6 +196,69 @@ export default function Landing() {
             <div className="absolute inset-0 border-[0.5px] border-outline-variant/30 rounded-lg"></div>
           </motion.div>
         </div>
+
+        <div className="container mx-auto px-8 relative z-10 mt-8 lg:mt-12">
+          <h3 className="text-lg md:text-xl text-primary font-bold tracking-[0.06em] uppercase mb-3 text-center max-w-xl mx-auto">
+            Inquiry Form
+          </h3>
+          <form onSubmit={handleHeroFormSubmit} className="bg-white/80 border border-outline-variant/20 rounded-xl p-4 md:p-5 max-w-xl mx-auto editorial-shadow">
+            <div className="grid grid-cols-1 gap-3">
+              <input
+                type="text"
+                name="name"
+                value={heroForm.name}
+                onChange={handleHeroFormChange}
+                placeholder="Name"
+                className="w-full px-3 py-2.5 text-sm border border-outline-variant/30 rounded bg-surface outline-none focus:border-primary transition-colors"
+                required
+              />
+              <input
+                type="tel"
+                name="mobile"
+                value={heroForm.mobile}
+                onChange={handleHeroFormChange}
+                placeholder="Mobile Number"
+                className="w-full px-3 py-2.5 text-sm border border-outline-variant/30 rounded bg-surface outline-none focus:border-primary transition-colors"
+                required
+              />
+              <input
+                type="email"
+                name="email"
+                value={heroForm.email}
+                onChange={handleHeroFormChange}
+                placeholder="Email"
+                className="w-full px-3 py-2.5 text-sm border border-outline-variant/30 rounded bg-surface outline-none focus:border-primary transition-colors"
+                required
+              />
+              <select
+                name="domainInterested"
+                value={heroForm.domainInterested}
+                onChange={handleHeroFormChange}
+                className="w-full px-3 py-2.5 text-sm border border-outline-variant/30 rounded bg-surface outline-none focus:border-primary transition-colors"
+                required
+              >
+                <option value="" disabled>
+                  Interested workshop
+                </option>
+                {domainOptions.map((domain) => (
+                  <option key={domain} value={domain}>
+                    {domain}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex items-center justify-between gap-3 mt-4">
+              <button
+                type="submit"
+                className="premium-gradient text-white px-5 py-2.5 rounded text-[11px] font-bold tracking-[0.05em] uppercase hover:opacity-90 transition-opacity"
+              >
+                Submit
+              </button>
+              {heroFormSubmitted && <p className="text-xs text-primary font-semibold">Thanks, we will contact you soon.</p>}
+            </div>
+          </form>
+        </div>
+
         <div className="absolute -right-20 top-0 w-1/3 h-full bg-surface-container-low -skew-x-12 z-0 hidden lg:block"></div>
       </section>
 
@@ -258,7 +346,6 @@ export default function Landing() {
                       <p className="text-xs text-on-surface-variant mb-6">{c.desc}</p>
                       <div className="mt-auto space-y-4">
                         <div className="flex justify-between text-[11px] font-bold tracking-widest uppercase text-on-surface-variant border-b border-outline-variant/10 pb-2">
-                          <span className="text-primary font-bold">₹{c.price || 5000}</span>
                           <span>{c.duration}</span>
                           <span>{c.format}</span>
                         </div>

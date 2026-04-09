@@ -142,7 +142,6 @@ export default function ExploreCourses() {
 
                   <div className="mt-auto space-y-4">
                     <div className="flex justify-between text-[11px] font-bold tracking-widest uppercase text-on-surface-variant border-b border-outline-variant/10 pb-2">
-                      <span className="text-primary font-bold">₹{course.price || 5000}</span>
                       <span>{course.duration}</span>
                       <span>{course.format}</span>
                     </div>
