@@ -28,7 +28,6 @@ import digital from '../assets/Advanced Course Images/Digital Markting/DM 1.jpg'
 import Investmentbanking from '../assets/Advanced Course Images/Investment banking/IB 6.jpg'
 import MERN from '../assets/Advanced Course Images/Mern Stack Development/MSD 1.jpg'
 import ProductManagement from '../assets/Advanced Course Images/Product management/PM 4.jpg'
-import ProformanceMarket from '../assets/Advanced Course Images/Performance marketing/PM 3.jpg'
 //import AutomationTesting from '../assets/Advanced Course Images/AutomationvTesting/automationtesting.jpg'
 import PromptAi from '../assets/Advanced Course Images/Prompt AI/prompt.avif'
 
@@ -120,9 +119,6 @@ const Advance = () => {
   };
   const handleViewCourse5 = () => {
     navigate("/ProductManagement");
-  };
-  const handleViewCourse6 = () => {
-    navigate("/Performancemarket");
   };
   // const handleViewCourse7 = () => {
   //   navigate("/AutomationTesting");
@@ -324,7 +320,8 @@ const Advance = () => {
               <span className="text-[#f15b29]">Transform with Krutanic’s Hands-On Learning Experience</span>
             </h1>
             <p className="text-md mb-8 text-white">
-              The Krutanic Advanced Program delivers an intensive, career-focused curriculum that blends theoretical learning with practical industry training. Students gain real-world project experience and mentor guidance, enabling them to confidently master the demands of Digital Marketing, Advanced Data Science, Investment Banking, Performance Marketing, Product Management, and MERN Stack Development. For more details and placement-support information, fill out the registration form.            </p>
+              The Krutanic Advanced Program delivers an intensive, career-focused curriculum that blends theoretical learning with practical industry training. Students gain real-world project experience and mentor guidance, enabling them to confidently master the demands of Digital Marketing, Advanced Data Science, Investment Banking, Product Management, and MERN Stack Development. For more details and placement-support information, fill out the registration form.
+            </p>
             <button
               onClick={scrollToCourse}
 
@@ -570,30 +567,6 @@ const Advance = () => {
                 </p>
                 <button
                   onClick={handleViewCourse5}
-                  className="bg-[#000] shadow-sm shadow-slate-50 border-gray-800 text-[#eee] px-4 py-2 rounded-md hover:bg-[#f15b29] hover:text-white ease-linear duration-700"
-                >
-                  Explore Details
-                </button>
-              </div>
-            </div>
-            <div className="bg-[#080808] shadow-sm shadow-slate-50 rounded-xl overflow-hidden flex flex-col items-center">
-              <div className="overflow-hidden lg:h-[300px]">
-                <img
-                  src={ProformanceMarket}
-                  alt="Proformance Market"
-                  className="hover:scale-110 ease-linear duration-700"
-                />
-              </div>
-              <div className="p-2">
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  Performance Marketing
-                </h3>
-                <p className="text-sm -tracking-tighter text-white mb-4">
-                  Marketing based on measurable actions, like clicks or sales.
-
-                </p>
-                <button
-                  onClick={handleViewCourse6}
                   className="bg-[#000] shadow-sm shadow-slate-50 border-gray-800 text-[#eee] px-4 py-2 rounded-md hover:bg-[#f15b29] hover:text-white ease-linear duration-700"
                 >
                   Explore Details
@@ -902,7 +875,6 @@ const Advance = () => {
                   <option value="Investment Banking"> Investment Banking</option>
                   <option value="MERN Stack Development">MERN Stack Development</option>
                   <option value="Product Management">Product Management</option>
-                  <option value="Performance Marketing">Performance Marketing</option>
                   {/* <option value="Automation Testing">Automation Testing</option> */}
                   <option value="Generative AI With Prompt Engineering">Generative AI With Prompt Engineering</option>
                 </select>

@@ -34,7 +34,7 @@ const columnsData = [
   {
     category: "Technology",
     icon: <FaLaptopCode className="text-[#bf3b2b]" />,
-    count: "3 Programs",
+    count: "2 Programs",
     cards: [
       {
         type: "icon",
@@ -49,20 +49,13 @@ const columnsData = [
         title: "Data Analytics Advanced Program",
         desc: "Master Excel, SQL, Python, and Power BI to drive business decisions with data.",
         link: "/DataAnalytics"
-      },
-      {
-        type: "icon",
-        icon: <FaLaptopCode />,
-        title: "MERN Stack Development Advanced Program",
-        desc: "Full-stack web development utilizing MongoDB, Express, React, and Node.js.",
-        link: "/MernStack"
       }
     ]
   },
   {
     category: "Marketing",
     icon: <FaBullhorn className="text-[#bf3b2b]" />,
-    count: "3 Programs",
+    count: "2 Programs",
     cards: [
       {
         type: "icon",
@@ -70,13 +63,6 @@ const columnsData = [
         title: "Digital Marketing Advanced Program",
         desc: "Multi-channel strategies, consumer psychology, and scalable digital campaigns.",
         link: "/DigitalMarket"
-      },
-      {
-        type: "icon",
-        icon: <FaChartLine />,
-        title: "Performance Marketing Advanced Program",
-        desc: "Data-driven ROI optimization and rigorous ad ecosystem management.",
-        link: "/Performancemarket"
       },
       {
         type: "icon",
@@ -98,14 +84,14 @@ const columnsData = [
         title: "Product Management Advanced Program",
         desc: "Leading product lifecycle, agile methodologies, and cross-functional teams.",
         link: "/ProductManagement"
+      },
+      {
+        type: "icon",
+        icon: <FaLaptopCode />,
+        title: "MERN Stack Development Advanced Program",
+        desc: "Full-stack web development utilizing MongoDB, Express, React, and Node.js.",
+        link: "/MernStack"
       }
-      // {
-      //   type: "icon",
-      //   icon: <FaCoins />,
-      //   title: "Investment Banking Advanced Program",
-      //   desc: "Advanced financial modeling, valuation, and complex corporate finance.",
-      //   link: "/Investmentbanking"
-      // }
     ]
   }
 ];

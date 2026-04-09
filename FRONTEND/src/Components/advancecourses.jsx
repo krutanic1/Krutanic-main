@@ -5,7 +5,6 @@ import dataScienceBrochure from "../../krutanic/DataScienceAdvancedProgram.pdf";
 import digitalMarketingBrochure from "../../krutanic/Digital Marketing Advanced Program.pdf";
 import investmentBankingBrochure from "../../krutanic/Investment Banking Advanced Program.pdf";
 import productManagementBrochure from "../../krutanic/Product management Advanced program.pdf";
-import performanceMarketingBrochure from "../../krutanic/Performance marketing Advanced Program.pdf";
 import automationTestingBrochure from "../../krutanic/Automation testing Advanced Program.pdf";
 import promptEngineeringBrochure from "../../krutanic/Prompt engineering for generative AI Advanced Program.pdf";
 
@@ -18,18 +17,6 @@ import promptEngineeringBrochure from "../../krutanic/Prompt engineering for gen
 
 const AdvanceCounses = () => {
   const courses = [
-    {
-      institute: "KRUTANIC School Of Technology",
-      title: "MERN Stack Development",
-      description: "Build production-ready web apps with MongoDB, Express.js, React, and Node.js.",
-      icon: <i className="fa fa-code" aria-hidden="true"></i>,
-      badge: "Bestseller",
-      badgeClass: "bg-[#6b0f44] text-white",
-      support: "360 Degree Career Support",
-      credential: "Executive Diploma",
-      duration: "6 Months",
-      brochure: mernBrochure,
-    },
     {
       institute: "KRUTANIC School Of Technology",
       title: "Data Science",
@@ -79,16 +66,28 @@ const AdvanceCounses = () => {
       brochure: productManagementBrochure,
     },
     {
-      institute: "KRUTANIC Marketing School",
-      title: "Performance Marketing",
-      description: "Scale paid campaigns using analytics, attribution, and conversion optimization frameworks.",
-      icon: <i className="fa fa-line-chart" aria-hidden="true"></i>,
-      badge: "Hands-On",
-      badgeClass: "bg-[#b45309] text-white",
-      support: "Campaign Portfolio Build",
-      credential: "Specialization",
+      institute: "KRUTANIC AI School",
+      title: "Prompt Engineering AI",
+      description: "Design reliable prompts and AI workflows for productivity, automation, and business applications.",
+      icon: <i className="fa fa-android" aria-hidden="true"></i>,
+      badge: "Future Skills",
+      badgeClass: "bg-[#dc2626] text-white",
+      support: "AI Career Guidance",
+      credential: "Certification",
       duration: "6 Months",
-      brochure: performanceMarketingBrochure,
+      brochure: promptEngineeringBrochure,
+    },
+    {
+      institute: "KRUTANIC School Of Technology",
+      title: "MERN Stack Development",
+      description: "Build production-ready web apps with MongoDB, Express.js, React, and Node.js.",
+      icon: <i className="fa fa-code" aria-hidden="true"></i>,
+      badge: "Bestseller",
+      badgeClass: "bg-[#6b0f44] text-white",
+      support: "360 Degree Career Support",
+      credential: "Executive Diploma",
+      duration: "6 Months",
+      brochure: mernBrochure,
     },
     {
       institute: "KRUTANIC QA School",
@@ -101,18 +100,6 @@ const AdvanceCounses = () => {
       credential: "Advanced Certificate",
       duration: "6 Months",
       brochure: automationTestingBrochure,
-    },
-    {
-      institute: "KRUTANIC AI School",
-      title: "Prompt Engineering AI",
-      description: "Design reliable prompts and AI workflows for productivity, automation, and business applications.",
-      icon: <i className="fa fa-android" aria-hidden="true"></i>,
-      badge: "Future Skills",
-      badgeClass: "bg-[#dc2626] text-white",
-      support: "AI Career Guidance",
-      credential: "Certification",
-      duration: "6 Months",
-      brochure: promptEngineeringBrochure,
     },
   ];
 

@@ -1085,7 +1085,7 @@ const Performancemarket = () => {
         <div className="pf-shell">
           <div className="pf-invest">
             <div className="pf-invest-sub">Program Investment</div>
-            <h3>Rs 47,200</h3>
+            <h3>Rs 95,999</h3>
             <div className="pf-invest-sub">Total fee (incl. GST)</div>
 
             <div className="pf-invest-grid">
@@ -1094,11 +1094,11 @@ const Performancemarket = () => {
                 <span>Registration fee to reserve your seat in this premium cohort.</span>
               </div>
               <div className="pf-invest-item">
-                <strong>Installment 1: Rs 18,600</strong>
+                <strong>Installment 1: Rs 43,000</strong>
                 <span>Payable within 15 days from date of registration.</span>
               </div>
               <div className="pf-invest-item">
-                <strong>Installment 2: Rs 18,600</strong>
+                <strong>Installment 2: Rs 42,999</strong>
                 <span>Payable within 15 days after installment 1.</span>
               </div>
             </div>
@@ -1107,13 +1107,13 @@ const Performancemarket = () => {
           <div className="pf-pay-grid">
             <div className="pf-fee-box">
               <div>Total Program Fee</div>
-              <div className="fee">Rs 47,200</div>
+              <div className="fee">Rs 95,999</div>
               <div>Inclusive of taxes</div>
             </div>
             <div className="pf-breakdown">
               <div className="pf-break-row"><span>Registration</span><strong>Rs 10,000</strong></div>
-              <div className="pf-break-row"><span>Installment 1</span><strong>Rs 18,600</strong></div>
-              <div className="pf-break-row"><span>Installment 2</span><strong>Rs 18,600</strong></div>
+              <div className="pf-break-row"><span>Installment 1</span><strong>Rs 43,000</strong></div>
+              <div className="pf-break-row"><span>Installment 2</span><strong>Rs 42,999</strong></div>
             </div>
           </div>
 

@@ -331,7 +331,6 @@ const AdvancedApplyPopup = ({ onClose }) => {
                                             <option value="Investment Banking">Investment Banking</option>
                                             <option value="MERN Stack Development">MERN Stack Development</option>
                                             <option value="Product Management">Product Management</option>
-                                            <option value="Performance Marketing">Performance Marketing</option>
                                             <option value="Generative AI With Prompt Engineering">Generative AI With Prompt Engineering</option>
                                         </select>
                                     </div>
@@ -660,7 +659,6 @@ const AdvancedApplyPopup = ({ onClose }) => {
                                     <option value="Investment Banking">Investment Banking</option>
                                     <option value="MERN Stack Development">MERN Stack Development</option>
                                     <option value="Product Management">Product Management</option>
-                                    <option value="Performance Marketing">Performance Marketing</option>
                                     <option value="Generative AI With Prompt Engineering">Generative AI With Prompt Engineering</option>
                                 </select>
                             </div>

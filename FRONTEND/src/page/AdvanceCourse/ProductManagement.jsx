@@ -1086,7 +1086,7 @@ const ProductManagement = () => {
         <div className="pm-shell">
           <div className="pm-invest">
             <div className="pm-invest-sub">Program Investment</div>
-            <h3>Rs 47,200</h3>
+            <h3>Rs 65,999</h3>
             <div className="pm-invest-sub">Total fee (incl. GST)</div>
 
             <div className="pm-invest-grid">
@@ -1095,11 +1095,11 @@ const ProductManagement = () => {
                 <span>Registration fee to reserve your seat in this premium cohort.</span>
               </div>
               <div className="pm-invest-item">
-                <strong>Installment 1: Rs 18,600</strong>
+                <strong>Installment 1: Rs 28,000</strong>
                 <span>Payable within 15 days from date of registration.</span>
               </div>
               <div className="pm-invest-item">
-                <strong>Installment 2: Rs 18,600</strong>
+                <strong>Installment 2: Rs 27,999</strong>
                 <span>Payable within 15 days after installment 1.</span>
               </div>
             </div>
@@ -1108,13 +1108,13 @@ const ProductManagement = () => {
           <div className="pm-pay-grid">
             <div className="pm-fee-box">
               <div>Total Program Fee</div>
-              <div className="fee">Rs 47,200</div>
+              <div className="fee">Rs 65,999</div>
               <div>Inclusive of taxes</div>
             </div>
             <div className="pm-breakdown">
               <div className="pm-break-row"><span>Registration</span><strong>Rs 10,000</strong></div>
-              <div className="pm-break-row"><span>Installment 1</span><strong>Rs 18,600</strong></div>
-              <div className="pm-break-row"><span>Installment 2</span><strong>Rs 18,600</strong></div>
+              <div className="pm-break-row"><span>Installment 1</span><strong>Rs 28,000</strong></div>
+              <div className="pm-break-row"><span>Installment 2</span><strong>Rs 27,999</strong></div>
             </div>
           </div>
 

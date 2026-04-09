@@ -1029,7 +1029,7 @@ const DataAnalytics = () => {
         <div className="da-shell">
           <div className="da-invest">
             <div className="da-invest-sub">Program Investment</div>
-            <h3>Rs 47,200</h3>
+            <h3>Rs 61,999</h3>
             <div className="da-invest-sub">Total fee (incl. GST)</div>
 
             <div className="da-invest-grid">
@@ -1038,11 +1038,11 @@ const DataAnalytics = () => {
                 <span>Registration fee to reserve your seat in this premium cohort.</span>
               </div>
               <div className="da-invest-item">
-                <strong>Installment 1: Rs 18,600</strong>
+                <strong>Installment 1: Rs 26,000</strong>
                 <span>Payable within 15 days from date of registration.</span>
               </div>
               <div className="da-invest-item">
-                <strong>Installment 2: Rs 18,600</strong>
+                <strong>Installment 2: Rs 25,999</strong>
                 <span>Payable within 15 days after installment 1.</span>
               </div>
             </div>
@@ -1051,13 +1051,13 @@ const DataAnalytics = () => {
           <div className="da-pay-grid">
             <div className="da-fee-box">
               <div>Total Program Fee</div>
-              <div className="fee">Rs 47,200</div>
+              <div className="fee">Rs 61,999</div>
               <div>Inclusive of taxes</div>
             </div>
             <div className="da-breakdown">
               <div className="da-break-row"><span>Registration</span><strong>Rs 10,000</strong></div>
-              <div className="da-break-row"><span>Installment 1</span><strong>Rs 18,600</strong></div>
-              <div className="da-break-row"><span>Installment 2</span><strong>Rs 18,600</strong></div>
+              <div className="da-break-row"><span>Installment 1</span><strong>Rs 26,000</strong></div>
+              <div className="da-break-row"><span>Installment 2</span><strong>Rs 25,999</strong></div>
             </div>
           </div>
 

@@ -29,7 +29,6 @@ import UIUXDesign from "./page/AdvanceCourse/UIUXDesign";
 import Investmentbanking from "./page/AdvanceCourse/Investmentbanking";
 import ProductManagement from "./page/AdvanceCourse/ProductManagement";
 import SmoothScroll from "./SmoothScroll";
-import Performancemarket from "./page/AdvanceCourse/Performancemarket";
 import MasterClass from "./page/MasterClass";
 import AutomationTesting from "./page/AdvanceCourse/AutomationTesting";
 import PromptEngineering from "./page/AdvanceCourse/PromptEngineering";
@@ -332,7 +331,6 @@ const AppContent = () => {
     "/datascience",
     "/dataanalytics",
     "/digitalmarket",
-    "/performancemarket",
     "/mernstack",
     "/investmentbanking",
     "/productmanagement",
@@ -553,7 +551,6 @@ const AppContent = () => {
         <Route path="/DataScience" element={<DataScience />} />
         <Route path="/DataAnalytics" element={<DataAnalytics />} />
         <Route path="/DigitalMarket" element={<DigitalMarket />} />
-        <Route path="/Performancemarket" element={<Performancemarket />} />
         <Route path="/MernStack" element={<MernStack />} />
         <Route path="/UIUX" element={<UIUXDesign />} />
         <Route path="/UIUXDesign" element={<UIUXDesign />} />
