@@ -15,7 +15,9 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as DocumentPicker from 'expo-document-picker';
+import { Audio } from 'expo-av';
 import { uploadToCloudinary } from '../utils/cloudinary';
+import { COLORS, SPACING, TYPOGRAPHY, SHADOWS } from '../utils/theme';
 
 const CallLogModal = ({ visible, callData, onSave, onCancel }) => {
     const [outcome, setOutcome] = useState('interested');
@@ -34,11 +36,26 @@ const CallLogModal = ({ visible, callData, onSave, onCancel }) => {
     const [uploading, setUploading] = useState(false);
     const [recordingUrl, setRecordingUrl] = useState('');
 
+    // Formatted Duration state
+    const [minutes, setMinutes] = useState('0');
+    const [seconds, setSeconds] = useState('0');
+
+    React.useEffect(() => {
+        if (callData?.durationSec) {
+            const m = Math.floor(callData.durationSec / 60);
+            const s = callData.durationSec % 60;
+            setMinutes(m.toString());
+            setSeconds(s.toString());
+        }
+    }, [callData]);
+
     const outcomes = [
         { id: 'interested', label: 'Interested', color: '#4CAF50' },
         { id: 'callback_requested', label: 'Callback', color: '#2196F3' },
+        { id: 'follow_up', label: 'Follow Up', color: '#9C27B0' },
         { id: 'no_answer', label: 'No Answer', color: '#FF9800' },
-        { id: 'not_interested', label: 'Not Interested', color: '#f44336' },
+        { id: 'not_interested', label: 'Rejected', color: '#757575' },
+        { id: 'junk', label: 'Junk', color: '#f44336' },
         { id: 'converted', label: 'Converted', color: '#FFC107' }
     ];
 
@@ -76,6 +93,19 @@ const CallLogModal = ({ visible, callData, onSave, onCancel }) => {
                 setRecordingUri(asset.uri);
                 setRecordingName(asset.name);
                 
+                // Get duration from file
+                try {
+                    const { sound, status } = await Audio.Sound.createAsync({ uri: asset.uri });
+                    if (status.isLoaded && status.durationMillis) {
+                        const totalSec = Math.floor(status.durationMillis / 1000);
+                        setMinutes(Math.floor(totalSec / 60).toString());
+                        setSeconds((totalSec % 60).toString());
+                    }
+                    await sound.unloadAsync();
+                } catch (audioErr) {
+                    console.warn('Could not extract audio duration:', audioErr);
+                }
+
                 // Start upload immediately
                 setUploading(true);
                 try {
@@ -95,13 +125,15 @@ const CallLogModal = ({ visible, callData, onSave, onCancel }) => {
     const handleSave = async () => {
         setLoading(true);
         try {
+            const finalDurationSec = (parseInt(minutes) || 0) * 60 + (parseInt(seconds) || 0);
+
             await onSave({
                 outcome,
                 summary,
                 remark,
-                durationSec: callData?.durationSec,
-                status: callData?.status,
-                followUpDate: outcome === 'callback_requested' ? followUpDate.toISOString() : null,
+                durationSec: finalDurationSec,
+                status: finalDurationSec >= 60 ? 'Connected' : 'Not Connected',
+                followUpDate: ['callback_requested', 'follow_up'].includes(outcome) ? followUpDate.toISOString() : null,
                 recordingUrl: recordingUrl // Include the Cloudinary URL
             });
             // Reset fields on success
@@ -141,16 +173,38 @@ const CallLogModal = ({ visible, callData, onSave, onCancel }) => {
                         {/* Call Info Section */}
                         <View style={styles.infoSection}>
                             <Text style={styles.leadName}>{callData?.leadName || 'Lead'}</Text>
-                            <View style={styles.statsRow}>
-                                <View style={styles.statBox}>
-                                    <Text style={styles.statLabel}>Duration</Text>
-                                    <Text style={styles.statValue}>{callData?.durationFormatted || '0s'}</Text>
-                                </View>
-                                <View style={styles.statBox}>
-                                    <Text style={styles.statLabel}>Status</Text>
-                                    <Text style={[styles.statValue, { color: callData?.status === 'Connected' ? '#4CAF50' : '#f44336' }]}>
-                                        {callData?.status || 'Unknown'}
-                                    </Text>
+                            <View style={styles.durationEditor}>
+                                <Text style={styles.sectionTitle}>Adjust Call Duration</Text>
+                                <View style={styles.durationInputs}>
+                                    <View style={styles.inputGroup}>
+                                        <TextInput
+                                            style={styles.durationInput}
+                                            value={minutes}
+                                            onChangeText={setMinutes}
+                                            keyboardType="numeric"
+                                            maxLength={3}
+                                        />
+                                        <Text style={styles.inputLabel}>MIN</Text>
+                                    </View>
+                                    <Text style={styles.durationSeparator}>:</Text>
+                                    <View style={styles.inputGroup}>
+                                        <TextInput
+                                            style={styles.durationInput}
+                                            value={seconds}
+                                            onChangeText={(val) => {
+                                                if (parseInt(val) < 60 || val === '') setSeconds(val);
+                                            }}
+                                            keyboardType="numeric"
+                                            maxLength={2}
+                                        />
+                                        <Text style={styles.inputLabel}>SEC</Text>
+                                    </View>
+                                    {recordingUrl && (
+                                        <View style={styles.accuracyBadge}>
+                                            <Ionicons name="shield-checkmark" size={14} color={COLORS.success} />
+                                            <Text style={styles.accuracyText}>VERIFIED</Text>
+                                        </View>
+                                    )}
                                 </View>
                             </View>
                         </View>
@@ -178,7 +232,7 @@ const CallLogModal = ({ visible, callData, onSave, onCancel }) => {
                         </View>
 
                         {/* Follow-Up Section (Experimental/WIP style) */}
-                        {outcome === 'callback_requested' && (
+                        {['callback_requested', 'follow_up'].includes(outcome) && (
                             <View style={styles.followUpContainer}>
                                 <Text style={styles.sectionTitle}>Follow-Up Time</Text>
                                 <TouchableOpacity
@@ -393,6 +447,65 @@ const styles = StyleSheet.create({
         fontStyle: 'italic',
         marginTop: 2,
         marginBottom: 10,
+    },
+    durationEditor: {
+        width: '100%',
+        alignItems: 'center',
+        backgroundColor: COLORS.background,
+        padding: 16,
+        borderRadius: 20,
+        marginTop: 10,
+    },
+    durationInputs: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 8,
+    },
+    inputGroup: {
+        alignItems: 'center',
+    },
+    durationInput: {
+        width: 60,
+        height: 50,
+        backgroundColor: COLORS.surface,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: COLORS.border,
+        textAlign: 'center',
+        fontSize: 24,
+        fontWeight: '700',
+        color: COLORS.primary,
+    },
+    inputLabel: {
+        ...TYPOGRAPHY.tiny,
+        color: COLORS.textDim,
+        marginTop: 4,
+        fontWeight: '700',
+    },
+    durationSeparator: {
+        fontSize: 24,
+        fontWeight: '700',
+        color: COLORS.textDim,
+        marginHorizontal: 12,
+        marginTop: -20,
+    },
+    accuracyBadge: {
+        position: 'absolute',
+        right: -60,
+        top: 0,
+        backgroundColor: COLORS.success + '15',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 8,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    accuracyText: {
+        ...TYPOGRAPHY.tiny,
+        color: COLORS.success,
+        fontWeight: '800',
+        marginLeft: 4,
     },
 });
 

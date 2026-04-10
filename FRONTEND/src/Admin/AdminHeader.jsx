@@ -159,18 +159,12 @@ const AdminHeader = () => {
             <Link to="/AdvAdminDashboard">
               <i className="fa fa-dashboard mr-2"></i>Admin Dashboard
             </Link>
+            <Link to="/Admin/CallLogs" className="flex items-center">
+              <i className="fa fa-phone mr-2" style={{ color: '#3b82f6' }}></i>Call Activity Logs
+            </Link>
             <Link to="/Admin/LiveMonitor" className="flex items-center">
               <i className="fa fa-heartbeat mr-2" style={{ color: '#10b981' }}></i>Live Monitoring
               <span className="ml-2 inline-flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            </Link>
-            <Link to="/Admin/Agents">
-              <i className="fa fa-user-circle mr-2"></i>Manage Agents
-            </Link>
-            <Link to="/Admin/Teams">
-              <i className="fa fa-sitemap mr-2"></i>Team Hierarchy
-            </Link>
-            <Link to="/Admin/LeadAssignments">
-              <i className="fa fa-send mr-2"></i>Bulk Lead Assign
             </Link>
             <Link to="/Admin/Reports">
               <i className="fa fa-file-excel-o mr-2"></i>System Reports

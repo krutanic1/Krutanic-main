@@ -1,0 +1,22 @@
+# Root-level ignore for subfolder-only builds
+# This ensures EAS doesn't bundle sibling folders or the massive .git history
+**/.git
+**/.git/**
+BACKEND/
+FRONTEND/
+mailback/
+mailfront/
+new-project/
+python-job-scraper/
+smartwarmup/
+tmp/
+warm-up/
+node_modules/
+**/node_modules/
+android/
+**/android/build/
+ios/
+.expo/
+dist/
+build/
+*.log

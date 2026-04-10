@@ -51,40 +51,93 @@ router.put("/add-member/:id", async (req, res) => {
     }
 });
 
-// GET dashboard stats for a specialist
+// GET dashboard stats for a specialist, manager, or leader
 router.get("/dashboard-stats", async (req, res) => {
-    const { specialistId } = req.query;
+    const { specialistId, role } = req.query;
     if (!specialistId) {
         return res.status(400).json({ message: "Specialist ID is required" });
     }
 
     try {
+        const { Types } = require("mongoose");
+        const isValidObjectId = Types.ObjectId.isValid(specialistId);
+        const objId = isValidObjectId ? new Types.ObjectId(specialistId) : null;
+        const roleNorm = (role || "").toLowerCase();
+
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        // 1. Total Leads Assigned (Today)
-        const totalLeads = await AdvLead.countDocuments({
-            current_owner_id: specialistId,
-            created_at: { $gte: today }
-        });
+        let leadQuery = {};
+        let activityQuery = {};
+
+        if (roleNorm === "admin") {
+            // Admin sees everything
+            leadQuery = {};
+            activityQuery = { createdAt: { $gte: today } };
+        } else if (roleNorm.includes("manager") || roleNorm.includes("leader")) {
+            // Manager/Leader sees team-wide stats
+            const teamFilter = roleNorm.includes("manager") 
+                ? { manager_id: specialistId } 
+                : { leaders: specialistId };
+            
+            const teams = await AdvTeamStructure.find(teamFilter);
+            const teamIds = teams.map(t => t._id);
+            const teamNames = teams.map(t => t.team_name);
+
+            leadQuery = {
+                $or: [
+                    { team_id: { $in: teamIds } },
+                    { team_name: { $in: teamNames } },
+                    { manager_id: specialistId },
+                    { leader_id: specialistId },
+                    { owner_id: specialistId },
+                    { current_owner_id: objId }
+                ]
+            };
+            
+            activityQuery = {
+                $or: [
+                    { teamId: { $in: teamIds } },
+                    { managerId: objId },
+                    { leaderId: objId },
+                    { specialistId: objId }
+                ],
+                createdAt: { $gte: today }
+            };
+        } else {
+            // Specialist sees personal stats
+            leadQuery = {
+                $or: [
+                    { owner_id: specialistId.toString() },
+                    { specialist_id: specialistId.toString() }
+                ]
+            };
+            if (objId) leadQuery.$or.push({ current_owner_id: objId });
+
+            activityQuery = {
+                $or: [
+                    { specialistId: objId },
+                    { specialistStringId: specialistId.toString() }
+                ],
+                createdAt: { $gte: today }
+            };
+        }
+
+        // 1. Total Leads Assigned (All Time for this scope)
+        const totalLeads = await AdvLead.countDocuments(leadQuery);
 
         // 2. Calls Made (Today)
-        const callsMade = await AdvCallActivity.countDocuments({
-            specialistId,
-            createdAt: { $gte: today }
-        });
+        const callsMade = await AdvCallActivity.countDocuments(activityQuery);
 
         // 3. Connected Calls (Today) - Anything except 'no_answer'
         const connectedCalls = await AdvCallActivity.countDocuments({
-            specialistId,
-            createdAt: { $gte: today },
+            ...activityQuery,
             callOutcome: { $ne: "no_answer" }
         });
 
         // 4. Converted Leads (Today)
         const convertedLeads = await AdvCallActivity.countDocuments({
-            specialistId,
-            createdAt: { $gte: today },
+            ...activityQuery,
             callOutcome: "converted"
         });
 
@@ -117,7 +170,8 @@ router.get("/team-leaderboard", async (req, res) => {
                         $sum: {
                             $cond: [{ $eq: ["$callOutcome", "converted"] }, 1, 0]
                         }
-                    }
+                    },
+                    totalDuration: { $sum: "$duration" }
                 }
             },
             { $sort: { converted: -1, calls: -1 } }

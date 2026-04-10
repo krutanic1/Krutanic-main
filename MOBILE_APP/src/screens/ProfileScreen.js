@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Platform, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
@@ -35,20 +35,15 @@ const ProfileScreen = () => {
                 </View>
 
                 <View style={styles.menuContainer}>
-                    <Text style={styles.sectionTitle}>Account Settings</Text>
+                    <Text style={styles.sectionTitle}>Support & Feedback</Text>
                     <View style={styles.menuCard}>
-                        <MenuItem icon="person-outline" label="Edit Profile" onPress={() => { }} />
+                        <MenuItem 
+                            icon="bug-outline" 
+                            label="Report Bug" 
+                            onPress={() => Linking.openURL('https://wa.me/918088766989?text=Hello%20Krutanic%20Support,%20I%20found%20a%20bug%20in%20the%20mobile%20app.')} 
+                        />
                         <View style={styles.divider} />
-                        <MenuItem icon="notifications-outline" label="Notifications" onPress={() => { }} />
-                        <View style={styles.divider} />
-                        <MenuItem icon="shield-checkmark-outline" label="Security" onPress={() => { }} />
-                    </View>
-
-                    <Text style={[styles.sectionTitle, { marginTop: 24 }]}>Support</Text>
-                    <View style={styles.menuCard}>
-                        <MenuItem icon="help-circle-outline" label="Help Center" onPress={() => { }} />
-                        <View style={styles.divider} />
-                        <MenuItem icon="information-circle-outline" label="About" onPress={() => { }} />
+                        <MenuItem icon="information-circle-outline" label="About Dashboard" onPress={() => { }} />
                     </View>
 
                     <TouchableOpacity style={styles.signOutBtn} onPress={signOut}>
@@ -57,7 +52,7 @@ const ProfileScreen = () => {
                     </TouchableOpacity>
                 </View>
 
-                <Text style={styles.versionText}>Version 2.4.0 (Redesign Alpha)</Text>
+                <Text style={styles.versionText}>Version 2.4.5 (Executive Sanctum)</Text>
             </View>
         </SafeAreaView>
     );

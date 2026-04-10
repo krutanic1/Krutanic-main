@@ -10,7 +10,6 @@ import {
   Calendar, 
   ChevronLeft, 
   ChevronRight, 
-  History, 
   X,
   Clock,
   UserCheck,
@@ -20,7 +19,11 @@ import {
   Filter,
   Download,
   Send,
-  Loader
+  Loader,
+  Trash2,
+  Edit3,
+  Check,
+  AlertCircle
 } from "lucide-react";
 
 /**
@@ -53,10 +56,20 @@ const AdminAttendance = () => {
   const [isSendingAbsent, setIsSendingAbsent] = useState(false);
   const [updatingRecord, setUpdatingRecord] = useState(null);
   
-  // Add Member State
   const [showAddModal, setShowAddModal] = useState(false);
   const [newMember, setNewMember] = useState({ email: "", name: "", role: "Employee", pin: "" });
   const [addingMember, setAddingMember] = useState(false);
+  
+  // Summary State
+  const [dailySummary, setDailySummary] = useState([]);
+  const [loadingSummary, setLoadingSummary] = useState(false);
+  const [editingRecord, setEditingRecord] = useState(null);
+  const [deletingRecord, setDeletingRecord] = useState(null);
+  
+  // User Account Edit State
+  const [showEditUserModal, setShowEditUserModal] = useState(false);
+  const [editingUser, setEditingUser] = useState(null); // stores the user object being edited
+  const [isUpdatingUser, setIsUpdatingUser] = useState(false);
 
   const fetchMembers = useCallback(async () => {
     setLoading(true);
@@ -82,9 +95,30 @@ const AdminAttendance = () => {
     }
   }, [currentPage, search, filterMonth, filterYear]);
 
+  const fetchDailySummary = useCallback(async () => {
+    setLoadingSummary(true);
+    try {
+      const token = localStorage.getItem("adminToken");
+      const now = new Date();
+      const istTime = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
+      const today = istTime.toISOString().split("T")[0];
+      
+      const res = await axios.get(`${API}/api/atd/admin/daily-summary`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { date: today }
+      });
+      setDailySummary(res.data.summary);
+    } catch (err) {
+      console.error("Failed to load summary");
+    } finally {
+      setLoadingSummary(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchMembers();
-  }, [fetchMembers]);
+    fetchDailySummary();
+  }, [fetchMembers, fetchDailySummary]);
 
   const fetchUserDetail = async (userId, page = 1) => {
     setLoadingHistory(true);
@@ -237,12 +271,52 @@ const AdminAttendance = () => {
       toast.success("Status updated");
       // Update local history
       setUserHistory(prev => prev.map(r => r._id === recordId ? { ...r, isHalfDayOverride: !currentVal, isHalfDay: !currentVal ? true : r.isHalfDay } : r));
-      // Refresh counts
+      // Refresh count in main list
       fetchMembers();
+      fetchDailySummary();
     } catch (err) {
       toast.error("Failed to update status");
     } finally {
       setUpdatingRecord(null);
+    }
+  };
+
+  const handleEditTime = async (recordId, newTime) => {
+    setUpdatingRecord(recordId);
+    try {
+      const token = localStorage.getItem("adminToken");
+      await axios.patch(`${API}/api/atd/admin/attendance/${recordId}`, {
+        newTime
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success("Time updated successfully");
+      setEditingRecord(null);
+      if (selectedUser) fetchUserDetail(selectedUser._id, historyPage);
+      fetchMembers();
+    } catch (err) {
+      toast.error("Failed to update time");
+    } finally {
+      setUpdatingRecord(null);
+    }
+  };
+
+  const handleDeleteRecord = async (recordId) => {
+    if (!window.confirm("Delete this record permanently?")) return;
+    setDeletingRecord(recordId);
+    try {
+      const token = localStorage.getItem("adminToken");
+      await axios.delete(`${API}/api/atd/admin/attendance/${recordId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success("Record deleted");
+      if (selectedUser) fetchUserDetail(selectedUser._id, historyPage);
+      fetchMembers();
+      fetchDailySummary();
+    } catch (err) {
+      toast.error("Failed to delete record");
+    } finally {
+      setDeletingRecord(null);
     }
   };
 
@@ -267,10 +341,51 @@ const AdminAttendance = () => {
       setShowAddModal(false);
       setNewMember({ email: "", name: "", role: "Employee", pin: "" });
       fetchMembers();
+      fetchDailySummary();
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to add member");
     } finally {
       setAddingMember(false);
+    }
+  };
+
+  const handleUpdateUser = async (e) => {
+    e.preventDefault();
+    if (!editingUser.email || !editingUser.name || !editingUser.pin) {
+      toast.error("Please fill all fields");
+      return;
+    }
+    setIsUpdatingUser(true);
+    try {
+      const token = localStorage.getItem("adminToken");
+      await axios.patch(`${API}/api/atd/admin/user/${editingUser._id}`, editingUser, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success("User credentials updated");
+      setShowEditUserModal(false);
+      fetchMembers();
+      fetchDailySummary();
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Failed to update user");
+    } finally {
+      setIsUpdatingUser(false);
+    }
+  };
+
+  const handleDeleteUser = async (user, e) => {
+    if (e) e.stopPropagation();
+    if (!window.confirm(`PERMANENTLY DELETE ${user.name}? This will wipe their account and ALL attendance history. This action cannot be undone.`)) return;
+    
+    try {
+      const token = localStorage.getItem("adminToken");
+      await axios.delete(`${API}/api/atd/admin/user/${user._id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success("User deleted permanently");
+      fetchMembers();
+      fetchDailySummary();
+    } catch (err) {
+      toast.error("Failed to delete user");
     }
   };
 
@@ -350,6 +465,83 @@ const AdminAttendance = () => {
         </div>
       )}
 
+      {/* Edit Member Modal */}
+      {showEditUserModal && editingUser && (
+        <div style={styles.modalOverlay}>
+           <div style={{ ...styles.modalContent, maxWidth: "450px" }}>
+              <div style={styles.modalHeader}>
+                 <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <div style={{ ...styles.iconBox, backgroundColor: "#f1f5f9" }}><Edit3 color="#64748b" /></div>
+                    <div>
+                       <h2 style={styles.modalTitle}>Edit Credentials</h2>
+                       <p style={{ fontSize: "12px", color: "#64748b" }}>Update employee profile and PIN</p>
+                    </div>
+                 </div>
+                 <button onClick={() => setShowEditUserModal(false)} style={styles.closeBtn}><X size={20} /></button>
+              </div>
+
+              <form onSubmit={handleUpdateUser} style={{ padding: "30px" }}>
+                 <div style={styles.formGroup}>
+                    <label style={styles.label}>Full Name</label>
+                    <input 
+                       type="text" 
+                       style={styles.input}
+                       value={editingUser.name}
+                       onChange={e => setEditingUser({...editingUser, name: e.target.value})}
+                       required
+                    />
+                 </div>
+                 <div style={styles.formGroup}>
+                    <label style={styles.label}>Email Address</label>
+                    <input 
+                       type="email" 
+                       style={styles.input}
+                       value={editingUser.email}
+                       onChange={e => setEditingUser({...editingUser, email: e.target.value})}
+                       required
+                    />
+                 </div>
+                 <div style={styles.formGroup}>
+                    <label style={styles.label}>Designation/Role</label>
+                    <input 
+                       type="text" 
+                       style={styles.input}
+                       value={editingUser.role}
+                       onChange={e => setEditingUser({...editingUser, role: e.target.value})}
+                       required
+                    />
+                 </div>
+                 <div style={styles.formGroup}>
+                    <label style={styles.label}>Employee PIN</label>
+                    <input 
+                       type="text" 
+                       style={styles.input}
+                       value={editingUser.pin || ""}
+                       onChange={e => setEditingUser({...editingUser, pin: e.target.value})}
+                       required
+                    />
+                 </div>
+                 
+                 <div style={styles.formGroup}>
+                    <label style={styles.label}>Account Status</label>
+                    <select 
+                       style={styles.input}
+                       value={editingUser.status || "active"}
+                       onChange={e => setEditingUser({...editingUser, status: e.target.value})}
+                    >
+                       <option value="active">Active (Access Allowed)</option>
+                       <option value="inactive">Inactive (Access Blocked)</option>
+                    </select>
+                 </div>
+
+                 <button type="submit" disabled={isUpdatingUser} style={styles.primaryBtn}>
+                    {isUpdatingUser ? "Updating..." : "Update Credentials"}
+                 </button>
+              </form>
+           </div>
+        </div>
+      )}
+
       <Toaster position="top-center" />
       <style>{`
         .admin-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
@@ -384,58 +576,25 @@ const AdminAttendance = () => {
           <p style={styles.subtitle}>Track and manage employee presence across all departments</p>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
-          <button 
-            style={styles.addBtn}
-            onClick={() => setShowAddModal(true)}
-          >
-             <Users size={18} />
-             <span>Add Member</span>
-          </button>
-          <button 
-            style={{ ...styles.exportBtn, background: '#f59e0b', color: 'white', border: 'none' }}
-            onClick={sendReminders}
-            disabled={isReminding}
-          >
-            {isReminding ? (
-              <><Loader size={18} className="animate-spin" /> Reminding...</>
-            ) : (
-              <><Clock size={18} /> Send Reminders</>
-            )}
-          </button>
-          <button 
-            style={{ ...styles.exportBtn, background: '#ef4444', color: 'white', border: 'none' }}
-            onClick={sendAbsentMails}
-            disabled={isSendingAbsent}
-          >
-            {isSendingAbsent ? (
-              <><Loader size={18} className="animate-spin" /> Sending...</>
-            ) : (
-              <><X size={18} /> Send Absent Mails</>
-            )}
-          </button>
-          <button 
-            style={{ ...styles.exportBtn, background: '#0f172a', color: 'white', border: 'none' }}
-            onClick={sendAllReports}
-            disabled={isBulkSending}
-          >
-            {isBulkSending ? (
-              <><Loader size={18} className="animate-spin" /> Dispatching...</>
-            ) : (
-              <><Send size={18} /> Send All Reports</>
-            )}
-          </button>
-          <button 
-            style={styles.exportBtn} 
-            onClick={exportToExcel} 
-            disabled={exportLoading}
-          >
-            {exportLoading ? (
-              <>Exporting...</>
-            ) : (
-              <><Download size={18} /> Export Report</>
-            )}
-          </button>
+          <button style={styles.addBtn} onClick={() => setShowAddModal(true)}><Users size={18} /><span>Add Member</span></button>
+          <button style={{ ...styles.exportBtn, background: '#f59e0b', color: 'white', border: 'none' }} onClick={sendReminders} disabled={isReminding}>{isReminding ? <><Loader size={18} className="animate-spin" /> Reminding...</> : <><Clock size={18} /> Send Reminders</>}</button>
+          <button style={{ ...styles.exportBtn, background: '#ef4444', color: 'white', border: 'none' }} onClick={sendAbsentMails} disabled={isSendingAbsent}>{isSendingAbsent ? <><Loader size={18} className="animate-spin" /> Sending...</> : <><X size={18} /> Send Absent Mails</>}</button>
+          <button style={{ ...styles.exportBtn, background: '#0f172a', color: 'white', border: 'none' }} onClick={sendAllReports} disabled={isBulkSending}>{isBulkSending ? <><Loader size={18} className="animate-spin" /> Dispatching...</> : <><Send size={18} /> Send All Reports</>}</button>
+          <button style={styles.exportBtn} onClick={exportToExcel} disabled={exportLoading}>{exportLoading ? <>Exporting...</> : <><Download size={18} /> Export Report</>}</button>
         </div>
+      </div>
+
+      {/* Daily Department Summary */}
+      <div style={styles.summaryGrid}>
+        {loadingSummary ? <div className="p-4 text-gray-400">Loading summary...</div> : (dailySummary && dailySummary.length > 0) ? dailySummary.map((s, i) => (
+          <div key={i} style={styles.summaryCard}>
+            <div style={{ ...styles.avatar, width: '32px', height: '32px', fontSize: '12px', background: '#f1f5f9', color: '#64748b' }}><UserCheck size={16} /></div>
+            <div style={{ flex: 1 }}>
+               <div style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: '#94a3b8', letterSpacing: '0.5px' }}>{s.department || "Other"}</div>
+               <div style={{ fontSize: '20px', fontWeight: '900', color: '#1e293b' }}>{s.count} <span style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8' }}>Present</span></div>
+            </div>
+          </div>
+        )) : <div style={{ padding: '20px', color: '#94a3b8', fontStyle: 'italic', fontSize: '13px' }}>No records found for today</div>}
       </div>
 
       {/* Controls Area */}
@@ -501,7 +660,12 @@ const AdminAttendance = () => {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <div style={styles.avatar}>{user.name.charAt(0)}</div>
                         <div>
-                          <div style={styles.userName}>{user.name}</div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div style={styles.userName}>{user.name}</div>
+                            {user.status === 'inactive' && (
+                              <span style={{ fontSize: '10px', background: '#fee2e2', color: '#ef4444', padding: '2px 6px', borderRadius: '4px', fontWeight: '800' }}>INACTIVE</span>
+                            )}
+                          </div>
                           <div style={styles.userEmail}>{user.email}</div>
                         </div>
                       </div>
@@ -532,19 +696,26 @@ const AdminAttendance = () => {
                        </div>
                     </td>
                     <td>
-                      <div style={{ display: 'flex', gap: '8px' }}>
-                        <button 
-                          style={{ ...styles.viewBtn, color: '#FF6B00', background: '#fff7ed' }}
-                          onClick={(e) => sendReport(user, e)}
-                          disabled={sendingReport === user._id}
-                          title="Send Report to Email"
-                        >
-                          {sendingReport === user._id ? <Loader size={16} className="animate-spin" /> : <Send size={16} />}
-                        </button>
-                        <button style={styles.viewBtn}>
-                          <ArrowRight size={16} />
-                        </button>
-                      </div>
+                       <div style={{ display: 'flex', gap: '8px' }}>
+                         <button 
+                           style={{ ...styles.viewBtn, color: '#FF6B00', background: '#fff7ed' }}
+                           onClick={(e) => { e.stopPropagation(); sendReport(user, e); }}
+                           disabled={sendingReport === user._id}
+                           title="Send Report to Email"
+                         >
+                           {sendingReport === user._id ? <Loader size={16} className="animate-spin" /> : <Send size={16} />}
+                         </button>
+                         <button 
+                           style={{ ...styles.viewBtn, color: '#64748b' }}
+                           onClick={(e) => { e.stopPropagation(); setEditingUser(user); setShowEditUserModal(true); }}
+                           title="Edit Credentials & Status"
+                         >
+                           <Edit3 size={16} />
+                         </button>
+                         <button style={styles.viewBtn}>
+                           <ArrowRight size={16} />
+                         </button>
+                       </div>
                     </td>
                   </tr>
                 ))}
@@ -620,54 +791,47 @@ const AdminAttendance = () => {
                  <div style={{ padding: '40px', textAlign: 'center' }}>Loading logs...</div>
                ) : (
                  <div style={styles.historyScroll}>
-                    {userHistory.length === 0 ? (
-                      <div style={{ padding: '40px', textAlign: 'center' }}>No logs for this period.</div>
-                    ) : (
-                      userHistory.map((h, i) => (
-                        <div key={i} style={styles.historyRow}>
+                     {(!userHistory || userHistory.length === 0) ? (
+                       <div style={{ padding: '40px', textAlign: 'center' }}>No logs for this period.</div>
+                     ) : (
+                       userHistory.map((h, i) => (
+                         <div key={i} style={styles.historyRow}>
                            <div style={{ flex: 1 }}>
-                               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
-                                  <div style={styles.smDateBadge}>
-                                     <div style={{ fontWeight: '800' }}>{new Date(h.date).getDate()}</div>
-                                     <div style={{ fontSize: '9px', textTransform: 'uppercase' }}>{new Date(h.date).toLocaleDateString('en-US', { month: 'short' })}</div>
-                                  </div>
-                                  <div>
-                                     <div style={{ fontWeight: '600', fontSize: '14px' }}>{new Date(h.date).toLocaleDateString('en-US', { weekday: 'long' })}</div>
-                                     <div style={{ fontSize: '10px', fontWeight: '800' }}>
-                                        {h.isHalfDay ? <span style={{ color: '#f43f5e' }}>HALF DAY</span> :
-                                         h.isLate ? <span style={{ color: '#f59e0b' }}>LATE LOGIN</span> :
-                                         <span style={{ color: '#10b981' }}>ON TIME</span>}
-                                     </div>
-                                  </div>
+                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
+                               <div style={styles.smDateBadge}>
+                                 <div style={{ fontWeight: '800' }}>{new Date(h.date).getDate()}</div>
+                                 <div style={{ fontSize: '9px', textTransform: 'uppercase' }}>{new Date(h.date).toLocaleDateString('en-US', { month: 'short' })}</div>
                                </div>
-                               {(h.ip || h.deviceInfo) && (
-                                 <div style={{ display: 'flex', gap: '8px', marginLeft: '45px' }}>
-                                    {h.ip && (
-                                      <div style={{ fontSize: '10px', color: '#94a3b8', background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px', fontWeight: '600' }}>
-                                        IP: {h.ip === "::1" || h.ip === "127.0.0.1" ? "Localhost" : h.ip}
-                                      </div>
-                                    )}
-                                    {h.deviceInfo && (
-                                      <div 
-                                        style={{ fontSize: '10px', color: '#64748b', background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px', fontWeight: '600', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
-                                        title={h.deviceInfo}
-                                      >
-                                        {h.deviceInfo.split('(')[1]?.split(')')[0] || "Device"}
-                                      </div>
-                                    )}
+                               <div>
+                                 <div style={{ fontWeight: '600', fontSize: '14px' }}>{new Date(h.date).toLocaleDateString('en-US', { weekday: 'long' })}</div>
+                                 <div style={{ fontSize: '10px', fontWeight: '800' }}>
+                                   {h.isHalfDay ? <span style={{ color: '#f43f5e' }}>HALF DAY</span> :
+                                    h.isLate ? <span style={{ color: '#f59e0b' }}>LATE LOGIN</span> :
+                                    <span style={{ color: '#10b981' }}>ON TIME</span>}
                                  </div>
-                               )}
+                               </div>
+                             </div>
+                             {h.ip && (
+                               <div style={{ display: 'flex', gap: '8px', marginLeft: '45px' }}>
+                                 <div style={{ fontSize: '10px', color: '#94a3b8', background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px', fontWeight: '600' }}>
+                                   IP: {h.ip === "::1" || h.ip === "127.0.0.1" ? "Localhost" : h.ip}
+                                 </div>
+                               </div>
+                             )}
                            </div>
-                           <div style={
-                              h.isHalfDay ? { ...styles.smTimeBadge, background: '#fff1f2', color: '#be123c' } :
-                              h.isLate ? { ...styles.smTimeBadge, background: '#fff7ed', color: '#c2410c' } : 
-                              styles.smTimeBadge
-                           }>
-                              <Clock size={12} /> {new Date(h.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                           
+                           <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                             <div style={
+                                h.isHalfDay ? { ...styles.smTimeBadge, background: '#fff1f2', color: '#be123c' } :
+                                h.isLate ? { ...styles.smTimeBadge, background: '#fff7ed', color: '#c2410c' } : 
+                                styles.smTimeBadge
+                             }>
+                                <Clock size={12} /> {h.timestamp ? new Date(new Date(h.timestamp).getTime() + (5.5 * 60 * 60 * 1000)).getUTCHours().toString().padStart(2, '0') + ":" + new Date(new Date(h.timestamp).getTime() + (5.5 * 60 * 60 * 1000)).getUTCMinutes().toString().padStart(2, '0') : "--:--"}
+                             </div>
                            </div>
-                        </div>
-                      ))
-                    )}
+                         </div>
+                       ))
+                     )}
                  </div>
                )}
 
@@ -970,7 +1134,11 @@ const styles = {
      fontSize: '13px',
      fontWeight: '700'
   },
-  smPageInfo: { fontSize: '13px', fontWeight: '700', color: '#94a3b8' }
+  smPageInfo: { fontSize: '13px', fontWeight: '700', color: '#94a3b8' },
+  iconBox: { width: '40px', height: '40px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  summaryGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px', marginBottom: '35px' },
+  summaryCard: { background: '#fff', padding: '20px', borderRadius: '16px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '15px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)' },
+  actionBtn: { width: '32px', height: '32px', borderRadius: '8px', border: '1px solid #e2e8f0', background: '#fff', color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: '0.2s' }
 };
 
 export default AdminAttendance;

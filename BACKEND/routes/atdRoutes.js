@@ -22,7 +22,11 @@ router.post("/admin/add-user", atdAuth, authController.addAdminUser);
 router.get("/admin/user/:userId/history", atdAuth, authController.getAdminUserHistory);
 router.post("/admin/send-reminders", atdAuth, authController.sendAttendanceReminders);
 router.post("/admin/send-absent-mails", atdAuth, authController.sendAbsentMails);
+router.get("/admin/daily-summary", atdAuth, authController.getAttendanceSummary);
 router.patch("/admin/attendance/:recordId", atdAuth, authController.updateAttendanceStatus);
+router.delete("/admin/attendance/:recordId", atdAuth, authController.deleteAttendance);
+router.patch("/admin/user/:userId", atdAuth, authController.updateAdminUser);
+router.delete("/admin/user/:userId", atdAuth, authController.deleteAdminUser);
 
 // Send specific report (Admin only)
 router.post("/admin/send-report/:userId", atdAuth, async (req, res) => {

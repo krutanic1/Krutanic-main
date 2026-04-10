@@ -1,0 +1,36 @@
+# Aggressive Isolation for Monorepo/Subfolder structures
+# Force ignore parent .git and sibling folders
+**/.git
+**/.git/**
+../BACKEND/
+../FRONTEND/
+../mailback/
+../mailfront/
+../new-project/
+../python-job-scraper/
+../smartwarmup/
+../tmp/
+../warm-up/
+
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+
+# Native directories
+android/
+ios/
+
+# Build artifacts
+build/
+**/build/
+
+# Environment
+.env*
+ 
+# Debug logs
+*.log

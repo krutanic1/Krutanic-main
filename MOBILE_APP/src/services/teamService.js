@@ -5,10 +5,10 @@ export const teamService = {
      * Get performance stats for a specialist.
      * Backend endpoint: /api/adv-reports/specialist-stats/:id
      */
-    getDashboardStats: async (specialistId) => {
+    getDashboardStats: async (specialistId, role) => {
         try {
             const response = await api.get('/api/adv-teams/dashboard-stats', {
-                params: { specialistId }
+                params: { specialistId, role }
             });
             return response.data;
         } catch (error) {

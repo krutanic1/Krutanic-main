@@ -1,19 +1,21 @@
 export const COLORS = {
-    primary: '#F15B29',
-    primaryLight: '#FF8B66',
+    primary: '#FF8343', // Warm Soft Orange
+    primaryLight: '#FF9F66',
     secondary: '#1A1A1A',
     accent: '#FFC107',
-    success: '#4CAF50',
+    success: '#00D084', // More vibrant green for 'Secure' indicator
     error: '#F44336',
     info: '#2196F3',
-    background: '#F8F9FA',
+    background: '#F1F4F9', // Slightly cooler background for depth
     surface: '#FFFFFF',
     text: '#1A1A1A',
     textLight: '#666666',
     textDim: '#888888',
-    border: '#EEEEEE',
+    border: '#E8EBF0',
     shadow: '#000000',
-    glass: 'rgba(255, 255, 255, 0.8)',
+    glass: 'rgba(255, 255, 255, 0.7)',
+    glassBorder: 'rgba(255, 255, 255, 0.4)',
+    glassDark: 'rgba(0, 0, 0, 0.03)',
 };
 
 export const SPACING = {
@@ -28,25 +30,32 @@ export const SPACING = {
 export const SHADOWS = {
     small: {
         shadowColor: COLORS.shadow,
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.05,
-        shadowRadius: 4,
-        elevation: 2,
+        shadowRadius: 10,
+        elevation: 3,
     },
     medium: {
         shadowColor: COLORS.shadow,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.08,
+        shadowRadius: 16,
+        elevation: 6,
     },
     large: {
         shadowColor: COLORS.shadow,
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.15,
-        shadowRadius: 16,
-        elevation: 8,
+        shadowOffset: { width: 0, height: 20 },
+        shadowOpacity: 0.12,
+        shadowRadius: 24,
+        elevation: 10,
     },
+    glow: {
+        shadowColor: COLORS.primary,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.4,
+        shadowRadius: 12,
+        elevation: 8,
+    }
 };
 
 export const TYPOGRAPHY = {

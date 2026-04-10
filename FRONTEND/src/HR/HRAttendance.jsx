@@ -17,7 +17,11 @@ import {
   Filter,
   Download,
   Send,
-  Loader
+  Loader,
+  Trash2,
+  Edit3,
+  Check,
+  AlertCircle
 } from "lucide-react";
 
 /**
@@ -49,10 +53,20 @@ const HRAttendance = () => {
   const [isSendingAbsent, setIsSendingAbsent] = useState(false);
   const [updatingRecord, setUpdatingRecord] = useState(null);
   
-  // Add Member State
+  const [addingMember, setAddingMember] = useState(false);
+  
+  // Summary State
+  const [dailySummary, setDailySummary] = useState([]);
+  const [loadingSummary, setLoadingSummary] = useState(false);
+  const [editingRecord, setEditingRecord] = useState(null); // { id, time }
+  const [deletingRecord, setDeletingRecord] = useState(null);
+  
+  // User Account Edit State
   const [showAddModal, setShowAddModal] = useState(false);
   const [newMember, setNewMember] = useState({ email: "", name: "", role: "Employee", pin: "" });
-  const [addingMember, setAddingMember] = useState(false);
+  const [showEditUserModal, setShowEditUserModal] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [isUpdatingUser, setIsUpdatingUser] = useState(false);
 
   const fetchMembers = useCallback(async () => {
     setLoading(true);
@@ -78,9 +92,31 @@ const HRAttendance = () => {
     }
   }, [currentPage, search, filterMonth, filterYear]);
 
+  const fetchDailySummary = useCallback(async () => {
+    setLoadingSummary(true);
+    try {
+      const token = localStorage.getItem("hrToken");
+      // Get today's date in IST YYYY-MM-DD
+      const now = new Date();
+      const istTime = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
+      const today = istTime.toISOString().split("T")[0];
+      
+      const res = await axios.get(`${API}/api/atd/admin/daily-summary`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { date: today }
+      });
+      setDailySummary(res.data.summary);
+    } catch (err) {
+      console.error("Failed to load summary");
+    } finally {
+      setLoadingSummary(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchMembers();
-  }, [fetchMembers]);
+    fetchDailySummary();
+  }, [fetchMembers, fetchDailySummary]);
 
   const fetchUserDetail = async (userId, page = 1) => {
     setLoadingHistory(true);
@@ -234,10 +270,52 @@ const HRAttendance = () => {
       setUserHistory(prev => prev.map(r => r._id === recordId ? { ...r, isHalfDayOverride: !currentVal, isHalfDay: !currentVal ? true : r.isHalfDay } : r));
       // Refresh count in main list
       fetchMembers();
+      fetchDailySummary();
     } catch (err) {
       toast.error("Failed to update status");
     } finally {
       setUpdatingRecord(null);
+    }
+  };
+
+  const handleEditTime = async (recordId, newTime) => {
+    setUpdatingRecord(recordId);
+    try {
+      const token = localStorage.getItem("hrToken");
+      await axios.patch(`${API}/api/atd/admin/attendance/${recordId}`, {
+        newTime
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success("Time updated successfully");
+      setEditingRecord(null);
+      // Refresh history and list
+      if (selectedUser) fetchUserDetail(selectedUser._id, historyPage);
+      fetchMembers();
+    } catch (err) {
+      toast.error("Failed to update time");
+    } finally {
+      setUpdatingRecord(null);
+    }
+  };
+
+  const handleDeleteRecord = async (recordId) => {
+    if (!window.confirm("Are you sure you want to permanently delete this attendance record?")) return;
+    setDeletingRecord(recordId);
+    try {
+      const token = localStorage.getItem("hrToken");
+      await axios.delete(`${API}/api/atd/admin/attendance/${recordId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success("Record deleted");
+      // Refresh
+      if (selectedUser) fetchUserDetail(selectedUser._id, historyPage);
+      fetchMembers();
+      fetchDailySummary();
+    } catch (err) {
+      toast.error("Failed to delete record");
+    } finally {
+      setDeletingRecord(null);
     }
   };
 
@@ -257,10 +335,34 @@ const HRAttendance = () => {
       setShowAddModal(false);
       setNewMember({ email: "", name: "", role: "Employee", pin: "" });
       fetchMembers();
+      fetchDailySummary();
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to add member");
     } finally {
       setAddingMember(false);
+    }
+  };
+
+  const handleUpdateUser = async (e) => {
+    e.preventDefault();
+    if (!editingUser.email || !editingUser.name || !editingUser.pin) {
+      toast.error("Please fill all fields");
+      return;
+    }
+    setIsUpdatingUser(true);
+    try {
+      const token = localStorage.getItem("hrToken");
+      await axios.patch(`${API}/api/atd/admin/user/${editingUser._id}`, editingUser, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success("User credentials updated");
+      setShowEditUserModal(false);
+      fetchMembers();
+      fetchDailySummary();
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Failed to update user");
+    } finally {
+      setIsUpdatingUser(false);
     }
   };
 
@@ -296,6 +398,39 @@ const HRAttendance = () => {
         </div>
       )}
 
+      {/* Edit Member Modal */}
+      {showEditUserModal && editingUser && (
+        <div style={styles.modalOverlay}>
+           <div style={{ ...styles.modalContent, maxWidth: "450px" }}>
+              <div style={styles.modalHeader}>
+                 <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <div style={{ ...styles.iconBox, backgroundColor: "#f1f5f9" }}><Edit3 color="#64748b" /></div>
+                    <div>
+                       <h2 style={styles.modalTitle}>Edit Credentials</h2>
+                       <p style={{ fontSize: "12px", color: "#64748b" }}>Update employee profile and PIN</p>
+                    </div>
+                 </div>
+                 <button onClick={() => setShowEditUserModal(false)} style={styles.closeBtn}><X size={20} /></button>
+              </div>
+
+              <form onSubmit={handleUpdateUser} style={{ padding: "30px" }}>
+                 <div style={styles.formGroup}><label style={styles.label}>Full Name</label><input type="text" style={styles.input} value={editingUser.name} onChange={e => setEditingUser({...editingUser, name: e.target.value})} required/></div>
+                 <div style={styles.formGroup}><label style={styles.label}>Email Address</label><input type="email" style={styles.input} value={editingUser.email} onChange={e => setEditingUser({...editingUser, email: e.target.value})} required/></div>
+                 <div style={styles.formGroup}><label style={styles.label}>Role</label><input type="text" style={styles.input} value={editingUser.role} onChange={e => setEditingUser({...editingUser, role: e.target.value})} required/></div>
+                 <div style={styles.formGroup}><label style={styles.label}>Employee PIN</label><input type="text" style={styles.input} value={editingUser.pin || ""} onChange={e => setEditingUser({...editingUser, pin: e.target.value})} required/></div>
+                 <div style={styles.formGroup}>
+                    <label style={styles.label}>Account Status</label>
+                    <select style={styles.input} value={editingUser.status || "active"} onChange={e => setEditingUser({...editingUser, status: e.target.value})}>
+                       <option value="active">Active (Access Allowed)</option>
+                       <option value="inactive">Inactive (Access Blocked)</option>
+                    </select>
+                 </div>
+                 <button type="submit" disabled={isUpdatingUser} style={styles.primaryBtn}>{isUpdatingUser ? "Updating..." : "Update Credentials"}</button>
+              </form>
+           </div>
+        </div>
+      )}
+
       <Toaster position="top-center" />
       <style>{`
         .admin-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
@@ -321,6 +456,19 @@ const HRAttendance = () => {
         </div>
       </div>
 
+      {/* Daily Department Summary */}
+      <div style={styles.summaryGrid}>
+        {loadingSummary ? <div className="p-4 text-gray-400">Loading summary...</div> : dailySummary.length > 0 ? dailySummary.map((s, i) => (
+          <div key={i} style={styles.summaryCard}>
+            <div style={{ ...styles.avatar, width: '32px', height: '32px', fontSize: '12px', background: '#f1f5f9', color: '#64748b' }}><UserCheck size={16} /></div>
+            <div style={{ flex: 1 }}>
+               <div style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: '#94a3b8', letterSpacing: '0.5px' }}>{s.department || "Other"}</div>
+               <div style={{ fontSize: '20px', fontWeight: '900', color: '#1e293b' }}>{s.count} <span style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8' }}>Present</span></div>
+            </div>
+          </div>
+        )) : <div style={{ padding: '20px', color: '#94a3b8', fontStyle: 'italic', fontSize: '13px' }}>No attendance records found for today</div>}
+      </div>
+
       <div style={styles.controls}>
         <div style={styles.searchContainer}><Search size={18} color="#94a3b8" /><input type="text" placeholder="Search..." style={styles.searchInput} value={search} onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}/></div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
@@ -336,13 +484,42 @@ const HRAttendance = () => {
               <thead><tr><th>Employee</th><th>Role</th><th>Total</th><th>Full</th><th>Late</th><th>Half Day</th><th>Actions</th></tr></thead>
               <tbody>{members.map((user) => (
                 <tr key={user._id} onClick={() => handleUserClick(user)}>
-                  <td><div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><div style={styles.avatar}>{user.name.charAt(0)}</div><div><div style={styles.userName}>{user.name}</div><div style={styles.userEmail}>{user.email}</div></div></div></td>
+                  <td><div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><div style={styles.avatar}>{user.name.charAt(0)}</div><div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                           <div style={styles.userName}>{user.name}</div>
+                           {user.status === 'inactive' && (
+                             <span style={{ fontSize: '10px', background: '#fee2e2', color: '#ef4444', padding: '2px 6px', borderRadius: '4px', fontWeight: '800' }}>INACTIVE</span>
+                           )}
+                        </div>
+                        <div style={styles.userEmail}>{user.email}</div>
+</div></div></td>
                   <td><span style={styles.roleTag}>{user.role || "Member"}</span></td>
                   <td><div style={{ ...styles.countBadge, background: '#f8fafc', color: '#0f172a', border: '1px solid #e2e8f0' }}>{user.daysPresent}</div></td>
                   <td><div style={{ ...styles.countBadge, color: '#10b981', border: '1px solid #d1fae5' }}>{user.onTimeCount}</div></td>
                   <td><div style={{ ...styles.countBadge, color: user.lateCount > 0 ? '#f59e0b' : '#94a3b8', border: user.lateCount > 0 ? '#ffedd5' : '#e2e8f0' }}>{user.lateCount}</div></td>
                   <td><div style={{ ...styles.countBadge, color: user.halfDayCount > 0 ? '#f43f5e' : '#94a3b8', border: user.halfDayCount > 0 ? '#ffe4e6' : '#e2e8f0' }}>{user.halfDayCount}</div></td>
-                  <td><button style={styles.viewBtn} onClick={(e) => sendReport(user, e)} disabled={sendingReport === user._id}>{sendingReport === user._id ? <Loader size={16} className="animate-spin" /> : <Send size={16} />}</button></td>
+                  <td>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                        <button 
+                          style={{ ...styles.viewBtn, color: '#FF6B00', background: '#fff7ed' }}
+                          onClick={(e) => { e.stopPropagation(); sendReport(user, e); }}
+                          disabled={sendingReport === user._id}
+                          title="Send Report to Email"
+                        >
+                          {sendingReport === user._id ? <Loader size={16} className="animate-spin" /> : <Send size={16} />}
+                        </button>
+                        <button 
+                          style={{ ...styles.viewBtn, color: '#64748b' }}
+                          onClick={(e) => { e.stopPropagation(); setEditingUser(user); setShowEditUserModal(true); }}
+                          title="Edit Credentials & Status"
+                        >
+                          <Edit3 size={16} />
+                        </button>
+                        <button style={styles.viewBtn} onClick={() => handleUserClick(user)}>
+                          <ArrowRight size={16} />
+                        </button>
+                      </div>
+                    </td>
                 </tr>
               ))}</tbody>
             </table>
@@ -367,7 +544,7 @@ const HRAttendance = () => {
                   <div style={{ textAlign: 'center', padding: '20px' }}><Loader size={24} className="animate-spin" /></div>
                 ) : userHistory.map((h, i) => (
                   <div key={i} style={{ padding: '16px', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
+                    <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: '700', fontSize: '15px' }}>{new Date(h.date).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })}</div>
                       <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
                         <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', padding: '2px 8px', borderRadius: '4px', background: h.isHalfDay ? '#fff1f2' : '#f0fdf4', color: h.isHalfDay ? '#e11d48' : '#16a34a' }}>
@@ -377,16 +554,13 @@ const HRAttendance = () => {
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                      <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontWeight: '600', fontSize: '14px' }}><Clock size={14} style={{ display: 'inline', marginRight: '4px', verticalAlign: 'text-bottom' }} /> {new Date(h.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                      </div>
-                      <button 
-                        onClick={() => toggleHalfDay(h._id, h.isHalfDayOverride)} 
-                        disabled={updatingRecord === h._id}
-                        style={{ ...styles.viewBtn, width: 'auto', padding: '0 12px', fontSize: '12px', height: '32px', border: '1px solid #e2e8f0', background: h.isHalfDayOverride ? '#f1f5f9' : '#fff' }}
-                      >
-                        {updatingRecord === h._id ? <Loader size={14} className="animate-spin" /> : h.isHalfDayOverride ? "Unmark Half Day" : "Mark Half Day"}
-                      </button>
+                             <div style={
+                                h.isHalfDay ? { ...styles.smTimeBadge, background: '#fff1f2', color: '#be123c' } :
+                                h.isLate ? { ...styles.smTimeBadge, background: '#fff7ed', color: '#c2410c' } : 
+                                styles.smTimeBadge
+                             }>
+                                <Clock size={12} /> {h.timestamp ? new Date(new Date(h.timestamp).getTime() + (5.5 * 60 * 60 * 1000)).getUTCHours().toString().padStart(2, '0') + ":" + new Date(new Date(h.timestamp).getTime() + (5.5 * 60 * 60 * 1000)).getUTCMinutes().toString().padStart(2, '0') : "--:--"}
+                             </div>
                     </div>
                   </div>
                 ))}
@@ -423,7 +597,14 @@ const styles = {
   modalHeader: { padding: "24px 30px", borderBottom: "1px solid #f1f5f9", display: "flex", justifyContent: "space-between" },
   formGroup: { marginBottom: "15px" },
   label: { display: "block", fontSize: "13px", fontWeight: "700", marginBottom: "5px" },
-  input: { width: "100%", padding: "12px", borderRadius: "10px", border: "1.5px solid #e2e8f0" }
+  input: { width: "100%", padding: "12px", borderRadius: "10px", border: "1.5px solid #e2e8f0" },
+  summaryGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px', marginBottom: '35px' },
+  summaryCard: { background: '#fff', padding: '20px', borderRadius: '16px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '15px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)' },
+  actionBtn: { width: '32px', height: '32px', borderRadius: '8px', border: '1px solid #e2e8f0', background: '#fff', color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: '0.2s' },
+  iconBox: { width: '40px', height: '40px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  modalTitle: { fontSize: '18px', fontWeight: '800', margin: 0 },
+  modalOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 },
+  smTimeBadge: { fontSize: '12px', fontWeight: '700', padding: '4px 8px', borderRadius: '6px', background: '#f8fafc', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }
 };
 
 export default HRAttendance;

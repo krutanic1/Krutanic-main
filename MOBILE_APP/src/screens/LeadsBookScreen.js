@@ -21,6 +21,7 @@ import LeadCard from '../components/LeadCard';
 import SearchBar from '../components/SearchBar';
 import FilterTabs from '../components/FilterTabs';
 import CallLogModal from '../components/CallLogModal';
+import BrandedLoading from '../components/BrandedLoading';
 import { endCallTracking } from '../utils/callTracker';
 import { scheduleFollowUpNotification } from '../services/notificationService';
 
@@ -50,6 +51,7 @@ const LeadsBookScreen = () => {
             const data = await leadService.getMyLeads({
                 userId: user?.id,
                 role: user?.role,
+                search: searchQuery, // Pass search to server
                 page: pageNumber,
                 limit: 25,
                 outcome: activeTab === 'all' ? undefined : activeTab
@@ -73,7 +75,16 @@ const LeadsBookScreen = () => {
         }
     }, [user?.id, activeTab, refreshing]);
 
+    // Search effect with debouncing
     useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchLeads(1);
+        }, 500); // 500ms debounce
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
+    useEffect(() => {
+        // Redundant fetch on user.id or activeTab (search handles its own now)
         fetchLeads(1);
     }, [activeTab, user?.id]);
 
@@ -138,21 +149,20 @@ const LeadsBookScreen = () => {
     };
 
     const filteredLeads = useMemo(() => {
+        // Since we now do server-side filtering for outcome and status,
+        // we only need a shallow local search if we want instant feedback,
+        // but for "all filters connected", server-side is more reliable.
+        // We'll keep a simple name/phone check for immediate feedback on the current page.
+        if (!searchQuery) return leads;
+        
         return leads.filter(lead => {
-            const matchesSearch =
-                lead.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                lead.phone_number?.includes(searchQuery) ||
-                lead.opted_domain?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                lead.company_name?.toLowerCase().includes(searchQuery.toLowerCase());
-
-            const matchesTab = activeTab === 'all' ||
-                (activeTab === 'callback_requested'
-                    ? (lead.status === 'callback_requested' || lead.status === 'in_followup')
-                    : (lead.status === activeTab || lead.last_outcome === activeTab));
-
-            return matchesSearch && matchesTab;
+            const q = searchQuery.toLowerCase();
+            return (
+                lead.full_name?.toLowerCase().includes(q) ||
+                lead.phone_number?.includes(searchQuery)
+            );
         });
-    }, [leads, searchQuery, activeTab]);
+    }, [leads, searchQuery]);
 
     const handleViewDetails = (leadId) => {
         navigation.navigate('LeadDetails', { leadId });
@@ -163,11 +173,7 @@ const LeadsBookScreen = () => {
     );
 
     if (loading && !refreshing) {
-        return (
-            <View style={styles.centerContainer}>
-                <ActivityIndicator size="large" color={COLORS.primary} />
-            </View>
-        );
+        return <BrandedLoading message="Fetching Leads..." />;
     }
 
     return (

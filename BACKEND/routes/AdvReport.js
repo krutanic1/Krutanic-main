@@ -738,4 +738,116 @@ router.get("/member-outcome-logs", async (req, res) => {
     }
 });
 
+// Get all call activities (paginated for admin)
+router.get("/all-activities", async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 30;
+        const skip = (page - 1) * limit;
+
+        const total = await AdvCallActivity.countDocuments();
+        const logs = await AdvCallActivity.find()
+            .populate("leadId", "full_name phone_number opted_domain")
+            .populate({
+                path: "specialistId",
+                select: "name team_id",
+                populate: {
+                    path: "team_id",
+                    select: "team_name"
+                }
+            })
+            .populate("teamId", "team_name")
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .lean();
+
+        res.status(200).json({
+            logs,
+            total,
+            page,
+            pages: Math.ceil(total / limit)
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Get aggregated analytics for the dashboard
+router.get("/dashboard-analytics", async (req, res) => {
+    try {
+        // 1. Month-on-Month Call Time
+        const monthlyStats = await AdvCallActivity.aggregate([
+            {
+                $group: {
+                    _id: {
+                        year: { $year: "$createdAt" },
+                        month: { $month: "$createdAt" }
+                    },
+                    totalDuration: { $sum: "$duration" },
+                    callCount: { $sum: 1 }
+                }
+            },
+            { $sort: { "_id.year": 1, "_id.month": 1 } },
+            { $limit: 12 } // Last 12 months
+        ]);
+
+        // Format month names for the chart
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const formattedMoM = monthlyStats.map(item => ({
+            name: `${monthNames[item._id.month - 1]} ${item._id.year}`,
+            duration: Math.round((item.totalDuration || 0) / 60), // in minutes
+            calls: item.callCount
+        }));
+
+        // 2. Specialist Performance
+        const agentStats = await AdvCallActivity.aggregate([
+            {
+                $group: {
+                    _id: "$specialistId",
+                    totalCalls: { $sum: 1 },
+                    totalDuration: { $sum: "$duration" },
+                    avgDuration: { $avg: "$duration" },
+                    // Capture the recorded specialistName from the documents as a fallback
+                    recordedName: { $first: "$specialistName" }
+                }
+            },
+            { $sort: { totalCalls: -1 } },
+            { $limit: 20 },
+            {
+                $lookup: {
+                    from: "advusers", 
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "specialist"
+                }
+            },
+            { $unwind: { path: "$specialist", preserveNullAndEmptyArrays: true } },
+            {
+                $project: {
+                    id: "$_id",
+                    // Hierarchy: Live Name > Recorded Name > "Unknown Specialist"
+                    name: {
+                        $ifNull: [
+                            "$specialist.name",
+                            "$recordedName",
+                            "Unknown Specialist"
+                        ]
+                    },
+                    totalCalls: 1,
+                    avgDuration: { $round: [{ $divide: ["$avgDuration", 60] }, 1] },
+                    totalDuration: { $round: [{ $divide: ["$totalDuration", 60] }, 0] }
+                }
+            }
+        ]);
+
+        res.status(200).json({
+            momData: formattedMoM,
+            agentStats: agentStats
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;

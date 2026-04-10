@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import teamService from '../services/teamService';
 import LeaderboardCard from '../components/LeaderboardCard';
+import BrandedLoading from '../components/BrandedLoading';
 import { COLORS, SPACING, SHADOWS, TYPOGRAPHY } from '../utils/theme';
 
 const LeaderboardScreen = () => {
@@ -95,11 +96,7 @@ const LeaderboardScreen = () => {
     );
 
     if (loading && !refreshing) {
-        return (
-            <View style={styles.centerContainer}>
-                <ActivityIndicator size="large" color={COLORS.primary} />
-            </View>
-        );
+        return <BrandedLoading message="Gathering Elite Performance..." />;
     }
 
     const topThree = leaderboard.slice(0, 3);

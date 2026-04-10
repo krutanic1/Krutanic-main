@@ -10,6 +10,11 @@ const schema = new mongoose.Schema({
   role: String,
   source: String,
   pin: String,
+  status: {
+    type: String,
+    enum: ["active", "inactive"],
+    default: "active"
+  },
   lastOtpLogin: Date
 }, { timestamps: true });
 

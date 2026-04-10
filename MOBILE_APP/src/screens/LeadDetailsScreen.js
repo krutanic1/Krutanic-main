@@ -9,6 +9,7 @@ import {
     Linking,
     AppState,
     Alert,
+    Platform,
     StatusBar
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -78,6 +79,7 @@ const LeadDetailsScreen = ({ route, navigation }) => {
                 leadId: activeCallData.leadId,
                 specialistId: user.id,
                 specialistName: user.name,
+                teamId: user.team_id,
                 callOutcome: logData.outcome,
                 summary: logData.summary,
                 remark: logData.remark,
@@ -108,6 +110,17 @@ const LeadDetailsScreen = ({ route, navigation }) => {
             Alert.alert('Error', String(error?.message || error || 'Failed to save call log'));
             throw error;
         }
+    };
+
+    const handleManualLog = () => {
+        setActiveCallData({
+            leadId: lead._id,
+            leadName: lead.full_name,
+            durationSec: 0,
+            durationFormatted: '0s',
+            status: 'Not Connected'
+        });
+        setCallModalVisible(true);
     };
 
     const InfoItem = ({ label, value, icon, color = COLORS.primary }) => (
@@ -142,7 +155,7 @@ const LeadDetailsScreen = ({ route, navigation }) => {
     return (
         <SafeAreaView style={styles.safeArea} edges={['top']}>
             <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent={true} />
-            <ScrollView style={styles.container}>
+            <View style={styles.container}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
                         <Ionicons name="chevron-back" size={28} color={COLORS.text} />
@@ -153,15 +166,40 @@ const LeadDetailsScreen = ({ route, navigation }) => {
                     </TouchableOpacity>
                 </View>
 
-                <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+                <ScrollView 
+                    style={styles.scrollView} 
+                    contentContainerStyle={styles.scrollContent} 
+                    showsVerticalScrollIndicator={false}
+                >
                     {/* Profile Section */}
                     <View style={styles.profileSection}>
                         <View style={styles.avatarLarge}>
                             <Text style={styles.avatarLargeText}>{lead.full_name?.charAt(0).toUpperCase()}</Text>
                         </View>
                         <Text style={styles.profileName}>{lead.full_name}</Text>
-                        <View style={styles.statusBadge}>
-                            <Text style={styles.statusBadgeText}>{(lead.status || 'Fresh').replace(/_/g, ' ')}</Text>
+                        <View style={styles.badgeRow}>
+                            <View style={styles.statusBadge}>
+                                <Text style={styles.statusBadgeText}>{(lead.status || 'Fresh').replace(/_/g, ' ')}</Text>
+                            </View>
+                            {lead.score > 0 && (
+                                <View style={[styles.statusBadge, { backgroundColor: COLORS.accent + '15', borderColor: COLORS.accent }]}>
+                                    <Text style={[styles.statusBadgeText, { color: COLORS.accent }]}>SCORE: {lead.score}</Text>
+                                </View>
+                            )}
+                        </View>
+                    </View>
+
+                    {/* Quick Stats Grid */}
+                    <View style={styles.statsGrid}>
+                        <View style={styles.statBox}>
+                            <Ionicons name="flash-outline" size={20} color={COLORS.accent} />
+                            <Text style={styles.statValue}>{lead.upskilling_ready || 'No Data'}</Text>
+                            <Text style={styles.statLabel}>UPSKILLING</Text>
+                        </View>
+                        <View style={styles.statBox}>
+                            <Ionicons name="time-outline" size={20} color={COLORS.info} />
+                            <Text style={styles.statValue}>{lead.start_timeframe || 'Immediate'}</Text>
+                            <Text style={styles.statLabel}>TIMEFRAME</Text>
                         </View>
                     </View>
 
@@ -179,9 +217,11 @@ const LeadDetailsScreen = ({ route, navigation }) => {
                         )}
                     </View>
 
-                    {/* Details Card */}
+                    {/* Career & Application Info */}
                     <View style={styles.card}>
-                        <Text style={styles.cardTitle}>Application Info</Text>
+                        <Text style={styles.cardTitle}>Professional Background</Text>
+                        <InfoItem label="Professional Role" value={lead.role || lead.current_status} icon="person-outline" color={COLORS.secondary} />
+                        <View style={styles.divider} />
                         <View style={styles.infoGrid}>
                             <View style={{ flex: 1 }}>
                                 <InfoItem label="Domain" value={lead.opted_domain} icon="layers-outline" color={COLORS.accent} />
@@ -200,6 +240,24 @@ const LeadDetailsScreen = ({ route, navigation }) => {
                             </View>
                         </View>
                     </View>
+
+                    {/* Dynamic Extra Fields */}
+                    {lead.extra_fields && Object.keys(lead.extra_fields).length > 0 && (
+                        <View style={styles.card}>
+                            <Text style={styles.cardTitle}>Form Submissions & Notes</Text>
+                            {Object.entries(lead.extra_fields).map(([key, value], index) => (
+                                <View key={key}>
+                                    <InfoItem 
+                                        label={key.replace(/_/g, ' ').toUpperCase()} 
+                                        value={String(value)} 
+                                        icon="information-circle-outline" 
+                                        color={COLORS.textLight} 
+                                    />
+                                    {index < Object.keys(lead.extra_fields).length - 1 && <View style={styles.divider} />}
+                                </View>
+                            ))}
+                        </View>
+                    )}
 
                     {/* Timeline Section */}
                     <View style={styles.timelineSection}>
@@ -230,6 +288,15 @@ const LeadDetailsScreen = ({ route, navigation }) => {
                     </TouchableOpacity>
                 </View>
 
+                {/* Manual Logging FAB */}
+                <TouchableOpacity 
+                    style={styles.manualFab} 
+                    onPress={handleManualLog}
+                    activeOpacity={0.8}
+                >
+                    <Ionicons name="add" size={30} color="#fff" />
+                </TouchableOpacity>
+
                 <CallLogModal
                     visible={callModalVisible}
                     callData={activeCallData}
@@ -239,7 +306,7 @@ const LeadDetailsScreen = ({ route, navigation }) => {
                         setActiveCallData(null);
                     }}
                 />
-            </ScrollView>
+            </View>
         </SafeAreaView>
     );
 };
@@ -296,15 +363,34 @@ const styles = StyleSheet.create({
     },
     avatarLargeText: { fontSize: 36, color: '#fff', fontWeight: '800' },
     profileName: { ...TYPOGRAPHY.h2, color: COLORS.text, marginBottom: 8 },
+    badgeRow: { flexDirection: 'row', alignItems: 'center' },
     statusBadge: {
         backgroundColor: COLORS.background,
         paddingHorizontal: 16,
         paddingVertical: 6,
         borderRadius: 20,
         borderWidth: 1,
-        borderColor: COLORS.border
+        borderColor: COLORS.border,
+        marginHorizontal: 4
     },
     statusBadgeText: { ...TYPOGRAPHY.tiny, color: COLORS.textLight, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 },
+
+    statsGrid: {
+        flexDirection: 'row',
+        paddingHorizontal: SPACING.md,
+        marginTop: SPACING.lg,
+    },
+    statBox: {
+        flex: 1,
+        backgroundColor: COLORS.surface,
+        borderRadius: 20,
+        padding: 16,
+        alignItems: 'center',
+        marginHorizontal: 4,
+        ...SHADOWS.small,
+    },
+    statValue: { ...TYPOGRAPHY.body, color: COLORS.text, fontWeight: '700', marginTop: 8 },
+    statLabel: { ...TYPOGRAPHY.tiny, color: COLORS.textDim, marginTop: 4, fontWeight: '600' },
 
     card: {
         marginTop: SPACING.lg,
@@ -332,30 +418,51 @@ const styles = StyleSheet.create({
 
     bottomActions: {
         position: 'absolute',
-        bottom: 24,
-        left: 24,
-        right: 24,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        paddingHorizontal: 24,
+        paddingTop: 16,
+        paddingBottom: Platform.OS === 'ios' ? 34 : 24,
         flexDirection: 'row',
         alignItems: 'center',
+        backgroundColor: 'rgba(255,255,255,0.92)',
+        borderTopWidth: 1,
+        borderTopColor: COLORS.border + '50',
     },
     primaryAction: {
         flex: 1,
-        height: 60,
-        borderRadius: 20,
+        height: 56,
+        borderRadius: 18,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 12,
-        ...SHADOWS.large,
+        ...SHADOWS.glow,
     },
-    primaryActionText: { color: '#fff', fontSize: 18, fontWeight: '800', marginLeft: 12 },
+    primaryActionText: { color: '#fff', fontSize: 16, fontWeight: '800', marginLeft: 12, letterSpacing: 0.5 },
     secondaryAction: {
-        width: 60,
-        height: 60,
-        borderRadius: 20,
+        width: 56,
+        height: 56,
+        borderRadius: 18,
+        justifyContent: 'center',
+        alignItems: 'center',
+        ...SHADOWS.medium,
+    },
+    manualFab: {
+        position: 'absolute',
+        bottom: 100,
+        right: 24,
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        backgroundColor: COLORS.secondary,
         justifyContent: 'center',
         alignItems: 'center',
         ...SHADOWS.large,
+        zIndex: 99,
+        borderWidth: 2,
+        borderColor: '#fff',
     },
 });
 

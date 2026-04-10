@@ -25,6 +25,8 @@ const FollowUpsScreen = () => {
     const [refreshing, setRefreshing] = useState(false);
 
     const fetchFollowUps = useCallback(async () => {
+        if (!user?.id) return;
+        
         try {
             const data = await leadService.getUpcomingFollowUps(user?.id);
             setFollowUps(data.followUps || []);

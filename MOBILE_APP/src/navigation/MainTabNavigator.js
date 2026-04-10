@@ -6,7 +6,6 @@ import DashboardScreen from '../screens/DashboardScreen';
 import LeadsBookScreen from '../screens/LeadsBookScreen';
 import FollowUpsScreen from '../screens/FollowUpsScreen';
 import LeaderboardScreen from '../screens/LeaderboardScreen';
-import PipelineScreen from '../screens/PipelineScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
@@ -26,8 +25,6 @@ const MainTabNavigator = () => {
                         iconName = focused ? 'notifications' : 'notifications-outline';
                     } else if (route.name === 'Leaderboard') {
                         iconName = focused ? 'stats-chart' : 'stats-chart-outline';
-                    } else if (route.name === 'Pipeline') {
-                        iconName = focused ? 'funnel' : 'funnel-outline';
                     } else if (route.name === 'Profile') {
                         iconName = focused ? 'person' : 'person-outline';
                     }
@@ -47,7 +44,6 @@ const MainTabNavigator = () => {
             <Tab.Screen name="Leads" component={LeadsBookScreen} />
             <Tab.Screen name="FollowUps" component={FollowUpsScreen} options={{ title: 'Follow-Ups' }} />
             <Tab.Screen name="Leaderboard" component={LeaderboardScreen} />
-            <Tab.Screen name="Pipeline" component={PipelineScreen} />
             <Tab.Screen name="Profile" component={ProfileScreen} />
         </Tab.Navigator>
     );

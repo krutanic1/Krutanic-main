@@ -1,8 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useAuth } from '../context/AuthContext';
-import { ActivityIndicator, View } from 'react-native';
-
+import BrandedLoading from '../components/BrandedLoading';
 // Screens
 import LoginScreen from '../screens/LoginScreen';
 import MainTabNavigator from './MainTabNavigator';
@@ -16,11 +15,7 @@ export const AppNavigator = () => {
     const { userToken, isLoading } = useAuth();
 
     if (isLoading) {
-        return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" color="#F15B29" />
-            </View>
-        );
+        return <BrandedLoading message="Securing Connection..." />;
     }
 
     return (

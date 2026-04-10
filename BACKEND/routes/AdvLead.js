@@ -698,10 +698,31 @@ router.get("/get-adv-leads", async (req, res) => {
             }
         }
 
-        // Apply extra filters if provided
-        let query = { ...baseQuery };
+        // APPLY EXTRA FILTERS (using strict intersection for privacy)
+        let andConditions = [];
+        
+        // Always enforce the base ownership query
+        if (Object.keys(baseQuery).length > 0) {
+            andConditions.push(baseQuery);
+        }
+        
+        // 🔍 Server-side Search support (Checks Name, Phone, Email, Domain)
+        const { search, status } = req.query;
+        if (search) {
+            const searchRegex = new RegExp(search, "i");
+            andConditions.push({
+                $or: [
+                    { full_name: searchRegex },
+                    { phone_number: { $regex: search.replace(/\D/g, '') || "NON_DIGIT_MATCH" } },
+                    { email: searchRegex },
+                    { opted_domain: searchRegex },
+                    { company_name: searchRegex }
+                ]
+            });
+        }
+
         if (status) {
-            query.status = status;
+            andConditions.push({ status });
         }
 
         const { month, year } = req.query;
@@ -710,27 +731,46 @@ router.get("/get-adv-leads", async (req, res) => {
             const y = parseInt(year);
             const startDate = new Date(y, m, 1);
             const endDate = new Date(y, m + 1, 0, 23, 59, 59, 999);
-            query.created_at = { $gte: startDate, $lte: endDate };
+            andConditions.push({ created_at: { $gte: startDate, $lte: endDate } });
         }
         
         if (outcome) {
             if (outcome === "fresh") {
-                // Leads with no interaction are considered fresh
-                query.last_interaction_at = { $exists: false };
+                andConditions.push({ last_interaction_at: { $exists: false } });
+            } else if (outcome === "callback_requested") {
+                andConditions.push({
+                    $or: [
+                        { last_outcome: "callback_requested" },
+                        { status: "callback_requested" },
+                        { status: "in_followup" }
+                    ]
+                });
             } else {
-                query.last_outcome = outcome;
+                andConditions.push({
+                    $or: [
+                        { last_outcome: outcome },
+                        { status: outcome }
+                    ]
+                });
             }
         }
+
         if (date) {
             const startOfDay = new Date(date);
             startOfDay.setHours(0, 0, 0, 0);
             const endOfDay = new Date(date);
             endOfDay.setHours(23, 59, 59, 999);
-            query.$or = [
-                { assigned_at: { $gte: startOfDay, $lte: endOfDay } },
-                { assigned_at: { $exists: false }, created_at: { $gte: startOfDay, $lte: endOfDay } }
-            ];
+            andConditions.push({
+                $or: [
+                    { assigned_at: { $gte: startOfDay, $lte: endOfDay } },
+                    { assigned_at: { $exists: false }, created_at: { $gte: startOfDay, $lte: endOfDay } }
+                ]
+            });
         }
+
+        // Final Aggregate Query
+        const query = andConditions.length > 0 ? { $and: andConditions } : {};
+
 
         const totalCount = await AdvLead.countDocuments(query);
         

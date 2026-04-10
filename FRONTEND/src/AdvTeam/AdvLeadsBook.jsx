@@ -18,29 +18,32 @@ const CALL_OUTCOMES = [
 const designTokens = {
     colors: {
         primary: "#6366F1", // Indigo
-        secondary: "#A855F7", // Purple
+        secondary: "#8B5CF6", // Violet
         accent: "#F43F5E", // Rose
-        background: "#F8FAFC",
+        background: "#F1F5F9",
         surface: "#FFFFFF",
         border: "#E2E8F0",
-        textPrimary: "#1E293B",
+        textPrimary: "#0F172A",
         textSecondary: "#64748B",
         success: "#10B981",
         warning: "#F59E0B",
         danger: "#EF4444",
-        info: "#3B82F6",
+        info: "#0EA5E9",
+        royal: "#312E81",
+        glass: "rgba(255, 255, 255, 0.7)"
     },
     shadows: {
         sm: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
         md: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
         lg: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
         xl: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+        premium: "0 25px 50px -12px rgba(99, 102, 241, 0.12)"
     },
     radius: {
         sm: "6px",
-        md: "10px",
-        lg: "16px",
-        xl: "24px",
+        md: "12px",
+        lg: "20px",
+        xl: "30px",
     }
 };
 
@@ -396,24 +399,25 @@ const AdvLeadsBook = () => {
             border: `1px solid ${designTokens.colors.border}`,
             marginBottom: '16px',
             overflow: 'hidden',
-            transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-            boxShadow: designTokens.shadows.sm,
-            position: 'relative'
+            transition: 'all 0.5s cubic-bezier(0.23, 1, 0.32, 1)',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01)',
+            position: 'relative',
         },
         leadCardActive: {
-            boxShadow: designTokens.shadows.xl,
-            borderColor: designTokens.colors.primary,
-            transform: 'translateY(-2px)',
+            boxShadow: designTokens.shadows.premium,
+            borderColor: `${designTokens.colors.primary}40`,
+            transform: 'scale(1.005) translateY(-4px)',
         },
         summaryRow: (isActive) => ({
-            padding: '24px 32px',
+            padding: '28px 36px',
             display: 'flex',
             alignItems: 'center',
             cursor: 'pointer',
-            background: isActive ? 'linear-gradient(to right, #F8FAFC, #FFFFFF)' : '#FFFFFF',
-            transition: 'all 0.3s ease',
+            background: isActive ? 'linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)' : '#FFFFFF',
+            transition: 'all 0.4s ease',
             position: 'relative',
-            zIndex: 1
+            zIndex: 1,
+            borderLeft: isActive ? `6px solid ${designTokens.colors.primary}` : `6px solid transparent`
         }),
         outcomeBtn: (active, color) => ({
             padding: '10px 18px',
@@ -521,21 +525,21 @@ const AdvLeadsBook = () => {
             transition: 'all 0.3s ease',
             marginLeft: '12px'
         }),
-        iconBtn: (color) => ({
+        iconBtn: (color, gradient) => ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            width: '36px',
-            height: '36px',
-            borderRadius: '12px',
-            background: color,
+            width: '42px',
+            height: '42px',
+            borderRadius: '14px',
+            background: gradient || color,
             color: '#fff',
-            fontSize: '18px',
+            fontSize: '20px',
             textDecoration: 'none',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-            boxShadow: `0 4px 6px ${color}30`,
+            transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            boxShadow: `0 8px 16px ${color}25`,
             border: 'none',
-            cursor: 'pointer'
+            cursor: 'pointer',
         })
     };
 
@@ -742,25 +746,25 @@ const AdvLeadsBook = () => {
                                                                 <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>call</span>
                                                                 {lead.phone_number}
                                                             </div>
-                                                                <div style={{ display: 'flex', gap: '8px' }}>
+                                                                <div style={{ display: 'flex', gap: '10px' }}>
                                                                     <a
                                                                         href={`https://wa.me/${lead.phone_number.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${lead.full_name}, this is from Krutanic`)}`}
                                                                         target="_blank"
                                                                         rel="noopener noreferrer"
                                                                         title="WhatsApp"
                                                                         onClick={(e) => e.stopPropagation()}
-                                                                        style={styles.iconBtn('#25D366')}
-                                                                        onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
-                                                                        onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                                                        style={styles.iconBtn('#25D366', 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)')}
+                                                                        onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.1)'; e.currentTarget.style.boxShadow = '0 12px 20px rgba(37, 211, 102, 0.4)'; }}
+                                                                        onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 8px 16px rgba(37, 211, 102, 0.25)'; }}
                                                                     >
                                                                         <i className="fa fa-whatsapp"></i>
                                                                     </a>
                                                                     <button
                                                                         title="Dial"
                                                                         onClick={(e) => { e.stopPropagation(); handleRemoteDial(lead.phone_number); }}
-                                                                        style={styles.iconBtn(designTokens.colors.warning)}
-                                                                        onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
-                                                                        onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                                                        style={styles.iconBtn(designTokens.colors.warning, 'linear-gradient(135deg, #FF9966 0%, #FF5E62 100%)')}
+                                                                        onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.1)'; e.currentTarget.style.boxShadow = '0 12px 20px rgba(255, 94, 98, 0.4)'; }}
+                                                                        onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 8px 16px rgba(255, 94, 98, 0.25)'; }}
                                                                     >
                                                                         <i className="fa fa-phone"></i>
                                                                     </button>
@@ -770,9 +774,9 @@ const AdvLeadsBook = () => {
                                                                         rel="noopener noreferrer"
                                                                         title="Video Meet"
                                                                         onClick={(e) => e.stopPropagation()}
-                                                                        style={styles.iconBtn('#EA4335')}
-                                                                        onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
-                                                                        onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                                                        style={styles.iconBtn('#EA4335', 'linear-gradient(135deg, #EE0979 0%, #FF6A00 100%)')}
+                                                                        onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.1)'; e.currentTarget.style.boxShadow = '0 12px 20px rgba(238, 9, 121, 0.4)'; }}
+                                                                        onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 8px 16px rgba(238, 9, 121, 0.25)'; }}
                                                                     >
                                                                         <i className="fa fa-video-camera"></i>
                                                                     </a>
@@ -786,32 +790,40 @@ const AdvLeadsBook = () => {
                                                                             setEmailDomain(lead.opted_domain || "General");
                                                                             setShowEmailModal(true);
                                                                         }}
-                                                                        style={styles.iconBtn(designTokens.colors.primary)}
-                                                                        onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
-                                                                        onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                                                        style={styles.iconBtn(designTokens.colors.primary, 'linear-gradient(135deg, #00B4DB 0%, #0083B0 100%)')}
+                                                                        onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.1)'; e.currentTarget.style.boxShadow = '0 12px 20px rgba(0, 180, 219, 0.4)'; }}
+                                                                        onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 180, 219, 0.25)'; }}
                                                                     >
                                                                         <i className="fa fa-envelope"></i>
                                                                     </button>
-                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
 
                                                     <div style={{ flex: 3.5, display: 'flex', alignItems: 'center', gap: '30px' }}>
-                                                        <div style={{ minWidth: '120px' }}>
-                                                            <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.05em' }}>Target Domain</div>
-                                                            <div style={{ fontSize: '14px', fontWeight: '700', color: designTokens.colors.textPrimary }}>{lead.opted_domain || 'General'}</div>
+                                                        <div style={{ minWidth: '140px' }}>
+                                                            <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>terminal</span> Target Domain
+                                                            </div>
+                                                            <div style={{ fontSize: '15px', fontWeight: '800', color: designTokens.colors.textPrimary, letterSpacing: '-0.01em' }}>{lead.opted_domain || 'General'}</div>
                                                         </div>
                                                         <div style={{ minWidth: '110px' }}>
-                                                            <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.05em' }}>Entity</div>
-                                                            <div style={{ fontSize: '14px', fontWeight: '600', color: designTokens.colors.textSecondary }}>{lead.company_name || 'Individual'}</div>
+                                                            <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>corporate_fare</span> Entity
+                                                            </div>
+                                                            <div style={{ fontSize: '14px', fontWeight: '700', color: designTokens.colors.textSecondary }}>{lead.company_name || 'Individual'}</div>
                                                         </div>
-                                                        <div style={{ minWidth: '120px' }}>
-                                                            <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.05em' }}>Created On</div>
-                                                            <div style={{ fontSize: '13px', fontWeight: '600', color: designTokens.colors.textSecondary }}>{lead.created_at ? new Date(lead.created_at).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}</div>
+                                                        <div style={{ minWidth: '130px' }}>
+                                                            <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>history_toggle_off</span> Created On
+                                                            </div>
+                                                            <div style={{ fontSize: '13px', fontWeight: '700', color: designTokens.colors.textPrimary }}>{lead.created_at ? new Date(lead.created_at).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}</div>
                                                         </div>
-                                                        <div style={{ minWidth: '120px' }}>
-                                                            <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.05em' }}>Assigned On</div>
-                                                            <div style={{ fontSize: '13px', fontWeight: '600', color: designTokens.colors.textSecondary }}>{lead.assigned_at ? new Date(lead.assigned_at).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}</div>
+                                                        <div style={{ minWidth: '130px' }}>
+                                                            <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>assignment_ind</span> Assigned On
+                                                            </div>
+                                                            <div style={{ fontSize: '13px', fontWeight: '700', color: designTokens.colors.textPrimary }}>{lead.assigned_at ? new Date(lead.assigned_at).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}</div>
                                                         </div>
                                                     </div>
 

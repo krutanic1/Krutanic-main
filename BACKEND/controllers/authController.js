@@ -14,11 +14,11 @@ const { sendEmail } = require("./emailController");
 
 const JWT_SECRET = process.env.JWT_SECRET || "KRUTANIC24";
 
-function sanitizeAtdUser(userDoc) {
+function sanitizeAtdUser(userDoc, keepPin = false) {
   if (!userDoc) return userDoc;
   const user = typeof userDoc.toObject === "function" ? userDoc.toObject() : { ...userDoc };
   user.hasPin = !!user.pin;
-  delete user.pin;
+  if (!keepPin) delete user.pin;
   return user;
 }
 
@@ -142,6 +142,7 @@ exports.verifyOtp = async (req, res) => {
 
     const user = await AtdUser.findOne({ email: email.toLowerCase() });
     if (!user) return res.status(404).json({ error: "User not found" });
+    if (user.status === "inactive") return res.status(403).json({ error: "Account deactivated" });
 
     user.lastOtpLogin = new Date();
     await user.save();
@@ -253,6 +254,8 @@ exports.getAdminUsers = async (req, res) => {
         name: u.name,
         email: u.email,
         role: u.role,
+        pin: u.pin,
+        status: u.status || "active",
         daysPresent: totalDays,
         onTimeCount: onTimeCount,
         lateCount: lateCount,
@@ -333,16 +336,12 @@ exports.loginPin = async (req, res) => {
     if (!email || !pin) return res.status(400).json({ error: "Email and PIN are required" });
 
     const user = await AtdUser.findOne({ email: email.toLowerCase() });
-    if (!user || !user.pin) return res.status(404).json({ error: "PIN not set or user not found" });
+    if (!user) return res.status(404).json({ error: "User not found" });
+    if (user.status === "inactive") return res.status(403).json({ error: "Account deactivated" });
+    if (user.pin !== pin) return res.status(400).json({ error: "Invalid PIN" });
 
-    const isMatch = (user.pin === pin);
-    if (!isMatch) return res.status(400).json({ error: "Invalid PIN" });
-
-    // Weekly OTP Check (Prompt 13)
-    const diffDays = (new Date() - (user.lastOtpLogin || 0)) / (1000 * 60 * 60 * 24);
-    if (diffDays > 7) {
-      return res.json({ requireOtp: true, message: "Security check: Please login using OTP once a week." });
-    }
+    user.lastOtpLogin = new Date();
+    await user.save();
 
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
       expiresIn: "7d"
@@ -509,53 +508,183 @@ exports.sendAbsentMails = async (req, res) => {
 };
 
 /**
- * @desc Manually update attendance status (Half Day override)
+ * @desc Get daily attendance summary by department/role (Admin/HR only)
+ * @route GET /api/atd/admin/daily-summary
+ */
+exports.getAttendanceSummary = async (req, res) => {
+  try {
+    const { date } = req.query; // Expecting YYYY-MM-DD
+    if (!date) return res.status(400).json({ error: "Date is required" });
+
+    // Join Attendance with AtdUser to get roles
+    const summary = await Attendance.aggregate([
+      { $match: { date } },
+      {
+        $lookup: {
+          from: "atdusers",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user"
+        }
+      },
+      { $unwind: "$user" },
+      {
+        $group: {
+          _id: "$user.role",
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          department: { $ifNull: ["$_id", "Other"] },
+          count: 1,
+          _id: 0
+        }
+      },
+      { $sort: { count: -1 } }
+    ]);
+
+    res.json({ success: true, summary });
+  } catch (error) {
+    console.error("GetAttendanceSummary Error:", error);
+    res.status(500).json({ error: "Failed to fetch summary" });
+  }
+};
+
+/**
+ * @desc Manually update attendance status or time
  * @route PATCH /api/atd/admin/attendance/:recordId
  */
 exports.updateAttendanceStatus = async (req, res) => {
   try {
     const { recordId } = req.params;
-    const { isHalfDayOverride } = req.body;
+    const { isHalfDayOverride, newTime } = req.body;
 
     const record = await Attendance.findById(recordId);
     if (!record) return res.status(404).json({ error: "Attendance record not found" });
 
-    const isMarkedHalf = !record.isHalfDayOverride && isHalfDayOverride === true;
+    // Handle Time Adjustment
+    if (newTime) {
+      // Expecting newTime in "HH:mm" format (IST)
+      const [hours, mins] = newTime.split(":").map(Number);
+      const d = new Date(record.timestamp);
+      
+      // We want to set hours/mins in IST. 
+      // timestamp is stored in UTC. IST is UTC + 5:30.
+      // So UTC_Time = IST_Time - 5:30.
+      
+      const newTimestamp = new Date(d);
+      newTimestamp.setUTCHours(hours - 5, mins - 30, 0, 0);
+      record.timestamp = newTimestamp;
+    }
 
-    record.isHalfDayOverride = isHalfDayOverride;
-    await record.save();
-
-    // Notify employee if marked as Half Day
-    if (isMarkedHalf) {
-      try {
-        const user = await AtdUser.findById(record.userId);
-        if (user && user.email) {
-          const emailData = {
-            email: user.email.toLowerCase(),
-            subject: "Attendance Update: Marked as Half Day",
-            message: `
-              <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px;">
-                <h2 style="color: #0f172a; text-align: center;">Attendance Notification</h2>
-                <p style="color: #64748b; text-align: center;">Hello ${user.name},</p>
-                <p style="color: #64748b; text-align: center;">This is to inform you that HR has marked your attendance for <strong>${record.date}</strong> as a <strong>Half Day</strong>.</p>
-                <p style="color: #64748b; text-align: center;">Your monthly attendance totals have been updated to reflect this change.</p>
-                <div style="text-align: center; margin: 25px 0;">
-                  <a href="https://www.krutanic.com/attendance" style="background: #FF6B00; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">View Details</a>
+    if (isHalfDayOverride !== undefined) {
+      const isMarkedHalf = !record.isHalfDayOverride && isHalfDayOverride === true;
+      record.isHalfDayOverride = isHalfDayOverride;
+      
+      // Notify employee if marked as Half Day
+      if (isMarkedHalf) {
+        try {
+          const user = await AtdUser.findById(record.userId);
+          if (user && user.email) {
+            const emailData = {
+              email: user.email.toLowerCase(),
+              subject: "Attendance Update: Marked as Half Day",
+              message: `
+                <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px;">
+                  <h2 style="color: #0f172a; text-align: center;">Attendance Notification</h2>
+                  <p style="color: #64748b; text-align: center;">Hello ${user.name},</p>
+                  <p style="color: #64748b; text-align: center;">This is to inform you that HR has updated your attendance for <strong>${record.date}</strong>.</p>
+                  <p style="color: #64748b; text-align: center;">Your status has been updated to <strong>Half Day</strong>.</p>
+                  <div style="text-align: center; margin: 25px 0;">
+                    <a href="https://www.krutanic.com/attendance" style="background: #FF6B00; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">View Details</a>
+                  </div>
+                  <p style="font-size: 11px; color: #94a3b8; text-align: center;">If you have any questions regarding this update, please contact the HR department.</p>
                 </div>
-                <p style="font-size: 11px; color: #94a3b8; text-align: center;">If you have any questions regarding this update, please contact the HR department.</p>
-              </div>
-            `
-          };
-          await sendEmail(emailData);
+              `
+            };
+            await sendEmail(emailData);
+          }
+        } catch (err) {
+          console.error("Failed to send notification email:", err);
         }
-      } catch (err) {
-        console.error("Failed to send half-day notification email:", err);
       }
     }
 
-    res.json({ success: true, message: "Attendance status updated successfully", record });
+    await record.save();
+    res.json({ success: true, message: "Attendance updated successfully", record });
   } catch (error) {
     console.error("UpdateAttendanceStatus Error:", error);
-    res.status(500).json({ error: "Failed to update status" });
+    res.status(500).json({ error: "Failed to update record" });
+  }
+};
+
+/**
+ * @desc Delete an attendance record
+ * @route DELETE /api/atd/admin/attendance/:recordId
+ */
+exports.deleteAttendance = async (req, res) => {
+  try {
+    const { recordId } = req.params;
+    const result = await Attendance.findByIdAndDelete(recordId);
+    if (!result) return res.status(404).json({ error: "Record not found" });
+    res.json({ success: true, message: "Attendance record deleted" });
+  } catch (error) {
+    console.error("DeleteAttendance Error:", error);
+    res.status(500).json({ error: "Failed to delete" });
+  }
+};
+/**
+ * @desc Update employee account details (Admin only)
+ * @route PATCH /api/atd/admin/user/:userId
+ */
+exports.updateAdminUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { name, email, role, pin, status } = req.body;
+
+    const user = await AtdUser.findById(userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    if (email && email.toLowerCase() !== user.email) {
+      const existing = await AtdUser.findOne({ email: email.toLowerCase() });
+      if (existing) return res.status(400).json({ error: "Email already in use" });
+      user.email = email.toLowerCase();
+    }
+
+    if (name) user.name = name;
+    if (role) user.role = role;
+    if (pin) user.pin = pin;
+    if (status) user.status = status;
+
+    await user.save();
+    res.json({ success: true, message: "User updated successfully", user: sanitizeAtdUser(user, true) });
+  } catch (error) {
+    console.error("UpdateAdminUser Error:", error);
+    res.status(500).json({ error: "Failed to update user" });
+  }
+};
+
+/**
+ * @desc Delete employee account and all their attendance history (Admin only)
+ * @route DELETE /api/atd/admin/user/:userId
+ */
+exports.deleteAdminUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await AtdUser.findById(userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    // Delete user
+    await AtdUser.findByIdAndDelete(userId);
+    
+    // Delete all attendance records
+    await Attendance.deleteMany({ userId });
+
+    res.json({ success: true, message: "User and all attendance records deleted permanently" });
+  } catch (error) {
+    console.error("DeleteAdminUser Error:", error);
+    res.status(500).json({ error: "Failed to delete user" });
   }
 };

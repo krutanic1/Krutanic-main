@@ -5,10 +5,12 @@ import { COLORS, SPACING, TYPOGRAPHY, SHADOWS } from '../utils/theme';
 const FilterTabs = ({ activeTab, onTabChange }) => {
     const tabs = [
         { id: 'all', label: 'All' },
+        { id: 'fresh', label: 'Fresh' },
         { id: 'interested', label: 'Interested' },
         { id: 'callback_requested', label: 'Follow Up' },
         { id: 'no_answer', label: 'No Answer' },
         { id: 'not_interested', label: 'Rejected' },
+        { id: 'junk', label: 'Junk' },
         { id: 'converted', label: 'Converted' }
     ];
 

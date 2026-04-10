@@ -142,6 +142,7 @@ import TeamsManagement from "./Admin/TeamsManagement";
 import LeadAssignments from "./Admin/LeadAssignments";
 import AgentActivity from "./Admin/AgentActivity";
 import AdminReports from "./Admin/AdminReports";
+import AdvCallLogs from "./Admin/AdvCallLogs";
 
 import BulkImport from "./Admin/BulkImport";
 import UserLayout from "./User/UserLayout";
@@ -413,7 +414,8 @@ const AppContent = () => {
     "/bulkimport",
     "/admin/attendance",
     "/advusermanagement",
-    "/admin/livemonitor"
+    "/admin/livemonitor",
+    "/admin/calllogs"
   ];
 
   const operationheaderPaths = [
@@ -635,6 +637,7 @@ const AppContent = () => {
         <Route path="/Admin/LeadAssignments" element={isAuthenticatedAdmin() ? <LeadAssignments /> : <Navigate to="/AdminLogin" />} />
         <Route path="/Admin/AgentActivity/:agentId" element={isAuthenticatedAdmin() ? <AgentActivity /> : <Navigate to="/AdminLogin" />} />
         <Route path="/Admin/Reports" element={isAuthenticatedAdmin() ? <AdminReports /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/Admin/CallLogs" element={isAuthenticatedAdmin() ? <AdvCallLogs /> : <Navigate to="/AdminLogin" />} />
 
         <Route path="/BulkImport" element={isAuthenticatedAdmin() ? (<BulkImport />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/Admin/Attendance" element={isAuthenticatedAdmin() ? <AdminAttendance /> : <Navigate to="/AdminLogin" />} />
