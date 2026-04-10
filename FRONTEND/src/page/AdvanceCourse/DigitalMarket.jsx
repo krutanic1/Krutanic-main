@@ -229,47 +229,47 @@ const roles = [
   {
     title: "Digital Marketing Manager",
     text: "Own cross-channel strategy and campaign performance end-to-end.",
-    avg: "Avg. package Rs 18 LPA",
+    avg: "Package range: Rs 8-18 LPA",
   },
   {
     title: "SEO Specialist",
     text: "Drive sustainable organic growth through technical and content SEO.",
-    avg: "Avg. package Rs 12 LPA",
+    avg: "Package range: Rs 4-12 LPA",
   },
   {
     title: "PPC Analyst",
     text: "Scale paid acquisition with efficient spend, bidding, and experimentation.",
-    avg: "Avg. package Rs 16 LPA",
+    avg: "Package range: Rs 5-14 LPA",
   },
   {
     title: "Social Media Manager",
     text: "Build brand-led growth through social strategy and platform campaigns.",
-    avg: "Avg. package Rs 14 LPA",
+    avg: "Package range: Rs 4-12 LPA",
   },
   {
     title: "Content Marketing Specialist",
     text: "Create conversion-oriented content systems for audience and demand growth.",
-    avg: "Avg. package Rs 13 LPA",
+    avg: "Package range: Rs 4-11 LPA",
   },
   {
     title: "Email Marketing Manager",
     text: "Design automated lifecycle journeys that improve retention and LTV.",
-    avg: "Avg. package Rs 15 LPA",
+    avg: "Package range: Rs 5-13 LPA",
   },
   {
     title: "Marketing Analyst",
     text: "Translate campaign data into decisions that increase efficiency and ROI.",
-    avg: "Avg. package Rs 14 LPA",
+    avg: "Package range: Rs 4-10 LPA",
   },
   {
     title: "Web Analyst",
     text: "Optimize user behavior flows and performance with web analytics.",
-    avg: "Avg. package Rs 13 LPA",
+    avg: "Package range: Rs 5-12 LPA",
   },
   {
     title: "Growth Marketing Associate",
     text: "Run rapid experiments across channels to unlock scalable growth loops.",
-    avg: "Avg. package Rs 17 LPA",
+    avg: "Package range: Rs 5-14 LPA",
   },
 ];
 
@@ -736,6 +736,32 @@ const DigitalMarket = () => {
           text-transform: uppercase;
         }
 
+        .dm-fixed-price {
+          align-items: center;
+          background: #ffffffee;
+          backdrop-filter: blur(6px);
+          border-top: 1px solid var(--line);
+          bottom: 0;
+          color: var(--ink);
+          display: flex;
+          font-size: 14px;
+          font-weight: 700;
+          justify-content: flex-start;
+          left: 0;
+          letter-spacing: 0.4px;
+          min-height: 56px;
+          padding: 10px 24px;
+          position: fixed;
+          text-transform: uppercase;
+          width: 100%;
+          z-index: 120;
+        }
+
+        .dm-fixed-price strong {
+          color: var(--accent-dark);
+          margin-left: 6px;
+        }
+
         .dm-metric {
           text-align: center;
           padding: 16px;
@@ -1049,8 +1075,10 @@ const DigitalMarket = () => {
           <div className="dm-role-grid">
             {roles.map((role) => (
               <article className="dm-role-card" key={role.title}>
-                <div className="dm-role-dot" />
-                <h4>{role.title}</h4>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
+                  <div className="dm-role-dot" style={{ marginBottom: 0 }} />
+                  <h4 style={{ margin: 0 }}>{role.title}</h4>
+                </div>
                 <p>{role.text}</p>
                 <strong>{role.avg}</strong>
               </article>
@@ -1174,6 +1202,8 @@ const DigitalMarket = () => {
           </div>
         </div>
       </section>
+
+      <div className="dm-fixed-price">Price: <strong>Rs 95,999 inclusive of GST</strong></div>
     </div>
   );
 };

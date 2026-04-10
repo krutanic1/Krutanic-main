@@ -229,47 +229,47 @@ const roles = [
   {
     title: "Full-Stack Developer",
     text: "Build complete web products across frontend and backend systems.",
-    avg: "Avg. package Rs 16 LPA",
+    avg: "Package range: Rs 6-18 LPA",
   },
   {
     title: "MERN Stack Developer",
     text: "Ship feature-rich applications using MongoDB, Express, React, and Node.",
-    avg: "Avg. package Rs 18 LPA",
+    avg: "Package range: Rs 6-20 LPA",
   },
   {
     title: "Frontend Developer",
     text: "Create high-quality user interfaces and interactive application experiences.",
-    avg: "Avg. package Rs 12 LPA",
+    avg: "Package range: Rs 4-14 LPA",
   },
   {
     title: "Backend Developer",
     text: "Engineer secure and scalable API services and backend infrastructure.",
-    avg: "Avg. package Rs 14 LPA",
+    avg: "Package range: Rs 5-16 LPA",
   },
   {
     title: "API Developer",
     text: "Design and maintain API ecosystems for modern web applications.",
-    avg: "Avg. package Rs 13 LPA",
+    avg: "Package range: Rs 5-14 LPA",
   },
   {
     title: "Web Application Architect",
     text: "Define scalable architecture and technical direction for web platforms.",
-    avg: "Avg. package Rs 22 LPA",
+    avg: "Package range: Rs 12-35 LPA",
   },
   {
     title: "React Developer",
     text: "Build performant frontend systems using component-driven architecture.",
-    avg: "Avg. package Rs 13 LPA",
+    avg: "Package range: Rs 5-15 LPA",
   },
   {
     title: "JavaScript Developer",
     text: "Develop interactive web solutions across frontend and backend environments.",
-    avg: "Avg. package Rs 12 LPA",
+    avg: "Package range: Rs 4-12 LPA",
   },
   {
     title: "Software Engineer",
     text: "Build maintainable software systems and collaborate across product teams.",
-    avg: "Avg. package Rs 17 LPA",
+    avg: "Package range: Rs 6-20 LPA",
   },
 ];
 
@@ -732,6 +732,32 @@ const MernStack = () => {
           text-transform: uppercase;
         }
 
+        .ms-fixed-price {
+          align-items: center;
+          background: #ffffffee;
+          backdrop-filter: blur(6px);
+          border-top: 1px solid var(--line);
+          bottom: 0;
+          color: var(--ink);
+          display: flex;
+          font-size: 14px;
+          font-weight: 700;
+          justify-content: flex-start;
+          left: 0;
+          letter-spacing: 0.4px;
+          min-height: 56px;
+          padding: 10px 24px;
+          position: fixed;
+          text-transform: uppercase;
+          width: 100%;
+          z-index: 120;
+        }
+
+        .ms-fixed-price strong {
+          color: var(--accent-dark);
+          margin-left: 6px;
+        }
+
         .ms-metric {
           text-align: center;
           padding: 16px;
@@ -1043,8 +1069,10 @@ const MernStack = () => {
           <div className="ms-role-grid">
             {roles.map((role) => (
               <article className="ms-role-card" key={role.title}>
-                <div className="ms-role-dot" />
-                <h4>{role.title}</h4>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
+                  <div className="ms-role-dot" style={{ marginBottom: 0 }} />
+                  <h4 style={{ margin: 0 }}>{role.title}</h4>
+                </div>
                 <p>{role.text}</p>
                 <strong>{role.avg}</strong>
               </article>
@@ -1168,6 +1196,8 @@ const MernStack = () => {
           </div>
         </div>
       </section>
+
+      <div className="ms-fixed-price">Price: <strong>Rs 61,999 inclusive of GST</strong></div>
     </div>
   );
 };

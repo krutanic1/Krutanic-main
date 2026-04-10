@@ -217,47 +217,47 @@ const roles = [
   {
     title: "Data Scientist",
     text: "Lead analytical decisions and discover non-obvious business patterns.",
-    avg: "Avg. package 5-9 LPA",
+    avg: "Package range: Rs 8-18 LPA",
   },
   {
     title: "Data Analyst",
     text: "Interpret data and build reporting systems to support decision-making.",
-    avg: "Avg. package 5-7 LPA",
+    avg: "Package range: Rs 4-10 LPA",
   },
   {
     title: "Machine Learning Engineer",
     text: "Deploy and optimize machine learning systems for production scale.",
-    avg: "Avg. package 8-12 LPA",
+    avg: "Package range: Rs 10-22 LPA",
   },
   {
     title: "Data Engineer",
     text: "Build high-throughput data pipelines and resilient infrastructure.",
-    avg: "Avg. package 5-7 LPA",
+    avg: "Package range: Rs 8-20 LPA",
   },
   {
     title: "Business Intelligence Analyst",
     text: "Transform business data into strategic, executable insights.",
-    avg: "Avg. package 4-6 LPA",
+    avg: "Package range: Rs 5-12 LPA",
   },
   {
     title: "AI Engineer",
     text: "Build AI-driven products and intelligent automation systems.",
-    avg: "Avg. package 12-19 LPA",
+    avg: "Package range: Rs 12-28 LPA",
   },
   {
     title: "Big Data Specialist",
     text: "Work with large-scale processing and high-volume data ecosystems.",
-    avg: "Avg. package 7-11 LPA",
+    avg: "Package range: Rs 9-20 LPA",
   },
   {
     title: "Data Science Consultant",
     text: "Guide organizations with data strategy and model-led business execution.",
-    avg: "Avg. package 6-9 LPA",
+    avg: "Package range: Rs 10-24 LPA",
   },
   {
     title: "Quantitative Analyst",
     text: "Build statistical and mathematical models for complex forecasting.",
-    avg: "Avg. package 4-7 LPA",
+    avg: "Package range: Rs 8-22 LPA",
   },
 ];
 
@@ -419,6 +419,7 @@ const DataScience = () => {
             var(--bg);
           color: var(--ink);
           font-family: "Sora", "Segoe UI", sans-serif;
+          padding-bottom: 74px;
         }
 
         .ds-shell {
@@ -858,6 +859,32 @@ const DataScience = () => {
           border-top: 1px solid #e7e0dc;
         }
 
+        .ds-fixed-price {
+          align-items: center;
+          background: #ffffffee;
+          backdrop-filter: blur(6px);
+          border-top: 1px solid var(--line);
+          bottom: 0;
+          color: var(--ink);
+          display: flex;
+          font-size: 14px;
+          font-weight: 700;
+          justify-content: flex-start;
+          left: 0;
+          letter-spacing: 0.4px;
+          min-height: 56px;
+          padding: 10px 24px;
+          position: fixed;
+          text-transform: uppercase;
+          width: 100%;
+          z-index: 120;
+        }
+
+        .ds-fixed-price strong {
+          color: var(--accent-dark);
+          margin-left: 8px;
+        }
+
         @media (max-width: 1080px) {
           .ds-hero,
           .ds-curr-grid,
@@ -1038,8 +1065,10 @@ const DataScience = () => {
           <div className="ds-role-grid">
             {roles.map((role) => (
               <article className="ds-role-card" key={role.title}>
-                <div className="ds-role-dot" />
-                <h4>{role.title}</h4>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
+                  <div className="ds-role-dot" style={{ marginBottom: 0 }} />
+                  <h4 style={{ margin: 0 }}>{role.title}</h4>
+                </div>
                 <p>{role.text}</p>
                 <strong>{role.avg}</strong>
               </article>
@@ -1163,6 +1192,8 @@ const DataScience = () => {
           </div>
         </div>
       </section>
+
+      <div className="ds-fixed-price">Price: <strong>Rs 65999 inclusive of GST</strong></div>
     </div>
   );
 };

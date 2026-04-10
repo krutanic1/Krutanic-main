@@ -229,47 +229,47 @@ const roles = [
   {
     title: "Data Analyst",
     text: "Convert raw data into actionable business insights for decision teams.",
-    avg: "Avg. package Rs 12 LPA",
+    avg: "Package range: Rs 4-10 LPA",
   },
   {
     title: "Business Analyst",
     text: "Bridge business context and analytics to drive strategic outcomes.",
-    avg: "Avg. package Rs 11 LPA",
+    avg: "Package range: Rs 5-12 LPA",
   },
   {
     title: "BI Developer",
     text: "Build scalable dashboards and reporting systems for enterprises.",
-    avg: "Avg. package Rs 13 LPA",
+    avg: "Package range: Rs 6-14 LPA",
   },
   {
     title: "Reporting Analyst",
     text: "Design recurring reports and KPI systems for executive tracking.",
-    avg: "Avg. package Rs 10 LPA",
+    avg: "Package range: Rs 4-9 LPA",
   },
   {
     title: "Product Analyst",
     text: "Use user and product metrics to improve feature and roadmap outcomes.",
-    avg: "Avg. package Rs 14 LPA",
+    avg: "Package range: Rs 7-16 LPA",
   },
   {
     title: "SQL Developer",
     text: "Design and optimize SQL-driven data extraction and transformation.",
-    avg: "Avg. package Rs 11 LPA",
+    avg: "Package range: Rs 5-12 LPA",
   },
   {
     title: "Marketing Analyst",
     text: "Evaluate campaign performance and optimize channel ROI.",
-    avg: "Avg. package Rs 10 LPA",
+    avg: "Package range: Rs 4-10 LPA",
   },
   {
     title: "Financial Analyst",
     text: "Support finance decisions through quantitative models and reporting.",
-    avg: "Avg. package Rs 12 LPA",
+    avg: "Package range: Rs 5-12 LPA",
   },
   {
     title: "Operations Analyst",
     text: "Improve process efficiency through operational data insights.",
-    avg: "Avg. package Rs 11 LPA",
+    avg: "Package range: Rs 4-10 LPA",
   },
 ];
 
@@ -676,6 +676,32 @@ const DataAnalytics = () => {
           text-transform: uppercase;
         }
 
+        .da-fixed-price {
+          align-items: center;
+          background: #ffffffee;
+          backdrop-filter: blur(6px);
+          border-top: 1px solid var(--line);
+          bottom: 0;
+          color: var(--ink);
+          display: flex;
+          font-size: 14px;
+          font-weight: 700;
+          justify-content: flex-start;
+          left: 0;
+          letter-spacing: 0.4px;
+          min-height: 56px;
+          padding: 10px 24px;
+          position: fixed;
+          text-transform: uppercase;
+          width: 100%;
+          z-index: 120;
+        }
+
+        .da-fixed-price strong {
+          color: var(--accent-dark);
+          margin-left: 6px;
+        }
+
         .da-metric {
           text-align: center;
           padding: 16px;
@@ -987,8 +1013,10 @@ const DataAnalytics = () => {
           <div className="da-role-grid">
             {roles.map((role) => (
               <article className="da-role-card" key={role.title}>
-                <div className="da-role-dot" />
-                <h4>{role.title}</h4>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
+                  <div className="da-role-dot" style={{ marginBottom: 0 }} />
+                  <h4 style={{ margin: 0 }}>{role.title}</h4>
+                </div>
                 <p>{role.text}</p>
                 <strong>{role.avg}</strong>
               </article>
@@ -1112,6 +1140,8 @@ const DataAnalytics = () => {
           </div>
         </div>
       </section>
+
+      <div className="da-fixed-price">Price: <strong>Rs 61,999 inclusive of GST</strong></div>
     </div>
   );
 };

@@ -229,47 +229,47 @@ const roles = [
   {
     title: "Product Manager",
     text: "Own product direction, prioritization, and cross-functional execution.",
-    avg: "Avg. package Rs 24 LPA",
+    avg: "Package range: Rs 10-28 LPA",
   },
   {
     title: "Product Marketing Manager",
     text: "Lead product positioning, messaging, and go-to-market strategy.",
-    avg: "Avg. package Rs 21 LPA",
+    avg: "Package range: Rs 8-22 LPA",
   },
   {
     title: "Product Owner",
     text: "Manage backlog quality and align delivery with user and business outcomes.",
-    avg: "Avg. package Rs 20 LPA",
+    avg: "Package range: Rs 9-22 LPA",
   },
   {
     title: "Product Analyst",
     text: "Use behavioral and product data to guide prioritization and improvements.",
-    avg: "Avg. package Rs 18 LPA",
+    avg: "Package range: Rs 6-16 LPA",
   },
   {
     title: "Growth Product Manager",
     text: "Drive growth loops and retention strategy through product experimentation.",
-    avg: "Avg. package Rs 25 LPA",
+    avg: "Package range: Rs 12-30 LPA",
   },
   {
     title: "UX Product Strategist",
     text: "Bridge user research, design quality, and product outcomes.",
-    avg: "Avg. package Rs 19 LPA",
+    avg: "Package range: Rs 8-20 LPA",
   },
   {
     title: "Product Development Lead",
     text: "Coordinate full product lifecycle from problem definition to launch.",
-    avg: "Avg. package Rs 23 LPA",
+    avg: "Package range: Rs 12-26 LPA",
   },
   {
     title: "VP Product",
     text: "Lead portfolio strategy and product organization alignment.",
-    avg: "Avg. package Rs 38 LPA",
+    avg: "Package range: Rs 35-90 LPA",
   },
   {
     title: "Chief Product Officer",
     text: "Own company-wide product vision, innovation, and strategic direction.",
-    avg: "Avg. package Rs 50 LPA",
+    avg: "Package range: Rs 50-120 LPA",
   },
 ];
 
@@ -733,6 +733,32 @@ const ProductManagement = () => {
           text-transform: uppercase;
         }
 
+        .pm-fixed-price {
+          align-items: center;
+          background: #ffffffee;
+          backdrop-filter: blur(6px);
+          border-top: 1px solid var(--line);
+          bottom: 0;
+          color: var(--ink);
+          display: flex;
+          font-size: 14px;
+          font-weight: 700;
+          justify-content: flex-start;
+          left: 0;
+          letter-spacing: 0.4px;
+          min-height: 56px;
+          padding: 10px 24px;
+          position: fixed;
+          text-transform: uppercase;
+          width: 100%;
+          z-index: 120;
+        }
+
+        .pm-fixed-price strong {
+          color: var(--accent-dark);
+          margin-left: 6px;
+        }
+
         .pm-metric {
           text-align: center;
           padding: 16px;
@@ -1044,8 +1070,10 @@ const ProductManagement = () => {
           <div className="pm-role-grid">
             {roles.map((role) => (
               <article className="pm-role-card" key={role.title}>
-                <div className="pm-role-dot" />
-                <h4>{role.title}</h4>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
+                  <div className="pm-role-dot" style={{ marginBottom: 0 }} />
+                  <h4 style={{ margin: 0 }}>{role.title}</h4>
+                </div>
                 <p>{role.text}</p>
                 <strong>{role.avg}</strong>
               </article>
@@ -1169,6 +1197,8 @@ const ProductManagement = () => {
           </div>
         </div>
       </section>
+
+      <div className="pm-fixed-price">Price: <strong>Rs 65,999 inclusive of GST</strong></div>
     </div>
   );
 };

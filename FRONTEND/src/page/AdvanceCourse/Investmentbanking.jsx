@@ -229,47 +229,47 @@ const roles = [
   {
     title: "Investment Banking Analyst",
     text: "Support deal execution, modeling, and client advisory documentation.",
-    avg: "Avg. package Rs 26 LPA",
+    avg: "Package range: Rs 10-22 LPA",
   },
   {
     title: "M&A Analyst",
     text: "Analyze transactions, valuations, and strategic combinations for deal outcomes.",
-    avg: "Avg. package Rs 28 LPA",
+    avg: "Package range: Rs 12-28 LPA",
   },
   {
     title: "Private Equity Analyst",
     text: "Evaluate private investment opportunities and portfolio growth potential.",
-    avg: "Avg. package Rs 30 LPA",
+    avg: "Package range: Rs 14-35 LPA",
   },
   {
     title: "Financial Analyst",
     text: "Interpret financial data to guide investment and corporate finance decisions.",
-    avg: "Avg. package Rs 18 LPA",
+    avg: "Package range: Rs 6-14 LPA",
   },
   {
     title: "Corporate Finance Specialist",
     text: "Drive financial planning and strategic capital decisions for enterprises.",
-    avg: "Avg. package Rs 22 LPA",
+    avg: "Package range: Rs 8-18 LPA",
   },
   {
     title: "Risk Management Analyst",
     text: "Identify and mitigate financial exposure across portfolios and transactions.",
-    avg: "Avg. package Rs 20 LPA",
+    avg: "Package range: Rs 7-16 LPA",
   },
   {
     title: "Equity Research Analyst",
     text: "Assess companies and sectors to generate market-aligned investment insights.",
-    avg: "Avg. package Rs 21 LPA",
+    avg: "Package range: Rs 8-18 LPA",
   },
   {
     title: "Portfolio Manager",
     text: "Manage allocations and optimize risk-adjusted returns across investments.",
-    avg: "Avg. package Rs 32 LPA",
+    avg: "Package range: Rs 12-40 LPA",
   },
   {
     title: "Corporate Finance Advisor",
     text: "Provide strategic advisory for funding, restructuring, and value creation.",
-    avg: "Avg. package Rs 29 LPA",
+    avg: "Package range: Rs 10-30 LPA",
   },
 ];
 
@@ -733,6 +733,32 @@ const Investmentbanking = () => {
           text-transform: uppercase;
         }
 
+        .ib-fixed-price {
+          align-items: center;
+          background: #ffffffee;
+          backdrop-filter: blur(6px);
+          border-top: 1px solid var(--line);
+          bottom: 0;
+          color: var(--ink);
+          display: flex;
+          font-size: 14px;
+          font-weight: 700;
+          justify-content: flex-start;
+          left: 0;
+          letter-spacing: 0.4px;
+          min-height: 56px;
+          padding: 10px 24px;
+          position: fixed;
+          text-transform: uppercase;
+          width: 100%;
+          z-index: 120;
+        }
+
+        .ib-fixed-price strong {
+          color: var(--accent-dark);
+          margin-left: 6px;
+        }
+
         .ib-metric {
           text-align: center;
           padding: 16px;
@@ -1044,8 +1070,10 @@ const Investmentbanking = () => {
           <div className="ib-role-grid">
             {roles.map((role) => (
               <article className="ib-role-card" key={role.title}>
-                <div className="ib-role-dot" />
-                <h4>{role.title}</h4>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
+                  <div className="ib-role-dot" style={{ marginBottom: 0 }} />
+                  <h4 style={{ margin: 0 }}>{role.title}</h4>
+                </div>
                 <p>{role.text}</p>
                 <strong>{role.avg}</strong>
               </article>
@@ -1169,6 +1197,8 @@ const Investmentbanking = () => {
           </div>
         </div>
       </section>
+
+      <div className="ib-fixed-price">Price: <strong>Rs 47,200 inclusive of GST</strong></div>
     </div>
   );
 };

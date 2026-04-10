@@ -228,47 +228,47 @@ const roles = [
   {
     title: "Performance Marketing Manager",
     text: "Lead paid growth strategy and channel performance optimization.",
-    avg: "Avg. package Rs 22 LPA",
+    avg: "Package range: Rs 10-22 LPA",
   },
   {
     title: "PPC Specialist",
     text: "Manage paid search and display campaigns for efficient acquisition.",
-    avg: "Avg. package Rs 15 LPA",
+    avg: "Package range: Rs 5-14 LPA",
   },
   {
     title: "Social Ads Specialist",
     text: "Build and optimize paid campaigns across social ecosystems.",
-    avg: "Avg. package Rs 14 LPA",
+    avg: "Package range: Rs 5-13 LPA",
   },
   {
     title: "CRO Specialist",
     text: "Improve conversion rates through funnel and landing page optimization.",
-    avg: "Avg. package Rs 16 LPA",
+    avg: "Package range: Rs 6-15 LPA",
   },
   {
     title: "Marketing Analyst",
     text: "Analyze campaign performance and recommend high-impact optimizations.",
-    avg: "Avg. package Rs 13 LPA",
+    avg: "Package range: Rs 4-10 LPA",
   },
   {
     title: "Campaign Manager",
     text: "Own campaign execution from strategy through reporting and scale.",
-    avg: "Avg. package Rs 17 LPA",
+    avg: "Package range: Rs 6-16 LPA",
   },
   {
     title: "Paid Media Manager",
     text: "Drive paid media direction and channel-wise growth outcomes.",
-    avg: "Avg. package Rs 20 LPA",
+    avg: "Package range: Rs 8-20 LPA",
   },
   {
     title: "Biddable Media Specialist",
     text: "Optimize bids and budgets to maximize return across paid platforms.",
-    avg: "Avg. package Rs 16 LPA",
+    avg: "Package range: Rs 6-14 LPA",
   },
   {
     title: "Programmatic Specialist",
     text: "Automate and optimize digital ad delivery for precision targeting.",
-    avg: "Avg. package Rs 18 LPA",
+    avg: "Package range: Rs 7-18 LPA",
   },
 ];
 
@@ -732,6 +732,32 @@ const Performancemarket = () => {
           text-transform: uppercase;
         }
 
+        .pf-fixed-price {
+          align-items: center;
+          background: #ffffffee;
+          backdrop-filter: blur(6px);
+          border-top: 1px solid var(--line);
+          bottom: 0;
+          color: var(--ink);
+          display: flex;
+          font-size: 14px;
+          font-weight: 700;
+          justify-content: flex-start;
+          left: 0;
+          letter-spacing: 0.4px;
+          min-height: 56px;
+          padding: 10px 24px;
+          position: fixed;
+          text-transform: uppercase;
+          width: 100%;
+          z-index: 120;
+        }
+
+        .pf-fixed-price strong {
+          color: var(--accent-dark);
+          margin-left: 6px;
+        }
+
         .pf-metric {
           text-align: center;
           padding: 16px;
@@ -1043,8 +1069,10 @@ const Performancemarket = () => {
           <div className="pf-role-grid">
             {roles.map((role) => (
               <article className="pf-role-card" key={role.title}>
-                <div className="pf-role-dot" />
-                <h4>{role.title}</h4>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
+                  <div className="pf-role-dot" style={{ marginBottom: 0 }} />
+                  <h4 style={{ margin: 0 }}>{role.title}</h4>
+                </div>
                 <p>{role.text}</p>
                 <strong>{role.avg}</strong>
               </article>
@@ -1168,6 +1196,8 @@ const Performancemarket = () => {
           </div>
         </div>
       </section>
+
+      <div className="pf-fixed-price">Price: <strong>Rs 95,999 inclusive of GST</strong></div>
     </div>
   );
 };

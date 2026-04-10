@@ -203,47 +203,47 @@ const roles = [
   {
     title: "Prompt Engineer",
     text: "Design and optimize prompts for production AI use-cases.",
-    avg: "Avg. package Rs 20 LPA",
+    avg: "Package range: Rs 8-24 LPA",
   },
   {
     title: "AI Content Specialist",
     text: "Build AI-assisted content pipelines with quality and consistency controls.",
-    avg: "Avg. package Rs 14 LPA",
+    avg: "Package range: Rs 5-14 LPA",
   },
   {
     title: "Chatbot Developer",
     text: "Create conversational AI experiences with prompt-driven behavior design.",
-    avg: "Avg. package Rs 16 LPA",
+    avg: "Package range: Rs 6-18 LPA",
   },
   {
     title: "AI Research Associate",
     text: "Experiment with model prompting and evaluation frameworks.",
-    avg: "Avg. package Rs 18 LPA",
+    avg: "Package range: Rs 8-20 LPA",
   },
   {
     title: "Marketing Automation Specialist",
     text: "Use GenAI prompting to scale campaign content and customer journeys.",
-    avg: "Avg. package Rs 13 LPA",
+    avg: "Package range: Rs 5-14 LPA",
   },
   {
     title: "AI Product Manager",
     text: "Lead AI product outcomes with prompt and model behavior strategy.",
-    avg: "Avg. package Rs 24 LPA",
+    avg: "Package range: Rs 12-30 LPA",
   },
   {
     title: "AI Data Trainer",
     text: "Improve model quality through structured data and prompt feedback loops.",
-    avg: "Avg. package Rs 15 LPA",
+    avg: "Package range: Rs 5-13 LPA",
   },
   {
     title: "Technical Writer (AI)",
     text: "Create AI-native documentation and instruction systems for teams.",
-    avg: "Avg. package Rs 12 LPA",
+    avg: "Package range: Rs 5-12 LPA",
   },
   {
     title: "Conversational UX Designer",
     text: "Design natural conversational interfaces across AI experiences.",
-    avg: "Avg. package Rs 17 LPA",
+    avg: "Package range: Rs 7-18 LPA",
   },
 ];
 
@@ -707,6 +707,32 @@ const PromptEngineering = () => {
           text-transform: uppercase;
         }
 
+        .pe-fixed-price {
+          align-items: center;
+          background: #ffffffee;
+          backdrop-filter: blur(6px);
+          border-top: 1px solid var(--line);
+          bottom: 0;
+          color: var(--ink);
+          display: flex;
+          font-size: 14px;
+          font-weight: 700;
+          justify-content: flex-start;
+          left: 0;
+          letter-spacing: 0.4px;
+          min-height: 56px;
+          padding: 10px 24px;
+          position: fixed;
+          text-transform: uppercase;
+          width: 100%;
+          z-index: 120;
+        }
+
+        .pe-fixed-price strong {
+          color: var(--accent-dark);
+          margin-left: 6px;
+        }
+
         .pe-metric {
           text-align: center;
           padding: 16px;
@@ -1018,8 +1044,10 @@ const PromptEngineering = () => {
           <div className="pe-role-grid">
             {roles.map((role) => (
               <article className="pe-role-card" key={role.title}>
-                <div className="pe-role-dot" />
-                <h4>{role.title}</h4>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
+                  <div className="pe-role-dot" style={{ marginBottom: 0 }} />
+                  <h4 style={{ margin: 0 }}>{role.title}</h4>
+                </div>
                 <p>{role.text}</p>
                 <strong>{role.avg}</strong>
               </article>
@@ -1143,6 +1171,8 @@ const PromptEngineering = () => {
           </div>
         </div>
       </section>
+
+      <div className="pe-fixed-price">Price: <strong>Rs 65,999 inclusive of GST</strong></div>
     </div>
   );
 };
