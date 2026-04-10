@@ -1197,7 +1197,7 @@ const Performancemarket = () => {
         </div>
       </section>
 
-      <div className="pf-fixed-price">Price: <strong>Rs 95,999 inclusive of GST</strong></div>
+      <div className="pf-fixed-price">Price: <strong>Rs 95,999 inclusive of taxes</strong></div>
     </div>
   );
 };

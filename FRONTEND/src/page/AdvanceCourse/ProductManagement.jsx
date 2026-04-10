@@ -1198,7 +1198,7 @@ const ProductManagement = () => {
         </div>
       </section>
 
-      <div className="pm-fixed-price">Price: <strong>Rs 65,999 inclusive of GST</strong></div>
+      <div className="pm-fixed-price">Price: <strong>Rs 65,999 inclusive of taxes</strong></div>
     </div>
   );
 };

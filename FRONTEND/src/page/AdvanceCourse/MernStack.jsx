@@ -1197,7 +1197,7 @@ const MernStack = () => {
         </div>
       </section>
 
-      <div className="ms-fixed-price">Price: <strong>Rs 61,999 inclusive of GST</strong></div>
+      <div className="ms-fixed-price">Price: <strong>Rs 61,999 inclusive of taxes</strong></div>
     </div>
   );
 };

@@ -1193,7 +1193,7 @@ const DataScience = () => {
         </div>
       </section>
 
-      <div className="ds-fixed-price">Price: <strong>Rs 65999 inclusive of GST</strong></div>
+      <div className="ds-fixed-price">Price: <strong>Rs 65999 inclusive of taxes</strong></div>
     </div>
   );
 };

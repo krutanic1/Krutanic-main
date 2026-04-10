@@ -1198,7 +1198,7 @@ const Investmentbanking = () => {
         </div>
       </section>
 
-      <div className="ib-fixed-price">Price: <strong>Rs 47,200 inclusive of GST</strong></div>
+      <div className="ib-fixed-price">Price: <strong>Rs 47,200 inclusive of taxes</strong></div>
     </div>
   );
 };

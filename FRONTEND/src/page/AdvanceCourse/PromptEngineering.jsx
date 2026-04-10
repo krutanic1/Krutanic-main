@@ -1172,7 +1172,7 @@ const PromptEngineering = () => {
         </div>
       </section>
 
-      <div className="pe-fixed-price">Price: <strong>Rs 65,999 inclusive of GST</strong></div>
+      <div className="pe-fixed-price">Price: <strong>Rs 65,999 inclusive of taxes</strong></div>
     </div>
   );
 };

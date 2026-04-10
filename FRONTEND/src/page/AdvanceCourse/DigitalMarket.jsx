@@ -1203,7 +1203,7 @@ const DigitalMarket = () => {
         </div>
       </section>
 
-      <div className="dm-fixed-price">Price: <strong>Rs 95,999 inclusive of GST</strong></div>
+      <div className="dm-fixed-price">Price: <strong>Rs 95,999 inclusive of taxes</strong></div>
     </div>
   );
 };

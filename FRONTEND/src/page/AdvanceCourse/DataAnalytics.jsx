@@ -1141,7 +1141,7 @@ const DataAnalytics = () => {
         </div>
       </section>
 
-      <div className="da-fixed-price">Price: <strong>Rs 61,999 inclusive of GST</strong></div>
+      <div className="da-fixed-price">Price: <strong>Rs 61,999 inclusive of taxes</strong></div>
     </div>
   );
 };
