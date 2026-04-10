@@ -99,7 +99,7 @@ export default function Landing() {
     navigate('/explore-courses');
   };
 
-  const availableCourses = coursesList.length > 0 ? coursesList : courses;
+  const availableCourses = coursesList;
   const domainOptions = Array.from(
     new Set(
       availableCourses

@@ -81,7 +81,7 @@ export default function ExploreCourses() {
     fetchCourses();
   }, []);
 
-  const courses = coursesList.length > 0 ? coursesList : fallbackCourses;
+  const courses = coursesList;
 
   const filteredCourses = useMemo(() => {
     const normalized = query.trim().toLowerCase();
