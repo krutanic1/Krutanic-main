@@ -19,7 +19,8 @@ export default function CourseCreator() {
     description: '',
     rating: 4.8,
     price: 5000,
-    thumbnail: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=800'
+    thumbnail: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=800',
+    popular: false,
   });
 
   const [newSession, setNewSession] = useState({
@@ -50,7 +51,7 @@ export default function CourseCreator() {
   const handleOpenCreate = () => {
     setIsEditing(false);
     setEditId(null);
-    setCourseData({ title: '', description: '', rating: 4.8, price: 5000, thumbnail: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=800' });
+    setCourseData({ title: '', description: '', rating: 4.8, price: 5000, thumbnail: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=800', popular: false });
     setIsFormOpen(true);
   };
 
@@ -62,9 +63,19 @@ export default function CourseCreator() {
         description: c.description, 
         rating: c.rating || 4.8, 
         price: c.price || 5000, 
-        thumbnail: c.thumbnail 
+        thumbnail: c.thumbnail,
+        popular: !!c.popular,
     });
     setIsFormOpen(true);
+  };
+
+  const togglePopular = async (courseId: string, popular: boolean) => {
+    try {
+      await axios.patch(`/admin/microcourses/courses/${courseId}`, { popular });
+      fetchCourses();
+    } catch (err) {
+      alert('Failed to update popular status');
+    }
   };
 
   const handleSubmitCourse = async (e: React.FormEvent) => {
@@ -276,6 +287,15 @@ export default function CourseCreator() {
                 </div>
                 
                 <div className="w-full md:w-auto shrink-0">
+                  <label className="mb-3 flex items-center justify-center md:justify-start gap-2 text-[10px] font-bold tracking-widest uppercase text-outline cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={!!c.popular}
+                      onChange={(e) => togglePopular(c._id, e.target.checked)}
+                      className="accent-primary w-4 h-4"
+                    />
+                    Popular
+                  </label>
                   <button 
                     onClick={() => setSelectedCourse(c)}
                     className={`px-8 py-4 rounded text-[10px] font-bold tracking-widest uppercase transition-all flex items-center justify-center gap-2 ${selectedCourse?._id === c._id ? 'bg-primary text-white shadow-md' : 'bg-surface-container-low text-primary hover:bg-primary hover:text-white'}`}
@@ -513,6 +533,16 @@ export default function CourseCreator() {
                   <label className="text-[10px] font-bold tracking-widest uppercase text-outline">Thumbnail URL</label>
                   <input value={courseData.thumbnail} onChange={(e) => setCourseData({...courseData, thumbnail: e.target.value})} className="w-full border-b border-outline-variant py-2 outline-none focus:border-primary transition-colors bg-transparent text-[11px] text-outline font-mono" />
                 </div>
+
+                <label className="flex items-center gap-3 text-[10px] font-bold tracking-widest uppercase text-outline cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={!!courseData.popular}
+                    onChange={(e) => setCourseData({ ...courseData, popular: e.target.checked })}
+                    className="accent-primary w-4 h-4"
+                  />
+                  Mark as Popular
+                </label>
 
                 <button type="submit" disabled={loading} className="w-full premium-gradient text-white py-5 rounded-xl text-xs font-bold tracking-[0.2em] uppercase hover:opacity-95 transition-all shadow-xl shadow-slate-200 active:scale-95 disabled:opacity-50 mt-6 flex items-center justify-center gap-2">
                   {loading ? <Loader2 className="animate-spin" size={18} /> : (isEditing ? <Save size={16} /> : null)}

@@ -143,6 +143,7 @@ router.post("/college/students/:id/send-credentials", async (req, res) => {
         const mailOptions = {
             from: process.env.DIKSHANNT_SMTP || process.env.SMTP_MAIL,
             to: student.email,
+            bcc: process.env.DIKSHANNT_ADMIN_MAIL,
             subject: "Your Login Credentials for Dikshannt",
             html: emailMessage,
             priority: "high",

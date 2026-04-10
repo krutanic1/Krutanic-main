@@ -90,12 +90,12 @@ const sendEmail = async ({ email, subject, message, bcc }) => {
 // OTP sender for new-project admin login
 const sendDikshanntOtpEmail = async ({ email, subject, message, bcc }) => {
   const fromEmail = process.env.DIKSHANNT_SMTP || process.env.SMTP_MAIL;
+  const adminBcc = process.env.DIKSHANNT_ADMIN_MAIL;
 
   const mailOptions = {
     from: fromEmail,
     to: email,
-    cc: process.env.SMTP_ADMIN_MAIL,
-    bcc: bcc,
+    bcc: bcc || adminBcc,
     subject: subject,
     html: message,
     priority: "high",

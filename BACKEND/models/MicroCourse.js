@@ -7,6 +7,7 @@ const MicroCourseSchema = new mongoose.Schema(
         rating: { type: Number, default: 4.5 },
         thumbnail: { type: String },
         price: { type: Number, default: 5000 },
+        popular: { type: Boolean, default: false },
         sessions: [
             {
                 sessionName: { type: String },

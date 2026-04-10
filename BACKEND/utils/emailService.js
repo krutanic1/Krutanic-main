@@ -15,6 +15,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const senderEmail = process.env.DIKSHANNT_SMTP || process.env.SMTP_MAIL || process.env.EMAIL_USER;
+const adminBcc = process.env.DIKSHANNT_ADMIN_MAIL;
 
 const resolveLoginUrl = () => {
     const explicitUrl = (process.env.DIKSHANNT_LOGIN_URL || '').trim();
@@ -69,6 +70,7 @@ const sendCredentialsEmail = async (userEmail, userName, password) => {
         await transporter.sendMail({
             from: `"Dikshannt Support" <${senderEmail}>`,
             to: userEmail,
+            bcc: adminBcc,
             subject: "Your Krutanic MicroCourses Credentials",
             html: `
                 <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 40px; color: #1a1a1a; max-width: 600px; margin: auto; border: 1px solid #eee;">
@@ -105,6 +107,7 @@ const sendCollegeCredentialsEmail = async (collegeEmail, authorizerName, college
         await transporter.sendMail({
             from: `"Dikshannt Institutional Support" <${senderEmail}>`,
             to: collegeEmail,
+            bcc: adminBcc,
             subject: "Your Institutional Portal Credentials - Dikshannt",
             html: `
                 <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 40px; color: #1a1a1a; max-width: 600px; margin: auto; border: 1px solid #eee; background: #fff;">

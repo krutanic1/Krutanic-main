@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import EnrollModal from '../components/EnrollModal';
+import CourseDetailsModal from '../components/CourseDetailsModal';
 
 const fallbackCourses = [
   { tag: 'TECH', title: 'Full Stack Web Development', desc: 'Build enterprise-grade applications from scratch.', duration: '24 WEEKS', format: 'COHORT-BASED', image: 'https://picsum.photos/seed/code/800/600' },
@@ -43,11 +44,24 @@ export default function ExploreCourses() {
   const [upcomingCourses, setUpcomingCourses] = useState<any[]>([]);
   const [query, setQuery] = useState('');
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
+  const [selectedCourseDetails, setSelectedCourseDetails] = useState<any>(null);
   const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   const handleEnrollClick = (course: any) => {
     setSelectedCourse(course);
     setIsEnrollModalOpen(true);
+  };
+
+  const handleLearnMoreClick = (course: any) => {
+    setSelectedCourseDetails(course);
+    setIsDetailsModalOpen(true);
+  };
+
+  const handleEnrollFromDetails = (course: any) => {
+    setSelectedCourse(course);
+    setIsEnrollModalOpen(true);
+    setIsDetailsModalOpen(false);
   };
 
   useEffect(() => {
@@ -131,27 +145,42 @@ export default function ExploreCourses() {
                 </div>
 
                 <div className="p-8 flex flex-col flex-grow">
-                  <h3 className="text-xl text-primary mb-2 leading-snug">{course.title}</h3>
-                  <div className="flex items-center gap-1.5 mb-4">
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <h3 className="text-xl text-primary leading-snug">{course.title}</h3>
+                    {course.popular && (
+                      <span className="shrink-0 bg-primary text-white text-[10px] font-bold tracking-widest px-3 py-1 uppercase rounded">
+                        Popular
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1.5 mb-3">
                     <div className="flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-100">
                       <span>{course.rating || 4.8}</span>
                       <Star size={10} fill="currentColor" strokeWidth={0} />
                     </div>
                   </div>
-                  <p className="text-xs text-on-surface-variant mb-6">{course.desc}</p>
+                  <p className="text-xs text-on-surface-variant mb-4">{course.desc}</p>
 
-                  <div className="mt-auto space-y-4">
+                  <div className="mt-auto space-y-3">
                     <div className="flex justify-between text-[11px] font-bold tracking-widest uppercase text-on-surface-variant border-b border-outline-variant/10 pb-2">
                       <span>{course.duration}</span>
                       <span>{course.format}</span>
                     </div>
 
-                    <button
-                      onClick={() => handleEnrollClick(course)}
-                      className="w-full text-center py-3 bg-primary text-white text-[10px] font-bold tracking-widest uppercase hover:bg-primary-container transition-all duration-300 active:scale-95 shadow-sm"
-                    >
-                      Enroll Now
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEnrollClick(course)}
+                        className="flex-1 text-center py-3 bg-primary text-white text-[10px] font-bold tracking-widest uppercase hover:bg-primary-container transition-all duration-300 active:scale-95 shadow-sm"
+                      >
+                        Enroll Now
+                      </button>
+                      <button
+                        onClick={() => handleLearnMoreClick(course)}
+                        className="flex-1 text-center py-3 border border-primary text-primary text-[10px] font-bold tracking-widest uppercase hover:bg-primary hover:text-white transition-all duration-300"
+                      >
+                        Learn More
+                      </button>
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -242,6 +271,15 @@ export default function ExploreCourses() {
           isOpen={isEnrollModalOpen}
           onClose={() => setIsEnrollModalOpen(false)}
           course={selectedCourse}
+        />
+      )}
+
+      {selectedCourseDetails && (
+        <CourseDetailsModal
+          isOpen={isDetailsModalOpen}
+          onClose={() => setIsDetailsModalOpen(false)}
+          onEnroll={handleEnrollFromDetails}
+          course={selectedCourseDetails}
         />
       )}
 

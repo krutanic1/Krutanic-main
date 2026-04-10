@@ -394,15 +394,22 @@ export default function Landing() {
                       </div>
                     </div>
                     <div className="p-8 flex flex-col flex-grow">
-                      <h3 className="text-xl text-primary mb-2 leading-snug">{c.title}</h3>
-                      <div className="flex items-center gap-1.5 mb-4">
+                      <div className="flex items-start justify-between gap-3 mb-2">
+                        <h3 className="text-xl text-primary leading-snug">{c.title}</h3>
+                        {c.popular && (
+                          <span className="shrink-0 bg-primary text-white text-[10px] font-bold tracking-widest px-3 py-1 uppercase rounded">
+                            Popular
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1.5 mb-3">
                         <div className="flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-100">
                           <span>{c.rating || 4.8}</span>
                           <Star size={10} fill="currentColor" strokeWidth={0} />
                         </div>
                       </div>
-                      <p className="text-xs text-on-surface-variant mb-6">{c.desc}</p>
-                      <div className="mt-auto space-y-4">
+                      <p className="text-xs text-on-surface-variant mb-4">{c.desc}</p>
+                      <div className="mt-auto space-y-3">
                         <div className="flex justify-between text-[11px] font-bold tracking-widest uppercase text-on-surface-variant border-b border-outline-variant/10 pb-2">
                           <span>{c.duration}</span>
                           <span>{c.format}</span>
