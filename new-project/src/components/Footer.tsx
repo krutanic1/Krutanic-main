@@ -56,17 +56,16 @@ export default function Footer() {
             <h3 className="text-[10px] font-bold tracking-[0.14em] uppercase text-slate-900 pb-2 border-b border-outline-variant/30 inline-block">Secure Payments</h3>
             <div className="mt-3 flex flex-col gap-2">
               <p className="text-sm md:text-base font-bold text-[#0b3276]">Razorpay</p>
-              <p className="text-sm md:text-base font-bold text-[#1d2f6f]">Easebuzz</p>
-            </div>
+              </div>
           </div>
         </div>
 
         <div className="mt-6 pt-4 border-t border-outline-variant/20 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-2.5">
           <p className="text-[10px] md:text-xs tracking-[0.08em] uppercase text-slate-500 font-semibold">© 2026 KRUTANIC. ALL RIGHTS RESERVED.</p>
           <div className="flex flex-wrap items-center gap-3 lg:gap-5">
-            <a href="#" className="text-[10px] md:text-xs tracking-[0.08em] uppercase text-slate-500 font-semibold hover:text-primary transition-colors">Terms of Service</a>
-            <a href="#" className="text-[10px] md:text-xs tracking-[0.08em] uppercase text-slate-500 font-semibold hover:text-primary transition-colors">Privacy Policy</a>
-            <a href="#" className="text-[10px] md:text-xs tracking-[0.08em] uppercase text-slate-500 font-semibold hover:text-primary transition-colors">Refund Policy</a>
+            <Link to="/terms-of-service" className="text-[10px] md:text-xs tracking-[0.08em] uppercase text-slate-500 font-semibold hover:text-primary transition-colors">Terms of Service</Link>
+            <Link to="/privacy-policy" className="text-[10px] md:text-xs tracking-[0.08em] uppercase text-slate-500 font-semibold hover:text-primary transition-colors">Privacy Policy</Link>
+            <Link to="/refund-policy" className="text-[10px] md:text-xs tracking-[0.08em] uppercase text-slate-500 font-semibold hover:text-primary transition-colors">Refund Policy</Link>
           </div>
         </div>
       </div>

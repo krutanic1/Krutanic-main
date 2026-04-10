@@ -217,47 +217,47 @@ const roles = [
   {
     title: "Data Scientist",
     text: "Lead analytical decisions and discover non-obvious business patterns.",
-    avg: "Avg. package Rs 24 LPA",
+    avg: "Avg. package 5-9 LPA",
   },
   {
     title: "Data Analyst",
     text: "Interpret data and build reporting systems to support decision-making.",
-    avg: "Avg. package Rs 15 LPA",
+    avg: "Avg. package 5-7 LPA",
   },
   {
     title: "Machine Learning Engineer",
     text: "Deploy and optimize machine learning systems for production scale.",
-    avg: "Avg. package Rs 28 LPA",
+    avg: "Avg. package 8-12 LPA",
   },
   {
     title: "Data Engineer",
     text: "Build high-throughput data pipelines and resilient infrastructure.",
-    avg: "Avg. package Rs 22 LPA",
+    avg: "Avg. package 5-7 LPA",
   },
   {
     title: "Business Intelligence Analyst",
     text: "Transform business data into strategic, executable insights.",
-    avg: "Avg. package Rs 16 LPA",
+    avg: "Avg. package 4-6 LPA",
   },
   {
     title: "AI Engineer",
     text: "Build AI-driven products and intelligent automation systems.",
-    avg: "Avg. package Rs 26 LPA",
+    avg: "Avg. package 12-19 LPA",
   },
   {
     title: "Big Data Specialist",
     text: "Work with large-scale processing and high-volume data ecosystems.",
-    avg: "Avg. package Rs 20 LPA",
+    avg: "Avg. package 7-11 LPA",
   },
   {
     title: "Data Science Consultant",
     text: "Guide organizations with data strategy and model-led business execution.",
-    avg: "Avg. package Rs 23 LPA",
+    avg: "Avg. package 6-9 LPA",
   },
   {
     title: "Quantitative Analyst",
     text: "Build statistical and mathematical models for complex forecasting.",
-    avg: "Avg. package Rs 25 LPA",
+    avg: "Avg. package 4-7 LPA",
   },
 ];
 

@@ -4,14 +4,30 @@ import axios from 'axios';
 
 interface EnrollmentNotification {
   studentName: string;
+  studentEmail?: string;
   courseName: string;
   amount: number;
 }
 
 const fallbackNotifications: EnrollmentNotification[] = [
-  { studentName: 'Aarav S.', courseName: 'Full Stack Web Development', amount: 5000 },
-  { studentName: 'Nisha K.', courseName: 'Data Analytics for Decision Making', amount: 5000 },
-  { studentName: 'Rohan M.', courseName: 'Digital Marketing and Growth Strategy', amount: 5000 },
+  {
+    studentName: 'Aarav S.',
+    studentEmail: 'aarav.s***@gmail.com',
+    courseName: 'Full Stack Web Development',
+    amount: 5000,
+  },
+  {
+    studentName: 'Nisha K.',
+    studentEmail: 'nisha.k***@gmail.com',
+    courseName: 'Data Analytics for Decision Making',
+    amount: 5000,
+  },
+  {
+    studentName: 'Rohan M.',
+    studentEmail: 'rohan.m***@gmail.com',
+    courseName: 'Digital Marketing and Growth Strategy',
+    amount: 5000,
+  },
 ];
 
 function maskName(name: string) {
@@ -19,6 +35,28 @@ function maskName(name: string) {
   const parts = name.trim().split(/\s+/);
   if (parts.length === 1) return `${parts[0].slice(0, 1)}***`;
   return `${parts[0]} ${parts[parts.length - 1].slice(0, 1)}.`;
+}
+
+function getMaskedEmail(name: string, email?: string) {
+  const safeEmail = typeof email === 'string' ? email.trim() : '';
+
+  if (safeEmail.includes('@')) {
+    const [localPart, domainPart] = safeEmail.split('@');
+    const cleanedLocal = localPart.replace(/[^a-zA-Z0-9._-]/g, '').toLowerCase();
+    const visibleLocal = cleanedLocal.slice(0, 7);
+    return `${visibleLocal || 'student'}***@${domainPart.toLowerCase()}`;
+  }
+
+  const base = name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .join('.');
+
+  return `${base || 'student'}***@gmail.com`;
 }
 
 function shuffleNotifications(items: EnrollmentNotification[]) {
@@ -52,6 +90,10 @@ export default function LiveEnrollmentCarousel() {
           .filter((item: any) => item?.studentName && item?.courseName)
           .map((item: any) => ({
             studentName: String(item.studentName),
+            studentEmail:
+              item?.studentEmail || item?.email
+                ? String(item.studentEmail || item.email)
+                : undefined,
             courseName: String(item.courseName),
             amount: Number(item.amount) || 5000,
           }));
@@ -102,7 +144,7 @@ export default function LiveEnrollmentCarousel() {
   if (!current) return null;
 
   return (
-    <div className="fixed bottom-5 right-5 z-[90] w-[calc(100vw-2.5rem)] max-w-xs pointer-events-none">
+    <div className="fixed bottom-5 right-5 z-[90] w-[calc(100vw-2.5rem)] max-w-[19rem] pointer-events-none">
       <AnimatePresence mode="wait">
         {showPopup && (
           <motion.div
@@ -111,22 +153,38 @@ export default function LiveEnrollmentCarousel() {
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: 80, scale: 0.96 }}
             transition={{ type: 'spring', stiffness: 260, damping: 24, mass: 0.9 }}
-            className="bg-white/95 backdrop-blur border border-metallic-green/20 rounded-2xl editorial-shadow overflow-hidden shadow-[0_18px_40px_rgba(0,77,64,0.14)] min-h-[150px]"
+            className="relative overflow-hidden rounded-[1.7rem] border border-[#d2d6d3] bg-[#ecefed] shadow-[0_16px_38px_rgba(23,52,46,0.2)]"
           >
-            <div className="h-1 bg-gradient-to-r from-metallic-green via-metallic-green-light to-metallic-accent"></div>
-            <div className="px-4 py-5 flex flex-col justify-between min-h-[150px]">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="w-2.5 h-2.5 rounded-full bg-metallic-green shadow-[0_0_0_6px_rgba(0,77,64,0.08)]"></span>
-                <p className="text-[11px] tracking-[0.16em] uppercase font-bold text-metallic-green">Recent Enrollment</p>
+            <div
+              className="absolute inset-x-0 top-0 h-3 bg-[#0b6f5b]"
+              aria-hidden="true"
+            />
+            <div className="relative flex items-center gap-3 px-5 py-4 min-h-[115px]">
+              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-[#d0d6d2] bg-[#dde2df]">
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  className="h-6 w-6 text-[#0b6f5b]"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M20 7L10 17l-5-5" />
+                </svg>
               </div>
-              <p className="text-sm md:text-[0.92rem] text-on-surface-variant leading-relaxed mb-3">
-                <span className="font-semibold text-on-surface">{maskName(current.studentName)}</span>
-                {' '}joined{' '}
-                <span className="font-semibold text-metallic-green">{current.courseName}</span>
-              </p>
-              <p className="text-sm md:text-[0.92rem] text-on-surface-variant">
-                Amount: <span className="font-semibold text-metallic-green">₹{current.amount}</span>
-              </p>
+              <div className="min-w-0">
+                <p className="truncate text-[1.02rem] font-semibold uppercase tracking-[0.07em] text-[#113d34] [font-family:Georgia,serif]">
+                  {maskName(current.studentName)}
+                </p>
+                <p className="mt-0.5 truncate text-[0.89rem] uppercase tracking-[0.03em] text-[#2f3f3a]/90">
+                  {getMaskedEmail(current.studentName, current.studentEmail)}
+                </p>
+                <p className="mt-1 text-[0.98rem] uppercase italic tracking-[0.02em] text-[#1d2d28] [font-family:Georgia,serif]">
+                  Just Enrolled!
+                </p>
+              </div>
             </div>
           </motion.div>
         )}

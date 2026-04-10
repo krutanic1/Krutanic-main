@@ -7,6 +7,9 @@ import ExploreCourses from './pages/ExploreCourses';
 import AboutUs from './pages/AboutUs';
 import Institutions from './pages/Institutions';
 import Insights from './pages/Insights';
+import TermsOfService from './pages/TermsOfService';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import RefundPolicy from './pages/RefundPolicy';
 import StudentDashboard from './pages/StudentDashboard';
 import AdminEnrolls from './admin/AdminEnrolls';
 import AdminReferrals from './admin/AdminReferrals';
@@ -146,6 +149,9 @@ export default function App() {
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/institutions" element={<Institutions />} />
         <Route path="/insights" element={<Insights />} />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/refund-policy" element={<RefundPolicy />} />
         <Route path="/login" element={<Login />} />
         <Route path="/adminlogin" element={<AdminLogin />} />
         <Route path="/dashboard/*" element={<StudentDashboard />} />
