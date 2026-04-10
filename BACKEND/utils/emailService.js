@@ -1,16 +1,41 @@
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT) || 587,
+    secure: false,
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
+        user: process.env.DIKSHANNT_SMTP || process.env.SMTP_MAIL || process.env.EMAIL_USER,
+        pass: process.env.DIKSHANNT_PASSWORD || process.env.SMTP_PASSWORD || process.env.EMAIL_PASS,
+    },
+    tls: {
+        rejectUnauthorized: false,
+    },
+    pool: true,
 });
+
+const senderEmail = process.env.DIKSHANNT_SMTP || process.env.SMTP_MAIL || process.env.EMAIL_USER;
+
+const resolveLoginUrl = () => {
+    const explicitUrl = (process.env.DIKSHANNT_LOGIN_URL || '').trim();
+    if (explicitUrl) return explicitUrl;
+
+    const configured = (process.env.FRONTEND_URL || '')
+        .split(',')
+        .map((value) => value.trim())
+        .filter(Boolean);
+
+    const preferred = configured.find((value) => /dikshannt\.com/i.test(value));
+    if (preferred) return `${preferred.replace(/\/$/, '')}/login`;
+
+    return 'https://dikshannt.com/login';
+};
+
+const loginUrl = resolveLoginUrl();
 
 const sendWelcomeEmail = async (userEmail, userName, courseName) => {
     const mailOptions = {
-        from: process.env.EMAIL_USER,
+        from: senderEmail,
         to: userEmail,
         subject: `Welcome to ${courseName} - Enrollment Approved!`,
         html: `
@@ -19,7 +44,7 @@ const sendWelcomeEmail = async (userEmail, userName, courseName) => {
                 <p>Your enrollment for the course <strong>${courseName}</strong> has been successfully verified and approved.</p>
                 <p>You can now log in to your dashboard to access all the course sessions and videos.</p>
                 <div style="margin: 30px 0;">
-                    <a href="${process.env.FRONTEND_URL}/login" style="background-color: #FE4323; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">Go to Dashboard</a>
+                    <a href="${loginUrl}" style="background-color: #FE4323; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">Go to Dashboard</a>
                 </div>
                 <p>If you have any questions, feel free to reply to this email.</p>
                 <br/>
@@ -41,9 +66,8 @@ const sendWelcomeEmail = async (userEmail, userName, courseName) => {
 
 const sendCredentialsEmail = async (userEmail, userName, password) => {
     try {
-        const loginUrl = `${process.env.FRONTEND_URL}/login`;
         await transporter.sendMail({
-            from: `"Krutanic Support" <${process.env.EMAIL_USER}>`,
+            from: `"Dikshannt Support" <${senderEmail}>`,
             to: userEmail,
             subject: "Your Krutanic MicroCourses Credentials",
             html: `
@@ -70,15 +94,16 @@ const sendCredentialsEmail = async (userEmail, userName, password) => {
             `,
         });
         console.log(`Credentials email sent to ${userEmail}`);
+        return true;
     } catch (error) {
         console.error("Credentials email failed:", error);
+        return false;
     }
 };
 const sendCollegeCredentialsEmail = async (collegeEmail, authorizerName, collegeName, password) => {
     try {
-        const loginUrl = `${process.env.FRONTEND_URL}/login`;
         await transporter.sendMail({
-            from: `"Dikshannt Institutional Support" <${process.env.EMAIL_USER}>`,
+            from: `"Dikshannt Institutional Support" <${senderEmail}>`,
             to: collegeEmail,
             subject: "Your Institutional Portal Credentials - Dikshannt",
             html: `

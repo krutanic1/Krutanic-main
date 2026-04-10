@@ -79,7 +79,10 @@ router.patch("/admin/microcourses/enroll/:id/verify", async (req, res) => {
             }
 
             // Send Welcome Email
-            await sendWelcomeEmail(enrollment.email, enrollment.fullName, enrollment.courseName);
+            const welcomeSent = await sendWelcomeEmail(enrollment.email, enrollment.fullName, enrollment.courseName);
+            if (!welcomeSent) {
+                return res.status(500).json({ error: "Enrollment updated, but failed to send welcome email. Check SMTP configuration." });
+            }
         }
 
         res.status(200).json({ message: `Enrollment ${status} successfully.` });
@@ -251,27 +254,29 @@ router.post("/admin/microcourses/send-credentials/:id", async (req, res) => {
         // Generate a random password (8 chars)
         const rawPassword = crypto.randomBytes(4).toString("hex");
 
-        // Create or Update MicroUser
-        let user = await MicroUser.findOne({ email: enroll.email });
-        if (!user) {
-            user = new MicroUser({
-                fullName: enroll.fullName,
-                email: enroll.email,
-                password: rawPassword,
-                enrolledCourses: [enroll.courseId]
-            });
-            await user.save();
-        } else {
-            // Update password if they exist but we are sending new ones
-            user.password = rawPassword;
-            if (!user.enrolledCourses.includes(enroll.courseId)) {
-                user.enrolledCourses.push(enroll.courseId);
-            }
-            await user.save();
-        }
+        // Create/update without full-document validation to avoid legacy invalid fields
+        await MicroUser.updateOne(
+            { email: enroll.email },
+            {
+                $set: {
+                    fullName: enroll.fullName,
+                    password: rawPassword,
+                },
+                $setOnInsert: {
+                    email: enroll.email,
+                },
+                $addToSet: {
+                    enrolledCourses: enroll.courseId,
+                },
+            },
+            { upsert: true }
+        );
 
         // Send Email
-        await sendCredentialsEmail(enroll.email, enroll.fullName, rawPassword);
+        const sent = await sendCredentialsEmail(enroll.email, enroll.fullName, rawPassword);
+        if (!sent) {
+            return res.status(500).json({ error: "Failed to dispatch credentials email. Check SMTP configuration." });
+        }
 
         // Update enrollment flag
         enroll.credentialsSent = true;

@@ -17,6 +17,21 @@ let transporter = nodemailer.createTransport({
   pool: true,
 });
 
+// Dedicated transporter for Dikshannt OTP flow (new-project micro admin)
+let dikshanntOtpTransporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
+  secure: false,
+  auth: {
+    user: process.env.DIKSHANNT_SMTP || process.env.SMTP_MAIL,
+    pass: process.env.DIKSHANNT_PASSWORD || process.env.SMTP_PASSWORD,
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
+  pool: true,
+});
+
 // Separate transporter for payment reminders (operations@krutanic.com)
 let operationsTransporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -66,6 +81,33 @@ const sendEmail = async ({ email, subject, message, bcc }) => {
         reject(error);
       } else {
         console.log("Email sent successfully!", info.response);
+        resolve(info.response);
+      }
+    });
+  });
+};
+
+// OTP sender for new-project admin login
+const sendDikshanntOtpEmail = async ({ email, subject, message, bcc }) => {
+  const fromEmail = process.env.DIKSHANNT_SMTP || process.env.SMTP_MAIL;
+
+  const mailOptions = {
+    from: fromEmail,
+    to: email,
+    cc: process.env.SMTP_ADMIN_MAIL,
+    bcc: bcc,
+    subject: subject,
+    html: message,
+    priority: "high",
+  };
+
+  return new Promise((resolve, reject) => {
+    dikshanntOtpTransporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error("Error sending Dikshannt OTP email:", error);
+        reject(error);
+      } else {
+        console.log("Dikshannt OTP email sent successfully!", info.response);
         resolve(info.response);
       }
     });
@@ -127,4 +169,4 @@ const sendEventReminderEmail = async ({ email, subject, message, bcc, textVersio
   });
 };
 
-module.exports = { sendEmail, sendPaymentReminderEmail, sendEventReminderEmail };
+module.exports = { sendEmail, sendDikshanntOtpEmail, sendPaymentReminderEmail, sendEventReminderEmail };

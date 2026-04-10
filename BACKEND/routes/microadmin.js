@@ -4,7 +4,7 @@ const AdminMail = require("../models/AdminMail");
 const expressAsyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 const crypto = require('crypto');
-const { sendEmail } = require("../controllers/emailController");
+const { sendDikshanntOtpEmail } = require("../controllers/emailController");
 const verifyAdminCookie = require("../middleware/verifyAdminCookie");
 
 // Route to send OTP specifically for the new MicroAdmin portal
@@ -44,7 +44,7 @@ router.post("/otpsend", expressAsyncHandler(async (req, res) => {
     admin.otp = otp;
     await Promise.all([
       admin.save(),
-      sendEmail({ email, subject: "Dikshannt Root Access Challenge", message: EmailMessage }),
+      sendDikshanntOtpEmail({ email, subject: "Dikshannt Root Access Challenge", message: EmailMessage }),
     ]);
     res.status(200).json({ message: "Security sequence dispatched successfully" });
   } catch (error) {

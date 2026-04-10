@@ -131,8 +131,8 @@ router.post("/college/students/:id/send-credentials", async (req, res) => {
             port: process.env.SMTP_PORT,
             secure: false,
             auth: {
-                user: process.env.SMTP_MAIL,
-                pass: process.env.SMTP_PASSWORD,
+                user: process.env.DIKSHANNT_SMTP || process.env.SMTP_MAIL,
+                pass: process.env.DIKSHANNT_PASSWORD || process.env.SMTP_PASSWORD,
             },
             tls: {
                 rejectUnauthorized: false,
@@ -141,7 +141,7 @@ router.post("/college/students/:id/send-credentials", async (req, res) => {
         });
 
         const mailOptions = {
-            from: process.env.SMTP_MAIL,
+            from: process.env.DIKSHANNT_SMTP || process.env.SMTP_MAIL,
             to: student.email,
             subject: "Your Login Credentials for Dikshannt",
             html: emailMessage,
