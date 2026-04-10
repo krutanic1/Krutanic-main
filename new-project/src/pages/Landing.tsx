@@ -74,6 +74,8 @@ export default function Landing() {
     domainInterested: '',
   });
   const [heroFormSubmitted, setHeroFormSubmitted] = useState(false);
+  const [heroFormSubmitting, setHeroFormSubmitting] = useState(false);
+  const [heroFormError, setHeroFormError] = useState('');
 
   const fetchCourses = async () => {
     try {
@@ -128,11 +130,31 @@ export default function Landing() {
   const handleHeroFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setHeroForm((prev) => ({ ...prev, [name]: value }));
+    if (heroFormSubmitted) setHeroFormSubmitted(false);
+    if (heroFormError) setHeroFormError('');
   };
 
-  const handleHeroFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleHeroFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setHeroFormSubmitted(true);
+    setHeroFormError('');
+    setHeroFormSubmitting(true);
+
+    try {
+      await axios.post('/student-requests/submit', heroForm);
+      setHeroFormSubmitted(true);
+      setHeroForm({
+        name: '',
+        mobile: '',
+        email: '',
+        domainInterested: '',
+      });
+    } catch (err: any) {
+      console.error('Failed to submit student inquiry', err);
+      setHeroFormError(err.response?.data?.message || 'Failed to submit inquiry. Please try again.');
+      setHeroFormSubmitted(false);
+    } finally {
+      setHeroFormSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -253,11 +275,13 @@ export default function Landing() {
                 <div className="flex items-center justify-between gap-3 mt-4">
                   <button
                     type="submit"
+                    disabled={heroFormSubmitting}
                     className="premium-gradient text-white px-5 py-2.5 rounded text-[11px] font-bold tracking-[0.05em] uppercase hover:opacity-90 transition-opacity"
                   >
-                    Submit
+                    {heroFormSubmitting ? 'Submitting...' : 'Submit'}
                   </button>
                   {heroFormSubmitted && <p className="text-xs text-primary font-semibold">Thanks, we will contact you soon.</p>}
+                  {!heroFormSubmitted && heroFormError && <p className="text-xs text-red-600 font-semibold">{heroFormError}</p>}
                 </div>
               </form>
             </div>

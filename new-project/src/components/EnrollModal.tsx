@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, CheckCircle2, CreditCard, Ticket, ArrowRight, Loader2, QrCode } from 'lucide-react';
+import { X, CheckCircle2, CreditCard, Ticket, ArrowRight, Loader2 } from 'lucide-react';
 import axios from 'axios';
 import Confetti from 'react-confetti';
+import Logo from './Logo';
 
 interface Course {
   _id?: string;
@@ -319,10 +320,23 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
                   className="space-y-6 text-center"
                 >
                   <h3 className="text-2xl text-primary mb-4">Verify Payment</h3>
-                  <p className="text-xs text-on-surface-variant mb-6 italic">Scan the QR code to pay ₹{price}, then enter the Transaction ID below.</p>
+                  <p className="text-xs text-on-surface-variant mb-4 italic">Pay ₹{price}, then enter the Transaction ID below.</p>
                   
-                  <div className="mx-auto w-48 h-48 bg-stone-100 flex items-center justify-center border border-outline-variant/20 mb-8 rounded-2xl overflow-hidden">
-                    <QrCode size={120} className="text-primary opacity-80" />
+                  <div className="mx-auto w-52 h-52 bg-stone-50 flex flex-col items-center justify-center border border-outline-variant/20 mb-6 rounded-2xl overflow-hidden shadow-sm gap-4 px-6">
+                    <Logo height={68} />
+                    <div className="flex flex-col items-center gap-2">
+                      <Loader2 className="animate-spin text-primary" size={28} />
+                      <p className="text-[10px] font-bold tracking-[0.18em] uppercase text-outline text-center">
+                        Payment processing
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mx-auto max-w-md rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-left">
+                    <p className="text-[10px] font-bold tracking-[0.16em] uppercase text-amber-900 mb-1">Important</p>
+                    <p className="text-xs text-amber-900/90 leading-relaxed">
+                      Do not close this page while payment is processing.
+                    </p>
                   </div>
 
                   <div className="text-left space-y-2">

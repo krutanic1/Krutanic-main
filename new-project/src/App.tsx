@@ -19,6 +19,7 @@ import AdminColleges from './admin/AdminColleges';
 import AdminCertificates from './admin/AdminCertificates';
 import AdminUpcomingCourses from './admin/AdminUpcomingCourses';
 import AdminCollegeRequests from './admin/AdminCollegeRequests';
+import AdminStudentRequests from './admin/AdminStudentRequests';
 import AdminMicroUsers from './admin/AdminMicroUsers';
 import CollegeDashboard from './pages/CollegeDashboard';
 import { Layout, Users, Ticket, Video, LogOut, ChevronRight, BookOpen, GraduationCap, Award, Calendar, Building2 } from 'lucide-react';
@@ -46,6 +47,7 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
   const navItems = [
     { label: 'Enrolls', path: '/admin/enrolls', icon: Users },
     { label: 'Referrals', path: '/admin/referrals', icon: Ticket },
+    { label: 'Student Request', path: '/admin/student-request', icon: Users },
     { label: 'Manage Courses', path: '/admin/courses', icon: Video },
     { label: 'Upcoming Courses', path: '/admin/upcoming', icon: Calendar },
     { label: 'Manage Projects', path: '/admin/projects', icon: BookOpen },
@@ -58,15 +60,15 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-surface-container-low flex">
       {/* Admin Sidebar */}
-      <aside className="w-64 bg-primary text-white p-8 flex flex-col fixed inset-y-0 z-50">
-        <div className="mb-12">
+      <aside className="w-64 h-screen bg-primary text-white p-6 flex flex-col fixed inset-y-0 z-50 overflow-hidden">
+        <div className="mb-8 shrink-0">
           <Link to="/" className="flex items-center">
             <Logo height={28} />
           </Link>
           <div className="text-[10px] font-bold tracking-[0.2em] opacity-40 mt-2 uppercase">Root Admin</div>
         </div>
 
-        <nav className="flex-grow space-y-4">
+        <nav className="flex-1 min-h-0 space-y-4 overflow-y-auto pr-1 pb-4">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -86,7 +88,7 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
           })}
         </nav>
 
-        <div className="mt-auto pt-8 border-t border-white/10">
+        <div className="mt-4 pt-6 border-t border-white/10 shrink-0">
           <button 
             onClick={handleLogout} 
             className="flex items-center gap-3 text-xs font-bold tracking-widest uppercase text-white/40 hover:text-white transition-colors w-full"
@@ -159,6 +161,7 @@ export default function App() {
         {/* Admin Protected Routes */}
         <Route path="/admin/enrolls" element={<AdminProtectedRoute><AdminLayout><AdminEnrolls /></AdminLayout></AdminProtectedRoute>} />
         <Route path="/admin/referrals" element={<AdminProtectedRoute><AdminLayout><AdminReferrals /></AdminLayout></AdminProtectedRoute>} />
+        <Route path="/admin/student-request" element={<AdminProtectedRoute><AdminLayout><AdminStudentRequests /></AdminLayout></AdminProtectedRoute>} />
         <Route path="/admin/courses" element={<AdminProtectedRoute><AdminLayout><CourseCreator /></AdminLayout></AdminProtectedRoute>} />
         <Route path="/admin/upcoming" element={<AdminProtectedRoute><AdminLayout><AdminUpcomingCourses /></AdminLayout></AdminProtectedRoute>} />
         <Route path="/admin/projects" element={<AdminProtectedRoute><AdminLayout><AdminProjectCreator /></AdminLayout></AdminProtectedRoute>} />
