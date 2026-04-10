@@ -341,7 +341,7 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
 
                   <div className="text-left space-y-2">
                     <label className="text-[10px] font-bold tracking-widest uppercase text-outline">Transaction ID*</label>
-                    <input name="transactionId" value={formData.transactionId} onChange={handleInputChange} className="w-full border-b border-outline-variant py-3 outline-none focus:border-primary transition-colors bg-transparent font-mono text-sm" placeholder="Enter the 12-digit UPI ID" />
+                    <input name="transactionId" value={formData.transactionId} onChange={handleInputChange} className="w-full border-b border-outline-variant py-3 outline-none focus:border-primary transition-colors bg-transparent font-mono text-sm" placeholder="Enter TRANSACTION ID" />
                     {error && <p className="text-red-500 text-[10px] font-bold">{error}</p>}
                   </div>
                 </motion.div>
