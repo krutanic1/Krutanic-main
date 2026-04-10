@@ -698,6 +698,10 @@ const PromptEngineering = () => {
           margin-bottom: 16px;
           width: 10px;
         }
+        
+        .pe-role-card h4 {
+          font-weight: 700;
+        }
 
         .pe-role-card strong {
           color: #b12e03;

@@ -724,6 +724,10 @@ const ProductManagement = () => {
           margin-bottom: 16px;
           width: 10px;
         }
+        
+        .pm-role-card h4 {
+          font-weight: 700;
+        }
 
         .pm-role-card strong {
           color: #b12e03;

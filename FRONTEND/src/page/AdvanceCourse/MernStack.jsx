@@ -723,6 +723,10 @@ const MernStack = () => {
           margin-bottom: 16px;
           width: 10px;
         }
+        
+        .ms-role-card h4 {
+          font-weight: 700;
+        }
 
         .ms-role-card strong {
           color: #b12e03;

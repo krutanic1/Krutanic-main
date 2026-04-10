@@ -727,6 +727,10 @@ const DigitalMarket = () => {
           margin-bottom: 16px;
           width: 10px;
         }
+        
+        .dm-role-card h4 {
+          font-weight: 700;
+        }
 
         .dm-role-card strong {
           color: #b12e03;

@@ -667,6 +667,10 @@ const DataAnalytics = () => {
           margin-bottom: 16px;
           width: 10px;
         }
+        
+        .da-role-card h4 {
+          font-weight: 700;
+        }
 
         .da-role-card strong {
           color: #b12e03;

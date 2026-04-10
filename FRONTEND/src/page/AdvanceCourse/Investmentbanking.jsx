@@ -724,6 +724,10 @@ const Investmentbanking = () => {
           margin-bottom: 16px;
           width: 10px;
         }
+        
+        .ib-role-card h4 {
+          font-weight: 700;
+        }
 
         .ib-role-card strong {
           color: #b12e03;

@@ -717,6 +717,10 @@ const DataScience = () => {
           margin-bottom: 16px;
           width: 10px;
         }
+        
+        .ds-role-card h4 {
+          font-weight: 700;
+        }
 
         .ds-role-card strong {
           color: #b12e03;
