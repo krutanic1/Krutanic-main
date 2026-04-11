@@ -186,7 +186,7 @@ const AdvanceCourses = () => {
             </div>
 
             <div className="absolute left-0 top-8 -translate-x-1/2 rounded-2xl border border-white/70 bg-white/90 px-5 py-4 shadow-lg backdrop-blur">
-              <p className="text-3xl font-extrabold text-[#f15b29] leading-none">8</p>
+              <p className="text-3xl font-extrabold text-[#f15b29] leading-none">6</p>
               <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-[#3453d1]">Programs</p>
             </div>
 
