@@ -157,19 +157,45 @@ const AdminAttendance = () => {
         }
       });
       
-      const dataToExport = res.data.data.map(m => ({
-        "Name": m.name,
-        "Email": m.email,
-        "Role": m.role || "Member",
-        "Total": m.daysPresent,
-        "Full Present": m.onTimeCount,
-        "Late": m.lateCount,
-        "Half Day": m.halfDayCount,
-        "Month": monthNames[filterMonth],
-        "Year": filterYear
-      }));
+      const daysInMonth = new Date(filterYear, parseInt(filterMonth) + 1, 0).getDate();
+      const dayColumns = [];
+      for (let i = 1; i <= daysInMonth; i++) {
+        dayColumns.push(i.toString().padStart(2, '0'));
+      }
 
-      const ws = XLSX.utils.json_to_sheet(dataToExport);
+      const dataToExport = res.data.data.map(m => {
+        const row = {
+          "Name": m.name,
+          "Email": m.email,
+          "Role": m.role || "Member",
+        };
+
+        // Dynamically add columns for each day of the month
+        for (let i = 1; i <= daysInMonth; i++) {
+          const dayKey = i.toString().padStart(2, '0');
+          const dayStr = `${filterYear}-${(parseInt(filterMonth) + 1).toString().padStart(2, '0')}-${i.toString().padStart(2, '0')}`;
+          const record = m.detailedRecords?.find(r => r.date === dayStr);
+          if (record) {
+            if (record.status === "Present") row[dayKey] = "P";
+            else if (record.status === "Late") row[dayKey] = "L";
+            else if (record.status === "Half Day") row[dayKey] = "HD";
+          } else {
+            row[dayKey] = "-"; // Absent
+          }
+        }
+
+        row["Total Present"] = m.daysPresent;
+        row["Full Present"] = m.onTimeCount;
+        row["Late"] = m.lateCount;
+        row["Half Day"] = m.halfDayCount;
+        row["Month"] = monthNames[filterMonth];
+        row["Year"] = filterYear;
+
+        return row;
+      });
+
+      const headerOrder = ["Name", "Email", "Role", ...dayColumns, "Total Present", "Full Present", "Late", "Half Day", "Month", "Year"];
+      const ws = XLSX.utils.json_to_sheet(dataToExport, { header: headerOrder });
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Attendance Report");
       const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });

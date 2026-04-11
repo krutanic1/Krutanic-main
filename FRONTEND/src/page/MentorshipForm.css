@@ -351,4 +351,45 @@ select {
         grid-template-columns: 1fr;
         flex-direction: column;
     }
+
+    .mobile-close-only {
+        display: inline-flex !important;
+    }
+
+    .hide-on-mobile {
+        display: none !important;
+    }
+}
+
+.mentorship-header-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    padding: 6px 16px;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    backdrop-filter: blur(8px);
+    z-index: 10;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+}
+
+.mentorship-header-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-1px);
+}
+
+.mobile-close-only {
+    display: none;
 }

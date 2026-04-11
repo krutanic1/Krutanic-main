@@ -219,18 +219,14 @@ exports.getAdminUsers = async (req, res) => {
       const records = await Attendance.find({
         userId: u._id,
         date: { $regex: new RegExp(`^${datePrefix}`) }
-      }).select("timestamp isHalfDayOverride");
+      }).select("timestamp date isHalfDayOverride");
 
       let lateCount = 0;
       let halfDayCount = 0;
       let onTimeCount = 0;
-      records.forEach(r => {
-        // Check Override first
-        if (r.isHalfDayOverride) {
-          halfDayCount++;
-          return;
-        }
+      const detailedRecords = [];
 
+      records.forEach(r => {
         // Convert to IST (UTC + 5:30)
         const d = new Date(r.timestamp);
         const istTime = new Date(d.getTime() + (5.5 * 60 * 60 * 1000));
@@ -238,12 +234,27 @@ exports.getAdminUsers = async (req, res) => {
         const mins = istTime.getUTCMinutes();
         const totalMinutes = hours * 60 + mins;
 
-        if (totalMinutes > 14 * 60) {
+        let status = "Present";
+        if (r.isHalfDayOverride) {
           halfDayCount++;
+          status = "Half Day";
+        } else if (totalMinutes > 14 * 60) {
+          halfDayCount++;
+          status = "Half Day";
         } else if (totalMinutes > 11 * 60 + 5) {
           lateCount++;
+          status = "Late";
         } else {
           onTimeCount++;
+          status = "Present";
+        }
+
+        if (isAll) {
+          detailedRecords.push({
+            date: r.date,
+            status: status,
+            time: hours.toString().padStart(2, '0') + ":" + mins.toString().padStart(2, '0')
+          });
         }
       });
 
@@ -259,7 +270,8 @@ exports.getAdminUsers = async (req, res) => {
         daysPresent: totalDays,
         onTimeCount: onTimeCount,
         lateCount: lateCount,
-        halfDayCount: halfDayCount
+        halfDayCount: halfDayCount,
+        detailedRecords: isAll ? detailedRecords : undefined
       };
     }));
 

@@ -138,8 +138,8 @@ const MentorshipForm = ({ isPopup, onClose }) => {
         <div className="mentorship-modal-overlay" onClick={ClearForm}>
           <div className="mentorship-modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="mentorship-modal-header">
-              <button className="close-btn-glass" onClick={ClearForm}>
-                <i className="fa fa-times"></i>
+              <button className="mentorship-header-close" onClick={ClearForm}>
+                Close
               </button>
               <h2>Apply Now</h2>
               <p>Elevate your career with expert mentorship</p>
@@ -290,20 +290,30 @@ const MentorshipForm = ({ isPopup, onClose }) => {
                   </select>
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={isSubmitting || !emailVerified}
-                  className="submit-btn-premium disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="form-loader"></div>
-                      Submitting...
-                    </>
-                  ) : (
-                    "Submit Application"
-                  )}
-                </button>
+                <div className="shared-form-actions">
+                  <button
+                    type="submit"
+                    disabled={isSubmitting || !emailVerified}
+                    className="submit-btn-premium disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="form-loader"></div>
+                        Submitting...
+                      </>
+                    ) : (
+                      "Submit Application"
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={ClearForm}
+                    className="shared-form-cancel mobile-close-only"
+                  >
+                    Close
+                  </button>
+                </div>
               </form>
             </div>
           </div>

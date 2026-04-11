@@ -25,7 +25,7 @@
         "WAKE_LOCK",
         "READ_PHONE_STATE"
       ],
-      "package": "com.tarunsaikola.MOBILE_APP",
+      "package": "com.krutanic.crm",
       "versionCode": 1
     },
     "web": {
