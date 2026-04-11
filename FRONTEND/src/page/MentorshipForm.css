@@ -18,6 +18,9 @@
 .shared-form-shell {
     width: 100%;
     max-width: 560px;
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
     border-radius: 28px;
     background: #ffffff;
@@ -93,6 +96,8 @@
 .mentorship-form-container,
 .shared-form-body {
     padding: 24px;
+    overflow-y: auto;
+    flex: 1;
 }
 
 .mentorship-form-grid,
@@ -342,6 +347,8 @@ select {
     .shared-form-body {
         padding-left: 18px;
         padding-right: 18px;
+        padding-top: 20px;
+        padding-bottom: 20px;
     }
 
     .shared-form-row,

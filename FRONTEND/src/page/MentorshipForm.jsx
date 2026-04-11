@@ -306,13 +306,7 @@ const MentorshipForm = ({ isPopup, onClose }) => {
                     )}
                   </button>
 
-                  <button
-                    type="button"
-                    onClick={ClearForm}
-                    className="shared-form-cancel mobile-close-only"
-                  >
-                    Close
-                  </button>
+
                 </div>
               </form>
             </div>
