@@ -137,7 +137,7 @@ const AdvisorForm = () => {
         onClick={handleBrochureClick}
         className="bg-[#3774AA] p-2 rounded-md"
       >
-        Apply Now
+        Enroll Now
       </button>
       {showForm && (
         <div className="fixed inset-0 lg:top-10 top-[20%] bg-gray-700 bg-opacity-50 z-[999] lg:flex justify-center items-center px-[20px]">
@@ -173,7 +173,7 @@ const AdvisorForm = () => {
             </div>
             <div className="rounded-lg lg:w-1/2 md:w-1/2 text-black p-3">
               <h3 className="text-md text-center font-semibold mb-2">
-                Apply Now
+                Enroll Now
               </h3>
               <form onSubmit={handleFormSubmit} className="space-y-2">
                 <input

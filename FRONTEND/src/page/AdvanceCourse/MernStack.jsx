@@ -744,9 +744,10 @@ const MernStack = () => {
           bottom: 0;
           color: var(--ink);
           display: flex;
+          gap: 12px;
           font-size: 14px;
           font-weight: 700;
-          justify-content: flex-start;
+          justify-content: space-between;
           left: 0;
           letter-spacing: 0.4px;
           min-height: 56px;
@@ -1201,7 +1202,10 @@ const MernStack = () => {
         </div>
       </section>
 
-      <div className="ms-fixed-price">Price: <strong>Rs 61,999 inclusive of taxes</strong></div>
+      <div className="ms-fixed-price">
+        <span>Program Fee: <strong>Rs 61,999 inclusive of taxes</strong></span>
+        <ApplyNowButton courseValue="Mern Stack" />
+      </div>
     </div>
   );
 };

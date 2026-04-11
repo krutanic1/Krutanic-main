@@ -744,9 +744,10 @@ const Performancemarket = () => {
           bottom: 0;
           color: var(--ink);
           display: flex;
+          gap: 12px;
           font-size: 14px;
           font-weight: 700;
-          justify-content: flex-start;
+          justify-content: space-between;
           left: 0;
           letter-spacing: 0.4px;
           min-height: 56px;
@@ -1201,7 +1202,10 @@ const Performancemarket = () => {
         </div>
       </section>
 
-      <div className="pf-fixed-price">Price: <strong>Rs 95,999 inclusive of taxes</strong></div>
+      <div className="pf-fixed-price">
+        <span>Price: <strong>Rs 95,999 inclusive of taxes</strong></span>
+        <ApplyNowButton courseValue="Performance Marketing" />
+      </div>
     </div>
   );
 };

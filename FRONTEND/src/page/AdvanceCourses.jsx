@@ -100,8 +100,8 @@ const learnerTestimonials = [
   {
     name: "Raja Singh",
     role: "Stock Market Analyst",
-    experience: "2 Years of Experience",
-    date: "Aug 9, 2024",
+    experience: "4 Years of Experience",
+    date: "Aug 9, 2023",
     image: rajaImg,
     quote:
       "Recently completed the stock market course and found it exceptionally informative and beneficial. The course was well-structured, making complex concepts easy to understand and practical to apply.",
@@ -109,8 +109,8 @@ const learnerTestimonials = [
   {
     name: "Birendra Kumar",
     role: "Data Science Associate",
-    experience: "2 Years of Experience",
-    date: "Aug 17, 2025",
+    experience: "10 Years of Experience",
+    date: "Aug 17, 2022",
     image: birendraImg,
     quote:
       "I completed my internship in stock market and also pursued more courses here. Great mentorship and training made a significant positive impact on my learning journey.",
@@ -119,7 +119,7 @@ const learnerTestimonials = [
     name: "Mithun Prajapati",
     role: "Full Stack Developer",
     experience: "2 Years of Experience",
-    date: "Mar 10, 2025",
+    date: "Mar 10, 2021",
     image: mithunImg,
     quote:
       "Successfully completed my full stack web development internship at Krutanic. Sessions were interactive, practical, and highly engaging with excellent mentor support.",

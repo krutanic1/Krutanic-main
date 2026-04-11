@@ -29,7 +29,7 @@ const ApplyNowButton = ({ courseValue }) => {
     setFormData({ ...formData, [name]: value });
   };
   const handleBrochureClick = () => {
-    setShowForm(true);
+    window.location.href = "https://rzp.io/rzp/Advanced_Program_Slot_Booking";
   };
 
   
@@ -139,13 +139,13 @@ const ApplyNowButton = ({ courseValue }) => {
         onClick={handleBrochureClick}
         className="bg-[#f15b29] border text-white font-semibold  px-6 py-2 hover:rounded-xl ease-linear duration-600  hover:text-black rounded-sm"
       >
-        Apply Now
+        Enroll Now
       </button>
       {showForm && (
         <div className=" fixed inset-0 bg-gray-700 bg-opacity-50 z-[999] flex justify-center items-center">
           <div className="bg-white text-black p-3 rounded-lg shadow-lg w-96">
             <h3 className="text-md text-center font-semibold mb-2">
-              Apply Now For {courseValue}
+              Enroll Now For {courseValue}
             </h3>
             <form onSubmit={handleFormSubmit} className="space-y-2">
               <input

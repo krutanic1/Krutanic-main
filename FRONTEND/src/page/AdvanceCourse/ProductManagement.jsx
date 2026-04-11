@@ -745,9 +745,10 @@ const ProductManagement = () => {
           bottom: 0;
           color: var(--ink);
           display: flex;
+          gap: 12px;
           font-size: 14px;
           font-weight: 700;
-          justify-content: flex-start;
+          justify-content: space-between;
           left: 0;
           letter-spacing: 0.4px;
           min-height: 56px;
@@ -1202,7 +1203,10 @@ const ProductManagement = () => {
         </div>
       </section>
 
-      <div className="pm-fixed-price">Price: <strong>Rs 65,999 inclusive of taxes</strong></div>
+      <div className="pm-fixed-price">
+        <span>Program Fee: <strong>Rs 65,999 inclusive of taxes</strong></span>
+        <ApplyNowButton courseValue="Product Management" />
+      </div>
     </div>
   );
 };
