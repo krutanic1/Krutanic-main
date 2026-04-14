@@ -11,6 +11,7 @@ const CALL_OUTCOMES = [
     { value: "no_answer", label: "📵 No Answer", color: "#F59E0B", icon: "phone_disabled" },
     { value: "not_interested", label: "❌ Not Interested", color: "#EF4444", icon: "cancel" },
     { value: "junk", label: "🗑️ Junk Leads", color: "#94A3B8", icon: "delete" },
+    { value: "qualified", label: "🌟 Qualified", color: "#FBBF24", icon: "star" },
     { value: "converted", label: "🏆 Converted", color: "#EC4899", icon: "stars" },
     { value: "unused", label: "🚫 Unused", color: "#CBD5E1", icon: "block" },
 ];

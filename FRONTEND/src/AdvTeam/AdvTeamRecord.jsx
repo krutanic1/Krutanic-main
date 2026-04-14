@@ -11,6 +11,7 @@ const CALL_OUTCOMES = [
     { value: "converted", label: "🏆 Converted", color: "#722ed1" },
     { value: "junk", label: "🗑️ Junk Leads", color: "#8c8c8c" },
     { value: "follow_up", label: "📅 Follow Up", color: "#eb2f96" },
+    { value: "qualified", label: "🌟 Qualified", color: "#fa8c16" },
 ];
 
 const AdvTeamRecord = () => {

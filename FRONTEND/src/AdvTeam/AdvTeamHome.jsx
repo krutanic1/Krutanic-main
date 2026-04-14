@@ -9,7 +9,7 @@ const AdvTeamHome = () => {
   const [leads, setLeads] = useState([]); // New state for leads
   const [outcomeCounts, setOutcomeCounts] = useState({
     fresh: 0, interested: 0, follow_up: 0, callback_requested: 0,
-    no_answer: 0, not_interested: 0, junk: 0, converted: 0, total: 0
+    no_answer: 0, not_interested: 0, junk: 0, converted: 0, qualified: 0, total: 0
   });
   
   const advTeamName = localStorage.getItem("advTeamName");
@@ -157,6 +157,7 @@ const AdvTeamHome = () => {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '40px' }}>
         <LeadStatCard label="Fresh Leads" count={outcomeCounts.fresh} icon="🆕" color="#64748B" />
         <LeadStatCard label="Interested" count={outcomeCounts.interested} icon="✅" color="#10B981" />
+        <LeadStatCard label="Qualified" count={outcomeCounts.qualified} icon="🌟" color="#FBBF24" />
         <LeadStatCard label="Follow Up" count={outcomeCounts.follow_up} icon="📞" color="#3B82F6" />
         <LeadStatCard label="Callback Requested" count={outcomeCounts.callback_requested} icon="🔄" color="#3B82F6" />
         <LeadStatCard label="No Answer" count={outcomeCounts.no_answer} icon="📵" color="#F59E0B" />

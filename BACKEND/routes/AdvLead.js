@@ -370,7 +370,7 @@ router.get("/get-outcome-counts", async (req, res) => {
             }
         }
 
-        const outcomes = ["interested", "follow_up", "callback_requested", "no_answer", "not_interested", "junk", "converted"];
+        const outcomes = ["interested", "follow_up", "callback_requested", "no_answer", "not_interested", "junk", "converted", "qualified"];
         const counts = {};
 
         // 1. Count Fresh (no interaction yet)
@@ -1270,6 +1270,7 @@ router.post("/log-call-activity", async (req, res) => {
             callback_requested: "in_followup",
             junk: "closed",
             follow_up: "in_followup",
+            qualified: "in_followup",
         };
 
         const stageMap = {
@@ -1280,6 +1281,7 @@ router.post("/log-call-activity", async (req, res) => {
             no_answer: "contacted",
             junk: "lost",
             follow_up: "contacted",
+            qualified: "interested",
         };
 
         // Define funnel hierarchy to prevent moving backward
