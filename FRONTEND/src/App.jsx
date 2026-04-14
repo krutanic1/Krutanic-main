@@ -36,6 +36,7 @@ import DashboardAccessForm from "./page/DashboardAccessForm";
 import AdvanceDashboardAccess from "./page/AdvanceDashboardAccess";
 import Alumni from "./page/Alumni";
 import Attendance from "./page/Attendance";
+import AdvanceApplyPage from "./page/AdvanceApplyPage";
 
 // Admin
 import AdminHeader from "./Admin/AdminHeader";
@@ -328,6 +329,7 @@ const AppContent = () => {
     "/feestructure",
     // "/events", // Hidden for custom navbar in TalentHunt/Events page
     "/advance",
+    "/advance-apply",
     "/mentorship",
     "/datascience",
     "/dataanalytics",
@@ -549,6 +551,7 @@ const AppContent = () => {
         <Route path="/events" element={<TalentHunt />} />
         <Route path="/EventRegister" element={<EventRegister />} />
         <Route path="/Advance" element={<AdvanceCourses />} />
+        <Route path="/advance-apply" element={<AdvanceApplyPage />} />
         <Route path="/Mentorship" element={<Mentorship />} />
         <Route path="/DataScience" element={<DataScience />} />
         <Route path="/DataAnalytics" element={<DataAnalytics />} />
