@@ -41,18 +41,7 @@ const AdvanceCounses = () => {
       duration: "6 Months",
       brochure: digitalMarketingBrochure,
     },
-    {
-      institute: "KRUTANIC School Of Finance",
-      title: "Investment Banking",
-      description: "Learn valuation, financial modeling, and deal lifecycle practices used in investment banking.",
-      icon: <i className="fa fa-bank"></i>,
-      badge: "Industry Ready",
-      badgeClass: "bg-[#374151] text-white",
-      support: "Interview Preparation",
-      credential: "PG Certification",
-      duration: "6 Months",
-      brochure: investmentBankingBrochure,
-    },
+
     {
       institute: "KRUTANIC Product School",
       title: "Product Management",

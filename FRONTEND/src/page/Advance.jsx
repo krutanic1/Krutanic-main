@@ -320,7 +320,7 @@ const Advance = () => {
               <span className="text-[#f15b29]">Transform with Krutanic’s Hands-On Learning Experience</span>
             </h1>
             <p className="text-md mb-8 text-white">
-              The Krutanic Advanced Program delivers an intensive, career-focused curriculum that blends theoretical learning with practical industry training. Students gain real-world project experience and mentor guidance, enabling them to confidently master the demands of Digital Marketing, Advanced Data Science, Investment Banking, Product Management, and MERN Stack Development. For more details and placement-support information, fill out the registration form.
+              The Krutanic Advanced Program delivers an intensive, career-focused curriculum that blends theoretical learning with practical industry training. Students gain real-world project experience and mentor guidance, enabling them to confidently master the demands of Digital Marketing, Advanced Data Science, Product Management, and MERN Stack Development. For more details and placement-support information, fill out the registration form.
             </p>
             <button
               onClick={scrollToCourse}
@@ -503,29 +503,7 @@ const Advance = () => {
                 </button>
               </div>
             </div>
-            <div className="bg-[#080808] shadow-sm shadow-slate-50 rounded-xl overflow-hidden flex flex-col items-center">
-              <div className="overflow-hidden lg:h-[300px]">
-                <img
-                  src={Investmentbanking}
-                  alt="Investment banking"
-                  className="hover:scale-110 ease-linear duration-700"
-                />
-              </div>
-              <div className="p-2">
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  Investment Banking
-                </h3>
-                <p className="text-sm text-white mb-4">
-                  Advising on financial transactions and raising capital for companies.
-                </p>
-                <button
-                  onClick={handleViewCourse3}
-                  className="bg-[#000] shadow-sm shadow-slate-50 border-gray-800 text-[#eee] px-4 py-2 rounded-md hover:bg-[#f15b29] hover:text-white ease-linear duration-700"
-                >
-                  Explore Details
-                </button>
-              </div>
-            </div>
+
             <div className="bg-[#080808] shadow-sm shadow-slate-50 rounded-xl overflow-hidden flex flex-col items-center">
               <div className="overflow-hidden lg:h-[300px]">
                 <img
@@ -872,7 +850,6 @@ const Advance = () => {
                     Data Science
                   </option>
                   <option value="Digital Marketing">Digital Marketing</option>
-                  <option value="Investment Banking"> Investment Banking</option>
                   <option value="MERN Stack Development">MERN Stack Development</option>
                   <option value="Product Management">Product Management</option>
                   {/* <option value="Automation Testing">Automation Testing</option> */}

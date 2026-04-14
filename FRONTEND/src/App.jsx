@@ -26,7 +26,7 @@ import DataAnalytics from "./page/AdvanceCourse/DataAnalytics";
 import DigitalMarket from "./page/AdvanceCourse/DigitalMarket";
 import MernStack from "./page/AdvanceCourse/MernStack";
 import UIUXDesign from "./page/AdvanceCourse/UIUXDesign";
-import Investmentbanking from "./page/AdvanceCourse/Investmentbanking";
+
 import ProductManagement from "./page/AdvanceCourse/ProductManagement";
 import SmoothScroll from "./SmoothScroll";
 import MasterClass from "./page/MasterClass";
@@ -560,7 +560,7 @@ const AppContent = () => {
         <Route path="/UIUX" element={<UIUXDesign />} />
         <Route path="/UIUXDesign" element={<UIUXDesign />} />
         <Route path="/ui-ux" element={<UIUXDesign />} />
-        <Route path="/Investmentbanking" element={<Investmentbanking />} />
+
         <Route path="/ProductManagement" element={<ProductManagement />} />
         <Route path="/AutomationTesting" element={<AutomationTesting />} />
         <Route path="/PromptEngineering" element={<PromptEngineering />} />
