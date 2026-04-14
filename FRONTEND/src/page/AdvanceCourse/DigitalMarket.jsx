@@ -11,265 +11,150 @@ import ApplyNowButton from "./Components/ApplyNowButton";
 import ApplyForm from "./Components/ApplyForm";
 
 const heroStats = [
-  { label: "Duration", value: "24 Weeks" },
-  { label: "Program Rating", value: "4.9/5" },
+  { label: "Placement Rate", value: "93%" },
+  { label: "Hiring Partners", value: "450+" },
 ];
 
 const curriculum = [
   {
-    week: "Weeks 1-2",
-    title: "Introduction to Digital Marketing",
-    objectives:
-      "Understand channel strategy, customer journeys, and conversion funnel frameworks across modern digital marketing stacks.",
+    week: "Module 1",
+    title: "Social Media Marketing (SMM)",
+    objectives: "Strategy, Content & Growth. Master the platform ecosystem and build brand-level case studies.",
     topics: [
-      "Digital Marketing Foundations",
-      "SEO, PPC, Social, Email",
-      "Strategy Planning",
-      "Conversion Funnels",
-      "Analytics Basics",
+      "Social Media Fundamentals",
+      "Instagram Marketing & Funnel",
+      "Content Strategy & Ideation",
+      "Short-form Reels Strategy",
+      "LinkedIn Personal Branding",
+      "YouTube Growth Strategy",
+      "AI Content Tools (Canva/AI)",
+      "Campaign Optimization"
     ],
   },
   {
-    week: "Weeks 3-4",
-    title: "Advanced SEO",
-    objectives:
-      "Build ranking systems with technical audits, on-page optimization, and scalable keyword strategy for growth.",
+    week: "Module 2",
+    title: "Search Engine Optimization (SEO)",
+    objectives: "Organic Growth & Higher Rankings. Technical, On-page, and Off-page mastery.",
     topics: [
-      "Technical SEO",
-      "On-Page SEO",
-      "Keyword Research",
-      "Link Building",
-      "SEO Reporting",
+      "SEO Fundamentals",
+      "On-Page, Technical & Off-Page",
+      "AI-Powered Content Optimization",
+      "Google Search Console",
+      "Keyword Research (Myntra)",
+      "Website SEO Audits",
+      "E-commerce & SaaS SEO",
+      "URL Structuring"
     ],
   },
   {
-    week: "Week 5",
-    title: "Paid Search Advertising (PPC)",
-    objectives:
-      "Design high-performing paid campaigns using bidding models, ad copy testing, and budget optimization.",
+    week: "Module 3",
+    title: "Performance Marketing",
+    objectives: "Paid Ads & Data-Driven Growth. Mastering Meta and Google Ads ROI.",
     topics: [
-      "Google Ads Setup",
-      "Bidding Strategies",
-      "Ad Optimization",
-      "PPC Measurement",
+      "Marketing Funnels & KPIs",
+      "CTR, CPA, ROAS Metrics",
+      "Excel for Marketing Analytics",
+      "Meta Ads (FB/Instagram)",
+      "Google Ads (Search/Shopping)",
+      "Google Analytics (GA4)",
       "A/B Testing",
+      "Looker Studio Dashboards"
     ],
   },
   {
-    week: "Week 6-7",
-    title: "Social Media Marketing",
-    objectives:
-      "Plan platform-specific content and ad strategy to improve engagement, conversion, and brand recall.",
+    week: "Module 4",
+    title: "Advanced Marketing & Automation",
+    objectives: "Scaling & Growth Systems. Omnichannel and conversion optimization.",
     topics: [
-      "Social Strategy",
-      "Paid Social Ads",
-      "Content Planning",
-      "Creator Workflows",
-      "Social Analytics",
+      "Conversion Rate Optimization",
+      "Email Marketing Automation",
+      "Omnichannel (WhatsApp/SMS)",
+      "Influencer & Affiliate Marketing",
+      "E-Commerce Growth Strategies",
+      "Retargeting Systems",
+      "App & B2B (LinkedIn Ads)"
     ],
   },
   {
-    week: "Week 8-9",
-    title: "Conversion Rate Optimization",
-    objectives:
-      "Improve user journeys, optimize landing pages, and increase conversion rates with experimentation frameworks.",
+    week: "Module 5",
+    title: "Career Acceleration",
+    objectives: "Job Readiness & Personal Branding. Resume building and mock interviews.",
     topics: [
-      "Landing Pages",
-      "Multivariate Tests",
-      "Behavior Tracking",
-      "CRO Tooling",
-      "Funnel Optimization",
-    ],
-  },
-  {
-    week: "Week 10",
-    title: "Email Marketing Automation",
-    objectives:
-      "Create lifecycle-based email systems with segmentation, personalization, and automated nurture flows.",
-    topics: [
-      "Email Campaigns",
-      "Audience Segmentation",
-      "Automation",
-      "Email Analytics",
-      "Nurture Sequences",
-    ],
-  },
-  {
-    week: "Week 11-12",
-    title: "Marketing Analytics and Metrics",
-    objectives:
-      "Track acquisition, activation, retention, and ROI using attribution models and reporting dashboards.",
-    topics: [
-      "Google Analytics",
-      "KPI Design",
-      "Performance Dashboards",
-      "Attribution",
-      "Data Storytelling",
-    ],
-  },
-  {
-    week: "Week 13-14",
-    title: "Display Ads and Retargeting",
-    objectives:
-      "Execute display campaigns and retargeting systems that improve recall, frequency, and conversion efficiency.",
-    topics: [
-      "Display Media Planning",
-      "Retargeting Strategy",
-      "Audience Signals",
-      "Creative Optimization",
-      "Performance Analysis",
-    ],
-  },
-  {
-    week: "Week 14-15",
-    title: "Affiliate and Influencer Marketing",
-    objectives:
-      "Launch affiliate programs and influencer collaborations with measurable outcomes and ROI alignment.",
-    topics: [
-      "Affiliate Setup",
-      "Creator Discovery",
-      "Partnership Tracking",
-      "Campaign Contracts",
-      "Channel Reporting",
-    ],
-  },
-  {
-    week: "Week 16",
-    title: "E-Commerce Marketing",
-    objectives:
-      "Scale ecommerce funnels through product listing optimization, paid traffic systems, and recovery automation.",
-    topics: [
-      "E-Com SEO",
-      "Performance Ads",
-      "Cart Recovery",
-      "Retention Journeys",
-      "E-Com Analytics",
-    ],
-  },
-  {
-    week: "Week 17-20",
-    title: "Capstone Project and Career Prep",
-    objectives:
-      "Execute a complete full-funnel campaign and portfolio-ready case study with measurable business impact.",
-    topics: [
-      "Campaign Blueprint",
-      "Creative and Copy",
-      "Channel Mix",
-      "Reporting",
-      "Portfolio Packaging",
-    ],
-  },
-  {
-    week: "Week 21-24",
-    title: "Placement Preparation",
-    objectives:
-      "Build job readiness with resume strategy, interview practice, and market positioning for top roles.",
-    topics: [
-      "Resume Optimization",
+      "Resume Building",
+      "LinkedIn Optimization",
+      "Portfolio Development",
+      "Industry Case Studies",
       "Mock Interviews",
-      "LinkedIn Branding",
-      "Job Search Strategy",
-      "Offer Navigation",
+      "Placement Support"
     ],
   },
 ];
 
 const overviewTopics = [
-  "Advanced SEO Strategies",
-  "Paid Advertising Management",
-  "Social Media Growth Systems",
-  "Email Marketing Automation",
-  "Content and Creative Strategy",
-  "Marketing Analytics and Tooling",
+  "Industry-Driven Curriculum",
+  "Mentor-Led Learning",
+  "Full-Funnel Expertise",
+  "Execution-First Approach",
+  "Small Cohorts (High Attention)",
+  "Live Campaign Execution",
+  "Portfolio Projects",
+  "Data & AI Integration",
+  "Career Acceleration Support",
+  "Outcome-Focused Training"
 ];
 
 const whyChoose = [
   {
-    title: "High Demand",
-    description:
-      "Brands across industries are hiring growth-focused digital marketers at scale.",
+    title: "10M+ Jobs Worldwide",
+    description: "Digital marketing is one of the fastest growing industries globally with increasing demand."
   },
   {
-    title: "Lucrative Opportunities",
-    description:
-      "Performance marketers and growth specialists command strong compensation.",
+    title: "Budget Transformation",
+    description: "70%+ of marketing budgets are shifting towards digital platforms, creating endless roles."
   },
   {
-    title: "Creative + Analytical",
-    description:
-      "Blend storytelling with experimentation for campaigns that move real metrics.",
-  },
-  {
-    title: "Role Flexibility",
-    description:
-      "Choose specializations in SEO, PPC, lifecycle, social, or growth marketing.",
-  },
-  {
-    title: "Data-Driven Work",
-    description:
-      "Use real-time insights and dashboards to optimize campaign efficiency.",
-  },
-  {
-    title: "Fast Career Growth",
-    description:
-      "Digital channels evolve quickly, creating continuous opportunities to advance.",
-  },
+    title: "Online Essential",
+    description: "90% of businesses are online today; a digital presence is no longer optional."
+  }
 ];
 
 const keyTakeaways = [
-  "Build full-funnel digital marketing strategies across acquisition and retention.",
-  "Master channel-level optimization in SEO, paid search, and paid social.",
-  "Deploy email and CRM automation systems for lifecycle growth.",
-  "Design conversion-focused landing pages and experimentation loops.",
-  "Measure campaign ROI with analytics, attribution, and dashboards.",
-  "Publish portfolio-ready campaigns with execution, reporting, and insights.",
+  "Skills: Google Forms, ChatGPT, Canva, Grammarly, Notion, Figma.",
+  "SEO: Search Console, SEMRUSH, Ahrefs, Ubersuggest, GA4, ScreamingFrog.",
+  "Social: Meta Business Suite, YouTube, TikTok, LinkedIn, Buffer, Hootsuite.",
+  "Ads: Meta Ads Manager, Google Ads, Zapier, Webflow, HubSpot, Mailchimp."
 ];
 
 const roles = [
   {
-    title: "Digital Marketing Manager",
-    text: "Own cross-channel strategy and campaign performance end-to-end.",
-    avg: "Package range: Rs 8-18 LPA",
+    title: "Performance Marketing Analyst",
+    text: "Analyze and optimize paid campaigns for maximum ROI.",
+    avg: "Salary: ₹4-7 LPA",
   },
   {
-    title: "SEO Specialist",
-    text: "Drive sustainable organic growth through technical and content SEO.",
-    avg: "Package range: Rs 4-12 LPA",
-  },
-  {
-    title: "PPC Analyst",
-    text: "Scale paid acquisition with efficient spend, bidding, and experimentation.",
-    avg: "Package range: Rs 5-14 LPA",
+    title: "Paid Media Specialist",
+    text: "Master Google and Meta ads for large scale acquisition.",
+    avg: "Salary: ₹5-9 LPA",
   },
   {
     title: "Social Media Manager",
-    text: "Build brand-led growth through social strategy and platform campaigns.",
-    avg: "Package range: Rs 4-12 LPA",
+    text: "Manage brand voice and community across social platforms.",
+    avg: "Salary: ₹4-7 LPA",
   },
   {
-    title: "Content Marketing Specialist",
-    text: "Create conversion-oriented content systems for audience and demand growth.",
-    avg: "Package range: Rs 4-11 LPA",
+    title: "SEO Specialist",
+    text: "Drive sustainable organic traffic through technical expertise.",
+    avg: "Salary: ₹4-8 LPA",
   },
   {
-    title: "Email Marketing Manager",
-    text: "Design automated lifecycle journeys that improve retention and LTV.",
-    avg: "Package range: Rs 5-13 LPA",
-  },
-  {
-    title: "Marketing Analyst",
-    text: "Translate campaign data into decisions that increase efficiency and ROI.",
-    avg: "Package range: Rs 4-10 LPA",
-  },
-  {
-    title: "Web Analyst",
-    text: "Optimize user behavior flows and performance with web analytics.",
-    avg: "Package range: Rs 5-12 LPA",
+    title: "Digital Marketing Executive",
+    text: "Handle day-to-state digital operations for brands.",
+    avg: "Salary: ₹3.5-6 LPA",
   },
   {
     title: "Growth Marketing Associate",
-    text: "Run rapid experiments across channels to unlock scalable growth loops.",
-    avg: "Package range: Rs 5-14 LPA",
+    text: "Execute rapid experiments to unlock scalable growth loops.",
+    avg: "Salary: ₹5-10 LPA",
   },
 ];
 
@@ -928,10 +813,9 @@ const DigitalMarket = () => {
         <section className="dm-hero">
           <div>
             <div className="dm-chip">Advanced Program 2026</div>
-            <h1>Master the <span>Growth</span> of Brands.</h1>
+            <h1>Digital Marketing & <span>Growth</span> Accelerator.</h1>
             <p className="dm-sub">
-              A premium digital marketing learning experience crafted for high-impact practitioners.
-              Build campaigns, optimize funnels, and scale measurable growth.
+              A ladder for a brighter future. Master the full funnel: SMM, SEO, and Performance Marketing through execution-first training. 
             </p>
 
             <div className="dm-stats">
@@ -1104,12 +988,15 @@ const DigitalMarket = () => {
 
       <section className="dm-section">
         <div className="dm-shell">
-          <h2 className="dm-center">Course Benefits at a Glance</h2>
+          <h2 className="dm-center">About Krutanic</h2>
+          <p className="lead dm-center" style={{ margin: "0 auto 18px", maxWidth: "800px" }}>
+            Krutanic is a fast-growing EdTech platform dedicated to empowering students & professionals with industry-relevant skills. Founded in 2024, we focus on bridging the gap between academic learning and real-world requirements. Aligned with NSDC (National Skill Development Corporation), we ensure high-quality, job-ready training.
+          </p>
           <div className="dm-metric-grid">
-            <article className="dm-metric"><h4>300+</h4><p>Mentees Placed</p></article>
-            <article className="dm-metric"><h4>8+ LPA</h4><p>Average CTC</p></article>
-            <article className="dm-metric"><h4>92%</h4><p>Placement Rate</p></article>
-            <article className="dm-metric"><h4>500+</h4><p>Hiring Partners</p></article>
+            <article className="dm-metric"><h4>200+</h4><p>Students Placed</p></article>
+            <article className="dm-metric"><h4>450+</h4><p>Hiring Partners</p></article>
+            <article className="dm-metric"><h4>4.7</h4><p>Rated Program</p></article>
+            <article className="dm-metric"><h4>93%</h4><p>Placement Rate</p></article>
           </div>
         </div>
       </section>
