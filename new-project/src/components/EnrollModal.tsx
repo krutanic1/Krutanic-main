@@ -34,6 +34,7 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
   const [enrollmentId, setEnrollmentId] = useState('');
   const [price, setPrice] = useState(course.price || 5000);
   const [discountApplied, setDiscountApplied] = useState(false);
+  const [discountPercentage, setDiscountPercentage] = useState(0);
   const [error, setError] = useState('');
   const [commonPaymentLink, setCommonPaymentLink] = useState('');
   const [customReferralLink, setCustomReferralLink] = useState('');
@@ -105,6 +106,7 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
       if (res.data.discountPercentage) {
         const basePrice = course.price || 5000;
         setPrice(basePrice * (1 - res.data.discountPercentage / 100));
+        setDiscountPercentage(res.data.discountPercentage);
         setDiscountApplied(true);
         if (res.data.paymentLink) {
           setCustomReferralLink(res.data.paymentLink);
@@ -274,7 +276,8 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
                         name="referralCode" 
                         value={formData.referralCode} 
                         onChange={handleInputChange} 
-                        className="flex-1 min-w-0 border-b border-outline-variant py-2 outline-none focus:border-primary transition-colors bg-transparent uppercase font-bold text-sm md:text-base" 
+                        disabled={discountApplied}
+                        className="flex-1 min-w-0 border-b border-outline-variant py-2 outline-none focus:border-primary transition-colors bg-transparent uppercase font-bold text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed" 
                         placeholder="Apply Code" 
                       />
                       <button 
@@ -282,28 +285,40 @@ export default function EnrollModal({ isOpen, onClose, course }: EnrollModalProp
                         disabled={loading || !formData.referralCode || discountApplied}
                         className="bg-primary text-white px-4 md:px-6 py-2 rounded text-[10px] font-bold tracking-widest uppercase disabled:opacity-50 shrink-0 mb-1"
                       >
-                        {loading ? <Loader2 className="animate-spin" size={16} /> : 'Apply'}
+                        {loading ? <Loader2 className="animate-spin" size={16} /> : (discountApplied ? 'Applied' : 'Apply')}
                       </button>
                     </div>
                     {error && <p className="text-red-500 text-[10px] font-bold">{error}</p>}
-                    {discountApplied && <p className="text-green-600 text-[10px] font-bold">✓ 40% Discount Applied Successfully!</p>}
+                    {discountApplied && (
+                      <p className="text-green-600 text-[10px] font-bold flex items-center gap-1">
+                        <CheckCircle2 size={12} /> {discountPercentage}% Discount Applied Successfully!
+                      </p>
+                    )}
                   </div>
 
-                  <div className="p-6 border border-outline-variant/30 text-center rounded-2xl">
+                  <div className="p-6 border border-outline-variant/30 text-center rounded-2xl relative overflow-hidden">
+                    {discountApplied && (
+                      <div className="absolute top-0 right-0 bg-green-500 text-white text-[8px] font-bold px-3 py-1 rounded-bl-lg uppercase tracking-widest">
+                        Save ₹{(course.price || 5000) - price}
+                      </div>
+                    )}
                     <p className="text-sm text-on-surface-variant mb-4">Total amount to pay:</p>
-                    <div className="flex items-center justify-center gap-4">
+                    <div className="flex flex-col items-center justify-center gap-1">
                       <AnimatePresence mode="wait">
                         {discountApplied ? (
-                          <motion.span 
-                            key="discounted"
-                            initial={{ scale: 1.5, color: 'var(--color-primary)' }}
-                            animate={{ scale: 1, color: '#000' }}
-                            className="text-4xl font-serif"
-                          >
-                            ₹{price}
-                          </motion.span>
+                          <div className="flex flex-col items-center">
+                            <span className="text-xs text-outline line-through opacity-60">₹{course.price || 5000}</span>
+                            <motion.span 
+                              key="discounted"
+                              initial={{ scale: 1.2, y: 10, opacity: 0 }}
+                              animate={{ scale: 1, y: 0, opacity: 1 }}
+                              className="text-4xl font-serif text-primary"
+                            >
+                              ₹{price}
+                            </motion.span>
+                          </div>
                         ) : (
-                          <span className="text-4xl font-serif">₹5000</span>
+                          <span className="text-4xl font-serif">₹{course.price || 5000}</span>
                         )}
                       </AnimatePresence>
                     </div>

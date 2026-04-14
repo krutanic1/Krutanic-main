@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-primary: #38bdf8;
+  --color-brand-secondary: #0ea5e9;
+  --color-obs-bg: #1e1e1e;
+  --color-obs-border: #2d2d2d;
+  --color-obs-panel: #252525;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-obs-bg text-gray-200 overflow-hidden;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-white/10 rounded-full hover:bg-white/20;
+}
+
+/* SaveToast auto-dismiss bar */
+@keyframes shrink {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
