@@ -959,50 +959,50 @@ const ProductManagement = () => {
             A rigorous pathway from product foundations to strategic execution and leadership-ready decision making.
           </p>
 
-          <div className="pm-curr-grid">
-            <div className="pm-accordion">
-              {curriculum.map((module, index) => {
-                const isOpen = openModule === index;
-                return (
-                  <article className={`pm-module ${isOpen ? "open" : ""}`} key={module.title}>
-                    <div
-                      className="pm-module-head"
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => setOpenModule(isOpen ? -1 : index)}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter" || event.key === " ") {
-                          setOpenModule(isOpen ? -1 : index);
-                        }
-                      }}
-                    >
-                      <div>
-                        <div className="pm-module-week">{module.week}</div>
-                        <div className="pm-module-title">{module.title}</div>
-                      </div>
-                      <span className="pm-module-toggle">{isOpen ? "-" : "+"}</span>
+          <div className="pm-accordion">
+            {curriculum.map((module, index) => {
+              const isOpen = openModule === index;
+              return (
+                <article className={`pm-module ${isOpen ? "open" : ""}`} key={module.title}>
+                  <div
+                    className="pm-module-head"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setOpenModule(isOpen ? -1 : index)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        setOpenModule(isOpen ? -1 : index);
+                      }
+                    }}
+                  >
+                    <div>
+                      <div className="pm-module-week">{module.week}</div>
+                      <div className="pm-module-title">{module.title}</div>
                     </div>
+                    <span className="pm-module-toggle">{isOpen ? "-" : "+"}</span>
+                  </div>
 
-                    {isOpen && (
-                      <div className="pm-module-body">
-                        <p className="pm-module-objective">{module.objectives}</p>
-                        <div className="pm-tag-wrap">
-                          {module.topics.map((topic) => (
-                            <span className="pm-tag" key={topic}>{topic}</span>
-                          ))}
-                        </div>
+                  {isOpen && (
+                    <div className="pm-module-body">
+                      <p className="pm-module-objective">{module.objectives}</p>
+                      <div className="pm-tag-wrap">
+                        {module.topics.map((topic) => (
+                          <span className="pm-tag" key={topic}>{topic}</span>
+                        ))}
                       </div>
-                    )}
-                  </article>
-                );
-              })}
-            </div>
+                    </div>
+                  )}
+                </article>
+              );
+            })}
+          </div>
 
-            <aside className="pm-side-panel">
-              <h3>Speak with an Advisor</h3>
-              <p>Get a personalized roadmap to transition into high-impact product roles.</p>
-              <ApplyForm />
-            </aside>
+          <div style={{ marginTop: "32px", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+            <h2 className="mb-4">Speak with an Advisor</h2>
+            <p className="lead mb-6" style={{ margin: "0 auto 24px" }}>Get a personalized roadmap to transition into high-impact product roles.</p>
+            <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+              <ApplyForm courseValue="Product Management" />
+            </div>
           </div>
         </section>
 

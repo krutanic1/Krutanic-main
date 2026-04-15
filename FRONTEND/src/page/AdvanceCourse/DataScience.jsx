@@ -954,50 +954,50 @@ const DataScience = () => {
             Curated for serious practitioners building at industry scale.
           </p>
 
-          <div className="ds-curr-grid">
-            <div className="ds-accordion">
-              {curriculum.map((module, index) => {
-                const isOpen = openModule === index;
-                return (
-                  <article className={`ds-module ${isOpen ? "open" : ""}`} key={module.title}>
-                    <div
-                      className="ds-module-head"
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => setOpenModule(isOpen ? -1 : index)}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter" || event.key === " ") {
-                          setOpenModule(isOpen ? -1 : index);
-                        }
-                      }}
-                    >
-                      <div>
-                        <div className="ds-module-week">{module.week}</div>
-                        <div className="ds-module-title">{module.title}</div>
-                      </div>
-                      <span className="ds-module-toggle">{isOpen ? "-" : "+"}</span>
+          <div className="ds-accordion">
+            {curriculum.map((module, index) => {
+              const isOpen = openModule === index;
+              return (
+                <article className={`ds-module ${isOpen ? "open" : ""}`} key={module.title}>
+                  <div
+                    className="ds-module-head"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setOpenModule(isOpen ? -1 : index)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        setOpenModule(isOpen ? -1 : index);
+                      }
+                    }}
+                  >
+                    <div>
+                      <div className="ds-module-week">{module.week}</div>
+                      <div className="ds-module-title">{module.title}</div>
                     </div>
+                    <span className="ds-module-toggle">{isOpen ? "-" : "+"}</span>
+                  </div>
 
-                    {isOpen && (
-                      <div className="ds-module-body">
-                        <p className="ds-module-objective">{module.objectives}</p>
-                        <div className="ds-tag-wrap">
-                          {module.topics.map((topic) => (
-                            <span className="ds-tag" key={topic}>{topic}</span>
-                          ))}
-                        </div>
+                  {isOpen && (
+                    <div className="ds-module-body">
+                      <p className="ds-module-objective">{module.objectives}</p>
+                      <div className="ds-tag-wrap">
+                        {module.topics.map((topic) => (
+                          <span className="ds-tag" key={topic}>{topic}</span>
+                        ))}
                       </div>
-                    )}
-                  </article>
-                );
-              })}
-            </div>
+                    </div>
+                  )}
+                </article>
+              );
+            })}
+          </div>
 
-            <aside className="ds-side-panel">
-              <h3>Speak with an Advisor</h3>
-              <p>Get a personalized curriculum walkthrough and career roadmap.</p>
-              <ApplyForm />
-            </aside>
+          <div style={{ marginTop: "32px", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+            <h2 className="mb-4">Speak with an Advisor</h2>
+            <p className="lead mb-6" style={{ margin: "0 auto 24px" }}>Get a personalized curriculum walkthrough and career roadmap.</p>
+            <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+              <ApplyForm courseValue="Data Science" />
+            </div>
           </div>
         </section>
 

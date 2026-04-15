@@ -902,50 +902,50 @@ const DataAnalytics = () => {
             A complete learning path from analytical foundations to business-grade dashboard and case execution.
           </p>
 
-          <div className="da-curr-grid">
-            <div className="da-accordion">
-              {curriculum.map((module, index) => {
-                const isOpen = openModule === index;
-                return (
-                  <article className={`da-module ${isOpen ? "open" : ""}`} key={module.title}>
-                    <div
-                      className="da-module-head"
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => setOpenModule(isOpen ? -1 : index)}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter" || event.key === " ") {
-                          setOpenModule(isOpen ? -1 : index);
-                        }
-                      }}
-                    >
-                      <div>
-                        <div className="da-module-week">{module.week}</div>
-                        <div className="da-module-title">{module.title}</div>
-                      </div>
-                      <span className="da-module-toggle">{isOpen ? "-" : "+"}</span>
+          <div className="da-accordion">
+            {curriculum.map((module, index) => {
+              const isOpen = openModule === index;
+              return (
+                <article className={`da-module ${isOpen ? "open" : ""}`} key={module.title}>
+                  <div
+                    className="da-module-head"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setOpenModule(isOpen ? -1 : index)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        setOpenModule(isOpen ? -1 : index);
+                      }
+                    }}
+                  >
+                    <div>
+                      <div className="da-module-week">{module.week}</div>
+                      <div className="da-module-title">{module.title}</div>
                     </div>
+                    <span className="da-module-toggle">{isOpen ? "-" : "+"}</span>
+                  </div>
 
-                    {isOpen && (
-                      <div className="da-module-body">
-                        <p className="da-module-objective">{module.objectives}</p>
-                        <div className="da-tag-wrap">
-                          {module.topics.map((topic) => (
-                            <span className="da-tag" key={topic}>{topic}</span>
-                          ))}
-                        </div>
+                  {isOpen && (
+                    <div className="da-module-body">
+                      <p className="da-module-objective">{module.objectives}</p>
+                      <div className="da-tag-wrap">
+                        {module.topics.map((topic) => (
+                          <span className="da-tag" key={topic}>{topic}</span>
+                        ))}
                       </div>
-                    )}
-                  </article>
-                );
-              })}
-            </div>
+                    </div>
+                  )}
+                </article>
+              );
+            })}
+          </div>
 
-            <aside className="da-side-panel">
-              <h3>Speak with an Advisor</h3>
-              <p>Get a personalized roadmap for analytics roles and data career transitions.</p>
-              <ApplyForm />
-            </aside>
+          <div style={{ marginTop: "32px", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+            <h2 className="mb-4">Speak with an Advisor</h2>
+            <p className="lead mb-6" style={{ margin: "0 auto 24px" }}>Get a personalized roadmap for analytics roles and data career transitions.</p>
+            <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+              <ApplyForm courseValue="Data Analytics" />
+            </div>
           </div>
         </section>
 

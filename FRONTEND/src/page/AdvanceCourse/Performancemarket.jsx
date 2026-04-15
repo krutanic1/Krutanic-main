@@ -958,50 +958,50 @@ const Performancemarket = () => {
             A tactical progression from campaign foundations to multi-channel scaling and performance leadership.
           </p>
 
-          <div className="pf-curr-grid">
-            <div className="pf-accordion">
-              {curriculum.map((module, index) => {
-                const isOpen = openModule === index;
-                return (
-                  <article className={`pf-module ${isOpen ? "open" : ""}`} key={module.title}>
-                    <div
-                      className="pf-module-head"
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => setOpenModule(isOpen ? -1 : index)}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter" || event.key === " ") {
-                          setOpenModule(isOpen ? -1 : index);
-                        }
-                      }}
-                    >
-                      <div>
-                        <div className="pf-module-week">{module.week}</div>
-                        <div className="pf-module-title">{module.title}</div>
-                      </div>
-                      <span className="pf-module-toggle">{isOpen ? "-" : "+"}</span>
+          <div className="pf-accordion">
+            {curriculum.map((module, index) => {
+              const isOpen = openModule === index;
+              return (
+                <article className={`pf-module ${isOpen ? "open" : ""}`} key={module.title}>
+                  <div
+                    className="pf-module-head"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setOpenModule(isOpen ? -1 : index)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        setOpenModule(isOpen ? -1 : index);
+                      }
+                    }}
+                  >
+                    <div>
+                      <div className="pf-module-week">{module.week}</div>
+                      <div className="pf-module-title">{module.title}</div>
                     </div>
+                    <span className="pf-module-toggle">{isOpen ? "-" : "+"}</span>
+                  </div>
 
-                    {isOpen && (
-                      <div className="pf-module-body">
-                        <p className="pf-module-objective">{module.objectives}</p>
-                        <div className="pf-tag-wrap">
-                          {module.topics.map((topic) => (
-                            <span className="pf-tag" key={topic}>{topic}</span>
-                          ))}
-                        </div>
+                  {isOpen && (
+                    <div className="pf-module-body">
+                      <p className="pf-module-objective">{module.objectives}</p>
+                      <div className="pf-tag-wrap">
+                        {module.topics.map((topic) => (
+                          <span className="pf-tag" key={topic}>{topic}</span>
+                        ))}
                       </div>
-                    )}
-                  </article>
-                );
-              })}
-            </div>
+                    </div>
+                  )}
+                </article>
+              );
+            })}
+          </div>
 
-            <aside className="pf-side-panel">
-              <h3>Speak with an Advisor</h3>
-              <p>Get a personalized roadmap for performance marketing roles and growth tracks.</p>
-              <ApplyForm />
-            </aside>
+          <div style={{ marginTop: "32px", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+            <h2 className="mb-4">Speak with an Advisor</h2>
+            <p className="lead mb-6" style={{ margin: "0 auto 24px" }}>Get a personalized roadmap for performance marketing roles and growth tracks.</p>
+            <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+              <ApplyForm courseValue="Performance Marketing" />
+            </div>
           </div>
         </section>
 

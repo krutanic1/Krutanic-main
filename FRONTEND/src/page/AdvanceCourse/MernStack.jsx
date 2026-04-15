@@ -958,50 +958,50 @@ const MernStack = () => {
             A practical progression from fundamentals to production deployment for modern JavaScript full-stack engineering.
           </p>
 
-          <div className="ms-curr-grid">
-            <div className="ms-accordion">
-              {curriculum.map((module, index) => {
-                const isOpen = openModule === index;
-                return (
-                  <article className={`ms-module ${isOpen ? "open" : ""}`} key={module.title}>
-                    <div
-                      className="ms-module-head"
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => setOpenModule(isOpen ? -1 : index)}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter" || event.key === " ") {
-                          setOpenModule(isOpen ? -1 : index);
-                        }
-                      }}
-                    >
-                      <div>
-                        <div className="ms-module-week">{module.week}</div>
-                        <div className="ms-module-title">{module.title}</div>
-                      </div>
-                      <span className="ms-module-toggle">{isOpen ? "-" : "+"}</span>
+          <div className="ms-accordion">
+            {curriculum.map((module, index) => {
+              const isOpen = openModule === index;
+              return (
+                <article className={`ms-module ${isOpen ? "open" : ""}`} key={module.title}>
+                  <div
+                    className="ms-module-head"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setOpenModule(isOpen ? -1 : index)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        setOpenModule(isOpen ? -1 : index);
+                      }
+                    }}
+                  >
+                    <div>
+                      <div className="ms-module-week">{module.week}</div>
+                      <div className="ms-module-title">{module.title}</div>
                     </div>
+                    <span className="ms-module-toggle">{isOpen ? "-" : "+"}</span>
+                  </div>
 
-                    {isOpen && (
-                      <div className="ms-module-body">
-                        <p className="ms-module-objective">{module.objectives}</p>
-                        <div className="ms-tag-wrap">
-                          {module.topics.map((topic) => (
-                            <span className="ms-tag" key={topic}>{topic}</span>
-                          ))}
-                        </div>
+                  {isOpen && (
+                    <div className="ms-module-body">
+                      <p className="ms-module-objective">{module.objectives}</p>
+                      <div className="ms-tag-wrap">
+                        {module.topics.map((topic) => (
+                          <span className="ms-tag" key={topic}>{topic}</span>
+                        ))}
                       </div>
-                    )}
-                  </article>
-                );
-              })}
-            </div>
+                    </div>
+                  )}
+                </article>
+              );
+            })}
+          </div>
 
-            <aside className="ms-side-panel">
-              <h3>Speak with an Advisor</h3>
-              <p>Get a personalized learning path to become a job-ready full-stack developer.</p>
-              <ApplyForm />
-            </aside>
+          <div style={{ marginTop: "32px", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+            <h2 className="mb-4">Speak with an Advisor</h2>
+            <p className="lead mb-6" style={{ margin: "0 auto 24px" }}>Get a personalized learning path to become a job-ready full-stack developer.</p>
+            <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+              <ApplyForm courseValue="MERN Stack" />
+            </div>
           </div>
         </section>
 

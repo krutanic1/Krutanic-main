@@ -573,8 +573,8 @@ const AutomationTesting = () => {
             >
               | Curriculum
             </h1>
-            <div className="lg:flex lg:gap-8">
-              <div className="lg:w-1/2 w-full">
+            <div className="lg:flex lg:flex-col lg:gap-8">
+              <div className="w-full">
                 <div className="space-y-4">
                   {modules.map((module, index) => (
                     <div key={index} className="pb-5">
@@ -606,8 +606,10 @@ const AutomationTesting = () => {
                 <span>and more..</span>
               </div>
 
-              <div className="lg:w-1/2 w-full lg:h-[450px] rounded-lg overflow-hidden mb-5 lg:mb-0 ">
-                <div className="">
+              <div className="w-full mt-8 flex flex-col items-center">
+                <h2 className="text-[#f15b29] font-bold text-center mb-4">Speak with an Advisor</h2>
+                <p className="text-gray-400 text-center mb-6 lead">Get a personalized curriculum walkthrough and career roadmap.</p>
+                <div className="w-full flex justify-center">
                   <ApplyForm courseValue="Automation Testing" />
                 </div>
               </div>

@@ -848,50 +848,50 @@ const DigitalMarket = () => {
             Designed for modern digital operators.
           </p>
 
-          <div className="dm-curr-grid">
-            <div className="dm-accordion">
-              {curriculum.map((module, index) => {
-                const isOpen = openModule === index;
-                return (
-                  <article className={`dm-module ${isOpen ? "open" : ""}`} key={module.title}>
-                    <div
-                      className="dm-module-head"
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => setOpenModule(isOpen ? -1 : index)}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter" || event.key === " ") {
-                          setOpenModule(isOpen ? -1 : index);
-                        }
-                      }}
-                    >
-                      <div>
-                        <div className="dm-module-week">{module.week}</div>
-                        <div className="dm-module-title">{module.title}</div>
-                      </div>
-                      <span className="dm-module-toggle">{isOpen ? "-" : "+"}</span>
+          <div className="dm-accordion">
+            {curriculum.map((module, index) => {
+              const isOpen = openModule === index;
+              return (
+                <article className={`dm-module ${isOpen ? "open" : ""}`} key={module.title}>
+                  <div
+                    className="dm-module-head"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setOpenModule(isOpen ? -1 : index)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        setOpenModule(isOpen ? -1 : index);
+                      }
+                    }}
+                  >
+                    <div>
+                      <div className="dm-module-week">{module.week}</div>
+                      <div className="dm-module-title">{module.title}</div>
                     </div>
+                    <span className="dm-module-toggle">{isOpen ? "-" : "+"}</span>
+                  </div>
 
-                    {isOpen && (
-                      <div className="dm-module-body">
-                        <p className="dm-module-objective">{module.objectives}</p>
-                        <div className="dm-tag-wrap">
-                          {module.topics.map((topic) => (
-                            <span className="dm-tag" key={topic}>{topic}</span>
-                          ))}
-                        </div>
+                  {isOpen && (
+                    <div className="dm-module-body">
+                      <p className="dm-module-objective">{module.objectives}</p>
+                      <div className="dm-tag-wrap">
+                        {module.topics.map((topic) => (
+                          <span className="dm-tag" key={topic}>{topic}</span>
+                        ))}
                       </div>
-                    )}
-                  </article>
-                );
-              })}
-            </div>
+                    </div>
+                  )}
+                </article>
+              );
+            })}
+          </div>
 
-            <aside className="dm-side-panel">
-              <h3>Speak with an Advisor</h3>
-              <p>Get a personalized roadmap to transition or accelerate your growth marketing career.</p>
-              <ApplyForm />
-            </aside>
+          <div style={{ marginTop: "32px", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+            <h2 className="mb-4">Speak with an Advisor</h2>
+            <p className="lead mb-6" style={{ margin: "0 auto 24px" }}>Get a personalized roadmap to transition or accelerate your growth marketing career.</p>
+            <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+              <ApplyForm courseValue="Digital Marketing" />
+            </div>
           </div>
         </section>
 
