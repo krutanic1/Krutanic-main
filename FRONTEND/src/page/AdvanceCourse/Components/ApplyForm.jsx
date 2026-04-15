@@ -139,8 +139,8 @@ const ApplyForm = ({ courseValue = "this program" }) => {
   return (
     <div>
       <Toaster position="top-center" reverseOrder={false} />
-      <div className="flex justify-center px-4 py-6">
-        <div className="shared-form-shell w-full max-w-xl">
+      <div className="w-full py-6">
+        <div className="shared-form-shell !max-w-none !w-full">
           <div className="shared-form-header">
             <button
               type="button"
@@ -185,32 +185,40 @@ const ApplyForm = ({ courseValue = "this program" }) => {
 
               {!emailVerified ? (
                 !otpSent ? (
-                  <button
-                    type="button"
-                    onClick={sendOTP}
-                    className="shared-form-verify"
-                  >
-                    Verify Email
-                  </button>
-                ) : (
-                  <div className="shared-form-otp">
-                    <input
-                      type="text"
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value)}
-                      placeholder="Enter OTP"
-                    />
+                  <div className="shared-form-field">
                     <button
                       type="button"
-                      onClick={verifyOTP}
-                      className="shared-form-submit !w-auto !px-5 !min-h-[48px] !bg-emerald-600 !shadow-none"
+                      onClick={sendOTP}
+                      className="shared-form-verify"
                     >
-                      Submit OTP
+                      Verify Email
                     </button>
+                  </div>
+                ) : (
+                  <div className="shared-form-field">
+                    <div className="shared-form-otp">
+                      <input
+                        type="text"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        placeholder="Enter OTP"
+                      />
+                      <button
+                        type="button"
+                        onClick={verifyOTP}
+                        className="shared-form-submit !w-auto !px-5 !min-h-[48px] !bg-emerald-600 !shadow-none"
+                      >
+                        Submit OTP
+                      </button>
+                    </div>
                   </div>
                 )
               ) : (
-                <div className="shared-form-status">Email verified successfully</div>
+                <div className="shared-form-field">
+                  <div className="shared-form-status">
+                    Email verified successfully
+                  </div>
+                </div>
               )}
 
               <div className="shared-form-field">
