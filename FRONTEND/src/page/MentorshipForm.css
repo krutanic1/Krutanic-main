@@ -20,6 +20,7 @@
     max-width: 560px;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
     border-radius: 28px;
     background: #ffffff;
     border: 1px solid rgba(255, 255, 255, 0.55);

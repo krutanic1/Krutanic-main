@@ -142,7 +142,6 @@ const ApplyForm = ({ courseValue = "this program" }) => {
       <div className="flex justify-center px-4 py-6">
         <div className="shared-form-shell w-full max-w-xl">
           <div className="shared-form-header">
-            <div className="shared-form-chip">Enroll now</div>
             <button
               type="button"
               className="shared-form-close opacity-0 pointer-events-none"
