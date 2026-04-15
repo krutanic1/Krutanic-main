@@ -16,8 +16,9 @@
 
 .mentorship-modal-content,
 .shared-form-shell {
-    width: 100%;
-    max-width: 560px;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
     display: flex;
     flex-direction: column;
     overflow: hidden;

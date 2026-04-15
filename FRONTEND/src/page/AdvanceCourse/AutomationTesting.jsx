@@ -565,15 +565,15 @@ const AutomationTesting = () => {
 
         {/* circulum section updated  */}
 
-        <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto">
+        <section className="py-[60px]">
+          <div className="w-full">
             <h1
               data-aos="fade-up"
               className=" font-bold text-center mb-8 text-[#f15b29]"
             >
               | Curriculum
             </h1>
-            <div className="lg:flex lg:flex-col lg:gap-8">
+            <div className="lg:flex lg:flex-col lg:gap-8 px-[10px]">
               <div className="w-full">
                 <div className="space-y-4">
                   {modules.map((module, index) => (
@@ -609,7 +609,7 @@ const AutomationTesting = () => {
               <div className="w-full mt-8 flex flex-col items-center">
                 <h2 className="text-[#f15b29] font-bold text-center mb-4">Speak with an Advisor</h2>
                 <p className="text-gray-400 text-center mb-6 lead">Get a personalized curriculum walkthrough and career roadmap.</p>
-                <div className="w-full flex justify-center">
+                <div style={{ width: "min(90%, calc(100% - 32px))", margin: "auto", padding: "0" }}>
                   <ApplyForm courseValue="Automation Testing" />
                 </div>
               </div>
@@ -660,7 +660,7 @@ const AutomationTesting = () => {
 
         {/* 2 Course Overview Section */}
         <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto">
+          <div className="container mx-auto max-w-7xl">
             <h1
               data-aos="fade-up"
               className=" font-bold text-center mb-12 text-[#f15b29]"
@@ -687,7 +687,7 @@ const AutomationTesting = () => {
 
         {/* 3 key outcome section  */}
         <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto lg:flex lg:gap-10 flex-col lg:flex-row">
+          <div className="container mx-auto max-w-full lg:flex lg:gap-10 flex-col lg:flex-row">
             {/* Left side: Key Outcomes */}
             <div className="w-full mb-3 lg:mb-0">
               <h1 data-aos="fade-up" className=" font-bold mb-4 text-[#f15b29]">
@@ -785,7 +785,7 @@ const AutomationTesting = () => {
         <section className="py-[60px] px-[10px]">
           <div
             data-aos="fade-up"
-            className="container mx-auto p-5 flex flex-col md:flex-row justify-between items-center flex-wrap gap-5 rounded-lg shadow-lg border-2 border-[#f15b29]"
+            className="container mx-auto max-w-full p-5 flex flex-col md:flex-row justify-between items-center flex-wrap gap-5 rounded-lg shadow-lg border-2 border-[#f15b29]"
           >
             <div className="text-center md:text-left">
               <h2 className="text-xl font-bold mb-2 text-[#f15b29]">
@@ -1035,7 +1035,7 @@ const AutomationTesting = () => {
         <hr className=" opacity-10" />
         {/* 13 job roles section  */}
         <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto">
+          <div className="container mx-auto max-w-full">
             <h1
               data-aos="fade-up"
               className="text-[#f15b29] text-center  font-bold mb-8"
@@ -1064,7 +1064,7 @@ const AutomationTesting = () => {
 
         {/* Clients Carousel */}
         <div className="workat">
-          <div className="alumni">
+          <div className="alumni container mx-auto max-w-full">
             <h1 className="text-[#f15b29] font-bold mb-6 text-center">
               | Our alumni at top Brands
             </h1>
@@ -1079,7 +1079,7 @@ const AutomationTesting = () => {
 
         {/* 12 key highlight section */}
         <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto">
+          <div className="container mx-auto max-w-full">
             <div className="">
               <div className=" w-full mb-8 lg:mb-0">
                 <h1
@@ -1128,7 +1128,7 @@ const AutomationTesting = () => {
 
         {/* 8 Certification section */}
         <section className="py-[60px] px-[10px]">
-          <div data-aos="fade-up">
+          <div data-aos="fade-up" className="container mx-auto max-w-full">
             <Certification />
           </div>
         </section>
@@ -1137,7 +1137,7 @@ const AutomationTesting = () => {
 
          {/* Flexible Payment Options */}
          <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto max-w-4xl">
+          <div className="container mx-auto max-w-full">
             <h1 className="text-center font-extrabold text-[#f15b29] mb-12 text-3xl md:text-4xl">
               Our Flexible Payment <span className="text-[#ff7f50]">Options</span>
             </h1>

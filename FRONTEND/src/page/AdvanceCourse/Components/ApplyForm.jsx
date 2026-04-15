@@ -139,8 +139,8 @@ const ApplyForm = ({ courseValue = "this program" }) => {
   return (
     <div>
       <Toaster position="top-center" reverseOrder={false} />
-      <div className="w-full py-6">
-        <div className="shared-form-shell !max-w-none !w-full">
+      <div className="w-full">
+        <div className="shared-form-shell !w-full !max-w-none">
           <div className="shared-form-header">
             <button
               type="button"
@@ -149,8 +149,8 @@ const ApplyForm = ({ courseValue = "this program" }) => {
             >
               <i className="fa fa-times"></i>
             </button>
-            <h2>Apply for {courseValue}</h2>
-            <p>
+            <h2 className="text-center">Apply for {courseValue}</h2>
+            <p className="text-center">
               Share your details and verify your email once. We will connect
               you with the right counselor for the next step.
             </p>

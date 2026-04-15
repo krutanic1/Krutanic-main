@@ -430,7 +430,7 @@ const Investmentbanking = () => {
         }
 
         .ib-shell {
-          width: min(1140px, calc(100% - 32px));
+          width: min(100%, calc(100% - 32px));
           margin: 0 auto;
         }
 
@@ -1000,7 +1000,7 @@ const Investmentbanking = () => {
           <div style={{ marginTop: "32px", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
             <h2 className="mb-4">Speak with an Advisor</h2>
             <p className="lead mb-6" style={{ margin: "0 auto 24px" }}>Get a personalized roadmap for investment banking and finance career tracks.</p>
-            <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+            <div style={{ width: "min(90%, calc(100% - 32px))", margin: "auto", padding: "0" }}>
               <ApplyForm courseValue="Investment Banking" />
             </div>
           </div>
