@@ -16,6 +16,8 @@ export default function ControlPanel({
   bgMode,             setBgMode,
   cameraBrightness,   setCameraBrightness,
   cameraContrast,     setCameraContrast,
+  floatingCameraWidth, setFloatingCameraWidth,
+  showFloatingCamera, setShowFloatingCamera,
 }) {
   const [showSettings, setShowSettings] = useState(false);
 
@@ -123,6 +125,10 @@ export default function ControlPanel({
           setCameraBrightness={setCameraBrightness}
           cameraContrast={cameraContrast}
           setCameraContrast={setCameraContrast}
+          floatingCameraWidth={floatingCameraWidth}
+          setFloatingCameraWidth={setFloatingCameraWidth}
+          showFloatingCamera={showFloatingCamera}
+          setShowFloatingCamera={setShowFloatingCamera}
         />
       )}
 

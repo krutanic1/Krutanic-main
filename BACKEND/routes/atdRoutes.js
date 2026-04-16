@@ -28,6 +28,10 @@ router.delete("/admin/attendance/:recordId", atdAuth, authController.deleteAtten
 router.patch("/admin/user/:userId", atdAuth, authController.updateAdminUser);
 router.delete("/admin/user/:userId", atdAuth, authController.deleteAdminUser);
 
+// Global Config/Override routes
+router.get("/admin/attendance-override", atdAuth, attendanceController.getAttendanceOverride);
+router.post("/admin/attendance-override", atdAuth, attendanceController.toggleAttendanceOverride);
+
 // Send specific report (Admin only)
 router.post("/admin/send-report/:userId", atdAuth, async (req, res) => {
   try {

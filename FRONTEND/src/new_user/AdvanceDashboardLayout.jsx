@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import axios from "axios";
-import API from "../API";
 import { Toaster } from "react-hot-toast";
 import { DashboardProvider, useDashboard } from "./DashboardContext";
 import { TopNav } from "./new-dashboad";
@@ -129,33 +127,30 @@ const Sidebar = ({ collapsed, setCollapsed, onLogout, mobileOpen, setMobileOpen 
    BREADCRUMB — derives label from URL
 ───────────────────────────────────────────── */
 const sectionTitles = {
-    overview: "Overview", training: "Training", practical: "Practical",
-    internship: "Internship", placement: "Placement",
+    overview: "Overview",
+    training: "Training",
+    practical: "Practical",
+    internship: "Internship",
+    exercise: "Exercise",
+    placement: "Placement",
+    profile: "Profile",
     payments: "Payments",
-    jobs: "Browse Jobs", "my-job": "Job Search", "mock-interview": "Mock Interview", "resume-ats": "Resume ATS",
+    jobs: "Browse Jobs",
+    "my-job": "Job Search",
+    "mock-interview": "Mock Interview",
+    "resume-ats": "Resume ATS",
     "resume-builder": "Resume Builder",
-    "profile": "Profile",
 };
 
 const Breadcrumb = () => {
-    const navigate = useNavigate();
     const location = useLocation();
-    const segment = location.pathname.split("/").pop(); // e.g. "training"
-    const currentSection = sectionTitles[segment] || "Overview";
-    const isOverview = !segment || segment === "advancedashboard";
+    const pathParts = location.pathname.split("/").filter(Boolean);
+    const lastPart = pathParts[pathParts.length - 1] || "overview";
+    const currentSection = sectionTitles[lastPart] || (lastPart.charAt(0).toUpperCase() + lastPart.slice(1));
 
     return (
         <div className="nd-breadcrumb">
-            <button className="nd-breadcrumb-home" onClick={() => navigate("/advancedashboard")}>
-                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>home</span>
-                Dashboard
-            </button>
-            {!isOverview && (
-                <>
-                    <span className="nd-breadcrumb-sep">›</span>
-                    <span className="nd-breadcrumb-current">{currentSection}</span>
-                </>
-            )}
+            <span className="nd-breadcrumb-current">{currentSection}</span>
         </div>
     );
 };
@@ -173,25 +168,6 @@ const LayoutInner = () => {
     useEffect(() => {
         setMobileSidebarOpen(false);
     }, [location.pathname]);
-
-    // Attendance: Mark on login (one-shot, no timer)
-    useEffect(() => {
-        if (!userData?._id) return;
-
-        const markAttendance = async () => {
-            try {
-                const token = localStorage.getItem("token");
-                await axios.post(`${API}/attendance/mark`, {}, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                console.log("[Attendance] ✅ Marked on login");
-            } catch (err) {
-                console.error("[Attendance] ❌ Failed:", err.message);
-            }
-        };
-
-        markAttendance();
-    }, [userData?._id]);
 
     return (
         <div className="nd-root">
@@ -219,9 +195,8 @@ const LayoutInner = () => {
                 {/* Mobile overlay — tap to close sidebar */}
                 {mobileSidebarOpen && (
                     <div
-                        className="nd-sidebar-overlay md:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+                        className="nd-sidebar-overlay nd-overlay-visible"
                         onClick={() => setMobileSidebarOpen(false)}
-                        aria-label="Close sidebar overlay"
                     />
                 )}
 

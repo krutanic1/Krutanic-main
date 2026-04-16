@@ -12,9 +12,17 @@ import { ImageSegmenter, FilesetResolver } from '@mediapipe/tasks-vision';
  * @returns {MediaStream|null} - The processed stream (or raw if disabled)
  */
 export function useVirtualBackground(rawStream, enabled = false, settings = { bgMode: 'blur', brightness: 100, contrast: 100 }) {
-  const { bgMode, brightness, contrast } = settings;
   const [processedStream, setProcessedStream] = useState(null);
   
+  // A stream needs processing if AI background is ON OR filters are applied
+  const isProcessingRequired = enabled || settings.brightness !== 100 || settings.contrast !== 100;
+
+  // Use a ref for settings to avoid recreating the processing loop on every slider change
+  const settingsRef = useRef(settings);
+  useEffect(() => {
+    settingsRef.current = settings;
+  }, [settings]);
+
   // Refs for processing pipeline
   const segmenterRef = useRef(null);
   const videoRef = useRef(null);
@@ -22,6 +30,8 @@ export function useVirtualBackground(rawStream, enabled = false, settings = { bg
   const requestRef = useRef(null);
   const outputStreamRef = useRef(null);
   const tempCanvasRef   = useRef(null); // Used for blurring/compositing
+  const mainCtxRef      = useRef(null);
+  const tempCtxRef      = useRef(null);
 
   // Initialize MediaPipe Segmenter
   useEffect(() => {
@@ -54,14 +64,22 @@ export function useVirtualBackground(rawStream, enabled = false, settings = { bg
 
   // Process frames
   const processFrame = useCallback(() => {
-    if (!enabled || !segmenterRef.current || !videoRef.current || !canvasRef.current) {
+    if (!isProcessingRequired || !videoRef.current || !canvasRef.current) {
       requestRef.current = requestAnimationFrame(processFrame);
       return;
     }
 
+    const { brightness, contrast, bgMode } = settingsRef.current;
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d', { alpha: true });
+
+    if (!mainCtxRef.current) {
+      mainCtxRef.current = canvas.getContext('2d', {
+        alpha: true,
+        willReadFrequently: true,
+      });
+    }
+    const ctx = mainCtxRef.current;
     
     if (video.paused || video.ended || video.readyState < 2) {
       requestRef.current = requestAnimationFrame(processFrame);
@@ -73,6 +91,22 @@ export function useVirtualBackground(rawStream, enabled = false, settings = { bg
       canvas.height = video.videoHeight;
     }
 
+    // CASE 1: Only Filters (No AI Background)
+    if (!enabled) {
+      ctx.save();
+      ctx.filter = `brightness(${brightness}%) contrast(${contrast}%)`;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      ctx.restore();
+      requestRef.current = requestAnimationFrame(processFrame);
+      return;
+    }
+
+    // CASE 2: AI Background + Filters
+    if (!segmenterRef.current) {
+      requestRef.current = requestAnimationFrame(processFrame);
+      return;
+    }
+
     // Initialize temp canvas if needed
     if (!tempCanvasRef.current) {
       tempCanvasRef.current = document.createElement('canvas');
@@ -82,7 +116,10 @@ export function useVirtualBackground(rawStream, enabled = false, settings = { bg
       tempCanvas.width = canvas.width;
       tempCanvas.height = canvas.height;
     }
-    const tctx = tempCanvas.getContext('2d');
+    if (!tempCtxRef.current) {
+      tempCtxRef.current = tempCanvas.getContext('2d', { willReadFrequently: true });
+    }
+    const tctx = tempCtxRef.current;
 
     const startTimeMs = performance.now();
     
@@ -124,7 +161,7 @@ export function useVirtualBackground(rawStream, enabled = false, settings = { bg
     });
 
     requestRef.current = requestAnimationFrame(processFrame);
-  }, [enabled]);
+  }, [enabled, isProcessingRequired]); // settings removed to keep callback stable
 
   // Handle stream changes
   useEffect(() => {
@@ -133,43 +170,53 @@ export function useVirtualBackground(rawStream, enabled = false, settings = { bg
       return;
     }
 
-    if (!enabled) {
+    if (!isProcessingRequired) {
       setProcessedStream(rawStream);
       return;
     }
 
-    // Setup processing hardware
-    const video = document.createElement('video');
-    video.srcObject = rawStream;
-    video.muted = true;
-    video.play();
-    videoRef.current = video;
+    // Setup processing hardware only if necessary
+    if (!videoRef.current) {
+      const video = document.createElement('video');
+      video.srcObject = rawStream;
+      video.muted = true;
+      video.play();
+      videoRef.current = video;
 
-    const canvas = document.createElement('canvas');
-    canvasRef.current = canvas;
+      const canvas = document.createElement('canvas');
+      canvasRef.current = canvas;
 
-    // Initial draw to pulse the canvas so the first capture has data
-    if (video.videoWidth > 0 && video.videoHeight > 0) {
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0);
+      // Capture processed stream ONCE
+      const outStream = canvas.captureStream(30);
+      outputStreamRef.current = outStream;
+      setProcessedStream(outStream);
+    } else {
+      // Update existing video source if rawStream changed but we already have processing hardware
+      if (videoRef.current.srcObject !== rawStream) {
+        videoRef.current.srcObject = rawStream;
+      }
     }
 
-    // Capture processed stream
-    const outStream = canvas.captureStream(30);
-    outputStreamRef.current = outStream;
-    setProcessedStream(outStream);
-
     // Start loop
+    cancelAnimationFrame(requestRef.current);
     requestRef.current = requestAnimationFrame(processFrame);
 
     return () => {
-      cancelAnimationFrame(requestRef.current);
-      video.pause();
-      video.srcObject = null;
+      // Cleanup only if stream or processing requirements truly change
     };
-  }, [rawStream, enabled, processFrame]);
+  }, [rawStream, isProcessingRequired, processFrame]);
+
+  // Global cleanup on unmount
+  useEffect(() => {
+    return () => {
+      cancelAnimationFrame(requestRef.current);
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.srcObject = null;
+      }
+    };
+  }, []);
+
 
   return processedStream;
 }

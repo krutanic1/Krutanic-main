@@ -5,6 +5,7 @@ import ControlPanel from './components/ControlPanel';
 import AudioMixer from './components/AudioMixer';
 import SaveToast from './components/SaveToast';
 import StatusBar from './components/StatusBar';
+import FloatingCameraMonitor from './components/FloatingCameraMonitor';
 import { useMediaRecorder } from './hooks/useMediaRecorder';
 import { useDevices } from './hooks/useDevices';
 import { useMicrophoneAudio } from './hooks/useMicrophoneAudio';
@@ -44,8 +45,10 @@ function App() {
   const [bgMode,             setBgMode]             = useState('blur'); // 'blur' | 'remove'
   const [cameraBrightness,   setCameraBrightness]   = useState(100);
   const [cameraContrast,     setCameraContrast]     = useState(100);
+  const [showFloatingCamera, setShowFloatingCamera] = useState(true);
+  const [floatingCameraWidth, setFloatingCameraWidth] = useState(280);
   const [webcamLayout,       setWebcamLayout]       = useState({
-    x: 20, y: 350, w: 320, h: 180 // Default to bottom-left (approx) and larger
+    x: 20, y: 20, w: 280, h: 157.5 // Default to top-left corner and smaller (16:9)
   });
 
   // Device enumeration
@@ -117,18 +120,15 @@ function App() {
 
       // Calculate relative layout FOR THE START of recording as well (used as baseline)
       const container = document.querySelector('.aspect-video');
-      let startLayout = webcamLayout;
-      if (container) {
-        const rect = container.getBoundingClientRect();
-        if (rect.width > 100) { // sanity check
-           startLayout = {
-             x: webcamLayout.x / rect.width,
-             y: webcamLayout.y / rect.height,
-             w: webcamLayout.w / rect.width,
-             h: webcamLayout.h / rect.height
-           };
-        }
-      }
+      const cw = container?.clientWidth || 1280;
+      const ch = container?.clientHeight || 720;
+      
+      const startLayout = {
+        x: Math.max(0, Math.min(1, webcamLayout.x / cw)),
+        y: Math.max(0, Math.min(1, webcamLayout.y / ch)),
+        w: Math.max(0.1, Math.min(1, webcamLayout.w / cw)),
+        h: Math.max(0.1, Math.min(1, webcamLayout.h / ch)),
+      };
 
       startRecording(mediaStream, processedWebcamStream, mic.streamDestRef, startLayout);
     } catch (err) {
@@ -159,7 +159,8 @@ function App() {
       console.log('[Layout] Final relative:', relativeLayout);
     }
 
-    stopRecording(relativeLayout);
+    const targetResolution = RESOLUTIONS[resolution] || RESOLUTIONS['1080p'];
+    stopRecording(relativeLayout, targetResolution);
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((t) => t.stop());
       streamRef.current = null;
@@ -303,6 +304,10 @@ function App() {
           setCameraBrightness={setCameraBrightness}
           cameraContrast={cameraContrast}
           setCameraContrast={setCameraContrast}
+          floatingCameraWidth={floatingCameraWidth}
+          setFloatingCameraWidth={setFloatingCameraWidth}
+          showFloatingCamera={showFloatingCamera}
+          setShowFloatingCamera={setShowFloatingCamera}
         />
       </div>
 
@@ -315,6 +320,14 @@ function App() {
       <StatusBar isRecording={isRecording} bytesWritten={bytesWritten} />
 
       <SaveToast savedPath={savedPath} onDismiss={() => {}} />
+
+      <FloatingCameraMonitor
+        webcamStream={processedWebcamStream}
+        isWebcamOn={isWebcamOn}
+        visible={showFloatingCamera}
+        width={floatingCameraWidth}
+        onWidthChange={setFloatingCameraWidth}
+      />
     </div>
   );
 }

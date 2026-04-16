@@ -74,6 +74,8 @@ export default function AdvancedSettings({
   bgMode,             setBgMode,
   cameraBrightness,   setCameraBrightness,
   cameraContrast,     setCameraContrast,
+  floatingCameraWidth, setFloatingCameraWidth,
+  showFloatingCamera, setShowFloatingCamera,
 }) {
   const cameraOptions     = cameras.map((d)     => ({ value: d.deviceId, label: d.label || `Camera ${d.deviceId.slice(0, 8)}` }));
   const micOptions        = microphones.map((d) => ({ value: d.deviceId, label: d.label || `Mic ${d.deviceId.slice(0, 8)}`    }));
@@ -146,6 +148,39 @@ export default function AdvancedSettings({
 
         {isWebcamOn && (
           <div className="space-y-3 pt-1 border-t border-white/5 mt-2">
+            {/* Floating live camera on all app tabs/pages */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-[10px] uppercase font-bold text-gray-500">
+                <span>Live Camera On All Tabs</span>
+                <button
+                  onClick={() => setShowFloatingCamera((v) => !v)}
+                  className={`px-2 py-1 rounded text-[10px] border ${showFloatingCamera
+                    ? 'border-brand-primary/40 text-brand-primary bg-brand-primary/10'
+                    : 'border-white/10 text-gray-400 bg-white/5'
+                    }`}
+                >
+                  {showFloatingCamera ? 'ON' : 'OFF'}
+                </button>
+              </div>
+            </div>
+
+            {/* Floating camera size */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-[10px] uppercase font-bold text-gray-500">
+                <span>Live Camera Size</span>
+                <span>{floatingCameraWidth}px</span>
+              </div>
+              <input
+                type="range"
+                min="180"
+                max="520"
+                step="10"
+                value={floatingCameraWidth}
+                onChange={(e) => setFloatingCameraWidth(Number(e.target.value))}
+                className="w-full h-1 bg-black/30 rounded-lg appearance-none cursor-pointer accent-brand-primary"
+              />
+            </div>
+
             {/* Brightness */}
             <div className="space-y-1">
               <div className="flex items-center justify-between text-[10px] uppercase font-bold text-gray-500">

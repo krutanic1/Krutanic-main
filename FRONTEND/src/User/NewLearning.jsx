@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
-import API from "../API";
 
 import playerlogo from "./playerlogo.jpg";
 
@@ -29,8 +28,7 @@ const NewLearning = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { courseTitle, sessions, startIndex = 0, thumbnail, enrollmentId, isFullyPaid: initialIsFullyPaid } = location.state || {};
-  const [isFullyPaid, setIsFullyPaid] = useState(initialIsFullyPaid);
+  const { courseTitle, sessions, startIndex = 0, thumbnail, enrollmentId } = location.state || {};
 
   const sessionKeys = sessions ? Object.keys(sessions) : [];
   const totalSessions = sessionKeys.length;
@@ -48,29 +46,7 @@ const NewLearning = () => {
         return next;
       });
     }
-
-    // Fallback/Verify payment status if not explicitly true
-    const verifyPayment = async () => {
-      if (!enrollmentId) return;
-      try {
-        const res = await fetch(`${API}/enrollments`);
-        const allEnrollments = await res.json();
-        const current = allEnrollments.find(e => e._id === enrollmentId);
-        if (current) {
-          const price = current.programPrice || 0;
-          const paid = current.paidAmount || 0;
-          const verifiedPaid = (price - paid) <= 0;
-          setIsFullyPaid(verifiedPaid);
-        }
-      } catch (err) {
-        console.error("Failed to verify payment status:", err);
-      }
-    };
-
-    if (initialIsFullyPaid !== true) {
-      verifyPayment();
-    }
-  }, [enrollmentId, location.state?.watchedSessionsFromDB, initialIsFullyPaid]);
+  }, [enrollmentId, location.state?.watchedSessionsFromDB]);
 
   const markWatched = async (key) => {
     if (!enrollmentId) return;
@@ -83,25 +59,14 @@ const NewLearning = () => {
       saveWatchedSet(enrollmentId, next);
 
       // Update backend in background
-      fetch(`${API}/updateprogress`, {
+      fetch("http://localhost:5000/api/newstudentenroll/updateprogress", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           enrollmentId,
           watchedSessions: [...next]
         })
-      })
-        .then(res => {
-          if (!res.ok) throw new Error(`API error: ${res.status}`);
-          return res.json();
-        })
-        .then(data => {
-          console.log("Watched sessions synced to DB:", data);
-        })
-        .catch(err => {
-          console.error("Failed to sync watched sessions to DB:", err);
-          toast.error("Failed to save progress to server");
-        });
+      }).catch(err => console.error("Sync failed:", err));
 
       return next;
     });
@@ -112,10 +77,6 @@ const NewLearning = () => {
 
   /* ─── Session click: select + mark as watched ─── */
   const handleSessionClick = (key, index) => {
-    if (!isFullyPaid && index !== 0) {
-      toast.error("Full access requires payment. Please clear your pending amount.");
-      return;
-    }
     setSelectedSession({ key, ...sessions[key] });
     setCurrentSessionIndex(index);
     setIsPlaying(true);
@@ -126,10 +87,6 @@ const NewLearning = () => {
     if (currentSessionIndex > 0) {
       const newIndex = currentSessionIndex - 1;
       const key = sessionKeys[newIndex];
-      if (!isFullyPaid && newIndex !== 0) {
-        toast.error("Full access requires payment.");
-        return;
-      }
       setSelectedSession({ key, ...sessions[key] });
       setCurrentSessionIndex(newIndex);
       setIsPlaying(true);
@@ -141,10 +98,6 @@ const NewLearning = () => {
     if (currentSessionIndex < totalSessions - 1) {
       const newIndex = currentSessionIndex + 1;
       const key = sessionKeys[newIndex];
-      if (!isFullyPaid && newIndex !== 0) {
-        toast.error("Full access requires payment.");
-        return;
-      }
       setSelectedSession({ key, ...sessions[key] });
       setCurrentSessionIndex(newIndex);
       setIsPlaying(true);
@@ -155,10 +108,6 @@ const NewLearning = () => {
   const handleSelectChange = (e) => {
     const index = parseInt(e.target.value);
     const key = sessionKeys[index];
-    if (!isFullyPaid && index !== 0) {
-      toast.error("Full access requires payment.");
-      return;
-    }
     setSelectedSession({ key, ...sessions[key] });
     setCurrentSessionIndex(index);
     setIsPlaying(true);
@@ -255,7 +204,7 @@ const NewLearning = () => {
                 <div className="text-white">
                   <p className="text-sm font-medium opacity-90 mb-1">
                     {currentSessionIndex < totalSessions - 1
-                      ? `Up Next: ${(!isFullyPaid && (currentSessionIndex + 1) !== 0) ? "Session Locked" : sessions[sessionKeys[currentSessionIndex + 1]]?.title}`
+                      ? `Up Next: ${sessions[sessionKeys[currentSessionIndex + 1]]?.title}`
                       : "This is the last session"}
                   </p>
                 </div>
@@ -282,9 +231,7 @@ const NewLearning = () => {
               <div className="flex-1 min-w-0 text-left overflow-hidden">
                 <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Previous</p>
                 <p className={`font-medium truncate ${currentSessionIndex === 0 ? "text-gray-400" : "text-gray-900"}`}>
-                  {currentSessionIndex > 0
-                    ? ((!isFullyPaid && (currentSessionIndex - 1) !== 0) ? "Session Locked" : sessions[sessionKeys[currentSessionIndex - 1]]?.title)
-                    : "No previous video"}
+                  {currentSessionIndex > 0 ? sessions[sessionKeys[currentSessionIndex - 1]]?.title : "No previous video"}
                 </p>
               </div>
             </button>
@@ -301,9 +248,7 @@ const NewLearning = () => {
               <div className="flex-1 min-w-0 text-right overflow-hidden">
                 <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Next</p>
                 <p className={`font-medium truncate ${currentSessionIndex >= totalSessions - 1 ? "text-gray-400" : "text-gray-900"}`}>
-                  {currentSessionIndex < totalSessions - 1
-                    ? ((!isFullyPaid && (currentSessionIndex + 1) !== 0) ? "Session Locked" : sessions[sessionKeys[currentSessionIndex + 1]]?.title)
-                    : "No next video"}
+                  {currentSessionIndex < totalSessions - 1 ? sessions[sessionKeys[currentSessionIndex + 1]]?.title : "No next video"}
                 </p>
               </div>
               <div className={`size-10 shrink-0 rounded-full flex items-center justify-center ${currentSessionIndex >= totalSessions - 1 ? "bg-gray-200" : "bg-primary/10"}`}>
@@ -381,17 +326,14 @@ const NewLearning = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm font-medium truncate ${isActive ? "text-primary" : "text-gray-800"}`}>
-                        {(!isFullyPaid && idx !== 0) ? "Session Locked" : (sessions[key]?.title || key)}
+                        {sessions[key]?.title || key}
                       </p>
                       {isWatched && (
                         <p className="text-xs text-green-600 font-medium">Watched</p>
                       )}
                     </div>
-                    {isActive && !isWatched && (
+                    {isActive && (
                       <span className="material-symbols-outlined text-primary text-[18px]">play_circle</span>
-                    )}
-                    {!isFullyPaid && idx !== 0 && (
-                      <span className="material-symbols-outlined text-gray-400 text-[18px]">lock</span>
                     )}
                   </button>
                 );

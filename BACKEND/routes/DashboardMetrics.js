@@ -8,13 +8,10 @@ const {
     WeeklyPractical,
     PlacementReadiness
 } = require('../models/DashboardMetrics');
-const NewEnrollStudent = require('../models/NewStudentEnroll');
-const User = require('../models/User');
 
 /**
  * GET /api/dashboard/:userId
  * Returns all metrics for a user including the assignment matrix and 24-week readiness.
- * Program completion is calculated from watchedSessions in NewEnroll model.
  */
 router.get('/:userId', async (req, res) => {
     try {
@@ -26,28 +23,12 @@ router.get('/:userId', async (req, res) => {
         }
         const userId = new mongoose.Types.ObjectId(userIdStr);
 
-        // Fetch user to get email for enrollment lookup
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        // Fetch enrollment and other metrics
-        const [enrollment, stats, readiness, placement] = await Promise.all([
-            NewEnrollStudent.findOne({ email: user.email }).populate('domainId'),
+        const [program, stats, readiness, placement] = await Promise.all([
+            ProgramProgress.findOne({ userId }),
             AssignmentStats.findOne({ userId }),
             InternshipReadiness.findOne({ userId }),
             PlacementReadiness.findOne({ userId }),
         ]);
-
-        // Calculate program completion from watchedSessions
-        let programCompletion = { completedSessions: 0, totalSessions: 0, percentage: 0 };
-        if (enrollment && enrollment.domainId && enrollment.domainId.session) {
-            const totalSessions = Object.keys(enrollment.domainId.session).length;
-            const completedSessions = enrollment.watchedSessions ? enrollment.watchedSessions.length : 0;
-            const percentage = totalSessions > 0 ? Math.round((completedSessions / totalSessions) * 100) : 0;
-            programCompletion = { completedSessions, totalSessions, percentage };
-        }
 
         // Default level object
         const defaultLevel = { bestScore: 0, latestScore: 0, attemptsCount: 0, status: 'Not Started' };
@@ -60,7 +41,7 @@ router.get('/:userId', async (req, res) => {
             { levelName: 'Intermediate', ...defaultLevel, ...(levels.Intermediate || {}) },
             { levelName: 'Advanced', ...defaultLevel, ...(levels.Advanced || {}) },
         ];
-        console.log(`[Dashboard] userId=${userIdStr} | enrollment found=${!!enrollment} | completedSessions=${programCompletion.completedSessions}/${programCompletion.totalSessions}`);
+        console.log(`[Dashboard] userId=${userIdStr} | assignmentStats found=${!!stats}`);
 
         // Build 24-week data
         const allWeeks = await WeeklyPractical.find({ userId });
@@ -73,8 +54,8 @@ router.get('/:userId', async (req, res) => {
         const readinessScore = readiness?.readinessScore || 0;
 
         res.json({
-            // Program completion calculated from watchedSessions in NewEnroll
-            programCompletion,
+            // Legacy stat card data (kept for backwards compat with OverviewPage)
+            programCompletion: program || { completedSessions: 0, totalSessions: 100, percentage: 0 },
             assignmentStats: stats || { levels: { Beginner: defaultLevel, Intermediate: defaultLevel, Advanced: defaultLevel } },
             internshipStatus: {
                 status: readiness?.internshipStatus || 'Not Eligible',
@@ -101,8 +82,7 @@ router.get('/:userId', async (req, res) => {
 
 /**
  * PATCH /api/dashboard/:userId
- * Updates specified metrics (placement readiness).
- * Note: programCompletion is now auto-calculated from watchedSessions in NewEnroll model.
+ * Updates specified legacy metrics (program completion, placement readiness).
  */
 router.patch('/:userId', async (req, res) => {
     try {
@@ -114,8 +94,17 @@ router.patch('/:userId', async (req, res) => {
         const updates = req.body;
         const responseData = {};
 
-        // Note: programCompletion is now read-only (calculated from watchedSessions)
-        // To update program completion, update watchedSessions in NewEnroll model via /enrollments endpoint
+        if (updates.programCompletion) {
+            let prog = await ProgramProgress.findOne({ userId });
+            if (!prog) prog = new ProgramProgress({ userId });
+            if (updates.programCompletion.completedSessions !== undefined) prog.completedSessions = updates.programCompletion.completedSessions;
+            if (updates.programCompletion.totalSessions !== undefined) prog.totalSessions = updates.programCompletion.totalSessions;
+            if (prog.totalSessions > 0) {
+                prog.percentage = Math.round((prog.completedSessions / prog.totalSessions) * 100);
+            }
+            await prog.save();
+            responseData.programCompletion = prog;
+        }
 
         if (updates.placementReadiness) {
             let place = await PlacementReadiness.findOne({ userId });

@@ -1,5 +1,6 @@
 const Attendance = require("../models/Attendance");
 const redis = require("../config/redis");
+const GlobalConfig = require("../models/GlobalConfig");
 
 // Contribution note: non-functional comment added for repository activity.
 
@@ -59,10 +60,19 @@ exports.markAttendance = async (req, res) => {
     const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     const deviceInfo = req.headers['user-agent'];
 
+    const config = await GlobalConfig.findOne({ key: "attendance_override" });
+    let finalTimestamp = new Date();
+
+    if (config && config.value === true) {
+      // Force attendance to 11:00 AM IST (UTC 05:30)
+      finalTimestamp = new Date();
+      finalTimestamp.setUTCHours(5, 30, 0, 0);
+    }
+
     await Attendance.create({
       userId,
       date: today,
-      timestamp: new Date(),
+      timestamp: finalTimestamp,
       lat,
       lng,
       ip,
@@ -169,5 +179,40 @@ exports.getHistory = async (req, res) => {
   } catch (error) {
     console.error("GetHistory Error:", error);
     res.status(500).json({ error: "Failed to fetch history" });
+  }
+};
+
+/**
+ * @desc Get global attendance override status
+ * @route GET /api/atd/admin/attendance-override
+ * @access Private/Admin
+ */
+exports.getAttendanceOverride = async (req, res) => {
+  try {
+    const config = await GlobalConfig.findOne({ key: "attendance_override" });
+    res.json({ success: true, value: config ? config.value : false });
+  } catch (error) {
+    console.error("GetAttendanceOverride Error:", error);
+    res.status(500).json({ error: "Failed to fetch override status" });
+  }
+};
+
+/**
+ * @desc Set global attendance override status
+ * @route POST /api/atd/admin/attendance-override
+ * @access Private/Admin
+ */
+exports.toggleAttendanceOverride = async (req, res) => {
+  try {
+    const { value } = req.body;
+    await GlobalConfig.findOneAndUpdate(
+      { key: "attendance_override" },
+      { value: !!value },
+      { upsert: true, new: true }
+    );
+    res.json({ success: true, message: `Attendance override turned ${value ? 'ON' : 'OFF'}` });
+  } catch (error) {
+    console.error("ToggleAttendanceOverride Error:", error);
+    res.status(500).json({ error: "Failed to update override status" });
   }
 };

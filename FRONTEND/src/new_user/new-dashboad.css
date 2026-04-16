@@ -7,8 +7,7 @@
 .nd-root {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
   background: #f5f6fa;
   font-family: 'Lexend', 'Inter', sans-serif;
 }
@@ -545,7 +544,7 @@
   margin-top: 64px;
   display: flex;
   flex: 1;
-  height: calc(100vh - 64px);
+  min-height: calc(100vh - 64px);
   overflow: hidden;
 }
 
@@ -560,7 +559,7 @@
   border-right: 1px solid rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
   transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
@@ -716,10 +715,8 @@
 ══════════════════════════════════════════ */
 .nd-main {
   flex: 1;
-  height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  scroll-behavior: smooth;
 }
 
 .nd-content {
@@ -1332,12 +1329,11 @@
     min-width: 64px;
   }
 
-  /* Hide labels only when sidebar is NOT open */
-  .nd-sidebar:not(.nd-sidebar-open) .nd-sidebar-item-label {
+  .nd-sidebar-item-label {
     display: none;
   }
 
-  .nd-sidebar:not(.nd-sidebar-open) .nd-sidebar-footer {
+  .nd-sidebar-footer {
     display: none;
   }
 
@@ -2577,8 +2573,7 @@
 
 /* Hamburger button — only visible on mobile */
 .nd-hamburger {
-  display: flex;
-  /* Tailwind's block/hidden classes control visibility */
+  display: none;
   align-items: center;
   justify-content: center;
   width: 40px;
@@ -2623,6 +2618,11 @@
 
 @media (max-width: 768px) {
 
+  /* Show hamburger in header */
+  .nd-hamburger {
+    display: flex;
+  }
+
   /* Hide the header center progress bar to save space */
   .nd-header-center {
     display: none;
@@ -2649,27 +2649,9 @@
     box-shadow: 4px 0 32px rgba(0, 0, 0, 0.12);
   }
 
-  /* On mobile, always show full width even if collapsed class is present */
-  .nd-sidebar.nd-sidebar-collapsed {
-    width: 240px !important;
-    min-width: 240px !important;
-    max-width: 240px !important;
-  }
-
   /* When sidebar is open on mobile (class toggled by JS) */
   .nd-sidebar-open {
-    display: flex !important;
-    /* Override Tailwind's hidden class */
     transform: translateX(0) !important;
-  }
-
-  /* Show labels when sidebar is open */
-  .nd-sidebar-open .nd-sidebar-item-label {
-    display: inline !important;
-  }
-
-  .nd-sidebar-open .nd-sidebar-footer {
-    display: block !important;
   }
 
   /* Overlay shows when sidebar is open */

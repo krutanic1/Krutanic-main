@@ -320,9 +320,6 @@ const sendPaymentReminders = async () => {
 const initializePaymentReminderScheduler = () => {
   // Only initialize scheduler in production environment
   if (process.env.NODE_ENV !== 'production') {
-    console.log("⚠️  Payment Reminder Scheduler NOT initialized - Not in production environment");
-    console.log(`   Current NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
-    console.log("   Payment reminders will only be sent in production environment");
     return;
   }
 

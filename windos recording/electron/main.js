@@ -39,6 +39,7 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
+      backgroundThrottling: false,
     },
     titleBarStyle: 'hidden',
     titleBarOverlay: {
@@ -282,28 +283,37 @@ ipcMain.handle('ffmpeg:merge', async (event, opts) => {
     let filterComplex = '';
     const maps = [];
 
-    const webcamIdx = webcamPath ? 1 : null;
+    const targetW = opts.targetResolution?.width  || 1920;
+    const targetH = opts.targetResolution?.height || 1080;
     const micIdx    = micPath ? (webcamPath ? 2 : 1) : null;
 
-    // 1. Video Overlay (Dynamic Streamer Layout)
+    // 1. Video Layout (Streamer Style: Full-screen Game + Overlay)
+    // Scale screen to target resolution (crop to fill)
+    filterComplex += `[0:v]scale=${targetW}:${targetH}:force_original_aspect_ratio=increase,crop=${targetW}:${targetH}[base_scaled]`;
+
     if (webcamPath) {
-      const layout = opts.webcamLayout; // Expected relX, relY, relW, relH
+      const layout = opts.webcamLayout;
+      const webcamIdx = 1;
+      
       if (layout) {
-        // Use relative percentages mapped to final resolution
-        filterComplex +=
-          `[0:v][${webcamIdx}:v]` +
-          `scale2ref=w=iw*${layout.w}:h=-1[wc][base];` +
-          `[base][wc]overlay=x=W*${layout.x}:y=H*${layout.y}[v]`;
+        // Step 1: Scale webcam to the desired size (relative to target resolution)
+        const wcW = Math.round(targetW * layout.w);
+        const wcH = Math.round(wcW * (9 / 16)); // maintain 16:9 aspect
+
+        // Step 2: Overlay webcam at the relative position on the full-screen base
+        const overlayX = `${targetW}*${layout.x}`;
+        const overlayY = `${targetH}*${layout.y}`;
+
+        filterComplex += `; [${webcamIdx}:v]scale=${wcW}:${wcH}[wc];` +
+                         `[base_scaled][wc]overlay=x=${overlayX}:y=${overlayY}[v]`;
       } else {
-        // Fallback to legacy bottom-right
-        filterComplex +=
-          `[0:v][${webcamIdx}:v]` +
-          `scale2ref=320:180[wc][base];` +
-          `[base][wc]overlay=W-w-20:H-h-20[v]`;
+        // Fallback: bottom-right corner, 320x180
+        filterComplex += `; [${webcamIdx}:v]scale=320:180[wc];` +
+                         `[base_scaled][wc]overlay=x=W-w-20:y=H-h-20[v]`;
       }
       maps.push('-map [v]');
     } else {
-      maps.push('-map 0:v');
+      maps.push('-map [base_scaled]');
     }
 
     // 2. Audio Mixing

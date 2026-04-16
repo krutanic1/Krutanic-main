@@ -70,6 +70,10 @@ const AdminAttendance = () => {
   const [showEditUserModal, setShowEditUserModal] = useState(false);
   const [editingUser, setEditingUser] = useState(null); // stores the user object being edited
   const [isUpdatingUser, setIsUpdatingUser] = useState(false);
+  
+  // Override System State
+  const [isOverrideActive, setIsOverrideActive] = useState(false);
+  const [loadingOverride, setLoadingOverride] = useState(false);
 
   const fetchMembers = useCallback(async () => {
     setLoading(true);
@@ -115,10 +119,23 @@ const AdminAttendance = () => {
     }
   }, []);
 
+  const fetchOverrideStatus = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      const res = await axios.get(`${API}/api/atd/admin/attendance-override`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setIsOverrideActive(res.data.value);
+    } catch (err) {
+      console.error("Failed to fetch override status");
+    }
+  }, []);
+
   useEffect(() => {
     fetchMembers();
     fetchDailySummary();
-  }, [fetchMembers, fetchDailySummary]);
+    fetchOverrideStatus();
+  }, [fetchMembers, fetchDailySummary, fetchOverrideStatus]);
 
   const fetchUserDetail = async (userId, page = 1) => {
     setLoadingHistory(true);
@@ -415,6 +432,25 @@ const AdminAttendance = () => {
     }
   };
 
+  const handleToggleOverride = async () => {
+    const newVal = !isOverrideActive;
+    if (!window.confirm(`Are you sure you want to turn ${newVal ? 'ON' : 'OFF'} the Emergency Attendance Override?\n\nIf ON, ALL new attendance marked from now on will be recorded at 11:00 AM IST (Full/On-Time).`)) return;
+    
+    setLoadingOverride(true);
+    try {
+      const token = localStorage.getItem("adminToken");
+      await axios.post(`${API}/api/atd/admin/attendance-override`, { value: newVal }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setIsOverrideActive(newVal);
+      toast.success(`Emergency Override is now ${newVal ? 'ACTIVE' : 'INACTIVE'}`);
+    } catch (err) {
+      toast.error("Failed to update override status");
+    } finally {
+      setLoadingOverride(false);
+    }
+  };
+
   const monthNames = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
@@ -606,6 +642,20 @@ const AdminAttendance = () => {
           <button style={{ ...styles.exportBtn, background: '#f59e0b', color: 'white', border: 'none' }} onClick={sendReminders} disabled={isReminding}>{isReminding ? <><Loader size={18} className="animate-spin" /> Reminding...</> : <><Clock size={18} /> Send Reminders</>}</button>
           <button style={{ ...styles.exportBtn, background: '#ef4444', color: 'white', border: 'none' }} onClick={sendAbsentMails} disabled={isSendingAbsent}>{isSendingAbsent ? <><Loader size={18} className="animate-spin" /> Sending...</> : <><X size={18} /> Send Absent Mails</>}</button>
           <button style={{ ...styles.exportBtn, background: '#0f172a', color: 'white', border: 'none' }} onClick={sendAllReports} disabled={isBulkSending}>{isBulkSending ? <><Loader size={18} className="animate-spin" /> Dispatching...</> : <><Send size={18} /> Send All Reports</>}</button>
+          <button 
+             style={{ 
+               ...styles.exportBtn, 
+               background: isOverrideActive ? '#f97316' : '#fff', 
+               color: isOverrideActive ? 'white' : '#64748b', 
+               border: isOverrideActive ? 'none' : '1px solid #e2e8f0',
+               boxShadow: isOverrideActive ? '0 0 15px rgba(249, 115, 22, 0.3)' : 'none'
+             }} 
+             onClick={handleToggleOverride} 
+             disabled={loadingOverride}
+          >
+            {loadingOverride ? <Loader size={18} className="animate-spin" /> : <AlertCircle size={18} />}
+            <span>Override: {isOverrideActive ? 'ON' : 'OFF'}</span>
+          </button>
           <button style={styles.exportBtn} onClick={exportToExcel} disabled={exportLoading}>{exportLoading ? <>Exporting...</> : <><Download size={18} /> Export Report</>}</button>
         </div>
       </div>

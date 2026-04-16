@@ -19,6 +19,8 @@ const Playground = () => {
     showInstructions: false,
     hasCameraPermission: false,
     showAudioWarning: false,
+    cameraExpanded: false,
+    cameraPiPActive: false,
   });
   const scoreRef = useRef(0);
   const videoRef = useRef(null);
@@ -26,6 +28,145 @@ const Playground = () => {
   const analyserRef = useRef(null);
   const sourceRef = useRef(null);
   const [retryCamera, setRetryCamera] = useState(0);
+
+  const waitForVideoReady = (videoEl) =>
+    new Promise((resolve, reject) => {
+      if (!videoEl) {
+        reject(new Error("Video element missing"));
+        return;
+      }
+
+      if (videoEl.readyState >= 2) {
+        resolve();
+        return;
+      }
+
+      const onLoaded = () => {
+        cleanup();
+        resolve();
+      };
+
+      const onError = () => {
+        cleanup();
+        reject(new Error("Video stream not ready"));
+      };
+
+      const cleanup = () => {
+        videoEl.removeEventListener("loadedmetadata", onLoaded);
+        videoEl.removeEventListener("error", onError);
+      };
+
+      videoEl.addEventListener("loadedmetadata", onLoaded, { once: true });
+      videoEl.addEventListener("error", onError, { once: true });
+
+      setTimeout(() => {
+        cleanup();
+        reject(new Error("Timed out waiting for camera stream"));
+      }, 2500);
+    });
+
+  const openCameraPiP = async ({ showPinnedToast = true } = {}) => {
+    const videoEl = videoRef.current;
+
+    if (!videoEl) {
+      toast.error("Camera is not ready yet.");
+      return false;
+    }
+
+    if (!document.pictureInPictureEnabled || videoEl.disablePictureInPicture) {
+      toast.error("Picture-in-Picture is not supported in this browser.");
+      return false;
+    }
+
+    try {
+      await waitForVideoReady(videoEl);
+      await videoEl.play();
+      await videoEl.requestPictureInPicture();
+      setState((prev) => ({ ...prev, cameraPiPActive: true }));
+
+      if (showPinnedToast) {
+        toast.success("Camera pinned in Picture-in-Picture window.");
+      }
+      return true;
+    } catch (error) {
+      console.error("Open PiP failed:", error);
+      toast.error("Unable to open camera window. Click Pin again.");
+      return false;
+    }
+  };
+
+  const toggleCameraPiP = async () => {
+    const videoEl = videoRef.current;
+
+    if (!videoEl) {
+      toast.error("Camera is not ready yet.");
+      return;
+    }
+
+    if (!document.pictureInPictureEnabled || videoEl.disablePictureInPicture) {
+      toast.error("Picture-in-Picture is not supported in this browser.");
+      return;
+    }
+
+    try {
+      if (document.pictureInPictureElement) {
+        await document.exitPictureInPicture();
+        setState((prev) => ({ ...prev, cameraPiPActive: false }));
+        return;
+      }
+
+      await openCameraPiP();
+    } catch (error) {
+      console.error("PiP toggle failed:", error);
+      toast.error("Unable to start Picture-in-Picture.");
+    }
+  };
+
+  const toggleCameraExpanded = async () => {
+    // When minimizing from full mode, try to keep camera visible via PiP.
+    if (state.cameraExpanded) {
+      setState((prev) => ({ ...prev, cameraExpanded: false }));
+
+      const videoEl = videoRef.current;
+      if (
+        !state.cameraPiPActive &&
+        videoEl &&
+        document.pictureInPictureEnabled &&
+        !videoEl.disablePictureInPicture
+      ) {
+        const opened = await openCameraPiP({ showPinnedToast: false });
+        if (opened) {
+          toast.success("Camera pinned while recorder is minimized.");
+        } else {
+          toast("Click Pin to keep camera visible across windows.", { icon: "📌" });
+        }
+      }
+      return;
+    }
+
+    setState((prev) => ({ ...prev, cameraExpanded: true }));
+  };
+
+  useEffect(() => {
+    const videoEl = videoRef.current;
+    if (!videoEl) return;
+
+    const onEnterPiP = () => {
+      setState((prev) => ({ ...prev, cameraPiPActive: true }));
+    };
+
+    const onLeavePiP = () => {
+      setState((prev) => ({ ...prev, cameraPiPActive: false }));
+    };
+
+    videoEl.addEventListener("enterpictureinpicture", onEnterPiP);
+    videoEl.addEventListener("leavepictureinpicture", onLeavePiP);
+
+    return () => {
+      videoEl.removeEventListener("enterpictureinpicture", onEnterPiP);
+      videoEl.removeEventListener("leavepictureinpicture", onLeavePiP);
+    };
+  }, [state.isDialogOpen]);
 
   // Fake Proctoring: Request Camera & Audio Access
   useEffect(() => {
@@ -236,6 +377,8 @@ const Playground = () => {
       selectedOption: null,
       quizCompleted: false,
       timeLeft: 30,
+      cameraExpanded: false,
+      cameraPiPActive: false,
     }));
   };
 
@@ -248,6 +391,9 @@ const Playground = () => {
       selectedOption: null,
       quizCompleted: false,
       quizEndedDueToTabSwitch: false,
+      cameraExpanded: false,
+      cameraPiPActive: false,
+      showAudioWarning: false,
     }));
 
   const storeScore = async (finalScore) => {
@@ -472,10 +618,33 @@ const Playground = () => {
       {isDialogOpen && currentQuiz?.questions?.length > 0 && !quizCompleted && (
         <div className="fixed inset-0 z-[99] bg-black">
           {/* FAKE PROCTORING WEBCAM */}
-          <div className="absolute top-2 right-2 md:top-4 md:right-4 z-[100] w-24 md:w-48 rounded-lg overflow-hidden border-2 border-red-600 shadow-xl bg-black transition-all duration-300">
-            <div className="bg-red-600 text-white text-[8px] md:text-[10px] font-bold px-2 py-0.5 flex items-center gap-1 animate-pulse">
-              <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-white"></span>
-              REC
+          <div
+            className={`${state.cameraExpanded
+              ? "fixed inset-0 z-[120] rounded-none border-0"
+              : "absolute top-2 right-2 md:top-4 md:right-4 z-[100] w-40 md:w-64 rounded-lg border-2 border-red-600"
+              } overflow-hidden shadow-xl bg-black transition-all duration-300`}
+          >
+            <div className="bg-red-600 text-white text-[8px] md:text-[10px] font-bold px-2 py-1 flex items-center justify-between gap-2 animate-pulse">
+              <div className="flex items-center gap-1">
+                <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-white"></span>
+                REC
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={toggleCameraExpanded}
+                  className="px-1.5 py-0.5 rounded bg-black/30 hover:bg-black/50"
+                >
+                  {state.cameraExpanded ? "Min" : "Full"}
+                </button>
+                <button
+                  type="button"
+                  onClick={toggleCameraPiP}
+                  className={`px-1.5 py-0.5 rounded ${state.cameraPiPActive ? "bg-green-700" : "bg-black/30 hover:bg-black/50"}`}
+                >
+                  {state.cameraPiPActive ? "Pinned" : "Pin"}
+                </button>
+              </div>
             </div>
             {state.showAudioWarning && (
               <div className="absolute inset-0 z-10 bg-red-600 bg-opacity-90 flex flex-col items-center justify-center text-white text-center p-2 animate-bounce">
@@ -489,7 +658,8 @@ const Playground = () => {
               autoPlay
               playsInline
               muted
-              className="w-full h-16 md:h-32 object-cover transform scale-x-[-1]" // Mirror effect
+              className={`w-full ${state.cameraExpanded ? "h-[calc(100vh-32px)]" : "h-24 md:h-40"
+                } object-cover transform scale-x-[-1]`}
             />
           </div>
 

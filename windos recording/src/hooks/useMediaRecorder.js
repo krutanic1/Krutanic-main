@@ -39,6 +39,8 @@ export function useMediaRecorder({ onDeviceDisconnect } = {}) {
 
   // Session IDs for the streaming writers
   const sessionId = useRef(null);
+  const activeKeysRef = useRef({ screen: null, webcam: null, mic: null });
+  const streamOpenStateRef = useRef({});
 
   // Bytes written counters (approximate)
   const bytesRef = useRef(0);
@@ -69,14 +71,33 @@ export function useMediaRecorder({ onDeviceDisconnect } = {}) {
 
   const hasElectron = () => !!window.electronAPI?.streamOpen;
 
+  const isNoOpenSessionError = (err) => {
+    const msg = err?.message || String(err || '');
+    return msg.includes('No open stream for session');
+  };
+
   // ── Flush pending chunks of one stream to disk via IPC ─────────────────
   const flushStream = useCallback(async (streamKey, pendingRef) => {
     if (!pendingRef.current.length) return;
     if (!hasElectron()) return;
+    if (!streamOpenStateRef.current[streamKey]) {
+      // Stream was already closed/aborted; drop pending chunks safely.
+      pendingRef.current.splice(0);
+      return;
+    }
     const chunks = pendingRef.current.splice(0); // drain the pending array
     for (const chunk of chunks) {
       const buf = await chunk.arrayBuffer();
-      await window.electronAPI.streamAppend(streamKey, buf);
+      try {
+        await window.electronAPI.streamAppend(streamKey, buf);
+      } catch (err) {
+        if (isNoOpenSessionError(err)) {
+          streamOpenStateRef.current[streamKey] = false;
+          setError(ERR.CHUNK_WRITE_FAIL);
+          return;
+        }
+        throw err;
+      }
       bytesRef.current += buf.byteLength;
     }
     setBytesWritten(bytesRef.current);
@@ -96,6 +117,9 @@ export function useMediaRecorder({ onDeviceDisconnect } = {}) {
       if (!e.data?.size) return;
       pendingRef.current.push(e.data);
       countRef.current++;
+      //recoder conslone is off it in teh console
+
+      // console.log(`[Recorder] ${streamKey} chunk ${countRef.current}`);
 
       // Flush every FLUSH_EVERY chunks (≈ 30 seconds)
       if (countRef.current % FLUSH_EVERY === 0) {
@@ -144,13 +168,31 @@ export function useMediaRecorder({ onDeviceDisconnect } = {}) {
     // Open streaming write sessions in parallel
     // NOTE: sessionId key already encodes track name (${sid}-screen etc.)
     //       so the filename only needs the timestamp to avoid double-naming.
+    const screenKey = `${sid}-screen`;
+    const webcamKey = `${sid}-webcam`;
+    const micKey    = `${sid}-mic`;
+
+    activeKeysRef.current = { screen: screenKey, webcam: webcamKey, mic: micKey };
+
     if (hasElectron()) {
-      await Promise.all([
-        window.electronAPI.streamOpen(`${sid}-screen`, `${ts}.webm`),
-        window.electronAPI.streamOpen(`${sid}-webcam`, `${ts}.webm`),
-        window.electronAPI.streamOpen(`${sid}-mic`,    `${ts}.webm`),
+      const [screenOpen, webcamOpen, micOpen, powerOpen] = await Promise.allSettled([
+        window.electronAPI.streamOpen(screenKey, `${ts}.webm`),
+        window.electronAPI.streamOpen(webcamKey, `${ts}.webm`),
+        window.electronAPI.streamOpen(micKey, `${ts}.webm`),
         window.electronAPI.startPowerBlock(),
       ]);
+
+      streamOpenStateRef.current[screenKey] = screenOpen.status === 'fulfilled';
+      streamOpenStateRef.current[webcamKey] = webcamOpen.status === 'fulfilled';
+      streamOpenStateRef.current[micKey]    = micOpen.status === 'fulfilled';
+
+      if (powerOpen.status === 'rejected') {
+        console.warn('Power blocker failed to start:', powerOpen.reason);
+      }
+
+      if (!streamOpenStateRef.current[screenKey]) {
+        throw new Error('Failed to open screen stream writer');
+      }
     }
 
     // Disk space warning (non-blocking)
@@ -173,7 +215,7 @@ export function useMediaRecorder({ onDeviceDisconnect } = {}) {
     // Screen recorder
     const screenTracks = [...screenStream.getVideoTracks(), ...screenStream.getAudioTracks()];
     screenRecRef.current = makeRecorder(
-      new MediaStream(screenTracks), screenPending, screenCount, `${sid}-screen`, videoMime
+      new MediaStream(screenTracks), screenPending, screenCount, screenKey, videoMime
     );
 
     // Webcam recorder
@@ -185,7 +227,7 @@ export function useMediaRecorder({ onDeviceDisconnect } = {}) {
         ? 'video/webm;codecs=vp9' 
         : videoMime;
       
-      webcamRecRef.current = makeRecorder(wcStream, webcamPending, webcamCount, `${sid}-webcam`, wcMime);
+      webcamRecRef.current = makeRecorder(wcStream, webcamPending, webcamCount, webcamKey, wcMime);
 
       // Handle webcam disconnect
       webcamStream.getVideoTracks()[0].addEventListener('ended', () => {
@@ -201,7 +243,7 @@ export function useMediaRecorder({ onDeviceDisconnect } = {}) {
     const micDest = micDestRef?.current;
     if (micDest?.stream) {
       const micStream = new MediaStream(micDest.stream.getAudioTracks());
-      micRecRef.current = makeRecorder(micStream, micPending, micCount, `${sid}-mic`, audioMime);
+      micRecRef.current = makeRecorder(micStream, micPending, micCount, micKey, audioMime);
 
       // Handle mic disconnect
       micDest.stream.getAudioTracks()[0]?.addEventListener('ended', () => {
@@ -230,8 +272,12 @@ export function useMediaRecorder({ onDeviceDisconnect } = {}) {
   }, [makeRecorder, onDeviceDisconnect]);
 
   // ── Stop ─────────────────────────────────────────────────────────────────
-  const stopRecording = useCallback(async (relativeLayout) => {
+  const stopRecording = useCallback(async (relativeLayout, targetResolution) => {
     if (!screenRecRef.current) return;
+
+    if (relativeLayout) {
+      webcamLayoutRef.current = relativeLayout;
+    }
 
     const waitForStop = (rec) =>
       new Promise((resolve) => {
@@ -262,22 +308,26 @@ export function useMediaRecorder({ onDeviceDisconnect } = {}) {
       await flushLock.current;
 
       let screenPath = null, webcamPath = null, micPath = null;
-      const sid = sessionId.current;
+      const { screen: screenKey, webcam: webcamKey, mic: micKey } = activeKeysRef.current;
 
       if (hasElectron()) {
         // Final flush of any remaining buffered chunks
         await Promise.all([
-          flushStream(`${sid}-screen`, screenPending),
-          webcamRecRef.current ? flushStream(`${sid}-webcam`, webcamPending) : Promise.resolve(),
-          micRecRef.current    ? flushStream(`${sid}-mic`,    micPending)    : Promise.resolve(),
+          flushStream(screenKey, screenPending),
+          webcamRecRef.current ? flushStream(webcamKey, webcamPending) : Promise.resolve(),
+          micRecRef.current    ? flushStream(micKey, micPending) : Promise.resolve(),
         ]);
 
         // Close all write streams and get the file paths
         [screenPath, webcamPath, micPath] = await Promise.all([
-          window.electronAPI.streamClose(`${sid}-screen`),
-          window.electronAPI.streamClose(`${sid}-webcam`),
-          window.electronAPI.streamClose(`${sid}-mic`),
+          window.electronAPI.streamClose(screenKey),
+          window.electronAPI.streamClose(webcamKey),
+          window.electronAPI.streamClose(micKey),
         ]);
+
+        streamOpenStateRef.current[screenKey] = false;
+        streamOpenStateRef.current[webcamKey] = false;
+        streamOpenStateRef.current[micKey] = false;
       } else {
         // Browser fallback: build blobs from pending (unflushed) chunks only
         const videoMime = pickMime(true);
@@ -312,19 +362,24 @@ export function useMediaRecorder({ onDeviceDisconnect } = {}) {
         webcamPath:   webcamPath || null,
         micPath:      micPath    || null,
         webcamLayout: webcamLayoutRef.current,
+        targetResolution,
       });
     } catch (err) {
       setError(`Export error: ${classifyError(err)}`);
       setMergeStatus('error');
 
       // Abort any open write streams
-      const sid = sessionId.current;
+      const { screen: screenKey, webcam: webcamKey, mic: micKey } = activeKeysRef.current;
       if (window.electronAPI?.streamAbort) {
         await Promise.allSettled([
-          window.electronAPI.streamAbort(`${sid}-screen`),
-          window.electronAPI.streamAbort(`${sid}-webcam`),
-          window.electronAPI.streamAbort(`${sid}-mic`),
+          window.electronAPI.streamAbort(screenKey),
+          window.electronAPI.streamAbort(webcamKey),
+          window.electronAPI.streamAbort(micKey),
         ]);
+
+        streamOpenStateRef.current[screenKey] = false;
+        streamOpenStateRef.current[webcamKey] = false;
+        streamOpenStateRef.current[micKey] = false;
       }
     }
   }, [flushStream]);
