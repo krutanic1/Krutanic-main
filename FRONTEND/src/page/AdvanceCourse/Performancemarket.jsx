@@ -8,10 +8,12 @@ import Certification from "./Components/Certification";
 import StoreSection from "./Components/StoreSection";
 import ApplyNowButton from "./Components/ApplyNowButton";
 import ApplyForm from "./Components/ApplyForm";
+import ImageSlider from "./Components/ImageSlider";
 
 const heroStats = [
   { label: "Duration", value: "24 Weeks" },
   { label: "Program Rating", value: "4.9/5" },
+  { label: "Batch Starting", value: "May 1, 2026" },
 ];
 
 const curriculum = [
@@ -446,21 +448,21 @@ const Performancemarket = () => {
           text-transform: uppercase;
         }
 
-        .pf-section { padding: 52px 0; }
-        .pf-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 12px; }
+        .pf-section { padding: 24px 0; }
+        .pf-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 8px; }
         .pf-section p.lead {
           color: var(--muted);
           line-height: 1.7;
-          margin: 0 0 26px;
+          margin: 0 0 16px;
           max-width: 760px;
         }
 
         .pf-hero {
           border-top: 1px solid var(--line);
           display: grid;
-          gap: 32px;
+          gap: 16px;
           grid-template-columns: 1fr 1fr;
-          padding: 26px 0 28px;
+          padding: 16px 0 20px;
         }
 
         .pf-chip {
@@ -478,7 +480,7 @@ const Performancemarket = () => {
         .pf-hero h1 {
           font-size: clamp(42px, 5vw, 74px);
           line-height: 0.98;
-          margin: 16px 0;
+          margin: 12px 0;
         }
 
         .pf-hero h1 span {
@@ -493,14 +495,14 @@ const Performancemarket = () => {
           font-size: 17px;
           line-height: 1.6;
           max-width: 520px;
-          margin-bottom: 22px;
+          margin-bottom: 16px;
         }
 
         .pf-stats {
           display: grid;
           gap: 12px;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          max-width: 420px;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          max-width: 560px;
           margin-bottom: 18px;
         }
 
@@ -530,6 +532,11 @@ const Performancemarket = () => {
           box-shadow: 0 24px 46px rgba(0, 0, 0, 0.28);
           overflow: hidden;
           padding: 18px;
+          height: 600px;
+        }
+
+        .pf-media-box > div {
+          height: 100%;
         }
 
         .pf-media-box img {
@@ -554,17 +561,17 @@ const Performancemarket = () => {
 
         .pf-curr-grid {
           display: grid;
-          gap: 20px;
+          gap: 10px;
           grid-template-columns: 2fr 1fr;
         }
 
-        .pf-accordion { display: grid; gap: 14px; }
+        .pf-accordion { display: grid; gap: 10px; }
 
         .pf-module {
           background: var(--panel);
           border: 1px solid #e7e0dc;
           border-radius: var(--radius);
-          padding: 18px;
+          padding: 14px;
         }
 
         .pf-module.open { border-color: #d05b36; }
@@ -926,7 +933,7 @@ const Performancemarket = () => {
             <div className="pf-chip">Advanced Program 2026</div>
             <h1>Master <span>Performance</span> that Scales Revenue.</h1>
             <p className="pf-sub">
-              A premium program for performance marketers who want to plan, execute, and optimize campaigns with measurable business impact.
+              A high-impact, elite program engineered for growth specialists to master ROI-driven performance marketing across paid media, advanced search, and social ecosystems. Architect sophisticated, data-backed acquisition systems and optimize complex conversion funnels with extreme precision using tools like Google Ads, Meta Ads Manager, and Advanced Analytics. Develop the strategic command needed to scale multi-million dollar budgets and drive exponential revenue growth for top-tier global brands and high-velocity startups.
             </p>
 
             <div className="pf-stats">
@@ -937,13 +944,11 @@ const Performancemarket = () => {
                 </article>
               ))}
             </div>
-
-            <ApplyNowButton courseValue="Performance Marketing" />
           </div>
 
           <div className="pf-hero-media">
             <div className="pf-media-box">
-              <img src={PM} alt="Performance marketing mentor" />
+              <ImageSlider />
             </div>
             <aside className="pf-floating-card">
               <h4>Outcome Focused</h4>

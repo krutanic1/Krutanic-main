@@ -9,10 +9,12 @@ import StoreSection from "./Components/StoreSection";
 import Certification from "./Components/Certification";
 import ApplyNowButton from "./Components/ApplyNowButton";
 import ApplyForm from "./Components/ApplyForm";
+import ImageSlider from "./Components/ImageSlider";
 
 const heroStats = [
   { label: "Duration", value: "24 Weeks" },
   { label: "Program Rating", value: "4.9/5" },
+  { label: "Batch Starting", value: "May 1, 2026" },
 ];
 
 const curriculum = [
@@ -446,21 +448,21 @@ const MernStack = () => {
           text-transform: uppercase;
         }
 
-        .ms-section { padding: 52px 0; }
-        .ms-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 12px; }
+        .ms-section { padding: 24px 0; }
+        .ms-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 8px; }
         .ms-section p.lead {
           color: var(--muted);
           line-height: 1.7;
-          margin: 0 0 26px;
+          margin: 0 0 16px;
           max-width: 760px;
         }
 
         .ms-hero {
           border-top: 1px solid var(--line);
           display: grid;
-          gap: 32px;
+          gap: 16px;
           grid-template-columns: 1fr 1fr;
-          padding: 26px 0 28px;
+          padding: 16px 0 20px;
         }
 
         .ms-chip {
@@ -478,7 +480,7 @@ const MernStack = () => {
         .ms-hero h1 {
           font-size: clamp(42px, 5vw, 74px);
           line-height: 0.98;
-          margin: 16px 0;
+          margin: 12px 0;
         }
 
         .ms-hero h1 span {
@@ -493,14 +495,14 @@ const MernStack = () => {
           font-size: 17px;
           line-height: 1.6;
           max-width: 520px;
-          margin-bottom: 22px;
+          margin-bottom: 16px;
         }
 
         .ms-stats {
           display: grid;
           gap: 12px;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          max-width: 420px;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          max-width: 560px;
           margin-bottom: 18px;
         }
 
@@ -530,6 +532,11 @@ const MernStack = () => {
           box-shadow: 0 24px 46px rgba(0, 0, 0, 0.28);
           overflow: hidden;
           padding: 18px;
+          height: 600px;
+        }
+
+        .ms-media-box > div {
+          height: 100%;
         }
 
         .ms-media-box img {
@@ -554,17 +561,17 @@ const MernStack = () => {
 
         .ms-curr-grid {
           display: grid;
-          gap: 20px;
+          gap: 10px;
           grid-template-columns: 2fr 1fr;
         }
 
-        .ms-accordion { display: grid; gap: 14px; }
+        .ms-accordion { display: grid; gap: 10px; }
 
         .ms-module {
           background: var(--panel);
           border: 1px solid #e7e0dc;
           border-radius: var(--radius);
-          padding: 18px;
+          padding: 14px;
         }
 
         .ms-module.open { border-color: #d05b36; }
@@ -926,7 +933,7 @@ const MernStack = () => {
             <div className="ms-chip">Advanced Program 2026</div>
             <h1>Master the <span>Stack</span> to Ship Products.</h1>
             <p className="ms-sub">
-              A premium full-stack learning path to build production-grade web applications from backend APIs to polished frontend experiences.
+              Master the full-stack MERN ecosystem to engineer scalable, production-grade web applications with high-performance architectures and sophisticated backend systems. Gain total proficiency across MongoDB, Express, React, and Node.js while integrating DevOps workflows with Docker, AWS, and CI/CD pipelines. Develop the technical command and architectural intuition needed to build end-to-end digital products that solve multi-dimensional business challenges for the world's most innovative tech giants.
             </p>
 
             <div className="ms-stats">
@@ -937,13 +944,11 @@ const MernStack = () => {
                 </article>
               ))}
             </div>
-
-            <ApplyNowButton courseValue="Mern Stack" />
           </div>
 
           <div className="ms-hero-media">
             <div className="ms-media-box">
-              <img src={MERNHero} alt="MERN stack mentor" />
+              <ImageSlider />
             </div>
             <aside className="ms-floating-card">
               <h4>Outcome Focused</h4>

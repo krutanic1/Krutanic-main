@@ -17,10 +17,8 @@ const UIUXDesign = () => {
             <span className="block text-[#f15b29]">Advanced Program</span>
           </h1>
 
-          <p className="mt-6 max-w-3xl text-lg leading-relaxed text-[#4b5563]">
-            Build a strong design foundation with user research, interaction design,
-            wireframing, prototyping, and design systems. Learn to ship intuitive
-            digital experiences with real-world product thinking.
+          <p className="mt-5 text-lg leading-relaxed text-[#4b5563] max-w-2xl">
+            A premium, research-driven curriculum designed for elite designers to master advanced user-centered methodologies, high-fidelity interactive prototyping, and strategic product design systems. Gain absolute mastery over Figma, Adobe Creative Cloud, and Framer while developing the artistic depth and psychological intuition required to lead design transformations at top global brands. Build a world-class, professional-grade portfolio and accelerate your path to Senior Design leadership roles in the global technology landscape.
           </p>
 
           <img
@@ -32,12 +30,6 @@ const UIUXDesign = () => {
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               to="/Mentorship"
-              className="rounded-xl bg-[#f15b29] px-5 py-3 font-semibold text-white transition hover:bg-[#d84e22]"
-            >
-              Enroll Through Mentorship
-            </Link>
-            <Link
-              to="/FeeStructure"
               className="rounded-xl border border-[#111827] px-5 py-3 font-semibold text-[#111827] transition hover:bg-[#111827] hover:text-white"
             >
               View Fee Structure

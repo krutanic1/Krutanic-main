@@ -32,7 +32,7 @@
 .mentorship-modal-header,
 .shared-form-header {
     position: relative;
-    padding: 28px 24px 24px;
+    padding: 20px 24px 16px;
     background: linear-gradient(135deg, #f15b29 0%, #ff8a4c 55%, #ffb36d 100%);
     color: #fff;
 }
@@ -95,7 +95,7 @@
 
 .mentorship-form-container,
 .shared-form-body {
-    padding: 24px;
+    padding: 16px 24px;
     flex: 1;
 }
 
@@ -103,7 +103,7 @@
 .shared-form-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    gap: 16px;
 }
 
 .shared-form-field {

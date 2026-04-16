@@ -9,10 +9,12 @@ import ClientsCarousel from "../../Components/our_alumni";
 import StoreSection from "./Components/StoreSection";
 import ApplyNowButton from "./Components/ApplyNowButton";
 import ApplyForm from "./Components/ApplyForm";
+import ImageSlider from "./Components/ImageSlider";
 
 const heroStats = [
   { label: "Duration", value: "24 Weeks" },
   { label: "Program Rating", value: "4.9/5" },
+  { label: "Batch Starting", value: "May 1, 2026" },
 ];
 
 const curriculum = [
@@ -421,21 +423,21 @@ const PromptEngineering = () => {
           text-transform: uppercase;
         }
 
-        .pe-section { padding: 52px 0; }
-        .pe-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 12px; }
+        .pe-section { padding: 24px 0; }
+        .pe-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 8px; }
         .pe-section p.lead {
           color: var(--muted);
           line-height: 1.7;
-          margin: 0 0 26px;
+          margin: 0 0 16px;
           max-width: 760px;
         }
 
         .pe-hero {
           border-top: 1px solid var(--line);
           display: grid;
-          gap: 32px;
+          gap: 16px;
           grid-template-columns: 1fr 1fr;
-          padding: 26px 0 28px;
+          padding: 16px 0 20px;
         }
 
         .pe-chip {
@@ -453,7 +455,7 @@ const PromptEngineering = () => {
         .pe-hero h1 {
           font-size: clamp(42px, 5vw, 74px);
           line-height: 0.98;
-          margin: 16px 0;
+          margin: 12px 0;
         }
 
         .pe-hero h1 span {
@@ -468,14 +470,14 @@ const PromptEngineering = () => {
           font-size: 17px;
           line-height: 1.6;
           max-width: 520px;
-          margin-bottom: 22px;
+          margin-bottom: 16px;
         }
 
         .pe-stats {
           display: grid;
           gap: 12px;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          max-width: 420px;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          max-width: 560px;
           margin-bottom: 18px;
         }
 
@@ -505,6 +507,11 @@ const PromptEngineering = () => {
           box-shadow: 0 24px 46px rgba(0, 0, 0, 0.28);
           overflow: hidden;
           padding: 18px;
+          height: 600px;
+        }
+
+        .pe-media-box > div {
+          height: 100%;
         }
 
         .pe-media-box img {
@@ -529,17 +536,17 @@ const PromptEngineering = () => {
 
         .pe-curr-grid {
           display: grid;
-          gap: 20px;
+          gap: 10px;
           grid-template-columns: 2fr 1fr;
         }
 
-        .pe-accordion { display: grid; gap: 14px; }
+        .pe-accordion { display: grid; gap: 10px; }
 
         .pe-module {
           background: var(--panel);
           border: 1px solid #e7e0dc;
           border-radius: var(--radius);
-          padding: 18px;
+          padding: 14px;
         }
 
         .pe-module.open { border-color: #d05b36; }
@@ -901,7 +908,7 @@ const PromptEngineering = () => {
             <div className="pe-chip">Advanced Program 2026</div>
             <h1>Master <span>Prompting</span> for Generative AI.</h1>
             <p className="pe-sub">
-              A premium learning experience to design high-performing prompt systems for content, coding, automation, and AI product workflows.
+              Unlock the cutting-edge potential of Generative AI by mastering advanced prompt engineering architectures and sophisticated LLM integration workflows for global scale. Learn to design robust, enterprise-grade AI solutions using frameworks like LangChain, Auto-GPT, and OpenAI APIs to drive radical innovation and efficiency across modern industries. Develop the rare technical expertise required to lead the AI revolution and architect the future of human-machine collaboration in the world's most forward-thinking technology companies.
             </p>
 
             <div className="pe-stats">
@@ -912,13 +919,11 @@ const PromptEngineering = () => {
                 </article>
               ))}
             </div>
-
-            <ApplyNowButton courseValue="Prompt Engineering" />
           </div>
 
           <div className="pe-hero-media">
             <div className="pe-media-box">
-              <img src={PEHero} alt="Prompt engineering mentor" />
+              <ImageSlider />
             </div>
             <aside className="pe-floating-card">
               <h4>Outcome Focused</h4>

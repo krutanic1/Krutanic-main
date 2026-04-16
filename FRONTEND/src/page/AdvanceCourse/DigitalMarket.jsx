@@ -9,10 +9,12 @@ import StoreSection from "./Components/StoreSection";
 import ClientsCarousel from "../../Components/our_alumni";
 import ApplyNowButton from "./Components/ApplyNowButton";
 import ApplyForm from "./Components/ApplyForm";
+import ImageSlider from "./Components/ImageSlider";
 
 const heroStats = [
   { label: "Placement Rate", value: "93%" },
   { label: "Hiring Partners", value: "450+" },
+  { label: "Batch Starting", value: "May 1, 2026" },
 ];
 
 const curriculum = [
@@ -335,21 +337,21 @@ const DigitalMarket = () => {
           text-transform: uppercase;
         }
 
-        .dm-section { padding: 52px 0; }
-        .dm-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 12px; }
+        .dm-section { padding: 24px 0; }
+        .dm-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 8px; }
         .dm-section p.lead {
           color: var(--muted);
           line-height: 1.7;
-          margin: 0 0 26px;
+          margin: 0 0 16px;
           max-width: 760px;
         }
 
         .dm-hero {
           border-top: 1px solid var(--line);
           display: grid;
-          gap: 32px;
+          gap: 16px;
           grid-template-columns: 1fr 1fr;
-          padding: 26px 0 28px;
+          padding: 16px 0 20px;
         }
 
         .dm-chip {
@@ -367,7 +369,7 @@ const DigitalMarket = () => {
         .dm-hero h1 {
           font-size: clamp(42px, 5vw, 74px);
           line-height: 0.98;
-          margin: 16px 0;
+          margin: 12px 0;
         }
 
         .dm-hero h1 span {
@@ -382,14 +384,14 @@ const DigitalMarket = () => {
           font-size: 17px;
           line-height: 1.6;
           max-width: 520px;
-          margin-bottom: 22px;
+          margin-bottom: 16px;
         }
 
         .dm-stats {
           display: grid;
           gap: 12px;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          max-width: 420px;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          max-width: 560px;
           margin-bottom: 18px;
         }
 
@@ -419,13 +421,18 @@ const DigitalMarket = () => {
           box-shadow: 0 24px 46px rgba(0, 0, 0, 0.28);
           overflow: hidden;
           padding: 18px;
+          height: 600px;
         }
 
-        .dm-media-box img {
+        .dm-media-box > div {
+          height: 100%;
+        }
+
+        .dm-media-box ImageSlider {
           border-radius: 16px;
           display: block;
           height: 100%;
-          min-height: 330px;
+          min-height: 100%;
           object-fit: cover;
           width: 100%;
         }
@@ -443,17 +450,17 @@ const DigitalMarket = () => {
 
         .dm-curr-grid {
           display: grid;
-          gap: 20px;
+          gap: 10px;
           grid-template-columns: 2fr 1fr;
         }
 
-        .dm-accordion { display: grid; gap: 14px; }
+        .dm-accordion { display: grid; gap: 10px; }
 
         .dm-module {
           background: var(--panel);
           border: 1px solid #e7e0dc;
           border-radius: var(--radius);
-          padding: 18px;
+          padding: 14px;
         }
 
         .dm-module.open { border-color: #d05b36; }
@@ -815,7 +822,7 @@ const DigitalMarket = () => {
             <div className="dm-chip">Advanced Program 2026</div>
             <h1>Digital Marketing & <span>Growth</span> Accelerator.</h1>
             <p className="dm-sub">
-              A ladder for a brighter future. Master the full funnel: SMM, SEO, and Performance Marketing through execution-first training. 
+              Accelerate your trajectory into the elite tier of digital marketing with advanced mastery in performance engineering, SEO strategy, and high-velocity growth automation. Learn to architect data-driven, multi-channel campaigns that drive exponential customer acquisition and measurable revenue growth for global brands. Master industry-leading tools like Google Analytics 4, Meta Ads Manager, and HubSpot to execute sophisticated marketing strategies that dominate today's competitive digital economy.
             </p>
 
             <div className="dm-stats">
@@ -826,13 +833,11 @@ const DigitalMarket = () => {
                 </article>
               ))}
             </div>
-
-            <ApplyNowButton courseValue="Digital Marketing" />
           </div>
 
           <div className="dm-hero-media">
             <div className="dm-media-box">
-              <img src={DMHero} alt="Digital marketing mentor" />
+              <ImageSlider />
             </div>
             <aside className="dm-floating-card">
               <h4>Outcome Focused</h4>

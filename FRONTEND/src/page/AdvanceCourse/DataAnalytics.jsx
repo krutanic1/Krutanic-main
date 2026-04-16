@@ -9,10 +9,12 @@ import Certification from "./Components/Certification";
 import StoreSection from "./Components/StoreSection";
 import ApplyNowButton from "./Components/ApplyNowButton";
 import ApplyForm from "./Components/ApplyForm";
+import ImageSlider from "./Components/ImageSlider";
 
 const heroStats = [
   { label: "Duration", value: "24 Weeks" },
   { label: "Program Rating", value: "4.9/5" },
+  { label: "Batch Starting", value: "May 1, 2026" },
 ];
 
 const curriculum = [
@@ -390,21 +392,21 @@ const DataAnalytics = () => {
           text-transform: uppercase;
         }
 
-        .da-section { padding: 52px 0; }
-        .da-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 12px; }
+        .da-section { padding: 24px 0; }
+        .da-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 8px; }
         .da-section p.lead {
           color: var(--muted);
           line-height: 1.7;
-          margin: 0 0 26px;
+          margin: 0 0 16px;
           max-width: 760px;
         }
 
         .da-hero {
           border-top: 1px solid var(--line);
           display: grid;
-          gap: 32px;
+          gap: 16px;
           grid-template-columns: 1fr 1fr;
-          padding: 26px 0 28px;
+          padding: 16px 0 20px;
         }
 
         .da-chip {
@@ -422,7 +424,7 @@ const DataAnalytics = () => {
         .da-hero h1 {
           font-size: clamp(42px, 5vw, 74px);
           line-height: 0.98;
-          margin: 16px 0;
+          margin: 12px 0;
         }
 
         .da-hero h1 span {
@@ -437,14 +439,14 @@ const DataAnalytics = () => {
           font-size: 17px;
           line-height: 1.6;
           max-width: 520px;
-          margin-bottom: 22px;
+          margin-bottom: 16px;
         }
 
         .da-stats {
           display: grid;
           gap: 12px;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          max-width: 420px;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          max-width: 560px;
           margin-bottom: 18px;
         }
 
@@ -474,6 +476,11 @@ const DataAnalytics = () => {
           box-shadow: 0 24px 46px rgba(0, 0, 0, 0.28);
           overflow: hidden;
           padding: 18px;
+          height: 600px;
+        }
+
+        .da-media-box > div {
+          height: 100%;
         }
 
         .da-media-box img {
@@ -498,17 +505,17 @@ const DataAnalytics = () => {
 
         .da-curr-grid {
           display: grid;
-          gap: 20px;
+          gap: 10px;
           grid-template-columns: 2fr 1fr;
         }
 
-        .da-accordion { display: grid; gap: 14px; }
+        .da-accordion { display: grid; gap: 10px; }
 
         .da-module {
           background: var(--panel);
           border: 1px solid #e7e0dc;
           border-radius: var(--radius);
-          padding: 18px;
+          padding: 14px;
         }
 
         .da-module.open { border-color: #d05b36; }
@@ -870,7 +877,7 @@ const DataAnalytics = () => {
             <div className="da-chip">Advanced Program 2026</div>
             <h1>Master <span>Analytics</span> that Drives Decisions.</h1>
             <p className="da-sub">
-              A premium data analytics journey designed to build end-to-end execution across Excel, SQL, Python, and BI workflows.
+              Master the sophisticated analytical frameworks and high-performance tools required to transform massive data streams into precise, actionable business intelligence for global enterprises. Develop expert-level proficiency in SQL, Tableau, Power BI, and Python to bridge the critical gap between raw technical analysis and executive-level strategic decision-making. Gain the foresight and technical rigour needed to drive multi-million dollar growth initiatives and lead data-driven transformations across the world's most innovative organizations.
             </p>
 
             <div className="da-stats">
@@ -881,13 +888,11 @@ const DataAnalytics = () => {
                 </article>
               ))}
             </div>
-
-            <ApplyNowButton courseValue="Data Analytics" />
           </div>
 
           <div className="da-hero-media">
             <div className="da-media-box">
-              <img src={daHero} alt="Data analytics mentor" />
+              <ImageSlider />
             </div>
             <aside className="da-floating-card">
               <h4>Outcome Focused</h4>

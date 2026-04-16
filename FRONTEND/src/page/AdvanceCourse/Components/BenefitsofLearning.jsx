@@ -43,6 +43,9 @@ const BenefitsofLearning = () => {
               {learn.map((learn, index) => (
                 <div
                 data-aos="fade-up" 
+                data-aos-delay={index * 100}
+                data-aos-offset="150"
+                data-aos-once="false"
                   key={index}
                   className="flex flex-col items-center text-center bg-white border border-[#efcfc2] p-6 rounded-xl shadow-md hover:shadow-xl transition duration-300"
                 >

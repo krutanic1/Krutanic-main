@@ -9,10 +9,12 @@ import ClientsCarousel from "../../Components/our_alumni";
 import StoreSection from "./Components/StoreSection";
 import ApplyNowButton from "./Components/ApplyNowButton";
 import ApplyForm from "./Components/ApplyForm";
+import ImageSlider from "./Components/ImageSlider";
 
 const heroStats = [
   { label: "Duration", value: "24 Weeks" },
   { label: "Program Rating", value: "4.9/5" },
+  { label: "Batch Starting", value: "May 1, 2026" },
 ];
 
 const curriculum = [
@@ -447,21 +449,21 @@ const Investmentbanking = () => {
           text-transform: uppercase;
         }
 
-        .ib-section { padding: 52px 0; }
-        .ib-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 12px; }
+        .ib-section { padding: 24px 0; }
+        .ib-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 8px; }
         .ib-section p.lead {
           color: var(--muted);
           line-height: 1.7;
-          margin: 0 0 26px;
+          margin: 0 0 16px;
           max-width: 760px;
         }
 
         .ib-hero {
           border-top: 1px solid var(--line);
           display: grid;
-          gap: 32px;
+          gap: 16px;
           grid-template-columns: 1fr 1fr;
-          padding: 26px 0 28px;
+          padding: 16px 0 20px;
         }
 
         .ib-chip {
@@ -479,7 +481,7 @@ const Investmentbanking = () => {
         .ib-hero h1 {
           font-size: clamp(42px, 5vw, 74px);
           line-height: 0.98;
-          margin: 16px 0;
+          margin: 12px 0;
         }
 
         .ib-hero h1 span {
@@ -494,14 +496,14 @@ const Investmentbanking = () => {
           font-size: 17px;
           line-height: 1.6;
           max-width: 520px;
-          margin-bottom: 22px;
+          margin-bottom: 16px;
         }
 
         .ib-stats {
           display: grid;
           gap: 12px;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          max-width: 420px;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          max-width: 560px;
           margin-bottom: 18px;
         }
 
@@ -531,6 +533,11 @@ const Investmentbanking = () => {
           box-shadow: 0 24px 46px rgba(0, 0, 0, 0.28);
           overflow: hidden;
           padding: 18px;
+          height: 600px;
+        }
+
+        .ib-media-box > div {
+          height: 100%;
         }
 
         .ib-media-box img {
@@ -555,17 +562,17 @@ const Investmentbanking = () => {
 
         .ib-curr-grid {
           display: grid;
-          gap: 20px;
+          gap: 10px;
           grid-template-columns: 2fr 1fr;
         }
 
-        .ib-accordion { display: grid; gap: 14px; }
+        .ib-accordion { display: grid; gap: 10px; }
 
         .ib-module {
           background: var(--panel);
           border: 1px solid #e7e0dc;
           border-radius: var(--radius);
-          padding: 18px;
+          padding: 14px;
         }
 
         .ib-module.open { border-color: #d05b36; }
@@ -927,7 +934,7 @@ const Investmentbanking = () => {
             <div className="ib-chip">Advanced Program 2026</div>
             <h1>Master <span>Capital</span> Strategy and Deals.</h1>
             <p className="ib-sub">
-              A premium learning experience for finance professionals to build world-class analytical skills in banking, valuation, and transaction strategy.
+              An intensive, high-calibre program engineered to master complex valuation methodologies, M&A execution, and capital market dynamics for aspiring investment banking elites. Develop sophisticated financial modeling skills in Excel and Bloomberg Terminal platforms while mastering the strategic rigour required to navigate high-stakes global transaction landscapes. Join an exclusive tier of finance professionals and accelerate your path to leadership roles in the world's most prestigious investment banks and private equity firms.
             </p>
 
             <div className="ib-stats">
@@ -938,13 +945,11 @@ const Investmentbanking = () => {
                 </article>
               ))}
             </div>
-
-            <ApplyNowButton courseValue="Investment Banking" />
           </div>
 
           <div className="ib-hero-media">
             <div className="ib-media-box">
-              <img src={IBHero} alt="Investment banking mentor" />
+              <ImageSlider />
             </div>
             <aside className="ib-floating-card">
               <h4>Outcome Focused</h4>

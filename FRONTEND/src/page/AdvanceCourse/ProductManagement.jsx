@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import AOS from "aos";
+import "aos/dist/aos.css";
 import PMHero from "../../../krutanic/images/pmad1.jpg";
 import PMOutcomes from "../../../krutanic/images/pmad2.jpg";
 import Flashaidlogo from "../../assets/Flashaidlogo.jpg";
@@ -9,10 +11,12 @@ import ClientsCarousel from "../../Components/our_alumni";
 import StoreSection from "./Components/StoreSection";
 import ApplyNowButton from "./Components/ApplyNowButton";
 import ApplyForm from "./Components/ApplyForm";
+import ImageSlider from "./Components/ImageSlider";
 
 const heroStats = [
   { label: "Duration", value: "24 Weeks" },
   { label: "Program Rating", value: "4.9/5" },
+  { label: "Batch Starting", value: "May 1, 2026" },
 ];
 
 const curriculum = [
@@ -399,6 +403,16 @@ const faqData = {
 
 const ProductManagement = () => {
   const [openModule, setOpenModule] = useState(0);
+
+  useEffect(() => {
+    AOS.init({
+      duration: 800,
+      once: false,
+      offset: 100,
+      mirror: true,
+    });
+    AOS.refresh();
+  }, []);
   const [activeCategory, setActiveCategory] = useState("Program");
   const [openFAQ, setOpenFAQ] = useState(null);
 
@@ -447,21 +461,21 @@ const ProductManagement = () => {
           text-transform: uppercase;
         }
 
-        .pm-section { padding: 52px 0; }
-        .pm-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 12px; }
+        .pm-section { padding: 24px 0; }
+        .pm-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 8px; }
         .pm-section p.lead {
           color: var(--muted);
           line-height: 1.7;
-          margin: 0 0 26px;
+          margin: 0 0 16px;
           max-width: 760px;
         }
 
         .pm-hero {
           border-top: 1px solid var(--line);
           display: grid;
-          gap: 32px;
+          gap: 16px;
           grid-template-columns: 1fr 1fr;
-          padding: 26px 0 28px;
+          padding: 16px 0 20px;
         }
 
         .pm-chip {
@@ -479,7 +493,7 @@ const ProductManagement = () => {
         .pm-hero h1 {
           font-size: clamp(42px, 5vw, 74px);
           line-height: 0.98;
-          margin: 16px 0;
+          margin: 12px 0;
         }
 
         .pm-hero h1 span {
@@ -494,14 +508,14 @@ const ProductManagement = () => {
           font-size: 17px;
           line-height: 1.6;
           max-width: 520px;
-          margin-bottom: 22px;
+          margin-bottom: 16px;
         }
 
         .pm-stats {
           display: grid;
           gap: 12px;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          max-width: 420px;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          max-width: 560px;
           margin-bottom: 18px;
         }
 
@@ -531,6 +545,11 @@ const ProductManagement = () => {
           box-shadow: 0 24px 46px rgba(0, 0, 0, 0.28);
           overflow: hidden;
           padding: 18px;
+          height: 600px;
+        }
+
+        .pm-media-box > div {
+          height: 100%;
         }
 
         .pm-media-box img {
@@ -555,17 +574,17 @@ const ProductManagement = () => {
 
         .pm-curr-grid {
           display: grid;
-          gap: 20px;
+          gap: 10px;
           grid-template-columns: 2fr 1fr;
         }
 
-        .pm-accordion { display: grid; gap: 14px; }
+        .pm-accordion { display: grid; gap: 10px; }
 
         .pm-module {
           background: var(--panel);
           border: 1px solid #e7e0dc;
           border-radius: var(--radius);
-          padding: 18px;
+          padding: 14px;
         }
 
         .pm-module.open { border-color: #d05b36; }
@@ -589,8 +608,8 @@ const ProductManagement = () => {
 
         .pm-module-body {
           border-top: 1px solid #eee4de;
-          margin-top: 16px;
-          padding-top: 15px;
+          margin-top: 12px;
+          padding-top: 10px;
         }
 
         .pm-module-objective {
@@ -646,51 +665,40 @@ const ProductManagement = () => {
         .pm-card h4 { margin: 0 0 8px; font-size: 20px; }
         .pm-card p { margin: 0; color: #5f5f5f; line-height: 1.6; }
 
-        .pm-takeaway-grid {
-          align-items: center;
-          display: grid;
-          gap: 22px;
-          grid-template-columns: 1.3fr 1fr;
+        .pm-takeaway-full {
+          width: 100%;
         }
 
-        .pm-list {
+        .pm-list-grid {
           margin: 0;
           padding: 0;
           display: grid;
-          gap: 10px;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 16px 40px;
         }
 
-        .pm-list li {
+        .pm-list-grid li {
           list-style: none;
-          padding-left: 16px;
+          padding-left: 24px;
           position: relative;
-          color: #454545;
-          line-height: 1.55;
+          color: #333;
+          line-height: 1.45;
+          font-size: 18px;
         }
 
-        .pm-list li::before {
+        .pm-list-grid li::before {
           background: #cb4213;
           border-radius: 50%;
           content: "";
-          height: 6px;
+          height: 8px;
           left: 0;
           position: absolute;
           top: 9px;
-          width: 6px;
+          width: 8px;
         }
 
-        .pm-image {
-          border-radius: 16px;
-          box-shadow: var(--shadow);
-          overflow: hidden;
-        }
-
-        .pm-image img {
-          display: block;
-          width: 100%;
-          height: 100%;
-          min-height: 320px;
-          object-fit: cover;
+        @media (max-width: 780px) {
+          .pm-list-grid { grid-template-columns: 1fr; }
         }
 
         .pm-center { text-align: center; }
@@ -916,7 +924,7 @@ const ProductManagement = () => {
         }
 
         @media (max-width: 780px) {
-          .pm-section { padding: 42px 0; }
+          .pm-section { padding: 24px 0; }
           .pm-module-title { font-size: 21px; }
         }
       `}</style>
@@ -927,7 +935,7 @@ const ProductManagement = () => {
             <div className="pm-chip">Advanced Program 2026</div>
             <h1>Master the <span>Craft</span> of Product.</h1>
             <p className="pm-sub">
-              A premium learning path for modern product leaders to build, launch, and scale products with strategic clarity.
+              A premium, high-impact learning path architected for modern product leaders to build, launch, and scale breakthrough products with strategic clarity and market-leading precision. Master the advanced arts of product discovery, GTM execution, and cross-functional leadership while utilizing elite frameworks such as Jira, Mixpanel, and Figma. Gain the strategic depth required to navigate complex product lifecycles and secure high-stakes leadership roles at top-tier global technology companies and unicorns.
             </p>
 
             <div className="pm-stats">
@@ -938,13 +946,11 @@ const ProductManagement = () => {
                 </article>
               ))}
             </div>
-
-            <ApplyNowButton courseValue="Product Management" />
           </div>
 
           <div className="pm-hero-media">
             <div className="pm-media-box">
-              <img src={PMHero} alt="Product management mentor" />
+              <ImageSlider />
             </div>
             <aside className="pm-floating-card">
               <h4>Outcome Focused</h4>
@@ -1032,15 +1038,12 @@ const ProductManagement = () => {
 
         <section className="pm-section">
           <h2>Key Takeaways</h2>
-          <div className="pm-takeaway-grid">
-            <ul className="pm-list">
+          <div className="pm-takeaway-full">
+            <ul className="pm-list-grid">
               {keyTakeaways.map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
-            <div className="pm-image">
-              <img src={PMOutcomes} alt="Key outcomes" />
-            </div>
           </div>
         </section>
 

@@ -19,6 +19,7 @@ import toast, { Toaster } from "react-hot-toast";
 import ApplyNowButton from "./Components/ApplyNowButton";
 import ApplyForm from "./Components/ApplyForm";
 import Flashaidlogo from "../../assets/Flashaidlogo.jpg";
+import ImageSlider from "./Components/ImageSlider";
 
 const AutomationTesting = () => {
   const [activeCategory, setActiveCategory] = useState("Program");
@@ -456,13 +457,7 @@ const AutomationTesting = () => {
   const today = new Date();
   const currentMonth = today.getMonth();
   const currentDay = today.getDate();
-  const displayDate =
-    currentDay > 10 || currentMonth > 1
-      ? `10th ${new Date(today.setMonth(currentMonth + 1)).toLocaleString(
-          "en",
-          { month: "long" }
-        )} 2025`
-      : "10th February 2025";
+  const displayDate = "May 1, 2026";
   // const randomNumber = Math.floor(Math.random() * 6) + 20;
 
   return (
@@ -472,7 +467,7 @@ const AutomationTesting = () => {
         {/* 1 hero part */}
         <section
           id="advanceautomationbg"
-          className="py-[60px] shadow-lg shadow-[#f15b29]  px-[10px] min-h-screen flex items-center justify-center"
+          className="py-[30px] shadow-lg shadow-[#f15b29]  px-[10px] min-h-[50vh] flex items-center justify-center"
         >
           <div className="container mx-auto ">
             <div className="">
@@ -491,73 +486,40 @@ const AutomationTesting = () => {
                   <i className="relative text-white ">Automation Testing</i>
                 </span>
               </h1>
+              <p className="text-center text-gray-300 max-w-2xl mx-auto mb-8 text-lg">
+                Master elite automation frameworks and high-performance CI/CD integration strategies to build resilient, enterprise-scale automated testing ecosystems. Gain total proficiency in Selenium, Playwright, and Appium while mastering sophisticated DevOps workflows to accelerate software delivery cycles with absolute precision. Develop the deep technical expertise required to ensure top-tier product quality and lead quality engineering teams at the world's most innovative technology companies.
+              </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               <div
                 data-aos="fade-up"
-                className=" border border-gray-700 p-6 flex flex-col backdrop-blur-md  bg-[#ffffff59] text-black items-center  rounded-md"
+                className=" border border-gray-700 p-4 flex flex-col backdrop-blur-md  bg-[#ffffff59] text-black items-center  rounded-md"
               >
-                <div className="bg-[#f15b29] p-3 rounded-full">
+                <div className="bg-[#f15b29] p-2 rounded-full">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="white"
                     viewBox="0 0 24 24"
-                    className="h-8 w-8"
+                    className="h-6 w-6"
                   >
                     <path d="M16 10V7a4 4 0 10-8 0v3H5v10h14V10h-3zm-6 0V7a2 2 0 114 0v3H10z" />
                   </svg>
                 </div>
-                <p className="mt-4 font-semibold text-lg">Batch Starting</p>
+                <p className="mt-2 font-semibold text-lg">Batch Starting</p>
                 <p className="">{displayDate}</p>
 
-                <p className="mt-2 text-md border border-[#f15b29] rounded-lg px-2 py-1">
+                <p className="mt-1 text-md border border-[#f15b29] rounded-lg px-2 py-1">
                   {" "}
                   Available Cohort{" "}
                 </p>
-                <p className="mt-2 text-md">
+                <p className="mt-1 text-md">
                   {/* <span className="line-through">60/60</span> Batch Closed{" "} */}
                 </p>
                 <p>33/60</p>
               </div>
               <div
                 data-aos="fade-up"
-                className=" border border-gray-700 p-6 flex flex-col backdrop-blur-md bg-[#ffffff59] text-black items-center   rounded-md"
-              >
-                <div className="bg-[#f15b29] p-3 rounded-full">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="white"
-                    viewBox="0 0 24 24"
-                    className="h-8 w-8"
-                  >
-                    <path d="M5 3v18l7-3 7 3V3H5zm12 13l-5-2.18L7 16V5h10v11z" />
-                  </svg>
-                </div>
-                <p className="mt-4 font-semibold text-lg">Duration</p>
-                <p className="">6 Months</p>
-              </div>
-              <div
-                data-aos="fade-up"
-                className=" border border-gray-700 p-6 flex flex-col backdrop-blur-md bg-[#ffffff59] text-black items-center   rounded-md"
-              >
-                <div className="bg-[#f15b29] p-3 rounded-full">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="white"
-                    viewBox="0 0 24 24"
-                    className="h-8 w-8"
-                  >
-                    <path d="M12 2a10 10 0 1010 10A10 10 0 0012 2zm0 18a8 8 0 118-8 8 8 0 01-8 8zm1-13h-2v5h5v-2h-3z" />
-                  </svg>
-                </div>
-                <p className="mt-4 font-semibold text-lg">Program Rating</p>
-                <p className="">
-                  <span className="text-[#f15b29]">★★★★</span>☆ (4.8/5)
-                </p>
-              </div>
-            </div>
-            <div className=" flex items-center justify-center mt-6">
-              <ApplyNowButton courseValue="Automation Testing" />
+              />
             </div>
           </div>
         </section>
@@ -565,15 +527,15 @@ const AutomationTesting = () => {
 
         {/* circulum section updated  */}
 
-        <section className="py-[60px]">
+        <section className="py-[30px]">
           <div className="w-full">
             <h1
               data-aos="fade-up"
-              className=" font-bold text-center mb-8 text-[#f15b29]"
+              className=" font-bold text-center mb-4 text-[#f15b29]"
             >
               | Curriculum
             </h1>
-            <div className="lg:flex lg:flex-col lg:gap-8 px-[10px]">
+            <div className="lg:flex lg:flex-col lg:gap-6 px-[10px]">
               <div className="w-full">
                 <div className="space-y-4">
                   {modules.map((module, index) => (
@@ -618,13 +580,13 @@ const AutomationTesting = () => {
         </section>
         <hr className=" opacity-10" />
         {/* 14 why choose us */}
-        <section className="py-[60px] px-[10px]">
+        <section className="py-[30px] px-[10px]">
           <div className="container mx-auto  text-center">
-            <h1 data-aos="fade-up" className="text-[#f15b29] font-bold mb-6">
+            <h1 data-aos="fade-up" className="text-[#f15b29] font-bold mb-4">
               | Why Choose{" "}
               <span className="text-white">Automation Testing ? </span>
             </h1>
-            <p data-aos="fade-up" className="text-gray-400 mb-12">
+            <p data-aos="fade-up" className="text-gray-400 mb-6">
               Automation testing enhances speed, accuracy, and efficiency in
               software development. Here's why it's a smart choice:
             </p>
@@ -653,17 +615,17 @@ const AutomationTesting = () => {
         <hr className=" opacity-10" />
 
         {/* 15 why learn with us */}
-        <section className="py-[60px] px-[10px]">
+        <section className="py-[30px] px-[10px]">
           <BenefitsofLearning />
         </section>
         <hr className=" opacity-10" />
 
         {/* 2 Course Overview Section */}
-        <section className="py-[60px] px-[10px]">
+        <section className="py-[30px] px-[10px]">
           <div className="container mx-auto max-w-7xl">
             <h1
               data-aos="fade-up"
-              className=" font-bold text-center mb-12 text-[#f15b29]"
+              className=" font-bold text-center mb-8 text-[#f15b29]"
             >
               | Program Overview
             </h1>
@@ -686,8 +648,8 @@ const AutomationTesting = () => {
         <hr className=" opacity-10" />
 
         {/* 3 key outcome section  */}
-        <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto max-w-full lg:flex lg:gap-10 flex-col lg:flex-row">
+        <section className="py-[30px] px-[10px]">
+          <div className="container mx-auto max-w-full lg:flex lg:gap-6 flex-col lg:flex-row">
             {/* Left side: Key Outcomes */}
             <div className="w-full mb-3 lg:mb-0">
               <h1 data-aos="fade-up" className=" font-bold mb-4 text-[#f15b29]">
@@ -767,13 +729,9 @@ const AutomationTesting = () => {
             {/* Right side: Image */}
             <div
               data-aos="fade-up"
-              className="lg:w-1/2 w-full h-[300px] rounded-lg shadow-lg shadow-slate-700 overflow-hidden"
+              className="lg:w-1/2 w-full h-[660px] rounded-lg shadow-lg shadow-slate-700 overflow-hidden"
             >
-              <img
-                src={DS}
-                alt="Curriculum"
-                className="object-cover h-full w-full"
-              />
+              <ImageSlider />
             </div>
           </div>
         </section>
@@ -782,10 +740,10 @@ const AutomationTesting = () => {
         {/* 4 Curriculum Section */}
 
         {/* 5 download curriculum section */}
-        <section className="py-[60px] px-[10px]">
+        <section className="py-[30px] px-[10px]">
           <div
             data-aos="fade-up"
-            className="container mx-auto max-w-full p-5 flex flex-col md:flex-row justify-between items-center flex-wrap gap-5 rounded-lg shadow-lg border-2 border-[#f15b29]"
+            className="container mx-auto max-w-full p-5 flex flex-col md:flex-row justify-between items-center flex-wrap gap-4 rounded-lg shadow-lg border-2 border-[#f15b29]"
           >
             <div className="text-center md:text-left">
               <h2 className="text-xl font-bold mb-2 text-[#f15b29]">
@@ -1034,11 +992,11 @@ const AutomationTesting = () => {
         {/* 7 alumni section  */}
         <hr className=" opacity-10" />
         {/* 13 job roles section  */}
-        <section className="py-[60px] px-[10px]">
+        <section className="py-[30px] px-[10px]">
           <div className="container mx-auto max-w-full">
             <h1
               data-aos="fade-up"
-              className="text-[#f15b29] text-center  font-bold mb-8"
+              className="text-[#f15b29] text-center  font-bold mb-6"
             >
               | Career Opportunities in{" "}
               <span className="text-white font-bold">Automation Testing</span>
@@ -1078,17 +1036,17 @@ const AutomationTesting = () => {
         <hr className=" opacity-10" />
 
         {/* 12 key highlight section */}
-        <section className="py-[60px] px-[10px]">
+        <section className="py-[30px] px-[10px]">
           <div className="container mx-auto max-w-full">
             <div className="">
-              <div className=" w-full mb-8 lg:mb-0">
+              <div className=" w-full mb-6 lg:mb-0">
                 <h1
                   data-aos="fade-up"
-                  className=" text-center font-bold mb-6 text-[#f15b29]"
+                  className=" text-center font-bold mb-4 text-[#f15b29]"
                 >
                   | Course Benefits at a Glance
                 </h1>
-                <p data-aos="fade-up" className="text-lg text-center mb-8">
+                <p data-aos="fade-up" className="text-lg text-center mb-6">
                   Learn expert{" "}
                   <span className="text-[#f15b29] font-bold">
                     Automation Testing

@@ -150,7 +150,7 @@ const ApplyForm = ({ courseValue = "this program" }) => {
               <i className="fa fa-times"></i>
             </button>
             <h2 className="text-center">Apply for {courseValue}</h2>
-            <p className="text-center">
+            <p className="text-center mx-auto" style={{ textAlign: "center", margin: "8px auto 0", display: "block", width: "100%" }}>
               Share your details and verify your email once. We will connect
               you with the right counselor for the next step.
             </p>

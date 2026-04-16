@@ -9,11 +9,13 @@ import StoreSection from "./Components/StoreSection";
 import ClientsCarousel from "../../Components/our_alumni";
 import ApplyNowButton from "./Components/ApplyNowButton";
 import ApplyForm from "./Components/ApplyForm";
+import ImageSlider from "./Components/ImageSlider";
 
 const heroStats = [
 
   { label: "Duration", value: "24 Weeks" },
   { label: "Program Rating", value: "4.9/5" },
+  { label: "Batch Starting", value: "May 1, 2026" },
 ];
 
 const curriculum = [
@@ -440,21 +442,21 @@ const DataScience = () => {
           text-transform: uppercase;
         }
 
-        .ds-section { padding: 52px 0; }
-        .ds-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 12px; }
+        .ds-section { padding: 24px 0; }
+        .ds-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 8px; }
         .ds-section p.lead {
           color: var(--muted);
           line-height: 1.7;
-          margin: 0 0 26px;
+          margin: 0 0 16px;
           max-width: 760px;
         }
 
         .ds-hero {
           border-top: 1px solid var(--line);
           display: grid;
-          gap: 32px;
+          gap: 16px;
           grid-template-columns: 1fr 1fr;
-          padding: 26px 0 28px;
+          padding: 16px 0 20px;
         }
 
         .ds-chip {
@@ -472,7 +474,7 @@ const DataScience = () => {
         .ds-hero h1 {
           font-size: clamp(42px, 5vw, 74px);
           line-height: 0.98;
-          margin: 16px 0;
+          margin: 12px 0;
         }
 
         .ds-hero h1 span {
@@ -487,7 +489,7 @@ const DataScience = () => {
           font-size: 17px;
           line-height: 1.6;
           max-width: 520px;
-          margin-bottom: 22px;
+          margin-bottom: 16px;
         }
 
         .ds-stats {
@@ -524,6 +526,11 @@ const DataScience = () => {
           box-shadow: 0 24px 46px rgba(0, 0, 0, 0.28);
           overflow: hidden;
           padding: 18px;
+          height: 600px;
+        }
+
+        .ds-media-box > div {
+          height: 100%;
         }
 
         .ds-media-box img {
@@ -548,17 +555,17 @@ const DataScience = () => {
 
         .ds-curr-grid {
           display: grid;
-          gap: 20px;
+          gap: 10px;
           grid-template-columns: 2fr 1fr;
         }
 
-        .ds-accordion { display: grid; gap: 14px; }
+        .ds-accordion { display: grid; gap: 10px; }
 
         .ds-module {
           background: var(--panel);
           border: 1px solid #e7e0dc;
           border-radius: var(--radius);
-          padding: 18px;
+          padding: 14px;
         }
 
         .ds-module.open { border-color: #d05b36; }
@@ -920,8 +927,7 @@ const DataScience = () => {
             <div className="ds-chip">Advanced Program 2026</div>
             <h1>Master the <span>Science</span> of Data.</h1>
             <p className="ds-sub">
-              A high-end editorial learning experience designed for elite practitioners.
-              Build production intelligence systems with clarity, precision, and speed.
+              An elite, high-performance training program meticulously designed for future data leaders to master advanced machine learning, big data architectures, and sophisticated AI systems. Gain absolute mastery over Python, TensorFlow, and AWS environments while developing the technical depth and strategic intuition required to solve complex, multi-million dollar business challenges at a global scale. Join a network of elite practitioners and accelerate your path to leadership roles in the world's most innovative technology companies.
             </p>
 
             <div className="ds-stats">
@@ -932,13 +938,11 @@ const DataScience = () => {
                 </article>
               ))}
             </div>
-
-            <ApplyNowButton courseValue="Data Science" />
           </div>
 
           <div className="ds-hero-media">
             <div className="ds-media-box">
-              <img src={DSHero} alt="Data science mentor" />
+              <ImageSlider />
             </div>
             <aside className="ds-floating-card">
               <h4>Outcome Focused</h4>
