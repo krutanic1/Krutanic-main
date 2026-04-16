@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import DikshaantBlaster from './DikshaantBlaster';
 
-const API = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5001' : '');
+const API = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5001' : window.location.origin + '/api');
 const W = { width: '100%', padding: 6, boxSizing: 'border-box' };
 const td1 = { padding: '5px 8px 5px 0', width: 110, verticalAlign: 'top' };
 const TEMPLATE_FIELDS = ['subjects', 'greetings', 'body_paragraphs', 'links', 'closings', 'signatures'];
