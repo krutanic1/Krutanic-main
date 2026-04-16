@@ -200,10 +200,19 @@ const AdvanceCourses = () => {
                 <span className="text-[11px] font-bold uppercase tracking-wider text-[#ff6a14]">Certification</span>
               </div>
             </div>
+            
+            <div className="mt-12">
+              <button
+                onClick={() => setShowApplyForm(true)}
+                className="w-full sm:w-auto bg-[#ff6a14] text-white font-bold py-4 px-10 rounded-xl hover:bg-[#e85a0d] transition-all duration-300 shadow-lg hover:shadow-xl text-lg flex items-center justify-center gap-2"
+              >
+                Apply for this Program <FaArrowRight />
+              </button>
+            </div>
           </div>
           
-          <div className="relative mt-4 w-full max-w-[340px] lg:mt-12">
-            <div className="overflow-hidden rounded-[30px] border border-[#ececec] bg-white p-2 shadow-[0_20px_45px_rgba(15,23,42,0.12)]">
+          <div className="relative mt-4 w-full flex-grow lg:mt-12 flex justify-center">
+            <div className="overflow-hidden rounded-[30px] border border-[#ececec] bg-white p-2 shadow-[0_20px_45px_rgba(15,23,42,0.12)] w-full">
               <img
                 src={advanceHeroImg}
                 alt="Advanced learning programs"
@@ -219,6 +228,27 @@ const AdvanceCourses = () => {
             <div className="absolute bottom-8 right-0 translate-x-1/2 rounded-2xl border border-white/70 bg-white/90 px-5 py-4 shadow-lg backdrop-blur">
               <p className="text-3xl font-extrabold text-[#f15b29] leading-none">3</p>
               <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-[#666]">Categories</p>
+            </div>
+
+            <div className="hidden lg:flex absolute -right-20 top-1/2 -translate-y-1/2 flex-col gap-4">
+              <div className="bg-white p-4 rounded-2xl shadow-xl border border-gray-100 flex items-center gap-4 animate-bounce">
+                <div className="bg-orange-100 p-3 rounded-xl text-orange-600">
+                  <FaAward size={24} />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-gray-900">Top Rated</p>
+                  <p className="text-[10px] text-gray-500">Industry Recognized</p>
+                </div>
+              </div>
+              <div className="bg-white p-4 rounded-2xl shadow-xl border border-gray-100 flex items-center gap-4 animate-pulse delay-700">
+                <div className="bg-blue-100 p-3 rounded-xl text-blue-600">
+                  <FaBuilding size={24} />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-gray-900">Elite Partners</p>
+                  <p className="text-[10px] text-gray-500">500+ Hiring Partners</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
