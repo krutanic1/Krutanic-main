@@ -174,6 +174,32 @@ const AdvanceCourses = () => {
             <p className="mt-6 text-[#555] text-lg lg:text-xl max-w-lg leading-relaxed">
               Explore our high-velocity learning paths designed for the next generation of industry leaders and technical pioneers.
             </p>
+            <div className="mt-10 grid grid-cols-2 sm:grid-cols-3 gap-y-8 gap-x-12">
+              <div className="flex flex-col">
+                <span className="text-2xl font-bold text-[#111]">100%</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#ff6a14]">Placement Support</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-2xl font-bold text-[#111]">1:1</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#ff6a14]">Industry Mentorship</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-2xl font-bold text-[#111]">Live</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#ff6a14]">Hands-on Experience</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-2xl font-bold text-[#111]">Project</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#ff6a14]">Based Learning</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-2xl font-bold text-[#111]">Real-World</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#ff6a14]">Capstone Projects</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-2xl font-bold text-[#111]">Elite</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#ff6a14]">Certification</span>
+              </div>
+            </div>
           </div>
           
           <div className="relative mt-4 w-full max-w-[340px] lg:mt-12">
