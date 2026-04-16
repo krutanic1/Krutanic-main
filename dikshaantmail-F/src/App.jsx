@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import DikshaantBlaster from './DikshaantBlaster';
 
-const API = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5001' : window.location.origin + '/api');
+const API = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5001' : '');
 const W = { width: '100%', padding: 6, boxSizing: 'border-box' };
 const td1 = { padding: '5px 8px 5px 0', width: 110, verticalAlign: 'top' };
 const TEMPLATE_FIELDS = ['subjects', 'greetings', 'body_paragraphs', 'links', 'closings', 'signatures'];
@@ -872,6 +872,15 @@ function AdminMailBlaster({ authedEmail, onLogout }) {
     }
   }
 
+async function handleLogout() {
+    try {
+      await apiFetch('/api/auth/logout', { method: 'POST' });
+    } catch (e) {
+      console.error('Logout error:', e);
+    }
+    onLogout();
+  }
+
   return (
     <div id="AdminAddCourse" className="mailblaster-admin">
       <style>{`
@@ -938,7 +947,7 @@ function AdminMailBlaster({ authedEmail, onLogout }) {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <small style={{ color: '#6b7280' }}>Logged in as {authedEmail || 'admin'}</small>
-            <button type="button" onClick={onLogout}>Logout</button>
+            <button type="button" onClick={handleLogout}>Logout</button>
           </div>
         </div>
 
