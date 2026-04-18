@@ -1,36 +1,55 @@
 import { useState, useRef, useCallback } from 'react';
-import { classifyError, ERR } from '../utils/errors';
+import { ERR } from '../utils/errors';
 
 /** Flush accumulated chunks to disk every N seconds (chunks = 1 per second). */
 const FLUSH_EVERY = 30;
 
+interface Layout {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+interface StreamingOptions {
+  enabled: boolean;
+  key: string;
+  liveStream?: MediaStream;
+}
+
+interface CropOptions {
+  cropTop: number;
+  cropBottom: number;
+}
+
+interface DeviceDisconnectCallback {
+  (device: 'webcam' | 'microphone'): void;
+}
+
 /** 
  * useMediaRecorder
- *
- * - Streams MediaRecorder chunks to disk incrementally (no OOM for 3+ hour recordings)
- * - Prevents system sleep via Electron powerSaveBlocker
- * - Recovers gracefully from device disconnects
- * - Uses user-friendly error messages
  */
-export function useMediaRecorder({ onDeviceDisconnect } = {}) {
+export function useMediaRecorder({ onDeviceDisconnect }: { onDeviceDisconnect?: DeviceDisconnectCallback } = {}) {
   const [isRecording,  setIsRecording]  = useState(false);
   const [isPaused,     setIsPaused]     = useState(false);
   const [seconds,      setSeconds]      = useState(0);
-  const [mergeStatus,  setMergeStatus]  = useState(null);
+  const [mergeStatus,  setMergeStatus]  = useState<'merging' | 'done' | 'error' | null>(null);
   const [mergePercent, setMergePercent] = useState(0);
-  const [savedPath,    setSavedPath]    = useState(null);
+  const [savedPath,    setSavedPath]    = useState<string | null>(null);
   const [bytesWritten, setBytesWritten] = useState(0);
-  const [error,        setError]        = useState(null);
+  const [error,        setError]        = useState<string | null>(null);
+  const [isStreaming,  setIsStreaming]  = useState(false);
 
   // Recorder instances
-  const screenRecRef = useRef(null);
-  const webcamRecRef = useRef(null);
-  const micRecRef    = useRef(null);
+  const screenRecRef = useRef<MediaRecorder | null>(null);
+  const webcamRecRef = useRef<MediaRecorder | null>(null);
+  const micRecRef    = useRef<MediaRecorder | null>(null);
+  const liveRecRef   = useRef<MediaRecorder | null>(null);
 
   // In-flight (unflushed) chunks
-  const screenPending = useRef([]);
-  const webcamPending = useRef([]);
-  const micPending    = useRef([]);
+  const screenPending = useRef<Blob[]>([]);
+  const webcamPending = useRef<Blob[]>([]);
+  const micPending    = useRef<Blob[]>([]);
 
   // Flush counters
   const screenCount   = useRef(0);
@@ -38,9 +57,9 @@ export function useMediaRecorder({ onDeviceDisconnect } = {}) {
   const micCount      = useRef(0);
 
   // Session IDs for the streaming writers
-  const sessionId = useRef(null);
-  const activeKeysRef = useRef({ screen: null, webcam: null, mic: null });
-  const streamOpenStateRef = useRef({});
+  const sessionId = useRef<string | null>(null);
+  const activeKeysRef = useRef<{ screen: string | null; webcam: string | null; mic: string | null }>({ screen: null, webcam: null, mic: null });
+  const streamOpenStateRef = useRef<Record<string, boolean>>({});
 
   // Bytes written counters (approximate)
   const bytesRef = useRef(0);
@@ -49,13 +68,13 @@ export function useMediaRecorder({ onDeviceDisconnect } = {}) {
   const flushLock = useRef(Promise.resolve());
 
   // Timer
-  const timerRef = useRef(null);
+  const timerRef = useRef<any>(null);
 
   const startTimer = () => { timerRef.current = setInterval(() => setSeconds((s) => s + 1), 1000); };
   const pauseTimer = () => clearInterval(timerRef.current);
   const resetTimer = () => { clearInterval(timerRef.current); setSeconds(0); };
 
-  const formatTime = (s) => {
+  const formatTime = (s: number) => {
     const h   = Math.floor(s / 3600).toString().padStart(2, '0');
     const m   = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
     const sec = (s % 60).toString().padStart(2, '0');
@@ -69,27 +88,28 @@ export function useMediaRecorder({ onDeviceDisconnect } = {}) {
     return candidates.find((m) => MediaRecorder.isTypeSupported(m)) || '';
   };
 
-  const hasElectron = () => !!window.electronAPI?.streamOpen;
+  const hasElectron = () => !!(window as any).electronAPI?.streamOpen;
 
-  const isNoOpenSessionError = (err) => {
+  const isNoOpenSessionError = (err: any) => {
     const msg = err?.message || String(err || '');
     return msg.includes('No open stream for session');
   };
 
   // ── Flush pending chunks of one stream to disk via IPC ─────────────────
-  const flushStream = useCallback(async (streamKey, pendingRef) => {
+  const flushStream = useCallback(async (streamKey: string, pendingRef: React.MutableRefObject<Blob[]>) => {
     if (!pendingRef.current.length) return;
     if (!hasElectron()) return;
     if (!streamOpenStateRef.current[streamKey]) {
-      // Stream was already closed/aborted; drop pending chunks safely.
       pendingRef.current.splice(0);
       return;
     }
-    const chunks = pendingRef.current.splice(0); // drain the pending array
+    const chunks = pendingRef.current.splice(0);
+    const api = (window as any).electronAPI;
+    
     for (const chunk of chunks) {
       const buf = await chunk.arrayBuffer();
       try {
-        await window.electronAPI.streamAppend(streamKey, buf);
+        await api.streamAppend(streamKey, buf);
       } catch (err) {
         if (isNoOpenSessionError(err)) {
           streamOpenStateRef.current[streamKey] = false;
@@ -104,7 +124,13 @@ export function useMediaRecorder({ onDeviceDisconnect } = {}) {
   }, []);
 
   // ── Build a MediaRecorder with periodic chunk flushing ─────────────────
-  const makeRecorder = useCallback((stream, pendingRef, countRef, streamKey, mimeType) => {
+  const makeRecorder = useCallback((
+    stream: MediaStream, 
+    pendingRef: React.MutableRefObject<Blob[]>, 
+    countRef: React.MutableRefObject<number>, 
+    streamKey: string, 
+    mimeType: string
+  ) => {
     if (!stream?.getTracks().length) return null;
 
     const rec = new MediaRecorder(stream, {
@@ -117,13 +143,8 @@ export function useMediaRecorder({ onDeviceDisconnect } = {}) {
       if (!e.data?.size) return;
       pendingRef.current.push(e.data);
       countRef.current++;
-      //recoder conslone is off it in teh console
 
-      // console.log(`[Recorder] ${streamKey} chunk ${countRef.current}`);
-
-      // Flush every FLUSH_EVERY chunks (≈ 30 seconds)
       if (countRef.current % FLUSH_EVERY === 0) {
-        // Chain onto the lock to avoid concurrent writes
         flushLock.current = flushLock.current
           .then(() => flushStream(streamKey, pendingRef))
           .catch((err) => {
@@ -131,43 +152,68 @@ export function useMediaRecorder({ onDeviceDisconnect } = {}) {
             setError(ERR.CHUNK_WRITE_FAIL);
           });
       }
+
+      if (streamKey === 'live-composite' && sessionId.current) {
+        e.data.arrayBuffer().then(buf => {
+          (window as any).electronAPI.liveStreamFeed(sessionId.current, buf);
+        });
+      }
     };
 
-    rec.onerror = (e) => {
+    rec.onerror = (e: any) => {
       const msg = e.error?.message ?? 'Unknown recorder error';
       console.error('MediaRecorder error:', msg);
-      // Don't abort immediately — try to salvage what's recorded
       setError(`${ERR.RECORDER_CRASH} (${msg})`);
     };
 
     return rec;
   }, [flushStream]);
 
-  const webcamLayoutRef = useRef(null);
+  const webcamLayoutRef = useRef<Layout | null>(null);
 
   // ── Start ────────────────────────────────────────────────────────────────
-  const startRecording = useCallback(async (screenStream, webcamStream, micDestRef, currentLayout) => {
+  const startRecording = useCallback(async (
+    screenStream: MediaStream, 
+    webcamStream: MediaStream | null, 
+    micDestRef: React.RefObject<MediaStreamAudioDestinationNode>, 
+    currentLayout: Layout, 
+    streamingOpts: StreamingOptions = { enabled: false, key: '' }
+  ) => {
     webcamLayoutRef.current = currentLayout;
+    const api = (window as any).electronAPI;
+    
     setError(null);
     setMergeStatus(null);
     setMergePercent(0);
     setSavedPath(null);
     setBytesWritten(0);
     bytesRef.current = 0;
+    setIsStreaming(streamingOpts.enabled);
 
     if (!screenStream) {
       setError(ERR.NO_SCREEN_STREAM);
       return;
     }
 
-    // Generate a unique session ID
     sessionId.current = Date.now().toString(36);
-    const sid = sessionId.current;
-    const ts  = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    const sid = sessionId.current!;
+    const ts  = new Date().toISOString().replace(/T/, '_').replace(/:/g, '-').slice(0, 19);
 
-    // Open streaming write sessions in parallel
-    // NOTE: sessionId key already encodes track name (${sid}-screen etc.)
-    //       so the filename only needs the timestamp to avoid double-naming.
+    if (streamingOpts.enabled && streamingOpts.key) {
+      try {
+        await api.liveStreamStart({
+          sessionId: sid,
+          streamKey: streamingOpts.key,
+          width: 1920,
+          height: 1080
+        });
+      } catch (err) {
+        console.error('Live stream start failed:', err);
+        setError('Failed to start live stream. Recording locally only.');
+        setIsStreaming(false);
+      }
+    }
+
     const screenKey = `${sid}-screen`;
     const webcamKey = `${sid}-webcam`;
     const micKey    = `${sid}-mic`;
@@ -176,30 +222,25 @@ export function useMediaRecorder({ onDeviceDisconnect } = {}) {
 
     if (hasElectron()) {
       const [screenOpen, webcamOpen, micOpen, powerOpen] = await Promise.allSettled([
-        window.electronAPI.streamOpen(screenKey, `${ts}.webm`),
-        window.electronAPI.streamOpen(webcamKey, `${ts}.webm`),
-        window.electronAPI.streamOpen(micKey, `${ts}.webm`),
-        window.electronAPI.startPowerBlock(),
+        api.streamOpen(screenKey, `${ts}.webm`),
+        api.streamOpen(webcamKey, `${ts}.webm`),
+        api.streamOpen(micKey, `${ts}.webm`),
+        api.startPowerBlock(),
       ]);
 
       streamOpenStateRef.current[screenKey] = screenOpen.status === 'fulfilled';
       streamOpenStateRef.current[webcamKey] = webcamOpen.status === 'fulfilled';
       streamOpenStateRef.current[micKey]    = micOpen.status === 'fulfilled';
 
-      if (powerOpen.status === 'rejected') {
-        console.warn('Power blocker failed to start:', powerOpen.reason);
-      }
-
       if (!streamOpenStateRef.current[screenKey]) {
         throw new Error('Failed to open screen stream writer');
       }
     }
 
-    // Disk space warning (non-blocking)
-    if (window.electronAPI?.checkDiskSpace) {
-      window.electronAPI.checkDiskSpace().then((info) => {
-        if (info && info.free < 5 * 1e9) { // < 5 GB free
-          setError(`Low disk space: only ${info.freeGB} GB remaining. Recording may stop early.`);
+    if (api?.checkDiskSpace) {
+      api.checkDiskSpace().then((info: any) => {
+        if (info && info.free < 5 * 1e9) {
+          setError(`Low disk space: only ${info.freeGB} GB remaining.`);
         }
       });
     }
@@ -207,45 +248,35 @@ export function useMediaRecorder({ onDeviceDisconnect } = {}) {
     const videoMime = pickMime(true);
     const audioMime = pickMime(false);
 
-    // Reset pending / counter refs
     screenPending.current = []; screenCount.current = 0;
     webcamPending.current = []; webcamCount.current = 0;
     micPending.current    = []; micCount.current    = 0;
 
-    // Screen recorder
     const screenTracks = [...screenStream.getVideoTracks(), ...screenStream.getAudioTracks()];
     screenRecRef.current = makeRecorder(
       new MediaStream(screenTracks), screenPending, screenCount, screenKey, videoMime
     );
 
-    // Webcam recorder
     webcamRecRef.current = null;
-    if (webcamStream?.getVideoTracks().length > 0) {
+    if (webcamStream?.getVideoTracks().length) {
       const wcStream = new MediaStream(webcamStream.getVideoTracks());
-      // Force VP9 for webcam if we want transparent background (alpha support)
-      const wcMime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9') 
-        ? 'video/webm;codecs=vp9' 
-        : videoMime;
-      
+      const wcMime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : videoMime;
       webcamRecRef.current = makeRecorder(wcStream, webcamPending, webcamCount, webcamKey, wcMime);
 
-      // Handle webcam disconnect
-      webcamStream.getVideoTracks()[0].addEventListener('ended', () => {
+      webcamStream.getVideoTracks()[0].onended = () => {
         if (webcamRecRef.current?.state !== 'inactive') {
           try { webcamRecRef.current?.stop(); } catch (_) {}
         }
         onDeviceDisconnect?.('webcam');
-      });
+      };
     }
 
-    // Mic recorder
     micRecRef.current = null;
     const micDest = micDestRef?.current;
     if (micDest?.stream) {
       const micStream = new MediaStream(micDest.stream.getAudioTracks());
       micRecRef.current = makeRecorder(micStream, micPending, micCount, micKey, audioMime);
 
-      // Handle mic disconnect
       micDest.stream.getAudioTracks()[0]?.addEventListener('ended', () => {
         if (micRecRef.current?.state !== 'inactive') {
           try { micRecRef.current?.stop(); } catch (_) {}
@@ -254,8 +285,18 @@ export function useMediaRecorder({ onDeviceDisconnect } = {}) {
       });
     }
 
-    // Start all recorders with 1-second timeslices
-    [screenRecRef, webcamRecRef, micRecRef].forEach((ref) => {
+    if (streamingOpts.liveStream) {
+      liveRecRef.current = makeRecorder(
+        streamingOpts.liveStream, 
+        { current: [] }, 
+        { current: 0 }, 
+        'live-composite', 
+        pickMime(true)
+      );
+    }
+
+    const recorders = [screenRecRef, webcamRecRef, micRecRef, liveRecRef];
+    recorders.forEach((ref) => {
       try {
         if (ref.current && ref.current.state === 'inactive') {
           ref.current.start(1000);
@@ -272,64 +313,60 @@ export function useMediaRecorder({ onDeviceDisconnect } = {}) {
   }, [makeRecorder, onDeviceDisconnect]);
 
   // ── Stop ─────────────────────────────────────────────────────────────────
-  const stopRecording = useCallback(async (relativeLayout, targetResolution) => {
+  const stopRecording = useCallback(async (
+    relativeLayout: Layout | null, 
+    targetResolution: { width: number; height: number }, 
+    cropOpts: CropOptions = { cropTop: 0, cropBottom: 0 }
+  ) => {
     if (!screenRecRef.current) return;
+    if (relativeLayout) webcamLayoutRef.current = relativeLayout;
+    const api = (window as any).electronAPI;
 
-    if (relativeLayout) {
-      webcamLayoutRef.current = relativeLayout;
-    }
-
-    const waitForStop = (rec) =>
-      new Promise((resolve) => {
+    const waitForStop = (rec: MediaRecorder | null) =>
+      new Promise<void>((resolve) => {
         if (!rec || rec.state === 'inactive') { resolve(); return; }
-        rec.onstop = resolve;
+        rec.onstop = () => resolve();
         try { rec.stop(); } catch (_) { resolve(); }
       });
 
-    // Stop all recorders
     await Promise.all([
       waitForStop(screenRecRef.current),
       waitForStop(webcamRecRef.current),
       waitForStop(micRecRef.current),
+      waitForStop(liveRecRef.current),
     ]);
 
     resetTimer();
     setIsRecording(false);
     setIsPaused(false);
-
-    // Stop system from preventing power save
-    window.electronAPI?.stopPowerBlock?.();
+    api?.stopPowerBlock?.();
 
     setMergeStatus('merging');
     setMergePercent(0);
 
     try {
-      // Wait for any in-flight flushes to settle
       await flushLock.current;
 
       let screenPath = null, webcamPath = null, micPath = null;
       const { screen: screenKey, webcam: webcamKey, mic: micKey } = activeKeysRef.current;
 
       if (hasElectron()) {
-        // Final flush of any remaining buffered chunks
         await Promise.all([
-          flushStream(screenKey, screenPending),
-          webcamRecRef.current ? flushStream(webcamKey, webcamPending) : Promise.resolve(),
-          micRecRef.current    ? flushStream(micKey, micPending) : Promise.resolve(),
+          flushStream(screenKey!, screenPending),
+          webcamKey ? flushStream(webcamKey, webcamPending) : Promise.resolve(),
+          micKey ? flushStream(micKey, micPending) : Promise.resolve(),
         ]);
 
-        // Close all write streams and get the file paths
         [screenPath, webcamPath, micPath] = await Promise.all([
-          window.electronAPI.streamClose(screenKey),
-          window.electronAPI.streamClose(webcamKey),
-          window.electronAPI.streamClose(micKey),
+          api.streamClose(screenKey),
+          webcamKey ? api.streamClose(webcamKey) : Promise.resolve(null),
+          micKey ? api.streamClose(micKey) : Promise.resolve(null),
         ]);
 
-        streamOpenStateRef.current[screenKey] = false;
-        streamOpenStateRef.current[webcamKey] = false;
-        streamOpenStateRef.current[micKey] = false;
+        streamOpenStateRef.current[screenKey!] = false;
+        if (webcamKey) streamOpenStateRef.current[webcamKey] = false;
+        if (micKey) streamOpenStateRef.current[micKey] = false;
       } else {
-        // Browser fallback: build blobs from pending (unflushed) chunks only
         const videoMime = pickMime(true);
         const blob = new Blob(screenPending.current, { type: videoMime });
         const url  = URL.createObjectURL(blob);
@@ -337,54 +374,51 @@ export function useMediaRecorder({ onDeviceDisconnect } = {}) {
         a.href = url;
         a.download = `recording-${Date.now()}.webm`;
         a.click();
-        setTimeout(() => URL.revokeObjectURL(url), 10_000);
         setMergeStatus('done');
         return;
       }
 
-      // Register merge event listeners
-      window.electronAPI.onMergeProgress(({ percent }) => setMergePercent(percent));
-      window.electronAPI.onMergeDone(({ outputPath }) => {
+      api.onMergeProgress(({ percent }: { percent: number }) => setMergePercent(percent));
+      api.onMergeDone(({ outputPath }: { outputPath: string }) => {
         setSavedPath(outputPath);
         setMergeStatus('done');
         setMergePercent(100);
-        window.electronAPI.removeMergeListeners();
+        api.removeMergeListeners();
       });
-      window.electronAPI.onMergeError(({ message }) => {
+      api.onMergeError(({ message }: { message: string }) => {
         setError(`${ERR.FFMPEG_FAIL} (${message})`);
         setMergeStatus('error');
-        window.electronAPI.removeMergeListeners();
+        api.removeMergeListeners();
       });
 
-      // Trigger FFmpeg merge
-      await window.electronAPI.mergeRecordings({
+      await api.mergeRecordings({
         screenPath,
         webcamPath:   webcamPath || null,
         micPath:      micPath    || null,
         webcamLayout: webcamLayoutRef.current,
         targetResolution,
+        cropTop: cropOpts.cropTop,
+        cropBottom: cropOpts.cropBottom,
       });
-    } catch (err) {
-      setError(`Export error: ${classifyError(err)}`);
+    } catch (err: any) {
+      setError(`Export error: ${err.message || 'Unknown'}`);
       setMergeStatus('error');
 
-      // Abort any open write streams
       const { screen: screenKey, webcam: webcamKey, mic: micKey } = activeKeysRef.current;
-      if (window.electronAPI?.streamAbort) {
+      if (api?.streamAbort) {
         await Promise.allSettled([
-          window.electronAPI.streamAbort(screenKey),
-          window.electronAPI.streamAbort(webcamKey),
-          window.electronAPI.streamAbort(micKey),
+          screenKey ? api.streamAbort(screenKey) : Promise.resolve(),
+          webcamKey ? api.streamAbort(webcamKey) : Promise.resolve(),
+          micKey ? api.streamAbort(micKey) : Promise.resolve(),
         ]);
-
-        streamOpenStateRef.current[screenKey] = false;
-        streamOpenStateRef.current[webcamKey] = false;
-        streamOpenStateRef.current[micKey] = false;
+      }
+    } finally {
+      if (sessionId.current) {
+        api.liveStreamStop(sessionId.current);
       }
     }
   }, [flushStream]);
 
-  // ── Pause / Resume ───────────────────────────────────────────────────────
   const togglePause = useCallback(() => {
     [screenRecRef, webcamRecRef, micRecRef].forEach((ref) => {
       if (!ref.current) return;
@@ -400,7 +434,7 @@ export function useMediaRecorder({ onDeviceDisconnect } = {}) {
   return {
     isRecording, isPaused, timer: formatTime(seconds),
     mergeStatus, mergePercent, savedPath,
-    bytesWritten, // expose for status bar
+    bytesWritten,
     error,
     startRecording, stopRecording, togglePause,
   };

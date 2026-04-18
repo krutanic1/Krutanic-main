@@ -14,7 +14,7 @@ import Popularcourse from "../Components/popularcourse";
 // import whychoose from "../assets/whatmakedifferent.png";
 import specialization from "../../krutanic/images/publicspeech.jpg";
 import whyimg from "../assets/whychoose.jpg";
-import corporate from "../../krutanic/images/asdfg.jpg";
+import corporate from "../../krutanic/images/learning-centre.png";
 import comingsoon from "../assets/comingsoon.jpg";
 import internshipCertificate from "../assets/certificates/c/internship.jpg";
 import trainingCertificate from "../assets/certificates/c/training.jpg";
@@ -190,6 +190,10 @@ const HomePage = () => {
 
       {/* section certifications */}
       <div className="landing-certifications" data-aos="fade-up">
+        {/* Decorative background elements */}
+        <div className="cert-bg-blob cert-bg-blob-1" aria-hidden="true" />
+        <div className="cert-bg-blob cert-bg-blob-2" aria-hidden="true" />
+
         <div className="landing-cert-grid">
           <div className="landing-cert-left">
             <p className="landing-cert-chip">Global Standards</p>
@@ -203,7 +207,9 @@ const HomePage = () => {
                 const Icon = item.icon;
                 return (
                   <article key={item.title} className="landing-cert-feature">
-                    <Icon className="landing-cert-feature-icon" />
+                    <div className="cert-icon-box">
+                      <Icon className="landing-cert-feature-icon" />
+                    </div>
                     <div>
                       <h3>{item.title}</h3>
                       <p>{item.text}</p>
@@ -218,7 +224,9 @@ const HomePage = () => {
                 const Icon = item.icon;
                 return (
                   <article key={item.label} className={`landing-cert-stat ${item.accent}`}>
-                    <Icon className="landing-cert-stat-icon" />
+                    <div className="cert-icon-box">
+                      <Icon className="landing-cert-stat-icon" />
+                    </div>
                     <strong>{item.value}</strong>
                     <span>{item.label}</span>
                   </article>

@@ -13,21 +13,6 @@ import imgalt from "../assets/defaultmasterclass.jpg";
 import Popularcourse from "../Components/popularcourse";
 
 const MasterClass = () => {
-  const [showPopup, setShowPopup] = useState(false);
-  useEffect(() => {
-    let interval;
-    const timer = setTimeout(() => {
-      setShowPopup(true);
-      interval = setInterval(() => {
-        setShowPopup(true);
-      }, 60000);
-    }, 5000);
-    return () => {
-      clearTimeout(timer);
-      if (interval) clearInterval(interval);
-    };
-  }, []);
-
   const [openIndex, setOpenIndex] = useState(null);
   const [isRegisterForm, setisRegisterForm] = useState(false);
   const [isDownloadForm, setisDownloadForm] = useState(false);
@@ -223,7 +208,6 @@ const MasterClass = () => {
 
   return (
     <div id="MasterClass">
-      {showPopup && <HomePopup onClose={() => setShowPopup(false)} />}
       <Helmet>
         <title>Krutanic MasterClass | Upskill in Tech, Coding & AI</title>
         <meta

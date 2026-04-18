@@ -14,7 +14,7 @@ import ImageSlider from "./Components/ImageSlider";
 const heroStats = [
   { label: "Duration", value: "24 Weeks" },
   { label: "Program Rating", value: "4.9/5" },
-  { label: "Batch Starting", value: "May 1, 2026" },
+  { label: "Batch Starting", value: "Upcoming" },
 ];
 
 const curriculum = [
@@ -1035,9 +1035,9 @@ const PromptEngineering = () => {
                 Access detailed modules, prompt templates, and capstone execution structure.
               </p>
             </div>
-            <a href={pdfds} target="_blank" rel="noreferrer" className="pe-btn" style={{ textDecoration: "none" }}>
+            <button disabled className="pe-btn" style={{ opacity: 0.6, cursor: 'not-allowed' }}>
               Download
-            </a>
+            </button>
           </div>
         </section>
       </div>

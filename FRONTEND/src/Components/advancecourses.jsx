@@ -218,14 +218,24 @@ const AdvanceCounses = () => {
                 >
                   View Program
                 </Link>
-                <a
-                  href={course.brochure}
-                  download={`${course.title} - Brochure.pdf`}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#f15b29] px-3 py-2.5 text-base font-semibold text-white transition hover:bg-[#d94f21]"
-                >
-                  <i className="fa fa-arrow-down" aria-hidden="true"></i>
-                  Syllabus
-                </a>
+                {(course.title === "Digital Marketing" || course.title === "Data Analytics") ? (
+                  <a
+                    href={course.brochure}
+                    download={`${course.title} - Brochure.pdf`}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#f15b29] px-3 py-2.5 text-base font-semibold text-white transition hover:bg-[#d94f21]"
+                  >
+                    <i className="fa fa-arrow-down" aria-hidden="true"></i>
+                    Syllabus
+                  </a>
+                ) : (
+                  <button
+                    disabled
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-400 px-3 py-2.5 text-base font-semibold text-white cursor-not-allowed"
+                  >
+                    <i className="fa fa-lock" aria-hidden="true"></i>
+                    Syllabus
+                  </button>
+                )}
               </div>
             </div>
           ))}

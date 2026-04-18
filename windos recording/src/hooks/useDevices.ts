@@ -6,10 +6,10 @@ import { useState, useEffect, useCallback } from 'react';
  * Triggers re-enumeration when devices are plugged in/removed.
  */
 export function useDevices() {
-  const [cameras,       setCameras]       = useState([]);
-  const [microphones,   setMicrophones]   = useState([]);
-  const [selectedCamera, setSelectedCamera] = useState('');
-  const [selectedMic,    setSelectedMic]   = useState('');
+  const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
+  const [microphones, setMicrophones] = useState<MediaDeviceInfo[]>([]);
+  const [selectedCamera, setSelectedCamera] = useState<string>('');
+  const [selectedMic, setSelectedMic] = useState<string>('');
 
   const enumerate = useCallback(async () => {
     try {
@@ -37,14 +37,21 @@ export function useDevices() {
 
   useEffect(() => {
     enumerate();
-    navigator.mediaDevices?.addEventListener('devicechange', enumerate);
-    return () => navigator.mediaDevices?.removeEventListener('devicechange', enumerate);
+    
+    const nav = navigator.mediaDevices as any;
+    if (nav?.addEventListener) {
+      nav.addEventListener('devicechange', enumerate);
+      return () => nav.removeEventListener('devicechange', enumerate);
+    }
   }, [enumerate]);
 
   return {
-    cameras, microphones,
-    selectedCamera, setSelectedCamera,
-    selectedMic,    setSelectedMic,
+    cameras, 
+    microphones,
+    selectedCamera, 
+    setSelectedCamera,
+    selectedMic,    
+    setSelectedMic,
     enumerate,
   };
 }

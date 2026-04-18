@@ -3,8 +3,61 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import axios from "axios";
 import API from "../../../API";
-import "../../../page/MentorshipForm.css";
 import toast, { Toaster } from "react-hot-toast";
+import { FaUser, FaEnvelope, FaPhone, FaGraduationCap, FaBriefcase, FaBullseye, FaCheckCircle, FaChevronDown, FaArrowRight } from "react-icons/fa";
+
+// Custom Select Component for a more professional look
+const CustomSelect = ({ label, icon, options, name, value, onChange, placeholder, required }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selectedOption = options.find(opt => opt.value === value);
+
+  return (
+    <div className="relative group flex flex-col gap-2" ref={dropdownRef}>
+      <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+        {icon} {label}
+      </label>
+      <div 
+        onClick={() => setIsOpen(!isOpen)}
+        className={`w-full px-4 py-4 bg-gray-50 border ${isOpen ? 'border-[#f15b29] ring-4 ring-[#f15b29]/5' : 'border-gray-100'} rounded-2xl cursor-pointer flex items-center justify-between transition-all hover:bg-white`}
+      >
+        <span className={`text-sm font-medium ${!value ? 'text-gray-400' : 'text-gray-900'}`}>
+          {selectedOption ? selectedOption.label : placeholder}
+        </span>
+        <FaChevronDown className={`text-gray-400 text-xs transition-transform duration-300 ${isOpen ? 'rotate-180 text-[#f15b29]' : ''}`} />
+      </div>
+
+      {isOpen && (
+        <div className="absolute z-[100] top-[calc(100%+8px)] left-0 w-full bg-white border border-gray-100 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+          {options.map((opt) => (
+            <div
+              key={opt.value}
+              onClick={() => {
+                onChange({ target: { name, value: opt.value } });
+                setIsOpen(false);
+              }}
+              className={`px-4 py-3 text-sm cursor-pointer transition-colors flex items-center justify-between ${value === opt.value ? 'bg-orange-50 text-[#f15b29] font-bold' : 'text-gray-600 hover:bg-gray-50'}`}
+            >
+              {opt.label}
+              {value === opt.value && <FaCheckCircle className="text-xs" />}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const ApplyForm = ({ courseValue = "this program" }) => {
   const [loading, setLoading] = useState(false);
@@ -30,78 +83,38 @@ const ApplyForm = ({ courseValue = "this program" }) => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleFormSubmit = async (e) => {
-    setLoading(true);
-    e.preventDefault();
-    const phoneRegex = /^[0-9]{10}$/;
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-
-    if (!emailVerified) {
-      toast.error("Please verify your email before submitting.");
-      setLoading(false);
-      return;
-    }
-
-    if (!phoneRegex.test(formData.number)) {
-      toast.error("Please enter a valid phone number.");
-      setLoading(false);
-      return;
-    }
-
-    if (!emailRegex.test(formData.email)) {
+  const sendOTP = async () => {
+    const trimmedEmail = formData.email.trim();
+    if (!trimmedEmail.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
       toast.error("Please enter a valid email address.");
-      setLoading(false);
       return;
     }
+    setLoading(true);
     try {
-      await axios.post(`${API}/advance/register`, {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.number,
-        currentRole: formData.currentRole,
-        experience: formData.experience,
-        goal: formData.goal,
-        goalOther: formData.goal === "Other" ? formData.goalOther : undefined,
-        reason: formData.reason,
-        domain: formData.domain,
-        domainOther:
-          formData.domain === "Other" ? formData.domainOther : undefined,
-        interestedDomain: courseValue,
-      });
-      toast.success(
-        `You have successfully applied for the ${courseValue}. Our counselor will connect with you shortly.`
-      );
-      FormOff();
+      await axios.post(`${API}/advance-send-otp`, { email: trimmedEmail });
+      toast.success("OTP sent to your email!");
+      setOtpSent(true);
     } catch (error) {
-      toast.error(
-        error.response?.data?.error || "Something went wrong. Please try again."
-      );
+      toast.error("Failed to send OTP. Try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  const sendOTP = async () => {
-    if (!formData.email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/)) {
-      toast.error("Please enter a valid email address.");
+  const verifyOTP = async () => {
+    const trimmedOtp = otp.trim();
+    const trimmedEmail = formData.email.trim();
+    if (!trimmedOtp) {
+      toast.error("Please enter the OTP.");
       return;
     }
-    try {
-      await axios.post(`${API}/advance-send-otp`, { email: formData.email });
-      toast.success("OTP sent to your email!");
-      setOtpSent(true);
-    } catch (error) {
-      toast.error("Failed to send OTP. Try again.");
-    }
-  };
-
-  const verifyOTP = async () => {
+    setLoading(true);
     try {
       const response = await axios.post(`${API}/advance-verify-otp`, {
-        email: formData.email,
-        otp,
+        email: trimmedEmail,
+        otp: trimmedOtp,
       });
-      if (response.data.success) {
+      if (response.data.success || response.data.token) {
         toast.success("Email verified successfully!");
         setEmailVerified(true);
         setOtp("");
@@ -111,25 +124,40 @@ const ApplyForm = ({ courseValue = "this program" }) => {
       }
     } catch (error) {
       toast.error("Verification failed or Invalid OTP.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const FormOff = () => {
-    setFormData({
-      name: "",
-      email: "",
-      number: "",
-      currentRole: "",
-      experience: "",
-      goal: "",
-      goalOther: "",
-      reason: "",
-      domain: "",
-      domainOther: "",
-    });
-    setOtpSent(false);
-    setOtp("");
-    setEmailVerified(false);
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    if (!emailVerified) {
+      toast.error("Please verify your email before submitting.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      await axios.post(`${API}/advance/register`, {
+        ...formData,
+        phone: formData.number,
+        domain: formData.domain === "Other" ? formData.domainOther : formData.domain,
+        goal: formData.goal === "Other" ? formData.goalOther : formData.goal,
+        interestedDomain: courseValue,
+      });
+      toast.success(`Successfully applied! Our counselor will connect with you shortly.`);
+      setFormData({
+        name: "", email: "", number: "", currentRole: "", experience: "",
+        goal: "", goalOther: "", reason: "", domain: "", domainOther: ""
+      });
+      setEmailVerified(false);
+    } catch (error) {
+      toast.error(error.response?.data?.error || "Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -137,245 +165,219 @@ const ApplyForm = ({ courseValue = "this program" }) => {
   }, []);
 
   return (
-    <div>
+    <div className="w-full max-w-4xl mx-auto px-4 py-16" data-aos="fade-up">
       <Toaster position="top-center" reverseOrder={false} />
-      <div className="w-full">
-        <div className="shared-form-shell !w-full !max-w-none">
-          <div className="shared-form-header">
-            <button
-              type="button"
-              className="shared-form-close opacity-0 pointer-events-none"
-              aria-hidden="true"
-            >
-              <i className="fa fa-times"></i>
-            </button>
-            <h2 className="text-center">Apply for {courseValue}</h2>
-            <p className="text-center mx-auto" style={{ textAlign: "center", margin: "8px auto 0", display: "block", width: "100%" }}>
-              Share your details and verify your email once. We will connect
-              you with the right counselor for the next step.
-            </p>
-          </div>
+      
+      <div className="bg-white rounded-[40px] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-gray-100 overflow-hidden">
+        {/* Form Header */}
+        <div className="bg-[#050d2f] p-10 md:p-12 text-center relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl opacity-50" />
+          <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-4 relative z-10">
+            Apply for <span className="text-[#f15b29]">{courseValue}</span>
+          </h2>
+          <p className="text-gray-400 max-w-xl mx-auto text-sm md:text-base leading-relaxed relative z-10">
+            Complete your application to gain access to world-class mentorship and industry-leading program resources.
+          </p>
+        </div>
 
-          <div className="shared-form-body">
-            <form onSubmit={handleFormSubmit} className="shared-form-grid">
-              <div className="shared-form-field">
+        {/* Form Content */}
+        <div className="p-8 md:p-12">
+          <form onSubmit={handleFormSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            {/* Full Name */}
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Full Name</label>
+              <div className="relative group">
+                <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#f15b29] transition-colors" />
                 <input
                   type="text"
-                  id="name"
                   name="name"
-                  placeholder="Enter your name"
+                  placeholder="e.g. Alex Johnson"
                   value={formData.name}
                   onChange={handleInputChange}
                   required
+                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:border-[#f15b29] outline-none transition-all font-medium text-gray-900"
                 />
               </div>
+            </div>
 
-              <div className="shared-form-field">
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  placeholder="Enter your email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  disabled={emailVerified}
-                  required
-                />
-              </div>
-
-              {!emailVerified ? (
-                !otpSent ? (
-                  <div className="shared-form-field">
-                    <button
-                      type="button"
-                      onClick={sendOTP}
-                      className="shared-form-verify"
-                    >
-                      Verify Email
-                    </button>
-                  </div>
-                ) : (
-                  <div className="shared-form-field">
-                    <div className="shared-form-otp">
-                      <input
-                        type="text"
-                        value={otp}
-                        onChange={(e) => setOtp(e.target.value)}
-                        placeholder="Enter OTP"
-                      />
-                      <button
-                        type="button"
-                        onClick={verifyOTP}
-                        className="shared-form-submit !w-auto !px-5 !min-h-[48px] !bg-emerald-600 !shadow-none"
-                      >
-                        Submit OTP
-                      </button>
-                    </div>
-                  </div>
-                )
-              ) : (
-                <div className="shared-form-field">
-                  <div className="shared-form-status">
-                    Email verified successfully
-                  </div>
-                </div>
-              )}
-
-              <div className="shared-form-field">
+            {/* Phone Number */}
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Phone Number</label>
+              <div className="relative group">
+                <FaPhone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#f15b29] transition-colors" />
                 <input
                   type="text"
-                  id="number"
                   name="number"
-                  placeholder="Enter your phone number"
+                  placeholder="10-digit number"
                   value={formData.number}
                   onChange={handleInputChange}
                   required
+                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:border-[#f15b29] outline-none transition-all font-medium text-gray-900"
                 />
               </div>
+            </div>
 
-              <div className="shared-form-field">
-                <select
-                  id="currentRole"
-                  name="currentRole"
-                  value={formData.currentRole}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option disabled value="">
-                    What do you currently do?
-                  </option>
-                  <option value="Founder">Founder</option>
-                  <option value="Student">Student</option>
-                  <option value="Working Professional">Working Professional</option>
-                  <option value="Self Employed">Self Employed</option>
-                </select>
-              </div>
-
-              <div className="shared-form-field">
-                <select
-                  id="experience"
-                  name="experience"
-                  value={formData.experience}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option disabled value="">
-                    Select Experience
-                  </option>
-                  <option value="0 year">0 year (Fresher)</option>
-                  <option value="1-2 years">1-2 years</option>
-                  <option value="3-5 years">3-5 years</option>
-                  <option value="5+ years">5+ years</option>
-                </select>
-              </div>
-
-              <div className="shared-form-field">
-                <select
-                  id="goal"
-                  name="goal"
-                  value={formData.goal}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option disabled value="">
-                    Goal of taking this program
-                  </option>
-                  <option value="Career Transition">Career Transition</option>
-                  <option value="Kickstart Career">Kickstart Career</option>
-                  <option value="Upskilling">Upskilling</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-
-              {formData.goal === "Other" && (
-                <div className="shared-form-field">
+            {/* Email & OTP Section */}
+            <div className="md:col-span-2 flex flex-col gap-2">
+              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Work/Personal Email</label>
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="relative flex-1 group">
+                  <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#f15b29] transition-colors" />
                   <input
-                    type="text"
-                    name="goalOther"
-                    value={formData.goalOther}
+                    type="email"
+                    name="email"
+                    placeholder="email@example.com"
+                    value={formData.email}
                     onChange={handleInputChange}
-                    placeholder="Please specify your goal"
+                    disabled={emailVerified}
                     required
+                    className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:border-[#f15b29] outline-none transition-all font-medium text-gray-900 disabled:opacity-50"
                   />
                 </div>
+                
+                {!emailVerified && !otpSent && (
+                  <button
+                    type="button"
+                    onClick={sendOTP}
+                    className="bg-[#050d2f] text-white px-8 py-4 rounded-2xl font-bold hover:bg-black transition-all shadow-lg active:scale-95 disabled:opacity-50 whitespace-nowrap"
+                    disabled={loading}
+                  >
+                    Verify Email
+                  </button>
+                )}
+                
+                {emailVerified && (
+                  <div className="flex items-center gap-2 px-6 py-4 bg-emerald-50 text-emerald-600 rounded-2xl font-bold text-sm">
+                    <FaCheckCircle /> Verified
+                  </div>
+                )}
+              </div>
+
+              {otpSent && !emailVerified && (
+                <div className="mt-4 p-6 bg-orange-50 rounded-3xl border border-orange-100 flex flex-col md:flex-row gap-4 animate-in slide-in-from-top-4 duration-300">
+                  <input
+                    type="text"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    placeholder="Enter 6-digit OTP"
+                    className="flex-1 px-6 py-4 rounded-2xl border-none outline-none font-bold text-center tracking-[0.5em] text-lg"
+                  />
+                  <button
+                    type="button"
+                    onClick={verifyOTP}
+                    className="bg-[#f15b29] text-white px-8 py-4 rounded-2xl font-bold hover:bg-[#d64a1d] transition-all shadow-lg shadow-orange-500/20 active:scale-95 whitespace-nowrap"
+                  >
+                    Confirm OTP
+                  </button>
+                </div>
               )}
+            </div>
 
-              <div className="shared-form-field">
-                <select
-                  id="reason"
-                  name="reason"
-                  value={formData.reason}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option disabled value="">
-                    Reason to take this program
-                  </option>
-                  <option value="I Want to Know More About the Program">
-                    I Want to Know More About the Program
-                  </option>
-                  <option value="I've Reviewed the Program – Need Career Guidance">
-                    I've Reviewed the Program - Need Career Guidance
-                  </option>
-                  <option value="I'm Ready to Enroll">I'm Ready to Enroll</option>
-                  <option value="I'm Already Enrolled – Need Support">
-                    I'm Already Enrolled - Need Support
-                  </option>
-                </select>
-              </div>
+            {/* Select Fields */}
+            <CustomSelect
+              label="Current Status"
+              icon={<FaGraduationCap />}
+              name="currentRole"
+              value={formData.currentRole}
+              onChange={handleInputChange}
+              placeholder="What's your role?"
+              options={[
+                { value: "Student", label: "Student" },
+                { value: "Working Professional", label: "Working Professional" },
+                { value: "Self Employed", label: "Self Employed" }
+              ]}
+            />
 
-              <div className="shared-form-field">
-                <select
-                  id="domain"
-                  name="domain"
-                  value={formData.domain}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option disabled value="">
-                    Domain currently working in
-                  </option>
-                  <option value="Digital Marketing/Performance marketing">
-                    Digital Marketing/Performance Marketing
-                  </option>
-                  <option value="Marketing/Sales">Marketing/Sales</option>
-                  <option value="Management/Operations">Management/Operations</option>
-                  <option value="IT/Tech/Product">IT/Tech/Product</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
+            <CustomSelect
+              label="Experience Level"
+              icon={<FaBriefcase />}
+              name="experience"
+              value={formData.experience}
+              onChange={handleInputChange}
+              placeholder="Years of exp."
+              options={[
+                { value: "Fresher", label: "0 (Fresher)" },
+                { value: "1-2 years", label: "1-2 Years" },
+                { value: "3-5 years", label: "3-5 Years" },
+                { value: "5+ years", label: "5+ Years" }
+              ]}
+            />
 
-              {formData.domain === "Other" && (
-                <div className="shared-form-field">
+            <CustomSelect
+              label="Current Domain"
+              icon={<FaBullseye />}
+              name="domain"
+              value={formData.domain}
+              onChange={handleInputChange}
+              placeholder="Domain working in"
+              options={[
+                { value: "Digital Marketing", label: "Digital Marketing" },
+                { value: "Marketing/Sales", label: "Marketing/Sales" },
+                { value: "Operations", label: "Management/Operations" },
+                { value: "Tech", label: "IT/Tech/Product" },
+                { value: "Other", label: "Other" }
+              ]}
+            />
+
+            <CustomSelect
+              label="Career Goal"
+              icon={<FaArrowRight />}
+              name="goal"
+              value={formData.goal}
+              onChange={handleInputChange}
+              placeholder="Primary motivation"
+              options={[
+                { value: "Career Transition", label: "Career Transition" },
+                { value: "Upskilling", label: "Upskilling" },
+                { value: "Kickstart Career", label: "Kickstart Career" },
+                { value: "Other", label: "Other" }
+              ]}
+            />
+
+            {/* Conditional "Other" inputs */}
+            {(formData.domain === "Other" || formData.goal === "Other") && (
+              <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in duration-500">
+                {formData.domain === "Other" && (
                   <input
                     type="text"
                     name="domainOther"
+                    placeholder="Specify your domain"
                     value={formData.domainOther}
                     onChange={handleInputChange}
-                    placeholder="Please specify your domain"
+                    className="w-full px-6 py-4 bg-white border border-[#f15b29]/30 rounded-2xl focus:border-[#f15b29] outline-none font-medium"
                     required
                   />
-                </div>
-              )}
-
-              <div className="shared-form-actions">
-                <button
-                  type="submit"
-                  disabled={loading || !emailVerified}
-                  className="shared-form-primary disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {loading ? (
-                    <>
-                      <div className="shared-form-loader"></div>
-                      Loading...
-                    </>
-                  ) : (
-                    "Submit Application"
-                  )}
-                </button>
+                )}
+                {formData.goal === "Other" && (
+                  <input
+                    type="text"
+                    name="goalOther"
+                    placeholder="Specify your goal"
+                    value={formData.goalOther}
+                    onChange={handleInputChange}
+                    className="w-full px-6 py-4 bg-white border border-[#f15b29]/30 rounded-2xl focus:border-[#f15b29] outline-none font-medium"
+                    required
+                  />
+                )}
               </div>
-            </form>
-          </div>
+            )}
+
+            {/* Submit Button */}
+            <div className="md:col-span-2 pt-6">
+              <button
+                type="submit"
+                disabled={loading || !emailVerified}
+                className="w-full py-6 bg-[#f15b29] text-white font-black text-lg rounded-3xl hover:bg-[#d64a1d] transition-all shadow-[0_20px_40px_rgba(241,91,41,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group flex items-center justify-center gap-3 uppercase tracking-widest"
+              >
+                {loading ? "Processing..." : "Submit My Application"}
+                <FaArrowRight className="group-hover:translate-x-2 transition-transform" />
+              </button>
+              <p className="text-center text-xs text-gray-400 mt-6 font-medium">
+                By clicking submit, you agree to our Terms of Service and Privacy Policy.
+              </p>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -383,3 +385,5 @@ const ApplyForm = ({ courseValue = "this program" }) => {
 };
 
 export default ApplyForm;
+
+

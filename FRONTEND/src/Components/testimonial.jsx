@@ -83,6 +83,13 @@ const Testimonial = () => {
         breakpoint: 760,
         settings: {
           slidesToShow: 1,
+          slidesToScroll: 1,
+          autoplaySpeed: 3000,
+          speed: 800,
+          cssEase: 'ease-in-out',
+          centerMode: false,
+          variableWidth: false,
+          adaptiveHeight: true
         },
       },
     ],

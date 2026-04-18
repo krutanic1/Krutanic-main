@@ -14,7 +14,7 @@ import ImageSlider from "./Components/ImageSlider";
 const heroStats = [
   { label: "Placement Rate", value: "93%" },
   { label: "Hiring Partners", value: "450+" },
-  { label: "Batch Starting", value: "May 1, 2026" },
+  { label: "Batch Starting", value: "10 May 2026" },
 ];
 
 const curriculum = [

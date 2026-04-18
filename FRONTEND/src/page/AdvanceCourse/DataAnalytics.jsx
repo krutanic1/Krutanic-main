@@ -14,7 +14,7 @@ import ImageSlider from "./Components/ImageSlider";
 const heroStats = [
   { label: "Duration", value: "24 Weeks" },
   { label: "Program Rating", value: "4.9/5" },
-  { label: "Batch Starting", value: "May 1, 2026" },
+  { label: "Batch Starting", value: "1 May 2026" },
 ];
 
 const curriculum = [

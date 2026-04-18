@@ -457,7 +457,7 @@ const AutomationTesting = () => {
   const today = new Date();
   const currentMonth = today.getMonth();
   const currentDay = today.getDate();
-  const displayDate = "May 1, 2026";
+  const displayDate = "Upcoming";
   // const randomNumber = Math.floor(Math.random() * 6) + 20;
 
   return (
@@ -756,8 +756,8 @@ const AutomationTesting = () => {
             </div>
             <div className="flex flex-col lg:flex-row items-center justify-center gap-3">
               <button
-                className="bg-[#f15b29] hover:bg-[#f15b29] text-white font-semibold py-2 px-6 rounded flex items-center gap-2"
-                onClick={handleBrochureClick}
+                disabled
+                className="bg-gray-400 text-white font-semibold py-2 px-6 rounded flex items-center gap-2 cursor-not-allowed"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

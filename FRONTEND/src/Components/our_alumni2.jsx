@@ -2,6 +2,8 @@ import React from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+
+// Importing all company logos
 import c1 from "../assets/company logo/1.png";
 import c2 from "../assets/company logo/2.png";
 import c3 from "../assets/company logo/3.png";
@@ -31,148 +33,143 @@ import c26 from "../assets/company logo/26.png";
 import c27 from "../assets/company logo/27.png";
 import c28 from "../assets/company logo/28.png";
 
+/**
+ * ClientsCarousel Component
+ * Renders a smooth, continuous linear marquee of company logos.
+ */
 const ClientsCarousel = () => {
-  const settings = {
+  // Common settings for the continuous marquee effect
+  const baseMarqueeSettings = {
     infinite: true,
     autoplay: true,
     autoplaySpeed: 0,
-    slidesToShow: 5,
-    slidesToScroll: 1,
     cssEase: "linear",
-    speed: 4000,
+    speed: 6000, // Duration of the animation loop
     arrows: false,
-    responsive: [
-      { breakpoint: 1200, settings: { slidesToShow: 5 } },
-      { breakpoint: 1024, settings: { slidesToShow: 4 } },
-      { breakpoint: 768, settings: { slidesToShow: 3 } },
-      { breakpoint: 480, settings: { slidesToShow: 2 } }
-    ]
+    dots: false,
+    pauseOnHover: false,
+    pauseOnFocus: false,
+    draggable: true,
+    slidesToScroll: 1,
+    swipeToSlide: true,
+    touchMove: true,
   };
 
-  const settings1 = {
-    infinite: true,
-    autoplay: true,
-    autoplaySpeed: 0,
+  // Mobile-specific overrides to slow down and smooth the movement
+  const responsiveSettings = [
+    {
+      breakpoint: 1024,
+      settings: {
+        slidesToShow: 4,
+        speed: 8000,
+      }
+    },
+    {
+      breakpoint: 768,
+      settings: {
+        slidesToShow: 3,
+        speed: 10000, // Slower on mobile for premium feel
+      }
+    },
+    {
+      breakpoint: 480,
+      settings: {
+        slidesToShow: 2,
+        speed: 10000, // Extra-slow loop on small screens
+      }
+    }
+  ];
+
+  // Configuration for the first row (Left to Right)
+  const settingsRow1 = {
+    ...baseMarqueeSettings,
     slidesToShow: 5,
-    slidesToScroll: 1,
-    cssEase: "linear",
-    dots: false,
-    speed: 4000,
-    arrows: false,
-    rtl: true,
-    responsive: [
-      { breakpoint: 1200, settings: { slidesToShow: 5 } },
-      { breakpoint: 1024, settings: { slidesToShow: 4 } },
-      { breakpoint: 768, settings: { slidesToShow: 3 } },
-      { breakpoint: 480, settings: { slidesToShow: 2 } }
-    ]
+    responsive: responsiveSettings,
   };
+
+  // Configuration for the second row (Right to Left)
+  const settingsRow2 = {
+    ...baseMarqueeSettings,
+    slidesToShow: 5,
+    rtl: true,
+    responsive: responsiveSettings,
+  };
+
+  // Logo Arrays for the two rows
+  const row1Logos = [c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14];
+  const row2Logos = [c15, c16, c17, c18, c19, c20, c21, c22, c23, c24, c25, c26, c27, c28];
 
   return (
     <div className="workatslider">
       <style>{`
-        .workatslider .client-img {
-          max-width: 400px !important;
-          max-height: 150px !important;
+        .workatslider {
           width: 100%;
+          overflow: hidden;
+          padding: 20px 0;
+        }
+        
+        /* Logo Containers */
+        .workatslider .slick-slide > div {
+          display: flex !important;
+          align-items: center;
+          justify-content: center;
+          height: 100px; /* Base container height for alignment */
+          padding: 0 1.5rem;
+        }
+
+        /* Branding Logos */
+        .workatslider .client-img {
+          max-width: 170px;
+          max-height: 50px;
+          width: auto;
           height: auto;
           object-fit: contain !important;
-          margin: 0 auto !important;
+          transition: transform 0.3s ease;
+          display: block;
+          margin: 0 auto;
         }
-        .workatslider .slick-slide > div {
-          padding: 0 2.5rem;
+
+        /* Desktop Hover Interaction */
+        .workatslider .client-img:hover {
+          transform: scale(1.1);
+        }
+
+        /* Responsive Branding Adjustments */
+        @media (max-width: 768px) {
+          .workatslider .slick-slide > div {
+            padding: 0 1rem;
+            height: 90px;
+          }
+          .workatslider .client-img {
+            max-width: 140px;
+            max-height: 55px; /* Slightly larger on mobile as requested */
+          }
+        }
+        
+        .workatslider .row-divider {
+          margin-top: 30px;
         }
       `}</style>
-      <div className="clients">
-        <Slider {...settings}>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c1} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c2} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c3} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c4} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c5} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c6} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c7} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c8} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c9} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c10} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c11} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c12} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c13} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c14} />
-          </div>
+
+      {/* Row 1: Left to Right Marquee */}
+      <div className="clients-row">
+        <Slider {...settingsRow1}>
+          {row1Logos.map((logo, index) => (
+            <div key={`row1-${index}`} className="logo-slide">
+              <img src={logo} alt={`Brand Logo ${index + 1}`} className="client-img" />
+            </div>
+          ))}
         </Slider>
       </div>
-      <div className="clients" style={{ marginTop: '40px' }}>
-        <Slider {...settings1}>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c15} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c16} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c17} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c18} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c19} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c20} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c21} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c22} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c23} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c24} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c25} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c26} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c27} />
-          </div>
-          <div className="box">
-            <img alt="client logo" className="client-img" src={c28} />
-          </div>
+
+      {/* Row 2: Right to Left Marquee */}
+      <div className="clients-row row-divider">
+        <Slider {...settingsRow2}>
+          {row2Logos.map((logo, index) => (
+            <div key={`row2-${index}`} className="logo-slide">
+              <img src={logo} alt={`Brand Logo ${index + 15}`} className="client-img" />
+            </div>
+          ))}
         </Slider>
       </div>
     </div>

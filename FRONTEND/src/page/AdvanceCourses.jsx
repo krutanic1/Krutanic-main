@@ -1,20 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import ClientsCarousel from "../Components/our_alumni";
+import BannerSlider from "../Components/BannerSlider";
 import AdvancedApplyPopup from "../Components/AdvancedApplyPopup";
 import birendraImg from "../assets/alumini/birendra.jpg";
 import rajaImg from "../assets/alumini/raja.jpg";
 import mithunImg from "../assets/alumini/mithun.jpg";
 import advanceHeroImg from "../../krutanic/images/advance.jpg";
+import SuccessPath from "../Components/SuccessPath";
+import ProgramGrid from "../Components/ProgramGrid";
 import { FaCheckCircle, FaStar, FaAward, FaBuilding } from "react-icons/fa";
-import { 
+import {
   FaQuoteLeft,
-  FaNetworkWired, 
-  FaShieldAlt, 
-  FaSearchDollar, 
-  FaRocket, 
-  FaChartBar, 
-  FaGlobe, 
+  FaNetworkWired,
+  FaShieldAlt,
+  FaSearchDollar,
+  FaRocket,
+  FaChartBar,
+  FaGlobe,
   FaArrowRight,
   FaLaptopCode,
   FaBullhorn,
@@ -41,14 +44,16 @@ const columnsData = [
         icon: <FaNetworkWired />,
         title: "Data Science Advanced Program",
         desc: "Master Machine Learning, AI ethics, and large-scale neural architectures.",
-        link: "/DataScience"
+        link: "/DataScience",
+        batch: "Upcoming"
       },
       {
         type: "icon",
         icon: <FaChartBar />,
         title: "Data Analytics Advanced Program",
         desc: "Master Excel, SQL, Python, and Power BI to drive business decisions with data.",
-        link: "/DataAnalytics"
+        link: "/DataAnalytics",
+        batch: "1 May 2026"
       }
     ]
   },
@@ -62,14 +67,16 @@ const columnsData = [
         icon: <FaSearchDollar />,
         title: "Digital Marketing Advanced Program",
         desc: "Multi-channel strategies, consumer psychology, and scalable digital campaigns.",
-        link: "/DigitalMarket"
+        link: "/DigitalMarket",
+        batch: "10 May 2026"
       },
       {
         type: "icon",
         icon: <FaBrain />,
         title: "Prompt Engineering with GenAI Advanced Program",
         desc: "Master the art of communicating with and optimizing Large Language Models.",
-        link: "/PromptEngineering"
+        link: "/PromptEngineering",
+        batch: "Upcoming"
       }
     ]
   },
@@ -83,14 +90,16 @@ const columnsData = [
         icon: <FaRocket />,
         title: "Product Management Advanced Program",
         desc: "Leading product lifecycle, agile methodologies, and cross-functional teams.",
-        link: "/ProductManagement"
+        link: "/ProductManagement",
+        batch: "Upcoming"
       },
       {
         type: "icon",
         icon: <FaLaptopCode />,
         title: "MERN Stack Development Advanced Program",
         desc: "Full-stack web development utilizing MongoDB, Express, React, and Node.js.",
-        link: "/MernStack"
+        link: "/MernStack",
+        batch: "Upcoming"
       }
     ]
   }
@@ -157,13 +166,15 @@ const capstoneTracks = [
 
 const AdvanceCourses = () => {
   const [showApplyForm, setShowApplyForm] = useState(false);
-  
+
   return (
     <div className="min-h-screen bg-[#fafafa] font-sans selection:bg-orange-200">
+      <BannerSlider />
+
       <main className="max-w-[1240px] mx-auto px-6 py-16 lg:px-8">
-        
+
         {/* Header Section */}
-        <div className="flex flex-col lg:flex-row justify-between items-start gap-12 mb-20 lg:mb-24 mt-8">
+        <div className="flex flex-col lg:flex-row justify-between items-start gap-12 mb-10 mt-8">
           <div className="max-w-2xl">
             <span className="inline-block bg-[#eff2ff] text-[#3453d1] font-bold text-[10px] uppercase tracking-widest py-2 px-4 rounded-full mb-6">
               Program Catalog
@@ -200,7 +211,7 @@ const AdvanceCourses = () => {
                 <span className="text-[11px] font-bold uppercase tracking-wider text-[#ff6a14]">Certification</span>
               </div>
             </div>
-            
+
             <div className="mt-12">
               <button
                 onClick={() => setShowApplyForm(true)}
@@ -210,8 +221,8 @@ const AdvanceCourses = () => {
               </button>
             </div>
           </div>
-          
-          <div className="relative mt-4 w-full flex-grow lg:mt-12 flex justify-center">
+
+          <div className="relative mt-4 w-full flex-grow lg:mt-12 flex flex-col items-center">
             <div className="overflow-hidden rounded-[30px] border border-[#ececec] bg-white p-2 shadow-[0_20px_45px_rgba(15,23,42,0.12)] w-full">
               <img
                 src={advanceHeroImg}
@@ -223,11 +234,6 @@ const AdvanceCourses = () => {
             <div className="absolute left-0 top-8 -translate-x-1/2 rounded-2xl border border-white/70 bg-white/90 px-5 py-4 shadow-lg backdrop-blur">
               <p className="text-3xl font-extrabold text-[#f15b29] leading-none">6</p>
               <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-[#3453d1]">Programs</p>
-            </div>
-
-            <div className="absolute bottom-8 right-0 translate-x-1/2 rounded-2xl border border-white/70 bg-white/90 px-5 py-4 shadow-lg backdrop-blur">
-              <p className="text-3xl font-extrabold text-[#f15b29] leading-none">3</p>
-              <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-[#666]">Categories</p>
             </div>
 
             <div className="hidden lg:flex absolute -right-20 top-1/2 -translate-y-1/2 flex-col gap-4">
@@ -250,10 +256,14 @@ const AdvanceCourses = () => {
                 </div>
               </div>
             </div>
+            
+            {/* Success Path Section - Visible only on Desktop to keep mobile layout clean */}
+            <div className="hidden lg:flex mt-28 w-full justify-center">
+              <SuccessPath />
+            </div>
           </div>
         </div>
 
-        {/* Lead Generation Banner */}
         <div className="my-20 bg-gradient-to-r from-orange-500 to-orange-600 rounded-[40px] p-8 md:p-16 shadow-lg">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">
@@ -264,9 +274,9 @@ const AdvanceCourses = () => {
             </p>
             <button
               onClick={() => setShowApplyForm(true)}
-              className="inline-block bg-white text-orange-600 font-bold py-3 px-8 rounded-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl"
+              className="bg-white text-orange-600 font-bold py-4 px-12 rounded-xl hover:bg-orange-50 transition-all duration-300 shadow-xl text-lg uppercase tracking-wider"
             >
-              Request Callback
+              Start Application
             </button>
           </div>
         </div>
@@ -274,64 +284,17 @@ const AdvanceCourses = () => {
         {/* Apply Form Modal */}
         {showApplyForm && <AdvancedApplyPopup onClose={() => setShowApplyForm(false)} />}
 
-        {/* Grid Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {columnsData.map((col, idx) => (
-            <div key={idx} className="flex flex-col gap-8">
-              {/* Column Header */}
-              <div className="flex items-center justify-between border-b pb-4 mb-2">
-                <div className="flex items-center gap-3 font-bold text-xl text-[#111]">
-                  {col.icon} {col.category}
-                </div>
-                <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">{col.count}</span>
-              </div>
-              
-              {/* Cards */}
-              {col.cards.map((card, cardIdx) => (
-                <div key={cardIdx} className="bg-white rounded-[24px] shadow-[0_2px_15px_-3px_rgba(0,0,0,0.02),0_10px_20px_-2px_rgba(0,0,0,0.01)] hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                  {card.type === "image" ? (
-                    <>
-                      <div className="p-3 pb-0">
-                        <img src={card.imageUrl} alt={card.title} className="w-full h-[180px] object-cover rounded-[16px]" />
-                      </div>
-                      <div className="p-8 pt-6">
-                        <h3 className="text-lg font-bold text-[#111] mb-2">{card.title}</h3>
-                        <p className="text-sm text-gray-500 mb-8 leading-relaxed">
-                          {card.desc}
-                        </p>
-                        <Link to={card.link} className="inline-flex items-center gap-2 text-[#b03022] font-bold text-[10px] uppercase tracking-widest hover:text-[#e45a16] transition-colors">
-                          View Program <FaArrowRight />
-                        </Link>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="p-8">
-                      <div className="text-[#d84814] text-3xl mb-8">
-                        {card.icon}
-                      </div>
-                      <h3 className="text-lg font-bold text-[#111] mb-2">{card.title}</h3>
-                      <p className="text-sm text-gray-500 mb-8 leading-relaxed">
-                        {card.desc}
-                      </p>
-                      <Link to={card.link} className="inline-flex items-center gap-2 text-[#b03022] font-bold text-[10px] uppercase tracking-widest hover:text-[#e45a16] transition-colors">
-                        View Program <FaArrowRight />
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
+        {/* Grid Section - Redesigned for Professional Equal-Height SaaS Look */}
+        <ProgramGrid columnsData={columnsData} />
 
         {/* CTA Banner Section */}
         <div className="mt-28 relative overflow-hidden bg-gradient-to-r from-[#ce390f] via-[#d64111] to-[#ee6916] rounded-[40px] p-12 lg:p-20 text-white shadow-xl shadow-orange-500/10">
           <div className="absolute right-0 bottom-0 opacity-10 transform translate-x-12 translate-y-16">
             <FaGraduationCap size={450} color="#fff" />
           </div>
-          
+
           <div className="relative z-10 max-w-2xl">
-            <h2 className="text-4xl lg:text-[44px] font-extrabold mb-6 leading-tight tracking-tight">Can't find your <br/> perfect program?</h2>
+            <h2 className="text-4xl lg:text-[44px] font-extrabold mb-6 leading-tight tracking-tight">Can't find your <br /> perfect program?</h2>
             <p className="text-base lg:text-lg text-white/90 mb-10 max-w-md leading-relaxed font-light">
               Speak with our academic advisors to build a custom learning path that aligns with your professional ambitions.
             </p>
@@ -344,11 +307,11 @@ const AdvanceCourses = () => {
         </div>
 
         {/* Value Proposition Section */}
-        <div className="mt-28 mb-16 px-6 lg:px-12 bg-[#fafbfc] rounded-[40px] py-20 border border-gray-100 shadow-[inset_0_0_80px_rgba(0,0,0,0.01)] relative overflow-hidden text-left" style={{textAlign: "left"}}>
+        <div className="mt-28 mb-16 px-6 lg:px-12 bg-[#fafbfc] rounded-[40px] py-20 border border-gray-100 shadow-[inset_0_0_80px_rgba(0,0,0,0.01)] relative overflow-hidden text-left" style={{ textAlign: "left" }}>
           {/* Subtle bg decorations */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-orange-100 rounded-full blur-[100px] opacity-40 mix-blend-multiply pointer-events-none"></div>
           <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-100 rounded-full blur-[100px] opacity-40 mix-blend-multiply pointer-events-none"></div>
-          
+
           <div className="relative z-10 text-center max-w-2xl mx-auto mb-16">
             <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight">
               Why Choose <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-orange-500">Advanced Training?</span>
@@ -368,7 +331,7 @@ const AdvanceCourses = () => {
                 Connect exclusively with industry veterans. Get direct feedback, career strategy, and exclusive insights to accelerate your vertical growth.
               </p>
             </div>
-            
+
             <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:-translate-y-2 hover:shadow-xl transition-all duration-300 transform md:translate-y-6">
               <div className="w-14 h-14 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center text-2xl mb-6">
                 <FaAward />

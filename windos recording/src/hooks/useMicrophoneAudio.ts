@@ -2,30 +2,24 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 
 /**
  * Manages a full Web Audio API processing chain for microphone input.
- *
- * Chain: getUserMedia → MediaStreamSource → GainNode → BiquadFilter (highpass)
- *        → DynamicsCompressor → AnalyserNode → AudioContext.destination
- *                            └→ MediaStreamAudioDestinationNode (for recording)
- *
- * Returns controls, live level data, and a processedStreamRef for MediaRecorder.
  */
-export function useMicrophoneAudio(deviceId = '') {
+export function useMicrophoneAudio(deviceId: string = '') {
   const [isActive, setIsActive]   = useState(false);
   const [isMuted, setIsMuted]     = useState(false);
   const [volume, setVolume]       = useState(80);   // 0-100
   const [level, setLevel]         = useState(0);    // 0-100  (live RMS)
-  const [error, setError]         = useState(null);
+  const [error, setError]         = useState<string | null>(null);
 
-  // Web Audio refs – kept in refs so they survive re-renders without effect churn
-  const ctxRef      = useRef(null);
-  const sourceRef   = useRef(null);
-  const gainRef     = useRef(null);
-  const filterRef   = useRef(null);
-  const compRef     = useRef(null);
-  const analyserRef    = useRef(null);
-  const streamRef      = useRef(null);
-  const rafRef         = useRef(null);
-  const streamDestRef  = useRef(null); // processed audio for MediaRecorder
+  // Web Audio refs
+  const ctxRef      = useRef<AudioContext | null>(null);
+  const sourceRef   = useRef<MediaStreamAudioSourceNode | null>(null);
+  const gainRef     = useRef<GainNode | null>(null);
+  const filterRef   = useRef<BiquadFilterNode | null>(null);
+  const compRef     = useRef<DynamicsCompressorNode | null>(null);
+  const analyserRef    = useRef<AnalyserNode | null>(null);
+  const streamRef      = useRef<MediaStream | null>(null);
+  const rafRef         = useRef<number | null>(null);
+  const streamDestRef  = useRef<MediaStreamAudioDestinationNode | null>(null);
 
   // ── Build processing chain ─────────────────────────────────────
   const start = useCallback(async () => {
@@ -46,7 +40,6 @@ export function useMicrophoneAudio(deviceId = '') {
       const ctx = new AudioContext();
       ctxRef.current = ctx;
 
-      // Ensure context is not suspended (browser/electron security)
       if (ctx.state === 'suspended') {
         await ctx.resume();
       }
@@ -60,14 +53,14 @@ export function useMicrophoneAudio(deviceId = '') {
       gain.gain.value = volume / 100;
       gainRef.current = gain;
 
-      // 3. BiquadFilter – highpass at 80 Hz removes rumble/low noise
+      // 3. BiquadFilter – highpass at 80 Hz
       const filter = ctx.createBiquadFilter();
       filter.type            = 'highpass';
       filter.frequency.value = 80;
       filter.Q.value         = 0.7;
       filterRef.current = filter;
 
-      // 4. DynamicsCompressor – balances loud/quiet audio
+      // 4. DynamicsCompressor
       const comp = ctx.createDynamicsCompressor();
       comp.threshold.value = -24;
       comp.knee.value      = 30;
@@ -76,13 +69,13 @@ export function useMicrophoneAudio(deviceId = '') {
       comp.release.value   = 0.25;
       compRef.current = comp;
 
-      // 5. AnalyserNode – feeds the live level meter
+      // 5. AnalyserNode
       const analyser = ctx.createAnalyser();
       analyser.fftSize            = 256;
       analyser.smoothingTimeConstant = 0.8;
       analyserRef.current = analyser;
 
-      // 5b. MediaStreamAudioDestinationNode – captures processed audio for recording
+      // 5b. MediaStreamAudioDestinationNode
       const streamDest = ctx.createMediaStreamDestination();
       streamDestRef.current = streamDest;
 
@@ -91,14 +84,11 @@ export function useMicrophoneAudio(deviceId = '') {
       gain.connect(filter);
       filter.connect(comp);
       comp.connect(analyser);
-
-      // Default: DO NOT connect to destination (speakers) to avoid feedback
-      // BUT, connect comp to streamDest for recording
       comp.connect(streamDest);
 
       setIsActive(true);
       startLevelMeter(analyser);
-    } catch (err) {
+    } catch (err: any) {
       setError(
         err.name === 'NotAllowedError'
           ? 'Microphone permission denied.'
@@ -108,11 +98,10 @@ export function useMicrophoneAudio(deviceId = '') {
   }, [volume, deviceId]);
 
   // ── Live level meter via requestAnimationFrame ─────────────────
-  const startLevelMeter = (analyser) => {
+  const startLevelMeter = (analyser: AnalyserNode) => {
     const buf = new Uint8Array(analyser.frequencyBinCount);
     const tick = () => {
       analyser.getByteFrequencyData(buf);
-      // RMS approximation
       const rms = Math.sqrt(buf.reduce((s, v) => s + v * v, 0) / buf.length);
       setLevel(Math.min(100, (rms / 128) * 100));
       rafRef.current = requestAnimationFrame(tick);
@@ -122,13 +111,16 @@ export function useMicrophoneAudio(deviceId = '') {
 
   // ── Stop chain ─────────────────────────────────────────────────
   const stop = useCallback(() => {
-    cancelAnimationFrame(rafRef.current);
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((t) => t.stop());
       streamRef.current = null;
     }
     if (ctxRef.current && ctxRef.current.state !== 'closed') {
-      ctxRef.current.close();
+      ctxRef.current.close().catch(() => {});
       ctxRef.current = null;
     }
     streamDestRef.current = null;
@@ -147,7 +139,7 @@ export function useMicrophoneAudio(deviceId = '') {
     }
   }, [volume]);
 
-  // ── Mute – disconnect/reconnect compressor from destination ───
+  // ── Mute – disconnect/reconnect compressor from analyser ───
   useEffect(() => {
     if (!compRef.current || !analyserRef.current || !ctxRef.current) return;
     if (isMuted) {
@@ -157,7 +149,6 @@ export function useMicrophoneAudio(deviceId = '') {
     }
   }, [isMuted]);
 
-  // Cleanup on unmount
   useEffect(() => () => stop(), [stop]);
 
   return {

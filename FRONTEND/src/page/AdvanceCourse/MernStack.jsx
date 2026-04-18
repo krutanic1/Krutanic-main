@@ -14,7 +14,7 @@ import ImageSlider from "./Components/ImageSlider";
 const heroStats = [
   { label: "Duration", value: "24 Weeks" },
   { label: "Program Rating", value: "4.9/5" },
-  { label: "Batch Starting", value: "May 1, 2026" },
+  { label: "Batch Starting", value: "Upcoming" },
 ];
 
 const curriculum = [
@@ -1060,9 +1060,9 @@ const MernStack = () => {
                 Access the detailed curriculum, project blueprint, and placement preparation plan.
               </p>
             </div>
-            <a href={pdfms} target="_blank" rel="noreferrer" className="ms-btn" style={{ textDecoration: "none" }}>
+            <button disabled className="ms-btn" style={{ opacity: 0.6, cursor: 'not-allowed' }}>
               Download
-            </a>
+            </button>
           </div>
         </section>
       </div>

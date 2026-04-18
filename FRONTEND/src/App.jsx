@@ -1,8 +1,9 @@
-import React, { lazy, useEffect } from "react";
+import React, { lazy, useEffect, useState } from "react";
 import { Routes, Route, BrowserRouter, useLocation, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ReactPixel from 'react-facebook-pixel';
 import Header from "./Components/Header";
+import AdvancedApplyPopup from "./Components/AdvancedApplyPopup";
 import HomePage from "./page/landing";
 import ContactUs from "./page/ContactUs";
 import AboutUs from "./page/AboutUs";
@@ -232,6 +233,38 @@ const App = () => {
 
 const AppContent = () => {
   const location = useLocation();
+  const [showAutoPopup, setShowAutoPopup] = useState(false);
+
+  useEffect(() => {
+    // Pages where auto-popup is allowed (strictly following the user's list)
+    const allowedPaths = ["/", "/advance", "/advancecourses", "/referandearn", "/events", "/masterclass", "/alumni"];
+    
+    // Normalize current path: lowercase and remove trailing slash (except for root)
+    let currentPath = location.pathname.toLowerCase();
+    if (currentPath.endsWith("/") && currentPath.length > 1) {
+      currentPath = currentPath.slice(0, -1);
+    }
+
+    // Check if the current page is exactly in the allowlist
+    const isAllowed = allowedPaths.includes(currentPath);
+
+    if (isAllowed) {
+       // Check if already shown for this specific page in this session
+       const hasShown = sessionStorage.getItem(`advance_popup_shown_${currentPath}`);
+       
+       if (!hasShown) {
+         const timer = setTimeout(() => {
+           setShowAutoPopup(true);
+           sessionStorage.setItem(`advance_popup_shown_${currentPath}`, "true");
+         }, 4000); // 4 seconds
+         
+         return () => clearTimeout(timer);
+       }
+    } else {
+      // If we move to a page that isn't allowed, ensure the auto-popup is closed
+      setShowAutoPopup(false);
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     ReactPixel.pageView();
@@ -777,6 +810,7 @@ const AppContent = () => {
         </>
       )}
 
+      {showAutoPopup && <AdvancedApplyPopup onClose={() => setShowAutoPopup(false)} />}
     </div>
   );
 };

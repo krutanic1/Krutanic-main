@@ -200,7 +200,7 @@ exports.getAttendanceOverride = async (req, res) => {
 /**
  * @desc Set global attendance override status
  * @route POST /api/atd/admin/attendance-override
- * @access Private/Admin
+ * @access Private/Admin 
  */
 exports.toggleAttendanceOverride = async (req, res) => {
   try {

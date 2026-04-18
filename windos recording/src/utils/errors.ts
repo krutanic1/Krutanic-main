@@ -1,5 +1,6 @@
 /**
- * errors.js — Centralized, user-friendly error message mapping
+ * errors.ts — Centralized, user-friendly error message mapping
+ * Part of the Krutanic Pro Migration.
  */
 
 export const ERR = {
@@ -20,20 +21,25 @@ export const ERR = {
   FFMPEG_FAIL:         'Export failed. FFmpeg encountered an error — check console for details.',
   DISK_FULL:           'Not enough disk space to save the recording.',
   NO_SCREEN_STREAM:    'No screen stream available. Start recording first.',
-};
+} as const;
+
+export type ErrorKey = keyof typeof ERR;
 
 /**
  * Classify a browser/Web API error into a friendly message.
  */
-export function classifyError(err) {
+export function classifyError(err: any): string {
   if (!err) return 'An unknown error occurred.';
-  switch (err.name) {
+  const name = typeof err === 'string' ? err : err.name;
+  const message = typeof err === 'string' ? err : err.message;
+
+  switch (name) {
     case 'NotAllowedError':       return ERR.PERMISSION_DENIED;
     case 'NotFoundError':         return ERR.DEVICE_NOT_FOUND;
     case 'NotReadableError':      return ERR.DEVICE_IN_USE;
     case 'OverconstrainedError':  return ERR.OVERCONSTRAINED;
     case 'AbortError':            return 'Operation cancelled by the user.';
     case 'SecurityError':         return 'Security policy blocked capture.';
-    default:                      return err.message || 'An unexpected error occurred.';
+    default:                      return message || 'An unexpected error occurred.';
   }
 }

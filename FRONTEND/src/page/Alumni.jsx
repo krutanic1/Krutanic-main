@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet";
 import { useState , useMemo, useEffect } from "react";
-import HomePopup from "../Components/HomePopup";
+import AdvancedApplyPopup from "../Components/AdvancedApplyPopup";
 import axios from "axios";
 import AlumniData from "../Components/alumniData";
 import API from "../API";
@@ -9,21 +9,10 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
+import alumniIndian from "../assets/alumni_indian.png";
+
 const Alumni = () => {
-  const [showPopup, setShowPopup] = useState(false);
-    useEffect(() => {
-      let interval;
-      const timer = setTimeout(() => {
-        setShowPopup(true);
-        interval = setInterval(() => {
-          setShowPopup(true);
-        }, 60000);
-      }, 5000);
-      return () => {
-        clearTimeout(timer);
-        if (interval) clearInterval(interval);
-      };
-    }, []);
+  const [showApplyPopup, setShowApplyPopup] = useState(false);
   const [filters, setFilters] = useState({ post: "", location: "", role: "" });
   const [searchQuery, setSearchQuery] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState({ post: false, location: false, role: false,});
@@ -151,7 +140,6 @@ const Alumni = () => {
 
   return (
     <div className="container m-auto px-[10px] py-[20px]">
-      {showPopup && <HomePopup onClose={() => setShowPopup(false)} />}
       <Helmet>
           <title>Krutanic Alumni | Success Stories from E-Learning Leaders</title>
           <meta name="keywords" content="e-learning alumni, Krutanic graduates, tech careers, coding success, mentorship stories"/>
@@ -297,9 +285,12 @@ const Alumni = () => {
             <p className="text-xs font-bold tracking-[0.2em] text-blue-200 mb-4 uppercase">Bridge the Gap</p>
             <h2 className="text-3xl md:text-4xl font-extrabold leading-tight mb-5 tracking-tight">Elevate Your Career with 1-1 Mentorship</h2>
             <p className="text-blue-100/90 text-sm md:text-base leading-relaxed mb-8">Book a session with us and get insider interview secrets.</p>
-            <button className="bg-white text-[#3B5498] font-bold py-3.5 px-8 rounded-2xl text-sm shadow-[0_4px_20px_rgba(255,255,255,0.2)] hover:scale-105 transition-transform">
-            Book a Session
-           </button>
+            <button 
+              onClick={() => setShowApplyPopup(true)}
+              className="bg-white text-[#3B5498] font-bold py-3.5 px-8 rounded-2xl text-sm shadow-[0_4px_20px_rgba(255,255,255,0.2)] hover:scale-105 transition-transform"
+            >
+              Book a Session
+            </button>
           </div>
         </div>
 
@@ -310,7 +301,7 @@ const Alumni = () => {
           <div className="grid md:grid-cols-2 gap-6">
             <div className="bg-white rounded-[32px] p-6 md:p-8 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100 flex items-center gap-6 hover:shadow-lg transition-shadow bg-gradient-to-br from-white to-gray-50 font-sans cursor-pointer">
               <div className="w-20 h-20 rounded-2xl bg-[#111] overflow-hidden shrink-0 shadow-lg border-2 border-white ring-1 ring-gray-100">
-                <img src="https://i.pravatar.cc/150?img=11" alt="avatar" className="w-full h-full object-cover"/>
+                <img src={alumniIndian} alt="Indian Professional Success Story" className="w-full h-full object-cover"/>
               </div>
               <div>
                 <p className="text-[#3B5498] text-[10px] font-extrabold tracking-widest uppercase mb-1.5 flex items-center gap-1">Transition Story</p>
@@ -340,6 +331,7 @@ const Alumni = () => {
           </div>
         </div>
       </div>
+      {showApplyPopup && <AdvancedApplyPopup onClose={() => setShowApplyPopup(false)} />}
       {selectedAlumni && (
         <div className="fixed inset-0 px-1 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="relative w-full max-w-2xl bg-white rounded-lg p-3 max-h-[80vh] overflow-y-auto scrollbar-hide">

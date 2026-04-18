@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
 import "./MentorshipForm.css";
+import { FaEnvelope, FaUser, FaPhoneAlt, FaGraduationCap, FaBriefcase, FaArrowRight, FaCheckCircle, FaTimes } from "react-icons/fa";
 
 const MentorshipForm = ({ isPopup, onClose }) => {
   const [showForm, setShowForm] = useState(false);
@@ -127,10 +128,8 @@ const MentorshipForm = ({ isPopup, onClose }) => {
 
       {!isPopup && (
         <button
-          // className="submit-btn-premium w-auto px-10"
           onClick={() => setShowForm(true)}
         >
-          
         </button>
       )}
 
@@ -139,10 +138,10 @@ const MentorshipForm = ({ isPopup, onClose }) => {
           <div className="mentorship-modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="mentorship-modal-header">
               <button className="mentorship-header-close" onClick={ClearForm}>
-                Close
+                <FaTimes style={{ marginRight: '8px' }} /> Close
               </button>
               <h2>Apply Now</h2>
-              <p>Elevate your career with expert mentorship</p>
+              <p>Elevate your career with expert 1:1 mentorship from industry leaders</p>
             </div>
 
             <div className="mentorship-form-container">
@@ -199,7 +198,7 @@ const MentorshipForm = ({ isPopup, onClose }) => {
                   )
                 ) : (
                   <div className="shared-form-status mb-3">
-                    ✅ Email Verified
+                    <FaCheckCircle /> Registration Email Verified
                   </div>
                 )}
 
@@ -302,7 +301,9 @@ const MentorshipForm = ({ isPopup, onClose }) => {
                         Submitting...
                       </>
                     ) : (
-                      "Submit Application"
+                      <>
+                        Submit Application <FaArrowRight />
+                      </>
                     )}
                   </button>
 

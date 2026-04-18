@@ -1,37 +1,48 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { ImageSegmenter, FilesetResolver } from '@mediapipe/tasks-vision';
 
+interface WebcamSettings {
+  bgMode: 'blur' | 'remove';
+  brightness: number;
+  contrast: number;
+}
+
 /**
  * useVirtualBackground
  * 
  * Takes a raw webcam MediaStream and applies real-time selfie segmentation.
  * Outputs a processed MediaStream that only contains the human (transparent/black background).
  *
- * @param {MediaStream} rawStream - The source webcam stream
- * @param {boolean} enabled - Whether background removal is active
- * @returns {MediaStream|null} - The processed stream (or raw if disabled)
+ * @param rawStream - The source webcam stream
+ * @param enabled - Whether background removal is active
+ * @param settings - Visual parameters (brightness, contrast, bgMode)
+ * @returns - The processed stream (or raw if disabled)
  */
-export function useVirtualBackground(rawStream, enabled = false, settings = { bgMode: 'blur', brightness: 100, contrast: 100 }) {
-  const [processedStream, setProcessedStream] = useState(null);
+export function useVirtualBackground(
+  rawStream: MediaStream | null, 
+  enabled: boolean = false, 
+  settings: WebcamSettings = { bgMode: 'blur', brightness: 100, contrast: 100 }
+) {
+  const [processedStream, setProcessedStream] = useState<MediaStream | null>(null);
   
   // A stream needs processing if AI background is ON OR filters are applied
   const isProcessingRequired = enabled || settings.brightness !== 100 || settings.contrast !== 100;
 
   // Use a ref for settings to avoid recreating the processing loop on every slider change
-  const settingsRef = useRef(settings);
+  const settingsRef = useRef<WebcamSettings>(settings);
   useEffect(() => {
     settingsRef.current = settings;
   }, [settings]);
 
   // Refs for processing pipeline
-  const segmenterRef = useRef(null);
-  const videoRef = useRef(null);
-  const canvasRef = useRef(null);
-  const requestRef = useRef(null);
-  const outputStreamRef = useRef(null);
-  const tempCanvasRef   = useRef(null); // Used for blurring/compositing
-  const mainCtxRef      = useRef(null);
-  const tempCtxRef      = useRef(null);
+  const segmenterRef = useRef<ImageSegmenter | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const requestRef = useRef<number | null>(null);
+  const outputStreamRef = useRef<MediaStream | null>(null);
+  const tempCanvasRef   = useRef<HTMLCanvasElement | null>(null);
+  const mainCtxRef      = useRef<CanvasRenderingContext2D | null>(null);
+  const tempCtxRef      = useRef<CanvasRenderingContext2D | null>(null);
 
   // Initialize MediaPipe Segmenter
   useEffect(() => {
@@ -65,7 +76,9 @@ export function useVirtualBackground(rawStream, enabled = false, settings = { bg
   // Process frames
   const processFrame = useCallback(() => {
     if (!isProcessingRequired || !videoRef.current || !canvasRef.current) {
-      requestRef.current = requestAnimationFrame(processFrame);
+      if (requestRef.current !== null) {
+        requestRef.current = requestAnimationFrame(processFrame);
+      }
       return;
     }
 
@@ -81,7 +94,7 @@ export function useVirtualBackground(rawStream, enabled = false, settings = { bg
     }
     const ctx = mainCtxRef.current;
     
-    if (video.paused || video.ended || video.readyState < 2) {
+    if (video.paused || video.ended || video.readyState < 2 || !ctx) {
       requestRef.current = requestAnimationFrame(processFrame);
       return;
     }
@@ -120,11 +133,14 @@ export function useVirtualBackground(rawStream, enabled = false, settings = { bg
       tempCtxRef.current = tempCanvas.getContext('2d', { willReadFrequently: true });
     }
     const tctx = tempCtxRef.current;
+    if (!tctx) return;
 
     const startTimeMs = performance.now();
     
     segmenterRef.current.segmentForVideo(video, startTimeMs, (result) => {
-      const mask = result.categoryMask.getAsUint8Array();
+      const maskData = result.categoryMask;
+      if (!maskData) return;
+      const mask = maskData.getAsUint8Array();
 
       // 2. Prepare background based on mode
       if (bgMode === 'blur') {
@@ -161,7 +177,7 @@ export function useVirtualBackground(rawStream, enabled = false, settings = { bg
     });
 
     requestRef.current = requestAnimationFrame(processFrame);
-  }, [enabled, isProcessingRequired]); // settings removed to keep callback stable
+  }, [enabled, isProcessingRequired]);
 
   // Handle stream changes
   useEffect(() => {
@@ -191,32 +207,29 @@ export function useVirtualBackground(rawStream, enabled = false, settings = { bg
       outputStreamRef.current = outStream;
       setProcessedStream(outStream);
     } else {
-      // Update existing video source if rawStream changed but we already have processing hardware
+      // Update existing video source if rawStream changed
       if (videoRef.current.srcObject !== rawStream) {
         videoRef.current.srcObject = rawStream;
       }
     }
 
     // Start loop
-    cancelAnimationFrame(requestRef.current);
+    if (requestRef.current !== null) cancelAnimationFrame(requestRef.current);
     requestRef.current = requestAnimationFrame(processFrame);
-
-    return () => {
-      // Cleanup only if stream or processing requirements truly change
-    };
   }, [rawStream, isProcessingRequired, processFrame]);
 
   // Global cleanup on unmount
   useEffect(() => {
     return () => {
-      cancelAnimationFrame(requestRef.current);
+      if (requestRef.current !== null) {
+        cancelAnimationFrame(requestRef.current);
+      }
       if (videoRef.current) {
         videoRef.current.pause();
         videoRef.current.srcObject = null;
       }
     };
   }, []);
-
 
   return processedStream;
 }

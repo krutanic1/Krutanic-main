@@ -167,7 +167,10 @@
     background: linear-gradient(155deg, #ffffff 0%, #fffaf7 100%);
     box-shadow: 0 14px 34px rgba(129, 54, 20, 0.1);
     padding: 30px 28px;
-    text-align: left;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   #landingpage .aboutus.aboutus-vibrant .about1stdiv .text h1 {
@@ -202,7 +205,8 @@
   }
 
   #landingpage .aboutus.aboutus-vibrant .number {
-    justify-content: flex-start;
+    display: flex;
+    justify-content: center;
     margin-top: 20px;
     gap: 12px;
   }
@@ -1479,6 +1483,10 @@ h2{
   border-left: 3px solid #c8441a;
   border-radius: 22px;
   box-shadow: 0 10px 24px rgba(124, 47, 16, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
   background: linear-gradient(160deg, #fffefa 0%, #fff3eb 100%);
   padding: 30px 28px;
 }
@@ -1507,10 +1515,11 @@ h2{
 }
 
 #landingpage.landing-neo .aboutus.aboutus-vibrant .about1stdiv .text p {
-  font-size: 16px;
   line-height: 1.68;
   color: #414b5b !important;
-  max-width: 50ch;
+  max-width: 60ch;
+  margin: 0 auto;
+  text-align: center;
 }
 
 #landingpage.landing-neo .aboutus.aboutus-vibrant .about1stdiv .text .btnblack {
@@ -1525,6 +1534,9 @@ h2{
 
 #landingpage.landing-neo .aboutus.aboutus-vibrant .number {
   margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
 }
 
 #landingpage.landing-neo .aboutus.aboutus-vibrant .number h2 {
@@ -1551,15 +1563,17 @@ h2{
 }
 
 #landingpage.landing-neo .aboutus.aboutus-vibrant .box > div span {
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-  font-size: 18px;
-  margin: 0 0 12px;
-  background: linear-gradient(140deg, #ffe6d6 0%, #fff4eb 100%) !important;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  font-size: 20px;
+  margin: 0 0 14px;
+  background: white !important;
+  border: 1px solid rgba(241, 91, 41, 0.1);
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 8px 16px rgba(126, 49, 17, 0.08);
 }
 
 #landingpage.landing-neo .aboutus.aboutus-vibrant .box > div h3 {
@@ -1656,9 +1670,10 @@ h2{
 }
 
 #landingpage.landing-neo .providesection.provide-vibrant .provide .provide-head {
-  margin: 0 auto 18px;
+  margin: 0 auto 24px;
   max-width: 1200px;
   text-align: left;
+  display: block; /* Explicit override of legacy display: grid on .provide > div */
 }
 
 #landingpage.landing-neo .providesection.provide-vibrant .provide .provide-kicker {
@@ -1687,11 +1702,11 @@ h2{
 }
 
 #landingpage.landing-neo .providesection.provide-vibrant .provide .provide-head p {
-  margin-top: 12px;
-  font-size: 18px;
+  margin-top: 14px;
+  font-size: 17px;
   line-height: 1.62;
   color: #4b5563;
-  max-width: 58ch;
+  max-width: 70ch;
 }
 
 #landingpage.landing-neo .providesection.provide-vibrant .provide .providecards {
@@ -1704,42 +1719,62 @@ h2{
 }
 
 #landingpage.landing-neo .providesection.provide-vibrant .provide .providecards .provide1 {
-  border: 1px solid #ebddd4;
-  border-radius: 20px;
-  background: #fff;
-  box-shadow: 0 8px 18px rgba(17, 24, 39, 0.05);
+  border: 1px solid rgba(235, 221, 212, 0.6);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 30px rgba(122, 46, 15, 0.06);
   min-height: 250px;
-  padding: 22px 22px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
   align-items: flex-start;
   text-align: left;
-  gap: 10px;
+  gap: 12px;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-#landingpage.landing-neo .providesection.provide-vibrant .provide .providecards .provide1--accent {
-  border-left: 3px solid #cf4b1f;
+#landingpage.landing-neo .providesection.provide-vibrant .provide .providecards .provide1:hover {
+  transform: translateY(-8px);
+  background: #ffffff;
+  box-shadow: 0 24px 48px rgba(126, 49, 17, 0.1);
+  border-color: rgba(241, 91, 41, 0.2);
 }
 
 #landingpage.landing-neo .providesection.provide-vibrant .provide .providecards .provide1 span {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: #fff2e8 !important;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: #fff5ee !important;
   color: #c84a1d !important;
-  font-size: 20px;
-  margin-bottom: 4px;
+  font-size: 22px;
+  margin-bottom: 6px;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid rgba(200, 74, 29, 0.12);
+  transition: all 0.3s ease;
+}
+
+#landingpage.landing-neo .providesection.provide-vibrant .provide .providecards .provide1:hover span {
+  background: #f15b29 !important;
+  color: #ffffff !important;
+  transform: rotate(-10deg);
 }
 
 #landingpage.landing-neo .providesection.provide-vibrant .provide .providecards .provide1 h2 {
-  margin: 2px 0 4px;
-  font-size: 24px;
+  margin: 4px 0 6px;
+  font-size: 25px;
+  font-weight: 800;
   line-height: 1.15;
   color: #111827;
+  letter-spacing: -0.02em;
 }
 
 #landingpage.landing-neo .providesection.provide-vibrant .provide .providecards .provide1 p {
   margin: 0;
-  font-size: 16px;
-  line-height: 1.62;
+  font-size: 15px;
+  line-height: 1.7;
   color: #4b5563;
 }
 
@@ -1880,6 +1915,30 @@ h2{
 
   #landingpage.landing-neo .providesection.provide-vibrant .provide .provide-cta .provide-cta-btn {
     min-width: 100%;
+    border-radius: 12px;
+  }
+
+  #landingpage.landing-neo .providesection.provide-vibrant .provide .provide-head .provide-title {
+    font-size: 36px;
+    padding-left: 18px;
+  }
+
+  #landingpage.landing-neo .providesection.provide-vibrant .provide .provide-head .provide-title::before {
+    height: 30px;
+    top: 4px;
+    width: 3px;
+  }
+
+  #landingpage.landing-neo .providesection.provide-vibrant .provide .provide-head p {
+    max-width: 100%;
+    font-size: 15px;
+    margin-top: 12px;
+  }
+
+  #landingpage.landing-neo .providesection.provide-vibrant {
+    width: 96%;
+    padding: 30px 16px;
+    margin-top: 40px;
   }
 }
 
