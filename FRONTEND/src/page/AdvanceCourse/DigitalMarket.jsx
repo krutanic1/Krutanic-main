@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import DMHero from "../../../krutanic/images/dmad1.jpg";
+import posterImage from "../../../krutanic/images/poster/digitalmarketing.png";
 import DMOutcomes from "../../../krutanic/images/dmad2.jpg";
 import Flashaidlogo from "../../assets/Flashaidlogo.jpg";
 import pdfdm from "../../../krutanic/Digital Marketing Advanced Program.pdf";
@@ -826,6 +827,13 @@ const DigitalMarket = () => {
       `}</style>
 
       <div className="dm-shell">
+        <div style={{ width: "100%", marginBottom: "20px", marginTop: "10px" }}>
+          <img 
+            src={posterImage} 
+            alt="Digital Marketing Poster" 
+            style={{ width: "100%", height: "auto", borderRadius: "18px", display: "block" }} 
+          />
+        </div>
         <section className="dm-hero">
           <div>
             <div className="dm-chip">Advanced Program 2026</div>

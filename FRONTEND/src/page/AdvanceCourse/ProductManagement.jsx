@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import PMHero from "../../../krutanic/images/pmad1.jpg";
+import posterImage from "../../../krutanic/images/poster/productmanagement.png";
 import PMOutcomes from "../../../krutanic/images/pmad2.jpg";
 import Flashaidlogo from "../../assets/Flashaidlogo.jpg";
 import pdfpmm from "../../../krutanic/Product management Advanced program.pdf";
@@ -930,6 +931,13 @@ const ProductManagement = () => {
       `}</style>
 
       <div className="pm-shell">
+        <div style={{ width: "100%", marginBottom: "20px", marginTop: "10px" }}>
+          <img 
+            src={posterImage} 
+            alt="Product Management Poster" 
+            style={{ width: "100%", height: "auto", borderRadius: "18px", display: "block" }} 
+          />
+        </div>
         <section className="pm-hero">
           <div>
             <div className="pm-chip">Advanced Program 2026</div>

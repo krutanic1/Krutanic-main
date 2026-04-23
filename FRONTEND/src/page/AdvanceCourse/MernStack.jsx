@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import MERNHero from "../../../krutanic/images/msad1.jpg";
+import posterImage from "../../../krutanic/images/poster/mern.png";
 import MERNOutcomes from "../../assets/Advanced Course Images/Mern Stack Development/mern.png";
 import Flashaidlogo from "../../assets/Flashaidlogo.jpg";
 import pdfms from "../../../krutanic/Mern Stack Web Development Advanced Program.pdf";
@@ -937,6 +938,13 @@ const MernStack = () => {
       `}</style>
 
       <div className="ms-shell">
+        <div style={{ width: "100%", marginBottom: "20px", marginTop: "10px" }}>
+          <img 
+            src={posterImage} 
+            alt="MERN Stack Poster" 
+            style={{ width: "100%", height: "auto", borderRadius: "18px", display: "block" }} 
+          />
+        </div>
         <section className="ms-hero">
           <div>
             <div className="ms-chip">Advanced Program 2026</div>

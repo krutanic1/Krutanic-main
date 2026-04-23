@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import daHero from "../../../krutanic/images/daad1.jpg";
+import posterImage from "../../../krutanic/images/poster/dataanalytics.png";
 import daOutcomes from "../../../krutanic/images/daad2.jpg";
 import Flashaidlogo from "../../assets/Flashaidlogo.jpg";
 import pdfDataAnalytics from "../../../krutanic/Data Analytics Advanced program.pdf";
@@ -375,7 +376,7 @@ const DataAnalytics = () => {
         }
 
         .da-shell {
-          width: min(90%, calc(90% - 32px));
+          width: min(100%, calc(100% - 32px));
           margin: 0 auto;
         }
 
@@ -881,6 +882,13 @@ const DataAnalytics = () => {
       `}</style>
 
       <div className="da-shell">
+        <div style={{ width: "100%", marginBottom: "20px", marginTop: "10px" }}>
+          <img 
+            src={posterImage} 
+            alt="Data Analytics Poster" 
+            style={{ width: "100%", height: "auto", borderRadius: "18px", display: "block" }} 
+          />
+        </div>
         <section className="da-hero">
           <div>
             <div className="da-chip">Advanced Program 2026</div>

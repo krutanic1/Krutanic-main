@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import PEHero from "../../../krutanic/images/pead1.jpg";
+import posterImage from "../../../krutanic/images/poster/promptengineering.png";
 import PEOutcomes from "../../../krutanic/images/pead2.jpg";
 import pdfds from "../../../krutanic/Prompt engineering for generative AI Advanced Program.pdf";
 import Flashaidlogo from "../../assets/Flashaidlogo.jpg";
@@ -912,6 +913,13 @@ const PromptEngineering = () => {
       `}</style>
 
       <div className="pe-shell">
+        <div style={{ width: "100%", marginBottom: "20px", marginTop: "10px" }}>
+          <img 
+            src={posterImage} 
+            alt="Prompt Engineering Poster" 
+            style={{ width: "100%", height: "auto", borderRadius: "18px", display: "block" }} 
+          />
+        </div>
         <section className="pe-hero">
           <div>
             <div className="pe-chip">Advanced Program 2026</div>

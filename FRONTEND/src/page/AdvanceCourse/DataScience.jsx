@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import DSHero from "../../../krutanic/images/dsad1.jpg";
+import posterImage from "../../../krutanic/images/poster/datascience.png";
 import DSOutcomes from "../../../krutanic/images/dsad2.jpg";
 import Flashaidlogo from "../../assets/Flashaidlogo.jpg";
 import pdfds from "../../../krutanic/DataScienceAdvancedProgram.pdf";
@@ -931,6 +932,13 @@ const DataScience = () => {
       `}</style>
 
       <div className="ds-shell">
+        <div style={{ width: "100%", marginBottom: "20px", marginTop: "10px" }}>
+          <img 
+            src={posterImage} 
+            alt="Data Science Poster" 
+            style={{ width: "100%", height: "auto", borderRadius: "18px", display: "block" }} 
+          />
+        </div>
         <section className="ds-hero">
           <div>
             <div className="ds-chip">Advanced Program 2026</div>
