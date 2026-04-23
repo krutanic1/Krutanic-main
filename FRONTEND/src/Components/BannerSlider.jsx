@@ -3,12 +3,12 @@ import { Link } from 'react-router-dom';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 const slides = [
-  { img: "/posters/data_science.png", link: "/DataScience" },
   { img: "/posters/mern.png", link: "/MernStack" },
-  { img: "/posters/data_analytics.png", link: "/DataAnalytics" },
-  { img: "/posters/digital_marketing.png", link: "/DigitalMarket" },
-  { img: "/posters/product_management.png", link: "/ProductManagement" },
-  { img: "/posters/prompt.png", link: "/PromptEngineering" },
+  { img: "/posters/data science.png", link: "/DataScience" },
+  { img: "/posters/degital marketing.png", link: "/DigitalMarket" },
+  { img: "/posters/data analyst.png", link: "/DataAnalytics" },
+  { img: "/posters/prodect mangement.png", link: "/ProductManagement" },
+  { img: "/posters/prompt_eng.png", link: "/PromptEngineering" },
 ];
 
 const BannerSlider = () => {
@@ -31,37 +31,38 @@ const BannerSlider = () => {
 
   return (
     <div 
-      className="relative w-full overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.1)] group bg-white"
-      style={{ height: 'var(--slider-height)' }}
+      className="w-full overflow-hidden relative shadow-[0_4px_30px_rgba(0,0,0,0.08)] group bg-white"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
       <style>{`
-        :root {
-          --slider-height: 500px;
-        }
-        @media (max-width: 1024px) {
-          :root {
-            --slider-height: 400px;
-          }
-        }
-        @media (max-width: 768px) {
-          :root {
-            --slider-height: auto;
-          }
-          .slide-item {
-            aspect-ratio: 16 / 7.5;
-          }
-        }
         .slide-container {
           display: flex;
-          transition: transform 0.7s ease-in-out;
-          height: 100%;
+          transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
           width: 100%;
         }
         .slide-item {
           min-width: 100%;
-          height: 100%;
+        }
+        .banner-img {
+          width: 100%;
+          object-fit: cover;
+          display: block;
+          /* Mobile height & focus (Stay Perfect) */
+          height: 200px;
+          object-position: right center;
+        }
+        @media (min-width: 768px) {
+          .banner-img {
+            height: 380px;
+            object-position: center center;
+          }
+        }
+        @media (min-width: 1024px) {
+          .banner-img {
+            height: 600px;
+            object-position: center top; /* Priority to show the heading text */
+          }
         }
       `}</style>
 
@@ -76,7 +77,7 @@ const BannerSlider = () => {
               <img 
                 src={slide.img} 
                 alt={`Banner ${index + 1}`}
-                className="w-full h-full object-contain sm:object-cover bg-white"
+                className="banner-img"
               />
             </Link>
           </div>

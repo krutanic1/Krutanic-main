@@ -1,5 +1,6 @@
 import React from 'react';
 import Slider from 'react-slick';
+import { Star, CheckCircle } from 'lucide-react';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import r1 from '../assets/alumini/birendra.jpg';
@@ -16,105 +17,116 @@ const Testimonial = () => {
       college: "Ujjain Engineering College",
       course: "Stock Marketing",
       image: r2,
-      review:
-        "Recently completed the stock market course and found it exceptionally informative and beneficial. The course was well-structured, making complex concepts easy to understand and practical to apply.",
+      review: "The stock market course was exceptionally informative. The well-structured modules made complex financial concepts easy to understand and apply in real-world trading scenarios.",
     },
     {
       name: "BIRENDRA KUMAR",
       college: "TMB University",
       course: "Stock Marketing",
       image: r1,
-      review:
-        "I completed my internship in stock market and also pursued more courses here. Great mentorship and training made a significant positive impact on my learning journey.",
+      review: "Great mentorship and practical training. Completing my internship here significantly boosted my confidence and gave me a clear perspective on market dynamics.",
     },
     {
       name: "MITHUN PRAJAPATI",
       college: "VIT Bhopal",
-      course: "Full Stack Web Development",
+      course: "Full Stack Development",
       image: r3,
-      review:
-        "Successfully completed my full stack web development internship at Krutanic. Sessions were interactive, practical, and highly engaging with excellent mentor support.",
+      review: "The Full Stack Web Development internship was truly interactive. The mentor support was excellent, helping me build production-ready applications with modern stacks.",
     },
     {
       name: "PRABHLEEN KAUR",
-      college: "Government Girls College",
+      college: "Govt Girls College",
       course: "Artificial Intelligence",
       image: r4,
-      review:
-        "A joyful experience while pursuing my internship in artificial intelligence. The mentor was cooperative, kind, and explained every concept with clarity.",
+      review: "A joyful and enriching AI internship experience. Concepts were explained with extreme clarity, and the hands-on projects were perfect for skill building.",
     },
     {
       name: "ROHAN SINGH",
-      college: "Amrita Vidyapeeth University",
+      college: "Amrita University",
       course: "Embedded System",
       image: r5,
-      review:
-        "Recently completed an internship with Krutanic and it was enriching. The learning environment was supportive and the team guidance was excellent.",
+      review: "The learning environment was incredibly supportive. The team's guidance during my Embedded Systems training was instrumental in my career progression.",
     },
     {
       name: "MANISH KUMAR",
       college: "DY Patil University",
       course: "Data Science",
       image: r6,
-      review:
-        "Loved my learning experience with Krutanic. The mentor was amazing and knowledgeable, and the team helped resolve doubts quickly throughout the course.",
+      review: "Loved the learning experience. The mentors are amazingly knowledgeable, and the doubt-resolution system is one of the best I've encountered in online learning.",
     },
   ];
 
   const settings = {
     infinite: true,
     autoplay: true,
-    autoplaySpeed: 0,
+    autoplaySpeed: 3000,
     slidesToShow: 3,
     slidesToScroll: 1,
-    cssEase: 'linear',
     dots: false,
-    speed: 7000,
+    speed: 1000,
     arrows: false,
     pauseOnHover: true,
     responsive: [
       {
         breakpoint: 1100,
-        settings: {
-          slidesToShow: 2,
-        },
+        settings: { slidesToShow: 2 },
       },
       {
         breakpoint: 760,
         settings: {
           slidesToShow: 1,
-          slidesToScroll: 1,
-          autoplaySpeed: 3000,
-          speed: 800,
-          cssEase: 'ease-in-out',
+          adaptiveHeight: true,
           centerMode: false,
-          variableWidth: false,
-          adaptiveHeight: true
         },
       },
     ],
   };
 
   return (
-    <div className="testimonialdiv">
-      <div className="testimonialcontainer">
+    <div className="py-10">
+      <div className="max-w-7xl mx-auto px-4">
         <Slider {...settings}>
-          {testimonials.map((item) => (
-            <div key={item.name} className="feedback-slide">
-              <article className="feedback-card">
-                <div className="feedback-quote-wrap">
-                  <p>{item.review}</p>
-                </div>
-
-                <div className="feedback-user">
-                  <img alt={item.name} src={item.image} />
-                  <div>
-                    <h2>{item.name}</h2>
-                    <h3>{item.college}</h3>
-                    <p>{item.course}</p>
+          {testimonials.map((item, index) => (
+            <div key={index} className="px-4 pb-8">
+              <div className="bg-white rounded-[32px] p-7 shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-slate-100 flex flex-col h-[380px] hover:shadow-[0_20px_50px_rgba(255,107,45,0.1)] transition-all duration-500 group">
+                
+                {/* Header: Rating & Verified */}
+                <div className="flex justify-between items-start mb-6">
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star key={s} size={16} fill="#ff6b2d" className="text-orange-600" />
+                    ))}
+                  </div>
+                  <div className="bg-green-50 text-green-600 text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1">
+                    <CheckCircle size={10} />
+                    VERIFIED LEARNER
                   </div>
                 </div>
-              </article>
+
+                {/* Body: Review Text */}
+                <div className="flex-1 overflow-hidden">
+                  <p className="text-slate-600 text-lg leading-relaxed italic line-clamp-6">
+                    "{item.review}"
+                  </p>
+                </div>
+
+                {/* Footer: User Profile */}
+                <div className="mt-8 pt-8 border-t border-slate-50 flex items-center gap-4">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-orange-600 rounded-full blur-md opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                    <img 
+                      src={item.image} 
+                      alt={item.name}
+                      className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md relative z-10"
+                    />
+                  </div>
+                  <div className="overflow-hidden">
+                    <h4 className="text-slate-900 font-bold truncate leading-tight">{item.name}</h4>
+                    <p className="text-orange-600 text-xs font-bold mt-1 truncate">{item.course}</p>
+                    <p className="text-slate-400 text-[10px] truncate mt-0.5">{item.college}</p>
+                  </div>
+                </div>
+              </div>
             </div>
           ))}
         </Slider>

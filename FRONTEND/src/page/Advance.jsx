@@ -17,7 +17,6 @@ import img2 from "../assets/Advanced Course Images/Digital Markting/DM 4.jpg";
 import img3 from "../assets/Advanced Course Images/Data science/DS 4.jpg";
 import img4 from "../assets/Advanced Course Images/Product management/PM 5.jpg";
 import bgImage from "../assets/BG12.png";
-import successmap from "../assets/1.png";
 import girl from "../assets/girl.png"
 import img from "../assets/developers/hacker.png"
 
@@ -28,13 +27,16 @@ import digital from '../assets/Advanced Course Images/Digital Markting/DM 1.jpg'
 import Investmentbanking from '../assets/Advanced Course Images/Investment banking/IB 6.jpg'
 import MERN from '../assets/Advanced Course Images/Mern Stack Development/MSD 1.jpg'
 import ProductManagement from '../assets/Advanced Course Images/Product management/PM 4.jpg'
-//import AutomationTesting from '../assets/Advanced Course Images/AutomationvTesting/automationtesting.jpg'
 import PromptAi from '../assets/Advanced Course Images/Prompt AI/prompt.avif'
-
 
 import axios from "axios";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
+import ShuffleHero from "../Components/ShuffleHero";
+import SuccessPath from "../Components/SuccessPath";
+import FeatureStrip from "../Components/FeatureStrip";
+import ProgramExplorer from "../Components/ProgramExplorer";
+import ReviewCards from "../Components/ReviewCards";
 
 
 
@@ -313,58 +315,20 @@ const Advance = () => {
 
 
       <Toaster position="top-center" reverseOrder={false} />
-      <section className="px-[10px] py-[60px]">
-        <div data-aos="fade-up" className="width flex items-center justify-center flex-wrap gap-[5rem]">
-          <div className="content lg:w-1/2 md:w-1/2 flex items-start flex-col max-[600px]:order-1 ">
-            <h1 className="text-4xl font-bold mb-4 ">
-              <span className="text-[#f15b29]">Transform with Krutanic’s Hands-On Learning Experience</span>
-            </h1>
-            <p className="text-md mb-8 text-white">
-              The Krutanic Advanced Program delivers an intensive, career-focused curriculum that blends theoretical learning with practical industry training. Students gain real-world project experience and mentor guidance, enabling them to confidently master the demands of Digital Marketing, Advanced Data Science, Product Management, and MERN Stack Development. For more details and placement-support information, fill out the registration form.
-            </p>
-            <button
-              onClick={scrollToCourse}
+      
+      {/* Premium Hero Section */}
+      <ShuffleHero />
 
-              className="bg-[#f15b29] hover:bg-orange-700 text-white transition-colors duration-300 px-6 py-3 rounded-lg font-semibold"
-            >
-              Find Your Course
+      {/* Redesigned Course Showcase Section */}
+      <ProgramExplorer columnsData={columnsData} />
 
-            </button>
-          </div>
-          <div className="">
-            <Swiper
-              effect={"cube"}
-              loop="true"
-              autoplay={{
-                delay: 3000,
-                disableOnInteraction: false,
-              }}
-              grabCursor={true}
-              cubeEffect={{
-                shadow: true,
-                slideShadows: true,
-                shadowOffset: 20,
-                shadowScale: 0.94,
-              }}
-              modules={[EffectCube, Autoplay, Pagination]}
-            >
-              <SwiperSlide className=" shadow-lg shadow-orange-800">
-                <img src={img1} />
-              </SwiperSlide>
-              <SwiperSlide className=" shadow-lg shadow-orange-800">
-                <img src={img2} />
-              </SwiperSlide>
-              <SwiperSlide className=" shadow-lg shadow-orange-800">
-                <img src={img3} />
-              </SwiperSlide>
-              <SwiperSlide className=" shadow-lg shadow-orange-800">
-                <img src={img4} />
-              </SwiperSlide>
-            </Swiper>
-          </div>
+      {/* Modern Review Section */}
+      <ReviewCards />
 
-        </div>
-      </section>
+
+      {/* Feature Highlights Strip */}
+      <FeatureStrip />
+
 
       <section className="px-[10px] py-[30px] md:py-[60px]">
         <div className="width rounded-[28px] bg-white px-4 py-8 md:px-8 md:py-10 text-black shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
@@ -427,185 +391,51 @@ const Advance = () => {
       <hr className=" opacity-10" />
 
 
-      {/* Our Course Section */}
-      <section ref={courseSectionRef} className="px-[10px] py-[60px]">
+      {/* Our Course Section - Redesigned for Premium Look */}
+      <section ref={courseSectionRef} className="px-[10px] py-[80px] bg-[#0a0a0c]">
         <div className="width">
-          <h1 className=" font-bold text-center py-5 text-[#f15b29]">
-            | Our Advanced Courses
-          </h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 px-[10px] md:px-12 lg:px-26">
-            <div className="bg-[#080808] shadow-sm shadow-slate-50 rounded-xl overflow-hidden flex flex-col items-center">
-              <div className="overflow-hidden  lg:h-[300px]">
-                <img
-                  src={datascience}
-                  alt="Data Science"
-                  className="hover:scale-110  ease-linear duration-700"
-                />
+          <div className="flex flex-col items-center mb-16">
+            <span className="text-[#f15b29] font-bold tracking-[0.3em] uppercase text-sm mb-4">Empowering Careers</span>
+            <h2 className="text-[2.5rem] md:text-[3.5rem] font-bold text-white text-center leading-tight" style={{ fontFamily: "'Libre Baskerville', Georgia, serif" }}>
+                Our <span className="text-[#f15b29]">Advanced</span> Masterclasses
+            </h2>
+            <div className="w-24 h-1 bg-[#f15b29] mt-6 rounded-full"></div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-[10px] md:px-6">
+            {[
+              { title: "Data Science", desc: "Analyzing data to find insights that guide business decisions.", img: datascience, action: handleViewCourse1 },
+              { title: "Data Analytics", desc: "Turning raw data into actionable insights through visualization.", img: dataAnalytics, action: handleViewCourse9 },
+              { title: "Digital Marketing", desc: "Promoting products online through social media, SEO, and ads.", img: digital, action: handleViewCourse2 },
+              { title: "MERN Stack Development", desc: "Building full-stack web apps using MongoDB, Express, React, and Node.", img: MERN, action: handleViewCourse4 },
+              { title: "Product Management", desc: "Overseeing a product’s development from concept to market.", img: ProductManagement, action: handleViewCourse5 },
+              { title: "Generative AI", desc: "Precision Prompt Engineering for the next generation of AI.", img: PromptAi, action: handleViewCourse8 }
+            ].map((course, idx) => (
+              <div key={idx} className="group relative bg-[#111114] border border-white/5 rounded-[32px] overflow-hidden transition-all duration-500 hover:border-[#f15b29]/30 hover:-translate-y-2">
+                <div className="relative h-[240px] overflow-hidden">
+                  <img src={course.img} alt={course.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#111114] via-transparent to-transparent opacity-60"></div>
+                </div>
+                <div className="p-8 pt-4">
+                  <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-[#f15b29] transition-colors">
+                    {course.title}
+                  </h3>
+                  <p className="text-gray-400 text-sm leading-relaxed mb-8">
+                    {course.desc}
+                  </p>
+                  <button
+                    onClick={course.action}
+                    className="flex items-center gap-2 text-white font-bold text-sm group/btn"
+                  >
+                    <span className="relative">
+                        Explore Program
+                        <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-[#f15b29] transition-all duration-300 group-hover/btn:w-full"></span>
+                    </span>
+                    <i className="fa fa-arrow-right text-[#f15b29] text-xs transition-transform group-hover/btn:translate-x-1"></i>
+                  </button>
+                </div>
               </div>
-              <div className="p-2">
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  Data Science
-                </h3>
-                <p className="text-sm -tracking-tighter text-white mb-4">
-                  Analyzing data to find insights that guide business decisions.
-                </p>
-                <button
-                  onClick={handleViewCourse1}
-                  className="bg-[#000] shadow-sm shadow-slate-50 border-gray-800 text-[#eee] px-4 py-2 rounded-md hover:bg-[#f15b29] hover:text-white ease-linear duration-700"
-                >
-                  Explore Details
-                </button>
-              </div>
-            </div>
-            <div className="bg-[#080808] shadow-sm shadow-slate-50 rounded-xl overflow-hidden flex flex-col items-center">
-              <div className="overflow-hidden  lg:h-[300px]">
-                <img
-                  src={dataAnalytics}
-                  alt="Data Analytics"
-                  className="hover:scale-110  ease-linear duration-700"
-                />
-              </div>
-              <div className="p-2">
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  Data Analytics
-                </h3>
-                <p className="text-sm -tracking-tighter text-white mb-4">
-                  Turning raw data into actionable insights through visualization and business intelligence.
-                </p>
-                <button
-                  onClick={handleViewCourse9}
-                  className="bg-[#000] shadow-sm shadow-slate-50 border-gray-800 text-[#eee] px-4 py-2 rounded-md hover:bg-[#f15b29] hover:text-white ease-linear duration-700"
-                >
-                  Explore Details
-                </button>
-              </div>
-            </div>
-            <div className="bg-[#080808] shadow-sm shadow-slate-50 rounded-xl overflow-hidden flex flex-col items-center ">
-              <div className="overflow-hidden lg:h-[300px]">
-                <img
-                  src={digital}
-                  alt="digital marketing"
-                  className="hover:scale-110  ease-linear duration-700"
-                />
-              </div>
-              <div className="p-2">
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  Digital Marketing
-                </h3>
-                <p className="text-sm text-white mb-4">
-                  Promoting products online through channels like social media, SEO, and ads to drive business goals.
-                </p>
-                <button
-                  onClick={handleViewCourse2}
-                  className="bg-[#000] shadow-sm shadow-slate-50 border-gray-800 text-[#eee] px-4 py-2 rounded-md hover:bg-[#f15b29] hover:text-white ease-linear duration-700"
-                >
-                  Explore Details
-                </button>
-              </div>
-            </div>
-
-            <div className="bg-[#080808] shadow-sm shadow-slate-50 rounded-xl overflow-hidden flex flex-col items-center">
-              <div className="overflow-hidden lg:h-[300px]">
-                <img
-                  src={MERN}
-                  alt="MERN"
-                  className="hover:scale-110 ease-linear duration-700"
-                />
-              </div>
-              <div className="p-2">
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  MERN Stack Development
-                </h3>
-                <p className="text-sm -tracking-tighter text-white mb-4">
-                  Building web apps using MongoDB, Express.js, React, and Node.js
-                </p>
-                <button
-                  onClick={handleViewCourse4}
-                  className="bg-[#000] shadow-sm shadow-slate-50 border-gray-800 text-[#eee] px-4 py-2 rounded-md hover:bg-[#f15b29] hover:text-white ease-linear duration-700"
-                >
-                  Explore Details
-                </button>
-              </div>
-            </div>
-            <div className="bg-[#080808] shadow-sm shadow-slate-50 rounded-xl overflow-hidden flex flex-col items-center">
-              <div className="overflow-hidden lg:h-[300px]">
-                <img
-                  src={ProductManagement}
-                  alt="Product Management"
-                  className="hover:scale-110 ease-linear duration-700"
-                />
-              </div>
-              <div className="p-2">
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  Product Management
-                </h3>
-                <p className="text-sm -tracking-tighter text-white mb-4">
-                  Overseeing a product’s development from concept to market.
-
-                </p>
-                <button
-                  onClick={handleViewCourse5}
-                  className="bg-[#000] shadow-sm shadow-slate-50 border-gray-800 text-[#eee] px-4 py-2 rounded-md hover:bg-[#f15b29] hover:text-white ease-linear duration-700"
-                >
-                  Explore Details
-                </button>
-              </div>
-            </div>
-            {/* <div className="bg-[#080808] shadow-sm shadow-slate-50 rounded-xl overflow-hidden flex flex-col items-center">
-             <div className="relative overflow-hidden lg:h-[300px]"> 
-             <span className="absolute top-0 left-0 bg-red-500 rounded-br-md text-white px-2 py-1 text-sm font-semibold">
-       Newly Launched
-     </span> 
-             <img
-               src={AutomationTesting}
-               alt="Automation Testing"
-               className="hover:scale-110 ease-linear duration-700"
-             /> 
-             </div>
-              <div className="p-2">
-              <h3 className="text-xl font-semibold text-white mb-2">
-               Automation Testing
-               </h3>
-             <p className="text-sm -tracking-tighter text-white mb-4">
-             Streamlining Quality with Precision: Empowering Automation Testing
- 
-             </p>
-             <button
-               onClick={handleViewCourse7}
-               className="bg-[#000] shadow-sm shadow-slate-50 border-gray-800 text-[#eee] px-4 py-2 rounded-md hover:bg-[#f15b29] hover:text-white ease-linear duration-700"
-             >
-               Explore Details
-             </button>
-              </div> 
-           </div> */}
-
-            <div className="bg-[#080808] shadow-sm shadow-slate-50 rounded-xl overflow-hidden flex flex-col items-center">
-              <div className=" relative overflow-hidden lg:h-[300px]">
-                {/* <span className="absolute top-0 left-0 bg-red-500 rounded-br-md text-white px-2 py-1 text-sm font-semibold">
-      Newly Launched
-    </span> */}
-                <img
-                  src={PromptAi}
-                  alt="Prompt engineering for generative AI"
-                  className="hover:scale-110 ease-linear duration-700"
-                />
-              </div>
-              <div className="p-2">
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  Generative AI With Prompt Engineering
-                </h3>
-                <p className="text-sm -tracking-tighter text-white mb-4">
-                  Crafting the Future: Precision Prompt Engineering for Next-Gen AI
-
-                </p>
-                <button
-                  onClick={handleViewCourse8}
-                  className="bg-[#000] shadow-sm shadow-slate-50 border-gray-800 text-[#eee] px-4 py-2 rounded-md hover:bg-[#f15b29] ease-linear duration-700"
-                >
-                  Explore Details
-                </button>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -878,13 +708,6 @@ const Advance = () => {
       )}
       <hr className=" opacity-10" />
 
-      {/* roadmap section */}
-      <section className="px-[10px] lg:py-[60px] py-[20px]">
-        <h1 className="font-bold text-center text-[#f15b29]">| Path To Success</h1>
-        <div className="width lg:px-20">
-          <img src={successmap} alt="Success Map" />
-        </div>
-      </section>
       <hr className=" opacity-10" />
 
       {/* program info  */}
