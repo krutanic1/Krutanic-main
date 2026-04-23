@@ -66,7 +66,12 @@ const Mentorship = () => {
   };
 
   useEffect(() => {
-    AOS.init({ duration: 2000, once: false });
+    AOS.init({ 
+      duration: 1000, 
+      once: true,
+      disable: 'mobile',
+      offset: 100
+    });
     document.body.classList.add("mentorship-theme-active");
 
     let interval;

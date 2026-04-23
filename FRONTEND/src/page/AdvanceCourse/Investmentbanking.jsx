@@ -657,14 +657,23 @@ const Investmentbanking = () => {
           align-items: center;
           display: grid;
           gap: 22px;
-          grid-template-columns: 1.3fr 1fr;
+          grid-template-columns: 1fr;
+          width: 100%;
         }
 
         .ib-list {
           margin: 0;
           padding: 0;
           display: grid;
-          gap: 10px;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 15px 30px;
+          width: 100%;
+        }
+
+        @media (max-width: 768px) {
+          .ib-list {
+            grid-template-columns: 1fr;
+          }
         }
 
         .ib-list li {
@@ -1043,9 +1052,6 @@ const Investmentbanking = () => {
                 <li key={item}>{item}</li>
               ))}
             </ul>
-            <div className="ib-image">
-              <img src={IBOutcomes} alt="Key outcomes" />
-            </div>
           </div>
         </section>
 

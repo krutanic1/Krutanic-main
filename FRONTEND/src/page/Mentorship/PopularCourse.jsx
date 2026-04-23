@@ -67,8 +67,7 @@ const PopularCourse = () => {
           | Our Popular Courses
         </h1>
         <div
-          data-aos="fade-in"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:px-24"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:px-10"
         >
           {popularCourses.map((course) => (
             <div
@@ -86,7 +85,8 @@ const PopularCourse = () => {
                   src={course.image}
                   alt={course.title}
                   loading="lazy"
-                  className="w-full h-48 object-cover"
+                  decoding="async"
+                  className="w-full h-auto object-contain"
                 />
               </div>
               <div className="px-3 py-3">

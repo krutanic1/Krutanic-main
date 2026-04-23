@@ -456,19 +456,19 @@ const CourseMentor = ({ }) => {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:px-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:px-10">
           {selectedCategory &&
             coursesData[selectedCategory] &&
             coursesData[selectedCategory].map((course) => (
               <div
-                data-aos="fade-in"
                 key={course.id}
                 className="bg-white text-[#101522] border border-[#d8deea] shadow-md shadow-slate-300/40 relative rounded-xl overflow-hidden">
                 <img
                   src={course.image}
                   alt={course.title}
-                  className="h-[220px] w-full object-cover hover:scale-110 ease-linear duration-700"
+                  className="h-auto w-full object-contain hover:scale-110 ease-linear duration-300"
                   loading="lazy"
+                  decoding="async"
                 />
                 <div className="px-3 py-3">
                   <h3 className="font-bold text-[1.75rem] mb-2 text-[#111827] leading-tight">

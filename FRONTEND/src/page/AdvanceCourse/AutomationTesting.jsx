@@ -649,7 +649,7 @@ const AutomationTesting = () => {
 
         {/* 3 key outcome section  */}
         <section className="py-[30px] px-[10px]">
-          <div className="container mx-auto max-w-full lg:flex lg:gap-6 flex-col lg:flex-row">
+          <div className="container mx-auto max-w-full">
             {/* Left side: Key Outcomes */}
             <div className="w-full mb-3 lg:mb-0">
               <h1 data-aos="fade-up" className=" font-bold mb-4 text-[#f15b29]">
@@ -724,14 +724,6 @@ const AutomationTesting = () => {
               >
                 {isExpanded ? "Read Less" : "Read More"}
               </button>
-            </div>
-
-            {/* Right side: Image */}
-            <div
-              data-aos="fade-up"
-              className="lg:w-1/2 w-full h-[660px] rounded-lg shadow-lg shadow-slate-700 overflow-hidden"
-            >
-              <ImageSlider />
             </div>
           </div>
         </section>

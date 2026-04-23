@@ -600,14 +600,23 @@ const DataAnalytics = () => {
           align-items: center;
           display: grid;
           gap: 22px;
-          grid-template-columns: 1.3fr 1fr;
+          grid-template-columns: 1fr;
+          width: 100%;
         }
 
         .da-list {
           margin: 0;
           padding: 0;
           display: grid;
-          gap: 10px;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 15px 30px;
+          width: 100%;
+        }
+
+        @media (max-width: 768px) {
+          .da-list {
+            grid-template-columns: 1fr;
+          }
         }
 
         .da-list li {
@@ -986,9 +995,6 @@ const DataAnalytics = () => {
                 <li key={item}>{item}</li>
               ))}
             </ul>
-            <div className="da-image">
-              <img src={daOutcomes} alt="Key outcomes" />
-            </div>
           </div>
         </section>
 
