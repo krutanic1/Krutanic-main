@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import ApplyNowButton from "./ApplyNowButton";
+import AdvancedApplyPopup from "../../../Components/AdvancedApplyPopup";
 
 /**
  * CourseInfoStrip
@@ -13,6 +14,25 @@ const CourseInfoStrip = ({
   emi = "4000/month*",
   brochureLink = "#"
 }) => {
+  const [showPopup, setShowPopup] = useState(false);
+
+  const handleDownloadSuccess = () => {
+    const link = document.createElement("a");
+    link.href = brochureLink;
+    link.download = `${courseValue} Brochure.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleBrochureClick = () => {
+    if (courseValue === "Data Analytics" || courseValue === "Digital Marketing") {
+      handleDownloadSuccess();
+    } else {
+      setShowPopup(true);
+    }
+  };
+
   return (
     <>
       <style>{`
@@ -50,31 +70,26 @@ const CourseInfoStrip = ({
           line-height: 1;
         }
 
-        .cis-cta-row button:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 20px rgba(241, 91, 41, 0.4);
-          filter: brightness(1.1);
+        .cis-cta-row button.cis-btn-outline {
+          padding: 12px 32px !important;
+          border-radius: 6px !important;
+          font-weight: 700 !important;
+          font-size: 15px !important;
+          cursor: pointer !important;
+          transition: all 0.3s ease !important;
+          background: #fff !important;
+          border: 1px solid #d1d5db !important;
+          color: #1f2937 !important;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+          white-space: nowrap !important;
         }
 
-        .cis-btn-outline {
-          padding: 12px 32px;
-          border-radius: 6px;
-          font-weight: 700;
-          font-size: 15px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          background: #fff;
-          border: 1px solid #d1d5db;
-          color: #1f2937;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-          white-space: nowrap;
-        }
-
-        .cis-btn-outline:hover {
-          border-color: #9ca3af;
-          background: #f9fafb;
-          transform: translateY(-1px);
-          box-shadow: 0 4px 6px rgba(0,0,0,0.08);
+        .cis-cta-row button.cis-btn-outline:hover {
+          border-color: #9ca3af !important;
+          background: #f9fafb !important;
+          transform: translateY(-1px) !important;
+          box-shadow: 0 4px 6px rgba(0,0,0,0.08) !important;
+          filter: brightness(1) !important;
         }
 
         .cis-card {
@@ -139,13 +154,13 @@ const CourseInfoStrip = ({
       <div className="cis-wrap">
         <div className="cis-cta-row">
           <ApplyNowButton courseValue={courseValue} />
-          <a 
-            href={brochureLink} 
-            download={`${courseValue} Brochure.pdf`}
+          <button 
+            type="button"
+            onClick={handleBrochureClick}
             className="cis-btn-outline"
           >
             Download Brochure
-          </a>
+          </button>
         </div>
 
         <div className="cis-card">
@@ -171,6 +186,15 @@ const CourseInfoStrip = ({
           </div>
         </div>
       </div>
+
+      {showPopup && (
+        <AdvancedApplyPopup
+          onClose={() => setShowPopup(false)}
+          initialDomain={courseValue}
+          onSuccess={handleDownloadSuccess}
+          popupType="brochure"
+        />
+      )}
     </>
   );
 };

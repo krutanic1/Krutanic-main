@@ -58,7 +58,7 @@ const CustomSelect = ({ label, icon, options, name, value, onChange, placeholder
     );
 };
 
-const AdvancedApplyPopup = ({ onClose, initialDomain = "" }) => {
+const AdvancedApplyPopup = ({ onClose, initialDomain = "", onSuccess, popupType = "apply" }) => {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -146,6 +146,7 @@ const AdvancedApplyPopup = ({ onClose, initialDomain = "" }) => {
             });
             toast.success("Application submitted successfully!");
             onClose();
+            if (onSuccess) onSuccess();
         } catch (error) {
             toast.error(error.response?.data?.message || "Submission failed");
         } finally {
@@ -237,8 +238,14 @@ const AdvancedApplyPopup = ({ onClose, initialDomain = "" }) => {
                 {/* Right Side: Professional Form Column */}
                 <div className="w-full md:w-[62%] bg-white p-8 md:p-12 flex flex-col h-full overflow-hidden">
                     <div className="mb-0">
-                        <h3 className="text-2xl font-black text-[#050d2f]">Program Application</h3>
-                        <p className="text-slate-400 text-sm mt-1">Complete the steps below to secure your spot.</p>
+                        <h3 className="text-2xl font-black text-[#050d2f]">
+                            {popupType === "brochure" ? "Download Curriculum" : "Program Application"}
+                        </h3>
+                        <p className="text-slate-400 text-sm mt-1">
+                            {popupType === "brochure" 
+                                ? "Complete the details to access the complete syllabus."
+                                : "Complete the steps below to secure your spot."}
+                        </p>
                     </div>
 
                     <form onSubmit={handleFormSubmit} className="mt-8 space-y-6 flex-1 overflow-y-auto px-1 custom-scrollbar pr-5">
@@ -442,7 +449,7 @@ const AdvancedApplyPopup = ({ onClose, initialDomain = "" }) => {
                                 disabled={!emailVerified || loading}
                                 className="flex-[2] py-4 bg-orange-600 text-white font-black rounded-xl hover:bg-orange-700 transition-all shadow-xl shadow-orange-600/30 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-2 group"
                             >
-                                {loading ? "Securely Submitting..." : "Send Application"} 
+                                {loading ? "Securely Submitting..." : (popupType === "brochure" ? "Get Brochure" : "Send Application")} 
                                 <span className="group-hover:translate-x-1 transition-transform">→</span>
                             </button>
                         </div>
