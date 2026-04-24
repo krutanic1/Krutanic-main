@@ -1,1122 +1,451 @@
-import React, { useState } from "react";
-import DMHero from "../../../krutanic/images/dmad1.jpg";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  CheckCircle2, 
+  ChevronDown, 
+  Download, 
+  TrendingUp, 
+  Award, 
+  Briefcase, 
+  ArrowRight,
+  ShieldCheck,
+  Zap, 
+  BarChart3, 
+  PieChart, 
+  Repeat, 
+  Layout,
+  PhoneCall,
+  UserCheck,
+  Video,
+  MessagesSquare,
+  FileText,
+  Rocket,
+  Globe,
+  Star,
+  Users,
+  Target,
+  Search,
+  Monitor,
+  Terminal,
+  Share2,
+  Cpu,
+  Mail,
+  Smartphone
+} from "lucide-react";
+
 import posterImage from "../../../krutanic/images/poster/digitalmarketing.png";
-import DMOutcomes from "../../../krutanic/images/dmad2.jpg";
 import Flashaidlogo from "../../assets/Flashaidlogo.jpg";
-import pdfdm from "../../../krutanic/Digital Marketing Advanced Program.pdf";
-import BenefitsofLearning from "./Components/BenefitsofLearning";
 import Certification from "./Components/Certification";
-import StoreSection from "./Components/StoreSection";
 import ClientsCarousel from "../../Components/our_alumni";
 import ApplyNowButton from "./Components/ApplyNowButton";
 import ApplyForm from "./Components/ApplyForm";
+import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
+import CourseInfoStrip from "./Components/CourseInfoStrip";
+import dmBrochure from "../../../krutanic/Digital Marketing Advanced Program.pdf";
 
 const heroStats = [
   { label: "Placement Rate", value: "93%" },
-  { label: "Hiring Partners", value: "450+" },
-  { label: "Batch Starting", value: "10 May 2026" },
+  { label: "Hiring Partners", value: "250+" },
+  { label: "Student Rating", value: "4.7/5" },
+  { label: "Students Placed", value: "200+" },
 ];
 
-const curriculum = [
-  {
-    week: "Module 1",
-    title: "Social Media Marketing (SMM)",
-    objectives: "Strategy, Content & Growth. Master the platform ecosystem and build brand-level case studies.",
-    topics: [
-      "Social Media Fundamentals",
-      "Instagram Marketing & Funnel",
-      "Content Strategy & Ideation",
-      "Short-form Reels Strategy",
-      "LinkedIn Personal Branding",
-      "YouTube Growth Strategy",
-      "AI Content Tools (Canva/AI)",
-      "Campaign Optimization"
-    ],
-  },
-  {
-    week: "Module 2",
-    title: "Search Engine Optimization (SEO)",
-    objectives: "Organic Growth & Higher Rankings. Technical, On-page, and Off-page mastery.",
-    topics: [
-      "SEO Fundamentals",
-      "On-Page, Technical & Off-Page",
-      "AI-Powered Content Optimization",
-      "Google Search Console",
-      "Keyword Research (Myntra)",
-      "Website SEO Audits",
-      "E-commerce & SaaS SEO",
-      "URL Structuring"
-    ],
-  },
-  {
-    week: "Module 3",
-    title: "Performance Marketing",
-    objectives: "Paid Ads & Data-Driven Growth. Mastering Meta and Google Ads ROI.",
-    topics: [
-      "Marketing Funnels & KPIs",
-      "CTR, CPA, ROAS Metrics",
-      "Excel for Marketing Analytics",
-      "Meta Ads (FB/Instagram)",
-      "Google Ads (Search/Shopping)",
-      "Google Analytics (GA4)",
-      "A/B Testing",
-      "Looker Studio Dashboards"
-    ],
-  },
-  {
-    week: "Module 4",
-    title: "Advanced Marketing & Automation",
-    objectives: "Scaling & Growth Systems. Omnichannel and conversion optimization.",
-    topics: [
-      "Conversion Rate Optimization",
-      "Email Marketing Automation",
-      "Omnichannel (WhatsApp/SMS)",
-      "Influencer & Affiliate Marketing",
-      "E-Commerce Growth Strategies",
-      "Retargeting Systems",
-      "App & B2B (LinkedIn Ads)"
-    ],
-  },
-  {
-    week: "Module 5",
-    title: "Career Acceleration",
-    objectives: "Job Readiness & Personal Branding. Resume building and mock interviews.",
-    topics: [
-      "Resume Building",
-      "LinkedIn Optimization",
-      "Portfolio Development",
-      "Industry Case Studies",
-      "Mock Interviews",
-      "Placement Support"
-    ],
-  },
+const audience = [
+  { title: "Students & Graduates", desc: "Build a professional marketing portfolio and land your first role in the digital economy.", icon: <Award size={20} /> },
+  { title: "Career Switchers", desc: "Pivot from traditional sales, admin, or support roles into high-growth performance marketing.", icon: <Repeat size={20} /> },
+  { title: "Business Owners", desc: "Master the tools to scale your own brand and manage campaigns without expensive agencies.", icon: <Rocket size={20} /> },
+  { title: "Working Professionals", desc: "Upskill in data-driven marketing and automation to move into senior strategy or growth roles.", icon: <Briefcase size={20} /> },
+  { title: "Freelancers", desc: "Broaden your service offerings from simple posting to full-funnel execution and SEO strategy.", icon: <Globe size={20} /> },
+  { title: "Content Creators", desc: "Learn the technical side of distribution, SEO, and paid growth to monetize your brand effectively.", icon: <Star size={20} /> }
 ];
 
-const overviewTopics = [
-  "Industry-Driven Curriculum",
-  "Mentor-Led Learning",
-  "Full-Funnel Expertise",
-  "Execution-First Approach",
-  "Small Cohorts (High Attention)",
-  "Live Campaign Execution",
-  "Portfolio Projects",
-  "Data & AI Integration",
-  "Career Acceleration Support",
-  "Outcome-Focused Training"
+const marketOpportunity = [
+  { title: "Budget Shift", desc: "Global ad spend is aggressively moving from TV and print to digital-first platforms.", icon: <TrendingUp size={24} /> },
+  { title: "Skill Gap", desc: "Businesses are struggling to find marketers who understand both creative strategy and technical data.", icon: <Target size={24} /> },
+  { title: "Universal Demand", desc: "Digital presence is no longer optional; every industry from local retail to SaaS needs experts.", icon: <Globe size={24} /> }
 ];
 
-const whyChoose = [
-  {
-    title: "10M+ Jobs Worldwide",
-    description: "Digital marketing is one of the fastest growing industries globally with increasing demand."
-  },
-  {
-    title: "Budget Transformation",
-    description: "70%+ of marketing budgets are shifting towards digital platforms, creating endless roles."
-  },
-  {
-    title: "Online Essential",
-    description: "90% of businesses are online today; a digital presence is no longer optional."
-  }
+const techStack = [
+  { group: "Fundamentals", tools: ["Google Forms", "ChatGPT", "Notion", "Google Drive"] },
+  { group: "Content & Design", tools: ["Canva", "QuillBot", "Grammarly", "copy.ai", "Figma"] },
+  { group: "Social Media", tools: ["Meta Business Suite", "LinkedIn", "Instagram", "Hootsuite", "Buffer"] },
+  { group: "SEO & Search", tools: ["SEMrush", "Ahrefs", "Google Search Console", "Screaming Frog", "Ubersuggest", "Yoast"] },
+  { group: "Performance & Ads", tools: ["Google Ads", "Meta Ads Manager", "LinkedIn Ads Manager", "TikTok Ads"] },
+  { group: "Analytics & Data", tools: ["GA4", "Looker Studio", "Microsoft Clarity", "Google Tag Manager"] },
+  { group: "Automation & CRM", tools: ["Zapier", "HubSpot", "Mailchimp", "ActiveCampaign", "Brevo"] },
+  { group: "E-Commerce", tools: ["Shopify", "Webflow", "AppsFlyer", "MoEngage"] }
 ];
 
-const keyTakeaways = [
-  "Skills: Google Forms, ChatGPT, Canva, Grammarly, Notion, Figma.",
-  "SEO: Search Console, SEMRUSH, Ahrefs, Ubersuggest, GA4, ScreamingFrog.",
-  "Social: Meta Business Suite, YouTube, TikTok, LinkedIn, Buffer, Hootsuite.",
-  "Ads: Meta Ads Manager, Google Ads, Zapier, Webflow, HubSpot, Mailchimp."
+const curriculumRoadmap = [
+  { module: "Module 1", title: "Social Media Marketing", summary: "Strategy, Content & Growth Funnels.", topics: "Instagram Reels, LinkedIn Branding, YouTube Growth, AI Content Tools, Viral Loops.", details: "Master the platform ecosystem and build brand-level case studies using AI-driven content generation." },
+  { module: "Module 2", title: "Search Engine Optimization", summary: "Organic Rankings & Technical Authority.", topics: "Keywords, On-Page SEO, Technical Audits, Backlinks, Search Console.", details: "Master the art of organic growth and site authority to drive high-intent traffic without ad spend." },
+  { module: "Module 3", title: "Performance Marketing", summary: "ROI-Focused Paid Ads & Analytics.", topics: "Google Ads, Meta Ads Manager, GA4, ROAS, A/B Testing.", details: "Learn to manage multi-million budgets with data-driven precision and cross-channel optimization." },
+  { module: "Module 4", title: "Advanced Automation", summary: "Omnichannel Growth & Scaling.", topics: "Email Marketing, CRO, Zapier, Retargeting, WhatsApp/SMS.", details: "Build automated systems that nurture leads and scale revenue through omnichannel integration." },
+  { module: "Module 5", title: "Career Acceleration", summary: "Job Readiness & Portfolio Execution.", topics: "Resume, Mock Interviews, Live Projects, Referrals.", details: "Final phase focused on personal branding and technical interview preparation for top hiring partners." }
 ];
 
-const roles = [
-  {
-    title: "Performance Marketing Analyst",
-    text: "Analyze and optimize paid campaigns for maximum ROI.",
-    avg: "Salary: ₹4-7 LPA",
-  },
-  {
-    title: "Paid Media Specialist",
-    text: "Master Google and Meta ads for large scale acquisition.",
-    avg: "Salary: ₹5-9 LPA",
-  },
-  {
-    title: "Social Media Manager",
-    text: "Manage brand voice and community across social platforms.",
-    avg: "Salary: ₹4-7 LPA",
-  },
-  {
-    title: "SEO Specialist",
-    text: "Drive sustainable organic traffic through technical expertise.",
-    avg: "Salary: ₹4-8 LPA",
-  },
-  {
-    title: "Digital Marketing Executive",
-    text: "Handle day-to-state digital operations for brands.",
-    avg: "Salary: ₹3.5-6 LPA",
-  },
-  {
-    title: "Growth Marketing Associate",
-    text: "Execute rapid experiments to unlock scalable growth loops.",
-    avg: "Salary: ₹5-10 LPA",
-  },
+const portfolioProjects = [
+  { title: "Full-Funnel Meta Campaign", problem: "Launching a scalable acquisition system for a premium D2C brand.", outcome: "Master ad-set structure and budget optimization." },
+  { title: "E-commerce SEO Audit", problem: "Identifying technical bottlenecks for a marketplace with 10k+ pages.", outcome: "Build professional site audits for hiring managers." },
+  { title: "LinkedIn Thought Leadership", problem: "Building a personal executive brand for a high-value SaaS founder.", outcome: "Master B2B content and distribution strategy." },
+  { title: "Omnichannel Automation", problem: "Integrating Email, WhatsApp, and SMS for a holiday discount event.", outcome: "Master CRM logic and multi-channel workflows." }
 ];
 
-const faqData = {
-  Program: [
-    {
-      question: "What topics are covered in the Digital Marketing program?",
-      answer:
-        "The program covers SEO, PPC, social media, email automation, content strategy, analytics, and growth systems.",
-    },
-    {
-      question: "How is the course delivered?",
-      answer:
-        "The course includes live sessions, recordings, guided assignments, and campaign-based projects.",
-    },
-    {
-      question: "Will I get hands-on experience?",
-      answer:
-        "Yes, you will run practical projects with channel planning, execution, and reporting workflows.",
-    },
-    {
-      question: "How long is the program?",
-      answer:
-        "The program runs for 24 weeks with a progressive, portfolio-focused structure.",
-    },
+const careerRoles = [
+  { role: "Performance Marketer", range: "12 - 22 LPA" },
+  { role: "Paid Media Specialist", range: "10 - 18 LPA" },
+  { role: "Social Media Manager", range: "08 - 14 LPA" },
+  { role: "SEO Specialist", range: "09 - 16 LPA" },
+  { role: "Growth Lead", range: "18 - 35 LPA" },
+  { role: "Digital Marketing Head", range: "25 - 50 LPA" }
+];
+
+const alumniOutcomes = [
+  { name: "Ananya Iyer", role: "Journalism Grad", target: "Performance Marketer", company: "Zomato", desc: "Bridging the gap between writing and data-driven ads was the game-changer." },
+  { name: "Rohan Verma", role: "Business Owner", target: "Growth Specialist", company: "Nykaa", desc: "I optimized my own store's ROAS from 1.2 to 4.5 before joining my current role." },
+  { name: "Priya Sharma", role: "Fresher", target: "SEO Specialist", company: "Microsoft", desc: "The technical SEO module helped me crack one of the hardest agency technical rounds." }
+];
+
+const faqCategories = {
+  "Program Details": [
+    { q: "Is this program for beginners?", a: "Yes, we start from digital fundamentals and move into high-performance execution. No prior marketing experience is required." },
+    { q: "What is the class format?", a: "Live interactice sessions on weekends/evenings with industry-level practical activity hours." }
   ],
-  Eligibility: [
-    {
-      question: "What are the prerequisites for this program?",
-      answer:
-        "No mandatory prerequisites. Basic comfort with digital tools is helpful.",
-    },
-    {
-      question: "Do I need prior digital marketing experience?",
-      answer:
-        "No, both beginners and early practitioners can use this track to become job-ready.",
-    },
-    {
-      question: "Can beginners apply?",
-      answer:
-        "Yes, the sequence starts with fundamentals and builds up to advanced execution.",
-    },
-    {
-      question: "Is there any age restriction?",
-      answer: "No, the program is open to all eligible learners.",
-    },
-  ],
-  Community: [
-    {
-      question: "How can I interact with other participants?",
-      answer:
-        "You can collaborate through cohort groups, assignment reviews, and peer learning sessions.",
-    },
-    {
-      question: "Is mentorship available?",
-      answer:
-        "Yes, mentors provide guidance on projects, campaign design, and career positioning.",
-    },
-    {
-      question: "Can I access support after completion?",
-      answer: "Yes, alumni and ongoing support channels are available after graduation.",
-    },
-    {
-      question: "How diverse is the community?",
-      answer:
-        "Learners come from varied industries including ecommerce, SaaS, agencies, and startups.",
-    },
-  ],
-  Lectures: [
-    {
-      question: "Are sessions live or recorded?",
-      answer:
-        "Both. Live sessions for interaction and recordings for flexible revision.",
-    },
-    {
-      question: "How interactive are the sessions?",
-      answer:
-        "Sessions include practical breakdowns, campaign critiques, and tactical discussions.",
-    },
-    {
-      question: "Can I replay missed lectures?",
-      answer: "Yes, recordings are available for each module.",
-    },
-    {
-      question: "How often are live sessions held?",
-      answer: "Live sessions are conducted weekly.",
-    },
-  ],
-  Certification: [
-    {
-      question: "Will I receive a certificate on completion?",
-      answer: "Yes, eligible learners receive a professional completion certificate.",
-    },
-    {
-      question: "Is the certification recognized by employers?",
-      answer:
-        "It demonstrates practical execution capability and portfolio-backed readiness.",
-    },
-    {
-      question: "Can I add this certification to resume/LinkedIn?",
-      answer: "Yes, it is designed for professional showcase.",
-    },
-    {
-      question: "Is certification included in the fee?",
-      answer: "Yes, it is included for successful graduates.",
-    },
-  ],
-  Opportunities: [
-    {
-      question: "What roles can I target after this program?",
-      answer:
-        "You can target SEO, paid media, growth, lifecycle, social, and analytics roles.",
-    },
-    {
-      question: "Is there placement support?",
-      answer: "Yes, placement assistance and interview support are included.",
-    },
-    {
-      question: "Are internships available?",
-      answer:
-        "Select learners may access internship and project opportunities through partner networks.",
-    },
-    {
-      question: "How does this help career growth?",
-      answer:
-        "You graduate with campaign execution depth, measurable outcomes, and a hiring-ready portfolio.",
-    },
-  ],
+  "Career Support": [
+    { q: "Do you offer placement?", a: "We provide 100% career support, including interview referrals, mock rounds, and portfolio polishing." },
+    { q: "Is there a certificate?", a: "Yes, you receive a professional Growth Accelerator Certification recognized by our 250+ hiring partners." }
+  ]
 };
 
 const DigitalMarket = () => {
-  const [openModule, setOpenModule] = useState(0);
-  const [activeCategory, setActiveCategory] = useState("Program");
-  const [openFAQ, setOpenFAQ] = useState(null);
+  const [expandedModule, setExpandedModule] = useState(null);
+  const [activeFaqCat, setActiveFaqCat] = useState("Program Details");
+  const [openFaqIdx, setOpenFaqIdx] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 80);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <div className="dm-page">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap');
 
         :root {
-          --bg: #f3f1f1;
-          --panel: #ffffff;
-          --ink: #171717;
-          --muted: #626262;
-          --line: #ded8d5;
-          --accent: #c43609;
-          --radius: 18px;
-          --shadow: 0 20px 40px rgba(29, 20, 13, 0.08);
+          --dm-bg: #F7F6F2;
+          --dm-text: #1F2937;
+          --dm-text-dim: #6B7280;
+          --dm-primary: #4F46E5;
+          --dm-accent: #818CF8;
+          --dm-border: rgba(31, 41, 55, 0.08);
         }
 
-        * { box-sizing: border-box; }
+        .dm-page { background: var(--dm-bg); color: var(--dm-text); font-family: 'Plus Jakarta Sans', sans-serif; }
+        .shell { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 
-        .dm-page {
-          background:
-            radial-gradient(circle at 8% 8%, rgba(196, 54, 9, 0.08), transparent 34%),
-            radial-gradient(circle at 95% 55%, rgba(15, 77, 98, 0.09), transparent 28%),
-            var(--bg);
-          color: var(--ink);
-          font-family: "Sora", "Segoe UI", sans-serif;
+        .dm-section { padding: 100px 0; }
+        .dm-sec-white { padding: 100px 0; background: #fff; border-top: 1px solid var(--dm-border); border-bottom: 1px solid var(--dm-border); }
+
+        .sec-title { font-family: 'Outfit', sans-serif; font-size: 32px; font-weight: 800; margin-bottom: 16px; color: var(--dm-text); text-align: left; }
+        .sec-sub { font-size: 17px; color: var(--dm-text-dim); max-width: 600px; margin-bottom: 48px; text-align: left; line-height:1.6; }
+
+        .p-card { 
+          background: #fff; 
+          border: 1px solid var(--dm-border); 
+          border-radius: 12px; 
+          padding: 24px; 
+          transition: 0.3s;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.02);
         }
+        .p-card:hover { border-color: var(--dm-accent); box-shadow: 0 8px 30px rgba(0,0,0,0.04); }
 
-        .dm-shell {
-          width: min(100%, calc(100% - 32px));
-          margin: 0 auto;
-        }
+        .btn-sec { border: 1px solid var(--dm-border); color: var(--dm-text); padding: 12px 24px; border-radius: 8px; font-weight: 700; font-size: 15px; background:#fff; }
 
-        .dm-btn {
-          background: linear-gradient(180deg, #d64d1d 0%, #af2f06 100%);
-          border: 0;
-          border-radius: 10px;
-          color: #fff;
-          cursor: pointer;
-          font-size: 12px;
-          font-weight: 700;
-          letter-spacing: 0.3px;
-          padding: 10px 18px;
-          text-transform: uppercase;
-        }
+        .faq-item { border: 1px solid var(--dm-border); border-radius: 12px; margin-bottom: 12px; overflow: hidden; background: #fff; }
+        .faq-quest { width:100%; text-align:left; padding: 20px 24px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .faq-ans { padding: 0 24px 24px; font-size: 14px; color: var(--dm-text-dim); line-height: 1.6; }
 
-        .dm-section { padding: 24px 0; }
-        .dm-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 8px; }
-        .dm-section p.lead {
-          color: var(--muted);
-          line-height: 1.7;
-          margin: 0 0 16px;
-          max-width: 760px;
-        }
+        .sticky-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 72px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--dm-border); z-index: 99; transform: translateY(100%); transition: 0.4s; display: flex; align-items: center; }
+        .sticky-bar.visible { transform: translateY(0); }
 
-        .dm-hero {
-          border-top: 1px solid var(--line);
-          display: grid;
-          gap: 16px;
-          grid-template-columns: 1fr 1fr;
-          padding: 16px 0 20px;
-        }
-
-        .dm-chip {
-          background: #f0e0db;
-          border-radius: 999px;
-          color: #8a4f40;
-          display: inline-flex;
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 0.5px;
-          padding: 6px 12px;
-          text-transform: uppercase;
-        }
-
-        .dm-hero h1 {
-          font-size: clamp(42px, 5vw, 74px);
-          line-height: 0.98;
-          margin: 12px 0;
-        }
-
-        .dm-hero h1 span {
-          color: var(--accent);
-          font-family: "Fraunces", Georgia, serif;
-          font-style: italic;
-          font-weight: 800;
-        }
-
-        .dm-sub {
-          color: var(--muted);
-          font-size: 17px;
-          line-height: 1.6;
-          max-width: 520px;
-          margin-bottom: 16px;
-        }
-
-        .dm-stats {
-          display: grid;
-          gap: 12px;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          max-width: 560px;
-          margin-bottom: 18px;
-        }
-
-        .dm-stat {
-          background: var(--panel);
-          border: 1px solid #eadeda;
-          border-radius: 16px;
-          box-shadow: var(--shadow);
-          padding: 16px 14px;
-        }
-
-        .dm-stat-label {
-          color: #8a8a8a;
-          font-size: 11px;
-          letter-spacing: 0.6px;
-          margin-bottom: 6px;
-          text-transform: uppercase;
-        }
-
-        .dm-stat-value { font-size: 18px; font-weight: 700; }
-
-        .dm-hero-media { position: relative; }
-
-        .dm-media-box {
-          background: radial-gradient(circle at 25% 20%, #17627c 0%, #0d1826 70%);
-          border-radius: 22px;
-          box-shadow: 0 24px 46px rgba(0, 0, 0, 0.28);
-          overflow: hidden;
-          padding: 18px;
-          height: 600px;
-        }
-
-        .dm-media-box > div {
-          height: 100%;
-        }
-
-        .dm-media-box ImageSlider {
-          border-radius: 16px;
-          display: block;
-          height: 100%;
-          min-height: 100%;
-          object-fit: cover;
-          width: 100%;
-        }
-
-        .dm-floating-card {
-          background: rgba(255, 255, 255, 0.92);
-          border-radius: 16px;
-          box-shadow: 0 12px 32px rgba(19, 16, 11, 0.18);
-          left: -20px;
-          max-width: 300px;
-          padding: 16px;
-          position: absolute;
-          bottom: -20px;
-        }
-
-        .dm-curr-grid {
-          display: grid;
-          gap: 10px;
-          grid-template-columns: 2fr 1fr;
-        }
-
-        .dm-accordion { display: grid; gap: 10px; }
-
-        .dm-module {
-          background: var(--panel);
-          border: 1px solid #e7e0dc;
-          border-radius: var(--radius);
-          padding: 14px;
-        }
-
-        .dm-module.open { border-color: #d05b36; }
-
-        .dm-module-head {
-          align-items: center;
-          cursor: pointer;
-          display: flex;
-          justify-content: space-between;
-        }
-
-        .dm-module-week {
-          color: #9b9b9b;
-          font-size: 10px;
-          letter-spacing: 0.5px;
-          text-transform: uppercase;
-        }
-
-        .dm-module-title { font-size: 24px; font-weight: 600; margin-top: 5px; }
-        .dm-module-toggle { color: #7b7b7b; font-size: 24px; line-height: 1; }
-
-        .dm-module-body {
-          border-top: 1px solid #eee4de;
-          margin-top: 16px;
-          padding-top: 15px;
-        }
-
-        .dm-module-objective {
-          color: #4b4b4b;
-          font-size: 14px;
-          line-height: 1.6;
-          margin-bottom: 10px;
-        }
-
-        .dm-tag-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
-        .dm-tag {
-          background: #f3e7e1;
-          border-radius: 999px;
-          color: #8d4d3b;
-          font-size: 11px;
-          padding: 5px 11px;
-        }
-
-        .dm-side-panel {
-          background: var(--panel);
-          border: 1px solid #e8e0dc;
-          border-radius: var(--radius);
-          box-shadow: var(--shadow);
-          height: fit-content;
-          padding: 20px;
-        }
-
-        .dm-side-panel h3 { font-size: 28px; margin: 0 0 6px; }
-        .dm-side-panel p { color: #6f6f6f; font-size: 14px; margin: 0 0 16px; }
-
-        .dm-overview-grid,
-        .dm-why-grid,
-        .dm-role-grid,
-        .dm-metric-grid,
-        .dm-faq-grid {
-          display: grid;
-          gap: 16px;
-        }
-
-        .dm-overview-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .dm-why-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .dm-role-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .dm-metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-        .dm-faq-grid { grid-template-columns: 250px 1fr; }
-
-        .dm-card {
-          background: #f7f5f4;
-          border: 1px solid #e6dfdc;
-          border-radius: 16px;
-          padding: 20px;
-        }
-
-        .dm-card h4 { margin: 0 0 8px; font-size: 20px; }
-        .dm-card p { margin: 0; color: #5f5f5f; line-height: 1.6; }
-
-        .dm-takeaway-grid {
-          align-items: center;
-          display: grid;
-          gap: 22px;
-          grid-template-columns: 1fr;
-          width: 100%;
-        }
-
-        .dm-list {
-          margin: 0;
-          padding: 0;
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 15px 30px;
-          width: 100%;
-        }
-
-        @media (max-width: 768px) {
-          .dm-list {
-            grid-template-columns: 1fr;
-          }
-        }
-
-        .dm-list li {
-          list-style: none;
-          padding-left: 16px;
-          position: relative;
-          color: #454545;
-          line-height: 1.55;
-        }
-
-        .dm-list li::before {
-          background: #cb4213;
-          border-radius: 50%;
-          content: "";
-          height: 6px;
-          left: 0;
-          position: absolute;
-          top: 9px;
-          width: 6px;
-        }
-
-        .dm-image {
-          border-radius: 16px;
-          box-shadow: var(--shadow);
-          overflow: hidden;
-        }
-
-        .dm-image img {
-          display: block;
-          width: 100%;
-          height: 100%;
-          min-height: 320px;
-          object-fit: cover;
-        }
-
-        .dm-center { text-align: center; }
-
-        .dm-brochure {
-          align-items: center;
-          border: 2px solid #ca3f12;
-          border-radius: 18px;
-          display: flex;
-          justify-content: space-between;
-          gap: 20px;
-          padding: 20px;
-          background: #fff;
-        }
-
-        .dm-career { background: #eceaea; border-top: 1px solid #ddd8d5; border-bottom: 1px solid #ddd8d5; }
-
-        .dm-role-card {
-          background: #f7f5f4;
-          border: 1px solid #e6dfdc;
-          border-radius: 16px;
-          min-height: 190px;
-          padding: 22px;
-          position: relative;
-        }
-
-        .dm-role-dot {
-          background: #be3a10;
-          border-radius: 50%;
-          height: 10px;
-          margin-bottom: 16px;
-          width: 10px;
-        }
-        
-        .dm-role-card h4 {
-          font-weight: 700;
-        }
-
-        .dm-role-card strong {
-          color: #b12e03;
-          display: block;
-          margin-top: 12px;
-          font-size: 12px;
-          text-transform: uppercase;
-        }
-
-        .dm-fixed-price {
-          align-items: center;
-          background: #ffffffee;
-          backdrop-filter: blur(6px);
-          border-top: 1px solid var(--line);
-          bottom: 0;
-          color: var(--ink);
-          display: flex;
-          gap: 12px;
-          font-size: 14px;
-          font-weight: 700;
-          justify-content: space-between;
-          left: 0;
-          letter-spacing: 0.4px;
-          min-height: 56px;
-          padding: 10px 24px;
-          position: fixed;
-          text-transform: uppercase;
-          width: 100%;
-          z-index: 120;
-        }
-
-        .dm-fixed-price strong {
-          color: var(--accent-dark);
-          margin-left: 6px;
-        }
-
-        .dm-metric {
-          text-align: center;
-          padding: 16px;
-          border: 1px solid #e6dfdc;
-          border-radius: 14px;
-          background: #fff;
-        }
-
-        .dm-metric h4 { margin: 0; color: #bf390d; font-size: 30px; }
-        .dm-metric p { margin: 6px 0 0; color: #5f5f5f; }
-
-        .dm-invest {
-          background: #fdfcfc;
-          border: 2px solid #ca3f12;
-          border-radius: 18px;
-          box-shadow: var(--shadow);
-          padding: 28px;
-        }
-
-        .dm-invest h3 { font-size: 40px; margin: 6px 0; }
-        .dm-invest-sub { color: #7a7a7a; font-size: 13px; text-transform: uppercase; }
-
-        .dm-invest-grid {
-          border-top: 1px solid #ece4e0;
-          display: grid;
-          gap: 18px;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          margin-top: 20px;
-          padding-top: 16px;
-        }
-
-        .dm-invest-item strong { color: #bf390d; display: block; margin-bottom: 6px; }
-        .dm-invest-item span { color: #5e5e5e; font-size: 13px; line-height: 1.5; }
-
-        .dm-pay-grid {
-          display: grid;
-          gap: 18px;
-          grid-template-columns: 1fr 1fr;
-          margin-top: 16px;
-        }
-
-        .dm-fee-box {
-          background: linear-gradient(145deg, #df5a2c 0%, #b73b14 100%);
-          border-radius: 26px;
-          color: #fff;
-          padding: 24px;
-          text-align: center;
-        }
-
-        .dm-fee-box .fee { font-size: 48px; font-weight: 800; line-height: 1.1; }
-
-        .dm-breakdown {
-          background: #fff;
-          border: 1px solid #e8e0dc;
-          border-radius: 16px;
-          padding: 16px;
-        }
-
-        .dm-break-row {
-          border-bottom: 1px solid #ebe3df;
-          display: flex;
-          justify-content: space-between;
-          font-size: 14px;
-          padding: 11px 0;
-        }
-
-        .dm-break-row:last-child { border-bottom: 0; }
-
-        .dm-partner {
-          align-items: center;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          margin-top: 16px;
-        }
-
-        .dm-partner img { height: 76px; object-fit: contain; }
-
-        .dm-faq-menu {
-          border: 1px solid #e5deda;
-          border-radius: 14px;
-          background: #fff;
-          padding: 12px;
-          height: fit-content;
-        }
-
-        .dm-faq-menu button {
-          background: #fff;
-          border: 1px solid #e7e0dc;
-          border-radius: 10px;
-          cursor: pointer;
-          display: block;
-          font-family: inherit;
-          font-size: 13px;
-          font-weight: 700;
-          margin-bottom: 8px;
-          padding: 10px 12px;
-          text-align: left;
-          width: 100%;
-        }
-
-        .dm-faq-menu button.active {
-          border-color: #d35e39;
-          color: #b9380f;
-        }
-
-        .dm-faq-item {
-          border: 1px solid #e7e0dc;
-          border-radius: 12px;
-          margin-bottom: 10px;
-          overflow: hidden;
-        }
-
-        .dm-faq-head {
-          align-items: center;
-          background: #fff;
-          cursor: pointer;
-          display: flex;
-          justify-content: space-between;
-          padding: 12px 14px;
-          width: 100%;
-          border: 0;
-          font-family: inherit;
-          text-align: left;
-        }
-
-        .dm-faq-body {
-          background: #f8f5f4;
-          color: #4f4f4f;
-          padding: 12px 14px;
-          border-top: 1px solid #e7e0dc;
-        }
-
-        @media (max-width: 1080px) {
-          .dm-hero,
-          .dm-curr-grid,
-          .dm-overview-grid,
-          .dm-why-grid,
-          .dm-role-grid,
-          .dm-metric-grid,
-          .dm-pay-grid,
-          .dm-faq-grid,
-          .dm-takeaway-grid,
-          .dm-invest-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .dm-floating-card { left: 14px; }
-          .dm-brochure { flex-direction: column; align-items: flex-start; }
-        }
-
-        @media (max-width: 780px) {
-          .dm-section { padding: 42px 0; }
-          .dm-module-title { font-size: 21px; }
-        }
+        @media (max-width: 768px) { .sec-title { font-size: 28px; } }
       `}</style>
 
-      <div className="dm-shell">
-        <div style={{ width: "100%", marginBottom: "20px", marginTop: "10px" }}>
-          <img 
-            src={posterImage} 
-            alt="Digital Marketing Poster" 
-            style={{ width: "100%", height: "auto", borderRadius: "18px", display: "block" }} 
-          />
-        </div>
-        <section className="dm-hero">
-          <div>
-            <div className="dm-chip">Advanced Program 2026</div>
-            <h1>Digital Marketing & <span>Growth</span> Accelerator.</h1>
-            <p className="dm-sub">
-              Accelerate your trajectory into the elite tier of digital marketing with advanced mastery in performance engineering, SEO strategy, and high-velocity growth automation. Learn to architect data-driven, multi-channel campaigns that drive exponential customer acquisition and measurable revenue growth for global brands. Master industry-leading tools like Google Analytics 4, Meta Ads Manager, and HubSpot to execute sophisticated marketing strategies that dominate today's competitive digital economy.
-            </p>
+      {/* 1. HERO */}
+      <CourseHeroBanner
+        badge="Growth Accelerator"
+        icon="🚀"
+        title="Digital Marketing"
+        highlight="Career Certification"
+        sub="Master the skills required to lead performance marketing, organic growth, and technical automation for global product brands."
+        stats={heroStats}
+        bg="linear-gradient(135deg, #1E1B4B 0%, #312E81 45%, #4338CA 100%)"
+        accent="#818CF8"
+        shape="DM"
+      >
+        <ImageSlider />
+      </CourseHeroBanner>
 
-            <div className="dm-stats">
-              {heroStats.map((item) => (
-                <article className="dm-stat" key={item.label}>
-                  <div className="dm-stat-label">{item.label}</div>
-                  <div className="dm-stat-value">{item.value}</div>
-                </article>
-              ))}
-            </div>
-          </div>
+      <CourseInfoStrip 
+        accent="#818CF8" 
+        courseValue="Digital Marketing" 
+        duration="24 Weeks"
+        brochureLink={dmBrochure}
+      />
 
-          <div className="dm-hero-media">
-            <div className="dm-media-box">
-              <ImageSlider />
-            </div>
-            <aside className="dm-floating-card">
-              <h4>Outcome Focused</h4>
-              <p>Build campaign outcomes that map directly to acquisition, retention, and revenue growth.</p>
-            </aside>
-          </div>
-        </section>
-
-        <section className="dm-section">
-          <h2>Curriculum</h2>
-          <p className="lead">
-            A practical, high-rigor roadmap from marketing foundations to full-funnel growth execution.
-            Designed for modern digital operators.
-          </p>
-
-          <div className="dm-accordion">
-            {curriculum.map((module, index) => {
-              const isOpen = openModule === index;
-              return (
-                <article className={`dm-module ${isOpen ? "open" : ""}`} key={module.title}>
-                  <div
-                    className="dm-module-head"
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => setOpenModule(isOpen ? -1 : index)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") {
-                        setOpenModule(isOpen ? -1 : index);
-                      }
-                    }}
-                  >
-                    <div>
-                      <div className="dm-module-week">{module.week}</div>
-                      <div className="dm-module-title">{module.title}</div>
-                    </div>
-                    <span className="dm-module-toggle">{isOpen ? "-" : "+"}</span>
-                  </div>
-
-                  {isOpen && (
-                    <div className="dm-module-body">
-                      <p className="dm-module-objective">{module.objectives}</p>
-                      <div className="dm-tag-wrap">
-                        {module.topics.map((topic) => (
-                          <span className="dm-tag" key={topic}>{topic}</span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </article>
-              );
-            })}
-          </div>
-
-          <div style={{ marginTop: "32px", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
-            <h2 className="mb-4">Speak with an Advisor</h2>
-            <p className="lead mb-6" style={{ margin: "0 auto 24px" }}>Get a personalized roadmap to transition or accelerate your growth marketing career.</p>
-            <div style={{ width: "min(90%, calc(100% - 32px))", margin: "auto", padding: "0" }}>
-              <ApplyForm courseValue="Digital Marketing" />
-            </div>
-          </div>
-        </section>
-
-        <section className="dm-section">
-          <h2>Program Overview</h2>
-          <div className="dm-overview-grid">
-            {overviewTopics.map((topic) => (
-              <article className="dm-card" key={topic}>
-                <h4>{topic}</h4>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="dm-section">
-          <h2>Why Choose Digital Marketing?</h2>
-          <p className="lead">Build one of the most versatile and high-velocity career paths in the digital economy.</p>
-          <div className="dm-why-grid">
-            {whyChoose.map((item) => (
-              <article className="dm-card" key={item.title}>
-                <h4>{item.title}</h4>
-                <p>{item.description}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="dm-section">
-          <h2>Key Takeaways</h2>
-          <div className="dm-takeaway-grid">
-            <ul className="dm-list">
-              {keyTakeaways.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        <section className="dm-section">
-          <BenefitsofLearning />
-        </section>
-
-        <section className="dm-section">
-          <div className="dm-brochure">
-            <div>
-              <h2 style={{ margin: "0 0 6px", fontSize: "32px" }}>Get the Full Course Breakdown</h2>
-              <p className="lead" style={{ margin: 0 }}>
-                Access the detailed curriculum with channel strategy, execution templates, and case studies.
-              </p>
-            </div>
-            <a href={pdfdm} target="_blank" rel="noreferrer" className="dm-btn" style={{ textDecoration: "none" }}>
-              Download
-            </a>
-          </div>
-        </section>
-      </div>
-
-      <section className="dm-section dm-career">
-        <div className="dm-shell">
-          <div className="dm-center">
-            <h2>Career Opportunities in Digital Marketing</h2>
-            <p className="lead" style={{ margin: "0 auto", maxWidth: "640px" }}>
-              The program prepares you for high-impact growth, performance, and digital strategy roles.
-            </p>
-          </div>
-
-          <div className="dm-role-grid">
-            {roles.map((role) => (
-              <article className="dm-role-card" key={role.title}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
-                  <div className="dm-role-dot" style={{ marginBottom: 0 }} />
-                  <h4 style={{ margin: 0 }}>{role.title}</h4>
+      {/* 2. AUDIENCE */}
+      <section className="dm-section">
+        <div className="shell">
+          <h2 className="sec-title">Who this program is for</h2>
+          <p className="sec-sub">Essential for anyone aiming to master full-funnel marketing execution, from creators to career switchers.</p>
+          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'20px'}}>
+             {audience.map((item, i) => (
+                <div key={i} className="p-card">
+                  <div style={{color:'var(--dm-primary)', marginBottom:'16px'}}>{item.icon}</div>
+                  <h4 style={{fontSize:'18px', fontWeight:800, marginBottom:'10px'}}>{item.title}</h4>
+                  <p style={{fontSize:'14px', color:'var(--dm-text-dim)', lineHeight:1.6}}>{item.desc}</p>
                 </div>
-                <p>{role.text}</p>
-                <strong>{role.avg}</strong>
-              </article>
-            ))}
+             ))}
           </div>
         </div>
       </section>
 
+      {/* 3. MARKET OPPORTUNITY */}
+      <section className="dm-sec-white">
+        <div className="shell text-left">
+          <h2 className="sec-title">The Digital Opportunity</h2>
+          <p className="sec-sub">Why there has never been a better time to build a technical marketing career.</p>
+          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(300px, 1fr))', gap:'40px'}}>
+             {marketOpportunity.map((item, i) => (
+               <div key={i} style={{paddingRight:'40px'}}>
+                 <div style={{color:'var(--dm-primary)', marginBottom:'20px'}}>{item.icon}</div>
+                 <h4 style={{fontSize:'18px', fontWeight:800, marginBottom:'12px'}}>{item.title}</h4>
+                 <p style={{fontSize:'15px', color:'var(--dm-text-dim)', lineHeight:1.6}}>{item.desc}</p>
+               </div>
+             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 4. TOOLS */}
       <section className="dm-section">
-        <div className="dm-shell">
-          <h2 className="dm-center">Our Alumni at Top Brands</h2>
-          <p className="lead dm-center" style={{ margin: "0 auto 18px", maxWidth: "760px" }}>
-            Their success stories inspire current students to aim for global excellence.
-          </p>
-          <ClientsCarousel />
-        </div>
-      </section>
-
-      <section className="dm-section">
-        <div className="dm-shell">
-          <h2 className="dm-center">About Krutanic</h2>
-          <p className="lead dm-center" style={{ margin: "0 auto 18px", maxWidth: "800px" }}>
-            Krutanic is a fast-growing EdTech platform dedicated to empowering students & professionals with industry-relevant skills. Founded in 2024, we focus on bridging the gap between academic learning and real-world requirements. Aligned with NSDC (National Skill Development Corporation), we ensure high-quality, job-ready training.
-          </p>
-          <div className="dm-metric-grid">
-            <article className="dm-metric"><h4>200+</h4><p>Students Placed</p></article>
-            <article className="dm-metric"><h4>450+</h4><p>Hiring Partners</p></article>
-            <article className="dm-metric"><h4>4.7</h4><p>Rated Program</p></article>
-            <article className="dm-metric"><h4>93%</h4><p>Placement Rate</p></article>
-          </div>
-        </div>
-      </section>
-
-      <section className="dm-section">
-        <div className="dm-shell">
-          <Certification />
-        </div>
-      </section>
-
-      <section className="dm-section">
-        <div className="dm-shell">
-          <div className="dm-invest">
-            <div className="dm-invest-sub">Program Investment</div>
-            <h3>Rs 95,999</h3>
-            <div className="dm-invest-sub">Total fee (incl. GST)</div>
-
-            <div className="dm-invest-grid">
-              <div className="dm-invest-item">
-                <strong>Rs 10,000</strong>
-                <span>Registration fee to reserve your seat in this premium cohort.</span>
-              </div>
-              <div className="dm-invest-item">
-                <strong>Installment 1: Rs 43,000</strong>
-                <span>Payable within 15 days from date of registration.</span>
-              </div>
-              <div className="dm-invest-item">
-                <strong>Installment 2: Rs 42,999</strong>
-                <span>Payable within 15 days after installment 1.</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="dm-pay-grid">
-            <div className="dm-fee-box">
-              <div>Total Program Fee</div>
-              <div className="fee">Rs 95,999</div>
-              <div>Inclusive of taxes</div>
-            </div>
-            <div className="dm-breakdown">
-              <div className="dm-break-row"><span>Registration</span><strong>Rs 10,000</strong></div>
-              <div className="dm-break-row"><span>Installment 1</span><strong>Rs 43,000</strong></div>
-              <div className="dm-break-row"><span>Installment 2</span><strong>Rs 42,999</strong></div>
-            </div>
-          </div>
-
-          <div className="dm-partner">
-            <p className="dm-invest-sub">Our Financial Partner</p>
-            <img src={Flashaidlogo} alt="Financial partner" />
-          </div>
-        </div>
-      </section>
-
-      <section className="dm-section" style={{ background: "#fff" }}>
-        <div className="dm-shell">
-          <StoreSection />
-        </div>
-      </section>
-
-      <section className="dm-section" style={{ background: "#fff" }}>
-        <div className="dm-shell">
-          <h2 className="dm-center">Ask Us Anything</h2>
-          <div className="dm-faq-grid">
-            <aside className="dm-faq-menu">
-              {Object.keys(faqData).map((category) => (
-                <button
-                  key={category}
-                  className={activeCategory === category ? "active" : ""}
-                  type="button"
-                  onClick={() => {
-                    setActiveCategory(category);
-                    setOpenFAQ(null);
-                  }}
-                >
-                  {category}
-                </button>
+        <div className="shell">
+           <h2 className="sec-title">Tool-stack you will master</h2>
+           <p className="sec-sub">Gain execution depth across a suite of 40+ industry tools for design, search, and automation.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(260px, 1fr))', gap:'20px'}}>
+              {techStack.map((group, i) => (
+                 <div key={i} className="p-card">
+                    <div style={{fontSize:'12px', fontWeight:800, color:'var(--dm-primary)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:'16px'}}>{group.group}</div>
+                    <div style={{display:'flex', flexWrap:'wrap', gap:'8px'}}>
+                       {group.tools.map(t => (
+                          <span key={t} style={{fontSize:'13px', fontWeight:700, background:'var(--dm-bg)', padding:'6px 12px', borderRadius:'6px'}}>{t}</span>
+                       ))}
+                    </div>
+                 </div>
               ))}
-            </aside>
-
-            <div>
-              {faqData[activeCategory].map((faq, index) => (
-                <article className="dm-faq-item" key={faq.question}>
-                  <button
-                    className="dm-faq-head"
-                    type="button"
-                    onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
-                  >
-                    <span>{faq.question}</span>
-                    <strong>{openFAQ === index ? "-" : "+"}</strong>
-                  </button>
-                  {openFAQ === index && <div className="dm-faq-body">{faq.answer}</div>}
-                </article>
-              ))}
-            </div>
-          </div>
+           </div>
         </div>
       </section>
 
-      <div className="dm-fixed-price">
-        <span>Program Fee: <strong>Rs 95,999 inclusive of taxes</strong></span>
-        <ApplyNowButton courseValue="Digital Marketing" />
+      {/* 5. ROADMAP */}
+      <section className="dm-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">Progressive Learning Roadmap</h2>
+           <p className="sec-sub">From organic search foundations to complex performance attribution and career acceleration.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(450px, 1fr))', gap:'16px'}}>
+              {curriculumRoadmap.map((item, idx) => (
+                 <div key={idx} className="p-card" onClick={() => setExpandedModule(expandedModule === idx ? null : idx)} style={{cursor:'pointer', borderLeft: expandedModule === idx ? '4px solid var(--dm-primary)' : '1px solid var(--dm-border)'}}>
+                    <div style={{display:'flex', justifyContent:'space-between', marginBottom:'12px'}}>
+                       <span style={{fontSize:'11px', fontWeight:800, color:'var(--dm-primary)', background:'rgba(79,70,229,0.05)', padding:'4px 12px', borderRadius:'99px'}}>{item.module}</span>
+                       <ChevronDown size={16} style={{transform: expandedModule === idx ? 'rotate(180deg)' : 'none', transition:'0.3s'}} />
+                    </div>
+                    <h4 style={{fontSize:'20px', fontWeight:800, marginBottom:'4px'}}>{item.title}</h4>
+                    <p style={{fontSize:'14px', color:'var(--dm-text-dim)', marginBottom:'8px'}}>{item.summary}</p>
+                    <div style={{fontSize:'13px', fontWeight:700, color:'var(--dm-primary)'}}>{item.topics}</div>
+                    {expandedModule === idx && (
+                       <div style={{marginTop:'20px', paddingTop:'20px', borderTop:'1px solid var(--dm-border)', color:'var(--dm-text-dim)', fontSize:'14px', lineHeight:1.6}}>
+                          {item.details}
+                       </div>
+                    )}
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 6. PROJECTS */}
+      <section className="dm-section">
+        <div className="shell">
+           <h2 className="sec-title">Practical projects and campaigns</h2>
+           <p className="sec-sub">Execute end-to-end marketing cycles on real industrial datasets to build your proof-of-work.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(350px, 1fr))', gap:'24px'}}>
+              {portfolioProjects.map((p, i) => (
+                 <div key={i} className="p-card">
+                    <h4 style={{fontSize:'20px', fontWeight:800, marginBottom:'16px'}}>{p.title}</h4>
+                    <div style={{marginBottom:'16px'}}><div style={{fontSize:'11px', fontWeight:800, color:'var(--dm-text-dim)', textTransform:'uppercase', marginBottom:'4px'}}>Business Objective</div><p style={{fontSize:'14px'}}>{p.problem}</p></div>
+                    <div><div style={{fontSize:'11px', fontWeight:800, color:'var(--dm-text-dim)', textTransform:'uppercase', marginBottom:'4px'}}>Mastered Skill</div><p style={{fontSize:'14px', fontWeight:700, color:'var(--dm-primary)'}}>{p.outcome}</p></div>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 7. HOW IT WORKS */}
+      <section className="dm-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">How Learning Works</h2>
+           <p className="sec-sub">A premium experience focused on live instruction, mentor accountability, and practical lab hours.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(260px, 1fr))', gap:'20px'}}>
+              {[{t:"Live Classes", d:"Weekend and evening sessions timed for professionals.", i:<Video size={20}/>}, {t:"Technical Mentors", d:"Personal reviews for your campaigns and growth assets.", i:<UserCheck size={20}/>}, {t:"Practical Labs", d:"Weekly activities focused on campaign execution drills.", i:<Terminal size={20}/>}, {t:"Placement Hub", d:"Direct referral pipeline for our 250+ hiring partners.", i:<MessagesSquare size={20}/>}].map((item, i) => (
+                 <div key={i} className="p-card text-center">
+                    <div style={{color:'var(--dm-primary)', margin:'0 auto 20px', width:'fit-content'}}>{item.i}</div>
+                    <div style={{fontWeight:800, marginBottom:'8px'}}>{item.t}</div>
+                    <p style={{fontSize:'13px', color:'var(--dm-text-dim)', lineHeight:1.5}}>{item.d}</p>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 8. CAREER PROCESS */}
+      <section className="dm-section">
+        <div className="shell">
+           <h2 className="sec-title">Career Support Process</h2>
+           <p className="sec-sub">A transparent 5-step transition workflow to ensure your skills translate into professional results.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(200px, 1fr))', gap:'12px'}}>
+              {["Profile Audit", "Asset Creation", "Portfolio Review", "Mock Interviews", "Referral Pipeline"].map((step, i) => (
+                 <div key={i} style={{padding:'24px', border:'1px solid var(--dm-border)', borderRadius:'12px', background:'#fff', position:'relative', overflow:'hidden'}}>
+                    <div style={{fontSize:'32px', fontWeight:950, opacity:0.1, position:'absolute', top:0, left:12}}>0{i+1}</div>
+                    <div style={{fontWeight:800, fontSize:'15px', position:'relative', zIndex:2, marginTop:24}}>{step}</div>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 9. ALUMNI */}
+      <section className="dm-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">Learner outcomes and success</h2>
+           <p className="sec-sub">Our graduates have built growth systems for global brands and accelerated their internal career tracks.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(350px, 1fr))', gap:'20px', marginBottom:'48px'}}>
+              {alumniOutcomes.map((a, i) => (
+                 <div key={i} className="p-card">
+                    <div style={{display:'flex', justifyContent:'space-between', marginBottom:'16px'}}>
+                       <div><div style={{fontWeight:800}}>{a.name}</div><div style={{fontSize:'12px', color:'var(--dm-text-dim)'}}>{a.role} → {a.target}</div></div>
+                       <div style={{fontSize:'14px', fontWeight:800, color:'var(--dm-primary)'}}>{a.company}</div>
+                    </div>
+                    <p style={{fontSize:'14px', fontStyle:'italic', opacity:0.8}}>"{a.desc}"</p>
+                 </div>
+              ))}
+           </div>
+           <ClientsCarousel />
+        </div>
+      </section>
+
+      {/* 10. PATHS */}
+      <section className="dm-section">
+        <div className="shell text-left">
+           <h2 className="sec-title">Career paths after the program</h2>
+           <p className="sec-sub">Target specialized roles with high demand and measurable salary growth models.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'12px'}}>
+              {careerRoles.map((r, i) => (
+                 <div key={i} className="p-card flex justify-between items-center" style={{padding:'20px'}}>
+                    <div style={{fontWeight:800}}>{r.role}</div>
+                    <div style={{fontSize:'13px', color:'var(--dm-primary)', fontWeight:700}}>{r.range}</div>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 11. CERTIFICATION */}
+      <section className="dm-sec-white">
+        <div className="shell">
+           <Certification />
+        </div>
+      </section>
+
+      {/* 12. PRICING */}
+      <section className="dm-section" id="pricing">
+        <div className="shell">
+           <h2 className="sec-title">Program Investment</h2>
+           <p className="sec-sub">Transparent enrollment options with secure payment partners and installment plans.</p>
+           <div className="p-card" style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'60px', padding:'48px', alignItems:'start'}}>
+              <div>
+                 <div style={{fontSize:'13px', fontWeight:800, color:'var(--dm-primary)', textTransform:'uppercase', marginBottom:'16px'}}>All-access certification</div>
+                 <div style={{fontSize:'64px', fontWeight:950, letterSpacing:'-3px', marginBottom:'16px'}}>₹95,999</div>
+                 <p style={{color:'var(--dm-text-dim)', marginBottom:'40px', lineHeight:1.6}}>Includes all tools, live sessions, project reviews, and 100% career support access.</p>
+                 <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="Digital Marketing" /><a href={dmBrochure} className="btn-sec">Official Syllabus</a></div>
+              </div>
+              <div style={{display:'grid', gap:'12px'}}>
+                 {[{l:"Seat Reservation", v:"₹10,000"}, {l:"Installment 1", v:"₹43,000"}, {l:"Installment 2", v:"₹42,999"}].map((row, i) => (
+                    <div key={i} style={{padding:'20px', background:'var(--dm-bg)', borderRadius:'8px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                       <span style={{fontSize:'13px', fontWeight:700}}>{row.l}</span><span style={{fontWeight:800}}>{row.v}</span>
+                    </div>
+                 ))}
+                 <div style={{marginTop:'12px', display:'flex', alignItems:'center', gap:'12px', opacity:0.6}}><Zap size={18} /> <img src={Flashaidlogo} alt="Flashaid" style={{height:'14px', grayscale:1}} /> <span style={{fontSize:'12px'}}>EMI starting at ₹4,000/month</span></div>
+              </div>
+           </div>
+        </div>
+      </section>
+
+      {/* 13. FAQ */}
+      <section className="dm-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">Common Questions</h2>
+           <p className="sec-sub">Everything you need to know about the enrollment, learning, and job transition process.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'60px', alignItems:'start'}}>
+              <div style={{display:'grid', gap:'8px'}}>
+                 {Object.keys(faqCategories).map(cat => (
+                    <button key={cat} onClick={() => { setActiveFaqCat(cat); setOpenFaqIdx(null); }} style={{textAlign:'left', padding:'16px 24px', borderRadius:'10px', fontWeight:700, fontSize:'14px', transition:'0.2s', background: activeFaqCat === cat ? 'var(--dm-primary)' : 'transparent', color: activeFaqCat === cat ? '#fff' : 'var(--dm-text)'}} className={activeFaqCat !== cat ? 'hover:bg-gray-100' : ''}>{cat}</button>
+                 ))}
+              </div>
+              <div style={{display:'grid', gap:'8px'}}>
+                 {faqCategories[activeFaqCat].map((faq, i) => (
+                    <div key={i} className="faq-item" onClick={() => setOpenFaqIdx(openFaqIdx === i ? null : i)}>
+                       <div className="faq-quest">{faq.q} <ChevronDown size={14} style={{transform: openFaqIdx === i ? 'rotate(180deg)' : 'none', transition:'0.3s'}} /></div>
+                       <AnimatePresence>{openFaqIdx === i && <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="faq-ans"><div style={{paddingTop:'20px', borderTop:'1px solid var(--dm-border)'}}>{faq.a}</div></motion.div>}</AnimatePresence>
+                    </div>
+                 ))}
+              </div>
+           </div>
+        </div>
+      </section>
+
+      {/* 14. FORM */}
+      <section className="dm-section">
+        <div className="shell">
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'80px', alignItems:'start'}}>
+              <div>
+                 <h2 className="sec-title">Request a Consultation</h2>
+                 <p className="sec-sub">Speak with our technical advisors to review your career roadmap and cohort eligibility.</p>
+                 <div style={{display:'grid', gap:'16px'}}>
+                    {['24-hour advisor response', 'One-on-one session planning', 'Program suitability audit'].map(t => (
+                       <div key={t} style={{display:'flex', alignItems:'center', gap:'12px', fontSize:'14px', fontWeight:700}}><CheckCircle2 size={18} className="text-indigo-600" /> {t}</div>
+                    ))}
+                 </div>
+              </div>
+              <div className="p-card" style={{padding:'32px', maxWidth:'520px'}}>
+                 <div style={{marginBottom:'24px'}}><h3 style={{fontSize:'20px', fontWeight:800, marginBottom:'4px'}}>Advisor Callback Request</h3><p style={{fontSize:'13px', color:'var(--dm-text-dim)'}}>Connect with the KRUTANIC team today.</p></div>
+                 <ApplyForm courseValue="Digital Marketing" isPremium={true} />
+              </div>
+           </div>
+        </div>
+      </section>
+
+      <div className={`sticky-bar ${scrolled ? 'visible' : ''}`}>
+        <div className="shell flex justify-between items-center w-full">
+           <div className="hidden sm:block"><div style={{fontSize:'10px', fontWeight:800, color:'var(--dm-text-dim)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:'2px'}}>Growth Accelerator</div><div style={{fontWeight:800}}>₹95,999 <span style={{fontSize:'12px', color:'var(--dm-primary)', marginLeft:'12px'}}>EMI ₹4,000/MO</span></div></div>
+           <div className="flex gap-4 items-center">
+              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-bold uppercase hidden lg:flex items-center gap-2 hover:text-indigo-600 transition-all"><PhoneCall size={14} /> Callback</button>
+              <ApplyNowButton courseValue="Digital Marketing" />
+           </div>
+        </div>
       </div>
     </div>
   );

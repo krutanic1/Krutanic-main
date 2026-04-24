@@ -37,7 +37,8 @@ import {
   FaCheckCircle,
   FaStar,
   FaAward,
-  FaBuilding
+  FaBuilding,
+  FaUsers
 } from "react-icons/fa";
 
 const mediaHighlights = [
@@ -298,7 +299,9 @@ const AdvanceCourses = () => {
               { icon: <FaStar />, title: "1-on-1 Mentorship", desc: "Connect exclusively with industry veterans. Get direct feedback, career strategy, and exclusive insights to accelerate your vertical growth.", bg: "bg-blue-50 text-blue-600" },
               { icon: <FaAward />, title: "Global Certification", desc: "Earn verifiable, globally-recognized certifications that dramatically elevate your resume and explicitly validate your advanced expertise.", bg: "bg-orange-50 text-orange-600" },
               { icon: <FaBuilding />, title: "Live Architectures", desc: "Work directly on live enterprise-grade projects. Deal with massive scale, real data, and deployment strategies mirroring FAANG stacks.", bg: "bg-green-50 text-green-600" },
-              { icon: <FaCheckCircle />, title: "Placement Assistance", desc: "Gain direct access to our 250+ hiring partners aggressively looking for certified profiles. Prepare with elite mock interviews and portfolio tracking.", bg: "bg-purple-50 text-purple-600" }
+              { icon: <FaCheckCircle />, title: "Placement Assistance", desc: "Gain direct access to our 250+ hiring partners aggressively looking for certified profiles. Prepare with elite mock interviews and portfolio tracking.", bg: "bg-purple-50 text-purple-600" },
+              { icon: <FaRocket />, title: "Project-Based Learning", desc: "Execute 50+ industry-standard projects across the program. Transition from theoretical knowledge to building production-ready systems.", bg: "bg-red-50 text-red-600" },
+              { icon: <FaUsers />, title: "Industry Masterclasses", desc: "Gain exclusive access to weekly masterclasses led by experts from top-tier firms. Stay updated with the latest industry trends and best practices.", bg: "bg-cyan-50 text-cyan-600" }
             ].map((item, i) => (
               <div key={i} className="bg-white p-6 sm:p-8 rounded-[24px] md:rounded-[32px] border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col md:flex-row items-start md:items-center gap-5 md:gap-8">
                 <div className={`w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 ${item.bg} rounded-2xl md:rounded-3xl flex-shrink-0 flex items-center justify-center text-2xl md:text-3xl`}>
@@ -434,6 +437,34 @@ const AdvanceCourses = () => {
         </div>
 
       </main>
+
+      {/* Fixed Bottom Contact Banner with Shining Effect */}
+      <div className="fixed bottom-0 left-0 w-full bg-gradient-to-r from-[#f15b29] via-[#ff7d4d] to-[#f15b29] text-white py-3 px-4 z-[100] text-center shadow-[0_-10px_30px_rgba(241,91,41,0.3)] border-t border-white/20 overflow-hidden">
+        {/* Shine/Shimmer Effect Layer */}
+        <div className="absolute inset-0 w-full h-full pointer-events-none">
+          <div className="w-[100px] h-full bg-white/30 skew-x-[-25deg] absolute top-0 -left-[150px] animate-[shine_4s_infinite]"></div>
+        </div>
+
+        <p className="text-[10px] md:text-sm font-black tracking-wider flex items-center justify-center gap-2 relative z-10 drop-shadow-sm uppercase">
+          <span>Feel free to reach out to us at <a href="tel:9380736449" className="hover:text-white/80 transition-colors bg-white/10 px-2 py-0.5 rounded-lg border border-white/20">9380736449</a> or simply</span>
+          <button 
+            onClick={() => setShowApplyForm(true)} 
+            className="group flex items-center gap-1.5 bg-white text-[#f15b29] px-4 py-1 rounded-full text-[9px] md:text-xs font-black shadow-lg hover:scale-105 transition-all duration-300 active:scale-95"
+          >
+            Request a Callback
+            <span className="group-hover:translate-x-1 transition-transform">→</span>
+          </button>
+          <span>, and we'll get in touch shortly.</span>
+        </p>
+
+        <style>{`
+          @keyframes shine {
+            0% { left: -150px; }
+            30% { left: 120%; }
+            100% { left: 120%; }
+          }
+        `}</style>
+      </div>
     </div>
   );
 };

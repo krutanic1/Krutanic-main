@@ -4,10 +4,7 @@ import AdvancedApplyPopup from "../Components/AdvancedApplyPopup";
 import axios from "axios";
 import AlumniData from "../Components/alumniData";
 import API from "../API";
-import { FaStar, FaSearch, FaSlidersH, FaBriefcase, FaChartLine } from "react-icons/fa";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import { FaSearch, FaArrowRight, FaRobot, FaBullhorn, FaBuilding, FaUserTie, FaCheckCircle, FaLaptopCode, FaFileAlt, FaUsers } from "react-icons/fa";
 
 import alumniIndian from "../assets/alumni_indian.png";
 
@@ -15,25 +12,10 @@ const Alumni = () => {
   const [showApplyPopup, setShowApplyPopup] = useState(false);
   const [filters, setFilters] = useState({ post: "", location: "", role: "" });
   const [searchQuery, setSearchQuery] = useState("");
-  const [dropdownOpen, setDropdownOpen] = useState({ post: false, location: false, role: false,});
   const [selectedAlumni, setSelectedAlumni] = useState(null);
   const [filteredResults, setFilteredResults] = useState(AlumniData);
   const [isFlipped, setIsFlipped] = useState(false);
   const [formErrors, setFormErrors] = useState({});
-
-  const uniqueValues = useMemo(
-    () => ({  
-      posts: [...new Set(AlumniData.map((a) => a.post))].sort(),
-      locations: [...new Set(AlumniData.map((a) => a.location))].sort(),
-      roles: [...new Set(AlumniData.map((a) => a.role))].sort(),
-    }),
-    []
-  );
-
-  const handleSelect = (field, value) => {
-    setFilters((prev) => ({ ...prev, [field]: value }));
-    setDropdownOpen((prev) => ({ ...prev, [field]: false }));
-  };
 
   useEffect(() => {
     setFilteredResults(
@@ -50,10 +32,7 @@ const Alumni = () => {
   }, [filters, searchQuery]);
 
   const handleCardClick = (alumni) => {
-    if (!alumni?.name) {
-      console.warn("Invalid alumni:", alumni);
-      return;
-    }
+    if (!alumni?.name) return;
     setIsFlipped(false);
     setSelectedAlumni(alumni);
   };
@@ -106,431 +85,575 @@ const Alumni = () => {
     }
   };
 
-  const Dropdown = ({ field, placeholder, options }) => (
-    <div className="w-full relative">
-      <button
-        onClick={() =>
-          setDropdownOpen((prev) => ({ ...prev, [field]: !prev[field] }))
-        }
-        className="w-full bg-black text-white px-4 py-2 rounded-md text-sm text-left flex justify-between"
-      >
-        {filters[field] || placeholder}
-      </button>
-      {dropdownOpen[field] && (
-        <div className="absolute z-10 w-full bg-[#1A1A1A] text-white rounded-md mt-1 max-h-40 overflow-y-auto scrollbar-hide">
-          <button
-            onClick={() => handleSelect(field, "")}
-            className="w-full text-left px-4 py-2 text-sm hover:bg-gray-700"
-          >
-            {placeholder}
-          </button>
-          {options.map((item, i) => (
-            <button
-              key={i}
-              onClick={() => handleSelect(field, item)}
-              className="w-full text-left px-4 py-2 text-sm hover:bg-gray-700"
-            >
-              {item}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-
   return (
     <div className="container m-auto px-[10px] py-[20px]">
       <Helmet>
-          <title>Krutanic Alumni | Success Stories from E-Learning Leaders</title>
-          <meta name="keywords" content="e-learning alumni, Krutanic graduates, tech careers, coding success, mentorship stories"/>
-          <meta name="description" content="Explore how Krutanic alumni achieved career success through our top e-learning programs. Real stories in tech, coding, and data science mentorship."/>
-          <meta property="og:title" content="Krutanic Alumni | Success Stories from E-Learning Leaders"/>
+          <title>Krutanic Outcomes | Career Transitions & Alumni Network</title>
+          <meta name="keywords" content="e-learning alumni, Krutanic graduates, tech careers, coding success, mentorship stories, job placement"/>
+          <meta name="description" content="See how Krutanic learners transition into high-growth roles, secure competitive packages, and build lasting professional networks."/>
+          <meta property="og:title" content="Krutanic Outcomes | Career Transitions & Alumni Network"/>
           <meta property="og:url" content="https://www.krutanic.com/Alumni"/>
           <meta property="og:image" content="https://www.krutanic.com/assets/LOGO3-Do06qODb.png"/>
-          <meta property="og:description" content="Explore how Krutanic alumni achieved career success through our top e-learning programs. Real stories in tech, coding, and data science mentorship."/>
+          <meta property="og:description" content="See how Krutanic learners transition into high-growth roles, secure competitive packages, and build lasting professional networks."/>
           <meta property="og:type" content="website"/>
           <meta name="twitter:card" content="summary"/>
-          <meta name="twitter:title" content="Krutanic Alumni | Success Stories from E-Learning Leaders"/>
+          <meta name="twitter:title" content="Krutanic Outcomes | Career Transitions & Alumni Network"/>
           <meta name="twitter:image" content="https://www.krutanic.com/assets/LOGO3-Do06qODb.png"/>
-          <meta name="twitter:description" content="Explore how Krutanic alumni achieved career success through our top e-learning programs. Real stories in tech, coding, and data science mentorship."/>
+          <meta name="twitter:description" content="See how Krutanic learners transition into high-growth roles, secure competitive packages, and build lasting professional networks."/>
           <link rel="canonical" href="https://www.krutanic.com/Alumni" />
       </Helmet>
-      <div className="max-w-5xl mx-auto pt-4 md:pt-10 pb-16">
-        {/* Header Section from Design */}
-        <div className="mb-10">
-          <div className="inline-flex items-center gap-2 bg-orange-50 rounded-full px-3 py-1.5 mb-6 border border-orange-100 shadow-sm">
-            <FaStar className="text-[#F15B29]" size={14}/>
-            <span className="text-xs font-bold text-[#F15B29]">4.9/5 Rating</span>
-            <span className="text-[10px] font-bold text-gray-400 tracking-widest pl-2 border-l border-gray-300">GLOBAL COMMUNITY</span>
-          </div>
-
-          <h1 className="text-[52px] md:text-[72px] leading-[1.05] font-extrabold text-[#111] tracking-tighter mb-4">
-            Our <span className="text-[#F15B29]">Legacy</span><br/>In Motion.
-          </h1>
-          <p className="text-gray-600 font-medium text-lg md:text-xl mb-8 max-w-sm leading-relaxed">
-            Connect with 5,000+ alumni from top tech firms worldwide.
-          </p>
-
-          {/* Search Bar + Filter */}
-          <div className="flex gap-4 mb-5 max-w-2xl">
-            <div className="flex-1 bg-white border border-gray-100 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex items-center px-6 h-16">
-              <FaSearch className="text-gray-400 shrink-0 text-xl" />
-              <input 
-                type="text" 
-                placeholder="Search role or company..." 
-                className="w-full bg-transparent outline-none px-4 text-base font-medium text-gray-700 placeholder-gray-400"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+      
+      <div className="max-w-[1200px] mx-auto pt-4 md:pt-10 pb-16">
+        
+        {/* 1. Poster-style hero */}
+        <div className="mb-14 bg-[#0B0F19] rounded-[32px] p-8 md:p-14 text-white relative overflow-hidden shadow-2xl">
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#F15B29] opacity-15 rounded-full blur-[100px] pointer-events-none"></div>
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-600 opacity-10 rounded-full blur-[100px] pointer-events-none"></div>
+          
+          <div className="relative z-10 flex flex-col lg:flex-row gap-12 items-center justify-between">
+            <div className="max-w-2xl w-full">
+              <h1 className="text-[44px] md:text-[60px] leading-[1.1] font-bold text-white tracking-tight mb-6 font-serif">
+                Career Outcomes Across <br/><span className="text-[#F15B29] font-sans font-extrabold tracking-tighter">High-Growth Roles</span>
+              </h1>
+              
+              <p className="text-gray-400 text-lg md:text-xl mb-10 max-w-xl leading-relaxed font-medium">
+                See how Krutanic learners transition into new careers, secure competitive roles, and build lasting professional networks. 
+              </p>
+              
+              <div className="flex flex-wrap gap-4">
+                <div className="bg-white/5 border border-white/10 rounded-xl py-3 px-5 backdrop-blur-sm flex items-center gap-3">
+                  <FaUserTie className="text-[#F15B29] text-xl" />
+                  <span className="text-sm font-semibold text-white tracking-wide">Active Career Guidance</span>
+                </div>
+                <div className="bg-white/5 border border-white/10 rounded-xl py-3 px-5 backdrop-blur-sm flex items-center gap-3">
+                  <FaCheckCircle className="text-[#F15B29] text-xl" />
+                  <span className="text-sm font-semibold text-white tracking-wide">Interview Preparation</span>
+                </div>
+                <div className="bg-white/5 border border-white/10 rounded-xl py-3 px-5 backdrop-blur-sm flex items-center gap-3">
+                  <FaBuilding className="text-[#F15B29] text-xl" />
+                  <span className="text-sm font-semibold text-white tracking-wide">Hiring-Readiness Support</span>
+                </div>
+              </div>
             </div>
-            <button className="h-16 w-16 bg-[#F15B29] rounded-3xl flex items-center justify-center text-white shadow-lg hover:bg-[#d84a1e] transition-colors shrink-0 text-2xl">
-              <FaSlidersH />
-            </button>
+            
+            <div className="w-full lg:w-[420px] hidden lg:block shrink-0">
+              <div className="bg-[#111827]/80 backdrop-blur-md border border-gray-700/50 rounded-[28px] p-8 relative shadow-2xl">
+                 <div className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold mb-6">Recent Transition</div>
+                 
+                 <div className="bg-[#1F2937]/50 rounded-2xl p-5 mb-5 border border-gray-700">
+                    <div className="text-xs font-bold text-gray-500 mb-1.5 uppercase tracking-widest">Before Krutanic</div>
+                    <div className="text-white font-semibold flex items-center justify-between text-base">
+                       <span>Sales Associate</span>
+                       <span className="text-gray-400 font-medium text-sm">Retail</span>
+                    </div>
+                 </div>
+                 
+                 <div className="flex justify-center my-3 text-[#F15B29]">
+                   <div className="bg-[#F15B29]/10 rounded-full p-2 border border-[#F15B29]/20">
+                     <FaArrowRight size={16} />
+                   </div>
+                 </div>
+                 
+                 <div className="bg-[#1F2937] rounded-2xl p-5 mt-5 border border-gray-700 shadow-inner">
+                    <div className="text-xs font-bold text-[#F15B29] mb-1.5 uppercase tracking-widest">After Krutanic</div>
+                    <div className="text-white font-semibold flex items-center justify-between text-lg">
+                       <span>Software Engineer</span>
+                       <span className="text-gray-300 font-bold text-sm bg-white/10 px-2 py-1 rounded">Microsoft</span>
+                    </div>
+                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 2. Outcomes proof strip */}
+        <div className="mb-24">
+          <div className="text-center md:text-left mb-6">
+             <h2 className="text-xs font-bold tracking-[0.25em] uppercase text-gray-400">Outcomes & Network Reach</h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 lg:gap-0 border-y border-gray-200 py-10">
+             <div className="lg:px-6 lg:border-r border-gray-200 last:border-0 pl-2">
+               <div className="text-3xl font-extrabold text-gray-900 mb-1.5 font-serif tracking-tight">5,000+</div>
+               <div className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Learner Network</div>
+             </div>
+             <div className="lg:px-6 lg:border-r border-gray-200 last:border-0">
+               <div className="text-3xl font-extrabold text-gray-900 mb-1.5 font-serif tracking-tight">300+</div>
+               <div className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Hiring Companies</div>
+             </div>
+             <div className="lg:px-6 lg:border-r border-gray-200 last:border-0 pl-2 md:pl-0">
+               <div className="text-3xl font-extrabold text-[#F15B29] mb-1.5 font-serif tracking-tight">140%</div>
+               <div className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Featured Salary Growth</div>
+             </div>
+             <div className="lg:px-6 lg:border-r border-gray-200 last:border-0">
+               <div className="text-3xl font-extrabold text-gray-900 mb-1.5 font-serif tracking-tight">45%</div>
+               <div className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Role Transitions</div>
+             </div>
+             <div className="lg:px-6 lg:border-r border-gray-200 last:border-0 pl-2 md:pl-0">
+               <div className="text-3xl font-extrabold text-gray-900 mb-1.5 font-serif tracking-tight">1-on-1</div>
+               <div className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Mentorship Support</div>
+             </div>
+             <div className="lg:px-6">
+               <div className="text-3xl font-extrabold text-gray-900 mb-1.5 font-serif tracking-tight">12+</div>
+               <div className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Projects Required</div>
+             </div>
+          </div>
+        </div>
+
+        {/* 3. Featured learner transitions */}
+        <div className="mb-24">
+          <div className="flex flex-col md:flex-row justify-between md:items-end gap-4 mb-10">
+            <div>
+              <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Featured Learner Transitions</h2>
+              <p className="text-gray-600 mt-2 font-medium text-lg">Documented career changes from recent cohorts.</p>
+            </div>
           </div>
 
-        </div>
-
-        {/* Featured Pioneers Section */}
-        <div className="mb-6 flex justify-between items-end">
-          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Featured Pioneers</h2>
-          <span className="cursor-pointer text-[#F15B29] text-[10px] font-extrabold uppercase tracking-widest hover:underline mb-1">View All</span>
-        </div>
-
-        <div className="pb-8 -mx-2 px-2 alumni-slider-container">
-          <style>{`
-            .alumni-slider-container .slick-slide { padding: 0 10px; box-sizing: border-box; }
-            .alumni-slider-container .slick-slide > div { margin-bottom: 24px; }
-            .alumni-slider-container .slick-dots li button:before { font-size: 10px; color: #d1d5db; }
-            .alumni-slider-container .slick-dots li.slick-active button:before { color: #F15B29; }
-          `}</style>
-          {filteredResults.length ? (
-            <div className="flex flex-col gap-6">
-              {[
-                [...filteredResults].reverse().filter((_, i) => i % 3 === 0),
-                [...filteredResults].reverse().filter((_, i) => i % 3 === 1),
-                [...filteredResults].reverse().filter((_, i) => i % 3 === 2)
-              ].map((rowItems, rowIndex) => {
-                if (rowItems.length === 0) return null;
-                // Duplicate items if too few to prevent react-slick continuous scroll glitching
-                const displayItems = rowItems.length < 4 ? [...rowItems, ...rowItems, ...rowItems, ...rowItems] : rowItems;
-                
-                return (
-                  <Slider
-                    key={rowIndex}
-                    infinite={true}
-                    autoplay={true}
-                    autoplaySpeed={0}
-                    speed={5000 + (rowIndex * 1500)}
-                    cssEase="linear"
-                    slidesToShow={3}
-                    slidesToScroll={1}
-                    arrows={false}
-                    pauseOnHover={true}
-                    rtl={rowIndex === 1}
-                    responsive={[
-                      { breakpoint: 1200, settings: { slidesToShow: 2 } },
-                      { breakpoint: 768, settings: { slidesToShow: 1 } }
-                    ]}
-                  >
-                    {displayItems.map((alumni, i) => (
-                      <div key={i} className="h-full" style={{ padding: '0 10px' }} dir={rowIndex === 1 ? 'rtl' : 'ltr'}>
-                        <div
-                          className="mx-auto bg-white border border-gray-100 rounded-[32px] p-6 shadow-[0_8px_30px_-4px_rgba(0,0,0,0.04)] hover:-translate-y-2 hover:shadow-xl transition-all cursor-pointer duration-300"
-                          onClick={() => handleCardClick(alumni)}
-                          dir="ltr"
-                        >
-                          <div className="flex justify-between items-start mb-6">
-                            <div className="w-14 h-14 bg-gradient-to-tr from-gray-900 to-gray-700 rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-md border-2 border-white ring-2 ring-gray-100">
-                              {alumni.name.charAt(0)}
-                            </div>
-                            <div className="text-right">
-                              <div className="text-[10px] text-[#F15B29] font-extrabold tracking-widest uppercase mb-0.5">Package</div>
-                              <div className="text-xl font-extrabold text-[#111] leading-none">{alumni.package || "Custom"}</div>
-                            </div>
-                          </div>
-                          
-                          <div className="mb-6">
-                            <h3 className="text-xl font-bold text-gray-900 mb-1">{alumni.name}</h3>
-                            <p className="text-sm text-blue-700 font-semibold">{alumni.role || "Professional"} at {alumni.post}</p>
-                          </div>
-
-                          <div className="flex gap-3">
-                            <div className="flex-1 bg-gray-50 rounded-2xl p-4 border border-gray-100/50">
-                              <div className="text-[10px] text-gray-400 font-bold tracking-widest mb-1.5 uppercase">Pre-Krutanic</div>
-                              <div className="text-sm font-bold text-gray-800">{alumni.pre}</div>
-                            </div>
-                            <div className="flex-1 bg-orange-50/50 rounded-2xl p-4 border border-[#F15B29]/10">
-                              <div className="text-[10px] text-[#F15B29] font-bold tracking-widest mb-1.5 uppercase">Post-Krutanic</div>
-                              <div className="text-sm font-bold text-[#df400b]">{alumni.package || alumni.post}</div>
-                            </div>
-                          </div>
-                        </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredResults.slice(0, 6).map((alumni, i) => (
+              <div key={i} className="bg-white border border-gray-200/80 rounded-[28px] p-8 shadow-sm hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:border-gray-300 transition-all cursor-pointer flex flex-col h-full group" onClick={() => handleCardClick(alumni)}>
+                 <div className="flex items-center gap-5 mb-8">
+                    <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-700 font-extrabold text-xl border border-gray-200 group-hover:bg-[#F15B29] group-hover:text-white transition-colors shadow-sm">
+                      {alumni.name.charAt(0)}
+                    </div>
+                    <div>
+                      <div className="text-lg font-extrabold text-gray-900 mb-0.5">{alumni.name}</div>
+                      <div className="text-sm font-semibold text-gray-500">{alumni.role || "Professional"}, <span className="text-gray-900">{alumni.post}</span></div>
+                    </div>
+                 </div>
+                 
+                 <div className="flex-1 bg-[#FAFAFA] rounded-2xl p-6 border border-gray-100 space-y-5">
+                    <div>
+                       <div className="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase mb-2">Before Krutanic</div>
+                       <div className="text-sm font-bold text-gray-700">{alumni.pre}</div>
+                    </div>
+                    <div className="h-px bg-gray-200/60 w-full relative">
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#FAFAFA] px-2 text-gray-300">
+                         <FaArrowRight size={10} />
                       </div>
-                    ))}
-                  </Slider>
-                );
-              })}
-            </div>
-          ) : (
-            <p className="text-gray-500 italic p-4">No alumni found matching your criteria.</p>
-          )}
-        </div>
-
-        {/* Mentorship Banner */}
-        <div className="my-10 bg-[#3B5498] rounded-[40px] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl shadow-blue-900/10">
-          <div className="absolute -top-20 -right-20 w-64 h-64 bg-white opacity-10 rounded-full blur-[40px]"></div>
-          <div className="absolute bottom-0 right-10 w-40 h-40 bg-blue-300 opacity-20 rounded-full blur-2xl translate-y-20"></div>
-          
-          <div className="relative z-10 max-w-sm">
-            <p className="text-xs font-bold tracking-[0.2em] text-blue-200 mb-4 uppercase">Bridge the Gap</p>
-            <h2 className="text-3xl md:text-4xl font-extrabold leading-tight mb-5 tracking-tight">Elevate Your Career with 1-1 Mentorship</h2>
-            <p className="text-blue-100/90 text-sm md:text-base leading-relaxed mb-8">Book a session with us and get insider interview secrets.</p>
-            <button 
-              onClick={() => setShowApplyPopup(true)}
-              className="bg-white text-[#3B5498] font-bold py-3.5 px-8 rounded-2xl text-sm shadow-[0_4px_20px_rgba(255,255,255,0.2)] hover:scale-105 transition-transform"
-            >
-              Book a Session
-            </button>
+                    </div>
+                    <div>
+                       <div className="flex justify-between items-start mb-2">
+                         <div className="text-[10px] font-extrabold tracking-widest text-[#F15B29] uppercase">After Krutanic</div>
+                         {alumni.package && <div className="text-[10px] font-extrabold text-[#F15B29] bg-orange-50 px-2 py-0.5 rounded border border-orange-100">Outcome: {alumni.package}</div>}
+                       </div>
+                       <div className="text-sm font-extrabold text-gray-900">{alumni.postRole || alumni.post}</div>
+                    </div>
+                 </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Success Stories & Stats Grid */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 tracking-tight mb-6">Success Stories</h2>
-          
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-white rounded-[32px] p-6 md:p-8 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100 flex items-center gap-6 hover:shadow-lg transition-shadow bg-gradient-to-br from-white to-gray-50 font-sans cursor-pointer">
-              <div className="w-20 h-20 rounded-2xl bg-[#111] overflow-hidden shrink-0 shadow-lg border-2 border-white ring-1 ring-gray-100">
-                <img src={alumniIndian} alt="Indian Professional Success Story" className="w-full h-full object-cover"/>
-              </div>
-              <div>
-                <p className="text-[#3B5498] text-[10px] font-extrabold tracking-widest uppercase mb-1.5 flex items-center gap-1">Transition Story</p>
-                <h4 className="font-bold text-gray-900 text-sm md:text-base leading-snug mb-3">"From Sales to Software Engineering at Microsoft"</h4>
-                <div className="text-gray-400 text-xs font-bold hover:text-gray-900 transition-colors uppercase tracking-wider flex items-center gap-1">Read More <span className="text-lg leading-none">&rarr;</span></div>
-              </div>
-            </div>
+        {/* 4. Browse outcomes */}
+        <div className="mb-24 bg-white border border-gray-200 rounded-[40px] p-10 md:p-14 shadow-sm shadow-gray-100/50">
+           <div className="mb-10 lg:w-2/3">
+             <h3 className="text-3xl font-extrabold text-gray-900">Explore Alumni Pathways</h3>
+             <p className="text-gray-600 mt-2 text-lg font-medium">Find documented journeys matching your background or career goals.</p>
+           </div>
+           
+           <div className="flex flex-col gap-8">
+             <div className="relative max-w-3xl">
+                <FaSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 text-lg" />
+                <input 
+                  type="text" 
+                  placeholder="Search by role, company, or learning path..." 
+                  className="w-full bg-gray-50 border border-gray-200 rounded-[24px] py-5 pl-14 pr-6 text-sm font-semibold text-gray-900 outline-none focus:border-gray-400 focus:bg-white transition-all appearance-none shadow-sm"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+             </div>
+             
+             <div className="flex flex-wrap gap-3">
+               {['Software Engineering', 'AI & Data', 'Marketing', 'Career Switchers', 'Freshers', 'Salary Growth', 'Top Companies'].map(cat => (
+                 <button key={cat} className="px-6 py-3 bg-white border border-gray-200 rounded-[20px] text-sm font-extrabold text-gray-600 hover:border-[#F15B29] hover:text-[#F15B29] hover:shadow-sm transition-all">
+                   {cat}
+                 </button>
+               ))}
+             </div>
+           </div>
+        </div>
 
-            <div className="grid grid-cols-2 gap-4 md:gap-6">
-              <div className="bg-[#FFF6F3] rounded-[32px] p-6 md:p-8 border border-[#F15B29]/10 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-6 text-[#F15B29] opacity-20 transform translate-x-4 -translate-y-4 group-hover:scale-110 group-hover:opacity-30 transition-all duration-500">
-                  <FaChartLine size={80}/>
-                </div>
-                <div className="text-[#F15B29] mb-4 relative z-10"><FaChartLine size={24}/></div>
-                <div className="text-[10px] text-gray-500 font-extrabold tracking-widest uppercase mb-1 relative z-10">Avg Hike</div>
-                <div className="text-4xl font-extrabold text-[#df400b] tracking-tight relative z-10">140%</div>
-              </div>
-              <div className="bg-[#EDF4FF] rounded-[32px] p-6 md:p-8 border border-blue-100 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-6 text-blue-500 opacity-10 transform translate-x-4 -translate-y-4 group-hover:scale-110 group-hover:opacity-20 transition-all duration-500">
-                  <FaBriefcase size={80}/>
-                </div>
-                <div className="text-blue-600 mb-4 relative z-10"><FaBriefcase size={22}/></div>
-                <div className="text-[10px] text-gray-500 font-extrabold tracking-widest uppercase mb-1 relative z-10">Placement</div>
-                <div className="text-4xl font-extrabold text-[#2F67B5] tracking-tight relative z-10">98%</div>
-              </div>
+        {/* 5. Editorial success stories */}
+        <div className="mb-24">
+          <div className="flex flex-col mb-10">
+            <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Case Studies</h2>
+            <p className="text-gray-600 mt-2 text-lg font-medium">Detailed looks into significant career transitions.</p>
+          </div>
+          
+          <div className="grid lg:grid-cols-12 gap-8">
+            {/* Featured Story */}
+            <div className="lg:col-span-7 bg-white border border-gray-200 rounded-[32px] overflow-hidden shadow-sm flex flex-col group cursor-pointer hover:shadow-xl hover:border-gray-300 transition-all">
+               <div className="h-72 bg-gradient-to-tr from-gray-900 to-gray-800 relative overflow-hidden">
+                  <img src={alumniIndian} alt="Featured Case Study" className="w-full h-full object-cover mix-blend-overlay opacity-60 group-hover:scale-105 transition-transform duration-1000"/>
+                  <div className="absolute top-6 left-6 bg-white px-4 py-2 text-[10px] font-extrabold tracking-widest uppercase text-gray-900 rounded-lg shadow-sm border border-gray-100">
+                    Operations to Data Science
+                  </div>
+               </div>
+               <div className="p-10 flex-1 flex flex-col">
+                  <h3 className="text-3xl font-extrabold text-gray-900 leading-tight mb-5 group-hover:text-[#F15B29] transition-colors tracking-tight">Building the technical depth required to pivot into advanced analytics.</h3>
+                  <p className="text-gray-600 text-base leading-relaxed mb-10 flex-1 font-medium">After three years in operational management, the lack of technical skills blocked entry into data analytics. Through 1-on-1 mentorship and capstone projects, the transition resulted in a data science role at a tier-1 firm.</p>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 pt-8 border-t border-gray-100">
+                     <div>
+                        <div className="font-extrabold text-gray-900 text-base">Priya Patel</div>
+                        <div className="text-xs text-gray-500 font-bold mt-1 uppercase tracking-wider">Program Completed: Data Science</div>
+                     </div>
+                     <div className="text-sm font-extrabold text-[#F15B29] flex items-center gap-2 group-hover:translate-x-1 transition-transform">Read Full Story <FaArrowRight /></div>
+                  </div>
+               </div>
+            </div>
+            
+            {/* Secondary Stories */}
+            <div className="lg:col-span-5 flex flex-col gap-8">
+               <div className="flex-1 bg-white border border-gray-200 rounded-[32px] p-8 md:p-10 shadow-sm flex flex-col group cursor-pointer hover:shadow-xl hover:border-gray-300 transition-all">
+                  <div className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-4">Fresher to Full Stack</div>
+                  <h4 className="text-xl font-extrabold text-gray-900 mb-4 leading-snug group-hover:text-[#F15B29] transition-colors">From basic frontend knowledge to a complete full-stack portfolio.</h4>
+                  <p className="text-sm text-gray-600 mb-8 flex-1 font-medium leading-relaxed">Gaining the practical architecture knowledge and project experience that product companies test for during technical interviews.</p>
+                  <div className="pt-6 border-t border-gray-100">
+                    <div className="text-base font-extrabold text-gray-900 flex justify-between items-center group-hover:text-[#F15B29] transition-colors">
+                      Rahul Sharma 
+                      <span className="text-[#F15B29] opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all"><FaArrowRight /></span>
+                    </div>
+                  </div>
+               </div>
+               <div className="flex-1 bg-white border border-gray-200 rounded-[32px] p-8 md:p-10 shadow-sm flex flex-col group cursor-pointer hover:shadow-xl hover:border-gray-300 transition-all">
+                  <div className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-4">Marketing to Product</div>
+                  <h4 className="text-xl font-extrabold text-gray-900 mb-4 leading-snug group-hover:text-[#F15B29] transition-colors">Mapping marketing intuition into structured product management.</h4>
+                  <p className="text-sm text-gray-600 mb-8 flex-1 font-medium leading-relaxed">How targeted resume reviews and mock execution interviews converted existing experience into a PM offer.</p>
+                  <div className="pt-6 border-t border-gray-100">
+                    <div className="text-base font-extrabold text-gray-900 flex justify-between items-center group-hover:text-[#F15B29] transition-colors">
+                      Ananya Gupta 
+                      <span className="text-[#F15B29] opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all"><FaArrowRight /></span>
+                    </div>
+                  </div>
+               </div>
             </div>
           </div>
         </div>
+
+        {/* 6. Career support system */}
+        <div className="mb-24">
+          <div className="text-center md:text-left mb-12 lg:w-2/3">
+            <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Career Support Behind the Outcomes</h2>
+            <p className="text-gray-600 mt-3 text-lg font-medium">The structured guidance and dedicated services that facilitate these transitions.</p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+             <div className="flex flex-col gap-4">
+                <div className="w-12 h-12 bg-[#FFF6F3] border border-[#F15B29]/10 rounded-[14px] flex items-center justify-center shrink-0">
+                  <FaUserTie className="text-[#F15B29] text-2xl" />
+                </div>
+                <div>
+                   <h4 className="text-lg font-extrabold text-gray-900 mb-2">Mentor-Led Sessions</h4>
+                   <p className="text-sm text-gray-600 leading-relaxed font-medium">Direct 1-on-1 guidance from active industry professionals who understand current hiring needs.</p>
+                </div>
+             </div>
+             <div className="flex flex-col gap-4">
+                <div className="w-12 h-12 bg-[#FFF6F3] border border-[#F15B29]/10 rounded-[14px] flex items-center justify-center shrink-0">
+                  <FaLaptopCode className="text-[#F15B29] text-2xl" />
+                </div>
+                <div>
+                   <h4 className="text-lg font-extrabold text-gray-900 mb-2">Project Portfolio Reviews</h4>
+                   <p className="text-sm text-gray-600 leading-relaxed font-medium">Code and architecture reviews to ensure your portfolio demonstrates production-level competence.</p>
+                </div>
+             </div>
+             <div className="flex flex-col gap-4">
+                <div className="w-12 h-12 bg-[#FFF6F3] border border-[#F15B29]/10 rounded-[14px] flex items-center justify-center shrink-0">
+                  <FaRobot className="text-[#F15B29] text-2xl" />
+                </div>
+                <div>
+                   <h4 className="text-lg font-extrabold text-gray-900 mb-2">Mock Interviews</h4>
+                   <p className="text-sm text-gray-600 leading-relaxed font-medium">Simulated technical and behavioral rounds to build confidence and refine your communication.</p>
+                </div>
+             </div>
+             <div className="flex flex-col gap-4">
+                <div className="w-12 h-12 bg-[#FFF6F3] border border-[#F15B29]/10 rounded-[14px] flex items-center justify-center shrink-0">
+                  <FaFileAlt className="text-[#F15B29] text-2xl" />
+                </div>
+                <div>
+                   <h4 className="text-lg font-extrabold text-gray-900 mb-2">Resume & Profile Review</h4>
+                   <p className="text-sm text-gray-600 leading-relaxed font-medium">Strategic structuring of your past experience and new skills to pass automated and manual screening.</p>
+                </div>
+             </div>
+             <div className="flex flex-col gap-4">
+                <div className="w-12 h-12 bg-[#FFF6F3] border border-[#F15B29]/10 rounded-[14px] flex items-center justify-center shrink-0">
+                  <FaBullhorn className="text-[#F15B29] text-xl" />
+                </div>
+                <div>
+                   <h4 className="text-lg font-extrabold text-gray-900 mb-2">Hiring-Readiness Guidance</h4>
+                   <p className="text-sm text-gray-600 leading-relaxed font-medium">Comprehensive coaching on the end-to-end recruitment process across different company tiers.</p>
+                </div>
+             </div>
+             <div className="flex flex-col gap-4">
+                <div className="w-12 h-12 bg-[#FFF6F3] border border-[#F15B29]/10 rounded-[14px] flex items-center justify-center shrink-0">
+                  <FaUsers className="text-[#F15B29] text-2xl" />
+                </div>
+                <div>
+                   <h4 className="text-lg font-extrabold text-gray-900 mb-2">Alumni & Community Referrals</h4>
+                   <p className="text-sm text-gray-600 leading-relaxed font-medium">Leveraging the network of past learners for insights and potential internal visibility.</p>
+                </div>
+             </div>
+          </div>
+        </div>
+
+        {/* 7. Alumni network and hiring ecosystem */}
+        <div className="mb-24 bg-[#FAFAFA] border border-gray-200 rounded-[40px] p-10 md:p-16">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+             <div className="order-2 lg:order-1">
+               <h2 className="text-3xl font-extrabold text-gray-900 mb-6 tracking-tight">The Alumni Employer Ecosystem</h2>
+               <p className="text-gray-600 text-lg leading-relaxed mb-10 font-medium">Our graduates leverage their skills across a diverse range of organizations, building careers in environments that match their goals.</p>
+               
+               <div className="grid grid-cols-2 gap-8">
+                 <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                   <div className="font-extrabold text-gray-900 text-sm mb-2">Global Enterprises</div>
+                   <div className="text-sm text-gray-500 font-medium leading-snug">Enterprise scale and enterprise architecture.</div>
+                 </div>
+                 <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                   <div className="font-extrabold text-gray-900 text-sm mb-2">Product Companies</div>
+                   <div className="text-sm text-gray-500 font-medium leading-snug">Core technology and product innovation.</div>
+                 </div>
+                 <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                   <div className="font-extrabold text-gray-900 text-sm mb-2">High-Growth Startups</div>
+                   <div className="text-sm text-gray-500 font-medium leading-snug">Agile development and rapid scaling logic.</div>
+                 </div>
+                 <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                   <div className="font-extrabold text-gray-900 text-sm mb-2">Consulting Firms</div>
+                   <div className="text-sm text-gray-500 font-medium leading-snug">Client solutions and technical strategy.</div>
+                 </div>
+               </div>
+             </div>
+             
+             <div className="order-1 lg:order-2 bg-white rounded-[32px] border border-gray-200 p-10 md:p-14 shadow-lg shadow-gray-100">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-y-12 gap-x-8 items-center text-center opacity-40 grayscale">
+                   {/* Logos or structured text representations */}
+                   <div className="text-[22px] font-extrabold text-gray-800 tracking-tighter">Microsoft</div>
+                   <div className="text-[22px] font-extrabold text-gray-800 tracking-tighter">Amazon</div>
+                   <div className="text-[22px] font-extrabold text-gray-800 tracking-tighter">Google</div>
+                   <div className="text-[22px] font-extrabold text-gray-800 tracking-tighter">Meta</div>
+                   <div className="text-[22px] font-extrabold text-gray-800 tracking-tighter">Netflix</div>
+                   <div className="text-[22px] font-extrabold text-gray-800 tracking-tighter">IBM</div>
+                   <div className="text-[22px] font-extrabold text-gray-800 tracking-tighter">Deloitte</div>
+                   <div className="text-[22px] font-extrabold text-gray-800 tracking-tighter">Accenture</div>
+                   <div className="text-[22px] font-extrabold text-gray-800 tracking-tighter">Oracle</div>
+                </div>
+             </div>
+          </div>
+        </div>
+
+        {/* 8. Final guidance CTA */}
+        <div className="mb-10 bg-[#0B0F19] rounded-[40px] p-12 md:p-20 text-center text-white relative overflow-hidden shadow-2xl">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-[#F15B29] opacity-15 blur-[120px] pointer-events-none rounded-[100%]"></div>
+          
+          <div className="relative z-10 max-w-3xl mx-auto">
+            <h2 className="text-3xl md:text-5xl font-extrabold leading-tight mb-6 text-white tracking-tight">Plan your next career move with Krutanic.</h2>
+            <p className="text-gray-300 text-lg md:text-xl mb-12 font-medium">Discuss your prior experience, specific goals, and how structured mentorship can support your transition.</p>
+            
+            <div className="flex flex-col sm:flex-row justify-center gap-5">
+              <button 
+                onClick={() => setShowApplyPopup(true)}
+                className="bg-[#F15B29] text-white font-extrabold py-4 px-10 rounded-2xl text-base hover:bg-orange-600 hover:-translate-y-1 transition-all shadow-[0_8px_30px_rgba(241,91,41,0.3)]"
+              >
+                Book a Career Strategy Session
+              </button>
+              <button 
+                onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                className="bg-transparent border border-white/20 text-white font-extrabold py-4 px-10 rounded-2xl text-base hover:bg-white/5 transition-all"
+              >
+                Browse Program Details
+              </button>
+            </div>
+          </div>
+        </div>
+
       </div>
+
       {showApplyPopup && <AdvancedApplyPopup onClose={() => setShowApplyPopup(false)} />}
+      
+      {/* Detail Dialog */}
       {selectedAlumni && (
-        <div className="fixed inset-0 px-1 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="relative w-full max-w-2xl bg-white rounded-lg p-3 max-h-[80vh] overflow-y-auto scrollbar-hide">
+        <div className="fixed inset-0 px-4 bg-gray-900/80 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="relative w-full max-w-2xl bg-white rounded-[32px] p-10 max-h-[90vh] overflow-y-auto scrollbar-hide shadow-2xl">
             <button
               onClick={handleCloseDialog}
-              className="absolute top-0 right-3 text-xl font-bold"
+              className="absolute top-6 right-8 text-3xl font-light text-gray-400 hover:text-gray-900 transition-colors"
               aria-label="Close dialog"
             >
-              x
+              &times;
             </button>
             {!isFlipped ? (
               <>
-                <div className="flex gap-4 items-center mb-4">
-                  {/* <img
-                    src={selectedAlumni.image}
-                    alt={selectedAlumni.name}
-                    className="w-24 h-24 rounded-full border-4 border-purple-700"
-                  /> */}
+                <div className="flex gap-6 items-center mb-10">
+                  <div className="w-20 h-20 bg-gray-50 border border-gray-200 rounded-[20px] flex items-center justify-center text-gray-800 font-extrabold text-3xl shadow-sm">
+                    {selectedAlumni.name.charAt(0)}
+                  </div>
                   <div>
-                    <h2 className="text-xl font-bold">{selectedAlumni.name}
-                    </h2>
-                    <p className="text-sm">
-                      {selectedAlumni.role} at  {selectedAlumni.post}
-                    
+                    <h2 className="text-2xl font-extrabold text-gray-900 mb-1">{selectedAlumni.name}</h2>
+                    <p className="text-base font-semibold text-gray-600 mb-0">
+                      {selectedAlumni.role} at <span className="text-gray-900">{selectedAlumni.post}</span>
                     </p>
-                    {/* <p className="text-sm ">
-                      Package : {selectedAlumni.package}
-                    </p> */}
-                      <a
-                      href={selectedAlumni.linkdinUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-2 border border-blue-600 text-blue-600 px-4 rounded cursor-pointer hover:bg-blue-600 hover:text-white transition-colors duration-300"
-                    >
-                      In Connect
-                    </a>
                   </div>
                 </div>
-                <div className="text-sm text-gray-700 mb-4">
-                  <p>📍{selectedAlumni.location}</p>
-                  <p>
-                    {/* 🎓{selectedAlumni.college} | {selectedAlumni.degree} */}
-                  </p>
-                  <p>💼{selectedAlumni.experience}</p>
+                
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  <div className="bg-[#FAFAFA] rounded-2xl p-5 border border-gray-100 text-sm font-bold text-gray-700">📍 {selectedAlumni.location || "Global"}</div>
+                  <div className="bg-[#FAFAFA] rounded-2xl p-5 border border-gray-100 text-sm font-bold text-gray-700">💼 {selectedAlumni.experience || "Professional"} Experience</div>
                 </div>
-                <div className="flex justify-between text-sm text-gray-700 mb-4">
+
+                <div className="bg-white border border-gray-200 rounded-3xl p-8 mb-10 shadow-sm relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-[#F15B29]"></div>
+                  
+                  <div className="mb-6">
+                    <p className="text-[10px] tracking-widest uppercase font-extrabold text-gray-400 mb-2">Before Krutanic</p>
+                    <p className="font-extrabold text-gray-900 text-lg">{selectedAlumni.pre}</p>
+                    <p className="text-sm text-gray-500 font-semibold mt-1">{selectedAlumni.preRole}</p>
+                  </div>
+                  
+                  <div className="h-px bg-gray-200 mb-6"></div>
+                  
                   <div>
-                    <p className="text-xs text-gray-500">Pre Krutanic</p>
-                    <p className="font-semibold">{selectedAlumni.pre}</p>
-                    <p className="text-xs">{selectedAlumni.preRole}</p>
-                  </div>
-                  <div className="text-2xl">➡️</div>
-                  <div>
-                    <p className="text-xs text-gray-500">Post Krutanic</p>
-                    <p className="font-semibold">{selectedAlumni.post}</p>
-                    
-                    {/* <p className="text-xs">{selectedAlumni.postRole}</p> */}
+                    <div className="flex justify-between items-center mb-2">
+                      <p className="text-[10px] tracking-widest uppercase font-extrabold text-[#F15B29]">After Krutanic</p>
+                      {selectedAlumni.package && <p className="text-[10px] uppercase tracking-widest font-extrabold text-[#F15B29] bg-orange-50 px-2 py-1 rounded">Outcome: {selectedAlumni.package}</p>}
+                    </div>
+                    <p className="font-extrabold text-gray-900 text-lg">{selectedAlumni.postRole || selectedAlumni.post}</p>
                   </div>
                 </div>
-                <div className="border p-4 rounded bg-gray-100">
-                  <div className="text-base font-semibold mb-1">
-                    Connect 1-1 with Alumni
+                
+                <div className="bg-gray-50 border border-gray-200 p-8 rounded-3xl text-center">
+                  <div className="text-xl font-extrabold text-gray-900 mb-2">
+                    Connect 1-1 with {selectedAlumni.name.split(" ")[0]}
                   </div>
-                  <p className="text-sm text-gray-600 mb-2">
-                    We will match you with the alumni based on their
-                    availability.
+                  <p className="text-sm text-gray-500 font-medium mb-8">
+                    We match learners with alumni based on availability and background alignment.
                   </p>
                   <button
                     onClick={() => setIsFlipped(true)}
-                    className="w-full bg-[#F15B29] text-white font-bold py-2 rounded"
+                    className="w-full bg-[#F15B29] text-white font-extrabold py-4 px-6 rounded-2xl hover:-translate-y-1 hover:shadow-lg transition-all"
                   >
-                    REQUEST FOR 1-1 SESSION
+                    REQUEST GUIDANCE SESSION
                   </button>
                 </div>
               </>
             ) : (
               <>
-                <h2 className="text-md font-bold mb-4">
-                  Take your career to the next level!
+                <h2 className="text-2xl font-extrabold text-gray-900 mb-6">
+                  Ready to map your transition?
                 </h2>
                 {formErrors.general && (
-                  <p className="text-red-500 text-sm mb-4">
+                  <p className="text-red-500 text-sm font-bold bg-red-50 p-4 rounded-xl mb-6">
                     {formErrors.general}
                   </p>
                 )}
-                <form className="space-y-4" onSubmit={handleSubmit}>
+                <form className="space-y-5" onSubmit={handleSubmit}>
                   <div>
                     <input
                       type="text"
                       name="fullName"
-                      className="block w-full border border-gray-300 rounded-md p-2 text-sm"
+                      className="w-full bg-white border border-gray-300 rounded-xl px-5 py-4 text-sm font-medium focus:ring-2 focus:ring-[#F15B29]/20 focus:border-[#F15B29] outline-none transition-all shadow-sm shadow-gray-50"
                       placeholder="Full name"
                       required
                     />
                   </div>
-                  <div>
-                    <input
-                      type="tel"
-                      name="contact"
-                      className="block w-full border border-gray-300 rounded-md p-2 text-sm"
-                      placeholder="Contact number"
-                      required
-                    />
-                    {formErrors.contact && (
-                      <p className="text-red-500 text-xs">
-                        {formErrors.contact}
-                      </p>
-                    )}
+                  <div className="grid grid-cols-2 gap-5">
+                    <div>
+                      <input
+                        type="tel"
+                        name="contact"
+                        className="w-full bg-white border border-gray-300 rounded-xl px-5 py-4 text-sm font-medium focus:ring-2 focus:ring-[#F15B29]/20 focus:border-[#F15B29] outline-none transition-all shadow-sm shadow-gray-50"
+                        placeholder="Contact number"
+                        required
+                      />
+                      {formErrors.contact && (
+                        <p className="text-red-500 text-xs mt-1.5 font-bold pl-1">{formErrors.contact}</p>
+                      )}
+                    </div>
+                    <div>
+                      <input
+                        type="email"
+                        name="email"
+                        className="w-full bg-white border border-gray-300 rounded-xl px-5 py-4 text-sm font-medium focus:ring-2 focus:ring-[#F15B29]/20 focus:border-[#F15B29] outline-none transition-all shadow-sm shadow-gray-50"
+                        placeholder="Email"
+                        required
+                      />
+                      {formErrors.email && (
+                        <p className="text-red-500 text-xs mt-1.5 font-bold pl-1">{formErrors.email}</p>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <input
-                      type="email"
-                      name="email"
-                      className="block w-full border border-gray-300 rounded-md p-2 text-sm"
-                      placeholder="Email"
-                      required
-                    />
-                    {formErrors.email && (
-                      <p className="text-red-500 text-xs">{formErrors.email}</p>
-                    )}
+                  
+                  <div className="grid grid-cols-2 gap-5">
+                    <div>
+                      <input
+                        type="number"
+                        name="graduationYear"
+                        className="w-full bg-white border border-gray-300 rounded-xl px-5 py-4 text-sm font-medium focus:ring-2 focus:ring-[#F15B29]/20 focus:border-[#F15B29] outline-none transition-all shadow-sm shadow-gray-50"
+                        placeholder="Grad. Year"
+                        required
+                      />
+                      {formErrors.graduationYear && (
+                        <p className="text-red-500 text-xs mt-1.5 font-bold pl-1">
+                          {formErrors.graduationYear}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <input
+                        type="number"
+                        name="yearsOfExperience"
+                        className="w-full bg-white border border-gray-300 rounded-xl px-5 py-4 text-sm font-medium focus:ring-2 focus:ring-[#F15B29]/20 focus:border-[#F15B29] outline-none transition-all shadow-sm shadow-gray-50"
+                        placeholder="Years of Exp."
+                        required
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <input
-                      type="number"
-                      name="graduationYear"
-                      className="block w-full border border-gray-300 rounded-md p-2 text-sm"
-                      placeholder="Graduation year"
-                      required
-                    />
-                    {formErrors.graduationYear && (
-                      <p className="text-red-500 text-xs">
-                        {formErrors.graduationYear}
-                      </p>
-                    )}
-                  </div>
+                  
                   <div>
                     <input
                       type="text"
                       name="currentCompany"
-                      className="block w-full border border-gray-300 rounded-md p-2 text-sm"
-                      placeholder="Current company"
+                      className="w-full bg-white border border-gray-300 rounded-xl px-5 py-4 text-sm font-medium focus:ring-2 focus:ring-[#F15B29]/20 focus:border-[#F15B29] outline-none transition-all shadow-sm shadow-gray-50"
+                      placeholder="Current company (or None)"
                       required
                     />
                   </div>
-                  <div>
-                    <input
-                      type="number"
-                      name="yearsOfExperience"
-                      className="block w-full border border-gray-300 rounded-md p-2 text-sm"
-                      placeholder="Years of experience"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-700 mb-2">
-                      Select Advanced Domains
+                  
+                  <div className="bg-gray-50 p-6 rounded-2xl border border-gray-200 mt-2">
+                    <p className="text-[10px] font-extrabold uppercase tracking-widest text-gray-500 mb-5">
+                      Interested Career Path
                     </p>
-                    <div className="grid grid-rows-4 grid-flow-col gap-x-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {[
-                        "Data Science",
-                        "Digital Marketing",
-                        "Investment Banking",
+                        "Data Science & AI",
+                        "Software Engineering",
                         "Product Management",
-                        "MERN Stack Development",
-                        "Performance Marketing",
-                        "Generative AI With Prompt Engineering",
-                        "Automation Testing",
+                        "Marketing & Growth"
                       ].map((domain) => (
-                        <div key={domain} className="flex items-center mb-2">
+                        <label key={domain} className="flex items-center gap-3 cursor-pointer group">
                           <input
                             type="checkbox"
-                            id={domain}
                             name="advancedDomains"
                             value={domain}
-                            className="h-3 w-3 border-gray-300 rounded"
+                            className="w-4 h-4 rounded border-gray-300 text-[#F15B29] focus:ring-[#F15B29]"
                           />
-                          <label
-                            htmlFor={domain}
-                            className="ml-2 text-sm text-gray-700"
-                          >
+                          <span className="text-sm font-bold text-gray-700 group-hover:text-gray-900 transition-colors">
                             {domain}
-                          </label>
-                        </div>
+                          </span>
+                        </label>
                       ))}
                     </div>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex flex-col sm:flex-row justify-between gap-4 pt-6">
                     <button
                       type="button"
                       onClick={() => setIsFlipped(false)}
-                      className="bg-gray-500 text-white font-bold py-2 px-4 rounded"
+                      className="bg-white border border-gray-300 text-gray-700 font-extrabold py-4 px-8 rounded-xl hover:bg-gray-50 transition-colors"
                     >
                       Back
                     </button>
                     <button
                       type="submit"
-                      className="bg-[#F15B29] text-white font-bold py-2 px-4 rounded"
+                      className="flex-1 bg-[#F15B29] text-white font-extrabold py-4 px-8 rounded-xl hover:bg-orange-600 hover:-translate-y-1 hover:shadow-lg transition-all shadow-md"
                     >
-                      Submit
+                      Submit Request
                     </button>
                   </div>
                 </form>
@@ -545,3 +668,4 @@ const Alumni = () => {
 };
 
 export default Alumni;
+

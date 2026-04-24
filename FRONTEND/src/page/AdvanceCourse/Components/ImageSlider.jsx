@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import advance from "../../../../krutanic/images/advance.jpg";
-import asdfg from "../../../../krutanic/images/asdfg.jpg";
 import daad1 from "../../../../krutanic/images/daad1.jpg";
 import daad2 from "../../../../krutanic/images/daad2.jpg";
 import dmad1 from "../../../../krutanic/images/dmad1.jpg";
@@ -18,7 +17,6 @@ import publicspeech from "../../../../krutanic/images/publicspeech.jpg";
 
 const images = [
   advance,
-  asdfg,
   daad1,
   daad2,
   dmad1,

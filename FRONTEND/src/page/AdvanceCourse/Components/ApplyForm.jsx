@@ -59,7 +59,7 @@ const CustomSelect = ({ label, icon, options, name, value, onChange, placeholder
   );
 };
 
-const ApplyForm = ({ courseValue = "this program" }) => {
+const ApplyForm = ({ courseValue = "this program", isPremium = false }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -170,19 +170,21 @@ const ApplyForm = ({ courseValue = "this program" }) => {
       
       <div className="bg-white rounded-[40px] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-gray-100 overflow-hidden">
         {/* Form Header */}
-        <div className="bg-[#050d2f] p-10 md:p-12 text-center relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl opacity-50" />
-          <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-4 relative z-10">
-            Apply for <span className="text-[#f15b29]">{courseValue}</span>
-          </h2>
-          <p className="text-gray-400 max-w-xl mx-auto text-sm md:text-base leading-relaxed relative z-10">
-            Complete your application to gain access to world-class mentorship and industry-leading program resources.
-          </p>
-        </div>
+        {!isPremium && (
+          <div className="bg-[#050d2f] p-10 md:p-12 text-center relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl opacity-50" />
+            <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-4 relative z-10">
+              Apply for <span className="text-[#f15b29]">{courseValue}</span>
+            </h2>
+            <p className="text-gray-400 max-w-xl mx-auto text-sm md:text-base leading-relaxed relative z-10">
+              Complete your application to gain access to world-class mentorship and industry-leading program resources.
+            </p>
+          </div>
+        )}
 
         {/* Form Content */}
-        <div className="p-8 md:p-12">
-          <form onSubmit={handleFormSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className={isPremium ? "p-4 md:p-2" : "p-8 md:p-12"}>
+          <form onSubmit={handleFormSubmit} className={`grid grid-cols-1 md:grid-cols-2 ${isPremium ? 'gap-4' : 'gap-8'}`}>
             
             {/* Full Name */}
             <div className="flex flex-col gap-2">
@@ -219,10 +221,10 @@ const ApplyForm = ({ courseValue = "this program" }) => {
             </div>
 
             {/* Email & OTP Section */}
-            <div className="md:col-span-2 flex flex-col gap-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Work/Personal Email</label>
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="relative flex-1 group">
+            <div className={`flex flex-col gap-2 ${isPremium ? 'md:col-span-1' : 'md:col-span-2'}`}>
+              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Email</label>
+              <div className="flex flex-col gap-2">
+                <div className="relative group flex-1">
                   <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#f15b29] transition-colors" />
                   <input
                     type="email"
@@ -232,7 +234,7 @@ const ApplyForm = ({ courseValue = "this program" }) => {
                     onChange={handleInputChange}
                     disabled={emailVerified}
                     required
-                    className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:border-[#f15b29] outline-none transition-all font-medium text-gray-900 disabled:opacity-50"
+                    className={`w-full pl-12 pr-4 ${isPremium ? 'py-3' : 'py-4'} bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:border-[#f15b29] outline-none transition-all font-medium text-gray-900 disabled:opacity-50`}
                   />
                 </div>
                 
@@ -240,7 +242,7 @@ const ApplyForm = ({ courseValue = "this program" }) => {
                   <button
                     type="button"
                     onClick={sendOTP}
-                    className="bg-[#050d2f] text-white px-8 py-4 rounded-2xl font-bold hover:bg-black transition-all shadow-lg active:scale-95 disabled:opacity-50 whitespace-nowrap"
+                    className={`bg-[#050d2f] text-white ${isPremium ? 'px-4 py-2 text-xs' : 'px-8 py-4'} rounded-2xl font-bold hover:bg-black transition-all shadow-lg active:scale-95 disabled:opacity-50 whitespace-nowrap`}
                     disabled={loading}
                   >
                     Verify Email
@@ -248,27 +250,27 @@ const ApplyForm = ({ courseValue = "this program" }) => {
                 )}
                 
                 {emailVerified && (
-                  <div className="flex items-center gap-2 px-6 py-4 bg-emerald-50 text-emerald-600 rounded-2xl font-bold text-sm">
+                  <div className={`flex items-center gap-2 ${isPremium ? 'px-4 py-2' : 'px-6 py-4'} bg-emerald-50 text-emerald-600 rounded-2xl font-bold text-xs`}>
                     <FaCheckCircle /> Verified
                   </div>
                 )}
               </div>
 
               {otpSent && !emailVerified && (
-                <div className="mt-4 p-6 bg-orange-50 rounded-3xl border border-orange-100 flex flex-col md:flex-row gap-4 animate-in slide-in-from-top-4 duration-300">
+                <div className="mt-2 p-4 bg-orange-50 rounded-2xl border border-orange-100 flex flex-col gap-2 animate-in slide-in-from-top-4 duration-300">
                   <input
                     type="text"
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
-                    placeholder="Enter 6-digit OTP"
-                    className="flex-1 px-6 py-4 rounded-2xl border-none outline-none font-bold text-center tracking-[0.5em] text-lg"
+                    placeholder="OTP"
+                    className="w-full px-4 py-2 rounded-xl border-none outline-none font-bold text-center tracking-widest text-base"
                   />
                   <button
                     type="button"
                     onClick={verifyOTP}
-                    className="bg-[#f15b29] text-white px-8 py-4 rounded-2xl font-bold hover:bg-[#d64a1d] transition-all shadow-lg shadow-orange-500/20 active:scale-95 whitespace-nowrap"
+                    className="bg-[#f15b29] text-white px-4 py-2 rounded-xl font-bold hover:bg-[#d64a1d] transition-all whitespace-nowrap text-sm"
                   >
-                    Confirm OTP
+                    Confirm
                   </button>
                 </div>
               )}
@@ -304,36 +306,40 @@ const ApplyForm = ({ courseValue = "this program" }) => {
               ]}
             />
 
-            <CustomSelect
-              label="Current Domain"
-              icon={<FaBullseye />}
-              name="domain"
-              value={formData.domain}
-              onChange={handleInputChange}
-              placeholder="Domain working in"
-              options={[
-                { value: "Digital Marketing", label: "Digital Marketing" },
-                { value: "Marketing/Sales", label: "Marketing/Sales" },
-                { value: "Operations", label: "Management/Operations" },
-                { value: "Tech", label: "IT/Tech/Product" },
-                { value: "Other", label: "Other" }
-              ]}
-            />
+            <div className={isPremium ? 'md:col-span-2' : ''}>
+              <CustomSelect
+                label="Current Domain"
+                icon={<FaBullseye />}
+                name="domain"
+                value={formData.domain}
+                onChange={handleInputChange}
+                placeholder="Domain working in"
+                options={[
+                  { value: "Digital Marketing", label: "Digital Marketing" },
+                  { value: "Marketing/Sales", label: "Marketing/Sales" },
+                  { value: "Operations", label: "Management/Operations" },
+                  { value: "Tech", label: "IT/Tech/Product" },
+                  { value: "Other", label: "Other" }
+                ]}
+              />
+            </div>
 
-            <CustomSelect
-              label="Career Goal"
-              icon={<FaArrowRight />}
-              name="goal"
-              value={formData.goal}
-              onChange={handleInputChange}
-              placeholder="Primary motivation"
-              options={[
-                { value: "Career Transition", label: "Career Transition" },
-                { value: "Upskilling", label: "Upskilling" },
-                { value: "Kickstart Career", label: "Kickstart Career" },
-                { value: "Other", label: "Other" }
-              ]}
-            />
+            <div className="md:col-span-2">
+              <CustomSelect
+                label="Career Goal"
+                icon={<FaArrowRight />}
+                name="goal"
+                value={formData.goal}
+                onChange={handleInputChange}
+                placeholder="Primary motivation"
+                options={[
+                  { value: "Career Transition", label: "Career Transition" },
+                  { value: "Upskilling", label: "Upskilling" },
+                  { value: "Kickstart Career", label: "Kickstart Career" },
+                  { value: "Other", label: "Other" }
+                ]}
+              />
+            </div>
 
             {/* Conditional "Other" inputs */}
             {(formData.domain === "Other" || formData.goal === "Other") && (
@@ -363,19 +369,34 @@ const ApplyForm = ({ courseValue = "this program" }) => {
               </div>
             )}
 
+            {/* Authorization Checkbox */}
+            <div className="md:col-span-2 flex items-start gap-3 mt-2 animate-in fade-in duration-500">
+              <input 
+                type="checkbox" 
+                id="authorize_form" 
+                required 
+                className="mt-1 h-4 w-4 rounded border-gray-300 text-[#f15b29] focus:ring-[#f15b29] cursor-pointer"
+              />
+              <label htmlFor="authorize_form" className="text-[13px] text-gray-500 leading-relaxed cursor-pointer select-none">
+                I authorise <span className="font-bold text-gray-700">Krutanic</span> & its representatives to contact me with updates and notifications via Email/SMS/WhatsApp/Call. This will override DND/NDNC
+              </label>
+            </div>
+
             {/* Submit Button */}
-            <div className="md:col-span-2 pt-6">
+            <div className="md:col-span-2 pt-2">
               <button
                 type="submit"
                 disabled={loading || !emailVerified}
-                className="w-full py-6 bg-[#f15b29] text-white font-black text-lg rounded-3xl hover:bg-[#d64a1d] transition-all shadow-[0_20px_40px_rgba(241,91,41,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group flex items-center justify-center gap-3 uppercase tracking-widest"
+                className={`w-full ${isPremium ? 'py-4' : 'py-6'} bg-[#f15b29] text-white font-black text-lg rounded-2xl hover:bg-[#d64a1d] transition-all shadow-[0_20px_40px_rgba(241,91,41,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group flex items-center justify-center gap-3 uppercase tracking-widest`}
               >
-                {loading ? "Processing..." : "Submit My Application"}
+                {loading ? "Processing..." : isPremium ? "Request Consultation" : "Submit My Application"}
                 <FaArrowRight className="group-hover:translate-x-2 transition-transform" />
               </button>
-              <p className="text-center text-xs text-gray-400 mt-6 font-medium">
-                By clicking submit, you agree to our Terms of Service and Privacy Policy.
-              </p>
+              {!isPremium && (
+                <p className="text-center text-xs text-gray-400 mt-6 font-medium">
+                  By clicking submit, you agree to our Terms of Service and Privacy Policy.
+                </p>
+              )}
             </div>
           </form>
         </div>

@@ -1,1226 +1,418 @@
 import React, { useState, useEffect } from "react";
-import "swiper/css";
-import "swiper/css/effect-cube";
-import "swiper/css/pagination";
-import AOS from "aos";
-import API from "../../API";
-import "aos/dist/aos.css";
-import axios from "axios";
-import { RiCustomerService2Fill } from "react-icons/ri";
-import BenefitsofLearning from "./Components/BenefitsofLearning";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  CheckCircle2, 
+  ChevronDown, 
+  Download, 
+  TrendingUp, 
+  Award, 
+  Briefcase, 
+  ArrowRight,
+  ShieldCheck, 
+  Zap, 
+  Target, 
+  Search, 
+  Layout, 
+  Bug, 
+  Terminal, 
+  Database, 
+  Workflow, 
+  Smartphone, 
+  Monitor, 
+  Layers, 
+  Cpu, 
+  Settings, 
+  FileCode2, 
+  PhoneCall,
+  UserCheck,
+  Video,
+  Rocket,
+  Compass,
+  Boxes
+} from "lucide-react";
+
+import posterImage from "../../assets/Advanced Course Images/AutomationvTesting/automationtesting.jpg";
+import Flashaidlogo from "../../assets/Flashaidlogo.jpg";
 import Certification from "./Components/Certification";
 import ClientsCarousel from "../../Components/our_alumni";
-import StoreSection from "./Components/StoreSection";
-
-import pdfds from "../../../krutanic/Automation testing Advanced Program.pdf";
-import DS from "../../assets/Advanced Course Images/AutomationvTesting/testing1.jpg";
-// import curriculumimage from "../../assets/Advanced Course Images/Automation Testing/DS 4.jpg";
-import toast, { Toaster } from "react-hot-toast";
 import ApplyNowButton from "./Components/ApplyNowButton";
 import ApplyForm from "./Components/ApplyForm";
-import Flashaidlogo from "../../assets/Flashaidlogo.jpg";
+import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
+import CourseInfoStrip from "./Components/CourseInfoStrip";
+import atBrochure from "../../../krutanic/Automation testing Advanced Program.pdf";
+
+const heroStats = [
+  { label: "Duration", value: "24 Weeks" },
+  { label: "Industrial Projects", value: "10+ Test Suites" },
+  { label: "Avg. Salary Hike", value: "54%" },
+  { label: "Hiring Partners", value: "250+" },
+];
+
+const audience = [
+  { title: "Manual Testers", desc: "Scale your career from manual execution to building sophisticated, high-performance automation frameworks.", icon: <Workflow size={20} /> },
+  { title: "Fresh Graduates", desc: "Gain an unfair advantage in tech with production-ready SDET skills and CI/CD integration depth.", icon: <Cpu size={20} /> },
+  { title: "Software Developers", desc: "Bridge your coding skills with quality engineering to own the full delivery lifecycle of robust products.", icon: <FileCode2 size={20} /> },
+  { title: "QA Engineers", desc: "Transition into Quality Leadership roles by mastering architectural patterns in selenium, playwright, and testing cloud.", icon: <Target size={20} /> },
+  { title: "IT Professionals", desc: "Formalize your technical logic with the scientific rigor of performance testing, security audits, and mobile automation.", icon: <Terminal size={20} /> },
+  { title: "Tech Project Managers", desc: "Understand the ROI and technical depth of automated quality to lead high-velocity engineering teams.", icon: <Settings size={20} /> }
+];
+
+const marketOpportunity = [
+  { title: "DevOps Alignment", desc: "Automation is the heart of CI/CD. Companies are prioritizing SDETs who can integrate quality into the deployment pipeline.", icon: <Boxes size={24} /> },
+  { title: "Quality Centrality", desc: "As tech complexity grows, the demand for sophisticated automation architects is outpacing supply.", icon: <ShieldCheck size={24} /> },
+  { title: "Strategic Career Path", desc: "Quality Engineering leads to high-growth roles like SDET Lead, QA Architect, and Release Manager.", icon: <Rocket size={24} /> }
+];
+
+const techStack = [
+  { group: "Core Libraries", tools: ["Selenium WebDriver", "Playwright", "Cypress", "Appium", "RestAssured"] },
+  { group: "Frameworks & Runners", tools: ["TestNG", "JUnit 5", "Cucumber (BDD)", "Pytest", "Mocha/Chai"] },
+  { group: "Infrastructure & Ops", tools: ["Jenkins", "Docker", "GitLab CI", "AWS Device Farm", "BrowserStack"] },
+  { group: "Reporting & Monitoring", tools: ["Allure Reports", "Extent Reports", "Grafana", "JMeter", "Postman"] }
+];
+
+const curriculumRoadmap = [
+  { weeks: "Weeks 1-2", title: "Automation Foundations", topics: "Java/JS for testing, Locators, Sync issues.", details: "Establish the programming foundation required to write clean, reusable, and maintainable test scripts." },
+  { weeks: "Weeks 3-4", title: "Web Automation Mastery", topics: "Selenium/Playwright, Grid, Cross-browser.", details: "Learn the core methodologies used to interact with modern web elements and handle dynamic content." },
+  { weeks: "Weeks 5-8", title: "Architectural Patterns", topics: "Page Object Model (POM), Data-driven, Hybrid.", details: "Deep-dive into production-ready framework design that ensures your test suites are scalable and lean." },
+  { weeks: "Weeks 9-10", title: "API Automation", topics: "REST APIs, OAuth, Payload validation, Mocking.", details: "Master the mechanics of validating backend services without relying on the UI layers." },
+  { weeks: "Weeks 11-12", title: "Mobile & Hybrid Apps", topics: "Appium, Emulator/Simulator, Mobile Gestures.", details: "Extend your quality skills to the mobile ecosystem—handling iOS and Android application lifecycles." },
+  { weeks: "Weeks 13-16", title: "CI/CD & DevOps Integration", topics: "Jenkins, Docker, Cloud-native testing.", details: "Transition from local execution to integrated, automated pipelines that trigger on every code push." },
+  { weeks: "Weeks 17-20", title: "Capstone Quality Suite", topics: "Framework from scratch, Performance, Report.", details: "Execute a full quality cycle—from test planning to a high-fidelity automated suite with cloud reporting." },
+  { weeks: "Weeks 21-24", title: "SDET Interview Engineering", topics: "DSA for QA, Framework design drills, Live coding.", details: "Final phase focused on cracking competitive SDET and QE Lead interviews with architectural clarity." }
+];
+
+const portfolioProjects = [
+  { title: "E-Commerce Suite", obs: "Full UI/API automation suite for a high-traffic shopping platform.", skill: "Framework Architecture" },
+  { title: "Financial API Validator", obs: "A robust, data-driven security validator for complex transaction APIs.", skill: "Backend Integrity" },
+  { title: "Mobile Social App", obs: "iOS and Android automated regression suite using Appium and cloud devices.", skill: "Mobile Scale" },
+  { title: "CI/CD Quality Gate", obs: "A Jenkins-integrated dockerized test pipeline with auto-reporting.", skill: "DevOps Logic" }
+];
+
+const careerRoles = [
+  { role: "SDET Engineer", range: "09 - 18 LPA" },
+  { role: "Automation Lead", range: "12 - 28 LPA" },
+  { role: "QA Architect", range: "18 - 45 LPA" },
+  { role: "Performance Engineer", range: "10 - 22 LPA" },
+  { role: "Quality Product Manager", range: "15 - 35 LPA" },
+  { role: "DevOps Engineer", range: "10 - 24 LPA" }
+];
+
+const faqCategories = {
+  "Progrm Logic": [
+    { q: "Do I need manual testing experience?", a: "While helpful, we start with foundations. If you understand app logic, we will teach you the automation syntax." },
+    { q: "Which programming language is used?", a: "We focus on Java and JavaScript (Playwright), the two most in-demand languages for SDET roles." }
+  ],
+  "Career Support": [
+    { q: "Is job support included?", a: "Yes. 100% assistance including architecture reviews, mock SDET coding rounds, and referral access." },
+    { q: "What is the certification value?", a: "It is an evidence-based professional certification backed by your capstone automation framework and cloud suites." }
+  ]
+};
 
 const AutomationTesting = () => {
-  const [activeCategory, setActiveCategory] = useState("Program");
-  const [openFAQ, setOpenFAQ] = useState(null);
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  const [isVisible, setIsVisible] = useState(false);
-  const [lastScrollPos, setLastScrollPos] = useState(0);
-  const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    number: "",
-    currentRole: "",
-    experience: "",
-    goal: "",
-    goalOther: "",
-    domain: "",
-    domainOther: "",
-    reason: "",
-  });
-
-    const [otpSent, setOtpSent] = useState(false);
-    const [otp, setOtp] = useState("");
-    const [emailVerified, setEmailVerified] = useState(false);
-
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
-
-  const courseTopics = [
-    { title: "Advanced Test Automation Frameworks", icon: "🌐" },
-    { title: "Scripting for Complex Applications", icon: "🎣" },
-    { title: "Integration with CI/CD Pipelines", icon: "⚡" },
-    { title: "Performance and Load Testing", icon: "🛣️" },
-    { title: "Test Automation Best Practices", icon: "🗃️" },
-    { title: "AI and Machine Learning in Automation", icon: "🗃️" },
-  ];
-
-  const modules = [
-    {
-      title: "Introduction to Automation Testing",
-      objectives:
-        "Get introduced to the basics of automation testing, its importance, and how it differs from manual testing in modern software development.",
-      topics: [
-        "Increased test coverage",
-        "Faster execution and repeatability",
-        "Identify potential challenges including maintenance overhead and initial setup costs",
-      ],
-    },
-    {
-      title: "Tools & Frameworks for Automation",
-      objectives:
-        "Get into popular testing tools and frameworks like Selenium, JUnit, and TestNG, and learn how to choose the best ones for your projects.",
-      topics: [
-        "Master advanced browser interactions, including handling multiple windows, frames, and alerts",
-        "Integrate Selenium with testing frameworks like TestNG or JUnit for enhanced test management.",
-        "Explore modern tools like Playwright and TestCafe, focusing on their unique features and advantages over traditional tools.",
-        "Implement cross-browser testing strategies to ensure application compatibility across different environments.",
-      ],
-    },
-    {
-      title: "Creating Test Scripts",
-      objectives:
-        "Learn how to write, execute, and debug test scripts, ensuring they run efficiently across different platforms and environments.",
-      topics: [
-        "Design comprehensive test cases for various HTTP methods, ensuring thorough validation of API endpoints.",
-        "Implement authentication mechanisms, including OAuth and API keys, in test scenarios.",
-        "Leverage Postman for manual and automated API testing, utilizing its scripting capabilities.",
-        "Employ RestAssured for seamless integration of API tests within Java-based frameworks.",
-      ],
-    },
-    {
-      title: "Test Automation Strategies",
-      objectives:
-        "Explore best practices and strategies to implement automation testing effectively, from planning and design to execution and reporting.",
-      topics: [
-        "Utilize advanced features such as data providers, parameterized tests, and custom annotations.",
-        "Configure parallel test execution to optimize testing time.",
-        "Implement the Page Object Model (POM) to enhance test maintenance and readability.",
-        "Apply Factory and Singleton patterns to manage test data and driver instances efficiently.",
-      ],
-    },
-    {
-      title: "Integrating Automation Testing into CI/CD",
-      objectives:
-        "Understand how to integrate automated tests within Continuous Integration and Continuous Deployment pipelines to ensure seamless software delivery",
-      topics: [
-        "Configure Jenkins pipelines to automate test execution upon code commits.",
-        "Implement Pipeline as Code using J enkinsfile for version-controlled CI/CD configurations",
-        "Master advanced Git workflows, including feature branching, rebasing, and merge strategies.",
-        "Set up automated triggers in CI/CD pipelines based on repository events",
-      ],
-    },
-  ];
-
-  const jobRoles = [
-    {
-      title: "Automation Test Engineer",
-      description:
-        "Design, develop, and execute automated test scripts to ensure software functionality and performance.",
-    },
-    {
-      title: "Test Automation Architect",
-      description:
-        "Develop and maintain the automation framework, ensuring scalability and reliability across testing processes.",
-    },
-    {
-      title: "QA Automation Lead",
-      description:
-        "Lead and guide the QA automation team, ensuring alignment with project goals and best practices.",
-    },
-    {
-      title: "Performance Test Engineer",
-      description:
-        "Focus on automating performance and load testing to measure system scalability and response under stress.",
-    },
-    {
-      title: "Continuous Integration Engineer",
-      description:
-        "Integrate automated tests into CI/CD pipelines for continuous testing and faster release cycles.",
-    },
-    {
-      title: "DevOps Automation Engineer",
-      description:
-        "Automate deployment, monitoring, and testing processes to streamline software development and operations.",
-    },
-    {
-      title: " SDET (Software Development Engineer in Test)",
-      description:
-        "Develop automated testing tools and frameworks while also writing code to test the product.",
-    },
-    {
-      title: "Test Manager",
-      description:
-        "Oversee test planning, execution, and reporting, managing both manual and automated testing activities.",
-    },
-    {
-      title: "AI Test Automation Specialist",
-      description:
-        " Implement AI-driven testing techniques to optimize test scripts and enhance test coverage and efficiency.",
-    },
-  ];
-
-  const Difference = [
-    {
-      title: "Faster Execution",
-      description:
-        "Automated tests run faster than manual tests, speeding up development.",
-      icon: "👥",
-    },
-    {
-      title: "Cost-Effective",
-      description:
-        "Reduces long-term costs by minimizing manual testing efforts.",
-      icon: "📘",
-    },
-    {
-      title: "Consistent Accuracy",
-      description: "Eliminates human error, ensuring reliable results.",
-      icon: "📦",
-    },
-    {
-      title: "Reusable Scripts",
-      description: "Test scripts can be reused across different projects.",
-      icon: "💼",
-    },
-    {
-      title: "Quick Developer Feedback",
-      description: "Provides instant feedback, speeding up bug fixes.",
-      icon: "💻",
-    },
-    {
-      title: "Scalability",
-      description:
-        " Handles large, complex projects effortlessly, running tests across multiple environments.",
-      icon: "🔗",
-    },
-  ];
-
-  const faqData = {
-    Program: [
-      {
-        question: "What topics are covered in the Automation Testing program?",
-        answer:
-          "The program covers essential automation testing concepts, including Selenium WebDriver,TestNG Framework,API Testing with Postman etc",
-      },
-      {
-        question: "How is the course delivered?",
-        answer:
-          "The course is delivered online with a blend of live sessions, recorded lectures, hands-on workshops, and practical projects.",
-      },
-      {
-        question: "Will I get hands-on experience?",
-        answer:
-          "Yes, the course includes real-world case studies and hands-on projects to apply your skills in solving industry-specific problems.",
-      },
-      {
-        question: "How long is the program?",
-        answer:
-          "The program is 6 months long, with flexible learning options designed for professionals.",
-      },
-    ],
-    Eligibility: [
-      {
-        question: "What are the prerequisites for the program?",
-        answer:
-          "No prior automation testing experience is required. However, basic knowledge of manual testing, programming (Python/Java), and databases is beneficial.",
-      },
-      {
-        question: "Do I need a background in testing or coding?",
-        answer:
-          "No, but having a basic understanding of testing concepts and coding fundamentals will help you grasp automation concepts faster.",
-      },
-      {
-        question: "Can beginners apply?",
-        answer:
-          "Absolutely! The course is designed for beginners and working professionals looking to switch to automation testing.",
-      },
-      {
-        question: "Is there any age restriction?",
-        answer:
-          "No, the course is open to anyone passionate about learning automation testing, regardless of age or experience.",
-      },
-    ],
-    Community: [
-      {
-        question: " How can I interact with other participants?",
-        answer:
-          "Engage with peers through discussion forums, collaborative projects, and networking opportunities designed to foster connections within the global Automation Testing community.",
-      },
-      {
-        question: "Is there mentorship available?",
-        answer:
-          "Yes, personalized mentoring from industry professionals will be provided throughout the course to guide you and offer real-time feedback.",
-      },
-      {
-        question: "Can I access support after the course ends?",
-        answer:
-          "Absolutely! Graduates gain continued access to community forums, alumni events, and ongoing support.",
-      },
-      {
-        question: "How diverse is the community?",
-        answer:
-          "Our community is international, bringing together a diverse group of professionals from various industries and backgrounds.",
-      },
-    ],
-    Lectures: [
-      {
-        question: "Are the lectures pre-recorded or live?",
-        answer:
-          "The program includes both live sessions and pre-recorded lectures, allowing for flexibility in learning while ensuring direct interaction with instructors.",
-      },
-      {
-        question: "How interactive are the sessions?",
-        answer:
-          "The live sessions are interactive, with opportunities to ask questions, engage in hands-on exercises, and receive personalized feedback.",
-      },
-      {
-        question: "Can I replay the lectures if I miss one?",
-        answer:
-          "Yes, all recorded lectures are available for on-demand viewing, so you can catch up at your convenience.",
-      },
-      {
-        question: "How often are live sessions held?",
-        answer:
-          "Live sessions are scheduled weekly and are designed to accommodate learners in various time zones.",
-      },
-    ],
-    Certification: [
-      {
-        question: "Will I receive a certificate upon completion?",
-        answer:
-          "Yes, after completing the program, you will receive an official Automation Testing certification from Krutanic Solutions.",
-      },
-      {
-        question: "Is the certification recognized by employers?",
-        answer:
-          "Yes, the certification is recognized in the industry and demonstrates your proficiency in advanced Automation Testing techniques.",
-      },
-      {
-        question:
-          "Can I add this certification to my resume or LinkedIn profile?",
-        answer:
-          "Yes, you can add your certification to your resume and LinkedIn profile to showcase your new skills to potential employers.",
-      },
-      {
-        question: "Is the certification free?",
-        answer:
-          "The certification is awarded upon successful completion of the course and is included as part of the program fee.",
-      },
-    ],
-    Opportunities: [
-      {
-        question: "What career opportunities will this course open for me?",
-        answer:
-          "This course prepares you for roles like Automation Test Engineer, QA Analyst, Software Tester, Selenium Tester, and Test Architect across industries such as IT, banking, e-commerce, and healthcare.",
-      },
-      {
-        question: "Will I receive job placement assistance?",
-        answer:
-          "Yes! We provide resume-building support, interview preparation, and job placement assistance through our network of hiring partners.",
-      },
-      {
-        question: "Are internships available through this program?",
-        answer:
-          "Yes, we offer internship opportunities to help you gain real-world experience and strengthen your practical knowledge.",
-      },
-      {
-        question: "How will this course help in advancing my career?",
-        answer:
-          "You'll acquire in-demand skills in Selenium, Java/Python, API testing, CI/CD tools, and test automation frameworks, making you a valuable asset in the job market.",
-      },
-    ],
-  };
-
-
+  const [expandedModule, setExpandedModule] = useState(null);
+  const [activeFaqCat, setActiveFaqCat] = useState("Progrm Logic");
+  const [openFaqIdx, setOpenFaqIdx] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollPos = window.scrollY;
-      if (currentScrollPos > lastScrollPos) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
-      setLastScrollPos(currentScrollPos);
-    };
-
+    const handleScroll = () => setScrolled(window.scrollY > 80);
     window.addEventListener("scroll", handleScroll);
-    
-
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollPos]);
-
-  useEffect(() => {
-    AOS.init({ duration: 2000, once: false });
   }, []);
 
-  const handleBrochureClick = () => {
-    setShowForm(true);
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const OffForm = () => {
-    setShowForm(false);
-    setFormData({
-      name: "",
-      email: "",
-      number: "",
-      currentRole: "",
-      experience: "",
-      goal: "",
-      goalOther: "",
-      domain: "",
-      domainOther: "",
-      reason: "",
-    });
-  };
-  const [loading, setLoading] = useState(false);
-  const [actionType, setActionType] = useState();
-  
-    const sendOTP = async () => {
-        if (!formData.email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/)) {
-            toast.error("Please enter a valid email address.");
-            return;
-        }
-        try {
-            await axios.post(`${API}/advance-send-otp`, { email: formData.email });
-            toast.success("OTP sent to your email!");
-            setOtpSent(true);
-        } catch (error) {
-            toast.error("Failed to send OTP. Try again.");
-        }
-    };
-
-    const verifyOTP = async () => {
-        try {
-            const response = await axios.post(`${API}/advance-verify-otp`, { email: formData.email, otp });
-            if (response.data.success) {
-                toast.success("Email verified successfully!");
-                setEmailVerified(true);
-                setOtp("");
-                setOtpSent(false);
-            } else {
-                toast.error("Invalid OTP. Try again.");
-            }
-        } catch (error) {
-            toast.error("Verification failed or Invalid OTP.");
-        }
-    };
-
-  const handleFormSubmit = async (e, actionType) => {
-   
-    e.preventDefault();
-    try {
-      setLoading(true);
-      await axios.post(`${API}/advance/register`, {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.number,
-        currentRole: formData.currentRole,
-        experience: formData.experience,
-        goal: formData.goal,
-        goalOther: formData.goal === "Other" ? formData.goalOther : undefined,
-        domain: formData.domain,
-        domainOther:
-          formData.domain === "Other" ? formData.domainOther : undefined,
-        interestedDomain: "Automation Testing",
-        reason: formData.reason,
-      });
-      toast.success("Registration successful! Opening the brochure...");
-      setTimeout(() => {
-        window.open(pdfds, "_blank");
-        OffForm();
-      }, 1500);
-    } catch (error) {
-      toast.error(
-        error.response?.data?.error || "Something went wrong. Please try again."
-      );
-    }finally {
-      setLoading(false);
-    }
-  };
-  const [activeModule, setActiveModule] = useState(null);
-
-  const toggleModule = (index) => {
-    setActiveModule(activeModule === index ? null : index);
-  };
-
-  const today = new Date();
-  const currentMonth = today.getMonth();
-  const currentDay = today.getDate();
-  const displayDate = "Upcoming";
-  // const randomNumber = Math.floor(Math.random() * 6) + 20;
-
   return (
-    <div>
-      <div className="bg-black text-white">
-        <Toaster position="top-center" reverseOrder={false} />
-        {/* 1 hero part */}
-        <section
-          id="advanceautomationbg"
-          className="py-[30px] shadow-lg shadow-[#f15b29]  px-[10px] min-h-[50vh] flex items-center justify-center"
-        >
-          <div className="container mx-auto ">
-            <div className="">
-              <h1
-                data-aos="fade-up"
-                className="text-4xl text-center font-bold mb-3"
-              >
-                <span className="before:block m-2 p-1 before:absolute before:-inset-1 before:-skew-y-2 before:bg-[#f15b29] relative inline-block">
-                  <i className="relative text-white ">
-                    {" "}
-                    Take Your Career to the Next Level with{" "}
-                  </i>
-                </span>
+    <div className="at-page">
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap');
 
-                <span className="before:block m-2 p-1 before:absolute before:-inset-1 before:-skew-y-2 before:bg-[#000] relative inline-block">
-                  <i className="relative text-white ">Automation Testing</i>
-                </span>
-              </h1>
-              <p className="text-center text-gray-300 max-w-2xl mx-auto mb-8 text-lg">
-                Master elite automation frameworks and high-performance CI/CD integration strategies to build resilient, enterprise-scale automated testing ecosystems. Gain total proficiency in Selenium, Playwright, and Appium while mastering sophisticated DevOps workflows to accelerate software delivery cycles with absolute precision. Develop the deep technical expertise required to ensure top-tier product quality and lead quality engineering teams at the world's most innovative technology companies.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-              <div
-                data-aos="fade-up"
-                className=" border border-gray-700 p-4 flex flex-col backdrop-blur-md  bg-[#ffffff59] text-black items-center  rounded-md"
-              >
-                <div className="bg-[#f15b29] p-2 rounded-full">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="white"
-                    viewBox="0 0 24 24"
-                    className="h-6 w-6"
-                  >
-                    <path d="M16 10V7a4 4 0 10-8 0v3H5v10h14V10h-3zm-6 0V7a2 2 0 114 0v3H10z" />
-                  </svg>
+        :root {
+          --at-bg: #F7F6F2;
+          --at-text: #111827;
+          --at-text-dim: #4B5563;
+          --at-primary: #2563EB;
+          --at-accent: #3B82F6;
+          --at-border: rgba(17, 24, 39, 0.08);
+        }
+
+        .at-page { background: var(--at-bg); color: var(--at-text); font-family: 'Plus Jakarta Sans', sans-serif; }
+        .shell { width: 100%; max-width: 1210px; margin: 0 auto; padding: 0 24px; }
+
+        .at-section { padding: 100px 0; }
+        .at-sec-white { padding: 100px 0; background: #fff; border-top: 1px solid var(--at-border); border-bottom: 1px solid var(--at-border); }
+
+        .sec-title { font-family: 'Outfit', sans-serif; font-size: 34px; font-weight: 800; margin-bottom: 16px; color: var(--at-text); text-align: left; }
+        .sec-sub { font-size: 17px; color: var(--at-text-dim); max-width: 610px; margin-bottom: 50px; text-align: left; line-height:1.6; }
+
+        .p-card { 
+          background: #fff; 
+          border: 1px solid var(--at-border); 
+          border-radius: 12px; 
+          padding: 24px; 
+          transition: 0.3s;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+        .p-card:hover { border-color: var(--at-primary); box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
+
+        .btn-sec { border: 1px solid var(--at-border); color: var(--at-text); padding: 12px 24px; border-radius: 8px; font-weight: 700; font-size: 15px; background:#fff; }
+
+        .faq-item { border: 1px solid var(--at-border); border-radius: 12px; margin-bottom: 12px; overflow: hidden; background: #fff; }
+        .faq-quest { width:100%; text-align:left; padding: 22px 24px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .faq-ans { padding: 0 24px 24px; font-size: 14px; color: var(--at-text-dim); line-height: 1.6; }
+
+        .sticky-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 72px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--at-border); z-index: 99; transform: translateY(100%); transition: 0.4s; display: flex; align-items: center; }
+        .sticky-bar.visible { transform: translateY(0); }
+
+        @media (max-width: 768px) { .sec-title { font-size: 28px; } }
+      `}</style>
+
+      {/* 1. HERO */}
+      <CourseHeroBanner
+        badge="Quality Engineering Mastery"
+        icon="🛡️"
+        title="Automation Testing"
+        highlight="& SDET Engineering"
+        sub="Master the architecture of quality. From elite automation frameworks to high-performance CI/CD integration, build the products that ensure global tech reliability."
+        stats={heroStats}
+        bg="linear-gradient(135deg, #1E3A8A 0%, #1E40AF 45%, #2563EB 100%)"
+        accent="#3B82F6"
+        shape="AT"
+      >
+        <ImageSlider />
+      </CourseHeroBanner>
+
+      <CourseInfoStrip 
+        accent="#3B82F6" 
+        courseValue="Automation Testing" 
+        duration="24 Weeks"
+        brochureLink={atBrochure}
+      />
+
+      {/* 2. AUDIENCE */}
+      <section className="at-section">
+        <div className="shell">
+          <h2 className="sec-title">Who this program is for</h2>
+          <p className="sec-sub">Essential for professionals aiming to own the intersection of code quality, performance engineering, and architectural deployment.</p>
+          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'20px'}}>
+             {audience.map((item, i) => (
+                <div key={i} className="p-card">
+                  <div style={{color:'var(--at-primary)', marginBottom:'18px'}}>{item.icon}</div>
+                  <h4 style={{fontSize:'18px', fontWeight:800, marginBottom:'10px'}}>{item.title}</h4>
+                  <p style={{fontSize:'14px', color:'var(--at-text-dim)', lineHeight:1.6}}>{item.desc}</p>
                 </div>
-                <p className="mt-2 font-semibold text-lg">Batch Starting</p>
-                <p className="">{displayDate}</p>
-
-                <p className="mt-1 text-md border border-[#f15b29] rounded-lg px-2 py-1">
-                  {" "}
-                  Available Cohort{" "}
-                </p>
-                <p className="mt-1 text-md">
-                  {/* <span className="line-through">60/60</span> Batch Closed{" "} */}
-                </p>
-                <p>33/60</p>
-              </div>
-              <div
-                data-aos="fade-up"
-              />
-            </div>
-          </div>
-        </section>
-        <hr className=" opacity-10" />
-
-        {/* circulum section updated  */}
-
-        <section className="py-[30px]">
-          <div className="w-full">
-            <h1
-              data-aos="fade-up"
-              className=" font-bold text-center mb-4 text-[#f15b29]"
-            >
-              | Curriculum
-            </h1>
-            <div className="lg:flex lg:flex-col lg:gap-6 px-[10px]">
-              <div className="w-full">
-                <div className="space-y-4">
-                  {modules.map((module, index) => (
-                    <div key={index} className="pb-5">
-                      <button
-                        className="w-full text-left hover:text-[#f15b29] transition-colors duration-300 focus:outline-none"
-                        onClick={() => toggleModule(index)}
-                      >
-                        <h3 className="text-xl font-semibold">
-                          Module {index + 1}: {module.title}
-                        </h3>
-                        <p className="text-sm text-gray-400">
-                          {module.objectives}
-                        </p>
-                      </button>
-                      {activeModule === index && (
-                        <div className="mt-4">
-                          <ul className="list-disc pl-9 text-gray-300">
-                            {module.topics.map((topic, topicIndex) => (
-                              <li key={topicIndex} className="mb-2">
-                                {topic}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                <span>and more..</span>
-              </div>
-
-              <div className="w-full mt-8 flex flex-col items-center">
-                <h2 className="text-[#f15b29] font-bold text-center mb-4">Speak with an Advisor</h2>
-                <p className="text-gray-400 text-center mb-6 lead">Get a personalized curriculum walkthrough and career roadmap.</p>
-                <div style={{ width: "min(90%, calc(100% - 32px))", margin: "auto", padding: "0" }}>
-                  <ApplyForm courseValue="Automation Testing" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-        <hr className=" opacity-10" />
-        {/* 14 why choose us */}
-        <section className="py-[30px] px-[10px]">
-          <div className="container mx-auto  text-center">
-            <h1 data-aos="fade-up" className="text-[#f15b29] font-bold mb-4">
-              | Why Choose{" "}
-              <span className="text-white">Automation Testing ? </span>
-            </h1>
-            <p data-aos="fade-up" className="text-gray-400 mb-6">
-              Automation testing enhances speed, accuracy, and efficiency in
-              software development. Here's why it's a smart choice:
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Difference.map((Difference, index) => (
-                <div
-                  data-aos="fade-up"
-                  key={index}
-                  className="bg-[#080810] p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition"
-                >
-                  <div className="text-[#f15b29] text-4xl mb-4">
-                    {Difference.icon}
-                  </div>
-                  <h3 className="text-lg text-[#f15b29] font-bold  mb-3">
-                    {Difference.title}
-                  </h3>
-                  <p className="text-white  ">{Difference.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div data-aos="fade-up" className="mt-[20px] text-center">
-            And more
-          </div>
-        </section>
-        <hr className=" opacity-10" />
-
-        {/* 15 why learn with us */}
-        <section className="py-[30px] px-[10px]">
-          <BenefitsofLearning />
-        </section>
-        <hr className=" opacity-10" />
-
-        {/* 2 Course Overview Section */}
-        <section className="py-[30px] px-[10px]">
-          <div className="container mx-auto max-w-7xl">
-            <h1
-              data-aos="fade-up"
-              className=" font-bold text-center mb-8 text-[#f15b29]"
-            >
-              | Program Overview
-            </h1>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-              {courseTopics.map((topic, index) => (
-                <div
-                  data-aos="fade-up"
-                  key={index}
-                  className="bg-[#080810] p-6 rounded-lg text-center transition-transform duration-300 hover:scale-105"
-                >
-                  <div className="text-4xl mb-4">{topic.icon}</div>
-                  <h3 className="text-xl font-bold uppercase text-white hover:text-[#f15b29] transition-colors duration-300">
-                    {topic.title}
-                  </h3>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-        <hr className=" opacity-10" />
-
-        {/* 3 key outcome section  */}
-        <section className="py-[30px] px-[10px]">
-          <div className="container mx-auto max-w-full">
-            {/* Left side: Key Outcomes */}
-            <div className="w-full mb-3 lg:mb-0">
-              <h1 data-aos="fade-up" className=" font-bold mb-4 text-[#f15b29]">
-                | Key Takeaways
-              </h1>
-              <ul data-aos="fade-up" className="space-y-4">
-                <li>
-                  <span className="font-semibold text-[#f15b29]">
-                    Become an Automation Pro{" "}
-                  </span>
-                  You'll gain hands-on experience with advanced tools and
-                  frameworks, making you an expert in automation testing.
-                </li>
-                <li>
-                  <li>
-                    <span className="font-semibold text-[#f15b29]">
-                      Boost Efficiency{" "}
-                    </span>
-                    Learn to streamline your testing process, saving time and
-                    improving accuracy across the board.
-                  </li>
-                  <span className="font-semibold text-[#f15b29]">
-                    Integrate with Ease
-                  </span>
-                  Master the art of integrating automation with CI/CD pipelines,
-                  ensuring smooth and continuous testing.
-                  <li>
-                    <span className="font-semibold text-[#f15b29]">
-                      Future-Proof Your Skills{"  "}
-                    </span>
-                    Learn the world of AI and machine learning to create
-                    intelligent, self-healing test scripts that will keep you
-                    ahead in the industry.
-                  </li>
-                  <li>
-                    <span className="font-semibold text-[#f15b29]">
-                      Enhance Testing Speed{"  "}
-                    </span>
-                    Automate repetitive tasks to make the testing process faster
-                    and reduce human errors and ensure reliable, consistent test
-                    results.
-                  </li>
-                  {isExpanded && (
-                    <>
-                      <li>
-                        <span className="font-semibold text-[#f15b29]">
-                          Seamless Integration{"  "}
-                        </span>
-                        Learn how to integrate automation with CI/CD pipelines
-                        for smooth workflows.
-                      </li>
-                    </>
-                  )}
-                </li>
-
-                {/* Hidden additional content */}
-                {isExpanded && (
-                  <>
-                    {/* Paragraphs */}
-                    <p className="mt-4">Stay Industry-Ready</p>
-                    <p>
-                      Build expertise in high-demand skills to stay competitive
-                      in the job market.
-                    </p>
-                  </>
-                )}
-              </ul>
-              <button
-                data-aos="fade-up"
-                onClick={toggleExpand}
-                className="mt-4 px-4 py-2 text-white font-medium border rounded"
-              >
-                {isExpanded ? "Read Less" : "Read More"}
-              </button>
-            </div>
-          </div>
-        </section>
-        <hr className=" opacity-10" />
-
-        {/* 4 Curriculum Section */}
-
-        {/* 5 download curriculum section */}
-        <section className="py-[30px] px-[10px]">
-          <div
-            data-aos="fade-up"
-            className="container mx-auto max-w-full p-5 flex flex-col md:flex-row justify-between items-center flex-wrap gap-4 rounded-lg shadow-lg border-2 border-[#f15b29]"
-          >
-            <div className="text-center md:text-left">
-              <h2 className="text-xl font-bold mb-2 text-[#f15b29]">
-                | Get the Full Course Breakdown
-              </h2>
-              <p className="text-gray-400 text-sm">
-                Access the detailed curriculum with key modules and learning
-                outcomes of the Automation Testing program.
-              </p>
-            </div>
-            <div className="flex flex-col lg:flex-row items-center justify-center gap-3">
-              <button
-                disabled
-                className="bg-gray-400 text-white font-semibold py-2 px-6 rounded flex items-center gap-2 cursor-not-allowed"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M3 8a1 1 0 011-1h12a1 1 0 011 1v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm9 4a1 1 0 10-2 0V9.707l-.293.293a1 1 0 11-1.414-1.414l2-2a1 1 0 011.414 0l2 2a1 1 0 11-1.414 1.414L12 9.707V12z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Download
-              </button>
-            </div>
-          </div>
-          {/* Dialog Box for Form */}
-          {showForm && (
-            <div className="fixed top-8 inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-[999]">
-              <div className="bg-white text-black p-3 rounded-lg shadow-lg w-96">
-                <span
-                  className="text-md float-end mb-2 font-bold border rounded-full px-2 cursor-pointer"
-                  onClick={OffForm}
-                >
-                  X
-                </span>
-                <h3 className="text-md text-center font-semibold mb-2">
-                  Register to Download Brochure
-                </h3>
-                <form
-                  className="space-y-2"
-                  onSubmit={(e) => handleFormSubmit(e, actionType)}
-                >
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    placeholder="Enter your name"
-                    required
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-300 p-1.5 rounded-md"
-                  />
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-300 p-1.5 rounded-md"
-                    disabled={emailVerified}
-                  required
-                  />
-                {!emailVerified ? (
-                    !otpSent ? (
-                        <button
-                            type="button"
-                            onClick={sendOTP}
-                            className="w-full bg-[#f15b29] text-white p-1.5 rounded-md text-sm mt-2 transition"
-                        >
-                            Verify Email
-                        </button>
-                    ) : (
-                        <div className="flex gap-2 mt-2">
-                            <input
-                                type="text"
-                                value={otp}
-                                onChange={(e) => setOtp(e.target.value)}
-                                placeholder="Enter OTP"
-                                className="w-full border border-gray-300 p-1.5 rounded-md text-black"
-                            />
-                            <button
-                                type="button"
-                                onClick={verifyOTP}
-                                className="bg-green-600 text-white px-3 py-1.5 rounded-md text-sm whitespace-nowrap"
-                            >
-                                Submit OTP
-                            </button>
-                        </div>
-                    )
-                ) : (
-                    <div className="bg-green-100 border border-green-400 text-green-700 px-3 py-1.5 rounded-md mt-2 text-center text-sm">
-                        ✅ Email Verified
-                    </div>
-                )}
-                  <input
-                    type="text"
-                    id="number"
-                    name="number"
-                    placeholder="Enter your phone number"
-                    value={formData.number}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-300 p-1.5 rounded-md"
-                    required
-                  />
-                  <select
-                    id="currentRole"
-                    name="currentRole"
-                    value={formData.currentRole}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-300 p-1.5 rounded-md"
-                    required
-                  >
-                    <option disabled value="">
-                      What do you currently do?
-                    </option>
-                    <option value="Founder">Founder</option>
-                    <option value="Student">Student</option>
-                    <option value="Working Professional">
-                      Working Professional
-                    </option>
-                    <option value="Self Employed">Self Employed</option>
-                  </select>
-                  <select
-                    id="experience"
-                    name="experience"
-                    value={formData.experience}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-300 p-1.5 rounded-md"
-                    required
-                  >
-                    <option disabled value="">
-                      Select Experience
-                    </option>
-                    <option value="0 year">0 year (Fresher)</option>
-                    <option value="1-2 years">1-2 years</option>
-                    <option value="3-5 years">3-5 years</option>
-                    <option value="5+ years">5+ years</option>
-                  </select>
-                  <select
-                    id="goal"
-                    name="goal"
-                    value={formData.goal}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-300 p-1.5 rounded-md"
-                    required
-                  >
-                    <option disabled value="">
-                      Goal of taking this program
-                    </option>
-                    <option value="Career Transition">Career Transition</option>
-                    <option value="Kickstart Career">Kickstart Career</option>
-                    <option value="Upskilling">Upskilling</option>
-                    <option value="Other">Other</option>
-                  </select>
-                  {formData.goal === "Other" && (
-                    <input
-                      type="text"
-                      name="goalOther"
-                      value={formData.goalOther}
-                      onChange={handleInputChange}
-                      placeholder="Please specify your goal"
-                      className="w-full border border-gray-300 p-1.5 rounded-md mt-2"
-                      required
-                    />
-                  )}
-                  <select
-                    id="reason"
-                    name="reason"
-                    value={formData.reason}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-300 p-1.5 rounded-md"
-                    required
-                  >
-                    <option disabled value="">
-                      Reason for taking this program
-                    </option>
-                    <option value="I Want to Know More About the Program">I Want to Know More About the Program</option>
-                    <option value="I've Reviewed the Program – Need Career Guidance">I've Reviewed the Program – Need Career Guidance</option>
-                    <option value="I'm Ready to Enroll">I'm Ready to Enroll</option>
-                    <option value="I'm Already Enrolled – Need Support">I'm Already Enrolled – Need Support</option>
-                  </select>
-                  <select
-                    id="domain"
-                    name="domain"
-                    value={formData.domain}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-300 p-1.5 rounded-md"
-                    required
-                  >
-                    <option disabled value="">
-                      Domain currently working in
-                    </option>
-                    <option value="Digital Marketing/Performance marketing">
-                      Digital Marketing/Performance Marketing
-                    </option>
-                    <option value="Marketing/Sales">Marketing/Sales</option>
-                    <option value="Management/Operations">
-                      Management/Operations
-                    </option>
-                    <option value="IT/Tech/Product">IT/Tech/Product</option>
-                    <option value="Other">Other</option>
-                  </select>
-                  {formData.domain === "Other" && (
-                    <input
-                      type="text"
-                      name="domainOther"
-                      value={formData.domainOther}
-                      onChange={handleInputChange}
-                      placeholder="Please specify your domain"
-                      className="w-full border border-gray-300 p-1.5 rounded-md mt-2"
-                      required
-                    />
-                  )}
-                  <div className="flex justify-center gap-2">
-                    <button
-                      type="submit"
-                      disabled={loading || !emailVerified}
-                      onClick={(e) => setActionType("Only Download Brochure")}
-                      className="px-4 py-2 w-full bg-[#f15b29] text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {loading ? "Loading..." :  <i className="fa fa-download"></i>}
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={loading || !emailVerified}
-                      onClick={(e) => setActionType("Requested To Call Back")}
-                      className="px-4 py-2 w-full bg-[#f15b29] flex items-center justify-center gap-1 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {loading ? "Loading..." : <p className="flex items-center justify-center"><i className="fa fa-download"></i> +  <RiCustomerService2Fill /></p>}
-                      
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
-        </section>
-
-        {/* 7 alumni section  */}
-        <hr className=" opacity-10" />
-        {/* 13 job roles section  */}
-        <section className="py-[30px] px-[10px]">
-          <div className="container mx-auto max-w-full">
-            <h1
-              data-aos="fade-up"
-              className="text-[#f15b29] text-center  font-bold mb-6"
-            >
-              | Career Opportunities in{" "}
-              <span className="text-white font-bold">Automation Testing</span>
-            </h1>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {jobRoles.map((role, index) => (
-                <div
-                  data-aos="fade-up"
-                  key={index}
-                  className="border-l-4 border-[#f15b29] bg-[#080810] rounded-md p-4 text-white shadow-lg"
-                >
-                  <h3 className="text-xl font-semibold mb-4">{role.title}</h3>
-                  <p>{role.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div data-aos="fade-up" className="mt-[20px] text-center">
-            And more
-          </div>
-        </section>
-        <hr className=" opacity-10" />
-
-        {/* Clients Carousel */}
-        <div className="workat">
-          <div className="alumni container mx-auto max-w-full">
-            <h1 className="text-[#f15b29] font-bold mb-6 text-center">
-              | Our alumni at top Brands
-            </h1>
-            <p className="text-gray-400 mb-12 text-center">
-              Their success stories inspire current students to aim for global
-              excellence in their careers.
-            </p>
-            <ClientsCarousel />
+             ))}
           </div>
         </div>
-        <hr className=" opacity-10" />
+      </section>
 
-        {/* 12 key highlight section */}
-        <section className="py-[30px] px-[10px]">
-          <div className="container mx-auto max-w-full">
-            <div className="">
-              <div className=" w-full mb-6 lg:mb-0">
-                <h1
-                  data-aos="fade-up"
-                  className=" text-center font-bold mb-4 text-[#f15b29]"
-                >
-                  | Course Benefits at a Glance
-                </h1>
-                <p data-aos="fade-up" className="text-lg text-center mb-6">
-                  Learn expert{" "}
-                  <span className="text-[#f15b29] font-bold">
-                    Automation Testing
-                  </span>{" "}
-                  skills, automate complex test scenarios, streamline CI/CD
-                  workflows, boost testing efficiency, stay ahead with AI tools,
-                  and elevate your career prospects in top tech roles.
-                </p>
-                <div
-                  data-aos="fade-up"
-                  className="grid grid-cols-2 md:grid-cols-4 gap-2 lg:px-20"
-                >
-                  <div className=" inline-block p-6 rounded-lg text-center">
-                    <h3 className="text-3xl font-bold text-[#f15b29]">200+</h3>
-                    <p className="mt-2 text-gray-300">Mentees Placed</p>
-                  </div>
-                  <div className=" inline-block p-6 rounded-lg text-center">
-                    <h3 className="text-3xl font-bold text-[#f15b29]">
-                      10+ LPA
-                    </h3>
-                    <p className="mt-2 text-gray-300">Average CTC</p>
-                  </div>
-                  <div className=" inline-block p-6 rounded-lg text-center">
-                    <h3 className="text-3xl font-bold text-[#f15b29]">93%</h3>
-                    <p className="mt-2 text-gray-300">Placement Rate</p>
-                  </div>
-                  <div className=" inline-block p-6 rounded-lg text-center">
-                    <h3 className="text-3xl font-bold text-[#f15b29]">450+</h3>
-                    <p className="mt-2 text-gray-300">Hiring Partners</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+      {/* 3. MARKET */}
+      <section className="at-sec-white">
+        <div className="shell">
+          <h2 className="sec-title">The SDET Advantage</h2>
+          <p className="sec-sub">Automation is no longer a luxury—it is the strategic engine of high-velocity deployment and global software excellence.</p>
+          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(300px, 1fr))', gap:'40px'}}>
+             {marketOpportunity.map((item, i) => (
+               <div key={i}>
+                 <div style={{color:'var(--at-primary)', marginBottom:'20px'}}>{item.icon}</div>
+                 <h4 style={{fontSize:'19px', fontWeight:800, marginBottom:'12px'}}>{item.title}</h4>
+                 <p style={{fontSize:'15px', color:'var(--at-text-dim)', lineHeight:1.6}}>{item.desc}</p>
+               </div>
+             ))}
           </div>
-        </section>
-        <hr className=" opacity-10" />
+        </div>
+      </section>
 
-        {/* 8 Certification section */}
-        <section className="py-[60px] px-[10px]">
-          <div data-aos="fade-up" className="container mx-auto max-w-full">
-            <Certification />
-          </div>
-        </section>
-        <hr className=" opacity-10" />
+      {/* 4. ROADMAP */}
+      <section className="at-section">
+        <div className="shell">
+           <h2 className="sec-title">Quality Engineering Roadmap</h2>
+           <p className="sec-sub">A structured 24-week journey from syntax foundations to elite CI/CD quality gate management.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(450px, 1fr))', gap:'16px'}}>
+              {curriculumRoadmap.map((item, idx) => (
+                 <div key={idx} className="p-card" onClick={() => setExpandedModule(expandedModule === idx ? null : idx)} style={{cursor:'pointer'}}>
+                    <div style={{display:'flex', justifyContent:'space-between', marginBottom:'12px'}}>
+                       <span style={{fontSize:'11px', fontWeight:800, color:'var(--at-primary)', background:'rgba(37,99,235,0.06)', padding:'4px 12px', borderRadius:'99px'}}>{item.weeks}</span>
+                       <ChevronDown size={17} style={{transform: expandedModule === idx ? 'rotate(180deg)' : 'none', transition:'0.3s', color:'var(--at-text-dim)'}} />
+                    </div>
+                    <h4 style={{fontSize:'20px', fontWeight:800, marginBottom:'6px'}}>{item.title}</h4>
+                    <p style={{fontSize:'14px', color:'var(--at-accent)', fontWeight:700}}>{item.topics}</p>
+                    {expandedModule === idx && <p style={{marginTop:'18px', paddingTop:'18px', borderTop:'1px solid var(--at-border)', fontSize:'14px', lineHeight:1.7, color:'var(--at-text-dim)'}}>{item.details}</p>}
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
 
+      {/* 5. TOOLS */}
+      <section className="at-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">The Engineering Stack</h2>
+           <p className="sec-sub">Master the exact technologies and CI/CD workflows used at high-growth engineering agencies and tech hubs.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(220px, 1fr))', gap:'16px'}}>
+              {techStack.map((group, i) => (
+                 <div key={i} className="p-card">
+                    <div style={{fontSize:'12px', fontWeight:800, color:'var(--at-primary)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:'16px'}}>{group.group}</div>
+                    <div style={{display:'flex', flexWrap:'wrap', gap:'6px'}}>
+                       {group.tools.map(t => (
+                          <span key={t} style={{fontSize:'12px', fontWeight:700, background:'var(--at-bg)', color:'var(--at-text)', padding:'6px 14px', borderRadius:'8px'}}>{t}</span>
+                       ))}
+                    </div>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
 
-         {/* Flexible Payment Options */}
-         <section className="py-[60px] px-[10px]">
-          <div className="container mx-auto max-w-full">
-            <h1 className="text-center font-extrabold text-[#f15b29] mb-12 text-3xl md:text-4xl">
-              Our Flexible Payment <span className="text-[#ff7f50]">Options</span>
-            </h1>
-            
-            {/* Payment Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-              {/* Left: Total Fee Box */}
-              <div className="bg-gradient-to-br from-[#f15b29] to-[#b5401f] rounded-l-[80px] rounded-r-lg p-8 md:p-12 flex flex-col justify-center items-center shadow-2xl">
-                <p className="text-white text-lg md:text-xl mb-4 font-medium">Total program fee</p>
-                <p className="text-white text-5xl md:text-6xl font-bold">₹89,000</p>
-                <p className="text-white text-sm mt-3 opacity-90">Inclusive of taxes</p>
+      {/* 6. PROJECTS */}
+      <section className="at-section">
+        <div className="shell">
+           <h2 className="sec-title">Production Suites</h2>
+           <p className="sec-sub">Building evidence-based automation architectures is the only way to demonstrate true quality readiness.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'24px'}}>
+              {portfolioProjects.map((p, i) => (
+                 <div key={i} className="p-card">
+                    <h4 style={{fontSize:'20px', fontWeight:800, marginBottom:'16px'}}>{p.title}</h4>
+                    <div style={{marginBottom:'16px'}}><div style={{fontSize:'11px', fontWeight:800, color:'var(--at-text-dim)', textTransform:'uppercase', marginBottom:'4px'}}>Project Focus</div><p style={{fontSize:'14px'}}>{p.obs}</p></div>
+                    <div><div style={{fontSize:'11px', fontWeight:800, color:'var(--at-text-dim)', textTransform:'uppercase', marginBottom:'4px'}}>Mastered Skill</div><p style={{fontSize:'14px', fontWeight:700, color:'var(--at-accent)'}}>{p.skill}</p></div>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 7. FORMAT */}
+      <section className="at-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">How Learning Works</h2>
+           <p className="sec-sub">A premium experience balancing visual perfection, mentor review, and institutional networking.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(260px, 1fr))', gap:'20px'}}>
+              {[{t:"Live Labs", d:"Real-time framework architecture walkthroughs and logic drills.", i:<Terminal size={20}/>}, {t:"Review Circles", d:"Direct mentor feedback on your GitHub commits and test suites.", i:<CheckCircle2 size={20}/>}, {t:"Backend Drills", d:"Heavy focus on API, Performance, and Cloud query logic.", i:<Cpu size={20}/>}, {t:"Deployment Labs", d:"Hands-on CI/CD and cloud-native quality implementation.", i:<Workflow size={20}/>}].map((item, i) => (
+                 <div key={i} className="p-card text-center">
+                    <div style={{color:'var(--at-primary)', margin:'0 auto 20px', width:'fit-content'}}>{item.i}</div>
+                    <div style={{fontWeight:800, marginBottom:'8px'}}>{item.t}</div>
+                    <p style={{fontSize:'13px', color:'var(--at-text-dim)', lineHeight:1.6}}>{item.d}</p>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 8. ROLES */}
+      <section className="at-section">
+        <div className="shell">
+           <h2 className="sec-title">Target Career Roles</h2>
+           <p className="sec-sub">Automation mastery allows you to target versatile roles across the engineering and DevOps spectrum.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'12px'}}>
+              {careerRoles.map((r, i) => (
+                 <div key={i} className="p-card flex justify-between items-center" style={{padding:'24px'}}>
+                    <div style={{fontWeight:800}}>{r.role}</div>
+                    <div style={{fontSize:'14px', color:'var(--at-accent)', fontWeight:700}}>{r.range}</div>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 9. ALUMNI */}
+      <section className="at-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">Hiring Success & Proof</h2>
+           <p className="sec-sub">Graduates from our advanced programs have transitioned into elite roles across global technology hubs.</p>
+           <ClientsCarousel />
+           <div style={{marginTop:'48px', display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(240px, 1fr))', gap:'24px'}}>
+              {[{l:"200+ Mentees Placed", d:"Across SDET, automation lead, and research tracks."}, {l:"₹09-18 LPA Range", d:"Typical entry-to-senior role transition packages."}, {l:"250+ Hiring Partners", d:"Representing the full spectrum of SaaS and IT orgs."}].map((item, i) => (
+                 <div key={i} className="p-card">
+                    <div style={{fontWeight:800, marginBottom:'10px', color:'var(--at-accent)'}}>{item.l}</div>
+                    <p style={{fontSize:'14px', color:'var(--at-text-dim)'}}>{item.d}</p>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 10. CERTIFICATION */}
+      <section className="at-section">
+        <div className="shell">
+           <Certification isDark={false} />
+        </div>
+      </section>
+
+      {/* 11. PRICING */}
+      <section className="at-sec-white" id="pricing">
+        <div className="shell">
+           <h2 className="sec-title">Program Investment</h2>
+           <p className="sec-sub">Professional enrollment including live labs, mentor reviews, and career support assets.</p>
+           <div className="p-card" style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'60px', padding:'48px', alignItems:'start'}}>
+              <div>
+                 <div style={{fontSize:'13px', fontWeight:800, color:'var(--at-accent)', textTransform:'uppercase', marginBottom:'16px'}}>Professional SDET Certification</div>
+                 <div style={{fontSize:'64px', fontWeight:950, letterSpacing:'-3px', marginBottom:'16px'}}>₹61,999</div>
+                 <p style={{color:'var(--at-text-dim)', marginBottom:'40px', lineHeight:1.7}}>Inclusive of all training frameworks, design labs, portfolio reviews, and job assistance.</p>
+                 <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="Automation Testing" /><a href={atBrochure} className="btn-sec">Official Syllabus</a></div>
               </div>
-              
-              {/* Right: Payment Breakdown */}
-              <div className="flex flex-col justify-center space-y-4">
-                <div className="flex justify-between items-center py-3 border-b border-gray-600">
-                  <span className="text-[#eee] text-lg">Registration</span>
-                  <span className="text-[#eee] text-lg font-semibold">₹10,000</span>
-                </div>
-                <div className="py-3 border-b border-gray-600">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[#eee] text-lg">Installment 1</span>
-                    <span className="text-[#eee] text-lg font-semibold">₹40,000</span>
-                  </div>
-                  <p className="text-[#aaa] text-xs mt-1">*First installment must be paid within 15 days from the date of registration</p>
-                </div>
-                <div className="py-3 border-b border-gray-600">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[#eee] text-lg">Installment 2</span>
-                    <span className="text-[#eee] text-lg font-semibold">₹39,000</span>
-                  </div>
-                  <p className="text-[#aaa] text-xs mt-1">*Second installment must be paid within 15 days of first installment</p>
-                </div>
+              <div style={{display:'grid', gap:'12px'}}>
+                 {[{l:"Seat Reservation", v:"₹10,000"}, {l:"Phase 1 Portfolio", v:"₹26,000"}, {l:"Phase 2 Balance", v:"₹25,999"}].map((row, i) => (
+                    <div key={i} style={{padding:'20px', background:'var(--at-bg)', borderRadius:'8px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                       <span style={{fontSize:'13px', fontWeight:700}}>{row.l}</span><span style={{fontWeight:800}}>{row.v}</span>
+                    </div>
+                 ))}
+                 <div style={{marginTop:'12px', display:'flex', alignItems:'center', gap:'12px', opacity:0.6}}><Zap size={18} /> <img src={Flashaidlogo} alt="Flashaid" style={{height:'14px', grayscale:1}} /> <span style={{fontSize:'12px'}}>EMI starting at ₹4,000/month</span></div>
               </div>
-            </div>
-            
-            
-            
-            {/* Financial Partner */}
-            <div className="flex flex-col justify-center items-center mt-12">
-              <p className="mb-2 text-[#f15b29]">| Our Financial Partner</p>
-              <img src={Flashaidlogo} alt="Financial Partner" className="h-[80px]"/>
-            </div>
-          </div>
-        </section>
+           </div>
+        </div>
+      </section>
 
-        {/* 16 store section  */}
-        <section className="py-[60px] px-[10px] bg-white">
-          <StoreSection />
-        </section>
-
-        {/* 17 new FAQ section */}
-        <section className="py-[60px] px-[10px] bg-white">
-          <div data-aos="fade-up" className="container mx-auto">
-            <h1 className="text-center mb-2  font-bold text-[#f15b29]">
-              | Ask Us Anything
-            </h1>
-            <div className="flex justify-center   flex-col md:flex-row">
-              <div className="md:w-1/6 w-full p-3 lg:border-r border-b md:border-b-0 text-black border-[#f15b29]">
-                <ul className="space-y-2">
-                  {Object.keys(faqData).map((category) => (
-                    <li
-                      key={category}
-                      onClick={() => {
-                        setActiveCategory(category);
-                        setOpenFAQ(null); // Reset any open question
-                      }}
-                      className={`cursor-pointer border font-bold text-black py-2 px-4 rounded-lg ${
-                        activeCategory === category ? " text-[#f15b29]" : ""
-                      }`}
-                    >
-                      {category}
-                    </li>
-                  ))}
-                </ul>
+      {/* 12. FAQ */}
+      <section className="at-section">
+        <div className="shell">
+           <h2 className="sec-title">Frequently Asked Questions</h2>
+           <p className="sec-sub">Clarify technical eligibility, programming prerequisites, and the SDET career progression.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'60px', alignItems:'start'}}>
+              <div style={{display:'grid', gap:'8px'}}>
+                 {Object.keys(faqCategories).map(cat => (
+                    <button key={cat} onClick={() => { setActiveFaqCat(cat); setOpenFaqIdx(null); }} style={{textAlign:'left', padding:'18px 24px', borderRadius:'10px', fontWeight:800, fontSize:'14px', transition:'0.2s', background: activeFaqCat === cat ? 'var(--at-primary)' : 'transparent', color: activeFaqCat === cat ? '#fff' : 'var(--at-text)'}} className={activeFaqCat !== cat ? 'hover:bg-gray-100' : ''}>{cat}</button>
+                 ))}
               </div>
-              <div className="md:w-3/4 w-full p-3">
-                <h2 className="text-2xl font-bold mb-4 text-[#f15b29]">
-                  {activeCategory} :
-                </h2>
-                <ul className="space-y-4 ">
-                  {faqData[activeCategory].map((faq, index) => (
-                    <li
-                      className="border  overflow-hidden rounded-lg "
-                      key={index}
-                    >
-                      <button
-                        onClick={() =>
-                          setOpenFAQ(openFAQ === index ? null : index)
-                        }
-                        className="w-full text-left text-black py-3 px-5  flex justify-between items-center"
-                      >
-                        {faq.question}
-                        <span className="text-[#f15b29] font-bold text-2xl">
-                          {openFAQ === index ? "-" : "+"}
-                        </span>
-                      </button>
-                      {openFAQ === index && (
-                        <div className="p-4 border-t bg-slate-100 text-black">
-                          <p>{faq.answer}</p>
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
+              <div style={{display:'grid', gap:'8px'}}>
+                 {faqCategories[activeFaqCat].map((faq, i) => (
+                    <div key={i} className="faq-item" onClick={() => setOpenFaqIdx(openFaqIdx === i ? null : i)}>
+                       <div className="faq-quest">{faq.q} <ChevronDown size={14} style={{transform: openFaqIdx === i ? 'rotate(180deg)' : 'none', transition:'0.3s'}} /></div>
+                       <AnimatePresence>{openFaqIdx === i && <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="faq-ans"><div style={{paddingTop:'20px', borderTop:'1px solid var(--at-border)'}}>{faq.a}</div></motion.div>}</AnimatePresence>
+                    </div>
+                 ))}
               </div>
-            </div>
-          </div>
-        </section>
+           </div>
+        </div>
+      </section>
 
-        {/* 11 scrolling section */}
-        <section className=" relative">
-          <div
-            className={`fixed bottom-0 left-0 w-full bg-white border-t border-black z-10 shadow-md flex justify-between items-center p-4   transition-transform duration-300 ${
-              isVisible ? "translate-y-0" : "translate-y-full"
-            }`}
-          >
-            <p className="text-lg font-semibold text-black">
-              Program fees 60,999/- + 18% GST
-            </p>
-            <div className=" relative flex space-x-4">
-              <button className="flex items-center px-3 py-2 border rounded-md text-white bg-black  hover:text-[#f15b29]">
-                <a
-                  href="https://rzp.io/rzp/Advanced_Program_Slot_Booking"
-                  target="blank"
-                  className="text-[#f15b29] whitespace-nowrap"
-                >
-                  Enroll Now
-                </a>
-              </button>
-            </div>
-          </div>
-        </section>
+      {/* 13. FORM */}
+      <section className="at-sec-white">
+        <div className="shell">
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'80px', alignItems:'start'}}>
+              <div>
+                 <h2 className="sec-title">Speak with an Advisor</h2>
+                 <p className="sec-sub">Get a personalized transition plan into SDET Engineering and review your institutional career roadmap.</p>
+                 <div style={{display:'grid', gap:'16px'}}>
+                    {['24-hour turnaround response', 'Deep technical walkthrough', 'QA suitability review'].map(t => (
+                       <div key={t} style={{display:'flex', alignItems:'center', gap:'12px', fontSize:'14px', fontWeight:700}}><CheckCircle2 size={18} className="text-blue-600" /> {t}</div>
+                    ))}
+                 </div>
+              </div>
+              <div className="p-card" style={{padding:'32px', maxWidth:'520px'}}>
+                 <div style={{marginBottom:'24px'}}><h3 style={{fontSize:'21px', fontWeight:800, marginBottom:'4px'}}>Expert Guidance Call</h3><p style={{fontSize:'13px', color:'var(--at-text-dim)'}}>Plan your career in global engineering.</p></div>
+                 <ApplyForm courseValue="Automation Testing" isPremium={true} />
+              </div>
+           </div>
+        </div>
+      </section>
+
+      <div className={`sticky-bar ${scrolled ? 'visible' : ''}`}>
+        <div className="shell flex justify-between items-center w-full">
+           <div className="hidden sm:block"><div style={{fontSize:'10px', fontWeight:800, color:'var(--at-text-dim)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:'2px'}}>Quality Authority</div><div style={{fontWeight:800}}>₹61,999 <span style={{fontSize:'12px', color:'var(--at-accent)', marginLeft:'12px'}}>EMI ₹4,000/MO</span></div></div>
+           <div className="flex gap-4 items-center">
+              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-bold uppercase hidden lg:flex items-center gap-2 hover:text-blue-700 transition-all"><PhoneCall size={14} /> Talk to Advisor</button>
+              <ApplyNowButton courseValue="Automation Testing" />
+           </div>
+        </div>
       </div>
     </div>
   );

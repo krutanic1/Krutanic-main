@@ -1,1229 +1,418 @@
-import React, { useState } from "react";
-import MERNHero from "../../../krutanic/images/msad1.jpg";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  CheckCircle2, 
+  ChevronDown, 
+  Download, 
+  TrendingUp, 
+  Award, 
+  Briefcase, 
+  ArrowRight,
+  ShieldCheck,
+  Zap, 
+  Code2, 
+  Database, 
+  Layout, 
+  Server, 
+  ShieldAlert, 
+  Globe,
+  Terminal,
+  Cpu,
+  Layers,
+  Workflow,
+  PhoneCall,
+  UserCheck,
+  Video,
+  FileCode2,
+  Box,
+  Binary,
+  Target
+} from "lucide-react";
+
 import posterImage from "../../../krutanic/images/poster/mern.png";
-import MERNOutcomes from "../../assets/Advanced Course Images/Mern Stack Development/mern.png";
 import Flashaidlogo from "../../assets/Flashaidlogo.jpg";
-import pdfms from "../../../krutanic/Mern Stack Web Development Advanced Program.pdf";
-import BenefitsofLearning from "./Components/BenefitsofLearning";
-import ClientsCarousel from "../../Components/our_alumni";
-import StoreSection from "./Components/StoreSection";
 import Certification from "./Components/Certification";
+import ClientsCarousel from "../../Components/our_alumni";
 import ApplyNowButton from "./Components/ApplyNowButton";
 import ApplyForm from "./Components/ApplyForm";
+import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
+import CourseInfoStrip from "./Components/CourseInfoStrip";
+import mernBrochure from "../../../krutanic/Mern Stack Web Development Advanced Program.pdf";
 
 const heroStats = [
-  { label: "Duration", value: "24 Weeks" },
-  { label: "Program Rating", value: "4.9/5" },
-  { label: "Batch Starting", value: "Upcoming" },
+  { label: "Mentees Placed", value: "280+" },
+  { label: "Avg. CTC Range", value: "11+ LPA" },
+  { label: "Placement Rate", value: "92%" },
+  { label: "Hiring Partners", value: "250+" },
 ];
 
-const curriculum = [
-  {
-    week: "Weeks 1-2",
-    title: "MERN Foundations",
-    objectives:
-      "Understand the architecture of MongoDB, Express, React, and Node and set up a modern dev workflow.",
-    topics: [
-      "MERN Architecture",
-      "Node Setup",
-      "MongoDB Basics",
-      "JavaScript ES6+",
-      "Project Structure",
-    ],
-  },
-  {
-    week: "Weeks 3-4",
-    title: "MongoDB and Express Fundamentals",
-    objectives:
-      "Build robust backend services with schema design, CRUD operations, routing, and middleware.",
-    topics: [
-      "Schema Modeling",
-      "CRUD",
-      "Express Routing",
-      "Middleware",
-      "API Patterns",
-    ],
-  },
-  {
-    week: "Week 5-6",
-    title: "Frontend with React",
-    objectives:
-      "Create responsive interfaces with reusable components, routing, and state management patterns.",
-    topics: [
-      "Component Design",
-      "React Router",
-      "Hooks",
-      "State Patterns",
-      "UI Integration",
-    ],
-  },
-  {
-    week: "Week 7",
-    title: "Advanced MongoDB",
-    objectives:
-      "Improve data performance and security using indexing, aggregations, and best-practice modeling.",
-    topics: [
-      "Aggregation",
-      "Indexing",
-      "Query Optimization",
-      "Backups",
-      "Security",
-    ],
-  },
-  {
-    week: "Week 8-9",
-    title: "Backend Engineering with Node and Express",
-    objectives:
-      "Develop scalable APIs and service layers with robust error handling and async control flows.",
-    topics: [
-      "Async Patterns",
-      "Error Handling",
-      "Service Layers",
-      "Sessions and Cookies",
-      "API Contracts",
-    ],
-  },
-  {
-    week: "Week 10",
-    title: "Full-Stack Integration",
-    objectives:
-      "Connect frontend and backend cleanly and deploy complete applications with stable workflows.",
-    topics: [
-      "React-API Integration",
-      "Data Flow",
-      "Axios",
-      "Deployment Basics",
-      "Environment Setup",
-    ],
-  },
-  {
-    week: "Week 11-12",
-    title: "Advanced React",
-    objectives:
-      "Scale frontend architecture using context, custom hooks, and performance optimization techniques.",
-    topics: [
-      "Context API",
-      "Custom Hooks",
-      "Performance Tuning",
-      "Composition",
-      "State Architecture",
-    ],
-  },
-  {
-    week: "Week 13-14",
-    title: "REST APIs and Authentication",
-    objectives:
-      "Secure applications with JWT and modern API security practices.",
-    topics: [
-      "JWT Auth",
-      "Protected Routes",
-      "OAuth Concepts",
-      "API Security",
-      "Authorization",
-    ],
-  },
-  {
-    week: "Week 14-15",
-    title: "Performance and Debugging",
-    objectives:
-      "Diagnose bottlenecks and optimize frontend and backend systems for production quality.",
-    topics: [
-      "DevTools Profiling",
-      "React Debugging",
-      "Node Debugging",
-      "Performance Fixes",
-      "Best Practices",
-    ],
-  },
-  {
-    week: "Week 16",
-    title: "Deployment and Scaling",
-    objectives:
-      "Ship and scale MERN applications using CI/CD, containers, and cloud deployment strategies.",
-    topics: [
-      "CI/CD",
-      "Docker",
-      "Cloud Deployments",
-      "Monitoring",
-      "Scaling Patterns",
-    ],
-  },
-  {
-    week: "Week 17-20",
-    title: "Capstone Project",
-    objectives:
-      "Build an end-to-end MERN product to demonstrate real-world development capability.",
-    topics: [
-      "Capstone Build",
-      "Project Reviews",
-      "Portfolio Packaging",
-      "Resume Refinement",
-      "Interview Prep",
-    ],
-  },
-  {
-    week: "Week 21-24",
-    title: "Placement Preparation",
-    objectives:
-      "Prepare for full-stack interviews with strong portfolio storytelling and job search strategy.",
-    topics: [
-      "Resume Optimization",
-      "Mock Interviews",
-      "LinkedIn Positioning",
-      "Networking",
-      "Offer Readiness",
-    ],
-  },
+const audience = [
+  { title: "Students & Freshers", desc: "Build a rock-solid foundation in full-stack engineering and graduate with a production-ready portfolio.", icon: <Cpu size={20} /> },
+  { title: "Frontend Developers", desc: "Expand your capabilities to the backend, mastering Node.js and MongoDB to become a complete architect.", icon: <Server size={20} /> },
+  { title: "Backend Developers", desc: "Bridge your logic with the user experience, learning React to own the full product lifecycle.", icon: <Layout size={20} /> },
+  { title: "Career Switchers", desc: "A first-principles approach to web development designed for those moving into high-growth software roles.", icon: <Globe size={20} /> },
+  { title: "Aspiring Architects", desc: "Learn to design scalable, secure, and performant web systems using the modern MERN stack.", icon: <Layers size={20} /> },
+  { title: "Hobbyist Developers", desc: "Formalize your knowledge with industry standards in authentication, deployment, and cloud integration.", icon: <Terminal size={20} /> }
 ];
 
-const overviewTopics = [
-  "MongoDB Database Design",
-  "Express API Engineering",
-  "React Frontend Architecture",
-  "Node Backend Development",
-  "Authentication and Security",
-  "Deployment and Scaling",
+const marketOpportunity = [
+  { title: "Startup Versatility", desc: "MERN is the preferred choice for fast-moving product teams due to its JavaScript-everywhere nature.", icon: <Zap size={24} /> },
+  { title: "Production Demand", desc: "Enterprise teams are prioritizing full-stack engineers who can own features from database to UI.", icon: <Target size={24} /> },
+  { title: "Execution Speed", desc: "Master the stack that allows for rapid feature iteration and seamless backend-frontend integration.", icon: <TrendingUp size={24} /> }
 ];
 
-const whyChoose = [
-  {
-    title: "High Demand",
-    description:
-      "Full-stack developers with MERN expertise are consistently in demand across industries.",
-  },
-  {
-    title: "Strong Compensation",
-    description:
-      "Specialized full-stack implementation skills command competitive salary ranges.",
-  },
-  {
-    title: "Full-Stack Ownership",
-    description:
-      "Build and ship complete products from frontend experience to backend architecture.",
-  },
-  {
-    title: "Versatile Career Paths",
-    description:
-      "Target frontend, backend, full-stack, and platform roles with one strong stack.",
-  },
-  {
-    title: "Modern Tooling",
-    description:
-      "Use production-grade workflows with APIs, containers, cloud, and CI/CD systems.",
-  },
-  {
-    title: "Continuous Growth",
-    description:
-      "The JavaScript ecosystem evolves rapidly, creating constant learning opportunities.",
-  },
+const techStack = [
+  { group: "Frontend Core", tools: ["React.js", "Redux Toolkit", "React Router", "Tailwind CSS", "Axios"] },
+  { group: "Backend & Logic", tools: ["Node.js", "Express.js", "JavaScript ES6+", "NPM", "JWT"] },
+  { group: "Database & Data", tools: ["MongoDB", "Mongoose", "Atlas", "Aggregation", "Indexing"] },
+  { group: "API & DevTools", tools: ["REST APIs", "Postman", "Insomnia", "Swagger", "Git/GitHub"] },
+  { group: "Cloud & Ops", tools: ["Docker", "Vercel", "Heroku", "CI/CD", "Performance Profiling"] }
 ];
 
-const keyTakeaways = [
-  "Build robust APIs and backend services using Node.js, Express, and MongoDB.",
-  "Create scalable React applications with reusable components and state architecture.",
-  "Implement secure authentication and authorization workflows for production apps.",
-  "Optimize app performance with debugging and profiling best practices.",
-  "Deploy and monitor full-stack applications with modern DevOps workflows.",
-  "Showcase a portfolio-ready capstone that demonstrates end-to-end MERN expertise.",
+const curriculumRoadmap = [
+  { weeks: "Weeks 1-2", title: "MERN Fundamentals", topics: "Node setup, Architecture, ES6+, Project init.", details: "Establish the core development environment and understand the non-blocking nature of modern JS architecture." },
+  { weeks: "Weeks 3-4", title: "DB & API Basics", topics: "Schema design, CRUD, Express routing, Middleware.", details: "Learn to design robust data models and connect them to functional backend service layers." },
+  { weeks: "Weeks 5-6", title: "React Component Logic", topics: "Hooks, State, Virtual DOM, UI Integration.", details: "Master the reactive nature of modern interfaces and component-driven architecture." },
+  { weeks: "Weeks 7-9", title: "Backend Engineering", topics: "Async flows, error handling, session management.", details: "Deep dive into production-grade backend logic that handles concurrency and complex business rules." },
+  { weeks: "Weeks 10-12", title: "Advanced Frontend", topics: "Context API, custom hooks, performance tuning.", details: "Scale your React applications to handle complex global states and heavy data interactions." },
+  { weeks: "Weeks 13-14", title: "Security & Auth", topics: "JWT, Protected routes, API encryption.", details: "Implement industry-standard authentication systems and secure your data against common vulnerabilities." },
+  { weeks: "Weeks 15-16", title: "Cloud Ops & Scaling", topics: "Docker, CI/CD pipelines, Cloud deployment.", details: "Transition from local development to production deployment using containers and cloud automation." },
+  { weeks: "Weeks 17-20", title: "Capstone Build", topics: "Architecture design, Full-cycle build, Peer reviews.", details: "Develop an end-to-end full-stack product that demonstrates your mastery to hiring partners." },
+  { weeks: "Weeks 21-24", title: "Interview Engineering", topics: "Mock interviews, LinkedIn, Technical pitching.", details: "Final phase focused on the soft and hard skills required to crack elite software engineering roles." }
 ];
 
-const roles = [
-  {
-    title: "Full-Stack Developer",
-    text: "Build complete web products across frontend and backend systems.",
-    avg: "Package range: Rs 6-18 LPA",
-  },
-  {
-    title: "MERN Stack Developer",
-    text: "Ship feature-rich applications using MongoDB, Express, React, and Node.",
-    avg: "Package range: Rs 6-20 LPA",
-  },
-  {
-    title: "Frontend Developer",
-    text: "Create high-quality user interfaces and interactive application experiences.",
-    avg: "Package range: Rs 4-14 LPA",
-  },
-  {
-    title: "Backend Developer",
-    text: "Engineer secure and scalable API services and backend infrastructure.",
-    avg: "Package range: Rs 5-16 LPA",
-  },
-  {
-    title: "API Developer",
-    text: "Design and maintain API ecosystems for modern web applications.",
-    avg: "Package range: Rs 5-14 LPA",
-  },
-  {
-    title: "Web Application Architect",
-    text: "Define scalable architecture and technical direction for web platforms.",
-    avg: "Package range: Rs 12-35 LPA",
-  },
-  {
-    title: "React Developer",
-    text: "Build performant frontend systems using component-driven architecture.",
-    avg: "Package range: Rs 5-15 LPA",
-  },
-  {
-    title: "JavaScript Developer",
-    text: "Develop interactive web solutions across frontend and backend environments.",
-    avg: "Package range: Rs 4-12 LPA",
-  },
-  {
-    title: "Software Engineer",
-    text: "Build maintainable software systems and collaborate across product teams.",
-    avg: "Package range: Rs 6-20 LPA",
-  },
+const portfolioProjects = [
+  { title: "Auth-Based Web App", obs: "Secure user-ecosystem with role-based access control.", skill: "Security & JWT" },
+  { title: "E-commerce Interface", obs: "Dynamic product catalog with real-time state synchronization.", skill: "React Complexity" },
+  { title: "Administrative CMS", obs: "Data-heavy dashboard with complex CRUD and visualization.", skill: "DB Design" },
+  { title: "Task Management Suite", obs: "A real-time collaborative tool with notification workflows.", skill: "Real-time Ops" }
 ];
 
-const faqData = {
-  Program: [
-    {
-      question: "What topics are covered in the MERN Stack program?",
-      answer:
-        "The program covers MongoDB, Express.js, React.js, Node.js, APIs, authentication, and deployment workflows.",
-    },
-    {
-      question: "How is the course delivered?",
-      answer:
-        "The course includes live sessions, recordings, practical labs, and full-stack project implementation.",
-    },
-    {
-      question: "Will I get hands-on experience?",
-      answer:
-        "Yes, you build end-to-end applications and implement real-world full-stack use cases.",
-    },
-    {
-      question: "How long is the program?",
-      answer: "The program runs for 24 weeks.",
-    },
+const careerRoles = [
+  { role: "Full-Stack Developer", range: "08 - 18 LPA" },
+  { role: "MERN Developer", range: "09 - 22 LPA" },
+  { role: "Backend Engineer", range: "07 - 16 LPA" },
+  { role: "Frontend Lead", range: "08 - 18 LPA" },
+  { role: "Product Architect", range: "18 - 35 LPA" },
+  { role: "Software Engineer", range: "10 - 24 LPA" }
+];
+
+const faqCategories = {
+  "Progrm Basics": [
+    { q: "Is prior coding experience required?", a: "While helpful, we start from foundations. If you can logic through problems, we will teach you the syntax." },
+    { q: "Which database will we master?", a: "We focus on MongoDB (NoSQL) for high-velocity scalability, but teach concepts applicable across DBs." }
   ],
-  Eligibility: [
-    {
-      question: "What are the prerequisites for this program?",
-      answer:
-        "Basic JavaScript and web fundamentals are helpful but not mandatory.",
-    },
-    {
-      question: "Do I need prior MERN experience?",
-      answer:
-        "No, the program is suitable for beginners and developers transitioning to full-stack roles.",
-    },
-    {
-      question: "Can beginners apply?",
-      answer: "Yes, the sequence starts from fundamentals and scales to advanced implementation.",
-    },
-    {
-      question: "Is there an age restriction?",
-      answer: "No, there is no age restriction.",
-    },
-  ],
-  Community: [
-    {
-      question: "How can I interact with other participants?",
-      answer:
-        "Through cohort channels, peer reviews, project collaboration, and networking sessions.",
-    },
-    {
-      question: "Is mentorship available?",
-      answer: "Yes, mentors support implementation quality, architecture, and interview readiness.",
-    },
-    {
-      question: "Can I access support after completion?",
-      answer: "Yes, alumni and support channels remain available after graduation.",
-    },
-    {
-      question: "How diverse is the community?",
-      answer:
-        "Learners come from engineering, IT services, startups, and non-tech transition backgrounds.",
-    },
-  ],
-  Lectures: [
-    {
-      question: "Are sessions live or recorded?",
-      answer: "Both live and recorded content are available for flexible learning.",
-    },
-    {
-      question: "How interactive are the sessions?",
-      answer:
-        "Sessions include coding walkthroughs, architecture discussions, and real-time feedback.",
-    },
-    {
-      question: "Can I replay missed lectures?",
-      answer: "Yes, recordings are available for all modules.",
-    },
-    {
-      question: "How often are live sessions held?",
-      answer: "Live sessions are held weekly.",
-    },
-  ],
-  Certification: [
-    {
-      question: "Will I receive a certificate on completion?",
-      answer: "Yes, successful participants receive a completion certificate.",
-    },
-    {
-      question: "Is the certification recognized by employers?",
-      answer:
-        "It demonstrates practical full-stack capability and portfolio-backed readiness.",
-    },
-    {
-      question: "Can I add this certification to resume or LinkedIn?",
-      answer: "Yes, it can be added to both.",
-    },
-    {
-      question: "Is certification included in the fee?",
-      answer: "Yes, it is included upon successful completion.",
-    },
-  ],
-  Opportunities: [
-    {
-      question: "What career opportunities does this open?",
-      answer:
-        "You can target MERN Stack Developer, Full-Stack Developer, Frontend Developer, Backend Developer, and API Engineer roles.",
-    },
-    {
-      question: "Is placement support included?",
-      answer: "Yes, placement and interview preparation support are included.",
-    },
-    {
-      question: "Are internships available?",
-      answer:
-        "Selected learners may access internship and project opportunities via partner networks.",
-    },
-    {
-      question: "How does this help career growth?",
-      answer:
-        "You graduate with deployable projects, architecture depth, and clear interview stories.",
-    },
-  ],
+  "Job Support": [
+    { q: "How do mock interviews work?", a: "You undergo 3 rounds of technical and architectural mock interviews with real dev leads." },
+    { q: "What is the hire rate?", a: "92% of our graduates transition into product roles within 6 months of completion." }
+  ]
 };
 
 const MernStack = () => {
-  const [openModule, setOpenModule] = useState(0);
-  const [activeCategory, setActiveCategory] = useState("Program");
-  const [openFAQ, setOpenFAQ] = useState(null);
+  const [expandedModule, setExpandedModule] = useState(null);
+  const [activeFaqCat, setActiveFaqCat] = useState("Progrm Basics");
+  const [openFaqIdx, setOpenFaqIdx] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 80);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <div className="ms-page">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap');
 
         :root {
-          --bg: #f3f1f1;
-          --panel: #ffffff;
-          --ink: #171717;
-          --muted: #626262;
-          --line: #ded8d5;
-          --accent: #c43609;
-          --radius: 18px;
-          --shadow: 0 20px 40px rgba(29, 20, 13, 0.08);
+          --ms-bg: #F7F6F2;
+          --ms-text: #111827;
+          --ms-text-dim: #4B5563;
+          --ms-primary: #059669;
+          --ms-accent: #10B981;
+          --ms-border: rgba(17, 24, 39, 0.08);
         }
 
-        * { box-sizing: border-box; }
+        .ms-page { background: var(--ms-bg); color: var(--ms-text); font-family: 'Plus Jakarta Sans', sans-serif; }
+        .shell { width: 100%; max-width: 1210px; margin: 0 auto; padding: 0 24px; }
 
-        .ms-page {
-          background:
-            radial-gradient(circle at 8% 8%, rgba(196, 54, 9, 0.08), transparent 34%),
-            radial-gradient(circle at 95% 55%, rgba(15, 77, 98, 0.09), transparent 28%),
-            var(--bg);
-          color: var(--ink);
-          font-family: "Sora", "Segoe UI", sans-serif;
+        .ms-section { padding: 100px 0; }
+        .ms-sec-white { padding: 100px 0; background: #fff; border-top: 1px solid var(--ms-border); border-bottom: 1px solid var(--ms-border); }
+
+        .sec-title { font-family: 'Outfit', sans-serif; font-size: 34px; font-weight: 800; margin-bottom: 16px; color: var(--ms-text); text-align: left; }
+        .sec-sub { font-size: 17px; color: var(--ms-text-dim); max-width: 610px; margin-bottom: 50px; text-align: left; line-height:1.6; }
+
+        .p-card { 
+          background: #fff; 
+          border: 1px solid var(--ms-border); 
+          border-radius: 12px; 
+          padding: 24px; 
+          transition: 0.3s;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.02);
         }
+        .p-card:hover { border-color: var(--ms-accent); box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
 
-        .ms-shell {
-          width: min(100%, calc(100% - 32px));
-          margin: 0 auto;
-        }
+        .btn-sec { border: 1px solid var(--ms-border); color: var(--ms-text); padding: 12px 24px; border-radius: 8px; font-weight: 700; font-size: 15px; background:#fff; }
 
-        .ms-btn {
-          background: linear-gradient(180deg, #d64d1d 0%, #af2f06 100%);
-          border: 0;
-          border-radius: 10px;
-          color: #fff;
-          cursor: pointer;
-          font-size: 12px;
-          font-weight: 700;
-          letter-spacing: 0.3px;
-          padding: 10px 18px;
-          text-transform: uppercase;
-        }
+        .faq-item { border: 1px solid var(--ms-border); border-radius: 12px; margin-bottom: 12px; overflow: hidden; background: #fff; }
+        .faq-quest { width:100%; text-align:left; padding: 22px 24px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .faq-ans { padding: 0 24px 24px; font-size: 14px; color: var(--ms-text-dim); line-height: 1.6; }
 
-        .ms-section { padding: 24px 0; }
-        .ms-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 8px; }
-        .ms-section p.lead {
-          color: var(--muted);
-          line-height: 1.7;
-          margin: 0 0 16px;
-          max-width: 760px;
-        }
+        .sticky-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 72px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--ms-border); z-index: 99; transform: translateY(100%); transition: 0.4s; display: flex; align-items: center; }
+        .sticky-bar.visible { transform: translateY(0); }
 
-        .ms-hero {
-          border-top: 1px solid var(--line);
-          display: grid;
-          gap: 16px;
-          grid-template-columns: 1fr 1fr;
-          padding: 16px 0 20px;
-        }
-
-        .ms-chip {
-          background: #f0e0db;
-          border-radius: 999px;
-          color: #8a4f40;
-          display: inline-flex;
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 0.5px;
-          padding: 6px 12px;
-          text-transform: uppercase;
-        }
-
-        .ms-hero h1 {
-          font-size: clamp(42px, 5vw, 74px);
-          line-height: 0.98;
-          margin: 12px 0;
-        }
-
-        .ms-hero h1 span {
-          color: var(--accent);
-          font-family: "Fraunces", Georgia, serif;
-          font-style: italic;
-          font-weight: 800;
-        }
-
-        .ms-sub {
-          color: var(--muted);
-          font-size: 17px;
-          line-height: 1.6;
-          max-width: 520px;
-          margin-bottom: 16px;
-        }
-
-        .ms-stats {
-          display: grid;
-          gap: 12px;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          max-width: 560px;
-          margin-bottom: 18px;
-        }
-
-        .ms-stat {
-          background: var(--panel);
-          border: 1px solid #eadeda;
-          border-radius: 16px;
-          box-shadow: var(--shadow);
-          padding: 16px 14px;
-        }
-
-        .ms-stat-label {
-          color: #8a8a8a;
-          font-size: 11px;
-          letter-spacing: 0.6px;
-          margin-bottom: 6px;
-          text-transform: uppercase;
-        }
-
-        .ms-stat-value { font-size: 18px; font-weight: 700; }
-
-        .ms-hero-media { position: relative; }
-
-        .ms-media-box {
-          background: radial-gradient(circle at 25% 20%, #17627c 0%, #0d1826 70%);
-          border-radius: 22px;
-          box-shadow: 0 24px 46px rgba(0, 0, 0, 0.28);
-          overflow: hidden;
-          padding: 18px;
-          height: 600px;
-        }
-
-        .ms-media-box > div {
-          height: 100%;
-        }
-
-        .ms-media-box img {
-          border-radius: 16px;
-          display: block;
-          height: 100%;
-          min-height: 330px;
-          object-fit: cover;
-          width: 100%;
-        }
-
-        .ms-floating-card {
-          background: rgba(255, 255, 255, 0.92);
-          border-radius: 16px;
-          box-shadow: 0 12px 32px rgba(19, 16, 11, 0.18);
-          left: -20px;
-          max-width: 300px;
-          padding: 16px;
-          position: absolute;
-          bottom: -20px;
-        }
-
-        .ms-curr-grid {
-          display: grid;
-          gap: 10px;
-          grid-template-columns: 2fr 1fr;
-        }
-
-        .ms-accordion { display: grid; gap: 10px; }
-
-        .ms-module {
-          background: var(--panel);
-          border: 1px solid #e7e0dc;
-          border-radius: var(--radius);
-          padding: 14px;
-        }
-
-        .ms-module.open { border-color: #d05b36; }
-
-        .ms-module-head {
-          align-items: center;
-          cursor: pointer;
-          display: flex;
-          justify-content: space-between;
-        }
-
-        .ms-module-week {
-          color: #9b9b9b;
-          font-size: 10px;
-          letter-spacing: 0.5px;
-          text-transform: uppercase;
-        }
-
-        .ms-module-title { font-size: 24px; font-weight: 600; margin-top: 5px; }
-        .ms-module-toggle { color: #7b7b7b; font-size: 24px; line-height: 1; }
-
-        .ms-module-body {
-          border-top: 1px solid #eee4de;
-          margin-top: 16px;
-          padding-top: 15px;
-        }
-
-        .ms-module-objective {
-          color: #4b4b4b;
-          font-size: 14px;
-          line-height: 1.6;
-          margin-bottom: 10px;
-        }
-
-        .ms-tag-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
-        .ms-tag {
-          background: #f3e7e1;
-          border-radius: 999px;
-          color: #8d4d3b;
-          font-size: 11px;
-          padding: 5px 11px;
-        }
-
-        .ms-side-panel {
-          background: var(--panel);
-          border: 1px solid #e8e0dc;
-          border-radius: var(--radius);
-          box-shadow: var(--shadow);
-          height: fit-content;
-          padding: 20px;
-        }
-
-        .ms-side-panel h3 { font-size: 28px; margin: 0 0 6px; }
-        .ms-side-panel p { color: #6f6f6f; font-size: 14px; margin: 0 0 16px; }
-
-        .ms-overview-grid,
-        .ms-why-grid,
-        .ms-role-grid,
-        .ms-metric-grid,
-        .ms-faq-grid {
-          display: grid;
-          gap: 16px;
-        }
-
-        .ms-overview-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .ms-why-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .ms-role-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .ms-metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-        .ms-faq-grid { grid-template-columns: 250px 1fr; }
-
-        .ms-card {
-          background: #f7f5f4;
-          border: 1px solid #e6dfdc;
-          border-radius: 16px;
-          padding: 20px;
-        }
-
-        .ms-card h4 { margin: 0 0 8px; font-size: 20px; }
-        .ms-card p { margin: 0; color: #5f5f5f; line-height: 1.6; }
-
-        .ms-takeaway-grid {
-          align-items: center;
-          display: grid;
-          gap: 22px;
-          grid-template-columns: 1fr;
-          width: 100%;
-        }
-
-        .ms-list {
-          margin: 0;
-          padding: 0;
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 15px 30px;
-          width: 100%;
-        }
-
-        @media (max-width: 768px) {
-          .ms-list {
-            grid-template-columns: 1fr;
-          }
-        }
-
-        .ms-list li {
-          list-style: none;
-          padding-left: 16px;
-          position: relative;
-          color: #454545;
-          line-height: 1.55;
-        }
-
-        .ms-list li::before {
-          background: #cb4213;
-          border-radius: 50%;
-          content: "";
-          height: 6px;
-          left: 0;
-          position: absolute;
-          top: 9px;
-          width: 6px;
-        }
-
-        .ms-image {
-          border-radius: 16px;
-          box-shadow: var(--shadow);
-          overflow: hidden;
-        }
-
-        .ms-image img {
-          display: block;
-          width: 100%;
-          height: 100%;
-          min-height: 320px;
-          object-fit: cover;
-        }
-
-        .ms-center { text-align: center; }
-
-        .ms-brochure {
-          align-items: center;
-          border: 2px solid #ca3f12;
-          border-radius: 18px;
-          display: flex;
-          justify-content: space-between;
-          gap: 20px;
-          padding: 20px;
-          background: #fff;
-        }
-
-        .ms-career { background: #eceaea; border-top: 1px solid #ddd8d5; border-bottom: 1px solid #ddd8d5; }
-
-        .ms-role-card {
-          background: #f7f5f4;
-          border: 1px solid #e6dfdc;
-          border-radius: 16px;
-          min-height: 190px;
-          padding: 22px;
-          position: relative;
-        }
-
-        .ms-role-dot {
-          background: #be3a10;
-          border-radius: 50%;
-          height: 10px;
-          margin-bottom: 16px;
-          width: 10px;
-        }
-        
-        .ms-role-card h4 {
-          font-weight: 700;
-        }
-
-        .ms-role-card strong {
-          color: #b12e03;
-          display: block;
-          margin-top: 12px;
-          font-size: 12px;
-          text-transform: uppercase;
-        }
-
-        .ms-fixed-price {
-          align-items: center;
-          background: #ffffffee;
-          backdrop-filter: blur(6px);
-          border-top: 1px solid var(--line);
-          bottom: 0;
-          color: var(--ink);
-          display: flex;
-          gap: 12px;
-          font-size: 14px;
-          font-weight: 700;
-          justify-content: space-between;
-          left: 0;
-          letter-spacing: 0.4px;
-          min-height: 56px;
-          padding: 10px 24px;
-          position: fixed;
-          text-transform: uppercase;
-          width: 100%;
-          z-index: 120;
-        }
-
-        .ms-fixed-price strong {
-          color: var(--accent-dark);
-          margin-left: 6px;
-        }
-
-        .ms-metric {
-          text-align: center;
-          padding: 16px;
-          border: 1px solid #e6dfdc;
-          border-radius: 14px;
-          background: #fff;
-        }
-
-        .ms-metric h4 { margin: 0; color: #bf390d; font-size: 30px; }
-        .ms-metric p { margin: 6px 0 0; color: #5f5f5f; }
-
-        .ms-invest {
-          background: #fdfcfc;
-          border: 2px solid #ca3f12;
-          border-radius: 18px;
-          box-shadow: var(--shadow);
-          padding: 28px;
-        }
-
-        .ms-invest h3 { font-size: 40px; margin: 6px 0; }
-        .ms-invest-sub { color: #7a7a7a; font-size: 13px; text-transform: uppercase; }
-
-        .ms-invest-grid {
-          border-top: 1px solid #ece4e0;
-          display: grid;
-          gap: 18px;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          margin-top: 20px;
-          padding-top: 16px;
-        }
-
-        .ms-invest-item strong { color: #bf390d; display: block; margin-bottom: 6px; }
-        .ms-invest-item span { color: #5e5e5e; font-size: 13px; line-height: 1.5; }
-
-        .ms-pay-grid {
-          display: grid;
-          gap: 18px;
-          grid-template-columns: 1fr 1fr;
-          margin-top: 16px;
-        }
-
-        .ms-fee-box {
-          background: linear-gradient(145deg, #df5a2c 0%, #b73b14 100%);
-          border-radius: 26px;
-          color: #fff;
-          padding: 24px;
-          text-align: center;
-        }
-
-        .ms-fee-box .fee { font-size: 48px; font-weight: 800; line-height: 1.1; }
-
-        .ms-breakdown {
-          background: #fff;
-          border: 1px solid #e8e0dc;
-          border-radius: 16px;
-          padding: 16px;
-        }
-
-        .ms-break-row {
-          border-bottom: 1px solid #ebe3df;
-          display: flex;
-          justify-content: space-between;
-          font-size: 14px;
-          padding: 11px 0;
-        }
-
-        .ms-break-row:last-child { border-bottom: 0; }
-
-        .ms-partner {
-          align-items: center;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          margin-top: 16px;
-        }
-
-        .ms-partner img { height: 76px; object-fit: contain; }
-
-        .ms-faq-menu {
-          border: 1px solid #e5deda;
-          border-radius: 14px;
-          background: #fff;
-          padding: 12px;
-          height: fit-content;
-        }
-
-        .ms-faq-menu button {
-          background: #fff;
-          border: 1px solid #e7e0dc;
-          border-radius: 10px;
-          cursor: pointer;
-          display: block;
-          font-family: inherit;
-          font-size: 13px;
-          font-weight: 700;
-          margin-bottom: 8px;
-          padding: 10px 12px;
-          text-align: left;
-          width: 100%;
-        }
-
-        .ms-faq-menu button.active {
-          border-color: #d35e39;
-          color: #b9380f;
-        }
-
-        .ms-faq-item {
-          border: 1px solid #e7e0dc;
-          border-radius: 12px;
-          margin-bottom: 10px;
-          overflow: hidden;
-        }
-
-        .ms-faq-head {
-          align-items: center;
-          background: #fff;
-          cursor: pointer;
-          display: flex;
-          justify-content: space-between;
-          padding: 12px 14px;
-          width: 100%;
-          border: 0;
-          font-family: inherit;
-          text-align: left;
-        }
-
-        .ms-faq-body {
-          background: #f8f5f4;
-          color: #4f4f4f;
-          padding: 12px 14px;
-          border-top: 1px solid #e7e0dc;
-        }
-
-        @media (max-width: 1080px) {
-          .ms-hero,
-          .ms-curr-grid,
-          .ms-overview-grid,
-          .ms-why-grid,
-          .ms-role-grid,
-          .ms-metric-grid,
-          .ms-pay-grid,
-          .ms-faq-grid,
-          .ms-takeaway-grid,
-          .ms-invest-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .ms-floating-card { left: 14px; }
-          .ms-brochure { flex-direction: column; align-items: flex-start; }
-        }
-
-        @media (max-width: 780px) {
-          .ms-section { padding: 42px 0; }
-          .ms-module-title { font-size: 21px; }
-        }
+        @media (max-width: 768px) { .sec-title { font-size: 28px; } }
       `}</style>
 
-      <div className="ms-shell">
-        <div style={{ width: "100%", marginBottom: "20px", marginTop: "10px" }}>
-          <img 
-            src={posterImage} 
-            alt="MERN Stack Poster" 
-            style={{ width: "100%", height: "auto", borderRadius: "18px", display: "block" }} 
-          />
-        </div>
-        <section className="ms-hero">
-          <div>
-            <div className="ms-chip">Advanced Program 2026</div>
-            <h1>Master the <span>Stack</span> to Ship Products.</h1>
-            <p className="ms-sub">
-              Master the full-stack MERN ecosystem to engineer scalable, production-grade web applications with high-performance architectures and sophisticated backend systems. Gain total proficiency across MongoDB, Express, React, and Node.js while integrating DevOps workflows with Docker, AWS, and CI/CD pipelines. Develop the technical command and architectural intuition needed to build end-to-end digital products that solve multi-dimensional business challenges for the world's most innovative tech giants.
-            </p>
+      {/* 1. HERO */}
+      <CourseHeroBanner
+        badge="Engineering Excellence"
+        icon="🚀"
+        title="Full-Stack Engineering"
+        highlight="with MERN Stack"
+        sub="Build secure, production-grade web applications from architectural first principles. Master the stack used by global top-tier product teams."
+        stats={heroStats}
+        bg="linear-gradient(135deg, #064E3B 0%, #065F46 45%, #059669 100%)"
+        accent="#34D399"
+        shape="MERN"
+      >
+        <ImageSlider />
+      </CourseHeroBanner>
 
-            <div className="ms-stats">
-              {heroStats.map((item) => (
-                <article className="ms-stat" key={item.label}>
-                  <div className="ms-stat-label">{item.label}</div>
-                  <div className="ms-stat-value">{item.value}</div>
-                </article>
-              ))}
-            </div>
-          </div>
+      <CourseInfoStrip 
+        accent="#34D399" 
+        courseValue="MERN Stack" 
+        duration="24 Weeks"
+        brochureLink={mernBrochure}
+      />
 
-          <div className="ms-hero-media">
-            <div className="ms-media-box">
-              <ImageSlider />
-            </div>
-            <aside className="ms-floating-card">
-              <h4>Outcome Focused</h4>
-              <p>Build deployable full-stack applications with architecture, performance, and security best practices.</p>
-            </aside>
-          </div>
-        </section>
-
-        <section className="ms-section">
-          <h2>Curriculum</h2>
-          <p className="lead">
-            A practical progression from fundamentals to production deployment for modern JavaScript full-stack engineering.
-          </p>
-
-          <div className="ms-accordion">
-            {curriculum.map((module, index) => {
-              const isOpen = openModule === index;
-              return (
-                <article className={`ms-module ${isOpen ? "open" : ""}`} key={module.title}>
-                  <div
-                    className="ms-module-head"
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => setOpenModule(isOpen ? -1 : index)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") {
-                        setOpenModule(isOpen ? -1 : index);
-                      }
-                    }}
-                  >
-                    <div>
-                      <div className="ms-module-week">{module.week}</div>
-                      <div className="ms-module-title">{module.title}</div>
-                    </div>
-                    <span className="ms-module-toggle">{isOpen ? "-" : "+"}</span>
-                  </div>
-
-                  {isOpen && (
-                    <div className="ms-module-body">
-                      <p className="ms-module-objective">{module.objectives}</p>
-                      <div className="ms-tag-wrap">
-                        {module.topics.map((topic) => (
-                          <span className="ms-tag" key={topic}>{topic}</span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </article>
-              );
-            })}
-          </div>
-
-          <div style={{ marginTop: "32px", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
-            <h2 className="mb-4">Speak with an Advisor</h2>
-            <p className="lead mb-6" style={{ margin: "0 auto 24px" }}>Get a personalized learning path to become a job-ready full-stack developer.</p>
-            <div style={{ width: "min(90%, calc(100% - 32px))", margin: "auto", padding: "0" }}>
-              <ApplyForm courseValue="MERN Stack" />
-            </div>
-          </div>
-        </section>
-
-        <section className="ms-section">
-          <h2>Program Overview</h2>
-          <div className="ms-overview-grid">
-            {overviewTopics.map((topic) => (
-              <article className="ms-card" key={topic}>
-                <h4>{topic}</h4>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="ms-section">
-          <h2>Why Choose MERN Stack Development?</h2>
-          <p className="lead">Build one of the most employable, end-to-end engineering skillsets in modern web development.</p>
-          <div className="ms-why-grid">
-            {whyChoose.map((item) => (
-              <article className="ms-card" key={item.title}>
-                <h4>{item.title}</h4>
-                <p>{item.description}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="ms-section">
-          <h2>Key Takeaways</h2>
-          <div className="ms-takeaway-grid">
-            <ul className="ms-list">
-              {keyTakeaways.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        <section className="ms-section">
-          <BenefitsofLearning />
-        </section>
-
-        <section className="ms-section">
-          <div className="ms-brochure">
-            <div>
-              <h2 style={{ margin: "0 0 6px", fontSize: "32px" }}>Get the Full Course Breakdown</h2>
-              <p className="lead" style={{ margin: 0 }}>
-                Access the detailed curriculum, project blueprint, and placement preparation plan.
-              </p>
-            </div>
-            <button disabled className="ms-btn" style={{ opacity: 0.6, cursor: 'not-allowed' }}>
-              Download
-            </button>
-          </div>
-        </section>
-      </div>
-
-      <section className="ms-section ms-career">
-        <div className="ms-shell">
-          <div className="ms-center">
-            <h2>Career Opportunities in MERN Stack Development</h2>
-            <p className="lead" style={{ margin: "0 auto", maxWidth: "640px" }}>
-              The program prepares you for full-stack roles across startups, product companies, and enterprise teams.
-            </p>
-          </div>
-
-          <div className="ms-role-grid">
-            {roles.map((role) => (
-              <article className="ms-role-card" key={role.title}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
-                  <div className="ms-role-dot" style={{ marginBottom: 0 }} />
-                  <h4 style={{ margin: 0 }}>{role.title}</h4>
+      {/* 2. AUDIENCE */}
+      <section className="ms-section">
+        <div className="shell">
+          <h2 className="sec-title">Who this program is for</h2>
+          <p className="sec-sub">Essential for anyone aiming to build complete, modern web products from interface to architectural deployment.</p>
+          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'20px'}}>
+             {audience.map((item, i) => (
+                <div key={i} className="p-card">
+                  <div style={{color:'var(--ms-primary)', marginBottom:'18px'}}>{item.icon}</div>
+                  <h4 style={{fontSize:'18px', fontWeight:800, marginBottom:'10px'}}>{item.title}</h4>
+                  <p style={{fontSize:'14px', color:'var(--ms-text-dim)', lineHeight:1.6}}>{item.desc}</p>
                 </div>
-                <p>{role.text}</p>
-                <strong>{role.avg}</strong>
-              </article>
-            ))}
+             ))}
           </div>
         </div>
       </section>
 
+      {/* 3. MARKET */}
+      <section className="ms-sec-white">
+        <div className="shell">
+          <h2 className="sec-title">Why MERN Engineering?</h2>
+          <p className="sec-sub">The unified JavaScript environment of MERN makes it the highest-efficiency choice for modern Full-Stack development.</p>
+          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(300px, 1fr))', gap:'40px'}}>
+             {marketOpportunity.map((item, i) => (
+               <div key={i}>
+                 <div style={{color:'var(--ms-primary)', marginBottom:'20px'}}>{item.icon}</div>
+                 <h4 style={{fontSize:'19px', fontWeight:800, marginBottom:'12px'}}>{item.title}</h4>
+                 <p style={{fontSize:'15px', color:'var(--ms-text-dim)', lineHeight:1.6}}>{item.desc}</p>
+               </div>
+             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 4. ROADMAP */}
       <section className="ms-section">
-        <div className="ms-shell">
-          <h2 className="ms-center">Our Alumni at Top Brands</h2>
-          <p className="lead ms-center" style={{ margin: "0 auto 18px", maxWidth: "760px" }}>
-            Their success stories inspire current students to aim for global excellence.
-          </p>
-          <ClientsCarousel />
-        </div>
-      </section>
-
-      <section className="ms-section">
-        <div className="ms-shell">
-          <h2 className="ms-center">Course Benefits at a Glance</h2>
-          <div className="ms-metric-grid">
-            <article className="ms-metric"><h4>280+</h4><p>Mentees Placed</p></article>
-            <article className="ms-metric"><h4>11+ LPA</h4><p>Average CTC</p></article>
-            <article className="ms-metric"><h4>92%</h4><p>Placement Rate</p></article>
-            <article className="ms-metric"><h4>460+</h4><p>Hiring Partners</p></article>
-          </div>
-        </div>
-      </section>
-
-      <section className="ms-section">
-        <div className="ms-shell">
-          <Certification />
-        </div>
-      </section>
-
-      <section className="ms-section">
-        <div className="ms-shell">
-          <div className="ms-invest">
-            <div className="ms-invest-sub">Program Investment</div>
-            <h3>Rs 61,999</h3>
-            <div className="ms-invest-sub">Total fee (incl. GST)</div>
-
-            <div className="ms-invest-grid">
-              <div className="ms-invest-item">
-                <strong>Rs 10,000</strong>
-                <span>Registration fee to reserve your seat in this premium cohort.</span>
-              </div>
-              <div className="ms-invest-item">
-                <strong>Installment 1: Rs 26,000</strong>
-                <span>Payable within 15 days from date of registration.</span>
-              </div>
-              <div className="ms-invest-item">
-                <strong>Installment 2: Rs 25,999</strong>
-                <span>Payable within 15 days after installment 1.</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="ms-pay-grid">
-            <div className="ms-fee-box">
-              <div>Total Program Fee</div>
-              <div className="fee">Rs 61,999</div>
-              <div>Inclusive of taxes</div>
-            </div>
-            <div className="ms-breakdown">
-              <div className="ms-break-row"><span>Registration</span><strong>Rs 10,000</strong></div>
-              <div className="ms-break-row"><span>Installment 1</span><strong>Rs 26,000</strong></div>
-              <div className="ms-break-row"><span>Installment 2</span><strong>Rs 25,999</strong></div>
-            </div>
-          </div>
-
-          <div className="ms-partner">
-            <p className="ms-invest-sub">Our Financial Partner</p>
-            <img src={Flashaidlogo} alt="Financial partner" />
-          </div>
-        </div>
-      </section>
-
-      <section className="ms-section" style={{ background: "#fff" }}>
-        <div className="ms-shell">
-          <StoreSection />
-        </div>
-      </section>
-
-      <section className="ms-section" style={{ background: "#fff" }}>
-        <div className="ms-shell">
-          <h2 className="ms-center">Ask Us Anything</h2>
-          <div className="ms-faq-grid">
-            <aside className="ms-faq-menu">
-              {Object.keys(faqData).map((category) => (
-                <button
-                  key={category}
-                  className={activeCategory === category ? "active" : ""}
-                  type="button"
-                  onClick={() => {
-                    setActiveCategory(category);
-                    setOpenFAQ(null);
-                  }}
-                >
-                  {category}
-                </button>
+        <div className="shell">
+           <h2 className="sec-title">Production Execution Roadmap</h2>
+           <p className="sec-sub">A structured 24-week journey from syntax basics to deploying complex architectural systems.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(450px, 1fr))', gap:'16px'}}>
+              {curriculumRoadmap.map((item, idx) => (
+                 <div key={idx} className="p-card" onClick={() => setExpandedModule(expandedModule === idx ? null : idx)} style={{cursor:'pointer'}}>
+                    <div style={{display:'flex', justifyContent:'space-between', marginBottom:'12px'}}>
+                       <span style={{fontSize:'11px', fontWeight:800, color:'var(--ms-primary)', background:'rgba(5,150,105,0.06)', padding:'4px 12px', borderRadius:'99px'}}>{item.weeks}</span>
+                       <ChevronDown size={17} style={{transform: expandedModule === idx ? 'rotate(180deg)' : 'none', transition:'0.3s', color:'var(--ms-text-dim)'}} />
+                    </div>
+                    <h4 style={{fontSize:'20px', fontWeight:800, marginBottom:'6px'}}>{item.title}</h4>
+                    <p style={{fontSize:'14px', color:'var(--ms-accent)', fontWeight:700}}>{item.topics}</p>
+                    {expandedModule === idx && <p style={{marginTop:'18px', paddingTop:'18px', borderTop:'1px solid var(--ms-border)', fontSize:'14px', lineHeight:1.7, color:'var(--ms-text-dim)'}}>{item.details}</p>}
+                 </div>
               ))}
-            </aside>
-
-            <div>
-              {faqData[activeCategory].map((faq, index) => (
-                <article className="ms-faq-item" key={faq.question}>
-                  <button
-                    className="ms-faq-head"
-                    type="button"
-                    onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
-                  >
-                    <span>{faq.question}</span>
-                    <strong>{openFAQ === index ? "-" : "+"}</strong>
-                  </button>
-                  {openFAQ === index && <div className="ms-faq-body">{faq.answer}</div>}
-                </article>
-              ))}
-            </div>
-          </div>
+           </div>
         </div>
       </section>
 
-      <div className="ms-fixed-price">
-        <span>Program Fee: <strong>Rs 61,999 inclusive of taxes</strong></span>
-        <ApplyNowButton courseValue="Mern Stack" />
+      {/* 5. TOOLS */}
+      <section className="ms-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">The Engineering Toolkit</h2>
+           <p className="sec-sub">Master the exact technologies and dev-workflows used at high-scale tech organizations.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(220px, 1fr))', gap:'16px'}}>
+              {techStack.map((group, i) => (
+                 <div key={i} className="p-card">
+                    <div style={{fontSize:'12px', fontWeight:800, color:'var(--ms-primary)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:'16px'}}>{group.group}</div>
+                    <div style={{display:'flex', flexWrap:'wrap', gap:'6px'}}>
+                       {group.tools.map(t => (
+                          <span key={t} style={{fontSize:'12px', fontWeight:700, background:'var(--ms-bg)', color:'var(--ms-text)', padding:'6px 14px', borderRadius:'8px'}}>{t}</span>
+                       ))}
+                    </div>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 6. PROJECTS */}
+      <section className="ms-section">
+        <div className="shell">
+           <h2 className="sec-title">Production Projects</h2>
+           <p className="sec-sub">Building real, deployable systems is the only way to demonstrate true full-stack readiness.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'24px'}}>
+              {portfolioProjects.map((p, i) => (
+                 <div key={i} className="p-card">
+                    <h4 style={{fontSize:'20px', fontWeight:800, marginBottom:'16px'}}>{p.title}</h4>
+                    <div style={{marginBottom:'16px'}}><div style={{fontSize:'11px', fontWeight:800, color:'var(--ms-text-dim)', textTransform:'uppercase', marginBottom:'4px'}}>Development Lead</div><p style={{fontSize:'14px'}}>{p.obs}</p></div>
+                    <div><div style={{fontSize:'11px', fontWeight:800, color:'var(--ms-text-dim)', textTransform:'uppercase', marginBottom:'4px'}}>Core Demonstration</div><p style={{fontSize:'14px', fontWeight:700, color:'var(--ms-accent)'}}>{p.skill}</p></div>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 7. FORMAT */}
+      <section className="ms-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">How Learning Works</h2>
+           <p className="sec-sub">A production-mode learning process focused on architectural depth and code quality.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(260px, 1fr))', gap:'20px'}}>
+              {[{t:"Live Coding", d:"Real-time architecture walkthroughs and logic drills.", i:<FileCode2 size={20}/>}, {t:"Code Review", d:"Direct mentor feedback on your GitHub commits and PRs.", i:<CheckCircle2 size={20}/>}, {t:"Backend Drills", d:"Heavy focus on security, auth, and DB query optimization.", i:<Binary size={20}/>}, {t:"Deployment Labs", d:"Hands-on CI/CD and cloud hosting implementation.", i:<Box size={20}/>}].map((item, i) => (
+                 <div key={i} className="p-card text-center">
+                    <div style={{color:'var(--ms-primary)', margin:'0 auto 20px', width:'fit-content'}}>{item.i}</div>
+                    <div style={{fontWeight:800, marginBottom:'8px'}}>{item.t}</div>
+                    <p style={{fontSize:'13px', color:'var(--ms-text-dim)', lineHeight:1.6}}>{item.d}</p>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 8. ROLES */}
+      <section className="ms-section">
+        <div className="shell">
+           <h2 className="sec-title">Target Career Roles</h2>
+           <p className="sec-sub">MERN mastery allows you to target versatile roles across the software engineering spectrum.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'12px'}}>
+              {careerRoles.map((r, i) => (
+                 <div key={i} className="p-card flex justify-between items-center" style={{padding:'24px'}}>
+                    <div style={{fontWeight:800}}>{r.role}</div>
+                    <div style={{fontSize:'14px', color:'var(--ms-accent)', fontWeight:700}}>{r.range}</div>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 9. ALUMNI */}
+      <section className="ms-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">Hiring Brands & Outcomes</h2>
+           <p className="sec-sub">Transition into production teams at global product companies and high-growth startups.</p>
+           <ClientsCarousel />
+           <div style={{marginTop:'48px', display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(240px, 1fr))', gap:'24px'}}>
+              {[{l:"280+ Mentees Placed", d:"Across various full-stack and platform roles."}, {l:"11+ LPA Avg CTC", d:"Focusing on high-value developer transitions."}, {l:"92% Placement Rate", d:"Reflecting our rigorous project-oriented prep."}].map((item, i) => (
+                 <div key={i} className="p-card">
+                    <div style={{fontWeight:800, marginBottom:'10px', color:'var(--ms-accent)'}}>{item.l}</div>
+                    <p style={{fontSize:'14px', color:'var(--ms-text-dim)'}}>{item.d}</p>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 10. CERTIFICATION */}
+      <section className="ms-section">
+        <div className="shell">
+           <Certification isDark={false} />
+        </div>
+      </section>
+
+      {/* 11. PRICING */}
+      <section className="ms-sec-white" id="pricing">
+        <div className="shell">
+           <h2 className="sec-title">Program Investment</h2>
+           <p className="sec-sub">Professional full-stack enrollment including code reviews, cloud labs, and career support.</p>
+           <div className="p-card" style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'60px', padding:'48px', alignItems:'start'}}>
+              <div>
+                 <div style={{fontSize:'13px', fontWeight:800, color:'var(--ms-accent)', textTransform:'uppercase', marginBottom:'16px'}}>Full-Stack Certification</div>
+                 <div style={{fontSize:'64px', fontWeight:950, letterSpacing:'-3px', marginBottom:'16px'}}>₹61,999</div>
+                 <p style={{color:'var(--ms-text-dim)', marginBottom:'40px', lineHeight:1.7}}>Inclusive of all training frameworks, live labs, project PR reviews, and job assistance.</p>
+                 <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="MERN Stack" /><a href={mernBrochure} className="btn-sec">Full Syllabus</a></div>
+              </div>
+              <div style={{display:'grid', gap:'12px'}}>
+                 {[{l:"Registration", v:"₹10,000"}, {l:"Installment 1", v:"₹26,000"}, {l:"Installment 2", v:"₹25,999"}].map((row, i) => (
+                    <div key={i} style={{padding:'20px', background:'var(--ms-bg)', borderRadius:'8px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                       <span style={{fontSize:'13px', fontWeight:700}}>{row.l}</span><span style={{fontWeight:800}}>{row.v}</span>
+                    </div>
+                 ))}
+                 <div style={{marginTop:'12px', display:'flex', alignItems:'center', gap:'12px', opacity:0.6}}><Zap size={18} /> <img src={Flashaidlogo} alt="Flashaid" style={{height:'14px', grayscale:1}} /> <span style={{fontSize:'12px'}}>EMI starting at ₹4,000/month</span></div>
+              </div>
+           </div>
+        </div>
+      </section>
+
+      {/* 12. FAQ */}
+      <section className="ms-section">
+        <div className="shell">
+           <h2 className="sec-title">Frequently Asked Questions</h2>
+           <p className="sec-sub">Clarify technical prerequisites, weekly time commitments, and the hiring process.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'60px', alignItems:'start'}}>
+              <div style={{display:'grid', gap:'8px'}}>
+                 {Object.keys(faqCategories).map(cat => (
+                    <button key={cat} onClick={() => { setActiveFaqCat(cat); setOpenFaqIdx(null); }} style={{textAlign:'left', padding:'18px 24px', borderRadius:'10px', fontWeight:800, fontSize:'14px', transition:'0.2s', background: activeFaqCat === cat ? 'var(--ms-primary)' : 'transparent', color: activeFaqCat === cat ? '#fff' : 'var(--ms-text)'}} className={activeFaqCat !== cat ? 'hover:bg-gray-100' : ''}>{cat}</button>
+                 ))}
+              </div>
+              <div style={{display:'grid', gap:'8px'}}>
+                 {faqCategories[activeFaqCat].map((faq, i) => (
+                    <div key={i} className="faq-item" onClick={() => setOpenFaqIdx(openFaqIdx === i ? null : i)}>
+                       <div className="faq-quest">{faq.q} <ChevronDown size={14} style={{transform: openFaqIdx === i ? 'rotate(180deg)' : 'none', transition:'0.3s'}} /></div>
+                       <AnimatePresence>{openFaqIdx === i && <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="faq-ans"><div style={{paddingTop:'20px', borderTop:'1px solid var(--ms-border)'}}>{faq.a}</div></motion.div>}</AnimatePresence>
+                    </div>
+                 ))}
+              </div>
+           </div>
+        </div>
+      </section>
+
+      {/* 13. FORM */}
+      <section className="ms-sec-white">
+        <div className="shell">
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'80px', alignItems:'start'}}>
+              <div>
+                 <h2 className="sec-title">Consult with a Specialist</h2>
+                 <p className="sec-sub">Plan your full-stack roadmap and get a technical evaluation of your current development skills.</p>
+                 <div style={{display:'grid', gap:'16px'}}>
+                    {['24-hour advisor response', 'GitHub and Portfolio review', 'Program fitment assessment'].map(t => (
+                       <div key={t} style={{display:'flex', alignItems:'center', gap:'12px', fontSize:'14px', fontWeight:700}}><CheckCircle2 size={18} className="text-emerald-600" /> {t}</div>
+                    ))}
+                 </div>
+              </div>
+              <div className="p-card" style={{padding:'32px', maxWidth:'520px'}}>
+                 <div style={{marginBottom:'24px'}}><h3 style={{fontSize:'21px', fontWeight:800, marginBottom:'4px'}}>Expert Guidance Call</h3><p style={{fontSize:'13px', color:'var(--ms-text-dim)'}}>Map your software engineering career.</p></div>
+                 <ApplyForm courseValue="MERN Stack" isPremium={true} />
+              </div>
+           </div>
+        </div>
+      </section>
+
+      <div className={`sticky-bar ${scrolled ? 'visible' : ''}`}>
+        <div className="shell flex justify-between items-center w-full">
+           <div className="hidden sm:block"><div style={{fontSize:'10px', fontWeight:800, color:'var(--ms-text-dim)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:'2px'}}>Full-Stack Pro</div><div style={{fontWeight:800}}>₹61,999 <span style={{fontSize:'12px', color:'var(--ms-accent)', marginLeft:'12px'}}>EMI ₹4,000/MO</span></div></div>
+           <div className="flex gap-4 items-center">
+              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-bold uppercase hidden lg:flex items-center gap-2 hover:text-emerald-700 transition-all"><PhoneCall size={14} /> Talk to Advisor</button>
+              <ApplyNowButton courseValue="MERN Stack" />
+           </div>
+        </div>
       </div>
     </div>
   );

@@ -58,7 +58,7 @@ const CustomSelect = ({ label, icon, options, name, value, onChange, placeholder
     );
 };
 
-const AdvancedApplyPopup = ({ onClose }) => {
+const AdvancedApplyPopup = ({ onClose, initialDomain = "" }) => {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -66,7 +66,7 @@ const AdvancedApplyPopup = ({ onClose }) => {
         currentRole: "",
         experience: "",
         goal: "",
-        interestedDomain: "",
+        interestedDomain: initialDomain,
     });
 
     const [otpSent, setOtpSent] = useState(false);
@@ -160,9 +160,31 @@ const AdvancedApplyPopup = ({ onClose }) => {
                 {/* Close Button */}
                 <button 
                     onClick={onClose}
-                    className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-orange-600 hover:text-white transition-all z-[110] shadow-sm border border-slate-200"
+                    title="Close"
+                    style={{
+                        position: 'absolute',
+                        top: '24px',
+                        right: '24px',
+                        width: '40px',
+                        height: '40px',
+                        backgroundColor: '#ff4d4d', // Red for clear visibility
+                        color: 'white',
+                        borderRadius: '50%',
+                        border: 'none',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '20px',
+                        fontWeight: 'bold',
+                        zIndex: 200,
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                        transition: 'all 0.2s ease'
+                    }}
+                    onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                    onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
                 >
-                    <FaTimes size={16} />
+                    ✕
                 </button>
 
                 {/* Left Side: Professional Info Column */}
@@ -184,7 +206,7 @@ const AdvancedApplyPopup = ({ onClose }) => {
                             {[
                                 { icon: <FaCheckCircle />, title: "Premium Curriculum", desc: "Designed by industry veterans" },
                                 { icon: <FaCheckCircle />, title: "AI-First Approach", desc: "Modern tech stack integration" },
-                                { icon: <FaCheckCircle />, title: "Guaranteed Referrals", desc: "Network of 500+ partners" }
+                                { icon: <FaCheckCircle />, title: "Guaranteed Referrals", desc: "Network of 250+ partners" }
                             ].map((item, i) => (
                                 <div key={i} className="flex gap-4">
                                     <div className="text-orange-500 mt-1">{item.icon}</div>
@@ -378,12 +400,47 @@ const AdvancedApplyPopup = ({ onClose }) => {
                             ]}
                         />
 
+                        {/* Authorization Checkbox */}
+                        <div className="flex items-start gap-3 mt-4 mb-2 animate-in fade-in duration-500">
+                            <input 
+                                type="checkbox" 
+                                id="authorize_popup" 
+                                required 
+                                className="mt-1 h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-600 cursor-pointer"
+                            />
+                            <label htmlFor="authorize_popup" className="text-[10px] md:text-[11px] text-slate-500 leading-relaxed cursor-pointer select-none">
+                                I authorise <span className="font-bold">Krutanic</span> & its representatives to contact me with updates and notifications via Email/SMS/WhatsApp/Call. This will override DND/NDNC
+                            </label>
+                        </div>
+
                         {/* Submit Footer */}
-                        <div className="sticky bottom-0 bg-white pt-6 pb-2">
+                        <div className="sticky bottom-0 bg-white pt-6 pb-2 flex gap-3">
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                style={{
+                                    flex: 1,
+                                    padding: '16px',
+                                    backgroundColor: '#f1f5f9', // Light gray
+                                    color: '#64748b',
+                                    fontWeight: 'bold',
+                                    borderRadius: '12px',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.1em',
+                                    fontSize: '11px',
+                                    transition: 'background-color 0.2s ease'
+                                }}
+                                onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#e2e8f0'}
+                                onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#f1f5f9'}
+                            >
+                                Cancel
+                            </button>
                             <button
                                 type="submit"
                                 disabled={!emailVerified || loading}
-                                className="w-full py-4 bg-orange-600 text-white font-black rounded-xl hover:bg-orange-700 transition-all shadow-xl shadow-orange-600/30 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-2 group"
+                                className="flex-[2] py-4 bg-orange-600 text-white font-black rounded-xl hover:bg-orange-700 transition-all shadow-xl shadow-orange-600/30 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-2 group"
                             >
                                 {loading ? "Securely Submitting..." : "Send Application"} 
                                 <span className="group-hover:translate-x-1 transition-transform">→</span>

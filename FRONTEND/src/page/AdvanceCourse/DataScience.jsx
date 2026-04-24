@@ -1,1224 +1,446 @@
-import React, { useState } from "react";
-import DSHero from "../../../krutanic/images/dsad1.jpg";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  CheckCircle2, 
+  ChevronDown, 
+  Download, 
+  Star, 
+  Users, 
+  TrendingUp, 
+  Award, 
+  Briefcase, 
+  ArrowRight,
+  ShieldCheck,
+  Globe, 
+  Zap, 
+  BarChart3, 
+  BrainCircuit, 
+  Database, 
+  Search, 
+  MessageSquare, 
+  Play, 
+  Rocket, 
+  LineChart, 
+  Monitor, 
+  Sparkles, 
+  Calendar, 
+  Clock, 
+  Laptop, 
+  Settings, 
+  Terminal, 
+  Code2, 
+  PieChart, 
+  Repeat, 
+  GitBranch, 
+  Cloud, 
+  Share2, 
+  Cpu,
+  Target,
+  FileText,
+  UserCheck,
+  Video,
+  MessagesSquare,
+  HelpCircle,
+  PhoneCall
+} from "lucide-react";
+
 import posterImage from "../../../krutanic/images/poster/datascience.png";
-import DSOutcomes from "../../../krutanic/images/dsad2.jpg";
 import Flashaidlogo from "../../assets/Flashaidlogo.jpg";
-import pdfds from "../../../krutanic/DataScienceAdvancedProgram.pdf";
-import BenefitsofLearning from "./Components/BenefitsofLearning";
 import Certification from "./Components/Certification";
 import StoreSection from "./Components/StoreSection";
 import ClientsCarousel from "../../Components/our_alumni";
 import ApplyNowButton from "./Components/ApplyNowButton";
 import ApplyForm from "./Components/ApplyForm";
+import dsBrochure from "../../../krutanic/DataScienceAdvancedProgram.pdf";
+
+import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
+import CourseInfoStrip from "./Components/CourseInfoStrip";
 
 const heroStats = [
-
   { label: "Duration", value: "24 Weeks" },
   { label: "Program Rating", value: "4.9/5" },
+  { label: "Avg. Salary Hike", value: "55%" },
   { label: "Batch Starting", value: "Upcoming" },
 ];
 
-const curriculum = [
-  {
-    week: "Weeks 1-2",
-    title: "Advanced Machine Learning Techniques",
-    objectives:
-      "Learn advanced supervised and unsupervised algorithms, ensemble models, evaluation, and hyperparameter tuning with practical model optimization.",
-    topics: [
-      "Supervised and Unsupervised Learning",
-      "Ensemble Methods",
-      "Model Evaluation and Metrics",
-      "Cross Validation",
-      "Hyperparameter Optimization",
-    ],
-  },
-  {
-    week: "Weeks 3-4",
-    title: "Deep Learning with TensorFlow and Keras",
-    objectives:
-      "Train deeper neural architectures for image, sequence, and NLP tasks while understanding optimization and deployment tradeoffs.",
-    topics: [
-      "Neural Network Fundamentals",
-      "CNN",
-      "RNN and LSTM",
-      "TensorFlow and Keras",
-      "Fine Tuning",
-    ],
-  },
-  {
-    week: "Week 5",
-    title: "Big Data Analytics",
-    objectives:
-      "Work with Hadoop and Spark for distributed processing, large dataset analytics, and real-time pipelines.",
-    topics: [
-      "Hadoop Ecosystem",
-      "Spark Processing",
-      "NoSQL",
-      "Data Pipelines",
-      "Kafka and Streaming",
-    ],
-  },
-  {
-    week: "Week 6-7",
-    title: "Feature Engineering and Model Optimization",
-    objectives:
-      "Design features, apply dimensionality reduction, and improve model reliability with regularization and tuning workflows.",
-    topics: [
-      "Feature Extraction",
-      "Feature Selection",
-      "PCA and t-SNE",
-      "Regularization",
-      "Grid and Random Search",
-    ],
-  },
-  {
-    week: "Week 8",
-    title: "AI Applications and Real-World Case Studies",
-    objectives:
-      "Use AI to solve real business problems across healthcare, finance, and retail with end-to-end applied case studies.",
-    topics: [
-      "Industry AI Use Cases",
-      "Fraud Detection",
-      "Predictive Analytics",
-      "Case Study Reviews",
-      "Deployment Strategies",
-    ],
-  },
-  {
-    week: "Week 9-10",
-    title: "Natural Language Processing",
-    objectives:
-      "Master NLP pipelines, text representation, and transformer model workflows for modern language applications.",
-    topics: [
-      "Text Preprocessing",
-      "Sentiment Analysis",
-      "Named Entity Recognition",
-      "Embeddings",
-      "Transformers",
-    ],
-  },
-  {
-    week: "Week 11-12",
-    title: "Data Visualization and Communication",
-    objectives:
-      "Present complex findings with dashboards and visual narratives that help teams make faster, better decisions.",
-    topics: [
-      "Matplotlib and Seaborn",
-      "Plotly Dashboards",
-      "Power BI and Tableau",
-      "Data Storytelling",
-      "Stakeholder Communication",
-    ],
-  },
-  {
-    week: "Week 13-14",
-    title: "Cloud Computing for Data Science",
-    objectives:
-      "Deploy and scale models on cloud platforms using production-oriented data and model lifecycle practices.",
-    topics: [
-      "AWS, Azure, GCP",
-      "Cloud Model Deployment",
-      "Scalable Processing",
-      "Cloud Storage",
-      "Monitoring",
-    ],
-  },
-  {
-    week: "Week 15-16",
-    title: "Ethical AI and Responsible Data Science",
-    objectives:
-      "Build ethical systems that account for fairness, privacy, bias, and governance requirements.",
-    topics: [
-      "Bias in ML",
-      "Fairness and Ethics",
-      "Privacy and Compliance",
-      "Transparency",
-      "Responsible AI",
-    ],
-  },
-  {
-    week: "Week 17-20",
-    title: "Capstone Project and Career Preparation",
-    objectives:
-      "Execute a full capstone project with project documentation, model delivery, and portfolio presentation.",
-    topics: [
-      "Capstone Project",
-      "ML and AI Integration",
-      "End-to-End Delivery",
-      "Documentation",
-      "Portfolio Building",
-    ],
-  },
-  {
-    week: "Week 21-24",
-    title: "Placement Preparation",
-    objectives:
-      "Prepare with resume strategy, mock interviews, and placement support for data and AI roles.",
-    topics: [
-      "Resume Building",
-      "Interview Preparation",
-      "Communication",
-      "Portfolio Review",
-      "Placement Assistance",
-    ],
-  },
+const audience = [
+  { title: "Freshers & Students", desc: "Build a foundation in mathematical modeling and programming to land your first role in data science.", icon: <Rocket size={20} /> },
+  { title: "Working Professionals", desc: "Transition from support or testing roles into high-impact data engineering and analytics positions.", icon: <Briefcase size={20} /> },
+  { title: "Career Switchers", desc: "Pivot from Marketing, Finance, or Operations into the data economy with our zero-to-one roadmap.", icon: <Repeat size={20} /> },
+  { title: "Data Analysts", desc: "Upscale from SQL and Excel reports to advanced predictive modeling and machine learning architectures.", icon: <LineChart size={20} /> },
+  { title: "Software Engineers", desc: "Move from application development into AI Engineering by mastering model deployment and architectural scaling.", icon: <Code2 size={20} /> },
+  { title: "Business Analysts", desc: "Gain the technical depth needed to lead data-driven initiatives and make high-stakes business decisions.", icon: <PieChart size={20} /> }
 ];
 
-const overviewTopics = [
-  "Advanced Machine Learning Algorithms",
-  "Big Data Analytics with Hadoop and Spark",
-  "Deep Learning with TensorFlow and Keras",
-  "Feature Engineering and Model Optimization",
-  "AI Applications and Real-World Case Studies",
-  "Natural Language Processing Methodology",
+// Simple Icon Fallbacks for Tech Stack
+const Table = ({ size }) => <Database size={size} />;
+
+const techStack = [
+  { name: "Python", context: "Data manipulation & AI.", icon: <Code2 size={24} /> },
+  { name: "Pandas", context: "Data structure analysis.", icon: <Table size={24} /> },
+  { name: "Scikit-Learn", context: "ML algorithms.", icon: <Cpu size={24} /> },
+  { name: "TensorFlow", context: "Deep learning models.", icon: <BrainCircuit size={24} /> },
+  { name: "Keras", context: "Neural network prototyping.", icon: <Settings size={24} /> },
+  { name: "SQL", context: "Database management.", icon: <Database size={24} /> },
+  { name: "Tableau", context: "Business dashboards.", icon: <BarChart3 size={24} /> },
+  { name: "Spark", context: "Distributed computing.", icon: <Zap size={24} /> },
+  { name: "Hadoop", context: "Massive data storage.", icon: <Database size={24} /> },
+  { name: "Git", context: "Version control.", icon: <GitBranch size={24} /> },
+  { name: "APIs", context: "Model communication.", icon: <Share2 size={24} /> },
+  { name: "MLOps", context: "Model deployment.", icon: <Cloud size={24} /> }
 ];
 
-const whyChoose = [
-  {
-    title: "High Demand",
-    description:
-      "Data science demand continues to rise across product, analytics, and AI-first teams.",
-  },
-  {
-    title: "Lucrative Salaries",
-    description:
-      "Specialized practitioners command strong compensation with high growth potential.",
-  },
-  {
-    title: "Industry Versatility",
-    description:
-      "Apply your skills in finance, healthcare, retail, SaaS, and enterprise operations.",
-  },
-  {
-    title: "Impactful Work",
-    description:
-      "Solve decisions that materially improve customer outcomes and business growth.",
-  },
-  {
-    title: "In-Demand Skills",
-    description:
-      "Master Python, model building, deployment, and experimentation workflows.",
-  },
-  {
-    title: "Continuous Innovation",
-    description:
-      "Stay relevant through fast-moving developments in LLMs, tooling, and infrastructure.",
-  },
+const compactRoadmap = [
+  { weeks: "Weeks 1-2", title: "Machine Learning Foundations", topics: "Supervised & Unsupervised learning, Model evaluation", details: "Core concepts of regression, classification, clustering, and fundamental statistics." },
+  { weeks: "Weeks 3-4", title: "Advanced Deep Learning", topics: "Neural networks, CNNs, RNN architectures", details: "Building neural networks, backpropagation, and deep vision/sequence models." },
+  { weeks: "Week 5", title: "Big Data & Infrastructure", topics: "Spark, Hadoop, Data ingestion", details: "Scaling data processing with distributed systems and handling multi-TB datasets." },
+  { weeks: "Weeks 6-7", title: "Feature Engineering", topics: "Dimensionality reduction, PCA, Scaling", details: "Preparing data for production models and finding optimal features." },
+  { weeks: "Week 8", title: "Industry Applications", topics: "Fraud detection, Churn, Forecasting", details: "Real-world business case studies where data solves revenue problems." },
+  { weeks: "Weeks 9-10", title: "NLP & Transformers", topics: "Sentiment, BERT, LLM foundations", details: "Natural language processing architectures and modern transformer models." },
+  { weeks: "Weeks 11-12", title: "Data Visualization", topics: "Tableau, Power BI, Storytelling", details: "Communicate technical insights effectively to business stakeholders." },
+  { weeks: "Weeks 13-24", title: "Cloud Ops & Capstone", topics: "MLOps, Projects, Career Prep", details: "Final project, cloud deployment on AWS/Azure, and placement assistance." }
 ];
 
-const keyTakeaways = [
-  "Master advanced machine learning and deep learning techniques for real use-cases.",
-  "Develop big data expertise with Hadoop, Spark, and scalable pipeline architecture.",
-  "Build strong visualization and storytelling capability with business dashboards.",
-  "Apply predictive analytics to forecasting, risk, and decision intelligence.",
-  "Design robust data preparation and feature workflows that improve model quality.",
-  "Solve real business problems with capstone-style projects and portfolio outcomes.",
+const portfolioProjects = [
+  { title: "Customer Attrition Model", problem: "Predicting high-risk attrition for telecom giants.", outcome: "Master classification and performance metrics." },
+  { title: "Recommendation Engine", problem: "Personalizing user experience for e-commerce platforms.", outcome: "Learn collaborative filtering and matrix operations." },
+  { title: "Market Forecasting", problem: "Predicting inventory demand for retail supply chains.", outcome: "Time-series analysis and seasonality modeling." },
+  { title: "AI-Driven Document Sorting", problem: "Automating classification of legal and medical docs.", outcome: "NLP implementation and NER (Named Entity Recognition)." }
 ];
 
-const roles = [
-  {
-    title: "Data Scientist",
-    text: "Lead analytical decisions and discover non-obvious business patterns.",
-    avg: "Package range: Rs 8-18 LPA",
-  },
-  {
-    title: "Data Analyst",
-    text: "Interpret data and build reporting systems to support decision-making.",
-    avg: "Package range: Rs 4-10 LPA",
-  },
-  {
-    title: "Machine Learning Engineer",
-    text: "Deploy and optimize machine learning systems for production scale.",
-    avg: "Package range: Rs 10-22 LPA",
-  },
-  {
-    title: "Data Engineer",
-    text: "Build high-throughput data pipelines and resilient infrastructure.",
-    avg: "Package range: Rs 8-20 LPA",
-  },
-  {
-    title: "Business Intelligence Analyst",
-    text: "Transform business data into strategic, executable insights.",
-    avg: "Package range: Rs 5-12 LPA",
-  },
-  {
-    title: "AI Engineer",
-    text: "Build AI-driven products and intelligent automation systems.",
-    avg: "Package range: Rs 12-28 LPA",
-  },
-  {
-    title: "Big Data Specialist",
-    text: "Work with large-scale processing and high-volume data ecosystems.",
-    avg: "Package range: Rs 9-20 LPA",
-  },
-  {
-    title: "Data Science Consultant",
-    text: "Guide organizations with data strategy and model-led business execution.",
-    avg: "Package range: Rs 10-24 LPA",
-  },
-  {
-    title: "Quantitative Analyst",
-    text: "Build statistical and mathematical models for complex forecasting.",
-    avg: "Package range: Rs 8-22 LPA",
-  },
+const learningFormat = [
+  { title: "Live Classes", desc: "Interactive sessions with industry experts focused on practical implementation.", icon: <Video size={20} /> },
+  { title: "1-on-1 Mentorship", desc: "Direct guidance for project reviews and your specific career roadmap.", icon: <UserCheck size={20} /> },
+  { title: "Practical Labs", desc: "Weekly coding assignments modeled on real company data problems.", icon: <Terminal size={20} /> },
+  { title: "Technical Community", desc: "Learning network of tech professionals for collaboration and reviews.", icon: <MessagesSquare size={20} /> }
 ];
 
-const faqData = {
-  Program: [
-    {
-      question: "What topics are covered in the Data Science program?",
-      answer:
-        "The program covers machine learning, deep learning, big data technologies, NLP, cloud deployment, and industry use-cases.",
-    },
-    {
-      question: "How is the course delivered?",
-      answer:
-        "The course is delivered with a blend of live sessions, recordings, practical tasks, and structured projects.",
-    },
-    {
-      question: "Will I get hands-on experience?",
-      answer:
-        "Yes, hands-on projects and case studies are integrated throughout the curriculum.",
-    },
-    {
-      question: "How long is the program?",
-      answer:
-        "The program runs for 24 weeks with a progressive module structure.",
-    },
+const alumniOutcomes = [
+  { name: "Aditi Sharma", role: "Junior Architect", target: "Senior Data Scientist", company: "Google", desc: "The transition from legacy systems to predictive AI was made seamless by the curriculum roadmap." },
+  { name: "Rahul Verma", role: "Marketing Analyst", target: "Business Analyst", company: "Amazon", desc: "I pivoted from a non-tech background into a core analytical role in under 6 months." },
+  { name: "Priya Singh", role: "Software Engineer", target: "MLOps Engineer", company: "Microsoft", desc: "The production-level focus on model deployment was the key to landing an engineering role in AI." }
+];
+
+const careerRoles = [
+  { role: "Data Scientist", range: "14 - 26 LPA" },
+  { role: "ML Engineer", range: "16 - 32 LPA" },
+  { role: "Data Analyst", range: "08 - 14 LPA" },
+  { role: "Data Engineer", range: "12 - 24 LPA" },
+  { role: "AI Researcher", range: "20 - 40 LPA" },
+  { role: "Quant Analyst", range: "18 - 35 LPA" }
+];
+
+const faqCategories = {
+  "Eligibility & Format": [
+    { q: "Who is this program for?", a: "Graduates and working professionals from technical or analytical backgrounds. Career switchers are also welcome with basic math skills." },
+    { q: "What are the timings?", a: "Live sessions happen on weekends and weekday evenings to accommodate work schedules." }
   ],
-  Eligibility: [
-    {
-      question: "What are the prerequisites for the program?",
-      answer:
-        "Basic programming familiarity and comfort with analytical thinking are recommended.",
-    },
-    {
-      question: "Do I need prior data science experience?",
-      answer:
-        "Prior experience helps, but the learning path is designed to build up progressively.",
-    },
-    {
-      question: "Can beginners apply?",
-      answer:
-        "Learners with a strong commitment and basic technical foundation can apply.",
-    },
-    {
-      question: "Is there any age restriction?",
-      answer: "No, there is no age restriction.",
-    },
-  ],
-  Community: [
-    {
-      question: "How can I interact with other participants?",
-      answer:
-        "Through group sessions, cohort channels, collaborative assignments, and alumni events.",
-    },
-    {
-      question: "Is there mentorship available?",
-      answer: "Yes, mentor support is available throughout the program journey.",
-    },
-    {
-      question: "Can I access support after the course ends?",
-      answer:
-        "Yes, alumni and support channels remain available after completion.",
-    },
-    {
-      question: "How diverse is the community?",
-      answer:
-        "The cohort includes professionals and learners from diverse backgrounds and industries.",
-    },
-  ],
-  Lectures: [
-    {
-      question: "Are the lectures pre-recorded or live?",
-      answer:
-        "Both, so you can learn with flexibility while still attending live mentor sessions.",
-    },
-    {
-      question: "How interactive are the sessions?",
-      answer:
-        "Live sessions are discussion-heavy and include interactive problem solving.",
-    },
-    {
-      question: "Can I replay missed lectures?",
-      answer: "Yes, recordings are available for review.",
-    },
-    {
-      question: "How often are live sessions held?",
-      answer: "Live sessions are held weekly with structured support touchpoints.",
-    },
-  ],
-  Certification: [
-    {
-      question: "Will I receive a certificate upon completion?",
-      answer: "Yes, successful participants receive a completion certificate.",
-    },
-    {
-      question: "Is the certification recognized by employers?",
-      answer:
-        "It demonstrates practical capability and project readiness in data roles.",
-    },
-    {
-      question: "Can I add this certification to my resume or LinkedIn profile?",
-      answer: "Yes, it can be added to both.",
-    },
-    {
-      question: "Is the certification free?",
-      answer: "Certification is included with successful program completion.",
-    },
-  ],
-  Opportunities: [
-    {
-      question: "What career opportunities does this open?",
-      answer:
-        "You can target roles across analytics, machine learning, AI engineering, and data infrastructure.",
-    },
-    {
-      question: "Will I receive job placement assistance?",
-      answer: "Yes, career guidance and placement support are included.",
-    },
-    {
-      question: "Are internships available through this program?",
-      answer:
-        "Selected learners may access internship pathways based on partner opportunities.",
-    },
-    {
-      question: "How will this help advance my career?",
-      answer:
-        "You build portfolio-grade work, practical technical depth, and interview readiness.",
-    },
-  ],
+  "Career & Projects": [
+    { q: "How does placement support work?", a: "We provide 100% assistance including resume reviews, mock interviews, and direct hiring partner referrals." },
+    { q: "What projects will I build?", a: "You will build 4-6 industrial grade projects including Recommendation Engines and Fraud Detection systems." }
+  ]
 };
 
 const DataScience = () => {
-  const [openModule, setOpenModule] = useState(0);
-  const [activeCategory, setActiveCategory] = useState("Program");
-  const [openFAQ, setOpenFAQ] = useState(null);
+  const [expandedModule, setExpandedModule] = useState(null);
+  const [activeFaqCat, setActiveFaqCat] = useState("Eligibility & Format");
+  const [openFaqIdx, setOpenFaqIdx] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 80);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <div className="ds-page">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap');
 
         :root {
-          --bg: #f3f1f1;
-          --panel: #ffffff;
-          --ink: #171717;
-          --muted: #626262;
-          --line: #ded8d5;
-          --accent: #c43609;
-          --accent-dark: #8f2100;
-          --radius: 18px;
-          --shadow: 0 20px 40px rgba(29, 20, 13, 0.08);
+          --ds-bg: #F7F6F2;
+          --ds-bg-alt: #FFFFFF;
+          --ds-text: #1F2937;
+          --ds-text-dim: #6B7280;
+          --ds-primary: #0F766E;
+          --ds-border: rgba(31, 41, 55, 0.08);
+          --ds-card-bg: #FFFFFF;
         }
 
-        * { box-sizing: border-box; }
+        .ds-page { background: var(--ds-bg); color: var(--ds-text); font-family: 'Plus Jakarta Sans', sans-serif; }
+        .shell { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 
-        .ds-page {
-          background:
-            radial-gradient(circle at 8% 8%, rgba(196, 54, 9, 0.08), transparent 34%),
-            radial-gradient(circle at 95% 55%, rgba(15, 77, 98, 0.09), transparent 28%),
-            var(--bg);
-          color: var(--ink);
-          font-family: "Sora", "Segoe UI", sans-serif;
-          padding-bottom: 74px;
+        .ds-section { padding: 100px 0; }
+        .ds-sec-white { padding: 100px 0; background: #fff; border-top: 1px solid var(--ds-border); border-bottom: 1px solid var(--ds-border); }
+
+        .sec-title { font-family: 'Outfit', sans-serif; font-size: 32px; font-weight: 800; margin-bottom: 16px; color: var(--ds-text); text-align: left; }
+        .sec-sub { font-size: 17px; color: var(--ds-text-dim); max-width: 600px; margin-bottom: 48px; text-align: left; line-height:1.6; }
+
+        .p-card { 
+          background: #fff; 
+          border: 1px solid var(--ds-border); 
+          border-radius: 12px; 
+          padding: 24px; 
+          transition: 0.3s;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.02);
         }
+        .p-card:hover { border-color: var(--ds-primary); box-shadow: 0 8px 30px rgba(0,0,0,0.04); }
 
-        .ds-shell {
-          width: min(100%, calc(100% - 32px));
-          margin: 0 auto;
-        }
+        .btn-prime { background: var(--ds-primary); color: #fff; padding: 12px 24px; border-radius: 8px; font-weight: 700; font-size: 15px; }
+        .btn-sec { border: 1px solid var(--ds-border); color: var(--ds-text); padding: 12px 24px; border-radius: 8px; font-weight: 700; font-size: 15px; }
 
-        .ds-btn {
-          background: linear-gradient(180deg, #d64d1d 0%, #af2f06 100%);
-          border: 0;
-          border-radius: 10px;
-          color: #fff;
-          cursor: pointer;
-          font-size: 12px;
-          font-weight: 700;
-          letter-spacing: 0.3px;
-          padding: 10px 18px;
-          text-transform: uppercase;
-        }
+        .sticky-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 72px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-top: 1px solid var(--ds-border); z-index: 99; transform: translateY(100%); transition: 0.4s; display: flex; align-items: center; }
+        .sticky-bar.visible { transform: translateY(0); }
 
-        .ds-section { padding: 24px 0; }
-        .ds-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 8px; }
-        .ds-section p.lead {
-          color: var(--muted);
-          line-height: 1.7;
-          margin: 0 0 16px;
-          max-width: 760px;
-        }
-
-        .ds-hero {
-          border-top: 1px solid var(--line);
-          display: grid;
-          gap: 16px;
-          grid-template-columns: 1fr 1fr;
-          padding: 16px 0 20px;
-        }
-
-        .ds-chip {
-          background: #f0e0db;
-          border-radius: 999px;
-          color: #8a4f40;
-          display: inline-flex;
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 0.5px;
-          padding: 6px 12px;
-          text-transform: uppercase;
-        }
-
-        .ds-hero h1 {
-          font-size: clamp(42px, 5vw, 74px);
-          line-height: 0.98;
-          margin: 12px 0;
-        }
-
-        .ds-hero h1 span {
-          color: var(--accent);
-          font-family: "Fraunces", Georgia, serif;
-          font-style: italic;
-          font-weight: 800;
-        }
-
-        .ds-sub {
-          color: var(--muted);
-          font-size: 17px;
-          line-height: 1.6;
-          max-width: 520px;
-          margin-bottom: 16px;
-        }
-
-        .ds-stats {
-          display: grid;
-          gap: 12px;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          max-width: 560px;
-          margin-bottom: 18px;
-        }
-
-        .ds-stat {
-          background: var(--panel);
-          border: 1px solid #eadeda;
-          border-radius: 16px;
-          box-shadow: var(--shadow);
-          padding: 16px 14px;
-        }
-
-        .ds-stat-label {
-          color: #8a8a8a;
-          font-size: 11px;
-          letter-spacing: 0.6px;
-          margin-bottom: 6px;
-          text-transform: uppercase;
-        }
-
-        .ds-stat-value { font-size: 18px; font-weight: 700; }
-
-        .ds-hero-media { position: relative; }
-
-        .ds-media-box {
-          background: radial-gradient(circle at 25% 20%, #17627c 0%, #0d1826 70%);
-          border-radius: 22px;
-          box-shadow: 0 24px 46px rgba(0, 0, 0, 0.28);
-          overflow: hidden;
-          padding: 18px;
-          height: 600px;
-        }
-
-        .ds-media-box > div {
-          height: 100%;
-        }
-
-        .ds-media-box img {
-          border-radius: 16px;
-          display: block;
-          height: 100%;
-          min-height: 330px;
-          object-fit: cover;
-          width: 100%;
-        }
-
-        .ds-floating-card {
-          background: rgba(255, 255, 255, 0.92);
-          border-radius: 16px;
-          box-shadow: 0 12px 32px rgba(19, 16, 11, 0.18);
-          left: -20px;
-          max-width: 300px;
-          padding: 16px;
-          position: absolute;
-          bottom: -20px;
-        }
-
-        .ds-curr-grid {
-          display: grid;
-          gap: 10px;
-          grid-template-columns: 2fr 1fr;
-        }
-
-        .ds-accordion { display: grid; gap: 10px; }
-
-        .ds-module {
-          background: var(--panel);
-          border: 1px solid #e7e0dc;
-          border-radius: var(--radius);
-          padding: 14px;
-        }
-
-        .ds-module.open { border-color: #d05b36; }
-
-        .ds-module-head {
-          align-items: center;
-          cursor: pointer;
-          display: flex;
-          justify-content: space-between;
-        }
-
-        .ds-module-week {
-          color: #9b9b9b;
-          font-size: 10px;
-          letter-spacing: 0.5px;
-          text-transform: uppercase;
-        }
-
-        .ds-module-title { font-size: 24px; font-weight: 600; margin-top: 5px; }
-        .ds-module-toggle { color: #7b7b7b; font-size: 24px; line-height: 1; }
-
-        .ds-module-body {
-          border-top: 1px solid #eee4de;
-          margin-top: 16px;
-          padding-top: 15px;
-        }
-
-        .ds-module-objective {
-          color: #4b4b4b;
-          font-size: 14px;
-          line-height: 1.6;
-          margin-bottom: 10px;
-        }
-
-        .ds-tag-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
-        .ds-tag {
-          background: #f3e7e1;
-          border-radius: 999px;
-          color: #8d4d3b;
-          font-size: 11px;
-          padding: 5px 11px;
-        }
-
-        .ds-side-panel {
-          background: var(--panel);
-          border: 1px solid #e8e0dc;
-          border-radius: var(--radius);
-          box-shadow: var(--shadow);
-          height: fit-content;
-          padding: 20px;
-        }
-
-        .ds-side-panel h3 { font-size: 28px; margin: 0 0 6px; }
-        .ds-side-panel p { color: #6f6f6f; font-size: 14px; margin: 0 0 16px; }
-
-        .ds-overview-grid,
-        .ds-why-grid,
-        .ds-role-grid,
-        .ds-metric-grid,
-        .ds-faq-grid {
-          display: grid;
-          gap: 16px;
-        }
-
-        .ds-overview-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .ds-why-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .ds-role-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .ds-metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-        .ds-faq-grid { grid-template-columns: 250px 1fr; }
-
-        .ds-card {
-          background: #f7f5f4;
-          border: 1px solid #e6dfdc;
-          border-radius: 16px;
-          padding: 20px;
-        }
-
-        .ds-card h4 { margin: 0 0 8px; font-size: 20px; }
-        .ds-card p { margin: 0; color: #5f5f5f; line-height: 1.6; }
-
-        .ds-takeaway-grid {
-          align-items: center;
-          display: grid;
-          gap: 22px;
-          grid-template-columns: 1fr;
-          width: 100%;
-        }
-
-        .ds-list {
-          margin: 0;
-          padding: 0;
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 15px 30px;
-          width: 100%;
-        }
-
-        @media (max-width: 768px) {
-          .ds-list {
-            grid-template-columns: 1fr;
-          }
-        }
-
-        .ds-list li {
-          list-style: none;
-          padding-left: 16px;
-          position: relative;
-          color: #454545;
-          line-height: 1.55;
-        }
-
-        .ds-list li::before {
-          background: #cb4213;
-          border-radius: 50%;
-          content: "";
-          height: 6px;
-          left: 0;
-          position: absolute;
-          top: 9px;
-          width: 6px;
-        }
-
-        .ds-image {
-          border-radius: 16px;
-          box-shadow: var(--shadow);
-          overflow: hidden;
-        }
-
-        .ds-image img {
-          display: block;
-          width: 100%;
-          height: 100%;
-          min-height: 320px;
-          object-fit: cover;
-        }
-
-        .ds-center { text-align: center; }
-
-        .ds-brochure {
-          align-items: center;
-          border: 2px solid #ca3f12;
-          border-radius: 18px;
-          display: flex;
-          justify-content: space-between;
-          gap: 20px;
-          padding: 20px;
-          background: #fff;
-        }
-
-        .ds-career { background: #eceaea; border-top: 1px solid #ddd8d5; border-bottom: 1px solid #ddd8d5; }
-
-        .ds-role-card {
-          background: #f7f5f4;
-          border: 1px solid #e6dfdc;
-          border-radius: 16px;
-          min-height: 190px;
-          padding: 22px;
-          position: relative;
-        }
-
-        .ds-role-dot {
-          background: #be3a10;
-          border-radius: 50%;
-          height: 10px;
-          margin-bottom: 16px;
-          width: 10px;
-        }
-        
-        .ds-role-card h4 {
-          font-weight: 700;
-        }
-
-        .ds-role-card strong {
-          color: #b12e03;
-          display: block;
-          margin-top: 12px;
-          font-size: 12px;
-          text-transform: uppercase;
-        }
-
-        .ds-metric {
-          text-align: center;
-          padding: 16px;
-          border: 1px solid #e6dfdc;
-          border-radius: 14px;
-          background: #fff;
-        }
-
-        .ds-metric h4 { margin: 0; color: #bf390d; font-size: 30px; }
-        .ds-metric p { margin: 6px 0 0; color: #5f5f5f; }
-
-        .ds-invest {
-          background: #fdfcfc;
-          border: 2px solid #ca3f12;
-          border-radius: 18px;
-          box-shadow: var(--shadow);
-          padding: 28px;
-        }
-
-        .ds-invest h3 { font-size: 40px; margin: 6px 0; }
-        .ds-invest-sub { color: #7a7a7a; font-size: 13px; text-transform: uppercase; }
-
-        .ds-invest-grid {
-          border-top: 1px solid #ece4e0;
-          display: grid;
-          gap: 18px;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          margin-top: 20px;
-          padding-top: 16px;
-        }
-
-        .ds-invest-item strong { color: #bf390d; display: block; margin-bottom: 6px; }
-        .ds-invest-item span { color: #5e5e5e; font-size: 13px; line-height: 1.5; }
-
-        .ds-pay-grid {
-          display: grid;
-          gap: 18px;
-          grid-template-columns: 1fr 1fr;
-          margin-top: 16px;
-        }
-
-        .ds-fee-box {
-          background: linear-gradient(145deg, #df5a2c 0%, #b73b14 100%);
-          border-radius: 26px;
-          color: #fff;
-          padding: 24px;
-          text-align: center;
-        }
-
-        .ds-fee-box .fee { font-size: 48px; font-weight: 800; line-height: 1.1; }
-
-        .ds-breakdown {
-          background: #fff;
-          border: 1px solid #e8e0dc;
-          border-radius: 16px;
-          padding: 16px;
-        }
-
-        .ds-break-row {
-          border-bottom: 1px solid #ebe3df;
-          display: flex;
-          justify-content: space-between;
-          font-size: 14px;
-          padding: 11px 0;
-        }
-
-        .ds-break-row:last-child { border-bottom: 0; }
-
-        .ds-partner {
-          align-items: center;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          margin-top: 16px;
-        }
-
-        .ds-partner img { height: 76px; object-fit: contain; }
-
-        .ds-faq-menu {
-          border: 1px solid #e5deda;
-          border-radius: 14px;
-          background: #fff;
-          padding: 12px;
-          height: fit-content;
-        }
-
-        .ds-faq-menu button {
-          background: #fff;
-          border: 1px solid #e7e0dc;
-          border-radius: 10px;
-          cursor: pointer;
-          display: block;
-          font-family: inherit;
-          font-size: 13px;
-          font-weight: 700;
-          margin-bottom: 8px;
-          padding: 10px 12px;
-          text-align: left;
-          width: 100%;
-        }
-
-        .ds-faq-menu button.active {
-          border-color: #d35e39;
-          color: #b9380f;
-        }
-
-        .ds-faq-item {
-          border: 1px solid #e7e0dc;
-          border-radius: 12px;
-          margin-bottom: 10px;
-          overflow: hidden;
-        }
-
-        .ds-faq-head {
-          align-items: center;
-          background: #fff;
-          cursor: pointer;
-          display: flex;
-          justify-content: space-between;
-          padding: 12px 14px;
-          width: 100%;
-          border: 0;
-          font-family: inherit;
-          text-align: left;
-        }
-
-        .ds-faq-body {
-          background: #f8f5f4;
-          color: #4f4f4f;
-          padding: 12px 14px;
-          border-top: 1px solid #e7e0dc;
-        }
-
-        .ds-fixed-price {
-          align-items: center;
-          background: #ffffffee;
-          backdrop-filter: blur(6px);
-          border-top: 1px solid var(--line);
-          bottom: 0;
-          color: var(--ink);
-          display: flex;
-          gap: 12px;
-          font-size: 14px;
-          font-weight: 700;
-          justify-content: space-between;
-          left: 0;
-          letter-spacing: 0.4px;
-          min-height: 56px;
-          padding: 10px 24px;
-          position: fixed;
-          text-transform: uppercase;
-          width: 100%;
-          z-index: 120;
-        }
-
-        .ds-fixed-price strong {
-          color: var(--accent-dark);
-          margin-left: 8px;
-        }
-
-        @media (max-width: 1080px) {
-          .ds-hero,
-          .ds-curr-grid,
-          .ds-overview-grid,
-          .ds-why-grid,
-          .ds-role-grid,
-          .ds-metric-grid,
-          .ds-pay-grid,
-          .ds-faq-grid,
-          .ds-takeaway-grid,
-          .ds-invest-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .ds-floating-card { left: 14px; }
-          .ds-brochure { flex-direction: column; align-items: flex-start; }
-        }
-
-        @media (max-width: 780px) {
-          .ds-section { padding: 42px 0; }
-          .ds-module-title { font-size: 21px; }
-        }
+        @media (max-width: 768px) { .sec-title { font-size: 28px; } .sec-sub { font-size: 15px; } }
       `}</style>
 
-      <div className="ds-shell">
-        <div style={{ width: "100%", marginBottom: "20px", marginTop: "10px" }}>
-          <img 
-            src={posterImage} 
-            alt="Data Science Poster" 
-            style={{ width: "100%", height: "auto", borderRadius: "18px", display: "block" }} 
-          />
-        </div>
-        <section className="ds-hero">
-          <div>
-            <div className="ds-chip">Advanced Program 2026</div>
-            <h1>Master the <span>Science</span> of Data.</h1>
-            <p className="ds-sub">
-              An elite, high-performance training program meticulously designed for future data leaders to master advanced machine learning, big data architectures, and sophisticated AI systems. Gain absolute mastery over Python, TensorFlow, and AWS environments while developing the technical depth and strategic intuition required to solve complex, multi-million dollar business challenges at a global scale. Join a network of elite practitioners and accelerate your path to leadership roles in the world's most innovative technology companies.
-            </p>
+      <CourseHeroBanner
+        badge="Data Science Expert"
+        icon="🧠"
+        title="Data Science"
+        highlight="and AI Masters"
+        sub="Master the sophisticated analytical frameworks and high-performance tools required to transform massive data streams into precise, actionable business intelligence."
+        stats={heroStats}
+        bg="linear-gradient(135deg, #0F766E 0%, #042F2E 45%, #054C44 100%)"
+        accent="#2DD4BF"
+        shape="DS"
+      >
+        <ImageSlider />
+      </CourseHeroBanner>
 
-            <div className="ds-stats">
-              {heroStats.map((item) => (
-                <article className="ds-stat" key={item.label}>
-                  <div className="ds-stat-label">{item.label}</div>
-                  <div className="ds-stat-value">{item.value}</div>
-                </article>
-              ))}
-            </div>
-          </div>
+      <CourseInfoStrip 
+        accent="#2DD4BF" 
+        courseValue="Data Science" 
+        duration="24 Weeks"
+        brochureLink={dsBrochure}
+      />
 
-          <div className="ds-hero-media">
-            <div className="ds-media-box">
-              <ImageSlider />
-            </div>
-            <aside className="ds-floating-card">
-              <h4>Outcome Focused</h4>
-              <p>Graduates have built teams at Google, Meta, and Netflix.</p>
-            </aside>
-          </div>
-        </section>
-
-        <section className="ds-section">
-          <h2>Curriculum</h2>
-          <p className="lead">
-            A rigorous path from fundamentals to neural architectures and modern LLM systems.
-            Curated for serious practitioners building at industry scale.
-          </p>
-
-          <div className="ds-accordion">
-            {curriculum.map((module, index) => {
-              const isOpen = openModule === index;
-              return (
-                <article className={`ds-module ${isOpen ? "open" : ""}`} key={module.title}>
-                  <div
-                    className="ds-module-head"
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => setOpenModule(isOpen ? -1 : index)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") {
-                        setOpenModule(isOpen ? -1 : index);
-                      }
-                    }}
-                  >
-                    <div>
-                      <div className="ds-module-week">{module.week}</div>
-                      <div className="ds-module-title">{module.title}</div>
-                    </div>
-                    <span className="ds-module-toggle">{isOpen ? "-" : "+"}</span>
-                  </div>
-
-                  {isOpen && (
-                    <div className="ds-module-body">
-                      <p className="ds-module-objective">{module.objectives}</p>
-                      <div className="ds-tag-wrap">
-                        {module.topics.map((topic) => (
-                          <span className="ds-tag" key={topic}>{topic}</span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </article>
-              );
-            })}
-          </div>
-
-          <div style={{ marginTop: "32px", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
-            <h2 className="mb-4">Speak with an Advisor</h2>
-            <p className="lead mb-6" style={{ margin: "0 auto 24px" }}>Get a personalized curriculum walkthrough and career roadmap.</p>
-            <div style={{ width: "min(90%, calc(100% - 32px))", margin: "auto", padding: "0" }}>
-              <ApplyForm courseValue="Data Science" />
-            </div>
-          </div>
-        </section>
-
-        <section className="ds-section">
-          <h2>Program Overview</h2>
-          <div className="ds-overview-grid">
-            {overviewTopics.map((topic) => (
-              <article className="ds-card" key={topic}>
-                <h4>{topic}</h4>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="ds-section">
-          <h2>Why Choose Data Science?</h2>
-          <p className="lead">Build one of the most future-proof skillsets across analytics, AI, and modern product organizations.</p>
-          <div className="ds-why-grid">
-            {whyChoose.map((item) => (
-              <article className="ds-card" key={item.title}>
-                <h4>{item.title}</h4>
-                <p>{item.description}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="ds-section">
-          <h2>Key Takeaways</h2>
-          <div className="ds-takeaway-grid">
-            <ul className="ds-list">
-              {keyTakeaways.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        <section className="ds-section">
-          <BenefitsofLearning />
-        </section>
-
-        <section className="ds-section">
-          <div className="ds-brochure">
-            <div>
-              <h2 style={{ margin: "0 0 6px", fontSize: "32px" }}>Get the Full Course Breakdown</h2>
-              <p className="lead" style={{ margin: 0 }}>
-                Access the detailed curriculum with modules, outcomes, and execution roadmap.
-              </p>
-            </div>
-            <button disabled className="ds-btn" style={{ opacity: 0.6, cursor: 'not-allowed' }}>
-              Download
-            </button>
-          </div>
-        </section>
-      </div>
-
-      <section className="ds-section ds-career">
-        <div className="ds-shell">
-          <div className="ds-center">
-            <h2>Career Opportunities in Data Science</h2>
-            <p className="lead" style={{ margin: "0 auto", maxWidth: "640px" }}>
-              The program prepares you for high-impact roles across product, platform, and applied AI teams.
-            </p>
-          </div>
-
-          <div className="ds-role-grid">
-            {roles.map((role) => (
-              <article className="ds-role-card" key={role.title}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
-                  <div className="ds-role-dot" style={{ marginBottom: 0 }} />
-                  <h4 style={{ margin: 0 }}>{role.title}</h4>
+      {/* AUDIENCE */}
+      <section className="ds-section">
+        <div className="shell">
+          <h2 className="sec-title">Who this program is for</h2>
+          <p className="sec-sub">Essential for practitioners moving into data-centric roles or upgrading from analytical positions.</p>
+          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'20px'}}>
+             {audience.map((item, i) => (
+                <div key={i} className="p-card">
+                  <div style={{color:'var(--ds-primary)', marginBottom:'16px'}}>{item.icon}</div>
+                  <h4 style={{fontSize:'18px', fontWeight:800, marginBottom:'10px'}}>{item.title}</h4>
+                  <p style={{fontSize:'14px', color:'var(--ds-text-dim)', lineHeight:1.6}}>{item.desc}</p>
                 </div>
-                <p>{role.text}</p>
-                <strong>{role.avg}</strong>
-              </article>
-            ))}
+             ))}
           </div>
         </div>
       </section>
 
+      {/* TOOLS */}
+      <section className="ds-sec-white">
+        <div className="shell">
+          <h2 className="sec-title">Tools you will use</h2>
+          <p className="sec-sub">Work with the standard technology stack utilized by global data engineering teams.</p>
+          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(260px, 1fr))', gap:'20px'}}>
+             {techStack.map((tech, i) => (
+               <div key={i} style={{padding:'20px', border:'1px solid var(--ds-border)', borderRadius:'12px', display:'flex', alignItems:'center', gap:'16px'}}>
+                 <div style={{color:'var(--ds-primary)'}}>{tech.icon}</div>
+                 <div><div style={{fontWeight:800, fontSize:'15px'}}>{tech.name}</div><div style={{fontSize:'13px', color:'var(--ds-text-dim)'}}>{tech.context}</div></div>
+               </div>
+             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ROADMAP */}
       <section className="ds-section">
-        <div className="ds-shell">
-          <h2 className="ds-center">Our Alumni at Top Brands</h2>
-          <p className="lead ds-center" style={{ margin: "0 auto 18px", maxWidth: "760px" }}>
-            Their success stories inspire current students to aim for global excellence.
-          </p>
-          <ClientsCarousel />
-        </div>
-      </section>
-
-      <section className="ds-section">
-        <div className="ds-shell">
-          <h2 className="ds-center">Course Benefits at a Glance</h2>
-          <div className="ds-metric-grid">
-            <article className="ds-metric"><h4>200+</h4><p>Mentees Placed</p></article>
-            <article className="ds-metric"><h4>10+ LPA</h4><p>Average CTC</p></article>
-            <article className="ds-metric"><h4>93%</h4><p>Placement Rate</p></article>
-            <article className="ds-metric"><h4>450+</h4><p>Hiring Partners</p></article>
-          </div>
-        </div>
-      </section>
-
-      <section className="ds-section">
-        <div className="ds-shell">
-          <Certification />
-        </div>
-      </section>
-
-      <section className="ds-section">
-        <div className="ds-shell">
-          <div className="ds-invest">
-            <div className="ds-invest-sub">Program Investment</div>
-            <h3>Rs 65,999</h3>
-            <div className="ds-invest-sub">Total fee (incl. GST)</div>
-
-            <div className="ds-invest-grid">
-              <div className="ds-invest-item">
-                <strong>Rs 10,000</strong>
-                <span>Registration fee to reserve your seat in this premium cohort.</span>
-              </div>
-              <div className="ds-invest-item">
-                <strong>Installment 1: Rs 28,000</strong>
-                <span>Payable within 15 days from date of registration.</span>
-              </div>
-              <div className="ds-invest-item">
-                <strong>Installment 2: Rs 27,999</strong>
-                <span>Payable within 15 days after installment 1.</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="ds-pay-grid">
-            <div className="ds-fee-box">
-              <div>Total Program Fee</div>
-              <div className="fee">Rs 65,999</div>
-              <div>Inclusive of taxes</div>
-            </div>
-            <div className="ds-breakdown">
-              <div className="ds-break-row"><span>Registration</span><strong>Rs 10,000</strong></div>
-              <div className="ds-break-row"><span>Installment 1</span><strong>Rs 28,000</strong></div>
-              <div className="ds-break-row"><span>Installment 2</span><strong>Rs 27,999</strong></div>
-            </div>
-          </div>
-
-          <div className="ds-partner">
-            <p className="ds-invest-sub">Our Financial Partner</p>
-            <img src={Flashaidlogo} alt="Financial partner" />
-          </div>
-        </div>
-      </section>
-
-      <section className="ds-section" style={{ background: "#fff" }}>
-        <div className="ds-shell">
-          <StoreSection />
-        </div>
-      </section>
-
-      <section className="ds-section" style={{ background: "#fff" }}>
-        <div className="ds-shell">
-          <h2 className="ds-center">Ask Us Anything</h2>
-          <div className="ds-faq-grid">
-            <aside className="ds-faq-menu">
-              {Object.keys(faqData).map((category) => (
-                <button
-                  key={category}
-                  className={activeCategory === category ? "active" : ""}
-                  type="button"
-                  onClick={() => {
-                    setActiveCategory(category);
-                    setOpenFAQ(null);
-                  }}
-                >
-                  {category}
-                </button>
+        <div className="shell">
+           <h2 className="sec-title">24-Week Learning Roadmap</h2>
+           <p className="sec-sub">A structured path from core concepts to deployment, capstone projects, and placement readiness.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(450px, 1fr))', gap:'16px'}}>
+              {compactRoadmap.map((item, idx) => (
+                 <div key={idx} className="p-card" onClick={() => setExpandedModule(expandedModule === idx ? null : idx)} style={{cursor:'pointer'}}>
+                    <div style={{display:'flex', justifyContent:'space-between', marginBottom:'12px'}}>
+                       <span style={{fontSize:'12px', fontWeight:800, color:'var(--ds-primary)'}}>{item.weeks}</span>
+                       <ChevronDown size={16} style={{transform: expandedModule === idx ? 'rotate(180deg)' : 'none', transition:'0.3s'}} />
+                    </div>
+                    <h4 style={{fontSize:'18px', fontWeight:800, marginBottom:'8px'}}>{item.title}</h4>
+                    <p style={{fontSize:'14px', color:'var(--ds-text-dim)'}}>{item.topics}</p>
+                    {expandedModule === idx && <p style={{marginTop:'16px', paddingTop:'16px', borderTop:'1px solid var(--ds-border)', fontSize:'13px', lineHeight:1.6}}>{item.details}</p>}
+                 </div>
               ))}
-            </aside>
-
-            <div>
-              {faqData[activeCategory].map((faq, index) => (
-                <article className="ds-faq-item" key={faq.question}>
-                  <button
-                    className="ds-faq-head"
-                    type="button"
-                    onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
-                  >
-                    <span>{faq.question}</span>
-                    <strong>{openFAQ === index ? "-" : "+"}</strong>
-                  </button>
-                  {openFAQ === index && <div className="ds-faq-body">{faq.answer}</div>}
-                </article>
-              ))}
-            </div>
-          </div>
+           </div>
         </div>
       </section>
 
-      <div className="ds-fixed-price">
-        <span>Program Fee: <strong>Rs 65999 inclusive of taxes</strong></span>
-        <ApplyNowButton courseValue="Data Science" />
+      {/* PROJECTS */}
+      <section className="ds-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">Portfolio Projects</h2>
+           <p className="sec-sub">Construct systems that solve business problems focused on automation, security, and forecasting.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(350px, 1fr))', gap:'20px'}}>
+              {portfolioProjects.map((p, i) => (
+                 <div key={i} className="p-card">
+                    <h4 style={{fontSize:'20px', fontWeight:800, marginBottom:'16px'}}>{p.title}</h4>
+                    <div style={{fontSize:'14px', marginBottom:'20px'}}><div style={{fontWeight:700, color:'var(--ds-text-dim)', fontSize:'12px', textTransform:'uppercase', marginBottom:'4px'}}>Industrial Problem</div>{p.problem}</div>
+                    <div style={{fontSize:'14px'}}><div style={{fontWeight:700, color:'var(--ds-text-dim)', fontSize:'12px', textTransform:'uppercase', marginBottom:'4px'}}>Mastered Outcome</div>{p.outcome}</div>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* FORMAT */}
+      <section className="ds-section">
+        <div className="shell">
+           <h2 className="sec-title">How learning works</h2>
+           <p className="sec-sub">Our format is designed for professionals who require technical depth and practical code execution.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(260px, 1fr))', gap:'20px'}}>
+              {learningFormat.map((f, i) => (
+                 <div key={i} className="p-card text-center">
+                    <div style={{color:'var(--ds-primary)', width:'fit-content', margin:'0 auto 20px'}}>{f.icon}</div>
+                    <h4 style={{fontWeight:800, marginBottom:'10px'}}>{f.title}</h4>
+                    <p style={{fontSize:'13px', color:'var(--ds-text-dim)', lineHeight:1.6}}>{f.desc}</p>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* CAREER SUPPORT */}
+      <section className="ds-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">Career Support Process</h2>
+           <p className="sec-sub">A structured cell dedicated to your transition into professional technical roles.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(220px, 1fr))', gap:'16px'}}>
+              {["Profile Audit", "Resume Design", "Portfolio Polish", "Mock Interviews", "Direct Referrals"].map((step, i) => (
+                 <div key={i} style={{padding:'20px', border:'1px solid var(--ds-border)', borderRadius:'12px'}}>
+                    <div style={{fontSize:'24px', fontWeight:900, opacity:0.2, marginBottom:'12px'}}>0{i+1}</div>
+                    <div style={{fontWeight:800, fontSize:'16px'}}>{step}</div>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* OUTCOMES */}
+      <section className="ds-section">
+        <div className="shell">
+           <h2 className="sec-title">Learner Outcomes</h2>
+           <p className="sec-sub"> Graduates from this program have successfully transitioned into these roles at global tech firms.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(350px, 1fr))', gap:'20px', marginBottom:'48px'}}>
+              {alumniOutcomes.map((a, i) => (
+                 <div key={i} className="p-card">
+                    <div style={{display:'flex', justifyContent:'space-between', marginBottom:'16px'}}>
+                       <div><div style={{fontWeight:800}}>{a.name}</div><div style={{fontSize:'12px', color:'var(--ds-text-dim)'}}>{a.role} → {a.target}</div></div>
+                       <div style={{fontSize:'14px', fontWeight:800, color:'var(--ds-primary)'}}>{a.company}</div>
+                    </div>
+                    <p style={{fontSize:'14px', fontStyle:'italic', opacity:0.8}}>"{a.desc}"</p>
+                 </div>
+              ))}
+           </div>
+           <ClientsCarousel />
+        </div>
+      </section>
+
+      {/* PATHS */}
+      <section className="ds-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">Career paths after the program</h2>
+           <p className="sec-sub">Target roles with measurable market demand and competitive compensation structures.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'16px'}}>
+              {careerRoles.map((r, i) => (
+                 <div key={i} className="p-card flex justify-between items-center">
+                    <div style={{fontWeight:800}}>{r.role}</div>
+                    <div style={{fontSize:'14px', color:'var(--ds-primary)', fontWeight:700}}>{r.range}</div>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* CERTIFICATION */}
+      <section className="ds-section">
+        <div className="shell">
+           <Certification isDark={false} />
+        </div>
+      </section>
+
+      {/* PRICING */}
+      <section className="ds-sec-white" id="pricing">
+        <div className="shell">
+           <h2 className="sec-title">Fees & Payment Options</h2>
+           <p className="sec-sub">Transparent program cost with structured installment plans and financial assistance.</p>
+           <div className="p-card" style={{display:'grid', gridTemplateColumns:'1fr 340px', gap:'64px', padding:'48px', alignItems:'start'}}>
+              <div>
+                 <div style={{fontSize:'14px', fontWeight:800, color:'var(--ds-primary)', textTransform:'uppercase', marginBottom:'20px'}}>Full Enrollment</div>
+                 <div style={{fontSize:'64px', fontWeight:950, letterSpacing:'-3px', marginBottom:'16px'}}>₹65,999</div>
+                 <p style={{color:'var(--ds-text-dim)', marginBottom:'40px'}}>Fee inclusive of all live training, dashboard access, and career support services.</p>
+                 <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="Data Science" /><a href={dsBrochure} className="btn-sec">Detailed Syllabus</a></div>
+              </div>
+              <div style={{display:'grid', gap:'12px'}}>
+                 {[{l:"Booking Amt", v:"₹10,000"}, {l:"Installment 1", v:"₹28,000"}, {l:"Installment 2", v:"₹27,999"}].map((row, i) => (
+                    <div key={i} style={{padding:'20px', background:'var(--ds-bg)', borderRadius:'8px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                       <span style={{fontSize:'13px', fontWeight:700}}>{row.l}</span><span style={{fontWeight:800}}>{row.v}</span>
+                    </div>
+                 ))}
+                 <div style={{marginTop:'12px', display:'flex', alignItems:'center', gap:'12px', opacity:0.6}}><Zap size={20} /> <img src={Flashaidlogo} alt="Flashaid" style={{height:'16px', grayscale:1}} /> <span style={{fontSize:'12px'}}>0% EMI Solutions</span></div>
+              </div>
+           </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="ds-section">
+        <div className="shell">
+           <h2 className="sec-title">Frequently Asked Questions</h2>
+           <p className="sec-sub">Resolving common queries about the roadmap, support, and enrollment process.</p>
+           <div style={{display:'grid', gridTemplateColumns:'280px 1fr', gap:'60px', alignItems:'start'}}>
+              <div style={{display:'grid', gap:'8px'}}>
+                 {Object.keys(faqCategories).map(cat => (
+                    <button key={cat} onClick={() => { setActiveFaqCat(cat); setOpenFaqIdx(null); }} style={{textAlign:'left', padding:'16px 24px', borderRadius:'8px', fontWeight:700, fontSize:'14px', transition:'0.2s', background: activeFaqCat === cat ? 'var(--ds-primary)' : 'transparent', color: activeFaqCat === cat ? '#fff' : 'var(--ds-text)'}} className={activeFaqCat !== cat ? 'hover:bg-gray-100' : ''}>{cat}</button>
+                 ))}
+              </div>
+              <div style={{display:'grid', gap:'8px'}}>
+                 {faqCategories[activeFaqCat].map((faq, i) => (
+                    <div key={i} className="faq-item" onClick={() => setOpenFaqIdx(openFaqIdx === i ? null : i)}>
+                       <div className="faq-quest">{faq.q} <ChevronDown size={16} style={{transform: openFaqIdx === i ? 'rotate(180deg)' : 'none', transition:'0.3s'}} /></div>
+                       <AnimatePresence>{openFaqIdx === i && <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="faq-ans"><div style={{paddingTop:'20px', borderTop:'1px solid var(--ds-border)'}}>{faq.a}</div></motion.div>}</AnimatePresence>
+                    </div>
+                 ))}
+              </div>
+           </div>
+        </div>
+      </section>
+
+      {/* FORM */}
+      <section className="ds-sec-white">
+        <div className="shell">
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'80px', alignItems:'start'}}>
+              <div>
+                 <h2 className="sec-title">Speak with an advisor</h2>
+                 <p className="sec-sub">Get a personalized program walkthrough and cohort fit review from our admissions team.</p>
+                 <div style={{display:'grid', gap:'16px'}}>
+                    {['24-hour response guarantee', 'Direct mentor counseling', 'Course feasibility check'].map(t => (
+                       <div key={t} style={{display:'flex', alignItems:'center', gap:'12px', fontSize:'14px', fontWeight:700}}><CheckCircle2 size={18} className="text-teal-600" /> {t}</div>
+                    ))}
+                 </div>
+              </div>
+              <div className="p-card" style={{padding:'32px', maxWidth:'520px'}}>
+                 <div style={{marginBottom:'24px'}}><h3 style={{fontSize:'20px', fontWeight:800, marginBottom:'4px'}}>Admission Review</h3><p style={{fontSize:'13px', color:'var(--ds-text-dim)'}}>Start your consultation request below.</p></div>
+                 <ApplyForm courseValue="Data Science" isPremium={true} />
+              </div>
+           </div>
+        </div>
+      </section>
+
+      <div className={`sticky-bar ${scrolled ? 'visible' : ''}`}>
+        <div className="shell flex justify-between items-center w-full">
+           <div className="hidden sm:block"><div style={{fontSize:'10px', fontWeight:800, color:'var(--ds-text-dim)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:'2px'}}>Professional Certification</div><div style={{fontWeight:800}}>₹65,999 <span style={{fontSize:'12px', color:'var(--ds-primary)', marginLeft:'12px'}}>EMI ₹4,599/MO</span></div></div>
+           <div className="flex gap-4 items-center">
+              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-bold uppercase hidden lg:flex items-center gap-2 hover:text-teal-600 transition-all"><PhoneCall size={14} /> Talk to Advisor</button>
+              <ApplyNowButton courseValue="Data Science" />
+           </div>
+        </div>
       </div>
     </div>
   );

@@ -28,7 +28,7 @@ const Collabration = () => {
     { name: "Years of Collaboration", value: "1.5" },
     { name: "Joint Research Projects", value: "150" },
     { name: "Student Internships", value: "10000" },
-    { name: "Industry Partnerships", value: "250" },
+    { name: "Industry Partnerships", value: "250+" },
   ];
 
   const collebrationSectionRef = useRef(null);

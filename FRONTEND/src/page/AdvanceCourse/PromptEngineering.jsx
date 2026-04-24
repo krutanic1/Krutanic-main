@@ -1,1204 +1,417 @@
-import React, { useState } from "react";
-import PEHero from "../../../krutanic/images/pead1.jpg";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  CheckCircle2, 
+  ChevronDown, 
+  Download, 
+  TrendingUp, 
+  Award, 
+  Briefcase, 
+  ArrowRight,
+  ShieldCheck,
+  Zap, 
+  Cpu, 
+  Terminal, 
+  Code2, 
+  MessagesSquare, 
+  Layout,
+  PhoneCall,
+  UserCheck,
+  Video,
+  Monitor,
+  Settings,
+  ShieldAlert,
+  Search,
+  Database,
+  Layers,
+  Sparkles,
+  Workflow
+} from "lucide-react";
+
 import posterImage from "../../../krutanic/images/poster/promptengineering.png";
-import PEOutcomes from "../../../krutanic/images/pead2.jpg";
-import pdfds from "../../../krutanic/Prompt engineering for generative AI Advanced Program.pdf";
 import Flashaidlogo from "../../assets/Flashaidlogo.jpg";
-import BenefitsofLearning from "./Components/BenefitsofLearning";
 import Certification from "./Components/Certification";
 import ClientsCarousel from "../../Components/our_alumni";
-import StoreSection from "./Components/StoreSection";
 import ApplyNowButton from "./Components/ApplyNowButton";
 import ApplyForm from "./Components/ApplyForm";
+import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
+import CourseInfoStrip from "./Components/CourseInfoStrip";
+import peBrochure from "../../../krutanic/Prompt engineering for generative AI Advanced Program.pdf";
 
 const heroStats = [
-  { label: "Duration", value: "24 Weeks" },
-  { label: "Program Rating", value: "4.9/5" },
-  { label: "Batch Starting", value: "Upcoming" },
+  { label: "Placement Rate", value: "94%" },
+  { label: "Avg. Salary Hike", value: "58%" },
+  { label: "Industry Rating", value: "4.9/5" },
+  { label: "Program Mode", value: "Live Hybrid" },
 ];
 
-const curriculum = [
-  {
-    week: "Weeks 1-2",
-    title: "Introduction to Prompt Engineering",
-    objectives:
-      "Understand core prompt engineering principles and how prompts shape AI output quality.",
-    topics: [
-      "Prompt Engineering Basics",
-      "LLM Behavior Patterns",
-      "Prompt Structure",
-      "Quality Evaluation",
-      "Use Cases Overview",
-    ],
-  },
-  {
-    week: "Weeks 3-4",
-    title: "Effective Prompting Techniques",
-    objectives:
-      "Use zero-shot, few-shot, and chain-of-thought methods to improve reliability and relevance.",
-    topics: [
-      "Zero-shot Prompting",
-      "Few-shot Prompting",
-      "Chain-of-thought",
-      "Role and Persona Prompting",
-      "Output Constraints",
-    ],
-  },
-  {
-    week: "Week 5-6",
-    title: "Refinement and Output Control",
-    objectives:
-      "Refine outputs iteratively with structured constraints and objective-aligned feedback loops.",
-    topics: [
-      "Prompt Iteration",
-      "Constraint Design",
-      "Response Calibration",
-      "Style Controls",
-      "Evaluation Rubrics",
-    ],
-  },
-  {
-    week: "Week 7-8",
-    title: "Context Engineering and Multi-Step Prompts",
-    objectives:
-      "Build context-rich prompts and chaining strategies for complex problem-solving workflows.",
-    topics: [
-      "Context Injection",
-      "Task Decomposition",
-      "Prompt Chaining",
-      "Memory Handling",
-      "Instruction Hierarchy",
-    ],
-  },
-  {
-    week: "Week 9-10",
-    title: "Prompting for Content and Coding",
-    objectives:
-      "Apply prompting for content systems, ideation, and AI-assisted development workflows.",
-    topics: [
-      "Content Generation",
-      "Creative Ideation",
-      "Code Prompting",
-      "Debug Assistance",
-      "Documentation Workflows",
-    ],
-  },
-  {
-    week: "Week 11-12",
-    title: "Model APIs and Tool Integration",
-    objectives:
-      "Integrate prompts into product workflows using APIs, templates, and automation systems.",
-    topics: [
-      "LLM APIs",
-      "Prompt Templates",
-      "System Messages",
-      "Tool Calling Concepts",
-      "Workflow Automation",
-    ],
-  },
-  {
-    week: "Week 13-14",
-    title: "Prompt Evaluation and Guardrails",
-    objectives:
-      "Design evaluation frameworks for consistency, safety, and performance across AI outputs.",
-    topics: [
-      "Prompt Testing",
-      "Hallucination Controls",
-      "Safety Guardrails",
-      "Bias Awareness",
-      "Reliability Metrics",
-    ],
-  },
-  {
-    week: "Week 15-16",
-    title: "Ethics and Responsible AI Prompting",
-    objectives:
-      "Apply responsible prompting practices and ethical principles in production contexts.",
-    topics: [
-      "AI Ethics",
-      "Bias Mitigation",
-      "Responsible Usage",
-      "Data Sensitivity",
-      "Policy Alignment",
-    ],
-  },
-  {
-    week: "Week 17-20",
-    title: "Capstone Project",
-    objectives:
-      "Build a practical prompt-engineering solution for a real business or product use case.",
-    topics: [
-      "Problem Framing",
-      "Prompt System Design",
-      "Evaluation Plan",
-      "Iteration Cycles",
-      "Final Presentation",
-    ],
-  },
-  {
-    week: "Week 21-24",
-    title: "Placement Preparation",
-    objectives:
-      "Build portfolio readiness and interview confidence for AI prompt and workflow roles.",
-    topics: [
-      "Resume and LinkedIn",
-      "Portfolio Positioning",
-      "Mock Interviews",
-      "Case Presentations",
-      "Job Strategy",
-    ],
-  },
+const audience = [
+  { title: "Software Engineers", desc: "Integrate LLMs into production codebases with reliable prompt architectures and API guardrails.", icon: <Code2 size={20} /> },
+  { title: "Data Scientists & ML", desc: "Bridge the gap between model training and effective inference through advanced context engineering.", icon: <Database size={20} /> },
+  { title: "Product Managers", desc: "Learn to define and control AI behavior to deliver consistent, high-value user experiences.", icon: <Layout size={20} /> },
+  { title: "Marketing & Content", desc: "Scale personalized content engines with sophisticated prompt templates and quality control.", icon: <Sparkles size={20} /> },
+  { title: "Operations & Ops", desc: "Automate complex business processes using zero-shot and few-shot multi-step AI workflows.", icon: <Workflow size={20} /> },
+  { title: "Future Tech Talent", desc: "A first-principles approach to mastering the most critical career skill in the Generative AI era.", icon: <Cpu size={20} /> }
 ];
 
-const overviewTopics = [
-  "Advanced Prompt Strategies",
-  "Iterative Refinement Systems",
-  "API and Workflow Integration",
-  "AI Assistants and Chatbots",
-  "Ethical and Safe Prompting",
-  "Future Trends in GenAI",
+const marketOpportunity = [
+  { title: "Strategic Resource", desc: "Prompt Engineering is now a core requirement for teams building production-grade AI features.", icon: <TrendingUp size={24} /> },
+  { title: "Economic Impact", desc: "Enterprises are prioritizing efficiency; skilled prompt engineers can reduce token costs by up to 40%.", icon: <Zap size={24} /> },
+  { title: "Role Emergence", desc: "Dedicated roles like 'AI Orchestrator' and 'Prompt Architect' are among the fastest-growing job titles.", icon: <Briefcase size={24} /> }
 ];
 
-const whyChoose = [
-  {
-    title: "High-Demand Skill",
-    description:
-      "Prompt engineering is becoming a core capability across AI product and content teams.",
-  },
-  {
-    title: "Practical Impact",
-    description:
-      "Well-designed prompts directly improve output quality, productivity, and automation outcomes.",
-  },
-  {
-    title: "Creative Control",
-    description:
-      "Shape model behavior with precision for writing, coding, research, and decision support tasks.",
-  },
-  {
-    title: "Cross-Industry Utility",
-    description:
-      "Apply prompt skills in marketing, product, education, operations, and engineering domains.",
-  },
-  {
-    title: "Future-Proof Growth",
-    description:
-      "As GenAI evolves, prompt and context engineering remain high-value strategic skills.",
-  },
-  {
-    title: "Fast Career Transition",
-    description:
-      "Build an AI portfolio quickly and move into emerging AI-enabled roles.",
-  },
+const techStack = [
+  { group: "Core LLMs", tools: ["GPT-4o", "Claude 3.5 Sonnet", "Gemini Pro", "Llama 3", "Mistral Large"] },
+  { group: "Prompt Tools", tools: ["PromptLayer", "LangSmith", "Humanloop", "Pryon"] },
+  { group: "Dev & Orchestrations", tools: ["LangChain", "LlamaIndex", "AutoGPT", "AutoGen"] },
+  { group: "Vector & Context", tools: ["Pinecone", "ChromaDB", "Weaviate", "Redis Stack"] },
+  { group: "Evaluation", tools: ["DeepEval", "Giskard", "Ragas", "TruLens"] }
 ];
 
-const keyTakeaways = [
-  "Build robust prompts that produce reliable, context-aware AI responses.",
-  "Use iterative refinement loops to improve output quality and consistency.",
-  "Apply structured prompting to content, coding, and decision workflows.",
-  "Integrate prompt systems into real applications using API-based workflows.",
-  "Design guardrails to reduce hallucinations and improve response safety.",
-  "Publish portfolio-grade AI prompt projects for hiring and career growth.",
+const curriculumRoadmap = [
+  { weeks: "Weeks 1-2", title: "Foundations of LLM Behavior", topics: "Tokenization, context window, temperature, hallucinations.", details: "Understand the mathematical and probabilistic nature of LLMs to predict response behavior through better framing." },
+  { weeks: "Weeks 3-4", title: "Advanced Prompting Patterns", topics: "Few-shot, Chain-of-Thought, ReAct, Self-Consistency.", details: "Master the fundamental architectures used to guide models through complex reasoning tasks." },
+  { weeks: "Weeks 5-6", title: "Constraint & Control Design", topics: "Structured outputs, XML/JSON tags, persona control.", details: "Learn to demand and enforce precise formatting and tone across diverse model cohorts." },
+  { weeks: "Weeks 7-8", title: "Multi-step Chaining", topics: "Task decomposition, state management, iterative refinement.", details: "Build sophisticated pipelines where the output of one prompt serves as the optimized context for the next." },
+  { weeks: "Weeks 9-10", title: "Prompting for Product & Code", topics: "SQL generation, API specs, unit test prompts, debugging.", details: "Deep dive into using prompts as a development tool to accelerate technical build cycles." },
+  { weeks: "Weeks 11-12", title: "Context & RAG Engineering", topics: "Vector embedding, chunking strategies, hybrid search.", details: "Master the art of providing external knowledge to models to eliminate outdated data limitations." },
+  { weeks: "Weeks 13-14", title: "Evaluation & Guardrails", topics: "Bias mitigation, safety layers, performance metrics.", details: "Build professional testing suites to ensure your prompt systems are safe and reliable for business production." },
+  { weeks: "Weeks 15-20", title: "Capstone & Full-Stack AI", topics: "API integration, deployment, cost optimization.", details: "Develop and deploy a complete prompt-driven system that solves a real-world vertical business problem." },
+  { weeks: "Weeks 21-24", title: "Career & Portfolio Prep", topics: "Portfolio review, LinkedIn, technical mock mocks.", details: "Final phase focused on presenting your AI systems to hiring partners and cracking technical AI roles." }
 ];
 
-const roles = [
-  {
-    title: "Prompt Engineer",
-    text: "Design and optimize prompts for production AI use-cases.",
-    avg: "Package range: Rs 8-24 LPA",
-  },
-  {
-    title: "AI Content Specialist",
-    text: "Build AI-assisted content pipelines with quality and consistency controls.",
-    avg: "Package range: Rs 5-14 LPA",
-  },
-  {
-    title: "Chatbot Developer",
-    text: "Create conversational AI experiences with prompt-driven behavior design.",
-    avg: "Package range: Rs 6-18 LPA",
-  },
-  {
-    title: "AI Research Associate",
-    text: "Experiment with model prompting and evaluation frameworks.",
-    avg: "Package range: Rs 8-20 LPA",
-  },
-  {
-    title: "Marketing Automation Specialist",
-    text: "Use GenAI prompting to scale campaign content and customer journeys.",
-    avg: "Package range: Rs 5-14 LPA",
-  },
-  {
-    title: "AI Product Manager",
-    text: "Lead AI product outcomes with prompt and model behavior strategy.",
-    avg: "Package range: Rs 12-30 LPA",
-  },
-  {
-    title: "AI Data Trainer",
-    text: "Improve model quality through structured data and prompt feedback loops.",
-    avg: "Package range: Rs 5-13 LPA",
-  },
-  {
-    title: "Technical Writer (AI)",
-    text: "Create AI-native documentation and instruction systems for teams.",
-    avg: "Package range: Rs 5-12 LPA",
-  },
-  {
-    title: "Conversational UX Designer",
-    text: "Design natural conversational interfaces across AI experiences.",
-    avg: "Package range: Rs 7-18 LPA",
-  },
+const portfolioProjects = [
+  { title: "Guardrailed Pipeline", obs: "Eliminating hallucination in medical document summarization.", skill: "Safety Guardrails" },
+  { title: "Context-Aware Assistant", obs: "A customer support engine with access to proprietary product manuals.", skill: "RAG & Embeddings" },
+  { title: "Code Gen Architecture", obs: "A prompt system that transforms PRD documents into functional React code.", skill: "Software Automation" },
+  { title: "Cost Optimization Suite", obs: "Refactoring prompts to reduce token usage by 50% without quality loss.", skill: "Token Efficiency" }
 ];
 
-const faqData = {
-  Program: [
-    {
-      question: "What topics are covered in the Prompt Engineering program?",
-      answer:
-        "The program covers prompting techniques, refinement systems, API integration, ethics, and applied AI workflows.",
-    },
-    {
-      question: "How is the course delivered?",
-      answer:
-        "The course includes live sessions, recordings, practical labs, and portfolio-oriented projects.",
-    },
-    {
-      question: "Will I get hands-on experience?",
-      answer:
-        "Yes, learners build practical prompt systems and deploy real workflow use-cases.",
-    },
-    {
-      question: "How long is the program?",
-      answer: "The program runs for 24 weeks.",
-    },
+const careerRoles = [
+  { role: "Prompt Engineer", range: "14 - 28 LPA" },
+  { role: "AI Workflow Architect", range: "18 - 35 LPA" },
+  { role: "LLM Solutions Lead", range: "22 - 45 LPA" },
+  { role: "AI Product Manager", range: "20 - 40 LPA" },
+  { role: "Conversational UX", range: "10 - 18 LPA" },
+  { role: "AI Content Strategist", range: "09 - 16 LPA" }
+];
+
+const faqCategories = {
+  "Progrm Basics": [
+    { q: "Is this course for non-coders?", a: "Yes. While code familiarity helps, prompt engineering is primarily a logic and language task. We provide support for both paths." },
+    { q: "Which LLMs will we use?", a: "The program is model-agnostic. We work with GPT-4, Claude 3.5, and open-source models like Llama 3." }
   ],
-  Eligibility: [
-    {
-      question: "Do I need prior AI experience?",
-      answer:
-        "No prior AI background is required, though basic familiarity with digital tools is helpful.",
-    },
-    {
-      question: "Do I need coding skills?",
-      answer:
-        "Coding is not mandatory; technical and non-technical learners are both supported.",
-    },
-    {
-      question: "Can beginners apply?",
-      answer: "Yes, beginners can apply and grow through the structured learning path.",
-    },
-    {
-      question: "Is there any age restriction?",
-      answer: "No, there is no age restriction.",
-    },
-  ],
-  Community: [
-    {
-      question: "How can I interact with other participants?",
-      answer:
-        "Through cohort groups, discussion forums, collaborative projects, and live learning sessions.",
-    },
-    {
-      question: "Is mentorship available?",
-      answer:
-        "Yes, mentors support project execution, AI workflows, and career development.",
-    },
-    {
-      question: "Can I access support after completion?",
-      answer: "Yes, alumni and support channels remain accessible after graduation.",
-    },
-    {
-      question: "How diverse is the community?",
-      answer:
-        "The community includes professionals from product, marketing, engineering, education, and business roles.",
-    },
-  ],
-  Lectures: [
-    {
-      question: "Are sessions live or recorded?",
-      answer: "Both live and recorded formats are available for flexibility.",
-    },
-    {
-      question: "How interactive are the sessions?",
-      answer:
-        "Sessions include practical exercises, prompt critiques, and real-time feedback.",
-    },
-    {
-      question: "Can I replay missed lectures?",
-      answer: "Yes, recordings are provided for all modules.",
-    },
-    {
-      question: "How often are live sessions held?",
-      answer: "Live sessions are held weekly.",
-    },
-  ],
-  Certification: [
-    {
-      question: "Will I receive a certificate upon completion?",
-      answer: "Yes, successful participants receive a completion certificate.",
-    },
-    {
-      question: "Is the certification recognized by employers?",
-      answer:
-        "It validates applied prompt engineering capability across production-grade AI workflows.",
-    },
-    {
-      question: "Can I add this certification to resume or LinkedIn?",
-      answer: "Yes, it can be showcased on both.",
-    },
-    {
-      question: "Is certification included in the fee?",
-      answer: "Yes, certification is included with successful completion.",
-    },
-  ],
-  Opportunities: [
-    {
-      question: "What career opportunities does this course open?",
-      answer:
-        "You can target roles like Prompt Engineer, AI Content Specialist, Conversational UX, and AI workflow specialist.",
-    },
-    {
-      question: "Will I receive placement support?",
-      answer: "Yes, placement assistance and interview support are included.",
-    },
-    {
-      question: "Are internships available?",
-      answer:
-        "Selected learners may access internships and project pathways through partner opportunities.",
-    },
-    {
-      question: "How does this help in career advancement?",
-      answer:
-        "You build practical AI execution skills and a portfolio that demonstrates real-world capability.",
-    },
-  ],
+  "Job Assistance": [
+    { q: "How does placement support work?", a: "We provide portfolio reviews, resume building for AI roles, and direct referrals to our hiring network." },
+    { q: "What is the demand for this role?", a: "Prompt Engineering is currently one of the fastest-growing niches in tech as every company integrates GenAI." }
+  ]
 };
 
 const PromptEngineering = () => {
-  const [openModule, setOpenModule] = useState(0);
-  const [activeCategory, setActiveCategory] = useState("Program");
-  const [openFAQ, setOpenFAQ] = useState(null);
+  const [expandedModule, setExpandedModule] = useState(null);
+  const [activeFaqCat, setActiveFaqCat] = useState("Progrm Basics");
+  const [openFaqIdx, setOpenFaqIdx] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 80);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <div className="pe-page">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap');
 
         :root {
-          --bg: #f3f1f1;
-          --panel: #ffffff;
-          --ink: #171717;
-          --muted: #626262;
-          --line: #ded8d5;
-          --accent: #c43609;
-          --radius: 18px;
-          --shadow: 0 20px 40px rgba(29, 20, 13, 0.08);
+          --pe-bg: #F7F6F2;
+          --pe-text: #1F2937;
+          --pe-text-dim: #626C78;
+          --pe-primary: #6D28D9;
+          --pe-accent: #A78BFA;
+          --pe-border: rgba(31, 41, 55, 0.08);
         }
 
-        * { box-sizing: border-box; }
+        .pe-page { background: var(--pe-bg); color: var(--pe-text); font-family: 'Plus Jakarta Sans', sans-serif; }
+        .shell { width: 100%; max-width: 1210px; margin: 0 auto; padding: 0 24px; }
 
-        .pe-page {
-          background:
-            radial-gradient(circle at 8% 8%, rgba(196, 54, 9, 0.08), transparent 34%),
-            radial-gradient(circle at 95% 55%, rgba(15, 77, 98, 0.09), transparent 28%),
-            var(--bg);
-          color: var(--ink);
-          font-family: "Sora", "Segoe UI", sans-serif;
+        .pe-section { padding: 100px 0; }
+        .pe-sec-white { padding: 100px 0; background: #fff; border-top: 1px solid var(--pe-border); border-bottom: 1px solid var(--pe-border); }
+
+        .sec-title { font-family: 'Outfit', sans-serif; font-size: 34px; font-weight: 800; margin-bottom: 16px; color: var(--pe-text); text-align: left; }
+        .sec-sub { font-size: 17px; color: var(--pe-text-dim); max-width: 610px; margin-bottom: 50px; text-align: left; line-height:1.6; }
+
+        .p-card { 
+          background: #fff; 
+          border: 1px solid var(--pe-border); 
+          border-radius: 12px; 
+          padding: 24px; 
+          transition: 0.3s;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.02);
         }
+        .p-card:hover { border-color: var(--pe-accent); box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
 
-        .pe-shell {
-          width: min(100%, calc(100% - 32px));
-          margin: 0 auto;
-        }
+        .btn-sec { border: 1px solid var(--pe-border); color: var(--pe-text); padding: 12px 24px; border-radius: 8px; font-weight: 700; font-size: 15px; background:#fff; }
 
-        .pe-btn {
-          background: linear-gradient(180deg, #d64d1d 0%, #af2f06 100%);
-          border: 0;
-          border-radius: 10px;
-          color: #fff;
-          cursor: pointer;
-          font-size: 12px;
-          font-weight: 700;
-          letter-spacing: 0.3px;
-          padding: 10px 18px;
-          text-transform: uppercase;
-        }
+        .faq-item { border: 1px solid var(--pe-border); border-radius: 12px; margin-bottom: 12px; overflow: hidden; background: #fff; }
+        .faq-quest { width:100%; text-align:left; padding: 22px 24px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .faq-ans { padding: 0 24px 24px; font-size: 14px; color: var(--pe-text-dim); line-height: 1.6; }
 
-        .pe-section { padding: 24px 0; }
-        .pe-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 8px; }
-        .pe-section p.lead {
-          color: var(--muted);
-          line-height: 1.7;
-          margin: 0 0 16px;
-          max-width: 760px;
-        }
+        .sticky-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 72px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--pe-border); z-index: 99; transform: translateY(100%); transition: 0.4s; display: flex; align-items: center; }
+        .sticky-bar.visible { transform: translateY(0); }
 
-        .pe-hero {
-          border-top: 1px solid var(--line);
-          display: grid;
-          gap: 16px;
-          grid-template-columns: 1fr 1fr;
-          padding: 16px 0 20px;
-        }
-
-        .pe-chip {
-          background: #f0e0db;
-          border-radius: 999px;
-          color: #8a4f40;
-          display: inline-flex;
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 0.5px;
-          padding: 6px 12px;
-          text-transform: uppercase;
-        }
-
-        .pe-hero h1 {
-          font-size: clamp(42px, 5vw, 74px);
-          line-height: 0.98;
-          margin: 12px 0;
-        }
-
-        .pe-hero h1 span {
-          color: var(--accent);
-          font-family: "Fraunces", Georgia, serif;
-          font-style: italic;
-          font-weight: 800;
-        }
-
-        .pe-sub {
-          color: var(--muted);
-          font-size: 17px;
-          line-height: 1.6;
-          max-width: 520px;
-          margin-bottom: 16px;
-        }
-
-        .pe-stats {
-          display: grid;
-          gap: 12px;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          max-width: 560px;
-          margin-bottom: 18px;
-        }
-
-        .pe-stat {
-          background: var(--panel);
-          border: 1px solid #eadeda;
-          border-radius: 16px;
-          box-shadow: var(--shadow);
-          padding: 16px 14px;
-        }
-
-        .pe-stat-label {
-          color: #8a8a8a;
-          font-size: 11px;
-          letter-spacing: 0.6px;
-          margin-bottom: 6px;
-          text-transform: uppercase;
-        }
-
-        .pe-stat-value { font-size: 18px; font-weight: 700; }
-
-        .pe-hero-media { position: relative; }
-
-        .pe-media-box {
-          background: radial-gradient(circle at 25% 20%, #17627c 0%, #0d1826 70%);
-          border-radius: 22px;
-          box-shadow: 0 24px 46px rgba(0, 0, 0, 0.28);
-          overflow: hidden;
-          padding: 18px;
-          height: 600px;
-        }
-
-        .pe-media-box > div {
-          height: 100%;
-        }
-
-        .pe-media-box img {
-          border-radius: 16px;
-          display: block;
-          height: 100%;
-          min-height: 330px;
-          object-fit: cover;
-          width: 100%;
-        }
-
-        .pe-floating-card {
-          background: rgba(255, 255, 255, 0.92);
-          border-radius: 16px;
-          box-shadow: 0 12px 32px rgba(19, 16, 11, 0.18);
-          left: -20px;
-          max-width: 300px;
-          padding: 16px;
-          position: absolute;
-          bottom: -20px;
-        }
-
-        .pe-curr-grid {
-          display: grid;
-          gap: 10px;
-          grid-template-columns: 2fr 1fr;
-        }
-
-        .pe-accordion { display: grid; gap: 10px; }
-
-        .pe-module {
-          background: var(--panel);
-          border: 1px solid #e7e0dc;
-          border-radius: var(--radius);
-          padding: 14px;
-        }
-
-        .pe-module.open { border-color: #d05b36; }
-
-        .pe-module-head {
-          align-items: center;
-          cursor: pointer;
-          display: flex;
-          justify-content: space-between;
-        }
-
-        .pe-module-week {
-          color: #9b9b9b;
-          font-size: 10px;
-          letter-spacing: 0.5px;
-          text-transform: uppercase;
-        }
-
-        .pe-module-title { font-size: 24px; font-weight: 600; margin-top: 5px; }
-        .pe-module-toggle { color: #7b7b7b; font-size: 24px; line-height: 1; }
-
-        .pe-module-body {
-          border-top: 1px solid #eee4de;
-          margin-top: 16px;
-          padding-top: 15px;
-        }
-
-        .pe-module-objective {
-          color: #4b4b4b;
-          font-size: 14px;
-          line-height: 1.6;
-          margin-bottom: 10px;
-        }
-
-        .pe-tag-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
-        .pe-tag {
-          background: #f3e7e1;
-          border-radius: 999px;
-          color: #8d4d3b;
-          font-size: 11px;
-          padding: 5px 11px;
-        }
-
-        .pe-side-panel {
-          background: var(--panel);
-          border: 1px solid #e8e0dc;
-          border-radius: var(--radius);
-          box-shadow: var(--shadow);
-          height: fit-content;
-          padding: 20px;
-        }
-
-        .pe-side-panel h3 { font-size: 28px; margin: 0 0 6px; }
-        .pe-side-panel p { color: #6f6f6f; font-size: 14px; margin: 0 0 16px; }
-
-        .pe-overview-grid,
-        .pe-why-grid,
-        .pe-role-grid,
-        .pe-metric-grid,
-        .pe-faq-grid {
-          display: grid;
-          gap: 16px;
-        }
-
-        .pe-overview-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .pe-why-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .pe-role-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .pe-metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-        .pe-faq-grid { grid-template-columns: 250px 1fr; }
-
-        .pe-card {
-          background: #f7f5f4;
-          border: 1px solid #e6dfdc;
-          border-radius: 16px;
-          padding: 20px;
-        }
-
-        .pe-card h4 { margin: 0 0 8px; font-size: 20px; }
-        .pe-card p { margin: 0; color: #5f5f5f; line-height: 1.6; }
-
-        .pe-takeaway-grid {
-          align-items: center;
-          display: grid;
-          gap: 22px;
-          grid-template-columns: 1fr;
-          width: 100%;
-        }
-
-        .pe-list {
-          margin: 0;
-          padding: 0;
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 15px 30px;
-          width: 100%;
-        }
-
-        @media (max-width: 768px) {
-          .pe-list {
-            grid-template-columns: 1fr;
-          }
-        }
-
-        .pe-list li {
-          list-style: none;
-          padding-left: 16px;
-          position: relative;
-          color: #454545;
-          line-height: 1.55;
-        }
-
-        .pe-list li::before {
-          background: #cb4213;
-          border-radius: 50%;
-          content: "";
-          height: 6px;
-          left: 0;
-          position: absolute;
-          top: 9px;
-          width: 6px;
-        }
-
-        .pe-image {
-          border-radius: 16px;
-          box-shadow: var(--shadow);
-          overflow: hidden;
-        }
-
-        .pe-image img {
-          display: block;
-          width: 100%;
-          height: 100%;
-          min-height: 320px;
-          object-fit: cover;
-        }
-
-        .pe-center { text-align: center; }
-
-        .pe-brochure {
-          align-items: center;
-          border: 2px solid #ca3f12;
-          border-radius: 18px;
-          display: flex;
-          justify-content: space-between;
-          gap: 20px;
-          padding: 20px;
-          background: #fff;
-        }
-
-        .pe-career { background: #eceaea; border-top: 1px solid #ddd8d5; border-bottom: 1px solid #ddd8d5; }
-
-        .pe-role-card {
-          background: #f7f5f4;
-          border: 1px solid #e6dfdc;
-          border-radius: 16px;
-          min-height: 190px;
-          padding: 22px;
-          position: relative;
-        }
-
-        .pe-role-dot {
-          background: #be3a10;
-          border-radius: 50%;
-          height: 10px;
-          margin-bottom: 16px;
-          width: 10px;
-        }
-        
-        .pe-role-card h4 {
-          font-weight: 700;
-        }
-
-        .pe-role-card strong {
-          color: #b12e03;
-          display: block;
-          margin-top: 12px;
-          font-size: 12px;
-          text-transform: uppercase;
-        }
-
-        .pe-fixed-price {
-          align-items: center;
-          background: #ffffffee;
-          backdrop-filter: blur(6px);
-          border-top: 1px solid var(--line);
-          bottom: 0;
-          color: var(--ink);
-          display: flex;
-          gap: 12px;
-          font-size: 14px;
-          font-weight: 700;
-          justify-content: space-between;
-          left: 0;
-          letter-spacing: 0.4px;
-          min-height: 56px;
-          padding: 10px 24px;
-          position: fixed;
-          text-transform: uppercase;
-          width: 100%;
-          z-index: 120;
-        }
-
-        .pe-fixed-price strong {
-          color: var(--accent-dark);
-          margin-left: 6px;
-        }
-
-        .pe-metric {
-          text-align: center;
-          padding: 16px;
-          border: 1px solid #e6dfdc;
-          border-radius: 14px;
-          background: #fff;
-        }
-
-        .pe-metric h4 { margin: 0; color: #bf390d; font-size: 30px; }
-        .pe-metric p { margin: 6px 0 0; color: #5f5f5f; }
-
-        .pe-invest {
-          background: #fdfcfc;
-          border: 2px solid #ca3f12;
-          border-radius: 18px;
-          box-shadow: var(--shadow);
-          padding: 28px;
-        }
-
-        .pe-invest h3 { font-size: 40px; margin: 6px 0; }
-        .pe-invest-sub { color: #7a7a7a; font-size: 13px; text-transform: uppercase; }
-
-        .pe-invest-grid {
-          border-top: 1px solid #ece4e0;
-          display: grid;
-          gap: 18px;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          margin-top: 20px;
-          padding-top: 16px;
-        }
-
-        .pe-invest-item strong { color: #bf390d; display: block; margin-bottom: 6px; }
-        .pe-invest-item span { color: #5e5e5e; font-size: 13px; line-height: 1.5; }
-
-        .pe-pay-grid {
-          display: grid;
-          gap: 18px;
-          grid-template-columns: 1fr 1fr;
-          margin-top: 16px;
-        }
-
-        .pe-fee-box {
-          background: linear-gradient(145deg, #df5a2c 0%, #b73b14 100%);
-          border-radius: 26px;
-          color: #fff;
-          padding: 24px;
-          text-align: center;
-        }
-
-        .pe-fee-box .fee { font-size: 48px; font-weight: 800; line-height: 1.1; }
-
-        .pe-breakdown {
-          background: #fff;
-          border: 1px solid #e8e0dc;
-          border-radius: 16px;
-          padding: 16px;
-        }
-
-        .pe-break-row {
-          border-bottom: 1px solid #ebe3df;
-          display: flex;
-          justify-content: space-between;
-          font-size: 14px;
-          padding: 11px 0;
-        }
-
-        .pe-break-row:last-child { border-bottom: 0; }
-
-        .pe-partner {
-          align-items: center;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          margin-top: 16px;
-        }
-
-        .pe-partner img { height: 76px; object-fit: contain; }
-
-        .pe-faq-menu {
-          border: 1px solid #e5deda;
-          border-radius: 14px;
-          background: #fff;
-          padding: 12px;
-          height: fit-content;
-        }
-
-        .pe-faq-menu button {
-          background: #fff;
-          border: 1px solid #e7e0dc;
-          border-radius: 10px;
-          cursor: pointer;
-          display: block;
-          font-family: inherit;
-          font-size: 13px;
-          font-weight: 700;
-          margin-bottom: 8px;
-          padding: 10px 12px;
-          text-align: left;
-          width: 100%;
-        }
-
-        .pe-faq-menu button.active {
-          border-color: #d35e39;
-          color: #b9380f;
-        }
-
-        .pe-faq-item {
-          border: 1px solid #e7e0dc;
-          border-radius: 12px;
-          margin-bottom: 10px;
-          overflow: hidden;
-        }
-
-        .pe-faq-head {
-          align-items: center;
-          background: #fff;
-          cursor: pointer;
-          display: flex;
-          justify-content: space-between;
-          padding: 12px 14px;
-          width: 100%;
-          border: 0;
-          font-family: inherit;
-          text-align: left;
-        }
-
-        .pe-faq-body {
-          background: #f8f5f4;
-          color: #4f4f4f;
-          padding: 12px 14px;
-          border-top: 1px solid #e7e0dc;
-        }
-
-        @media (max-width: 1080px) {
-          .pe-hero,
-          .pe-curr-grid,
-          .pe-overview-grid,
-          .pe-why-grid,
-          .pe-role-grid,
-          .pe-metric-grid,
-          .pe-pay-grid,
-          .pe-faq-grid,
-          .pe-takeaway-grid,
-          .pe-invest-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .pe-floating-card { left: 14px; }
-          .pe-brochure { flex-direction: column; align-items: flex-start; }
-        }
-
-        @media (max-width: 780px) {
-          .pe-section { padding: 42px 0; }
-          .pe-module-title { font-size: 21px; }
-        }
+        @media (max-width: 768px) { .sec-title { font-size: 28px; } }
       `}</style>
 
-      <div className="pe-shell">
-        <div style={{ width: "100%", marginBottom: "20px", marginTop: "10px" }}>
-          <img 
-            src={posterImage} 
-            alt="Prompt Engineering Poster" 
-            style={{ width: "100%", height: "auto", borderRadius: "18px", display: "block" }} 
-          />
-        </div>
-        <section className="pe-hero">
-          <div>
-            <div className="pe-chip">Advanced Program 2026</div>
-            <h1>Master <span>Prompting</span> for Generative AI.</h1>
-            <p className="pe-sub">
-              Unlock the cutting-edge potential of Generative AI by mastering advanced prompt engineering architectures and sophisticated LLM integration workflows for global scale. Learn to design robust, enterprise-grade AI solutions using frameworks like LangChain, Auto-GPT, and OpenAI APIs to drive radical innovation and efficiency across modern industries. Develop the rare technical expertise required to lead the AI revolution and architect the future of human-machine collaboration in the world's most forward-thinking technology companies.
-            </p>
+      {/* 1. HERO */}
+      <CourseHeroBanner
+        badge="Generative AI Focus"
+        icon="🧠"
+        title="Prompt Engineering"
+        highlight="Foundations to Pro"
+        sub="Master the technical architectures and psychological frameworks required to steer LLMs with surgical precision across production-grade AI workflows."
+        stats={heroStats}
+        bg="linear-gradient(135deg, #1E1B4B 0%, #3730A3 45%, #6D28D9 100%)"
+        accent="#A78BFA"
+        shape="PE"
+      >
+        <ImageSlider />
+      </CourseHeroBanner>
 
-            <div className="pe-stats">
-              {heroStats.map((item) => (
-                <article className="pe-stat" key={item.label}>
-                  <div className="pe-stat-label">{item.label}</div>
-                  <div className="pe-stat-value">{item.value}</div>
-                </article>
-              ))}
-            </div>
-          </div>
+      <CourseInfoStrip 
+        accent="#A78BFA" 
+        courseValue="Prompt Engineering" 
+        duration="24 Weeks"
+        brochureLink={peBrochure}
+      />
 
-          <div className="pe-hero-media">
-            <div className="pe-media-box">
-              <ImageSlider />
-            </div>
-            <aside className="pe-floating-card">
-              <h4>Outcome Focused</h4>
-              <p>Build production-grade prompt workflows that improve quality, reliability, and speed across AI tasks.</p>
-            </aside>
-          </div>
-        </section>
-
-        <section className="pe-section">
-          <h2>Curriculum</h2>
-          <p className="lead">
-            A hands-on roadmap from foundational prompting to advanced context engineering and AI workflow deployment.
-          </p>
-
-          <div className="pe-accordion">
-            {curriculum.map((module, index) => {
-              const isOpen = openModule === index;
-              return (
-                <article className={`pe-module ${isOpen ? "open" : ""}`} key={module.title}>
-                  <div
-                    className="pe-module-head"
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => setOpenModule(isOpen ? -1 : index)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") {
-                        setOpenModule(isOpen ? -1 : index);
-                      }
-                    }}
-                  >
-                    <div>
-                      <div className="pe-module-week">{module.week}</div>
-                      <div className="pe-module-title">{module.title}</div>
-                    </div>
-                    <span className="pe-module-toggle">{isOpen ? "-" : "+"}</span>
-                  </div>
-
-                  {isOpen && (
-                    <div className="pe-module-body">
-                      <p className="pe-module-objective">{module.objectives}</p>
-                      <div className="pe-tag-wrap">
-                        {module.topics.map((topic) => (
-                          <span className="pe-tag" key={topic}>{topic}</span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </article>
-              );
-            })}
-          </div>
-
-          <div style={{ marginTop: "32px", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
-            <h2 className="mb-4">Speak with an Advisor</h2>
-            <p className="lead mb-6" style={{ margin: "0 auto 24px" }}>Get a personalized roadmap for prompt engineering and GenAI role transitions.</p>
-            <div style={{ width: "min(90%, calc(100% - 32px))", margin: "auto", padding: "0" }}>
-              <ApplyForm courseValue="Prompt Engineering" />
-            </div>
-          </div>
-        </section>
-
-        <section className="pe-section">
-          <h2>Program Overview</h2>
-          <div className="pe-overview-grid">
-            {overviewTopics.map((topic) => (
-              <article className="pe-card" key={topic}>
-                <h4>{topic}</h4>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="pe-section">
-          <h2>Why Choose Prompt Engineering?</h2>
-          <p className="lead">Build one of the fastest-growing AI capabilities with direct business and product impact.</p>
-          <div className="pe-why-grid">
-            {whyChoose.map((item) => (
-              <article className="pe-card" key={item.title}>
-                <h4>{item.title}</h4>
-                <p>{item.description}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="pe-section">
-          <h2>Key Takeaways</h2>
-          <div className="pe-takeaway-grid">
-            <ul className="pe-list">
-              {keyTakeaways.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        <section className="pe-section">
-          <BenefitsofLearning />
-        </section>
-
-        <section className="pe-section">
-          <div className="pe-brochure">
-            <div>
-              <h2 style={{ margin: "0 0 6px", fontSize: "32px" }}>Get the Full Course Breakdown</h2>
-              <p className="lead" style={{ margin: 0 }}>
-                Access detailed modules, prompt templates, and capstone execution structure.
-              </p>
-            </div>
-            <button disabled className="pe-btn" style={{ opacity: 0.6, cursor: 'not-allowed' }}>
-              Download
-            </button>
-          </div>
-        </section>
-      </div>
-
-      <section className="pe-section pe-career">
-        <div className="pe-shell">
-          <div className="pe-center">
-            <h2>Career Opportunities in Prompt Engineering</h2>
-            <p className="lead" style={{ margin: "0 auto", maxWidth: "640px" }}>
-              The program prepares you for emerging AI-first roles across product, content, and automation teams.
-            </p>
-          </div>
-
-          <div className="pe-role-grid">
-            {roles.map((role) => (
-              <article className="pe-role-card" key={role.title}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
-                  <div className="pe-role-dot" style={{ marginBottom: 0 }} />
-                  <h4 style={{ margin: 0 }}>{role.title}</h4>
+      {/* 2. AUDIENCE */}
+      <section className="pe-section">
+        <div className="shell">
+          <h2 className="sec-title">Who this program is for</h2>
+          <p className="sec-sub">Designed for technical and non-technical professionals who want to lead the AI-first transformation in their respective fields.</p>
+          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'20px'}}>
+             {audience.map((item, i) => (
+                <div key={i} className="p-card">
+                  <div style={{color:'var(--pe-primary)', marginBottom:'18px'}}>{item.icon}</div>
+                  <h4 style={{fontSize:'18px', fontWeight:800, marginBottom:'10px'}}>{item.title}</h4>
+                  <p style={{fontSize:'14px', color:'var(--pe-text-dim)', lineHeight:1.6}}>{item.desc}</p>
                 </div>
-                <p>{role.text}</p>
-                <strong>{role.avg}</strong>
-              </article>
-            ))}
+             ))}
           </div>
         </div>
       </section>
 
-      <section className="pe-section">
-        <div className="pe-shell">
-          <h2 className="pe-center">Our Alumni at Top Brands</h2>
-          <p className="lead pe-center" style={{ margin: "0 auto 18px", maxWidth: "760px" }}>
-            Their success stories inspire current students to aim for global excellence.
-          </p>
-          <ClientsCarousel />
-        </div>
-      </section>
-
-      <section className="pe-section">
-        <div className="pe-shell">
-          <h2 className="pe-center">Course Benefits at a Glance</h2>
-          <div className="pe-metric-grid">
-            <article className="pe-metric"><h4>240+</h4><p>Mentees Placed</p></article>
-            <article className="pe-metric"><h4>12+ LPA</h4><p>Average CTC</p></article>
-            <article className="pe-metric"><h4>91%</h4><p>Placement Rate</p></article>
-            <article className="pe-metric"><h4>410+</h4><p>Hiring Partners</p></article>
+      {/* 3. MARKET */}
+      <section className="pe-sec-white">
+        <div className="shell">
+          <h2 className="sec-title">The Prompting Opportunity</h2>
+          <p className="sec-sub">Prompt engineering has moved from a curiosity to a mission-critical role in the global enterprise tech stack.</p>
+          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(300px, 1fr))', gap:'40px'}}>
+             {marketOpportunity.map((item, i) => (
+               <div key={i}>
+                 <div style={{color:'var(--pe-primary)', marginBottom:'20px'}}>{item.icon}</div>
+                 <h4 style={{fontSize:'19px', fontWeight:800, marginBottom:'12px'}}>{item.title}</h4>
+                 <p style={{fontSize:'15px', color:'var(--pe-text-dim)', lineHeight:1.6}}>{item.desc}</p>
+               </div>
+             ))}
           </div>
         </div>
       </section>
 
-      <section className="pe-section">
-        <div className="pe-shell">
-          <Certification />
-        </div>
-      </section>
-
-      <section className="pe-section">
-        <div className="pe-shell">
-          <div className="pe-invest">
-            <div className="pe-invest-sub">Program Investment</div>
-            <h3>Rs 65,999</h3>
-            <div className="pe-invest-sub">Total fee (incl. GST)</div>
-
-            <div className="pe-invest-grid">
-              <div className="pe-invest-item">
-                <strong>Rs 10,000</strong>
-                <span>Registration fee to reserve your seat in this premium cohort.</span>
-              </div>
-              <div className="pe-invest-item">
-                <strong>Installment 1: Rs 28,000</strong>
-                <span>Payable within 15 days from date of registration.</span>
-              </div>
-              <div className="pe-invest-item">
-                <strong>Installment 2: Rs 27,999</strong>
-                <span>Payable within 15 days after installment 1.</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="pe-pay-grid">
-            <div className="pe-fee-box">
-              <div>Total Program Fee</div>
-              <div className="fee">Rs 65,999</div>
-              <div>Inclusive of taxes</div>
-            </div>
-            <div className="pe-breakdown">
-              <div className="pe-break-row"><span>Registration</span><strong>Rs 10,000</strong></div>
-              <div className="pe-break-row"><span>Installment 1</span><strong>Rs 28,000</strong></div>
-              <div className="pe-break-row"><span>Installment 2</span><strong>Rs 27,999</strong></div>
-            </div>
-          </div>
-
-          <div className="pe-partner">
-            <p className="pe-invest-sub">Our Financial Partner</p>
-            <img src={Flashaidlogo} alt="Financial partner" />
-          </div>
-        </div>
-      </section>
-
-      <section className="pe-section" style={{ background: "#fff" }}>
-        <div className="pe-shell">
-          <StoreSection />
-        </div>
-      </section>
-
-      <section className="pe-section" style={{ background: "#fff" }}>
-        <div className="pe-shell">
-          <h2 className="pe-center">Ask Us Anything</h2>
-          <div className="pe-faq-grid">
-            <aside className="pe-faq-menu">
-              {Object.keys(faqData).map((category) => (
-                <button
-                  key={category}
-                  className={activeCategory === category ? "active" : ""}
-                  type="button"
-                  onClick={() => {
-                    setActiveCategory(category);
-                    setOpenFAQ(null);
-                  }}
-                >
-                  {category}
-                </button>
+      {/* 4. ROADMAP */}
+      <section className="pe-section" id="roadmap">
+        <div className="shell">
+           <h2 className="sec-title">Technical Learning Roadmap</h2>
+           <p className="sec-sub">A structured career journey from basic LLM responses to autonomous multi-agent prompt systems.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(450px, 1fr))', gap:'16px'}}>
+              {curriculumRoadmap.map((item, idx) => (
+                 <div key={idx} className="p-card" onClick={() => setExpandedModule(expandedModule === idx ? null : idx)} style={{cursor:'pointer'}}>
+                    <div style={{display:'flex', justifyContent:'space-between', marginBottom:'12px'}}>
+                       <span style={{fontSize:'11px', fontWeight:800, color:'var(--pe-primary)', background:'rgba(109,40,217,0.06)', padding:'4px 12px', borderRadius:'99px'}}>{item.weeks}</span>
+                       <ChevronDown size={17} style={{transform: expandedModule === idx ? 'rotate(180deg)' : 'none', transition:'0.3s', color:'var(--pe-text-dim)'}} />
+                    </div>
+                    <h4 style={{fontSize:'20px', fontWeight:800, marginBottom:'6px'}}>{item.title}</h4>
+                    <p style={{fontSize:'14px', color:'var(--pe-primary)', fontWeight:700}}>{item.topics}</p>
+                    {expandedModule === idx && <p style={{marginTop:'18px', paddingTop:'18px', borderTop:'1px solid var(--pe-border)', fontSize:'14px', lineHeight:1.7, color:'var(--pe-text-dim)'}}>{item.details}</p>}
+                 </div>
               ))}
-            </aside>
-
-            <div>
-              {faqData[activeCategory].map((faq, index) => (
-                <article className="pe-faq-item" key={faq.question}>
-                  <button
-                    className="pe-faq-head"
-                    type="button"
-                    onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
-                  >
-                    <span>{faq.question}</span>
-                    <strong>{openFAQ === index ? "-" : "+"}</strong>
-                  </button>
-                  {openFAQ === index && <div className="pe-faq-body">{faq.answer}</div>}
-                </article>
-              ))}
-            </div>
-          </div>
+           </div>
         </div>
       </section>
 
-      <div className="pe-fixed-price">
-        <span>Program Fee: <strong>Rs 65,999 inclusive of taxes</strong></span>
-        <ApplyNowButton courseValue="Prompt Engineering" />
+      {/* 5. TOOLS */}
+      <section className="pe-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">AI Stack and Frameworks</h2>
+           <p className="sec-sub">Master the development environment used by top AI labs to build, test, and deploy prompt-centric apps.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(220px, 1fr))', gap:'16px'}}>
+              {techStack.map((group, i) => (
+                 <div key={i} className="p-card">
+                    <div style={{fontSize:'12px', fontWeight:800, color:'var(--pe-primary)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:'16px'}}>{group.group}</div>
+                    <div style={{display:'flex', flexWrap:'wrap', gap:'6px'}}>
+                       {group.tools.map(t => (
+                          <span key={t} style={{fontSize:'12px', fontWeight:700, background:'var(--pe-bg)', color:'var(--pe-text)', padding:'6px 14px', borderRadius:'8px'}}>{t}</span>
+                       ))}
+                    </div>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 6. PROJECTS */}
+      <section className="pe-section">
+        <div className="shell">
+           <h2 className="sec-title">Projects and Portfolio</h2>
+           <p className="sec-sub">Practical, evidence-based systems that demonstrate your ability to execute high-impact LLM strategies.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'24px'}}>
+              {portfolioProjects.map((p, i) => (
+                 <div key={i} className="p-card">
+                    <h4 style={{fontSize:'20px', fontWeight:800, marginBottom:'16px'}}>{p.title}</h4>
+                    <div style={{marginBottom:'16px'}}><div style={{fontSize:'11px', fontWeight:800, color:'var(--pe-text-dim)', textTransform:'uppercase', marginBottom:'4px'}}>Project Goal</div><p style={{fontSize:'14px'}}>{p.obs}</p></div>
+                    <div><div style={{fontSize:'11px', fontWeight:800, color:'var(--pe-text-dim)', textTransform:'uppercase', marginBottom:'4px'}}>Mastered Skill</div><p style={{fontSize:'14px', fontWeight:700, color:'var(--pe-primary)'}}>{p.skill}</p></div>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 7. FORMAT */}
+      <section className="pe-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">How Learning Works</h2>
+           <p className="sec-sub">Experience a structured, mentor-led bootcamp format focused on technical depth and portfolio construction.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(260px, 1fr))', gap:'20px'}}>
+              {[{t:"Live Bootcamp", d:"Interactive technical lectures focused on real behavior patterns.", i:<Video size={20}/>}, {t:"Mentor Feedback", d:"Regular 1-on-1 reviews for your prompt architectures and code.", i:<UserCheck size={20}/>}, {t:"Practical Labs", d:"Weekly hands-on tasks to build and test prompt libraries.", i:<Terminal size={20}/>}, {t:"Career Hub", d:"Direct referral and interview support for emerging AI roles.", i:<MessagesSquare size={20}/>}].map((item, i) => (
+                 <div key={i} className="p-card text-center">
+                    <div style={{color:'var(--pe-primary)', margin:'0 auto 20px', width:'fit-content'}}>{item.i}</div>
+                    <div style={{fontWeight:800, marginBottom:'8px'}}>{item.t}</div>
+                    <p style={{fontSize:'13px', color:'var(--pe-text-dim)', lineHeight:1.6}}>{item.d}</p>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 8. ROLES */}
+      <section className="pe-section">
+        <div className="shell">
+           <h2 className="sec-title">Target Career Roles</h2>
+           <p className="sec-sub">Prepare for highly specialized positions that bridge the gap between business needs and AI capability.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'12px'}}>
+              {careerRoles.map((r, i) => (
+                 <div key={i} className="p-card flex justify-between items-center" style={{padding:'24px'}}>
+                    <div style={{fontWeight:800}}>{r.role}</div>
+                    <div style={{fontSize:'14px', color:'var(--pe-primary)', fontWeight:700}}>{r.range}</div>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 9. OUTCOMES */}
+      <section className="pe-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">Program Outcomes at a Glance</h2>
+           <p className="sec-sub">Direct access to industry-recognized benchmarks and professional validation in the GenAI space.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(240px, 1fr))', gap:'24px', marginBottom:'48px'}}>
+              {[{l:"Skill Validation", d:"Certified expertise in 15+ advanced prompting frameworks."}, {l:"Portfolio", d:"Four production-grade systems ready for hiring reviews."}, {l:"Hiring Pipeline", d:"Referrals to our 250+ technology and product partners."}].map((item, i) => (
+                 <div key={i} className="p-card">
+                    <div style={{fontWeight:800, marginBottom:'10px', color:'var(--pe-primary)'}}>{item.l}</div>
+                    <p style={{fontSize:'14px', color:'var(--pe-text-dim)'}}>{item.d}</p>
+                 </div>
+              ))}
+           </div>
+           <ClientsCarousel />
+        </div>
+      </section>
+
+      {/* 10. CERTIFICATION */}
+      <section className="pe-section">
+        <div className="shell">
+           <Certification isDark={false} />
+        </div>
+      </section>
+
+      {/* 11. PRICING */}
+      <section className="pe-sec-white" id="pricing">
+        <div className="shell">
+           <h2 className="sec-title">Program Investment</h2>
+           <p className="sec-sub">Complete program enrollment with structured payment plans and career support integration.</p>
+           <div className="p-card" style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'60px', padding:'48px', alignItems:'start'}}>
+              <div>
+                 <div style={{fontSize:'13px', fontWeight:800, color:'var(--pe-primary)', textTransform:'uppercase', marginBottom:'16px'}}>Professional Certification</div>
+                 <div style={{fontSize:'64px', fontWeight:950, letterSpacing:'-3px', marginBottom:'16px'}}>₹65,999</div>
+                 <p style={{color:'var(--pe-text-dim)', marginBottom:'40px', lineHeight:1.7}}>Inclusive of all training credits, live sessions, project reviews, and placement assistance.</p>
+                 <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="Prompt Engineering" /><a href={peBrochure} className="btn-sec">Full Syllabus</a></div>
+              </div>
+              <div style={{display:'grid', gap:'12px'}}>
+                 {[{l:"Booking Seat", v:"₹10,000"}, {l:"Phase 1 Due", v:"₹28,000"}, {l:"Phase 2 Balance", v:"₹27,999"}].map((row, i) => (
+                    <div key={i} style={{padding:'20px', background:'var(--pe-bg)', borderRadius:'8px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                       <span style={{fontSize:'13px', fontWeight:700}}>{row.l}</span><span style={{fontWeight:800}}>{row.v}</span>
+                    </div>
+                 ))}
+                 <div style={{marginTop:'12px', display:'flex', alignItems:'center', gap:'12px', opacity:0.6}}><Zap size={18} /> <img src={Flashaidlogo} alt="Flashaid" style={{height:'14px', grayscale:1}} /> <span style={{fontSize:'12px'}}>EMI starting at ₹4,000/month</span></div>
+              </div>
+           </div>
+        </div>
+      </section>
+
+      {/* 12. FAQ */}
+      <section className="pe-section">
+        <div className="shell">
+           <h2 className="sec-title">Frequently Asked Questions</h2>
+           <p className="sec-sub">Clarify eligibility, technical requirements, and the career acceleration process.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'60px', alignItems:'start'}}>
+              <div style={{display:'grid', gap:'8px'}}>
+                 {Object.keys(faqCategories).map(cat => (
+                    <button key={cat} onClick={() => { setActiveFaqCat(cat); setOpenFaqIdx(null); }} style={{textAlign:'left', padding:'18px 24px', borderRadius:'10px', fontWeight:800, fontSize:'14px', transition:'0.2s', background: activeFaqCat === cat ? 'var(--pe-primary)' : 'transparent', color: activeFaqCat === cat ? '#fff' : 'var(--pe-text)'}} className={activeFaqCat !== cat ? 'hover:bg-gray-100' : ''}>{cat}</button>
+                 ))}
+              </div>
+              <div style={{display:'grid', gap:'8px'}}>
+                 {faqCategories[activeFaqCat].map((faq, i) => (
+                    <div key={i} className="faq-item" onClick={() => setOpenFaqIdx(openFaqIdx === i ? null : i)}>
+                       <div className="faq-quest">{faq.q} <ChevronDown size={14} style={{transform: openFaqIdx === i ? 'rotate(180deg)' : 'none', transition:'0.3s'}} /></div>
+                       <AnimatePresence>{openFaqIdx === i && <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="faq-ans"><div style={{paddingTop:'20px', borderTop:'1px solid var(--pe-border)'}}>{faq.a}</div></motion.div>}</AnimatePresence>
+                    </div>
+                 ))}
+              </div>
+           </div>
+        </div>
+      </section>
+
+      {/* 13. FORM */}
+      <section className="pe-sec-white">
+        <div className="shell">
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'80px', alignItems:'start'}}>
+              <div>
+                 <h2 className="sec-title">Request a Consultation</h2>
+                 <p className="sec-sub">Connect with our AI advisors to review the syllabus depth and your personal career roadmap.</p>
+                 <div style={{display:'grid', gap:'16px'}}>
+                    {['Technical counseling session', 'Response within 12 business hours', 'Program fitment review'].map(t => (
+                       <div key={t} style={{display:'flex', alignItems:'center', gap:'12px', fontSize:'14px', fontWeight:700}}><CheckCircle2 size={18} className="text-violet-600" /> {t}</div>
+                    ))}
+                 </div>
+              </div>
+              <div className="p-card" style={{padding:'32px', maxWidth:'520px'}}>
+                 <div style={{marginBottom:'24px'}}><h3 style={{fontSize:'21px', fontWeight:800, marginBottom:'4px'}}>Advisor Callback</h3><p style={{fontSize:'13px', color:'var(--pe-text-dim)'}}>Receive personalized program guidance.</p></div>
+                 <ApplyForm courseValue="Prompt Engineering" isPremium={true} />
+              </div>
+           </div>
+        </div>
+      </section>
+
+      <div className={`sticky-bar ${scrolled ? 'visible' : ''}`}>
+        <div className="shell flex justify-between items-center w-full">
+           <div className="hidden sm:block"><div style={{fontSize:'10px', fontWeight:800, color:'var(--pe-text-dim)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:'2px'}}>Prompt Strategy Pro</div><div style={{fontWeight:800}}>₹65,999 <span style={{fontSize:'12px', color:'var(--pe-primary)', marginLeft:'12px'}}>EMI ₹4,000/MO</span></div></div>
+           <div className="flex gap-4 items-center">
+              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-bold uppercase hidden lg:flex items-center gap-2 hover:text-violet-700 transition-all"><PhoneCall size={14} /> Talk to Advisor</button>
+              <ApplyNowButton courseValue="Prompt Engineering" />
+           </div>
+        </div>
       </div>
     </div>
   );

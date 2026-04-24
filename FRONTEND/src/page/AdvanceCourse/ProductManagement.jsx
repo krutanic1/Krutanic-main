@@ -1,1222 +1,389 @@
 import React, { useState, useEffect } from "react";
-import AOS from "aos";
-import "aos/dist/aos.css";
-import PMHero from "../../../krutanic/images/pmad1.jpg";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  CheckCircle2, 
+  ChevronDown, 
+  Download, 
+  TrendingUp, 
+  Award, 
+  Briefcase, 
+  ArrowRight,
+  ShieldCheck,
+  Zap, 
+  Target, 
+  Search, 
+  Layout, 
+  PieChart, 
+  Repeat, 
+  PhoneCall,
+  UserCheck,
+  Video,
+  MessagesSquare,
+  FileText,
+  Rocket,
+  Users,
+  Compass,
+  Layers,
+  BarChart3,
+  Globe
+} from "lucide-react";
+
 import posterImage from "../../../krutanic/images/poster/productmanagement.png";
-import PMOutcomes from "../../../krutanic/images/pmad2.jpg";
 import Flashaidlogo from "../../assets/Flashaidlogo.jpg";
-import pdfpmm from "../../../krutanic/Product management Advanced program.pdf";
-import BenefitsofLearning from "./Components/BenefitsofLearning";
 import Certification from "./Components/Certification";
 import ClientsCarousel from "../../Components/our_alumni";
-import StoreSection from "./Components/StoreSection";
 import ApplyNowButton from "./Components/ApplyNowButton";
 import ApplyForm from "./Components/ApplyForm";
+import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
+import CourseInfoStrip from "./Components/CourseInfoStrip";
+import pmBrochure from "../../../krutanic/Product management Advanced program.pdf";
 
 const heroStats = [
   { label: "Duration", value: "24 Weeks" },
   { label: "Program Rating", value: "4.9/5" },
+  { label: "Avg. Salary Hike", value: "55%" },
   { label: "Batch Starting", value: "Upcoming" },
 ];
 
-const curriculum = [
-  {
-    week: "Weeks 1-2",
-    title: "Introduction to Product Management",
-    objectives:
-      "Build foundational PM thinking around product lifecycle, user pain points, and business impact metrics.",
-    topics: [
-      "PM Role and Scope",
-      "Product Lifecycle",
-      "User Needs Mapping",
-      "PM Metrics",
-      "Stakeholder Context",
-    ],
-  },
-  {
-    week: "Weeks 3-4",
-    title: "Market Research and Competitive Analysis",
-    objectives:
-      "Use market intelligence frameworks to prioritize opportunities and position products effectively.",
-    topics: [
-      "Customer Discovery",
-      "Competitive Analysis",
-      "Trend Mapping",
-      "Opportunity Sizing",
-      "SWOT Application",
-    ],
-  },
-  {
-    week: "Week 5-6",
-    title: "Product Vision and Strategy",
-    objectives:
-      "Define product vision and convert strategic goals into clear roadmap initiatives.",
-    topics: [
-      "Vision Crafting",
-      "Strategic Frameworks",
-      "Goal Alignment",
-      "Roadmap Planning",
-      "Prioritization",
-    ],
-  },
-  {
-    week: "Week 7-8",
-    title: "Agile Product Development",
-    objectives:
-      "Execute agile product cycles with cross-functional teams using iterative delivery systems.",
-    topics: [
-      "Agile Principles",
-      "Scrum and Kanban",
-      "User Stories",
-      "Backlog Grooming",
-      "Sprint Rituals",
-    ],
-  },
-  {
-    week: "Week 9-10",
-    title: "Product Design and UX",
-    objectives:
-      "Translate user insight into usable product experiences through testing and design collaboration.",
-    topics: [
-      "Design Thinking",
-      "Wireframing",
-      "Usability Testing",
-      "User Research",
-      "Feedback Loops",
-    ],
-  },
-  {
-    week: "Week 11-12",
-    title: "Data-Driven Decision Making",
-    objectives:
-      "Use analytics and experimentation to validate hypotheses and optimize product outcomes.",
-    topics: [
-      "Product Analytics",
-      "KPI Frameworks",
-      "A/B Testing",
-      "Experiment Design",
-      "Data Visualization",
-    ],
-  },
-  {
-    week: "Week 13-14",
-    title: "Pricing and Monetization",
-    objectives:
-      "Develop monetization models and pricing strategy aligned with product value and market dynamics.",
-    topics: [
-      "Pricing Models",
-      "Revenue Design",
-      "Price Sensitivity",
-      "Unit Economics",
-      "Monetization Metrics",
-    ],
-  },
-  {
-    week: "Week 15-16",
-    title: "Stakeholder Management",
-    objectives:
-      "Drive alignment across business, design, engineering, and GTM teams through structured communication.",
-    topics: [
-      "Stakeholder Mapping",
-      "Executive Communication",
-      "Conflict Resolution",
-      "Alignment Frameworks",
-      "Decision Hygiene",
-    ],
-  },
-  {
-    week: "Week 17-18",
-    title: "Product Launch and Go-to-Market",
-    objectives:
-      "Plan launch strategy from positioning to execution with measurable launch success metrics.",
-    topics: [
-      "Launch Planning",
-      "Positioning",
-      "Messaging",
-      "GTM Channels",
-      "Launch Measurement",
-    ],
-  },
-  {
-    week: "Week 19-20",
-    title: "Scaling Products",
-    objectives:
-      "Manage growth-stage product operations while balancing technical constraints and user outcomes.",
-    topics: [
-      "Scaling Operations",
-      "Portfolio Management",
-      "Continuous Improvement",
-      "Technical Debt",
-      "Growth Trade-offs",
-    ],
-  },
-  {
-    week: "Week 21-22",
-    title: "Emerging Trends in PM",
-    objectives:
-      "Integrate AI, PLG, and modern product tooling into your product leadership toolkit.",
-    topics: [
-      "AI in PM",
-      "Product-Led Growth",
-      "No-Code Tooling",
-      "Sustainability Lens",
-      "Future PM Skills",
-    ],
-  },
-  {
-    week: "Week 23-24",
-    title: "Capstone and Placement Preparation",
-    objectives:
-      "Deliver an end-to-end product case and position yourself strongly for PM interviews.",
-    topics: [
-      "Capstone Case",
-      "Resume and Portfolio",
-      "Interview Frameworks",
-      "Networking Strategy",
-      "Career Positioning",
-    ],
-  },
+const audience = [
+  { title: "Aspiring PMs", desc: "Gain the first-principles knowledge required to break into product roles with a structured case-study portfolio.", icon: <Compass size={20} /> },
+  { title: "Software Engineers", desc: "Transition from building features to owning the 'why' behind them, leading strategic product discovery.", icon: <Rocket size={20} /> },
+  { title: "Business Professionals", desc: "Translate your operational and business expertise into technical product leadership and growth strategy.", icon: <TrendingUp size={20} /> },
+  { title: "Startup Founders", desc: "Master product-market fit frameworks to validate features faster and scale your business with precision.", icon: <Users size={20} /> },
+  { title: "UX Designers", desc: "Expand your scope from interface design to full-funnel product strategy and monetization leadership.", icon: <Layout size={20} /> },
+  { title: "Analytics Professionals", desc: "Move from reporting data to driving product roadmaps and experiments backed by behavioral insight.", icon: <BarChart3 size={20} /> }
 ];
 
-const overviewTopics = [
-  "Product Roadmapping",
-  "Agile and Lean Product Workflows",
-  "User-Centered Product Design",
-  "Market and Competitor Intelligence",
-  "Go-to-Market Execution",
-  "Data-Informed Product Decisions",
+const marketOpportunity = [
+  { title: "High-Value Centrality", desc: "Product Managers act as the glue between engineering, design, and business, making them indispensable.", icon: <Layers size={24} /> },
+  { title: "Strategic Demand", desc: "As tech mature, companies are prioritizing product discovery over just feature volume, driving PM growth.", icon: <Target size={24} /> },
+  { title: "Career Progression", desc: "A structured path from Associate PM to C-suite roles like Head of Product or Chief Product Officer.", icon: <Briefcase size={24} /> }
 ];
 
-const whyChoose = [
-  {
-    title: "High Demand",
-    description:
-      "Companies increasingly rely on strong PM talent to lead product innovation and growth.",
-  },
-  {
-    title: "Competitive Salaries",
-    description:
-      "Product roles are among the highest growth and highest value positions in technology teams.",
-  },
-  {
-    title: "Cross-Functional Leadership",
-    description:
-      "PMs shape outcomes by coordinating design, engineering, marketing, and business teams.",
-  },
-  {
-    title: "Impactful Work",
-    description:
-      "You influence real user experiences and business outcomes through every product decision.",
-  },
-  {
-    title: "Strategic + Execution Blend",
-    description:
-      "The role combines big-picture strategy with practical day-to-day problem solving.",
-  },
-  {
-    title: "Strong Career Progression",
-    description:
-      "Career paths expand into leadership roles like Head of Product, VP Product, and CPO.",
-  },
+const curriculumRoadmap = [
+  { weeks: "Weeks 1-2", title: "Product Thinking & Foundations", topics: "Lifecycle, pain points, metrics, role scope.", details: "Understand the core mental models used by top-tier PMs to identify user problems and business impact." },
+  { weeks: "Weeks 3-4", title: "Market & User Discovery", topics: "Customer discovery, SWOT, JTBD, competitive analysis.", details: "Learn the frameworks used to validate market opportunities before writing a single line of code." },
+  { weeks: "Weeks 5-6", title: "Product Vision & Strategy", topics: "Vision crafting, roadmaps, prioritisation frameworks.", details: "Learn to align stakeholders around a coherent product vision and translate it into actionable phases." },
+  { weeks: "Weeks 7-8", title: "Agile Development Cycles", topics: "Scrum, Kanban, User Stories, Backlog Grooming.", details: "Master the execution rituals required to lead engineering teams with clarity and iterative precision." },
+  { weeks: "Weeks 9-10", title: "Product Design & UX", topics: "Design thinking, wireframing, usability testing.", details: "Collaborate effectively with designers to translate user empathy into seamless product experiences." },
+  { weeks: "Weeks 11-12", title: "Data-Driven Decision Making", topics: "KPI frameworks, A/B testing, product analytics.", details: "Use behavioral data and structured experiments to validate hypotheses and optimize product value." },
+  { weeks: "Weeks 13-16", title: "Monetization & Stakeholders", topics: "Pricing models, unit economics, executive alignment.", details: "Learn the business side of product—from pricing strategy to navigating complex stakeholder hierarchies." },
+  { weeks: "Weeks 17-20", title: "Launch & GTM Execution", topics: "Launch planning, positioning, messaging, scaling.", details: "Plan and execute a high-impact go-to-market strategy that ensures adoption and market resonance." },
+  { weeks: "Weeks 21-24", title: "Capstone & Placement Prep", topics: "End-to-end case, Resume, Mock interviews.", details: "Crystalize your learning into a portfolio-grade deck and prepare for the rigors of PM hiring cycles." }
 ];
 
-const keyTakeaways = [
-  "Develop product sense through user, market, and business understanding.",
-  "Build roadmaps that align strategy with execution and measurable outcomes.",
-  "Lead agile product teams with clear priorities and communication discipline.",
-  "Use analytics and experiments to validate product decisions with confidence.",
-  "Design product launches with positioning, messaging, and GTM alignment.",
-  "Create a portfolio-grade capstone case for interviews and career growth.",
+const portfolioProjects = [
+  { title: "End-to-End Case Study", obs: "Solving a high-value user problem from discovery to GTM.", skill: "Product Sense & Strategy" },
+  { title: "Market Research Doc", obs: "Competitive positioning and opportunity sizing for a new vertical.", skill: "Strategic Analysis" },
+  { title: "Prioritization Framework", obs: "A model-driven roadmap of features for a growth-stage product.", skill: "Resource Optimization" },
+  { title: "Monetization Strategy", obs: "Refactoring pricing for a SaaS platform to increase LTV/CAC ratio.", skill: "Business & Economics" }
 ];
 
-const roles = [
-  {
-    title: "Product Manager",
-    text: "Own product direction, prioritization, and cross-functional execution.",
-    avg: "Package range: Rs 10-28 LPA",
-  },
-  {
-    title: "Product Marketing Manager",
-    text: "Lead product positioning, messaging, and go-to-market strategy.",
-    avg: "Package range: Rs 8-22 LPA",
-  },
-  {
-    title: "Product Owner",
-    text: "Manage backlog quality and align delivery with user and business outcomes.",
-    avg: "Package range: Rs 9-22 LPA",
-  },
-  {
-    title: "Product Analyst",
-    text: "Use behavioral and product data to guide prioritization and improvements.",
-    avg: "Package range: Rs 6-16 LPA",
-  },
-  {
-    title: "Growth Product Manager",
-    text: "Drive growth loops and retention strategy through product experimentation.",
-    avg: "Package range: Rs 12-30 LPA",
-  },
-  {
-    title: "UX Product Strategist",
-    text: "Bridge user research, design quality, and product outcomes.",
-    avg: "Package range: Rs 8-20 LPA",
-  },
-  {
-    title: "Product Development Lead",
-    text: "Coordinate full product lifecycle from problem definition to launch.",
-    avg: "Package range: Rs 12-26 LPA",
-  },
-  {
-    title: "VP Product",
-    text: "Lead portfolio strategy and product organization alignment.",
-    avg: "Package range: Rs 35-90 LPA",
-  },
-  {
-    title: "Chief Product Officer",
-    text: "Own company-wide product vision, innovation, and strategic direction.",
-    avg: "Package range: Rs 50-120 LPA",
-  },
+const careerRoles = [
+  { role: "Product Manager", range: "12 - 28 LPA" },
+  { role: "Growth PM", range: "14 - 32 LPA" },
+  { role: "Product Marketing", range: "10 - 22 LPA" },
+  { role: "Technical PM", range: "15 - 35 LPA" },
+  { role: "VP of Product", range: "35 - 75 LPA" },
+  { role: "Chief Product Officer", range: "50 - 120 LPA" }
 ];
 
-const faqData = {
-  Program: [
-    {
-      question: "What topics are covered in the Product Management program?",
-      answer:
-        "The program covers product strategy, agile execution, UX, analytics, GTM, and product leadership fundamentals.",
-    },
-    {
-      question: "How is the course delivered?",
-      answer:
-        "The course includes live sessions, recordings, practical assignments, and capstone-oriented learning.",
-    },
-    {
-      question: "Will I get hands-on experience?",
-      answer:
-        "Yes, through product cases, strategy exercises, and an end-to-end capstone project.",
-    },
-    {
-      question: "How long is the program?",
-      answer: "The program runs for 24 weeks.",
-    },
+const faqCategories = {
+  "Progrm Details": [
+    { q: "Do I need technical skills first?", a: "No. While understanding tech helps, PM is primarily about problem-solving, user discovery, and business strategy." },
+    { q: "What is the project format?", a: "You will build a professional product case study that acts as your portfolio for interviews." }
   ],
-  Eligibility: [
-    {
-      question: "What are the prerequisites for this program?",
-      answer:
-        "No strict prerequisites. Curiosity, problem-solving mindset, and consistency are key.",
-    },
-    {
-      question: "Do I need prior PM experience?",
-      answer:
-        "No, the curriculum supports both beginners and professionals transitioning into PM roles.",
-    },
-    {
-      question: "Can beginners apply?",
-      answer: "Yes, beginners can apply and build from fundamentals to advanced PM execution.",
-    },
-    {
-      question: "Is there any age restriction?",
-      answer: "No, there is no age restriction.",
-    },
-  ],
-  Community: [
-    {
-      question: "How can I interact with other participants?",
-      answer:
-        "Through cohort groups, peer review sessions, project collaboration, and networking touchpoints.",
-    },
-    {
-      question: "Is mentorship available?",
-      answer:
-        "Yes, mentors guide product thinking, case quality, and career preparation.",
-    },
-    {
-      question: "Can I access support after completion?",
-      answer: "Yes, alumni channels and support resources remain available.",
-    },
-    {
-      question: "How diverse is the community?",
-      answer:
-        "Learners come from engineering, business, design, and operations backgrounds.",
-    },
-  ],
-  Lectures: [
-    {
-      question: "Are sessions live or recorded?",
-      answer: "Both live and recorded content are included for flexibility.",
-    },
-    {
-      question: "How interactive are the sessions?",
-      answer:
-        "Sessions include case-based discussions, framework drills, and practical feedback.",
-    },
-    {
-      question: "Can I replay missed lectures?",
-      answer: "Yes, recordings are available for review.",
-    },
-    {
-      question: "How often are live sessions held?",
-      answer: "Live sessions are conducted weekly.",
-    },
-  ],
-  Certification: [
-    {
-      question: "Will I receive a certificate on completion?",
-      answer: "Yes, successful learners receive a professional completion certificate.",
-    },
-    {
-      question: "Is the certification recognized by employers?",
-      answer:
-        "It demonstrates product execution capability and portfolio-backed readiness.",
-    },
-    {
-      question: "Can I add the certification to resume or LinkedIn?",
-      answer: "Yes, it is intended for professional showcase.",
-    },
-    {
-      question: "Is certification included in the fee?",
-      answer: "Yes, certification is included for successful completion.",
-    },
-  ],
-  Opportunities: [
-    {
-      question: "What roles can I target after the program?",
-      answer:
-        "You can target PM, Product Analyst, Product Owner, PMM, and growth-focused product roles.",
-    },
-    {
-      question: "Is placement support included?",
-      answer: "Yes, placement assistance and interview prep are included.",
-    },
-    {
-      question: "Are internships available?",
-      answer:
-        "Selected learners may get internship and project opportunities based on partner openings.",
-    },
-    {
-      question: "How does this help career growth?",
-      answer:
-        "You build strategic and execution depth with a strong capstone portfolio for PM interviews.",
-    },
-  ],
+  "Career & Prep": [
+    { q: "Is job support included?", a: "Yes. 100% assistance including PM mock interviews, resume reviews, and referral access." },
+    { q: "How much time is required?", a: "We recommend 6-8 hours per week including live sessions and practical case-study work." }
+  ]
 };
 
 const ProductManagement = () => {
-  const [openModule, setOpenModule] = useState(0);
+  const [expandedModule, setExpandedModule] = useState(null);
+  const [activeFaqCat, setActiveFaqCat] = useState("Progrm Details");
+  const [openFaqIdx, setOpenFaqIdx] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    AOS.init({
-      duration: 800,
-      once: false,
-      offset: 100,
-      mirror: true,
-    });
-    AOS.refresh();
+    const handleScroll = () => setScrolled(window.scrollY > 80);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-  const [activeCategory, setActiveCategory] = useState("Program");
-  const [openFAQ, setOpenFAQ] = useState(null);
 
   return (
     <div className="pm-page">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap');
 
         :root {
-          --bg: #f3f1f1;
-          --panel: #ffffff;
-          --ink: #171717;
-          --muted: #626262;
-          --line: #ded8d5;
-          --accent: #c43609;
-          --radius: 18px;
-          --shadow: 0 20px 40px rgba(29, 20, 13, 0.08);
+          --pm-bg: #F7F6F2;
+          --pm-text: #1F2937;
+          --pm-text-dim: #626C78;
+          --pm-primary: #334155;
+          --pm-accent: #3B82F6;
+          --pm-border: rgba(31, 41, 55, 0.08);
         }
 
-        * { box-sizing: border-box; }
+        .pm-page { background: var(--pm-bg); color: var(--pm-text); font-family: 'Plus Jakarta Sans', sans-serif; }
+        .shell { width: 100%; max-width: 1210px; margin: 0 auto; padding: 0 24px; }
 
-        .pm-page {
-          background:
-            radial-gradient(circle at 8% 8%, rgba(196, 54, 9, 0.08), transparent 34%),
-            radial-gradient(circle at 95% 55%, rgba(15, 77, 98, 0.09), transparent 28%),
-            var(--bg);
-          color: var(--ink);
-          font-family: "Sora", "Segoe UI", sans-serif;
+        .pm-section { padding: 100px 0; }
+        .pm-sec-white { padding: 100px 0; background: #fff; border-top: 1px solid var(--pm-border); border-bottom: 1px solid var(--pm-border); }
+
+        .sec-title { font-family: 'Outfit', sans-serif; font-size: 34px; font-weight: 800; margin-bottom: 16px; color: var(--pm-text); text-align: left; }
+        .sec-sub { font-size: 17px; color: var(--pm-text-dim); max-width: 610px; margin-bottom: 50px; text-align: left; line-height:1.6; }
+
+        .p-card { 
+          background: #fff; 
+          border: 1px solid var(--pm-border); 
+          border-radius: 12px; 
+          padding: 24px; 
+          transition: 0.3s;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.02);
         }
+        .p-card:hover { border-color: var(--pm-accent); box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
 
-        .pm-shell {
-          width: min(100%, calc(100% - 32px));
-          margin: 0 auto;
-        }
+        .btn-sec { border: 1px solid var(--pm-border); color: var(--pm-text); padding: 12px 24px; border-radius: 8px; font-weight: 700; font-size: 15px; background:#fff; }
 
-        .pm-btn {
-          background: linear-gradient(180deg, #d64d1d 0%, #af2f06 100%);
-          border: 0;
-          border-radius: 10px;
-          color: #fff;
-          cursor: pointer;
-          font-size: 12px;
-          font-weight: 700;
-          letter-spacing: 0.3px;
-          padding: 10px 18px;
-          text-transform: uppercase;
-        }
+        .faq-item { border: 1px solid var(--pm-border); border-radius: 12px; margin-bottom: 12px; overflow: hidden; background: #fff; }
+        .faq-quest { width:100%; text-align:left; padding: 22px 24px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .faq-ans { padding: 0 24px 24px; font-size: 14px; color: var(--pm-text-dim); line-height: 1.6; }
 
-        .pm-section { padding: 24px 0; }
-        .pm-section h2 { font-size: clamp(32px, 4vw, 50px); margin: 0 0 8px; }
-        .pm-section p.lead {
-          color: var(--muted);
-          line-height: 1.7;
-          margin: 0 0 16px;
-          max-width: 760px;
-        }
+        .sticky-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 72px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--pm-border); z-index: 99; transform: translateY(100%); transition: 0.4s; display: flex; align-items: center; }
+        .sticky-bar.visible { transform: translateY(0); }
 
-        .pm-hero {
-          border-top: 1px solid var(--line);
-          display: grid;
-          gap: 16px;
-          grid-template-columns: 1fr 1fr;
-          padding: 16px 0 20px;
-        }
-
-        .pm-chip {
-          background: #f0e0db;
-          border-radius: 999px;
-          color: #8a4f40;
-          display: inline-flex;
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 0.5px;
-          padding: 6px 12px;
-          text-transform: uppercase;
-        }
-
-        .pm-hero h1 {
-          font-size: clamp(42px, 5vw, 74px);
-          line-height: 0.98;
-          margin: 12px 0;
-        }
-
-        .pm-hero h1 span {
-          color: var(--accent);
-          font-family: "Fraunces", Georgia, serif;
-          font-style: italic;
-          font-weight: 800;
-        }
-
-        .pm-sub {
-          color: var(--muted);
-          font-size: 17px;
-          line-height: 1.6;
-          max-width: 520px;
-          margin-bottom: 16px;
-        }
-
-        .pm-stats {
-          display: grid;
-          gap: 12px;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          max-width: 560px;
-          margin-bottom: 18px;
-        }
-
-        .pm-stat {
-          background: var(--panel);
-          border: 1px solid #eadeda;
-          border-radius: 16px;
-          box-shadow: var(--shadow);
-          padding: 16px 14px;
-        }
-
-        .pm-stat-label {
-          color: #8a8a8a;
-          font-size: 11px;
-          letter-spacing: 0.6px;
-          margin-bottom: 6px;
-          text-transform: uppercase;
-        }
-
-        .pm-stat-value { font-size: 18px; font-weight: 700; }
-
-        .pm-hero-media { position: relative; }
-
-        .pm-media-box {
-          background: radial-gradient(circle at 25% 20%, #17627c 0%, #0d1826 70%);
-          border-radius: 22px;
-          box-shadow: 0 24px 46px rgba(0, 0, 0, 0.28);
-          overflow: hidden;
-          padding: 18px;
-          height: 600px;
-        }
-
-        .pm-media-box > div {
-          height: 100%;
-        }
-
-        .pm-media-box img {
-          border-radius: 16px;
-          display: block;
-          height: 100%;
-          min-height: 330px;
-          object-fit: cover;
-          width: 100%;
-        }
-
-        .pm-floating-card {
-          background: rgba(255, 255, 255, 0.92);
-          border-radius: 16px;
-          box-shadow: 0 12px 32px rgba(19, 16, 11, 0.18);
-          left: -20px;
-          max-width: 300px;
-          padding: 16px;
-          position: absolute;
-          bottom: -20px;
-        }
-
-        .pm-curr-grid {
-          display: grid;
-          gap: 10px;
-          grid-template-columns: 2fr 1fr;
-        }
-
-        .pm-accordion { display: grid; gap: 10px; }
-
-        .pm-module {
-          background: var(--panel);
-          border: 1px solid #e7e0dc;
-          border-radius: var(--radius);
-          padding: 14px;
-        }
-
-        .pm-module.open { border-color: #d05b36; }
-
-        .pm-module-head {
-          align-items: center;
-          cursor: pointer;
-          display: flex;
-          justify-content: space-between;
-        }
-
-        .pm-module-week {
-          color: #9b9b9b;
-          font-size: 10px;
-          letter-spacing: 0.5px;
-          text-transform: uppercase;
-        }
-
-        .pm-module-title { font-size: 24px; font-weight: 600; margin-top: 5px; }
-        .pm-module-toggle { color: #7b7b7b; font-size: 24px; line-height: 1; }
-
-        .pm-module-body {
-          border-top: 1px solid #eee4de;
-          margin-top: 12px;
-          padding-top: 10px;
-        }
-
-        .pm-module-objective {
-          color: #4b4b4b;
-          font-size: 14px;
-          line-height: 1.6;
-          margin-bottom: 10px;
-        }
-
-        .pm-tag-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
-        .pm-tag {
-          background: #f3e7e1;
-          border-radius: 999px;
-          color: #8d4d3b;
-          font-size: 11px;
-          padding: 5px 11px;
-        }
-
-        .pm-side-panel {
-          background: var(--panel);
-          border: 1px solid #e8e0dc;
-          border-radius: var(--radius);
-          box-shadow: var(--shadow);
-          height: fit-content;
-          padding: 20px;
-        }
-
-        .pm-side-panel h3 { font-size: 28px; margin: 0 0 6px; }
-        .pm-side-panel p { color: #6f6f6f; font-size: 14px; margin: 0 0 16px; }
-
-        .pm-overview-grid,
-        .pm-why-grid,
-        .pm-role-grid,
-        .pm-metric-grid,
-        .pm-faq-grid {
-          display: grid;
-          gap: 16px;
-        }
-
-        .pm-overview-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .pm-why-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .pm-role-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .pm-metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-        .pm-faq-grid { grid-template-columns: 250px 1fr; }
-
-        .pm-card {
-          background: #f7f5f4;
-          border: 1px solid #e6dfdc;
-          border-radius: 16px;
-          padding: 20px;
-        }
-
-        .pm-card h4 { margin: 0 0 8px; font-size: 20px; }
-        .pm-card p { margin: 0; color: #5f5f5f; line-height: 1.6; }
-
-        .pm-takeaway-full {
-          width: 100%;
-        }
-
-        .pm-list-grid {
-          margin: 0;
-          padding: 0;
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 16px 40px;
-        }
-
-        .pm-list-grid li {
-          list-style: none;
-          padding-left: 24px;
-          position: relative;
-          color: #333;
-          line-height: 1.45;
-          font-size: 18px;
-        }
-
-        .pm-list-grid li::before {
-          background: #cb4213;
-          border-radius: 50%;
-          content: "";
-          height: 8px;
-          left: 0;
-          position: absolute;
-          top: 9px;
-          width: 8px;
-        }
-
-        @media (max-width: 780px) {
-          .pm-list-grid { grid-template-columns: 1fr; }
-        }
-
-        .pm-center { text-align: center; }
-
-        .pm-brochure {
-          align-items: center;
-          border: 2px solid #ca3f12;
-          border-radius: 18px;
-          display: flex;
-          justify-content: space-between;
-          gap: 20px;
-          padding: 20px;
-          background: #fff;
-        }
-
-        .pm-career { background: #eceaea; border-top: 1px solid #ddd8d5; border-bottom: 1px solid #ddd8d5; }
-
-        .pm-role-card {
-          background: #f7f5f4;
-          border: 1px solid #e6dfdc;
-          border-radius: 16px;
-          min-height: 190px;
-          padding: 22px;
-          position: relative;
-        }
-
-        .pm-role-dot {
-          background: #be3a10;
-          border-radius: 50%;
-          height: 10px;
-          margin-bottom: 16px;
-          width: 10px;
-        }
-        
-        .pm-role-card h4 {
-          font-weight: 700;
-        }
-
-        .pm-role-card strong {
-          color: #b12e03;
-          display: block;
-          margin-top: 12px;
-          font-size: 12px;
-          text-transform: uppercase;
-        }
-
-        .pm-fixed-price {
-          align-items: center;
-          background: #ffffffee;
-          backdrop-filter: blur(6px);
-          border-top: 1px solid var(--line);
-          bottom: 0;
-          color: var(--ink);
-          display: flex;
-          gap: 12px;
-          font-size: 14px;
-          font-weight: 700;
-          justify-content: space-between;
-          left: 0;
-          letter-spacing: 0.4px;
-          min-height: 56px;
-          padding: 10px 24px;
-          position: fixed;
-          text-transform: uppercase;
-          width: 100%;
-          z-index: 120;
-        }
-
-        .pm-fixed-price strong {
-          color: var(--accent-dark);
-          margin-left: 6px;
-        }
-
-        .pm-metric {
-          text-align: center;
-          padding: 16px;
-          border: 1px solid #e6dfdc;
-          border-radius: 14px;
-          background: #fff;
-        }
-
-        .pm-metric h4 { margin: 0; color: #bf390d; font-size: 30px; }
-        .pm-metric p { margin: 6px 0 0; color: #5f5f5f; }
-
-        .pm-invest {
-          background: #fdfcfc;
-          border: 2px solid #ca3f12;
-          border-radius: 18px;
-          box-shadow: var(--shadow);
-          padding: 28px;
-        }
-
-        .pm-invest h3 { font-size: 40px; margin: 6px 0; }
-        .pm-invest-sub { color: #7a7a7a; font-size: 13px; text-transform: uppercase; }
-
-        .pm-invest-grid {
-          border-top: 1px solid #ece4e0;
-          display: grid;
-          gap: 18px;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          margin-top: 20px;
-          padding-top: 16px;
-        }
-
-        .pm-invest-item strong { color: #bf390d; display: block; margin-bottom: 6px; }
-        .pm-invest-item span { color: #5e5e5e; font-size: 13px; line-height: 1.5; }
-
-        .pm-pay-grid {
-          display: grid;
-          gap: 18px;
-          grid-template-columns: 1fr 1fr;
-          margin-top: 16px;
-        }
-
-        .pm-fee-box {
-          background: linear-gradient(145deg, #df5a2c 0%, #b73b14 100%);
-          border-radius: 26px;
-          color: #fff;
-          padding: 24px;
-          text-align: center;
-        }
-
-        .pm-fee-box .fee { font-size: 48px; font-weight: 800; line-height: 1.1; }
-
-        .pm-breakdown {
-          background: #fff;
-          border: 1px solid #e8e0dc;
-          border-radius: 16px;
-          padding: 16px;
-        }
-
-        .pm-break-row {
-          border-bottom: 1px solid #ebe3df;
-          display: flex;
-          justify-content: space-between;
-          font-size: 14px;
-          padding: 11px 0;
-        }
-
-        .pm-break-row:last-child { border-bottom: 0; }
-
-        .pm-partner {
-          align-items: center;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          margin-top: 16px;
-        }
-
-        .pm-partner img { height: 76px; object-fit: contain; }
-
-        .pm-faq-menu {
-          border: 1px solid #e5deda;
-          border-radius: 14px;
-          background: #fff;
-          padding: 12px;
-          height: fit-content;
-        }
-
-        .pm-faq-menu button {
-          background: #fff;
-          border: 1px solid #e7e0dc;
-          border-radius: 10px;
-          cursor: pointer;
-          display: block;
-          font-family: inherit;
-          font-size: 13px;
-          font-weight: 700;
-          margin-bottom: 8px;
-          padding: 10px 12px;
-          text-align: left;
-          width: 100%;
-        }
-
-        .pm-faq-menu button.active {
-          border-color: #d35e39;
-          color: #b9380f;
-        }
-
-        .pm-faq-item {
-          border: 1px solid #e7e0dc;
-          border-radius: 12px;
-          margin-bottom: 10px;
-          overflow: hidden;
-        }
-
-        .pm-faq-head {
-          align-items: center;
-          background: #fff;
-          cursor: pointer;
-          display: flex;
-          justify-content: space-between;
-          padding: 12px 14px;
-          width: 100%;
-          border: 0;
-          font-family: inherit;
-          text-align: left;
-        }
-
-        .pm-faq-body {
-          background: #f8f5f4;
-          color: #4f4f4f;
-          padding: 12px 14px;
-          border-top: 1px solid #e7e0dc;
-        }
-
-        @media (max-width: 1080px) {
-          .pm-hero,
-          .pm-curr-grid,
-          .pm-overview-grid,
-          .pm-why-grid,
-          .pm-role-grid,
-          .pm-metric-grid,
-          .pm-pay-grid,
-          .pm-faq-grid,
-          .pm-takeaway-grid,
-          .pm-invest-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .pm-floating-card { left: 14px; }
-          .pm-brochure { flex-direction: column; align-items: flex-start; }
-        }
-
-        @media (max-width: 780px) {
-          .pm-section { padding: 24px 0; }
-          .pm-module-title { font-size: 21px; }
-        }
+        @media (max-width: 768px) { .sec-title { font-size: 28px; } }
       `}</style>
 
-      <div className="pm-shell">
-        <div style={{ width: "100%", marginBottom: "20px", marginTop: "10px" }}>
-          <img 
-            src={posterImage} 
-            alt="Product Management Poster" 
-            style={{ width: "100%", height: "auto", borderRadius: "18px", display: "block" }} 
-          />
-        </div>
-        <section className="pm-hero">
-          <div>
-            <div className="pm-chip">Advanced Program 2026</div>
-            <h1>Master the <span>Craft</span> of Product.</h1>
-            <p className="pm-sub">
-              A premium, high-impact learning path architected for modern product leaders to build, launch, and scale breakthrough products with strategic clarity and market-leading precision. Master the advanced arts of product discovery, GTM execution, and cross-functional leadership while utilizing elite frameworks such as Jira, Mixpanel, and Figma. Gain the strategic depth required to navigate complex product lifecycles and secure high-stakes leadership roles at top-tier global technology companies and unicorns.
-            </p>
+      {/* 1. HERO */}
+      <CourseHeroBanner
+        badge="Product Leadership"
+        icon="💎"
+        title="Product Management"
+        highlight="Build & Scale"
+        sub="A comprehensive 24-week program to help you build, launch, and scale high-impact products with strategic clarity and business precision."
+        stats={heroStats}
+        bg="linear-gradient(135deg, #0F172A 0%, #1E293B 45%, #334155 100%)"
+        accent="#3B82F6"
+        shape="PM"
+      >
+        <ImageSlider />
+      </CourseHeroBanner>
 
-            <div className="pm-stats">
-              {heroStats.map((item) => (
-                <article className="pm-stat" key={item.label}>
-                  <div className="pm-stat-label">{item.label}</div>
-                  <div className="pm-stat-value">{item.value}</div>
-                </article>
-              ))}
-            </div>
-          </div>
+      <CourseInfoStrip 
+        accent="#3B82F6" 
+        courseValue="Product Management" 
+        duration="24 Weeks"
+        brochureLink={pmBrochure}
+      />
 
-          <div className="pm-hero-media">
-            <div className="pm-media-box">
-              <ImageSlider />
-            </div>
-            <aside className="pm-floating-card">
-              <h4>Outcome Focused</h4>
-              <p>Build portfolio-ready product cases and strategic execution depth for top PM roles.</p>
-            </aside>
-          </div>
-        </section>
-
-        <section className="pm-section">
-          <h2>Curriculum</h2>
-          <p className="lead">
-            A rigorous pathway from product foundations to strategic execution and leadership-ready decision making.
-          </p>
-
-          <div className="pm-accordion">
-            {curriculum.map((module, index) => {
-              const isOpen = openModule === index;
-              return (
-                <article className={`pm-module ${isOpen ? "open" : ""}`} key={module.title}>
-                  <div
-                    className="pm-module-head"
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => setOpenModule(isOpen ? -1 : index)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") {
-                        setOpenModule(isOpen ? -1 : index);
-                      }
-                    }}
-                  >
-                    <div>
-                      <div className="pm-module-week">{module.week}</div>
-                      <div className="pm-module-title">{module.title}</div>
-                    </div>
-                    <span className="pm-module-toggle">{isOpen ? "-" : "+"}</span>
-                  </div>
-
-                  {isOpen && (
-                    <div className="pm-module-body">
-                      <p className="pm-module-objective">{module.objectives}</p>
-                      <div className="pm-tag-wrap">
-                        {module.topics.map((topic) => (
-                          <span className="pm-tag" key={topic}>{topic}</span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </article>
-              );
-            })}
-          </div>
-
-          <div style={{ marginTop: "32px", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
-            <h2 className="mb-4">Speak with an Advisor</h2>
-            <p className="lead mb-6" style={{ margin: "0 auto 24px" }}>Get a personalized roadmap to transition into high-impact product roles.</p>
-            <div style={{ width: "min(90%, calc(100% - 32px))", margin: "auto", padding: "0" }}>
-              <ApplyForm courseValue="Product Management" />
-            </div>
-          </div>
-        </section>
-
-        <section className="pm-section">
-          <h2>Program Overview</h2>
-          <div className="pm-overview-grid">
-            {overviewTopics.map((topic) => (
-              <article className="pm-card" key={topic}>
-                <h4>{topic}</h4>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="pm-section">
-          <h2>Why Choose Product Management?</h2>
-          <p className="lead">Build strategic leverage by solving the right product problems with execution excellence.</p>
-          <div className="pm-why-grid">
-            {whyChoose.map((item) => (
-              <article className="pm-card" key={item.title}>
-                <h4>{item.title}</h4>
-                <p>{item.description}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="pm-section">
-          <h2>Key Takeaways</h2>
-          <div className="pm-takeaway-full">
-            <ul className="pm-list-grid">
-              {keyTakeaways.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        <section className="pm-section">
-          <BenefitsofLearning />
-        </section>
-
-        <section className="pm-section">
-          <div className="pm-brochure">
-            <div>
-              <h2 style={{ margin: "0 0 6px", fontSize: "32px" }}>Get the Full Course Breakdown</h2>
-              <p className="lead" style={{ margin: 0 }}>
-                Access the detailed curriculum, product templates, and capstone structure.
-              </p>
-            </div>
-            <button disabled className="pm-btn" style={{ opacity: 0.6, cursor: 'not-allowed' }}>
-              Download
-            </button>
-          </div>
-        </section>
-      </div>
-
-      <section className="pm-section pm-career">
-        <div className="pm-shell">
-          <div className="pm-center">
-            <h2>Career Opportunities in Product Management</h2>
-            <p className="lead" style={{ margin: "0 auto", maxWidth: "640px" }}>
-              Build readiness for strategic product, growth, and leadership-oriented PM roles.
-            </p>
-          </div>
-
-          <div className="pm-role-grid">
-            {roles.map((role) => (
-              <article className="pm-role-card" key={role.title}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
-                  <div className="pm-role-dot" style={{ marginBottom: 0 }} />
-                  <h4 style={{ margin: 0 }}>{role.title}</h4>
+      {/* 2. AUDIENCE */}
+      <section className="pm-section">
+        <div className="shell">
+          <h2 className="sec-title">Who this program is for</h2>
+          <p className="sec-sub">Essential for professionals aiming to own the 'why' behind product decisions and lead cross-functional innovation.</p>
+          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'20px'}}>
+             {audience.map((item, i) => (
+                <div key={i} className="p-card">
+                  <div style={{color:'var(--pm-primary)', marginBottom:'18px'}}>{item.icon}</div>
+                  <h4 style={{fontSize:'18px', fontWeight:800, marginBottom:'10px'}}>{item.title}</h4>
+                  <p style={{fontSize:'14px', color:'var(--pm-text-dim)', lineHeight:1.6}}>{item.desc}</p>
                 </div>
-                <p>{role.text}</p>
-                <strong>{role.avg}</strong>
-              </article>
-            ))}
+             ))}
           </div>
         </div>
       </section>
 
+      {/* 3. MARKET */}
+      <section className="pm-sec-white">
+        <div className="shell">
+          <h2 className="sec-title">The PM Opportunity</h2>
+          <p className="sec-sub">Product roles are now central to business innovation, offering one of the most high-impact growth paths in modern tech.</p>
+          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(300px, 1fr))', gap:'40px'}}>
+             {marketOpportunity.map((item, i) => (
+               <div key={i}>
+                 <div style={{color:'var(--pm-primary)', marginBottom:'20px'}}>{item.icon}</div>
+                 <h4 style={{fontSize:'19px', fontWeight:800, marginBottom:'12px'}}>{item.title}</h4>
+                 <p style={{fontSize:'15px', color:'var(--pm-text-dim)', lineHeight:1.6}}>{item.desc}</p>
+               </div>
+             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 4. ROADMAP */}
       <section className="pm-section">
-        <div className="pm-shell">
-          <h2 className="pm-center">Our Alumni at Top Brands</h2>
-          <p className="lead pm-center" style={{ margin: "0 auto 18px", maxWidth: "760px" }}>
-            Their success stories inspire current students to aim for global excellence.
-          </p>
-          <ClientsCarousel />
-        </div>
-      </section>
-
-      <section className="pm-section">
-        <div className="pm-shell">
-          <h2 className="pm-center">Course Benefits at a Glance</h2>
-          <div className="pm-metric-grid">
-            <article className="pm-metric"><h4>250+</h4><p>Mentees Placed</p></article>
-            <article className="pm-metric"><h4>12+ LPA</h4><p>Average CTC</p></article>
-            <article className="pm-metric"><h4>91%</h4><p>Placement Rate</p></article>
-            <article className="pm-metric"><h4>420+</h4><p>Hiring Partners</p></article>
-          </div>
-        </div>
-      </section>
-
-      <section className="pm-section">
-        <div className="pm-shell">
-          <Certification />
-        </div>
-      </section>
-
-      <section className="pm-section">
-        <div className="pm-shell">
-          <div className="pm-invest">
-            <div className="pm-invest-sub">Program Investment</div>
-            <h3>Rs 65,999</h3>
-            <div className="pm-invest-sub">Total fee (incl. GST)</div>
-
-            <div className="pm-invest-grid">
-              <div className="pm-invest-item">
-                <strong>Rs 10,000</strong>
-                <span>Registration fee to reserve your seat in this premium cohort.</span>
-              </div>
-              <div className="pm-invest-item">
-                <strong>Installment 1: Rs 28,000</strong>
-                <span>Payable within 15 days from date of registration.</span>
-              </div>
-              <div className="pm-invest-item">
-                <strong>Installment 2: Rs 27,999</strong>
-                <span>Payable within 15 days after installment 1.</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="pm-pay-grid">
-            <div className="pm-fee-box">
-              <div>Total Program Fee</div>
-              <div className="fee">Rs 65,999</div>
-              <div>Inclusive of taxes</div>
-            </div>
-            <div className="pm-breakdown">
-              <div className="pm-break-row"><span>Registration</span><strong>Rs 10,000</strong></div>
-              <div className="pm-break-row"><span>Installment 1</span><strong>Rs 28,000</strong></div>
-              <div className="pm-break-row"><span>Installment 2</span><strong>Rs 27,999</strong></div>
-            </div>
-          </div>
-
-          <div className="pm-partner">
-            <p className="pm-invest-sub">Our Financial Partner</p>
-            <img src={Flashaidlogo} alt="Financial partner" />
-          </div>
-        </div>
-      </section>
-
-      <section className="pm-section" style={{ background: "#fff" }}>
-        <div className="pm-shell">
-          <StoreSection />
-        </div>
-      </section>
-
-      <section className="pm-section" style={{ background: "#fff" }}>
-        <div className="pm-shell">
-          <h2 className="pm-center">Ask Us Anything</h2>
-          <div className="pm-faq-grid">
-            <aside className="pm-faq-menu">
-              {Object.keys(faqData).map((category) => (
-                <button
-                  key={category}
-                  className={activeCategory === category ? "active" : ""}
-                  type="button"
-                  onClick={() => {
-                    setActiveCategory(category);
-                    setOpenFAQ(null);
-                  }}
-                >
-                  {category}
-                </button>
+        <div className="shell">
+           <h2 className="sec-title">Progressive Learning Roadmap</h2>
+           <p className="sec-sub">A structured career journey from first-principles discovery to executive-level product strategy.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(450px, 1fr))', gap:'16px'}}>
+              {curriculumRoadmap.map((item, idx) => (
+                 <div key={idx} className="p-card" onClick={() => setExpandedModule(expandedModule === idx ? null : idx)} style={{cursor:'pointer'}}>
+                    <div style={{display:'flex', justifyContent:'space-between', marginBottom:'12px'}}>
+                       <span style={{fontSize:'11px', fontWeight:800, color:'var(--pm-primary)', background:'rgba(51,65,85,0.06)', padding:'4px 12px', borderRadius:'99px'}}>{item.weeks}</span>
+                       <ChevronDown size={17} style={{transform: expandedModule === idx ? 'rotate(180deg)' : 'none', transition:'0.3s', color:'var(--pm-text-dim)'}} />
+                    </div>
+                    <h4 style={{fontSize:'20px', fontWeight:800, marginBottom:'6px'}}>{item.title}</h4>
+                    <p style={{fontSize:'14px', color:'var(--pm-accent)', fontWeight:700}}>{item.topics}</p>
+                    {expandedModule === idx && <p style={{marginTop:'18px', paddingTop:'18px', borderTop:'1px solid var(--pm-border)', fontSize:'14px', lineHeight:1.7, color:'var(--pm-text-dim)'}}>{item.details}</p>}
+                 </div>
               ))}
-            </aside>
-
-            <div>
-              {faqData[activeCategory].map((faq, index) => (
-                <article className="pm-faq-item" key={faq.question}>
-                  <button
-                    className="pm-faq-head"
-                    type="button"
-                    onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
-                  >
-                    <span>{faq.question}</span>
-                    <strong>{openFAQ === index ? "-" : "+"}</strong>
-                  </button>
-                  {openFAQ === index && <div className="pm-faq-body">{faq.answer}</div>}
-                </article>
-              ))}
-            </div>
-          </div>
+           </div>
         </div>
       </section>
 
-      <div className="pm-fixed-price">
-        <span>Program Fee: <strong>Rs 65,999 inclusive of taxes</strong></span>
-        <ApplyNowButton courseValue="Product Management" />
+      {/* 5. OVERVIEW/PROJECTS */}
+      <section className="pm-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">Case Studies and Capstone</h2>
+           <p className="sec-sub">Build an evidence-based portfolio of strategic documents that showcase your readiness for product leadership.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'24px'}}>
+              {portfolioProjects.map((p, i) => (
+                 <div key={i} className="p-card">
+                    <h4 style={{fontSize:'20px', fontWeight:800, marginBottom:'16px'}}>{p.title}</h4>
+                    <div style={{marginBottom:'16px'}}><div style={{fontSize:'11px', fontWeight:800, color:'var(--pm-text-dim)', textTransform:'uppercase', marginBottom:'4px'}}>Objective</div><p style={{fontSize:'14px'}}>{p.obs}</p></div>
+                    <div><div style={{fontSize:'11px', fontWeight:800, color:'var(--pm-text-dim)', textTransform:'uppercase', marginBottom:'4px'}}>Demonstrated Skill</div><p style={{fontSize:'14px', fontWeight:700, color:'var(--pm-accent)'}}>{p.skill}</p></div>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 6. HOW IT WORKS */}
+      <section className="pm-section">
+        <div className="shell">
+           <h2 className="sec-title">How Learning Works</h2>
+           <p className="sec-sub">A premium experience balancing live frameworks, mentor review, and peer-to-peer accountability.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(260px, 1fr))', gap:'20px'}}>
+              {[{t:"Live Frameworks", d:"Executive sessions focused on the discovery and strategy cycles.", i:<Video size={20}/>}, {t:"Mentor Accountability", d:"Regular reviews for your portfolios, docs, and interview pitch.", i:<UserCheck size={20}/>}, {t:"Practical Assets", d:"Weekly tasks designed to build your leadership toolkit.", i:<FileText size={20}/>}, {t:"Industry Network", d:"Referral access to our partner ecosystem of 250+ companies.", i:<MessagesSquare size={20}/>}].map((item, i) => (
+                 <div key={i} className="p-card text-center">
+                    <div style={{color:'var(--pm-primary)', margin:'0 auto 20px', width:'fit-content'}}>{item.i}</div>
+                    <div style={{fontWeight:800, marginBottom:'8px'}}>{item.t}</div>
+                    <p style={{fontSize:'13px', color:'var(--pm-text-dim)', lineHeight:1.6}}>{item.d}</p>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 7. ROLES */}
+      <section className="pm-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">Career Roles and Outcomes</h2>
+           <p className="sec-sub">Position yourself for roles that own product outcomes and drive measurable business growth.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'12px'}}>
+              {careerRoles.map((r, i) => (
+                 <div key={i} className="p-card flex justify-between items-center" style={{padding:'24px'}}>
+                    <div style={{fontWeight:800}}>{r.role}</div>
+                    <div style={{fontSize:'14px', color:'var(--pm-accent)', fontWeight:700}}>{r.range}</div>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 8. ALUMNI */}
+      <section className="pm-section">
+        <div className="shell">
+           <h2 className="sec-title">Where our learners work</h2>
+           <p className="sec-sub">Graduates from our advanced programs have transitioned into leading roles at global technology hubs.</p>
+           <ClientsCarousel />
+           <div style={{marginTop:'48px', display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(240px, 1fr))', gap:'24px'}}>
+              {[{l:"200+ Mentees Placed", d:"Across product, growth, and leadership tracks."}, {l:"₹10-28 LPA Range", d:"Typical entry-to-senior role transition packages."}, {l:"250+ Hiring Partners", d:"Representing the full spectrum of SaaS and product orgs."}].map((item, i) => (
+                 <div key={i} className="p-card">
+                    <div style={{fontWeight:800, marginBottom:'10px', color:'var(--pm-accent)'}}>{item.l}</div>
+                    <p style={{fontSize:'14px', color:'var(--pm-text-dim)'}}>{item.d}</p>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 9. CERTIFICATION */}
+      <section className="pm-sec-white">
+        <div className="shell">
+           <Certification isDark={false} />
+        </div>
+      </section>
+
+      {/* 10. PRICING */}
+      <section className="pm-section" id="pricing">
+        <div className="shell">
+           <h2 className="sec-title">Program Investment</h2>
+           <p className="sec-sub">Professional enrollment including live sessions, mentor reviews, and career support assets.</p>
+           <div className="p-card" style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'60px', padding:'48px', alignItems:'start'}}>
+              <div>
+                 <div style={{fontSize:'13px', fontWeight:800, color:'var(--pm-accent)', textTransform:'uppercase', marginBottom:'16px'}}>Advanced PM Certification</div>
+                 <div style={{fontSize:'64px', fontWeight:950, letterSpacing:'-3px', marginBottom:'16px'}}>₹65,999</div>
+                 <p style={{color:'var(--pm-text-dim)', marginBottom:'40px', lineHeight:1.7}}>Inclusive of all training frameworks, live sessions, project reviews, and job assistance.</p>
+                 <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="Product Management" /><a href={pmBrochure} className="btn-sec">Official Syllabus</a></div>
+              </div>
+              <div style={{display:'grid', gap:'12px'}}>
+                 {[{l:"Seat Reservation", v:"₹10,000"}, {l:"Phase 1 Due", v:"₹28,000"}, {l:"Phase 2 Balance", v:"₹27,999"}].map((row, i) => (
+                    <div key={i} style={{padding:'20px', background:'var(--pm-bg)', borderRadius:'8px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                       <span style={{fontSize:'13px', fontWeight:700}}>{row.l}</span><span style={{fontWeight:800}}>{row.v}</span>
+                    </div>
+                 ))}
+                 <div style={{marginTop:'12px', display:'flex', alignItems:'center', gap:'12px', opacity:0.6}}><Zap size={18} /> <img src={Flashaidlogo} alt="Flashaid" style={{height:'14px', grayscale:1}} /> <span style={{fontSize:'12px'}}>EMI starting at ₹4,000/month</span></div>
+              </div>
+           </div>
+        </div>
+      </section>
+
+      {/* 11. FAQ */}
+      <section className="pm-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">Frequently Asked Questions</h2>
+           <p className="sec-sub">Clarify eligibility, weekly effort, and the product leadership career progression.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'60px', alignItems:'start'}}>
+              <div style={{display:'grid', gap:'8px'}}>
+                 {Object.keys(faqCategories).map(cat => (
+                    <button key={cat} onClick={() => { setActiveFaqCat(cat); setOpenFaqIdx(null); }} style={{textAlign:'left', padding:'18px 24px', borderRadius:'10px', fontWeight:800, fontSize:'14px', transition:'0.2s', background: activeFaqCat === cat ? 'var(--pm-primary)' : 'transparent', color: activeFaqCat === cat ? '#fff' : 'var(--pm-text)'}} className={activeFaqCat !== cat ? 'hover:bg-gray-100' : ''}>{cat}</button>
+                 ))}
+              </div>
+              <div style={{display:'grid', gap:'8px'}}>
+                 {faqCategories[activeFaqCat].map((faq, i) => (
+                    <div key={i} className="faq-item" onClick={() => setOpenFaqIdx(openFaqIdx === i ? null : i)}>
+                       <div className="faq-quest">{faq.q} <ChevronDown size={14} style={{transform: openFaqIdx === i ? 'rotate(180deg)' : 'none', transition:'0.3s'}} /></div>
+                       <AnimatePresence>{openFaqIdx === i && <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="faq-ans"><div style={{paddingTop:'20px', borderTop:'1px solid var(--pm-border)'}}>{faq.a}</div></motion.div>}</AnimatePresence>
+                    </div>
+                 ))}
+              </div>
+           </div>
+        </div>
+      </section>
+
+      {/* 12. FORM */}
+      <section className="pm-section">
+        <div className="shell">
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'80px', alignItems:'start'}}>
+              <div>
+                 <h2 className="sec-title">Speak with an Advisor</h2>
+                 <p className="sec-sub">Get a personalized transition plan into Product Management and review your personal case-study roadmap.</p>
+                 <div style={{display:'grid', gap:'16px'}}>
+                    {['24-hour turnaround response', 'Deep syllabus walkthrough', 'Program suitability review'].map(t => (
+                       <div key={t} style={{display:'flex', alignItems:'center', gap:'12px', fontSize:'14px', fontWeight:700}}><CheckCircle2 size={18} className="text-slate-600" /> {t}</div>
+                    ))}
+                 </div>
+              </div>
+              <div className="p-card" style={{padding:'32px', maxWidth:'520px'}}>
+                 <div style={{marginBottom:'24px'}}><h3 style={{fontSize:'21px', fontWeight:800, marginBottom:'4px'}}>Advisor Call Request</h3><p style={{fontSize:'13px', color:'var(--pm-text-dim)'}}>Plan your product leadership journey.</p></div>
+                 <ApplyForm courseValue="Product Management" isPremium={true} />
+              </div>
+           </div>
+        </div>
+      </section>
+
+      <div className={`sticky-bar ${scrolled ? 'visible' : ''}`}>
+        <div className="shell flex justify-between items-center w-full">
+           <div className="hidden sm:block"><div style={{fontSize:'10px', fontWeight:800, color:'var(--pm-text-dim)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:'2px'}}>Build & Scale</div><div style={{fontWeight:800}}>₹65,999 <span style={{fontSize:'12px', color:'var(--pm-accent)', marginLeft:'12px'}}>EMI ₹4,000/MO</span></div></div>
+           <div className="flex gap-4 items-center">
+              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-bold uppercase hidden lg:flex items-center gap-2 hover:text-slate-700 transition-all"><PhoneCall size={14} /> Request Callback</button>
+              <ApplyNowButton courseValue="Product Management" />
+           </div>
+        </div>
       </div>
     </div>
   );

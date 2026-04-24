@@ -14,6 +14,7 @@ import Login from "./page/Login";
 import Collabration from "./page/Collabration";
 import Career from "./page/Career";
 import AdvanceCourses from "./page/AdvanceCourses";
+import Advance from "./page/Advance";
 import FeeStructure from "./page/FeeStructure";
 import TalentHunt from "./page/TalentHunt";
 import Footer from "./Components/Footer";
@@ -579,11 +580,11 @@ const AppContent = () => {
         <Route path="/RefundPolicy" element={<RefundPolicy />} />
         <Route path="/Career" element={<Career />} />
         <Route path="/Collabration" element={<Collabration />} />
-        <Route path="/AdvanceCourses" element={<AdvanceCourses />} />
+        <Route path="/AdvanceCourses" element={<Advance />} />
         <Route path="/FeeStructure" element={<FeeStructure />} />
         <Route path="/events" element={<TalentHunt />} />
         <Route path="/EventRegister" element={<EventRegister />} />
-        <Route path="/Advance" element={<AdvanceCourses />} />
+        <Route path="/Advance" element={<Advance />} />
         <Route path="/advance-apply" element={<AdvanceApplyPage />} />
         <Route path="/Mentorship" element={<Mentorship />} />
         <Route path="/DataScience" element={<DataScience />} />

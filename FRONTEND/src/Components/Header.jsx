@@ -40,7 +40,7 @@ const Header = () => {
             <img src={logo3} alt="Krutanic" className="h-10 w-auto" />
           </Link>
 
-          <nav className="hidden items-center gap-1 lg:flex">
+          <nav className="hidden items-center gap-1 xl:flex">
             {topNav.map((item) => (
               <Link
                 key={item.to}
@@ -64,7 +64,7 @@ const Header = () => {
           <button
             type="button"
             onClick={() => setIsMobileOpen((v) => !v)}
-            className="rounded-lg border border-[#dbe0f3] px-3 py-2 text-[#0f172a] lg:hidden"
+            className="rounded-lg border border-[#dbe0f3] px-3 py-2 text-[#0f172a] xl:hidden"
             aria-label="Toggle menu"
           >
             <span className="text-xl">☰</span>
@@ -72,7 +72,7 @@ const Header = () => {
         </div>
 
         {isMobileOpen && (
-          <div className="border-t border-[#ececf5] bg-white lg:hidden">
+          <div className="border-t border-[#ececf5] bg-white xl:hidden">
             <div className="mx-auto grid w-[94%] max-w-7xl gap-2 py-3">
               {topNav.map((item) => (
                 <Link
