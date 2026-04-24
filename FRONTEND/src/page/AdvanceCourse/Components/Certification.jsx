@@ -52,6 +52,7 @@ const Certification = ({ isDark = false }) => {
                       </p>
                    </div>
                 </div>
+                //dfhjkl;';kjhgcvm,.'
 
                 <div className="flex gap-6 group">
                    <div className="w-14 h-14 shrink-0 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 transition-colors group-hover:bg-blue-600 group-hover:text-white">
