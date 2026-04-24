@@ -24,7 +24,7 @@ const CustomSelect = ({ label, icon, options, name, value, onChange, placeholder
   const selectedOption = options.find(opt => opt.value === value);
 
   return (
-    <div className="relative group flex flex-col gap-2" ref={dropdownRef}>
+    <div className={`relative group flex flex-col gap-2 ${isOpen ? 'z-[1001]' : 'z-[1]'}`} ref={dropdownRef}>
       <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
         {icon} {label}
       </label>
@@ -39,7 +39,7 @@ const CustomSelect = ({ label, icon, options, name, value, onChange, placeholder
       </div>
 
       {isOpen && (
-        <div className="absolute z-[100] top-[calc(100%+8px)] left-0 w-full bg-white border border-gray-100 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute z-[1002] top-[calc(100%+8px)] left-0 w-full bg-white border border-gray-100 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] py-2 animate-in fade-in slide-in-from-top-2 duration-200">
           {options.map((opt) => (
             <div
               key={opt.value}

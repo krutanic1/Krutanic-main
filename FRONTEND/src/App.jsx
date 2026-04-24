@@ -249,19 +249,14 @@ const AppContent = () => {
     // Check if the current page is exactly in the allowlist
     const isAllowed = allowedPaths.includes(currentPath);
 
-    if (isAllowed) {
-       // Check if already shown for this specific page in this session
-       const hasShown = sessionStorage.getItem(`advance_popup_shown_${currentPath}`);
+     if (isAllowed) {
+       const timer = setTimeout(() => {
+         console.log("Triggering auto popup for:", currentPath);
+         setShowAutoPopup(true);
+       }, 5000); // 5 seconds
        
-       if (!hasShown) {
-         const timer = setTimeout(() => {
-           setShowAutoPopup(true);
-           sessionStorage.setItem(`advance_popup_shown_${currentPath}`, "true");
-         }, 4000); // 4 seconds
-         
-         return () => clearTimeout(timer);
-       }
-    } else {
+       return () => clearTimeout(timer);
+     } else {
       // If we move to a page that isn't allowed, ensure the auto-popup is closed
       setShowAutoPopup(false);
     }

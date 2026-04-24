@@ -25,14 +25,6 @@ const CourseInfoStrip = ({
     document.body.removeChild(link);
   };
 
-  const handleBrochureClick = () => {
-    if (courseValue === "Data Analytics" || courseValue === "Digital Marketing") {
-      handleDownloadSuccess();
-    } else {
-      setShowPopup(true);
-    }
-  };
-
   return (
     <>
       <style>{`
@@ -154,13 +146,15 @@ const CourseInfoStrip = ({
       <div className="cis-wrap">
         <div className="cis-cta-row">
           <ApplyNowButton courseValue={courseValue} />
-          <button 
-            type="button"
-            onClick={handleBrochureClick}
-            className="cis-btn-outline"
-          >
-            Download Brochure
-          </button>
+          {(courseValue === "Data Analytics" || courseValue === "Digital Marketing") && (
+            <button 
+              type="button"
+              onClick={() => setShowPopup(true)}
+              className="cis-btn-outline"
+            >
+              Download Brochure
+            </button>
+          )}
         </div>
 
         <div className="cis-card">

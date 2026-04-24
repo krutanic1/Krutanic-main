@@ -56,6 +56,7 @@ import dsBrochure from "../../../krutanic/DataScienceAdvancedProgram.pdf";
 import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
 import CourseInfoStrip from "./Components/CourseInfoStrip";
+import ToolStack from "./Components/ToolStack";
 
 const heroStats = [
   { label: "Duration", value: "24 Weeks" },
@@ -73,22 +74,11 @@ const audience = [
   { title: "Business Analysts", desc: "Gain the technical depth needed to lead data-driven initiatives and make high-stakes business decisions.", icon: <PieChart size={20} /> }
 ];
 
-// Simple Icon Fallbacks for Tech Stack
-const Table = ({ size }) => <Database size={size} />;
-
 const techStack = [
-  { name: "Python", context: "Data manipulation & AI.", icon: <Code2 size={24} /> },
-  { name: "Pandas", context: "Data structure analysis.", icon: <Table size={24} /> },
-  { name: "Scikit-Learn", context: "ML algorithms.", icon: <Cpu size={24} /> },
-  { name: "TensorFlow", context: "Deep learning models.", icon: <BrainCircuit size={24} /> },
-  { name: "Keras", context: "Neural network prototyping.", icon: <Settings size={24} /> },
-  { name: "SQL", context: "Database management.", icon: <Database size={24} /> },
-  { name: "Tableau", context: "Business dashboards.", icon: <BarChart3 size={24} /> },
-  { name: "Spark", context: "Distributed computing.", icon: <Zap size={24} /> },
-  { name: "Hadoop", context: "Massive data storage.", icon: <Database size={24} /> },
-  { name: "Git", context: "Version control.", icon: <GitBranch size={24} /> },
-  { name: "APIs", context: "Model communication.", icon: <Share2 size={24} /> },
-  { name: "MLOps", context: "Model deployment.", icon: <Cloud size={24} /> }
+  { group: "Programming & Storage", tools: ["Python", "SQL", "Git", "APIs"] },
+  { group: "Data Science Libraries", tools: ["Pandas", "Scikit-Learn", "TensorFlow", "Keras"] },
+  { group: "Big Data Systems", tools: ["Spark", "Hadoop"] },
+  { group: "Visualization & Ops", tools: ["Tableau", "MLOps"] }
 ];
 
 const compactRoadmap = [
@@ -129,6 +119,29 @@ const careerRoles = [
   { role: "Data Engineer", range: "12 - 24 LPA" },
   { role: "AI Researcher", range: "20 - 40 LPA" },
   { role: "Quant Analyst", range: "18 - 35 LPA" }
+];
+
+const careerSupport = [
+  { 
+    title: "Profile Audit", 
+    desc: "Deep review of your resume, LinkedIn, and portfolio to align them with target data science roles." 
+  },
+  { 
+    title: "Resume Design", 
+    desc: "ATS-friendly, impact-focused resume tailored to data and AI hiring pipelines." 
+  },
+  { 
+    title: "Model Portfolio", 
+    desc: "Curated project portfolio with production-grade ML models and datasets that you can showcase in interviews." 
+  },
+  { 
+    title: "Mock Interviews", 
+    desc: "Role-specific mock interviews with detailed feedback on coding, math, and case approach." 
+  },
+  { 
+    title: "Referral Access", 
+    desc: "Warm referrals and profile pitches to hiring partners in our recruiter and alumni network." 
+  }
 ];
 
 const faqCategories = {
@@ -194,7 +207,17 @@ const DataScience = () => {
         .sticky-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 72px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-top: 1px solid var(--ds-border); z-index: 99; transform: translateY(100%); transition: 0.4s; display: flex; align-items: center; }
         .sticky-bar.visible { transform: translateY(0); }
 
-        @media (max-width: 768px) { .sec-title { font-size: 28px; } .sec-sub { font-size: 15px; } }
+        @media (max-width: 1024px) {
+          .grid-2-col { grid-template-columns: 1fr !important; gap: 40px !important; }
+          .grid-pricing { grid-template-columns: 1fr !important; gap: 40px !important; padding: 32px !important; }
+          .grid-faq { grid-template-columns: 1fr !important; gap: 40px !important; }
+        }
+
+        @media (max-width: 768px) { 
+          .sec-title { font-size: 28px; } 
+          .sec-sub { font-size: 15px; } 
+          .ds-section, .ds-sec-white { padding: 60px 0; }
+        }
       `}</style>
 
       <CourseHeroBanner
@@ -235,28 +258,19 @@ const DataScience = () => {
         </div>
       </section>
 
-      {/* TOOLS */}
-      <section className="ds-sec-white">
-        <div className="shell">
-          <h2 className="sec-title">Tools you will use</h2>
-          <p className="sec-sub">Work with the standard technology stack utilized by global data engineering teams.</p>
-          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(260px, 1fr))', gap:'20px'}}>
-             {techStack.map((tech, i) => (
-               <div key={i} style={{padding:'20px', border:'1px solid var(--ds-border)', borderRadius:'12px', display:'flex', alignItems:'center', gap:'16px'}}>
-                 <div style={{color:'var(--ds-primary)'}}>{tech.icon}</div>
-                 <div><div style={{fontWeight:800, fontSize:'15px'}}>{tech.name}</div><div style={{fontSize:'13px', color:'var(--ds-text-dim)'}}>{tech.context}</div></div>
-               </div>
-             ))}
-          </div>
-        </div>
-      </section>
+      {/* 4. TOOLS */}
+      <ToolStack 
+        categories={techStack} 
+        accentColor="#0F766E"
+        subtitle="Gain execution depth across a suite of 30+ industry tools for machine learning, big data, and model deployment."
+      />
 
       {/* ROADMAP */}
       <section className="ds-section">
         <div className="shell">
            <h2 className="sec-title">24-Week Learning Roadmap</h2>
            <p className="sec-sub">A structured path from core concepts to deployment, capstone projects, and placement readiness.</p>
-           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(450px, 1fr))', gap:'16px'}}>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap:'16px'}}>
               {compactRoadmap.map((item, idx) => (
                  <div key={idx} className="p-card" onClick={() => setExpandedModule(expandedModule === idx ? null : idx)} style={{cursor:'pointer'}}>
                     <div style={{display:'flex', justifyContent:'space-between', marginBottom:'12px'}}>
@@ -310,12 +324,13 @@ const DataScience = () => {
       <section className="ds-sec-white">
         <div className="shell">
            <h2 className="sec-title">Career Support Process</h2>
-           <p className="sec-sub">A structured cell dedicated to your transition into professional technical roles.</p>
-           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(220px, 1fr))', gap:'16px'}}>
-              {["Profile Audit", "Resume Design", "Portfolio Polish", "Mock Interviews", "Direct Referrals"].map((step, i) => (
-                 <div key={i} style={{padding:'20px', border:'1px solid var(--ds-border)', borderRadius:'12px'}}>
-                    <div style={{fontSize:'24px', fontWeight:900, opacity:0.2, marginBottom:'12px'}}>0{i+1}</div>
-                    <div style={{fontWeight:800, fontSize:'16px'}}>{step}</div>
+           <p className="sec-sub">A structured 5‑step support system to convert your technical skills into real, high‑growth job offers.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'20px'}}>
+              {careerSupport.map((step, i) => (
+                 <div key={i} className="p-card" style={{background:'#F9FAFB'}}>
+                    <div style={{fontSize:'32px', fontWeight:900, opacity:0.1, marginBottom:'12px', fontFamily:'Outfit'}}>0{i+1}</div>
+                    <h4 style={{fontWeight:800, fontSize:'18px', marginBottom:'10px', color:'var(--ds-primary)'}}>{step.title}</h4>
+                    <p style={{fontSize:'14px', color:'var(--ds-text-dim)', lineHeight:1.6}}>{step.desc}</p>
                  </div>
               ))}
            </div>
@@ -370,7 +385,7 @@ const DataScience = () => {
         <div className="shell">
            <h2 className="sec-title">Fees & Payment Options</h2>
            <p className="sec-sub">Transparent program cost with structured installment plans and financial assistance.</p>
-           <div className="p-card" style={{display:'grid', gridTemplateColumns:'1fr 340px', gap:'64px', padding:'48px', alignItems:'start'}}>
+           <div className="p-card grid-pricing" style={{display:'grid', gridTemplateColumns:'1fr 340px', gap:'64px', padding:'48px', alignItems:'start'}}>
               <div>
                  <div style={{fontSize:'14px', fontWeight:800, color:'var(--ds-primary)', textTransform:'uppercase', marginBottom:'20px'}}>Full Enrollment</div>
                  <div style={{fontSize:'64px', fontWeight:950, letterSpacing:'-3px', marginBottom:'16px'}}>₹65,999</div>
@@ -394,10 +409,10 @@ const DataScience = () => {
         <div className="shell">
            <h2 className="sec-title">Frequently Asked Questions</h2>
            <p className="sec-sub">Resolving common queries about the roadmap, support, and enrollment process.</p>
-           <div style={{display:'grid', gridTemplateColumns:'280px 1fr', gap:'60px', alignItems:'start'}}>
+           <div className="grid-faq" style={{display:'grid', gridTemplateColumns:'280px 1fr', gap:'60px', alignItems:'start'}}>
               <div style={{display:'grid', gap:'8px'}}>
                  {Object.keys(faqCategories).map(cat => (
-                    <button key={cat} onClick={() => { setActiveFaqCat(cat); setOpenFaqIdx(null); }} style={{textAlign:'left', padding:'16px 24px', borderRadius:'8px', fontWeight:700, fontSize:'14px', transition:'0.2s', background: activeFaqCat === cat ? 'var(--ds-primary)' : 'transparent', color: activeFaqCat === cat ? '#fff' : 'var(--ds-text)'}} className={activeFaqCat !== cat ? 'hover:bg-gray-100' : ''}>{cat}</button>
+                    <button key={cat} onClick={() => { setActiveFaqCat(cat); setOpenFaqIdx(null); }} style={{textAlign:'left', padding:'18px 24px', borderRadius:'8px', fontWeight:700, fontSize:'14px', transition:'0.2s', background: activeFaqCat === cat ? 'var(--ds-primary)' : 'transparent', color: activeFaqCat === cat ? '#fff' : 'var(--ds-text)'}} className={activeFaqCat !== cat ? 'hover:bg-gray-100' : ''}>{cat}</button>
                  ))}
               </div>
               <div style={{display:'grid', gap:'8px'}}>

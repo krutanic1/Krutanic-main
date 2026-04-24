@@ -5,6 +5,9 @@ import axios from "axios";
 import AlumniData from "../Components/alumniData";
 import API from "../API";
 import { FaSearch, FaArrowRight, FaRobot, FaBullhorn, FaBuilding, FaUserTie, FaCheckCircle, FaLaptopCode, FaFileAlt, FaUsers } from "react-icons/fa";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 import alumniIndian from "../assets/alumni_indian.png";
 
@@ -84,6 +87,70 @@ const Alumni = () => {
       setFormErrors({ general: "Failed to submit form. Please try again." });
     }
   };
+
+  const sliderSettings = {
+    infinite: true,
+    autoplay: true,
+    autoplaySpeed: 0,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    cssEase: "linear",
+    speed: 6000,
+    arrows: false,
+    dots: false,
+    pauseOnHover: true,
+    responsive: [
+      { breakpoint: 1024, settings: { slidesToShow: 2, speed: 4000 } },
+      { breakpoint: 768, settings: { slidesToShow: 1, speed: 3000 } }
+    ]
+  };
+
+  const sliderSettingsRev = {
+    ...sliderSettings,
+    rtl: true,
+  };
+
+  // Split results into 3 groups for 3 parallel rows
+  const row1 = useMemo(() => filteredResults.filter((_, i) => i % 3 === 0), [filteredResults]);
+  const row2 = useMemo(() => filteredResults.filter((_, i) => i % 3 === 1), [filteredResults]);
+  const row3 = useMemo(() => filteredResults.filter((_, i) => i % 3 === 2), [filteredResults]);
+
+  const AlumniCard = ({ alumni }) => (
+    <div className="px-3 pb-6 h-full">
+      <div 
+        className="bg-white border border-gray-200/80 rounded-[24px] p-6 shadow-sm hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:border-gray-300 transition-all cursor-pointer flex flex-col h-[320px] group" 
+        onClick={() => handleCardClick(alumni)}
+      >
+        <div className="flex items-center gap-4 mb-6">
+            <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center text-gray-700 font-extrabold text-lg border border-gray-200 group-hover:bg-[#F15B29] group-hover:text-white transition-colors shadow-sm">
+              {alumni.name.charAt(0)}
+            </div>
+            <div className="overflow-hidden">
+              <div className="text-base font-extrabold text-gray-900 mb-0.5 truncate">{alumni.name}</div>
+              <div className="text-xs font-semibold text-gray-500 truncate">
+                {alumni.role || "Professional"}, <span className="text-gray-900">{alumni.post}</span>
+              </div>
+            </div>
+        </div>
+        
+        <div className="flex-1 bg-[#FAFAFA] rounded-xl p-5 border border-gray-100 space-y-4">
+            <div>
+              <div className="text-[9px] font-extrabold tracking-widest text-gray-400 uppercase mb-1.5">Before Krutanic</div>
+              <div className="text-xs font-bold text-gray-700 truncate">{alumni.pre}</div>
+            </div>
+            <div className="h-px bg-gray-200/60 w-full relative">
+            </div>
+            <div>
+              <div className="flex justify-between items-start mb-1.5">
+                  <div className="text-[9px] font-extrabold tracking-widest text-[#F15B29] uppercase">After Krutanic</div>
+                  {alumni.package && <div className="text-[9px] font-extrabold text-[#F15B29] bg-orange-50 px-1.5 py-0.5 rounded border border-orange-100">{alumni.package}</div>}
+              </div>
+              <div className="text-xs font-extrabold text-gray-900 truncate">{alumni.postRole || alumni.post}</div>
+            </div>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="container m-auto px-[10px] py-[20px]">
@@ -208,39 +275,33 @@ const Alumni = () => {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredResults.slice(0, 6).map((alumni, i) => (
-              <div key={i} className="bg-white border border-gray-200/80 rounded-[28px] p-8 shadow-sm hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:border-gray-300 transition-all cursor-pointer flex flex-col h-full group" onClick={() => handleCardClick(alumni)}>
-                 <div className="flex items-center gap-5 mb-8">
-                    <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-700 font-extrabold text-xl border border-gray-200 group-hover:bg-[#F15B29] group-hover:text-white transition-colors shadow-sm">
-                      {alumni.name.charAt(0)}
-                    </div>
-                    <div>
-                      <div className="text-lg font-extrabold text-gray-900 mb-0.5">{alumni.name}</div>
-                      <div className="text-sm font-semibold text-gray-500">{alumni.role || "Professional"}, <span className="text-gray-900">{alumni.post}</span></div>
-                    </div>
-                 </div>
-                 
-                 <div className="flex-1 bg-[#FAFAFA] rounded-2xl p-6 border border-gray-100 space-y-5">
-                    <div>
-                       <div className="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase mb-2">Before Krutanic</div>
-                       <div className="text-sm font-bold text-gray-700">{alumni.pre}</div>
-                    </div>
-                    <div className="h-px bg-gray-200/60 w-full relative">
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#FAFAFA] px-2 text-gray-300">
-                         <FaArrowRight size={10} />
-                      </div>
-                    </div>
-                    <div>
-                       <div className="flex justify-between items-start mb-2">
-                         <div className="text-[10px] font-extrabold tracking-widest text-[#F15B29] uppercase">After Krutanic</div>
-                         {alumni.package && <div className="text-[10px] font-extrabold text-[#F15B29] bg-orange-50 px-2 py-0.5 rounded border border-orange-100">Outcome: {alumni.package}</div>}
-                       </div>
-                       <div className="text-sm font-extrabold text-gray-900">{alumni.postRole || alumni.post}</div>
-                    </div>
-                 </div>
-              </div>
-            ))}
+          <div className="alumni-slider-rows space-y-4">
+            {/* Row 1: Forward */}
+            <div className="overflow-hidden">
+              <Slider {...sliderSettings}>
+                {row1.map((alumni, i) => (
+                  <AlumniCard key={`row1-${i}`} alumni={alumni} />
+                ))}
+              </Slider>
+            </div>
+
+            {/* Row 2: Backward (Parallel) */}
+            <div className="overflow-hidden">
+              <Slider {...sliderSettingsRev}>
+                {row2.map((alumni, i) => (
+                  <AlumniCard key={`row2-${i}`} alumni={alumni} />
+                ))}
+              </Slider>
+            </div>
+
+            {/* Row 3: Forward */}
+            <div className="overflow-hidden">
+              <Slider {...sliderSettings}>
+                {row3.map((alumni, i) => (
+                  <AlumniCard key={`row3-${i}`} alumni={alumni} />
+                ))}
+              </Slider>
+            </div>
           </div>
         </div>
 
@@ -297,7 +358,7 @@ const Alumni = () => {
                         <div className="font-extrabold text-gray-900 text-base">Priya Patel</div>
                         <div className="text-xs text-gray-500 font-bold mt-1 uppercase tracking-wider">Program Completed: Data Science</div>
                      </div>
-                     <div className="text-sm font-extrabold text-[#F15B29] flex items-center gap-2 group-hover:translate-x-1 transition-transform">Read Full Story <FaArrowRight /></div>
+                      <div className="text-sm font-extrabold text-[#F15B29] flex items-center gap-2">Read Full Story</div>
                   </div>
                </div>
             </div>
@@ -311,7 +372,6 @@ const Alumni = () => {
                   <div className="pt-6 border-t border-gray-100">
                     <div className="text-base font-extrabold text-gray-900 flex justify-between items-center group-hover:text-[#F15B29] transition-colors">
                       Rahul Sharma 
-                      <span className="text-[#F15B29] opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all"><FaArrowRight /></span>
                     </div>
                   </div>
                </div>
@@ -322,7 +382,6 @@ const Alumni = () => {
                   <div className="pt-6 border-t border-gray-100">
                     <div className="text-base font-extrabold text-gray-900 flex justify-between items-center group-hover:text-[#F15B29] transition-colors">
                       Ananya Gupta 
-                      <span className="text-[#F15B29] opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all"><FaArrowRight /></span>
                     </div>
                   </div>
                </div>

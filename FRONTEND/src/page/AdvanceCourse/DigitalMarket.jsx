@@ -42,6 +42,7 @@ import ApplyForm from "./Components/ApplyForm";
 import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
 import CourseInfoStrip from "./Components/CourseInfoStrip";
+import ToolStack from "./Components/ToolStack";
 import dmBrochure from "../../../krutanic/Digital Marketing Advanced Program.pdf";
 
 const heroStats = [
@@ -71,7 +72,7 @@ const techStack = [
   { group: "Content & Design", tools: ["Canva", "QuillBot", "Grammarly", "copy.ai", "Figma"] },
   { group: "Social Media", tools: ["Meta Business Suite", "LinkedIn", "Instagram", "Hootsuite", "Buffer"] },
   { group: "SEO & Search", tools: ["SEMrush", "Ahrefs", "Google Search Console", "Screaming Frog", "Ubersuggest", "Yoast"] },
-  { group: "Performance & Ads", tools: ["Google Ads", "Meta Ads Manager", "LinkedIn Ads Manager", "TikTok Ads"] },
+  { group: "Performance & Ads", tools: ["Google Ads", "Meta Ads Manager", "LinkedIn Ads Manager"] },
   { group: "Analytics & Data", tools: ["GA4", "Looker Studio", "Microsoft Clarity", "Google Tag Manager"] },
   { group: "Automation & CRM", tools: ["Zapier", "HubSpot", "Mailchimp", "ActiveCampaign", "Brevo"] },
   { group: "E-Commerce", tools: ["Shopify", "Webflow", "AppsFlyer", "MoEngage"] }
@@ -99,6 +100,29 @@ const careerRoles = [
   { role: "SEO Specialist", range: "09 - 16 LPA" },
   { role: "Growth Lead", range: "18 - 35 LPA" },
   { role: "Digital Marketing Head", range: "25 - 50 LPA" }
+];
+
+const careerSupport = [
+  { 
+    title: "Profile Audit", 
+    desc: "Deep review of your resume, LinkedIn, and portfolio to align them with target marketing and growth roles." 
+  },
+  { 
+    title: "Resume Design", 
+    desc: "ATS-friendly, impact-focused resume tailored to digital and performance marketing hiring pipelines." 
+  },
+  { 
+    title: "Asset Portfolio", 
+    desc: "Curated brand portfolio with campaign case studies and growth audits that you can showcase in interviews." 
+  },
+  { 
+    title: "Mock Interviews", 
+    desc: "Role-specific mock interviews with detailed feedback on strategy, creative approach, and analytics." 
+  },
+  { 
+    title: "Referral Access", 
+    desc: "Warm referrals and profile pitches to hiring partners in our recruiter and alumni network." 
+  }
 ];
 
 const alumniOutcomes = [
@@ -172,7 +196,10 @@ const DigitalMarket = () => {
         .sticky-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 72px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--dm-border); z-index: 99; transform: translateY(100%); transition: 0.4s; display: flex; align-items: center; }
         .sticky-bar.visible { transform: translateY(0); }
 
-        @media (max-width: 768px) { .sec-title { font-size: 28px; } }
+        @media (max-width: 768px) { 
+          .sec-title { font-size: 28px; } 
+          .dm-section, .dm-sec-white { padding: 60px 0; }
+        }
       `}</style>
 
       {/* 1. HERO */}
@@ -232,31 +259,18 @@ const DigitalMarket = () => {
       </section>
 
       {/* 4. TOOLS */}
-      <section className="dm-section">
-        <div className="shell">
-           <h2 className="sec-title">Tool-stack you will master</h2>
-           <p className="sec-sub">Gain execution depth across a suite of 40+ industry tools for design, search, and automation.</p>
-           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(260px, 1fr))', gap:'20px'}}>
-              {techStack.map((group, i) => (
-                 <div key={i} className="p-card">
-                    <div style={{fontSize:'12px', fontWeight:800, color:'var(--dm-primary)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:'16px'}}>{group.group}</div>
-                    <div style={{display:'flex', flexWrap:'wrap', gap:'8px'}}>
-                       {group.tools.map(t => (
-                          <span key={t} style={{fontSize:'13px', fontWeight:700, background:'var(--dm-bg)', padding:'6px 12px', borderRadius:'6px'}}>{t}</span>
-                       ))}
-                    </div>
-                 </div>
-              ))}
-           </div>
-        </div>
-      </section>
+      <ToolStack 
+        categories={techStack} 
+        accentColor="#4F46E5"
+        subtitle="Gain execution depth across a suite of 40+ industry tools for design, search, and automation."
+      />
 
       {/* 5. ROADMAP */}
       <section className="dm-sec-white">
         <div className="shell">
            <h2 className="sec-title">Progressive Learning Roadmap</h2>
            <p className="sec-sub">From organic search foundations to complex performance attribution and career acceleration.</p>
-           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(450px, 1fr))', gap:'16px'}}>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap:'16px'}}>
               {curriculumRoadmap.map((item, idx) => (
                  <div key={idx} className="p-card" onClick={() => setExpandedModule(expandedModule === idx ? null : idx)} style={{cursor:'pointer', borderLeft: expandedModule === idx ? '4px solid var(--dm-primary)' : '1px solid var(--dm-border)'}}>
                     <div style={{display:'flex', justifyContent:'space-between', marginBottom:'12px'}}>
@@ -315,12 +329,13 @@ const DigitalMarket = () => {
       <section className="dm-section">
         <div className="shell">
            <h2 className="sec-title">Career Support Process</h2>
-           <p className="sec-sub">A transparent 5-step transition workflow to ensure your skills translate into professional results.</p>
-           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(200px, 1fr))', gap:'12px'}}>
-              {["Profile Audit", "Asset Creation", "Portfolio Review", "Mock Interviews", "Referral Pipeline"].map((step, i) => (
-                 <div key={i} style={{padding:'24px', border:'1px solid var(--dm-border)', borderRadius:'12px', background:'#fff', position:'relative', overflow:'hidden'}}>
-                    <div style={{fontSize:'32px', fontWeight:950, opacity:0.1, position:'absolute', top:0, left:12}}>0{i+1}</div>
-                    <div style={{fontWeight:800, fontSize:'15px', position:'relative', zIndex:2, marginTop:24}}>{step}</div>
+           <p className="sec-sub">A structured 5‑step support system to convert your technical skills into real, high‑growth job offers.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'20px'}}>
+              {careerSupport.map((step, i) => (
+                 <div key={i} className="p-card" style={{background:'#fff'}}>
+                    <div style={{fontSize:'32px', fontWeight:900, opacity:0.1, marginBottom:'12px', fontFamily:'Outfit'}}>0{i+1}</div>
+                    <h4 style={{fontWeight:800, fontSize:'18px', marginBottom:'10px', color:'var(--dm-primary)'}}>{step.title}</h4>
+                    <p style={{fontSize:'14px', color:'var(--dm-text-dim)', lineHeight:1.6}}>{step.desc}</p>
                  </div>
               ))}
            </div>

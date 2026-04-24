@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import axios from "axios";
 import API from "../API";
 import toast from "react-hot-toast";
@@ -23,7 +24,7 @@ const CustomSelect = ({ label, icon, options, name, value, onChange, placeholder
     const selectedOption = options.find(opt => opt.value === value);
 
     return (
-        <div className="relative group" ref={dropdownRef}>
+        <div className={`relative group ${isOpen ? 'z-[1001]' : 'z-[1]'}`} ref={dropdownRef}>
             <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 block ml-1 flex items-center gap-2">
                 {icon} {label}
             </label>
@@ -38,7 +39,7 @@ const CustomSelect = ({ label, icon, options, name, value, onChange, placeholder
             </div>
 
             {isOpen && (
-                <div className="absolute z-[100] top-[calc(100%+8px)] left-0 w-full bg-white border border-slate-100 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="absolute z-[1002] top-[calc(100%+8px)] left-0 w-full bg-white border border-slate-100 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] py-2 animate-in fade-in slide-in-from-top-2 duration-200">
                     {options.map((opt) => (
                         <div
                             key={opt.value}
@@ -154,8 +155,8 @@ const AdvancedApplyPopup = ({ onClose, initialDomain = "", onSuccess, popupType 
         }
     };
 
-    return (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-[#0a0a0b]/80 backdrop-blur-md p-4 md:p-6 overflow-y-auto animate-in fade-in duration-300">
+    return createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#0a0a0b]/80 backdrop-blur-md p-4 md:p-6 overflow-y-auto animate-in fade-in duration-300">
             <div className="w-full max-w-[950px] my-auto h-fit min-h-[500px] md:h-[650px] bg-white rounded-[24px] shadow-2xl relative overflow-hidden flex flex-col md:flex-row animate-in zoom-in-95 duration-300 border border-white/10">
                 
                 {/* Close Button */}
@@ -248,7 +249,7 @@ const AdvancedApplyPopup = ({ onClose, initialDomain = "", onSuccess, popupType 
                         </p>
                     </div>
 
-                    <form onSubmit={handleFormSubmit} className="mt-8 space-y-6 flex-1 overflow-y-auto px-1 custom-scrollbar pr-5">
+                    <form onSubmit={handleFormSubmit} className="mt-8 space-y-6 flex-1 overflow-y-auto px-1 custom-scrollbar pr-5 pb-32">
                         {/* Name & Phone Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="relative group">
@@ -463,7 +464,8 @@ const AdvancedApplyPopup = ({ onClose, initialDomain = "", onSuccess, popupType 
                 .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
             `}</style>
-        </div>
+        </div>,
+        document.body
     );
 };
 

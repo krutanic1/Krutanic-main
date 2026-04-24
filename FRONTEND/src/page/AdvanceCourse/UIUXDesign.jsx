@@ -41,6 +41,7 @@ import ApplyForm from "./Components/ApplyForm";
 import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
 import CourseInfoStrip from "./Components/CourseInfoStrip";
+import ToolStack from "./Components/ToolStack";
 import uiuxBrochure from "../../../krutanic/UI  UX-min.pdf";
 
 const heroStats = [
@@ -97,6 +98,29 @@ const careerRoles = [
   { role: "UX Architect", range: "12 - 25 LPA" },
   { role: "Design Systems Lead", range: "15 - 32 LPA" },
   { role: "Head of Design", range: "35 - 75 LPA" }
+];
+
+const careerSupport = [
+  { 
+    title: "Profile Audit", 
+    desc: "Deep review of your resume, LinkedIn, and portfolio to align them with target product and UI/UX design roles." 
+  },
+  { 
+    title: "Resume Design", 
+    desc: "ATS-friendly, impact-focused resume tailored to elite design hiring pipelines." 
+  },
+  { 
+    title: "Design Portfolio", 
+    desc: "Curated project portfolio with evidence-based case studies and high-fidelity prototypes that you can showcase in interviews." 
+  },
+  { 
+    title: "Mock Interviews", 
+    desc: "Role-specific mock interviews with detailed feedback on design thinking, visual execution, and design sprints." 
+  },
+  { 
+    title: "Referral Access", 
+    desc: "Warm referrals and profile pitches to hiring partners in our recruiter and alumni network." 
+  }
 ];
 
 const faqCategories = {
@@ -245,24 +269,11 @@ const UIUXDesign = () => {
       </section>
 
       {/* 5. TOOLS */}
-      <section className="ux-sec-white">
-        <div className="shell">
-           <h2 className="sec-title">The Design Stack</h2>
-           <p className="sec-sub">Master the exact technologies and dev-handoff workflows used at high-growth design agencies and tech hubs.</p>
-           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(220px, 1fr))', gap:'16px'}}>
-              {techStack.map((group, i) => (
-                 <div key={i} className="p-card">
-                    <div style={{fontSize:'12px', fontWeight:800, color:'var(--ux-primary)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:'16px'}}>{group.group}</div>
-                    <div style={{display:'flex', flexWrap:'wrap', gap:'6px'}}>
-                       {group.tools.map(t => (
-                          <span key={t} style={{fontSize:'12px', fontWeight:700, background:'var(--ux-bg)', color:'var(--ux-text)', padding:'6px 14px', borderRadius:'8px'}}>{t}</span>
-                       ))}
-                    </div>
-                 </div>
-              ))}
-           </div>
-        </div>
-      </section>
+      <ToolStack 
+        categories={techStack} 
+        accentColor="#7C3AED"
+        subtitle="Master the exact technologies and dev-handoff workflows used at high-growth design agencies and tech hubs."
+      />
 
       {/* 6. PROJECTS */}
       <section className="ux-section">
@@ -298,7 +309,24 @@ const UIUXDesign = () => {
         </div>
       </section>
 
-      {/* 8. ROLES */}
+      {/* 8. CAREER SUPPORT */}
+      <section className="ux-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">Career Support Process</h2>
+           <p className="sec-sub">A structured 5‑step support system to convert your technical skills into real, high‑growth job offers.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'20px'}}>
+              {careerSupport.map((step, i) => (
+                 <div key={i} className="p-card" style={{background:'#F9FAFB'}}>
+                    <div style={{fontSize:'32px', fontWeight:900, opacity:0.1, marginBottom:'12px', fontFamily:'Outfit'}}>0{i+1}</div>
+                    <h4 style={{fontWeight:800, fontSize:'18px', marginBottom:'10px', color:'var(--ux-primary)'}}>{step.title}</h4>
+                    <p style={{fontSize:'14px', color:'var(--ux-text-dim)', lineHeight:1.6}}>{step.desc}</p>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 9. ROLES */}
       <section className="ux-section">
         <div className="shell">
            <h2 className="sec-title">Target Career Roles</h2>

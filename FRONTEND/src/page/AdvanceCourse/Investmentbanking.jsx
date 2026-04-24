@@ -92,6 +92,29 @@ const careerRoles = [
   { role: "Risk Analyst", range: "08 - 18 LPA" }
 ];
 
+const careerSupport = [
+  { 
+    title: "Profile Audit", 
+    desc: "Deep review of your resume, LinkedIn, and portfolio to align them with target banking and finance roles." 
+  },
+  { 
+    title: "Resume Design", 
+    desc: "ATS-friendly, impact-focused resume tailored to elite financial and institutional hiring pipelines." 
+  },
+  { 
+    title: "Deal Portfolio", 
+    desc: "Curated project portfolio with financial models and transaction case studies that you can showcase in interviews." 
+  },
+  { 
+    title: "Mock Interviews", 
+    desc: "Role-specific mock interviews with detailed feedback on technical modeling, valuation, and M&A logic." 
+  },
+  { 
+    title: "Referral Access", 
+    desc: "Warm referrals and profile pitches to hiring partners in our recruiter and alumni network." 
+  }
+];
+
 const faqCategories = {
   "Progrm Logic": [
     { q: "Is this program for non-finance students?", a: "Yes. While a finance background is helpful, we start with banking first-principles and build upwards." },
@@ -271,7 +294,24 @@ const Investmentbanking = () => {
         </div>
       </section>
 
-      {/* 7. ROLES */}
+      {/* 7. CAREER SUPPORT */}
+      <section className="ib-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">Career Support Process</h2>
+           <p className="sec-sub">A structured 5‑step support system to convert your technical skills into real, high‑growth job offers.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'20px'}}>
+              {careerSupport.map((step, i) => (
+                 <div key={i} className="p-card" style={{background:'#F9FAFB'}}>
+                    <div style={{fontSize:'32px', fontWeight:900, opacity:0.1, marginBottom:'12px', fontFamily:'Outfit'}}>0{i+1}</div>
+                    <h4 style={{fontWeight:800, fontSize:'18px', marginBottom:'10px', color:'var(--ib-primary)'}}>{step.title}</h4>
+                    <p style={{fontSize:'14px', color:'var(--ib-text-dim)', lineHeight:1.6}}>{step.desc}</p>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 8. ROLES */}
       <section className="ib-sec-white">
         <div className="shell">
            <h2 className="sec-title">Target Career Roles</h2>

@@ -89,6 +89,29 @@ const careerRoles = [
   { role: "Chief Product Officer", range: "50 - 120 LPA" }
 ];
 
+const careerSupport = [
+  { 
+    title: "Profile Audit", 
+    desc: "Deep review of your resume, LinkedIn, and portfolio to align them with target product leadership roles." 
+  },
+  { 
+    title: "Resume Design", 
+    desc: "ATS-friendly, impact-focused resume tailored to modern product and tech hiring pipelines." 
+  },
+  { 
+    title: "Product Portfolio", 
+    desc: "Curated project portfolio with strategic PRDs and discovery case studies that you can showcase in interviews." 
+  },
+  { 
+    title: "Mock Interviews", 
+    desc: "Role-specific mock interviews with detailed feedback on product sense, execution, and strategy." 
+  },
+  { 
+    title: "Referral Access", 
+    desc: "Warm referrals and profile pitches to hiring partners in our recruiter and alumni network." 
+  }
+];
+
 const faqCategories = {
   "Progrm Details": [
     { q: "Do I need technical skills first?", a: "No. While understanding tech helps, PM is primarily about problem-solving, user discovery, and business strategy." },
@@ -268,7 +291,24 @@ const ProductManagement = () => {
         </div>
       </section>
 
-      {/* 7. ROLES */}
+      {/* 7. CAREER SUPPORT */}
+      <section className="pm-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">Career Support Process</h2>
+           <p className="sec-sub">A structured 5‑step support system to convert your technical skills into real, high‑growth job offers.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'20px'}}>
+              {careerSupport.map((step, i) => (
+                 <div key={i} className="p-card" style={{background:'#F9FAFB'}}>
+                    <div style={{fontSize:'32px', fontWeight:900, opacity:0.1, marginBottom:'12px', fontFamily:'Outfit'}}>0{i+1}</div>
+                    <h4 style={{fontWeight:800, fontSize:'18px', marginBottom:'10px', color:'var(--pm-primary)'}}>{step.title}</h4>
+                    <p style={{fontSize:'14px', color:'var(--pm-text-dim)', lineHeight:1.6}}>{step.desc}</p>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 8. ROLES */}
       <section className="pm-sec-white">
         <div className="shell">
            <h2 className="sec-title">Career Roles and Outcomes</h2>

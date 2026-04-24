@@ -37,6 +37,7 @@ import ApplyForm from "./Components/ApplyForm";
 import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
 import CourseInfoStrip from "./Components/CourseInfoStrip";
+import ToolStack from "./Components/ToolStack";
 import peBrochure from "../../../krutanic/Prompt engineering for generative AI Advanced Program.pdf";
 
 const heroStats = [
@@ -95,6 +96,29 @@ const careerRoles = [
   { role: "AI Product Manager", range: "20 - 40 LPA" },
   { role: "Conversational UX", range: "10 - 18 LPA" },
   { role: "AI Content Strategist", range: "09 - 16 LPA" }
+];
+
+const careerSupport = [
+  { 
+    title: "Profile Audit", 
+    desc: "Deep review of your resume, LinkedIn, and portfolio to align them with target AI and prompt engineering roles." 
+  },
+  { 
+    title: "Resume Design", 
+    desc: "ATS-friendly, impact-focused resume tailored to cutting-edge generative AI and tech hiring pipelines." 
+  },
+  { 
+    title: "AI Portfolio", 
+    desc: "Curated project portfolio with production-ready prompt templates and AI system designs that you can showcase in interviews." 
+  },
+  { 
+    title: "Mock Interviews", 
+    desc: "Role-specific mock interviews with detailed feedback on AI logic, reasoning patterns, and system design." 
+  },
+  { 
+    title: "Referral Access", 
+    desc: "Warm referrals and profile pitches to hiring partners in our recruiter and alumni network." 
+  }
 ];
 
 const faqCategories = {
@@ -162,7 +186,10 @@ const PromptEngineering = () => {
         .sticky-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 72px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--pe-border); z-index: 99; transform: translateY(100%); transition: 0.4s; display: flex; align-items: center; }
         .sticky-bar.visible { transform: translateY(0); }
 
-        @media (max-width: 768px) { .sec-title { font-size: 28px; } }
+        @media (max-width: 768px) { 
+          .sec-title { font-size: 28px; } 
+          .pe-section, .pe-sec-white { padding: 60px 0; }
+        }
       `}</style>
 
       {/* 1. HERO */}
@@ -226,7 +253,7 @@ const PromptEngineering = () => {
         <div className="shell">
            <h2 className="sec-title">Technical Learning Roadmap</h2>
            <p className="sec-sub">A structured career journey from basic LLM responses to autonomous multi-agent prompt systems.</p>
-           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(450px, 1fr))', gap:'16px'}}>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap:'16px'}}>
               {curriculumRoadmap.map((item, idx) => (
                  <div key={idx} className="p-card" onClick={() => setExpandedModule(expandedModule === idx ? null : idx)} style={{cursor:'pointer'}}>
                     <div style={{display:'flex', justifyContent:'space-between', marginBottom:'12px'}}>
@@ -243,24 +270,11 @@ const PromptEngineering = () => {
       </section>
 
       {/* 5. TOOLS */}
-      <section className="pe-sec-white">
-        <div className="shell">
-           <h2 className="sec-title">AI Stack and Frameworks</h2>
-           <p className="sec-sub">Master the development environment used by top AI labs to build, test, and deploy prompt-centric apps.</p>
-           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(220px, 1fr))', gap:'16px'}}>
-              {techStack.map((group, i) => (
-                 <div key={i} className="p-card">
-                    <div style={{fontSize:'12px', fontWeight:800, color:'var(--pe-primary)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:'16px'}}>{group.group}</div>
-                    <div style={{display:'flex', flexWrap:'wrap', gap:'6px'}}>
-                       {group.tools.map(t => (
-                          <span key={t} style={{fontSize:'12px', fontWeight:700, background:'var(--pe-bg)', color:'var(--pe-text)', padding:'6px 14px', borderRadius:'8px'}}>{t}</span>
-                       ))}
-                    </div>
-                 </div>
-              ))}
-           </div>
-        </div>
-      </section>
+      <ToolStack 
+        categories={techStack} 
+        accentColor="#6D28D9"
+        subtitle="Master the development environment used by top AI labs to build, test, and deploy prompt-centric apps."
+      />
 
       {/* 6. PROJECTS */}
       <section className="pe-section">
@@ -296,7 +310,24 @@ const PromptEngineering = () => {
         </div>
       </section>
 
-      {/* 8. ROLES */}
+      {/* 8. CAREER SUPPORT */}
+      <section className="pe-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">Career Support Process</h2>
+           <p className="sec-sub">A structured 5‑step support system to convert your technical skills into real, high‑growth job offers.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'20px'}}>
+              {careerSupport.map((step, i) => (
+                 <div key={i} className="p-card" style={{background:'#F9FAFB'}}>
+                    <div style={{fontSize:'32px', fontWeight:900, opacity:0.1, marginBottom:'12px', fontFamily:'Outfit'}}>0{i+1}</div>
+                    <h4 style={{fontWeight:800, fontSize:'18px', marginBottom:'10px', color:'var(--pe-primary)'}}>{step.title}</h4>
+                    <p style={{fontSize:'14px', color:'var(--pe-text-dim)', lineHeight:1.6}}>{step.desc}</p>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 9. ROLES */}
       <section className="pe-section">
         <div className="shell">
            <h2 className="sec-title">Target Career Roles</h2>

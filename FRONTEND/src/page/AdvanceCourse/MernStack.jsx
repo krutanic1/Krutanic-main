@@ -38,6 +38,7 @@ import ApplyForm from "./Components/ApplyForm";
 import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
 import CourseInfoStrip from "./Components/CourseInfoStrip";
+import ToolStack from "./Components/ToolStack";
 import mernBrochure from "../../../krutanic/Mern Stack Web Development Advanced Program.pdf";
 
 const heroStats = [
@@ -96,6 +97,29 @@ const careerRoles = [
   { role: "Frontend Lead", range: "08 - 18 LPA" },
   { role: "Product Architect", range: "18 - 35 LPA" },
   { role: "Software Engineer", range: "10 - 24 LPA" }
+];
+
+const careerSupport = [
+  { 
+    title: "Profile Audit", 
+    desc: "Deep review of your resume, LinkedIn, and portfolio to align them with target full-stack engineering roles." 
+  },
+  { 
+    title: "Resume Design", 
+    desc: "ATS-friendly, impact-focused resume tailored to modern software development hiring pipelines." 
+  },
+  { 
+    title: "Project Portfolio", 
+    desc: "Curated project portfolio with production-grade web architectures and codebases that you can showcase in interviews." 
+  },
+  { 
+    title: "Mock Interviews", 
+    desc: "Role-specific mock interviews with detailed feedback on problem-solving, communication, and technical approach." 
+  },
+  { 
+    title: "Referral Access", 
+    desc: "Warm referrals and profile pitches to hiring partners in our recruiter and alumni network." 
+  }
 ];
 
 const faqCategories = {
@@ -163,7 +187,10 @@ const MernStack = () => {
         .sticky-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 72px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--ms-border); z-index: 99; transform: translateY(100%); transition: 0.4s; display: flex; align-items: center; }
         .sticky-bar.visible { transform: translateY(0); }
 
-        @media (max-width: 768px) { .sec-title { font-size: 28px; } }
+        @media (max-width: 768px) { 
+          .sec-title { font-size: 28px; } 
+          .ms-section, .ms-sec-white { padding: 60px 0; }
+        }
       `}</style>
 
       {/* 1. HERO */}
@@ -227,7 +254,7 @@ const MernStack = () => {
         <div className="shell">
            <h2 className="sec-title">Production Execution Roadmap</h2>
            <p className="sec-sub">A structured 24-week journey from syntax basics to deploying complex architectural systems.</p>
-           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(450px, 1fr))', gap:'16px'}}>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap:'16px'}}>
               {curriculumRoadmap.map((item, idx) => (
                  <div key={idx} className="p-card" onClick={() => setExpandedModule(expandedModule === idx ? null : idx)} style={{cursor:'pointer'}}>
                     <div style={{display:'flex', justifyContent:'space-between', marginBottom:'12px'}}>
@@ -244,24 +271,11 @@ const MernStack = () => {
       </section>
 
       {/* 5. TOOLS */}
-      <section className="ms-sec-white">
-        <div className="shell">
-           <h2 className="sec-title">The Engineering Toolkit</h2>
-           <p className="sec-sub">Master the exact technologies and dev-workflows used at high-scale tech organizations.</p>
-           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(220px, 1fr))', gap:'16px'}}>
-              {techStack.map((group, i) => (
-                 <div key={i} className="p-card">
-                    <div style={{fontSize:'12px', fontWeight:800, color:'var(--ms-primary)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:'16px'}}>{group.group}</div>
-                    <div style={{display:'flex', flexWrap:'wrap', gap:'6px'}}>
-                       {group.tools.map(t => (
-                          <span key={t} style={{fontSize:'12px', fontWeight:700, background:'var(--ms-bg)', color:'var(--ms-text)', padding:'6px 14px', borderRadius:'8px'}}>{t}</span>
-                       ))}
-                    </div>
-                 </div>
-              ))}
-           </div>
-        </div>
-      </section>
+      <ToolStack 
+        categories={techStack} 
+        accentColor="#059669"
+        subtitle="Master the exact technologies and dev-workflows used at high-scale tech organizations."
+      />
 
       {/* 6. PROJECTS */}
       <section className="ms-section">
@@ -297,7 +311,24 @@ const MernStack = () => {
         </div>
       </section>
 
-      {/* 8. ROLES */}
+      {/* 8. CAREER SUPPORT */}
+      <section className="ms-sec-white">
+        <div className="shell">
+           <h2 className="sec-title">Career Support Process</h2>
+           <p className="sec-sub">A structured 5‑step support system to convert your technical skills into real, high‑growth job offers.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'20px'}}>
+              {careerSupport.map((step, i) => (
+                 <div key={i} className="p-card" style={{background:'#F9FAFB'}}>
+                    <div style={{fontSize:'32px', fontWeight:900, opacity:0.1, marginBottom:'12px', fontFamily:'Outfit'}}>0{i+1}</div>
+                    <h4 style={{fontWeight:800, fontSize:'18px', marginBottom:'10px', color:'var(--ms-primary)'}}>{step.title}</h4>
+                    <p style={{fontSize:'14px', color:'var(--ms-text-dim)', lineHeight:1.6}}>{step.desc}</p>
+                 </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* 9. ROLES */}
       <section className="ms-section">
         <div className="shell">
            <h2 className="sec-title">Target Career Roles</h2>

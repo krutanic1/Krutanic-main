@@ -53,7 +53,7 @@ const TeamLogin = () => {
     <div id="loginpage">
       <Toaster position="top-center" reverseOrder={false}/>
       <div className="loginform">
-        <h2>Login With Offical Email Id</h2>
+        <h2>Login With Official Email Id</h2>
         {step === 1 ? (
           <form onSubmit={handleSendOTP}>
             <div className="input-field">

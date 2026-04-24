@@ -8,7 +8,6 @@ const topNav = [
   { label: "Advanced Program", to: "/Advance" },
   { label: "Alumni", to: "/Alumni" },
   { label: "Masterclass", to: "/MasterClass" },
-  { label: "Events", to: "/events" },
   { label: "Refer and Earn", to: "/ReferAndEarn" }
 ];
 

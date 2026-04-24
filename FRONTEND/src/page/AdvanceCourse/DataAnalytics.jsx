@@ -38,6 +38,7 @@ import ApplyForm from "./Components/ApplyForm";
 import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
 import CourseInfoStrip from "./Components/CourseInfoStrip";
+import ToolStack from "./Components/ToolStack";
 import daBrochure from "../../../krutanic/Data Analytics Advanced program.pdf";
 
 const heroStats = [
@@ -57,16 +58,10 @@ const audience = [
 ];
 
 const techStack = [
-  { name: "Advanced Excel", context: "Complex modeling & reporting.", icon: <BarChart3 size={24} /> },
-  { name: "SQL", context: "Database extraction & logic.", icon: <Database size={24} /> },
-  { name: "Power BI", context: "Executive dashboarding.", icon: <Layout size={24} /> },
-  { name: "Tableau", context: "Interactive data visuals.", icon: <PieChart size={24} /> },
-  { name: "Python", context: "Scalable data manipulation.", icon: <Code2 size={24} /> },
-  { name: "Google Sheets", context: "Collaborative live analysis.", icon: <FileText size={24} /> },
-  { name: "Git", context: "Project version control.", icon: <GitBranch size={24} /> },
-  { name: "Pandas", context: "Data cleaning workflows.", icon: <Settings size={24} /> },
-  { name: "NumPy", context: "Mathematical computation.", icon: <Terminal size={24} /> },
-  { name: "DAX", context: "Advanced BI calculations.", icon: <Zap size={24} /> }
+  { group: "Data Manipulation", tools: ["Advanced Excel", "SQL", "Google Sheets", "Python"] },
+  { group: "Libraries", tools: ["Pandas", "NumPy", "DAX"] },
+  { group: "Visualization & BI", tools: ["Power BI", "Tableau"] },
+  { group: "Version Control", tools: ["Git"] }
 ];
 
 const compactRoadmap = [
@@ -99,6 +94,29 @@ const careerRoles = [
   { role: "Reporting Lead", range: "09 - 16 LPA" },
   { role: "Product Analyst", range: "14 - 24 LPA" },
   { role: "Operations Analyst", range: "08 - 15 LPA" }
+];
+
+const careerSupport = [
+  { 
+    title: "Profile Audit", 
+    desc: "Deep review of your resume, LinkedIn, and portfolio to align them with target analyst roles." 
+  },
+  { 
+    title: "Resume Design", 
+    desc: "ATS-friendly, impact-focused resume tailored to data and analytics hiring pipelines." 
+  },
+  { 
+    title: "Dashboard Portfolio", 
+    desc: "Curated project portfolio with industry-grade dashboards that you can showcase in interviews." 
+  },
+  { 
+    title: "Mock Interviews", 
+    desc: "Role-specific mock interviews with detailed feedback on problem-solving, communication, and case approach." 
+  },
+  { 
+    title: "Referral Access", 
+    desc: "Warm referrals and profile pitches to hiring partners in our recruiter and alumni network." 
+  }
 ];
 
 const alumniOutcomes = [
@@ -172,7 +190,10 @@ const DataAnalytics = () => {
         .sticky-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 72px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--da-border); z-index: 99; transform: translateY(100%); transition: 0.4s; display: flex; align-items: center; }
         .sticky-bar.visible { transform: translateY(0); }
 
-        @media (max-width: 768px) { .sec-title { font-size: 28px; } }
+        @media (max-width: 768px) { 
+          .sec-title { font-size: 28px; } 
+          .da-section, .da-sec-white { padding: 60px 0; }
+        }
       `}</style>
 
       {/* 1. HERO */}
@@ -215,27 +236,18 @@ const DataAnalytics = () => {
       </section>
 
       {/* 3. TOOLS */}
-      <section className="da-sec-white">
-        <div className="shell">
-          <h2 className="sec-title">Tools and platforms you will use</h2>
-          <p className="sec-sub">Master the tool-stack utilized by data analytics teams in high-performing product companies.</p>
-          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(260px, 1fr))', gap:'20px'}}>
-             {techStack.map((tech, i) => (
-               <div key={i} style={{padding:'20px', border:'1px solid var(--da-border)', borderRadius:'12px', display:'flex', alignItems:'center', gap:'16px', background:'#F9FAFB'}}>
-                 <div style={{color:'var(--da-primary)'}}>{tech.icon}</div>
-                 <div><div style={{fontWeight:800, fontSize:'15px'}}>{tech.name}</div><div style={{fontSize:'13px', color:'var(--da-text-dim)'}}>{tech.context}</div></div>
-               </div>
-             ))}
-          </div>
-        </div>
-      </section>
+      <ToolStack 
+        categories={techStack} 
+        accentColor="#4F46E5"
+        subtitle="Gain execution depth across a suite of 40+ industry tools for data extraction, analysis, and cloud deployment."
+      />
 
       {/* 4. ROADMAP */}
       <section className="da-section">
         <div className="shell">
            <h2 className="sec-title">24-Week Learning Roadmap</h2>
            <p className="sec-sub">A structured career journey from dashboard logic to predictive reporting and interview mastery.</p>
-           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(450px, 1fr))', gap:'16px'}}>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap:'16px'}}>
               {compactRoadmap.map((item, idx) => (
                  <div key={idx} className="p-card" onClick={() => setExpandedModule(expandedModule === idx ? null : idx)} style={{cursor:'pointer'}}>
                     <div style={{display:'flex', justifyContent:'space-between', marginBottom:'12px'}}>
@@ -289,12 +301,13 @@ const DataAnalytics = () => {
       <section className="da-sec-white">
         <div className="shell">
            <h2 className="sec-title">Career Support Process</h2>
-           <p className="sec-sub">A structured 5-step workflow to ensure your technical skills translate into professional role transitions.</p>
-           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(200px, 1fr))', gap:'12px'}}>
-              {["Profile Audit", "Resume Design", "Dashboard Portfolio", "Mock Interviews", "Referral Access"].map((step, i) => (
-                 <div key={i} style={{padding:'24px', border:'1px solid var(--da-border)', borderRadius:'12px', background:'#F9FAFB'}}>
-                    <div style={{fontSize:'24px', fontWeight:900, opacity:0.15, marginBottom:'4px'}}>0{i+1}</div>
-                    <div style={{fontWeight:800, fontSize:'15px'}}>{step}</div>
+           <p className="sec-sub">A structured 5‑step support system to convert your technical skills into real, high‑growth job offers.</p>
+           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'20px'}}>
+              {careerSupport.map((step, i) => (
+                 <div key={i} className="p-card" style={{background:'#F9FAFB'}}>
+                    <div style={{fontSize:'32px', fontWeight:900, opacity:0.1, marginBottom:'12px', fontFamily:'Outfit'}}>0{i+1}</div>
+                    <h4 style={{fontWeight:800, fontSize:'18px', marginBottom:'10px', color:'var(--da-primary)'}}>{step.title}</h4>
+                    <p style={{fontSize:'14px', color:'var(--da-text-dim)', lineHeight:1.6}}>{step.desc}</p>
                  </div>
               ))}
            </div>
@@ -362,7 +375,7 @@ const DataAnalytics = () => {
                        <span style={{fontSize:'13px', fontWeight:700}}>{row.l}</span><span style={{fontWeight:800}}>{row.v}</span>
                     </div>
                  ))}
-                 <div style={{marginTop:'12px', display:'flex', alignItems:'center', gap:'12px', opacity:0.6}}><Zap size={18} /> <img src={Flashaidlogo} alt="Flashaid" style={{height:'14px', grayscale:1}} /> <span style={{fontSize:'12px'}}>0% Installment Facility</span></div>
+                 <div style={{marginTop:'12px', display:'flex', alignItems:'center', gap:'12px', opacity:0.6}}><Zap size={18} /> <img src={Flashaidlogo} alt="Flashaid" style={{height:'14px', filter:'grayscale(1)'}} /> <span style={{fontSize:'12px'}}>0% Installment Facility</span></div>
               </div>
            </div>
         </div>
