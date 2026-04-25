@@ -208,7 +208,7 @@ const AdvancedApplyPopup = ({ onClose, initialDomain = "", onSuccess, popupType 
                             {[
                                 { icon: <FaCheckCircle />, title: "Premium Curriculum", desc: "Designed by industry veterans" },
                                 { icon: <FaCheckCircle />, title: "AI-First Approach", desc: "Modern tech stack integration" },
-                                { icon: <FaCheckCircle />, title: "Guaranteed Referrals", desc: "Network of 250+ partners" }
+                                { icon: <FaCheckCircle />, title: "Guaranteed Referrals", desc: "Network of 500+ partners" }
                             ].map((item, i) => (
                                 <div key={i} className="flex gap-4">
                                     <div className="text-orange-500 mt-1">{item.icon}</div>
@@ -249,7 +249,7 @@ const AdvancedApplyPopup = ({ onClose, initialDomain = "", onSuccess, popupType 
                         </p>
                     </div>
 
-                    <form onSubmit={handleFormSubmit} className="mt-8 space-y-6 flex-1 overflow-y-auto px-1 custom-scrollbar pr-5 pb-32">
+                    <form id="advanced-apply-form" onSubmit={handleFormSubmit} className="mt-8 space-y-6 flex-1 overflow-y-auto px-1 custom-scrollbar pr-5 pb-20">
                         {/* Name & Phone Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="relative group">
@@ -421,40 +421,42 @@ const AdvancedApplyPopup = ({ onClose, initialDomain = "", onSuccess, popupType 
                             </label>
                         </div>
 
-                        {/* Submit Footer */}
-                        <div className="sticky bottom-0 bg-white pt-6 pb-2 flex gap-3">
-                            <button
-                                type="button"
-                                onClick={onClose}
-                                style={{
-                                    flex: 1,
-                                    padding: '16px',
-                                    backgroundColor: '#f1f5f9', // Light gray
-                                    color: '#64748b',
-                                    fontWeight: 'bold',
-                                    borderRadius: '12px',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.1em',
-                                    fontSize: '11px',
-                                    transition: 'background-color 0.2s ease'
-                                }}
-                                onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#e2e8f0'}
-                                onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#f1f5f9'}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="submit"
-                                disabled={!emailVerified || loading}
-                                className="flex-[2] py-4 bg-orange-600 text-white font-black rounded-xl hover:bg-orange-700 transition-all shadow-xl shadow-orange-600/30 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-2 group"
-                            >
-                                {loading ? "Securely Submitting..." : (popupType === "brochure" ? "Get Brochure" : "Send Application")} 
-                                <span className="group-hover:translate-x-1 transition-transform">→</span>
-                            </button>
-                        </div>
                     </form>
+                    
+                    {/* Submit Footer - Moved outside scrollable area */}
+                    <div className="pt-6 mt-auto flex gap-3 border-t border-slate-100 bg-white">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            style={{
+                                flex: 1,
+                                padding: '16px',
+                                backgroundColor: '#f1f5f9',
+                                color: '#64748b',
+                                fontWeight: 'bold',
+                                borderRadius: '12px',
+                                border: 'none',
+                                cursor: 'pointer',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.1em',
+                                fontSize: '11px',
+                                transition: 'background-color 0.2s ease'
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#e2e8f0'}
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#f1f5f9'}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            form="advanced-apply-form"
+                            disabled={!emailVerified || loading}
+                            className="flex-[2] py-4 bg-orange-600 text-white font-black rounded-xl hover:bg-orange-700 transition-all shadow-xl shadow-orange-600/30 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-2 group"
+                        >
+                            {loading ? "Securely Submitting..." : (popupType === "brochure" ? "Get Brochure" : "Send Application")} 
+                            <span className="group-hover:translate-x-1 transition-transform">→</span>
+                        </button>
+                    </div>
                 </div>
             </div>
             

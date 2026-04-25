@@ -9,7 +9,7 @@ import AdvancedApplyPopup from "../../../Components/AdvancedApplyPopup";
 const CourseInfoStrip = ({ 
   accent = "#00d2ff", 
   courseValue = "",
-  learningFormat = "Online Bootcamp",
+  learningFormat = "Online Program",
   duration = "8 Months",
   emi = "4000/month*",
   brochureLink = "#"
@@ -146,15 +146,13 @@ const CourseInfoStrip = ({
       <div className="cis-wrap">
         <div className="cis-cta-row">
           <ApplyNowButton courseValue={courseValue} />
-          {(courseValue === "Data Analytics" || courseValue === "Digital Marketing") && (
-            <button 
-              type="button"
-              onClick={() => setShowPopup(true)}
-              className="cis-btn-outline"
-            >
-              Download Brochure
-            </button>
-          )}
+          <button 
+            type="button"
+            onClick={() => setShowPopup(true)}
+            className="cis-btn-outline"
+          >
+            Download Brochure
+          </button>
         </div>
 
         <div className="cis-card">

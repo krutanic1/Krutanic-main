@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet";
+import { Helmet } from 'react-helmet-async';
 import { useState , useMemo, useEffect } from "react";
 import AdvancedApplyPopup from "../Components/AdvancedApplyPopup";
 import axios from "axios";

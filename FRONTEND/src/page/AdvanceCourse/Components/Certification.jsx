@@ -14,7 +14,7 @@ const Certification = ({ isDark = false }) => {
              Global <span className="text-orange-600">Certification</span>
            </h2>
            <p className="max-w-[600px] text-gray-500 text-lg leading-relaxed font-medium">
-             Evidence your expertise with a professional-grade certification recognized by 250+ global technology and finance partners.
+             Evidence your expertise with a professional-grade certification recognized by 500+ global technology and finance partners.
            </p>
         </div>
 
@@ -52,7 +52,7 @@ const Certification = ({ isDark = false }) => {
                       </p>
                    </div>
                 </div>
-                //dfhjkl;';kjhgcvm,.'
+              
 
                 <div className="flex gap-6 group">
                    <div className="w-14 h-14 shrink-0 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 transition-colors group-hover:bg-blue-600 group-hover:text-white">
@@ -63,7 +63,7 @@ const Certification = ({ isDark = false }) => {
                         Hiring Signal
                       </h3>
                       <p className={`text-base leading-relaxed font-medium ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        Our certification is recognized as a 'Tier-1 Hiring Signal' by our network of 250+ global corporate partners.
+                        Our certification is recognized as a 'Tier-1 Hiring Signal' by our network of 500+ global corporate partners.
                       </p>
                    </div>
                 </div>

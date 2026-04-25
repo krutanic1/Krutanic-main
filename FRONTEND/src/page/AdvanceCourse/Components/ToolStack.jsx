@@ -30,6 +30,7 @@ const ToolStack = ({ title, subtitle, categories, accentColor = "#4F46E5" }) => 
     
     // AI & LLM Core
     "GPT-4o": "openai",
+    "ChatGPT": "openai",
     "Claude 3.5 Sonnet": "anthropic",
     "Gemini Pro": "googlegemini",
     "Llama 3": "meta",
@@ -76,6 +77,8 @@ const ToolStack = ({ title, subtitle, categories, accentColor = "#4F46E5" }) => 
     "Insomnia": "insomnia",
     "Swagger": "swagger",
     "Storybook": "storybook",
+    "API": "none",
+    "APIs": "none",
 
     // MERN & Dev Concepts
     "Aggregation": "mongodb",
@@ -113,8 +116,10 @@ const ToolStack = ({ title, subtitle, categories, accentColor = "#4F46E5" }) => 
     "Google Ads": "googleads",
     "Meta Ads": "meta",
     "Meta Ads Manager": "meta",
+    "Meta Business Suite": "meta",
     "LinkedIn Ads": "linkedin",
     "LinkedIn Ads Manager": "linkedin",
+    "LinkedIn": "linkedin",
     "TikTok Ads": "tiktok",
     "Shopify": "shopify",
     "Canva": "canva",
@@ -126,7 +131,7 @@ const ToolStack = ({ title, subtitle, categories, accentColor = "#4F46E5" }) => 
     "Slack": "slack",
     "Jira": "jira",
     "SEMrush": "semrush",
-    "Ahrefs": "ahrefs",
+    "Ahrefs": "none",
     "Hotjar": "hotjar",
     "Mixpanel": "mixpanel",
     "GTM": "googletagmanager",
@@ -139,6 +144,22 @@ const ToolStack = ({ title, subtitle, categories, accentColor = "#4F46E5" }) => 
     "Twitter Ads": "twitter",
     "Snapchat Ads": "snapchat",
     "Bing Ads": "microsoftbing",
+    "QuillBot": "none",
+    "copy.ai": "none",
+    "Grammarly": "grammarly",
+    "Screaming Frog": "none",
+    "Ubersuggest": "none",
+    "Microsoft Clarity": "microsoft",
+    "ActiveCampaign": "activecampaign",
+    "AppsFlyer": "none",
+    "MoEngage": "none",
+    "Google Forms": "google",
+    "Google Drive": "googledrive",
+    "Hootsuite": "hootsuite",
+    "Buffer": "buffer",
+    "Yoast": "yoast",
+    "Brevo": "brevo",
+    "Webflow": "webflow",
     
     // Design
     "Figma": "figma",
@@ -182,8 +203,9 @@ const ToolStack = ({ title, subtitle, categories, accentColor = "#4F46E5" }) => 
               
               <div className="flex flex-wrap gap-3">
                 {category.tools.map((tool, tIdx) => {
-                  const slug = iconMap[tool] || tool.toLowerCase().replace(/\./g, 'dot').replace(/\+/g, 'plus').replace(/\//g, '').replace(/\s+/g, '');
-                  const iconUrl = `https://cdn.simpleicons.org/${slug}`;
+                  const mappedSlug = iconMap[tool];
+                  const fallbackSlug = tool.toLowerCase().replace(/\./g, 'dot').replace(/\+/g, 'plus').replace(/\//g, '').replace(/\s+/g, '');
+                  const slug = mappedSlug !== undefined ? mappedSlug : fallbackSlug;
                   
                   return (
                     <div 
@@ -191,19 +213,27 @@ const ToolStack = ({ title, subtitle, categories, accentColor = "#4F46E5" }) => 
                       className="flex items-center gap-3 px-4 py-2.5 bg-gray-50/50 border border-gray-100 rounded-xl hover:bg-white hover:border-gray-300 hover:-translate-y-1 hover:shadow-sm transition-all duration-300 cursor-default group/pill"
                     >
                       <div className="w-5 h-5 flex items-center justify-center overflow-hidden">
-                        <img 
-                          src={`https://cdn.simpleicons.org/${slug}`} 
-                          alt={tool} 
-                          className="w-full h-full object-contain filter grayscale group-hover/pill:grayscale-0 transition-all duration-300"
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                            const fallback = e.target.parentElement.querySelector('.fallback-icon');
-                            if (fallback) fallback.style.display = 'flex';
-                          }}
-                        />
-                        <div className="fallback-icon hidden w-full h-full items-center justify-center bg-gray-100 rounded text-[10px] font-bold text-gray-400 uppercase">
-                          {tool.substring(0, 2)}
-                        </div>
+                        {slug !== "none" ? (
+                          <>
+                            <img 
+                              src={`https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/${slug}.svg`} 
+                              alt={tool} 
+                              className="w-full h-full object-contain filter grayscale group-hover/pill:grayscale-0 transition-all duration-300"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                const fallback = e.target.parentElement.querySelector('.fallback-icon');
+                                if (fallback) fallback.style.display = 'flex';
+                              }}
+                            />
+                            <div className="fallback-icon hidden w-full h-full items-center justify-center bg-gray-100 rounded text-[10px] font-bold text-gray-400 uppercase">
+                              {tool.substring(0, 2)}
+                            </div>
+                          </>
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gray-100 rounded text-[10px] font-bold text-gray-400 uppercase">
+                            {tool.substring(0, 2)}
+                          </div>
+                        )}
                       </div>
                       <span className="text-[14px] font-[700] text-gray-700 whitespace-nowrap leading-none group-hover/pill:text-gray-900 transition-colors">
                         {tool}

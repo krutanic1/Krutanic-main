@@ -40,9 +40,13 @@ ReactPixel.init('753815477788409', options);
 ReactPixel.pageView();
 
 
+import { HelmetProvider } from 'react-helmet-async';
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
-    <SpeedInsights />
+    <HelmetProvider>
+      <App />
+      <SpeedInsights />
+    </HelmetProvider>
   </StrictMode>,
 )

@@ -1,4 +1,4 @@
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
@@ -90,9 +90,31 @@ const programs = [
     link: "/PromptEngineering", 
     cat: "GenAI", 
     accent: "bg-purple-600",
-    lightAccent: "bg-purple-50 text-purple-700 border-purple-100"
+    lightAccent: "bg-purple-50 text-purple-700 border-purple-100" 
+  },
+  { 
+    id: "genai", 
+    icon: <Sparkles size={24}/>, 
+    name: "Generative AI", 
+    positioning: "Architect multi-agent systems and RAG pipelines.", 
+    dur: "24 Weeks", 
+    idealFor: "Software engineers & AI architects.", 
+    tools: ["RAG", "Multi-Agent", "LangGraph"], 
+    link: "/GenerativeAI", 
+    cat: "GenAI", 
+    accent: "bg-fuchsia-600",
+    lightAccent: "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-100" 
   },
 ];
+
+function TrendingUpIcon(props) {
+   return (
+      <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+         <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+         <polyline points="16 7 22 7 22 13"></polyline>
+      </svg>
+   )
+}
 
 function DatabaseIcon(props) {
    return (
@@ -214,8 +236,23 @@ const Advance = () => {
         .k-card { background: #fff; border: 1px solid #E2E8F0; border-radius: 16px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .k-card:hover { border-color: #CBD5E1; box-shadow: 0 16px 32px -8px rgba(0,0,0,0.08); transform: translateY(-4px); }
         
-        .sticky-hub { position: fixed; bottom: 0; left: 0; width: 100%; height: 72px; background: rgba(255,255,255,0.98); border-top: 1px solid #F1F5F9; z-index: 99; transform: translateY(100%); transition: 0.3s; display: flex; align-items: center; box-shadow: 0 -4px 12px rgba(0,0,0,0.02); }
+        .sticky-hub { 
+          position: fixed; 
+          bottom: 0; 
+          left: 0; 
+          width: 100%; 
+          height: 72px; 
+          background: #6D28D9; 
+          color: #fff;
+          z-index: 100; 
+          transform: translateY(100%); 
+          transition: 0.4s; 
+          display: flex; 
+          align-items: center; 
+          box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+        }
         .sticky-hub.visible { transform: translateY(0); }
+        .countdown-box { background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 6px; font-variant-numeric: tabular-nums; }
 
         .k-gradient-text { background: linear-gradient(135deg, #0F172A 0%, #064E3B 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
@@ -739,22 +776,30 @@ const Advance = () => {
 
       {/* STICKY FOOTER (Clean & restrained) */}
       <div className={`sticky-hub ${scrolled ? 'visible' : ''}`}>
-         <div className="k-shell flex justify-between items-center w-full">
-            <div className="flex items-center gap-4">
-               <div>
-                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest hidden sm:block mb-0.5">Professional Education</div>
-                  <div className="text-[15px] sm:text-base font-bold text-slate-900">Krutanic Advanced Programs</div>
-               </div>
-            </div>
-            <div className="flex gap-4">
-               <button onClick={() => setShowApplyForm(true)} className="hidden md:block py-2.5 px-5 rounded-lg text-[13px] font-bold text-slate-600 hover:bg-slate-100 transition-colors border border-transparent">
-                  Contact Admissions
-               </button>
-               <button onClick={() => document.getElementById('catalog').scrollIntoView({behavior:'smooth'})} className="bg-emerald-600 text-white hover:bg-emerald-700 py-2.5 px-6 rounded-lg text-[13px] font-bold transition-colors shadow-sm flex items-center gap-2">
-                  View Catalog
-               </button>
-            </div>
-         </div>
+        <div className="k-shell flex justify-between items-center w-full">
+           <div className="flex items-center gap-2 md:gap-6">
+              <div className="flex items-center gap-2 text-sm md:text-lg font-bold">
+                 <span className="animate-pulse">🚨</span>
+                 <span>30% Scholarship closing in just 2 days.</span>
+              </div>
+              <div className="hidden lg:flex items-center gap-3 text-sm font-bold opacity-90">
+                 <span>Batch closing in</span>
+                 <div className="flex gap-1.5 items-center">
+                    <span className="countdown-box">23</span> :
+                    <span className="countdown-box">07</span> :
+                    <span className="countdown-box">57</span>
+                 </div>
+              </div>
+           </div>
+           <div className="flex gap-4 items-center">
+              <button onClick={() => setShowApplyForm(true)} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white">
+                 Contact Admissions
+              </button>
+              <button onClick={() => document.getElementById('catalog').scrollIntoView({behavior:'smooth'})} className="bg-white text-[#6D28D9] hover:scale-105 py-2.5 px-6 rounded-lg text-sm font-black transition-all shadow-sm flex items-center gap-2">
+                 View Catalog
+              </button>
+           </div>
+        </div>
       </div>
 
       <Toaster position="top-center" />

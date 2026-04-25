@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import API from "../API";
 import Header from "../Components/Header";
-import { Helmet } from "react-helmet";
+import { Helmet } from 'react-helmet-async';
 import toast, { Toaster } from "react-hot-toast";
 
 const EventDetails = () => {

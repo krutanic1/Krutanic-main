@@ -51,6 +51,7 @@ import StoreSection from "./Components/StoreSection";
 import ClientsCarousel from "../../Components/our_alumni";
 import ApplyNowButton from "./Components/ApplyNowButton";
 import ApplyForm from "./Components/ApplyForm";
+import DownloadBrochureButton from "./Components/DownloadBrochureButton";
 import dsBrochure from "../../../krutanic/DataScienceAdvancedProgram.pdf";
 
 import CourseHeroBanner from "./Components/CourseHeroBanner";
@@ -145,19 +146,29 @@ const careerSupport = [
 ];
 
 const faqCategories = {
-  "Eligibility & Format": [
-    { q: "Who is this program for?", a: "Graduates and working professionals from technical or analytical backgrounds. Career switchers are also welcome with basic math skills." },
+  "Program Details": [
+    { q: "Is this program for beginners?", a: "Yes. Our curriculum is designed to take you from fundamentals to advanced execution, ensuring a smooth learning curve for all skill levels." },
+    { q: "What is the duration and format?", a: "The program spans 24 weeks with live interactive sessions on weekends and weekday evenings to accommodate working professionals." },
+    { q: "Do I need any prior knowledge?", a: "No prior experience is required. We teach you everything from scratch, focusing on logic, psychology, and technical execution." },
     { q: "What are the timings?", a: "Live sessions happen on weekends and weekday evenings to accommodate work schedules." }
   ],
-  "Career & Projects": [
-    { q: "How does placement support work?", a: "We provide 100% assistance including resume reviews, mock interviews, and direct hiring partner referrals." },
-    { q: "What projects will I build?", a: "You will build 4-6 industrial grade projects including Recommendation Engines and Fraud Detection systems." }
+  "Career & Certification": [
+    { q: "Do you offer placement support?", a: "We provide 100% career support, including resume audits, mock interviews, LinkedIn optimization, and direct referrals to our 500+ hiring partners." },
+    { q: "Will I receive a certificate?", a: "Yes, upon successful completion of the program and projects, you will receive an industry-recognized Professional Certification." },
+    { q: "What projects will I build?", a: "You will work on multiple industry-grade projects and capstones that mimic real-world challenges, allowing you to build a production-ready portfolio." },
+    { q: "How many case studies or projects will I complete?", a: "You will graduate with at least 3-4 deep, evidence-based case studies or production-ready projects in your portfolio." }
+  ],
+  "Admissions & Policy": [
+    { q: "How do I attend the classes?", a: "You will receive meeting links on your registered email. Classes are conducted via premium platforms like Zoom or Google Meet." },
+    { q: "Do I get access to recorded sessions?", a: "Yes! Simply log in to the LMS portal to access the recorded sessions of any classes you missed." },
+    { q: "What is the refund policy?", a: "Our courses are crafted with care and commitment. Therefore, we do not offer refunds as we provide immediate access to high-value resources." },
+    { q: "Are there any prerequisites before starting?", a: "There are no prerequisites required! Our courses are designed for all skill levels." }
   ]
 };
 
 const DataScience = () => {
   const [expandedModule, setExpandedModule] = useState(null);
-  const [activeFaqCat, setActiveFaqCat] = useState("Eligibility & Format");
+  const [activeFaqCat, setActiveFaqCat] = useState("Program Details");
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
   const [scrolled, setScrolled] = useState(false);
 
@@ -204,8 +215,23 @@ const DataScience = () => {
         .btn-prime { background: var(--ds-primary); color: #fff; padding: 12px 24px; border-radius: 8px; font-weight: 700; font-size: 15px; }
         .btn-sec { border: 1px solid var(--ds-border); color: var(--ds-text); padding: 12px 24px; border-radius: 8px; font-weight: 700; font-size: 15px; }
 
-        .sticky-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 72px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-top: 1px solid var(--ds-border); z-index: 99; transform: translateY(100%); transition: 0.4s; display: flex; align-items: center; }
+        .sticky-bar { 
+          position: fixed; 
+          bottom: 0; 
+          left: 0; 
+          width: 100%; 
+          height: 72px; 
+          background: var(--ds-primary); 
+          color: #fff;
+          z-index: 100; 
+          transform: translateY(100%); 
+          transition: 0.4s; 
+          display: flex; 
+          align-items: center; 
+          box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+        }
         .sticky-bar.visible { transform: translateY(0); }
+        .countdown-box { background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 6px; font-variant-numeric: tabular-nums; }
 
         @media (max-width: 1024px) {
           .grid-2-col { grid-template-columns: 1fr !important; gap: 40px !important; }
@@ -346,7 +372,7 @@ const DataScience = () => {
               {alumniOutcomes.map((a, i) => (
                  <div key={i} className="p-card">
                     <div style={{display:'flex', justifyContent:'space-between', marginBottom:'16px'}}>
-                       <div><div style={{fontWeight:800}}>{a.name}</div><div style={{fontSize:'12px', color:'var(--ds-text-dim)'}}>{a.role} → {a.target}</div></div>
+                       <div><div style={{fontWeight:800}}>{a.name}</div><div style={{fontSize:'12px', color:'var(--ds-text-dim)'}}>{a.role} ➔ {a.target}</div></div>
                        <div style={{fontSize:'14px', fontWeight:800, color:'var(--ds-primary)'}}>{a.company}</div>
                     </div>
                     <p style={{fontSize:'14px', fontStyle:'italic', opacity:0.8}}>"{a.desc}"</p>
@@ -390,7 +416,7 @@ const DataScience = () => {
                  <div style={{fontSize:'14px', fontWeight:800, color:'var(--ds-primary)', textTransform:'uppercase', marginBottom:'20px'}}>Full Enrollment</div>
                  <div style={{fontSize:'64px', fontWeight:950, letterSpacing:'-3px', marginBottom:'16px'}}>₹65,999</div>
                  <p style={{color:'var(--ds-text-dim)', marginBottom:'40px'}}>Fee inclusive of all live training, dashboard access, and career support services.</p>
-                 <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="Data Science" /><a href={dsBrochure} className="btn-sec">Detailed Syllabus</a></div>
+                 <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="Data Science" /><DownloadBrochureButton courseValue="Data Science" brochureLink={dsBrochure} label="Detailed Syllabus" /></div>
               </div>
               <div style={{display:'grid', gap:'12px'}}>
                  {[{l:"Booking Amt", v:"₹10,000"}, {l:"Installment 1", v:"₹28,000"}, {l:"Installment 2", v:"₹27,999"}].map((row, i) => (
@@ -398,7 +424,7 @@ const DataScience = () => {
                        <span style={{fontSize:'13px', fontWeight:700}}>{row.l}</span><span style={{fontWeight:800}}>{row.v}</span>
                     </div>
                  ))}
-                 <div style={{marginTop:'12px', display:'flex', alignItems:'center', gap:'12px', opacity:0.6}}><Zap size={20} /> <img src={Flashaidlogo} alt="Flashaid" style={{height:'16px', grayscale:1}} /> <span style={{fontSize:'12px'}}>0% EMI Solutions</span></div>
+                 <div style={{marginTop:'12px', display:'flex', alignItems:'center', gap:'12px', opacity:0.6}}><Zap size={20} /> <img src={Flashaidlogo} alt="Flashaid" style={{height:'16px', grayscale:1}} /> <span style={{fontSize:'12px'}}>0% EMI ₹7,333/MO</span></div>
               </div>
            </div>
         </div>
@@ -450,10 +476,27 @@ const DataScience = () => {
 
       <div className={`sticky-bar ${scrolled ? 'visible' : ''}`}>
         <div className="shell flex justify-between items-center w-full">
-           <div className="hidden sm:block"><div style={{fontSize:'10px', fontWeight:800, color:'var(--ds-text-dim)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:'2px'}}>Professional Certification</div><div style={{fontWeight:800}}>₹65,999 <span style={{fontSize:'12px', color:'var(--ds-primary)', marginLeft:'12px'}}>EMI ₹4,599/MO</span></div></div>
+           <div className="flex items-center gap-2 md:gap-6">
+              <div className="flex items-center gap-2 text-sm md:text-lg font-bold">
+                 <span className="animate-pulse">🚨</span>
+                 <span>30% Scholarship closing in just 2 days.</span>
+              </div>
+              <div className="hidden lg:flex items-center gap-3 text-sm font-bold opacity-90">
+                 <span>Batch closing in</span>
+                 <div className="flex gap-1.5 items-center">
+                    <span className="countdown-box">23</span> :
+                    <span className="countdown-box">07</span> :
+                    <span className="countdown-box">57</span>
+                 </div>
+              </div>
+           </div>
            <div className="flex gap-4 items-center">
-              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-bold uppercase hidden lg:flex items-center gap-2 hover:text-teal-600 transition-all"><PhoneCall size={14} /> Talk to Advisor</button>
-              <ApplyNowButton courseValue="Data Science" />
+              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Talk to Advisor</button>
+              <ApplyNowButton 
+                 courseValue="Data Science" 
+                 label="Connect Now" 
+                 className="!bg-white !from-white !to-white !text-teal-700 !px-8 !py-2.5 !rounded-lg !shadow-none hover:!scale-105"
+              />
            </div>
         </div>
       </div>
@@ -462,3 +505,7 @@ const DataScience = () => {
 };
 
 export default DataScience;
+
+
+
+

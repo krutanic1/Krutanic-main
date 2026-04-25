@@ -55,7 +55,7 @@ const ShuffleHero = () => {
             </div>
             <div className="rounded-[16px] md:rounded-[20px] border border-[#efe0d8] bg-white px-3 py-4 md:px-6 md:py-5 shadow-[0_12px_28px_rgba(17,24,39,0.04)] flex flex-col items-center justify-center text-center">
               <div className="text-[9px] md:text-[11px] font-bold uppercase tracking-[0.1em] md:tracking-[0.2em] text-[#9ca3af]">Hiring<br className="block md:hidden"/> Partners</div>
-              <div className="mt-1 text-[22px] md:text-[32px] font-black leading-none text-[#111827]">250+</div>
+              <div className="mt-1 text-[22px] md:text-[32px] font-black leading-none text-[#111827]">500+</div>
             </div>
           </div>
 

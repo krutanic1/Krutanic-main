@@ -43,11 +43,12 @@ import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
 import CourseInfoStrip from "./Components/CourseInfoStrip";
 import ToolStack from "./Components/ToolStack";
+import DownloadBrochureButton from "./Components/DownloadBrochureButton";
 import dmBrochure from "../../../krutanic/Digital Marketing Advanced Program.pdf";
 
 const heroStats = [
   { label: "Placement Rate", value: "93%" },
-  { label: "Hiring Partners", value: "250+" },
+  { label: "Hiring Partners", value: "500+" },
   { label: "Student Rating", value: "4.7/5" },
   { label: "Students Placed", value: "200+" },
 ];
@@ -133,12 +134,22 @@ const alumniOutcomes = [
 
 const faqCategories = {
   "Program Details": [
-    { q: "Is this program for beginners?", a: "Yes, we start from digital fundamentals and move into high-performance execution. No prior marketing experience is required." },
-    { q: "What is the class format?", a: "Live interactice sessions on weekends/evenings with industry-level practical activity hours." }
+    { q: "Is this program for beginners?", a: "Yes. Our curriculum is designed to take you from fundamentals to advanced execution, ensuring a smooth learning curve for all skill levels." },
+    { q: "What is the duration and format?", a: "The program spans 24 weeks with live interactive sessions on weekends and weekday evenings to accommodate working professionals." },
+    { q: "Do I need any prior knowledge?", a: "No prior experience is required. We teach you everything from scratch, focusing on logic, psychology, and technical execution." },
+    { q: "What are the timings?", a: "Live sessions happen on weekends and weekday evenings to accommodate work schedules." }
   ],
-  "Career Support": [
-    { q: "Do you offer placement?", a: "We provide 100% career support, including interview referrals, mock rounds, and portfolio polishing." },
-    { q: "Is there a certificate?", a: "Yes, you receive a professional Growth Accelerator Certification recognized by our 250+ hiring partners." }
+  "Career & Certification": [
+    { q: "Do you offer placement support?", a: "We provide 100% career support, including resume audits, mock interviews, LinkedIn optimization, and direct referrals to our 500+ hiring partners." },
+    { q: "Will I receive a certificate?", a: "Yes, upon successful completion of the program and projects, you will receive an industry-recognized Professional Certification." },
+    { q: "What projects will I build?", a: "You will work on multiple industry-grade projects and capstones that mimic real-world challenges, allowing you to build a production-ready portfolio." },
+    { q: "How many case studies or projects will I complete?", a: "You will graduate with at least 3-4 deep, evidence-based case studies or production-ready projects in your portfolio." }
+  ],
+  "Admissions & Policy": [
+    { q: "How do I attend the classes?", a: "You will receive meeting links on your registered email. Classes are conducted via premium platforms like Zoom or Google Meet." },
+    { q: "Do I get access to recorded sessions?", a: "Yes! Simply log in to the LMS portal to access the recorded sessions of any classes you missed." },
+    { q: "What is the refund policy?", a: "Our courses are crafted with care and commitment. Therefore, we do not offer refunds as we provide immediate access to high-value resources." },
+    { q: "Are there any prerequisites before starting?", a: "There are no prerequisites required! Our courses are designed for all skill levels." }
   ]
 };
 
@@ -193,8 +204,23 @@ const DigitalMarket = () => {
         .faq-quest { width:100%; text-align:left; padding: 20px 24px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .faq-ans { padding: 0 24px 24px; font-size: 14px; color: var(--dm-text-dim); line-height: 1.6; }
 
-        .sticky-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 72px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--dm-border); z-index: 99; transform: translateY(100%); transition: 0.4s; display: flex; align-items: center; }
+        .sticky-bar { 
+          position: fixed; 
+          bottom: 0; 
+          left: 0; 
+          width: 100%; 
+          height: 72px; 
+          background: var(--dm-primary); 
+          color: #fff;
+          z-index: 100; 
+          transform: translateY(100%); 
+          transition: 0.4s; 
+          display: flex; 
+          align-items: center; 
+          box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+        }
         .sticky-bar.visible { transform: translateY(0); }
+        .countdown-box { background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 6px; font-variant-numeric: tabular-nums; }
 
         @media (max-width: 768px) { 
           .sec-title { font-size: 28px; } 
@@ -274,7 +300,7 @@ const DigitalMarket = () => {
               {curriculumRoadmap.map((item, idx) => (
                  <div key={idx} className="p-card" onClick={() => setExpandedModule(expandedModule === idx ? null : idx)} style={{cursor:'pointer', borderLeft: expandedModule === idx ? '4px solid var(--dm-primary)' : '1px solid var(--dm-border)'}}>
                     <div style={{display:'flex', justifyContent:'space-between', marginBottom:'12px'}}>
-                       <span style={{fontSize:'11px', fontWeight:800, color:'var(--dm-primary)', background:'rgba(79,70,229,0.05)', padding:'4px 12px', borderRadius:'99px'}}>{item.module}</span>
+                       <span style={{fontSize:'12px', fontWeight:800, color:'var(--dm-primary)', background:'rgba(79,70,229,0.05)', padding:'4px 12px', borderRadius:'99px'}}>{item.module}</span>
                        <ChevronDown size={16} style={{transform: expandedModule === idx ? 'rotate(180deg)' : 'none', transition:'0.3s'}} />
                     </div>
                     <h4 style={{fontSize:'20px', fontWeight:800, marginBottom:'4px'}}>{item.title}</h4>
@@ -314,7 +340,7 @@ const DigitalMarket = () => {
            <h2 className="sec-title">How Learning Works</h2>
            <p className="sec-sub">A premium experience focused on live instruction, mentor accountability, and practical lab hours.</p>
            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(260px, 1fr))', gap:'20px'}}>
-              {[{t:"Live Classes", d:"Weekend and evening sessions timed for professionals.", i:<Video size={20}/>}, {t:"Technical Mentors", d:"Personal reviews for your campaigns and growth assets.", i:<UserCheck size={20}/>}, {t:"Practical Labs", d:"Weekly activities focused on campaign execution drills.", i:<Terminal size={20}/>}, {t:"Placement Hub", d:"Direct referral pipeline for our 250+ hiring partners.", i:<MessagesSquare size={20}/>}].map((item, i) => (
+              {[{t:"Live Classes", d:"Weekend and evening sessions timed for professionals.", i:<Video size={20}/>}, {t:"Technical Mentors", d:"Personal reviews for your campaigns and growth assets.", i:<UserCheck size={20}/>}, {t:"Practical Labs", d:"Weekly activities focused on campaign execution drills.", i:<Terminal size={20}/>}, {t:"Placement Hub", d:"Direct referral pipeline for our 500+ hiring partners.", i:<MessagesSquare size={20}/>}].map((item, i) => (
                  <div key={i} className="p-card text-center">
                     <div style={{color:'var(--dm-primary)', margin:'0 auto 20px', width:'fit-content'}}>{item.i}</div>
                     <div style={{fontWeight:800, marginBottom:'8px'}}>{item.t}</div>
@@ -329,7 +355,7 @@ const DigitalMarket = () => {
       <section className="dm-section">
         <div className="shell">
            <h2 className="sec-title">Career Support Process</h2>
-           <p className="sec-sub">A structured 5‑step support system to convert your technical skills into real, high‑growth job offers.</p>
+           <p className="sec-sub">A structured 5-step support system to convert your technical skills into real, high-growth job offers.</p>
            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'20px'}}>
               {careerSupport.map((step, i) => (
                  <div key={i} className="p-card" style={{background:'#fff'}}>
@@ -387,23 +413,32 @@ const DigitalMarket = () => {
 
       {/* 12. PRICING */}
       <section className="dm-section" id="pricing">
-        <div className="shell">
+        <div className="shell box-border">
            <h2 className="sec-title">Program Investment</h2>
            <p className="sec-sub">Transparent enrollment options with secure payment partners and installment plans.</p>
-           <div className="p-card" style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'60px', padding:'48px', alignItems:'start'}}>
-              <div>
+           <div className="p-card box-border w-full max-w-full" style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap:'clamp(32px, 5vw, 60px)', padding:'clamp(24px, 5vw, 48px)', alignItems:'start'}}>
+              <div className="w-full min-w-0">
                  <div style={{fontSize:'13px', fontWeight:800, color:'var(--dm-primary)', textTransform:'uppercase', marginBottom:'16px'}}>All-access certification</div>
-                 <div style={{fontSize:'64px', fontWeight:950, letterSpacing:'-3px', marginBottom:'16px'}}>₹95,999</div>
+                 <div className="break-words" style={{fontSize:'clamp(48px, 8vw, 64px)', fontWeight:950, letterSpacing:'-3px', marginBottom:'16px'}}>₹95,999</div>
                  <p style={{color:'var(--dm-text-dim)', marginBottom:'40px', lineHeight:1.6}}>Includes all tools, live sessions, project reviews, and 100% career support access.</p>
-                 <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="Digital Marketing" /><a href={dmBrochure} className="btn-sec">Official Syllabus</a></div>
+                 <div className="flex flex-col sm:flex-row gap-4 w-full">
+                    <div className="w-full sm:w-auto [&>div]:w-full [&>div>button]:w-full">
+                       <ApplyNowButton courseValue="Digital Marketing" />
+                    </div>
+                    <DownloadBrochureButton courseValue="Digital Marketing" brochureLink={dmBrochure} className="btn-sec text-center" />
+                 </div>
               </div>
-              <div style={{display:'grid', gap:'12px'}}>
+              <div style={{display:'grid', gap:'12px'}} className="w-full min-w-0">
                  {[{l:"Seat Reservation", v:"₹10,000"}, {l:"Installment 1", v:"₹43,000"}, {l:"Installment 2", v:"₹42,999"}].map((row, i) => (
-                    <div key={i} style={{padding:'20px', background:'var(--dm-bg)', borderRadius:'8px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                    <div key={i} style={{padding:'20px', background:'var(--dm-bg)', borderRadius:'12px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                        <span style={{fontSize:'13px', fontWeight:700}}>{row.l}</span><span style={{fontWeight:800}}>{row.v}</span>
                     </div>
                  ))}
-                 <div style={{marginTop:'12px', display:'flex', alignItems:'center', gap:'12px', opacity:0.6}}><Zap size={18} /> <img src={Flashaidlogo} alt="Flashaid" style={{height:'14px', grayscale:1}} /> <span style={{fontSize:'12px'}}>EMI starting at ₹4,000/month</span></div>
+                 <div style={{marginTop:'12px', display:'flex', alignItems:'center', gap:'12px', opacity:0.6}} className="flex-wrap min-w-0">
+                    <Zap size={18} className="shrink-0" /> 
+                    <img src={Flashaidlogo} alt="Flashaid" style={{height:'14px', filter:'grayscale(1)'}} className="shrink-0" /> 
+                    <span className="break-words min-w-0 flex-1" style={{fontSize:'12px'}}>EMI ₹10,666/MO</span>
+                 </div>
               </div>
            </div>
         </div>
@@ -455,10 +490,27 @@ const DigitalMarket = () => {
 
       <div className={`sticky-bar ${scrolled ? 'visible' : ''}`}>
         <div className="shell flex justify-between items-center w-full">
-           <div className="hidden sm:block"><div style={{fontSize:'10px', fontWeight:800, color:'var(--dm-text-dim)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:'2px'}}>Growth Accelerator</div><div style={{fontWeight:800}}>₹95,999 <span style={{fontSize:'12px', color:'var(--dm-primary)', marginLeft:'12px'}}>EMI ₹4,000/MO</span></div></div>
+           <div className="flex items-center gap-2 md:gap-6">
+              <div className="flex items-center gap-2 text-sm md:text-lg font-bold">
+                 <span className="animate-pulse">🚨</span>
+                 <span>30% Scholarship closing in just 2 days.</span>
+              </div>
+              <div className="hidden lg:flex items-center gap-3 text-sm font-bold opacity-90">
+                 <span>Batch closing in</span>
+                 <div className="flex gap-1.5 items-center">
+                    <span className="countdown-box">23</span> :
+                    <span className="countdown-box">07</span> :
+                    <span className="countdown-box">57</span>
+                 </div>
+              </div>
+           </div>
            <div className="flex gap-4 items-center">
-              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-bold uppercase hidden lg:flex items-center gap-2 hover:text-indigo-600 transition-all"><PhoneCall size={14} /> Callback</button>
-              <ApplyNowButton courseValue="Digital Marketing" />
+              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Talk to Advisor</button>
+              <ApplyNowButton 
+                 courseValue="Digital Marketing" 
+                 label="Connect Now" 
+                 className="!bg-white !from-white !to-white !text-indigo-700 !px-8 !py-2.5 !rounded-lg !shadow-none hover:!scale-105"
+              />
            </div>
         </div>
       </div>
@@ -467,3 +519,8 @@ const DigitalMarket = () => {
 };
 
 export default DigitalMarket;
+
+
+
+
+

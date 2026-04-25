@@ -290,7 +290,7 @@ const AdvanceCourses = () => {
               Why Choose <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-orange-500">Advanced Training?</span>
             </h2>
             <p className="mt-4 text-gray-500 font-medium text-base sm:text-lg leading-relaxed px-2">
-              Step beyond generic bootcamps. Our advanced programs are engineered exclusively for professionals aiming for leadership and mastery.
+              Step beyond generic programs. Our advanced programs are engineered exclusively for professionals aiming for leadership and mastery.
             </p>
           </div>
 
@@ -299,7 +299,7 @@ const AdvanceCourses = () => {
               { icon: <FaStar />, title: "1-on-1 Mentorship", desc: "Connect exclusively with industry veterans. Get direct feedback, career strategy, and exclusive insights to accelerate your vertical growth.", bg: "bg-blue-50 text-blue-600" },
               { icon: <FaAward />, title: "Global Certification", desc: "Earn verifiable, globally-recognized certifications that dramatically elevate your resume and explicitly validate your advanced expertise.", bg: "bg-orange-50 text-orange-600" },
               { icon: <FaBuilding />, title: "Live Architectures", desc: "Work directly on live enterprise-grade projects. Deal with massive scale, real data, and deployment strategies mirroring FAANG stacks.", bg: "bg-green-50 text-green-600" },
-              { icon: <FaCheckCircle />, title: "Placement Assistance", desc: "Gain direct access to our 250+ hiring partners aggressively looking for certified profiles. Prepare with elite mock interviews and portfolio tracking.", bg: "bg-purple-50 text-purple-600" },
+              { icon: <FaCheckCircle />, title: "Placement Assistance", desc: "Gain direct access to our 500+ hiring partners aggressively looking for certified profiles. Prepare with elite mock interviews and portfolio tracking.", bg: "bg-purple-50 text-purple-600" },
               { icon: <FaRocket />, title: "Project-Based Learning", desc: "Execute 50+ industry-standard projects across the program. Transition from theoretical knowledge to building production-ready systems.", bg: "bg-red-50 text-red-600" },
               { icon: <FaUsers />, title: "Industry Masterclasses", desc: "Gain exclusive access to weekly masterclasses led by experts from top-tier firms. Stay updated with the latest industry trends and best practices.", bg: "bg-cyan-50 text-cyan-600" }
             ].map((item, i) => (

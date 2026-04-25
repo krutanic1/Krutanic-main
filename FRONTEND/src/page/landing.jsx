@@ -104,7 +104,7 @@ const HomePage = () => {
             </Link>
             <div className="number">
               <h2 data-aos="fade-right">
-                <span className="fa fa-globe"></span> 250+ Hiring Partners
+                <span className="fa fa-globe"></span> 500+ Hiring Partners
               </h2>
               <h2 data-aos="fade-right">
                 <span className="fa fa-globe"></span> 170+ Global Mentors

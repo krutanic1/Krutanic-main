@@ -34,6 +34,7 @@ import SmoothScroll from "./SmoothScroll";
 import MasterClass from "./page/MasterClass";
 import AutomationTesting from "./page/AdvanceCourse/AutomationTesting";
 import PromptEngineering from "./page/AdvanceCourse/PromptEngineering";
+import GenerativeAI from "./page/AdvanceCourse/GenerativeAI";
 import DashboardAccessForm from "./page/DashboardAccessForm";
 import AdvanceDashboardAccess from "./page/AdvanceDashboardAccess";
 import Alumni from "./page/Alumni";
@@ -368,6 +369,7 @@ const AppContent = () => {
     "/productmanagement",
     "/automationtesting",
     "/promptengineering",
+    "/generativeai",
     "/operationlogin",
     "/advoperationlogin",
     "/teamlogin",
@@ -593,6 +595,7 @@ const AppContent = () => {
         <Route path="/ProductManagement" element={<ProductManagement />} />
         <Route path="/AutomationTesting" element={<AutomationTesting />} />
         <Route path="/PromptEngineering" element={<PromptEngineering />} />
+        <Route path="/GenerativeAI" element={<GenerativeAI />} />
         <Route path="/DashboardAccessForm" element={<DashboardAccessForm />} />
         <Route path="/AdvanceDashboardAccess" element={<AdvanceDashboardAccess />} />
         <Route path="/MasterClass" element={<MasterClass />} />

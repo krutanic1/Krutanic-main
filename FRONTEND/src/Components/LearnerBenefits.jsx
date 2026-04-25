@@ -37,7 +37,7 @@ const benefitData = [
     points: [
       "Resume Building & Mock Interview Prep",
       "Exclusive access to Krutanic Job Portal",
-      "250+ Hiring Partners across the globe"
+      "500+ Hiring Partners across the globe"
     ]
   }
 ];

@@ -7,7 +7,7 @@ import AdvancedApplyPopup from "../../../Components/AdvancedApplyPopup";
  * ApplyNowButton
  * Triggers the premium AdvancedApplyPopup modal without navigating away.
  */
-const ApplyNowButton = ({ courseValue }) => {
+const ApplyNowButton = ({ courseValue, className = "", label = "Enroll Now" }) => {
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
@@ -23,9 +23,9 @@ const ApplyNowButton = ({ courseValue }) => {
       <button
         data-aos="fade-up"
         onClick={handleEnrollClick}
-        className="bg-[#f15b29] border text-white font-semibold px-6 py-2 hover:rounded-xl ease-linear duration-600 hover:text-black rounded-sm transition-all"
+        className={`bg-gradient-to-b from-[#8f52ff] to-[#6f31f6] text-white font-bold px-10 py-3.5 rounded-full hover:scale-105 transition-all duration-300 shadow-lg shadow-purple-500/20 ${className}`}
       >
-        Enroll Now
+        {label}
       </button>
 
       {showPopup && (

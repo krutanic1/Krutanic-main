@@ -42,13 +42,14 @@ import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
 import CourseInfoStrip from "./Components/CourseInfoStrip";
 import ToolStack from "./Components/ToolStack";
+import DownloadBrochureButton from "./Components/DownloadBrochureButton";
 import uiuxBrochure from "../../../krutanic/UI  UX-min.pdf";
 
 const heroStats = [
   { label: "Duration", value: "24 Weeks" },
   { label: "Design Projects", value: "8+ Portfolio Cases" },
   { label: "Avg. Salary Hike", value: "52%" },
-  { label: "Hiring Partners", value: "250+" },
+  { label: "Hiring Partners", value: "500+" },
 ];
 
 const audience = [
@@ -80,7 +81,7 @@ const curriculumRoadmap = [
   { weeks: "Weeks 7-10", title: "UI Engineering in Figma", topics: "Auto-layout, components, variants, styles.", details: "Deep-dive into Figma to build production-ready interfaces with systematic precision." },
   { weeks: "Weeks 11-12", title: "UX Psychology", topics: "Gestalt laws, cognitive load, behavioral triggers.", details: "Understand the 'why' behind user behavior and design interfaces that align with human intuition." },
   { weeks: "Weeks 13-16", title: "Advanced Design Systems", topics: "Tokenization, documentation, scalability.", details: "Learn to build and manage cohesive design systems that scale across platforms and teams." },
-  { weeks: "Weeks 17-20", title: "Capstone Product Design", topics: "End-to-end case, Prototyping, Usability testing.", details: "Execute a full product cycle—from research to a high-fidelity interactive prototype." },
+  { weeks: "Weeks 17-20", title: "Capstone Product Design", topics: "End-to-end case, Prototyping, Usability testing.", details: "Execute a full product cycleÃ¢â‚¬â€from research to a high-fidelity interactive prototype." },
   { weeks: "Weeks 21-24", title: "Portfolio Engineering", topics: "Case study writing, Behance/Dribbble, CV prep.", details: "Translate your projects into a world-class portfolio that captures the attention of elite design leads." }
 ];
 
@@ -124,19 +125,29 @@ const careerSupport = [
 ];
 
 const faqCategories = {
-  "Progrm Logic": [
-    { q: "Do I need drawing skills?", a: "No. UI/UX is about problem-solving, hierarchy, and user psychology. We teach you the visual execution from scratch." },
-    { q: "Which tools do we master?", a: "Primarily Figma (industry standard), but we cover the full ecosystem including Framer and Adobe Suite." }
+  "Program Details": [
+    { q: "Is this program for beginners?", a: "Yes. Our curriculum is designed to take you from fundamentals to advanced execution, ensuring a smooth learning curve for all skill levels." },
+    { q: "What is the duration and format?", a: "The program spans 24 weeks with live interactive sessions on weekends and weekday evenings to accommodate working professionals." },
+    { q: "Do I need any prior knowledge or drawing skills?", a: "No prior experience is required. We teach you everything from scratch, focusing on logic, psychology, and technical execution." },
+    { q: "What are the timings?", a: "Live sessions happen on weekends and weekday evenings to accommodate work schedules." }
   ],
-  "Career & Support": [
-    { q: "Is job assistance included?", a: "Yes. 100% assistance including portfolio reviews, Behance strategy, and mock design sprints." },
-    { q: "How many cases do we build?", a: "You will graduate with at least 3-4 deep, evidence-based case studies in your portfolio." }
+  "Career & Certification": [
+    { q: "Do you offer placement support?", a: "We provide 100% career support, including resume audits, mock interviews, LinkedIn optimization, and direct referrals to our 500+ hiring partners." },
+    { q: "Will I receive a certificate?", a: "Yes, upon successful completion of the program and projects, you will receive an industry-recognized Professional Certification." },
+    { q: "What projects will I build?", a: "You will work on multiple industry-grade projects and capstones that mimic real-world challenges, allowing you to build a production-ready portfolio." },
+    { q: "How many case studies or projects will I complete?", a: "You will graduate with at least 3-4 deep, evidence-based case studies or production-ready projects in your portfolio." }
+  ],
+  "Admissions & Policy": [
+    { q: "How do I attend the classes?", a: "You will receive meeting links on your registered email. Classes are conducted via premium platforms like Zoom or Google Meet." },
+    { q: "Do I get access to recorded sessions?", a: "Yes! Simply log in to the LMS portal to access the recorded sessions of any classes you missed." },
+    { q: "What is the refund policy?", a: "Our courses are crafted with care and commitment. Therefore, we do not offer refunds as we provide immediate access to high-value resources." },
+    { q: "Are there any prerequisites before starting?", a: "There are no prerequisites required! Our courses are designed for all skill levels." }
   ]
 };
 
 const UIUXDesign = () => {
   const [expandedModule, setExpandedModule] = useState(null);
-  const [activeFaqCat, setActiveFaqCat] = useState("Progrm Logic");
+  const [activeFaqCat, setActiveFaqCat] = useState("Program Details");
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
   const [scrolled, setScrolled] = useState(false);
 
@@ -185,8 +196,23 @@ const UIUXDesign = () => {
         .faq-quest { width:100%; text-align:left; padding: 22px 24px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .faq-ans { padding: 0 24px 24px; font-size: 14px; color: var(--ux-text-dim); line-height: 1.6; }
 
-        .sticky-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 72px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--ux-border); z-index: 99; transform: translateY(100%); transition: 0.4s; display: flex; align-items: center; }
+        .sticky-bar { 
+          position: fixed; 
+          bottom: 0; 
+          left: 0; 
+          width: 100%; 
+          height: 72px; 
+          background: var(--ux-primary); 
+          color: #fff;
+          z-index: 100; 
+          transform: translateY(100%); 
+          transition: 0.4s; 
+          display: flex; 
+          align-items: center; 
+          box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+        }
         .sticky-bar.visible { transform: translateY(0); }
+        .countdown-box { background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 6px; font-variant-numeric: tabular-nums; }
 
         @media (max-width: 768px) { .sec-title { font-size: 28px; } }
       `}</style>
@@ -194,7 +220,7 @@ const UIUXDesign = () => {
       {/* 1. HERO */}
       <CourseHeroBanner
         badge="Product Design Authority"
-        icon="🎨"
+        icon="Ã°Å¸Å½Â¨"
         title="UI/UX Design"
         highlight="& Product Strategy"
         sub="Master the architecture of user experience. From deep discovery to high-fidelity design systems, build the products that shape the future."
@@ -234,7 +260,7 @@ const UIUXDesign = () => {
       <section className="ux-sec-white">
         <div className="shell">
           <h2 className="sec-title">The Design Edge</h2>
-          <p className="sec-sub">UX is no longer a luxury—it is the strategic engine of high-growth product companies and market disruptors.</p>
+          <p className="sec-sub">UX is no longer a luxuryÃ¢â‚¬â€it is the strategic engine of high-growth product companies and market disruptors.</p>
           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(300px, 1fr))', gap:'40px'}}>
              {marketOpportunity.map((item, i) => (
                <div key={i}>
@@ -298,7 +324,7 @@ const UIUXDesign = () => {
            <h2 className="sec-title">How Learning Works</h2>
            <p className="sec-sub">A premium experience balancing visual perfection, mentor review, and institutional networking.</p>
            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(260px, 1fr))', gap:'20px'}}>
-              {[{t:"Design Sprints", d:"Time-boxed challenges to simulate real product discovery cycles.", i:<Zap size={20}/>}, {t:"Review Labs", d:"Direct mentor feedback on your Figma boards and prototypes.", i:<Search size={20}/>}, {t:"Critique Circles", d:"Weekly peer-to-peer reviews to sharpen your artistic eye.", i:<Users size={20}/>}, {t:"Industry Network", d:"Referral access to our network of 250+ global design partners.", i:<Award size={20}/>}].map((item, i) => (
+              {[{t:"Design Sprints", d:"Time-boxed challenges to simulate real product discovery cycles.", i:<Zap size={20}/>}, {t:"Review Labs", d:"Direct mentor feedback on your Figma boards and prototypes.", i:<Search size={20}/>}, {t:"Critique Circles", d:"Weekly peer-to-peer reviews to sharpen your artistic eye.", i:<Users size={20}/>}, {t:"Industry Network", d:"Referral access to our network of 500+ global design partners.", i:<Award size={20}/>}].map((item, i) => (
                  <div key={i} className="p-card text-center">
                     <div style={{color:'var(--ux-primary)', margin:'0 auto 20px', width:'fit-content'}}>{item.i}</div>
                     <div style={{fontWeight:800, marginBottom:'8px'}}>{item.t}</div>
@@ -313,7 +339,7 @@ const UIUXDesign = () => {
       <section className="ux-sec-white">
         <div className="shell">
            <h2 className="sec-title">Career Support Process</h2>
-           <p className="sec-sub">A structured 5‑step support system to convert your technical skills into real, high‑growth job offers.</p>
+           <p className="sec-sub">A structured 5Ã¢â‚¬â€˜step support system to convert your technical skills into real, highÃ¢â‚¬â€˜growth job offers.</p>
            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'20px'}}>
               {careerSupport.map((step, i) => (
                  <div key={i} className="p-card" style={{background:'#F9FAFB'}}>
@@ -349,7 +375,7 @@ const UIUXDesign = () => {
            <p className="sec-sub">Graduates from our advanced programs have transitioned into elite roles across global design hubs.</p>
            <ClientsCarousel />
            <div style={{marginTop:'48px', display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(240px, 1fr))', gap:'24px'}}>
-              {[{l:"200+ Mentees Placed", d:"Across product, UX, and research tracks."}, {l:"₹08-18 LPA Range", d:"Typical entry-to-senior role transition packages."}, {l:"250+ Hiring Partners", d:"Representing the full spectrum of SaaS and agency orgs."}].map((item, i) => (
+              {[{l:"200+ Mentees Placed", d:"Across product, UX, and research tracks."}, {l:"₹08-18 LPA Range", d:"Typical entry-to-senior role transition packages."}, {l:"500+ Hiring Partners", d:"Representing the full spectrum of SaaS and agency orgs."}].map((item, i) => (
                  <div key={i} className="p-card">
                     <div style={{fontWeight:800, marginBottom:'10px', color:'var(--ux-accent)'}}>{item.l}</div>
                     <p style={{fontSize:'14px', color:'var(--ux-text-dim)'}}>{item.d}</p>
@@ -376,7 +402,7 @@ const UIUXDesign = () => {
                  <div style={{fontSize:'13px', fontWeight:800, color:'var(--ux-accent)', textTransform:'uppercase', marginBottom:'16px'}}>Advanced Product Design Certification</div>
                  <div style={{fontSize:'64px', fontWeight:950, letterSpacing:'-3px', marginBottom:'16px'}}>₹65,999</div>
                  <p style={{color:'var(--ux-text-dim)', marginBottom:'40px', lineHeight:1.7}}>Inclusive of all training frameworks, design labs, portfolio reviews, and job assistance.</p>
-                 <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="UIUX Design" /><a href={uiuxBrochure} className="btn-sec">Official Syllabus</a></div>
+                  <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="UIUX Design" /><DownloadBrochureButton courseValue="UIUX Design" brochureLink={uiuxBrochure} /></div>
               </div>
               <div style={{display:'grid', gap:'12px'}}>
                  {[{l:"Seat Reservation", v:"₹10,000"}, {l:"Phase 1 Due", v:"₹28,000"}, {l:"Phase 2 Balance", v:"₹27,999"}].map((row, i) => (
@@ -384,7 +410,7 @@ const UIUXDesign = () => {
                        <span style={{fontSize:'13px', fontWeight:700}}>{row.l}</span><span style={{fontWeight:800}}>{row.v}</span>
                     </div>
                  ))}
-                 <div style={{marginTop:'12px', display:'flex', alignItems:'center', gap:'12px', opacity:0.6}}><Zap size={18} /> <img src={Flashaidlogo} alt="Flashaid" style={{height:'14px', grayscale:1}} /> <span style={{fontSize:'12px'}}>EMI starting at ₹4,000/month</span></div>
+                 <div style={{marginTop:'12px', display:'flex', alignItems:'center', gap:'12px', opacity:0.6}}><Zap size={18} /> <img src={Flashaidlogo} alt="Flashaid" style={{height:'14px', grayscale:1}} /> <span style={{fontSize:'12px'}}>EMI ₹7,333/MO</span></div>
               </div>
            </div>
         </div>
@@ -436,10 +462,27 @@ const UIUXDesign = () => {
 
       <div className={`sticky-bar ${scrolled ? 'visible' : ''}`}>
         <div className="shell flex justify-between items-center w-full">
-           <div className="hidden sm:block"><div style={{fontSize:'10px', fontWeight:800, color:'var(--ux-text-dim)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:'2px'}}>Design Authority</div><div style={{fontWeight:800}}>₹65,999 <span style={{fontSize:'12px', color:'var(--ux-accent)', marginLeft:'12px'}}>EMI ₹4,000/MO</span></div></div>
+           <div className="flex items-center gap-2 md:gap-6">
+              <div className="flex items-center gap-2 text-sm md:text-lg font-bold">
+                 <span className="animate-pulse">🚨</span>
+                 <span>30% Scholarship closing in just 2 days.</span>
+              </div>
+              <div className="hidden lg:flex items-center gap-3 text-sm font-bold opacity-90">
+                 <span>Batch closing in</span>
+                 <div className="flex gap-1.5 items-center">
+                    <span className="countdown-box">23</span> :
+                    <span className="countdown-box">07</span> :
+                    <span className="countdown-box">57</span>
+                 </div>
+              </div>
+           </div>
            <div className="flex gap-4 items-center">
-              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-bold uppercase hidden lg:flex items-center gap-2 hover:text-purple-700 transition-all"><PhoneCall size={14} /> Talk to Advisor</button>
-              <ApplyNowButton courseValue="UIUX Design" />
+              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Talk to Advisor</button>
+              <ApplyNowButton 
+                 courseValue="UIUX Design" 
+                 label="Connect Now" 
+                 className="!bg-white !from-white !to-white !text-purple-700 !px-8 !py-2.5 !rounded-lg !shadow-none hover:!scale-105"
+              />
            </div>
         </div>
       </div>
@@ -448,3 +491,7 @@ const UIUXDesign = () => {
 };
 
 export default UIUXDesign;
+
+
+
+

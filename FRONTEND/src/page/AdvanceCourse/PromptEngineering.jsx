@@ -38,6 +38,7 @@ import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
 import CourseInfoStrip from "./Components/CourseInfoStrip";
 import ToolStack from "./Components/ToolStack";
+import DownloadBrochureButton from "./Components/DownloadBrochureButton";
 import peBrochure from "../../../krutanic/Prompt engineering for generative AI Advanced Program.pdf";
 
 const heroStats = [
@@ -122,19 +123,29 @@ const careerSupport = [
 ];
 
 const faqCategories = {
-  "Progrm Basics": [
-    { q: "Is this course for non-coders?", a: "Yes. While code familiarity helps, prompt engineering is primarily a logic and language task. We provide support for both paths." },
-    { q: "Which LLMs will we use?", a: "The program is model-agnostic. We work with GPT-4, Claude 3.5, and open-source models like Llama 3." }
+  "Program Details": [
+    { q: "Is this program for beginners?", a: "Yes. Our curriculum is designed to take you from fundamentals to advanced execution, ensuring a smooth learning curve for all skill levels." },
+    { q: "What is the duration and format?", a: "The program spans 24 weeks with live interactive sessions on weekends and weekday evenings to accommodate working professionals." },
+    { q: "Do I need any prior knowledge?", a: "No prior experience is required. We teach you everything from scratch, focusing on logic, psychology, and technical execution." },
+    { q: "What are the timings?", a: "Live sessions happen on weekends and weekday evenings to accommodate work schedules." }
   ],
-  "Job Assistance": [
-    { q: "How does placement support work?", a: "We provide portfolio reviews, resume building for AI roles, and direct referrals to our hiring network." },
-    { q: "What is the demand for this role?", a: "Prompt Engineering is currently one of the fastest-growing niches in tech as every company integrates GenAI." }
+  "Career & Certification": [
+    { q: "Do you offer placement support?", a: "We provide 100% career support, including resume audits, mock interviews, LinkedIn optimization, and direct referrals to our 500+ hiring partners." },
+    { q: "Will I receive a certificate?", a: "Yes, upon successful completion of the program and projects, you will receive an industry-recognized Professional Certification." },
+    { q: "What projects will I build?", a: "You will work on multiple industry-grade projects and capstones that mimic real-world challenges, allowing you to build a production-ready portfolio." },
+    { q: "How many case studies or projects will I complete?", a: "You will graduate with at least 3-4 deep, evidence-based case studies or production-ready projects in your portfolio." }
+  ],
+  "Admissions & Policy": [
+    { q: "How do I attend the classes?", a: "You will receive meeting links on your registered email. Classes are conducted via premium platforms like Zoom or Google Meet." },
+    { q: "Do I get access to recorded sessions?", a: "Yes! Simply log in to the LMS portal to access the recorded sessions of any classes you missed." },
+    { q: "What is the refund policy?", a: "Our courses are crafted with care and commitment. Therefore, we do not offer refunds as we provide immediate access to high-value resources." },
+    { q: "Are there any prerequisites before starting?", a: "There are no prerequisites required! Our courses are designed for all skill levels." }
   ]
 };
 
 const PromptEngineering = () => {
   const [expandedModule, setExpandedModule] = useState(null);
-  const [activeFaqCat, setActiveFaqCat] = useState("Progrm Basics");
+  const [activeFaqCat, setActiveFaqCat] = useState("Program Details");
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
   const [scrolled, setScrolled] = useState(false);
 
@@ -183,8 +194,23 @@ const PromptEngineering = () => {
         .faq-quest { width:100%; text-align:left; padding: 22px 24px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .faq-ans { padding: 0 24px 24px; font-size: 14px; color: var(--pe-text-dim); line-height: 1.6; }
 
-        .sticky-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 72px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--pe-border); z-index: 99; transform: translateY(100%); transition: 0.4s; display: flex; align-items: center; }
+        .sticky-bar { 
+          position: fixed; 
+          bottom: 0; 
+          left: 0; 
+          width: 100%; 
+          height: 72px; 
+          background: #6D28D9; 
+          color: #fff;
+          z-index: 100; 
+          transform: translateY(100%); 
+          transition: 0.4s; 
+          display: flex; 
+          align-items: center; 
+          box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+        }
         .sticky-bar.visible { transform: translateY(0); }
+        .countdown-box { background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 6px; font-variant-numeric: tabular-nums; }
 
         @media (max-width: 768px) { 
           .sec-title { font-size: 28px; } 
@@ -195,7 +221,7 @@ const PromptEngineering = () => {
       {/* 1. HERO */}
       <CourseHeroBanner
         badge="Generative AI Focus"
-        icon="🧠"
+        icon="Ã°Å¸Â§Â "
         title="Prompt Engineering"
         highlight="Foundations to Pro"
         sub="Master the technical architectures and psychological frameworks required to steer LLMs with surgical precision across production-grade AI workflows."
@@ -297,9 +323,9 @@ const PromptEngineering = () => {
       <section className="pe-sec-white">
         <div className="shell">
            <h2 className="sec-title">How Learning Works</h2>
-           <p className="sec-sub">Experience a structured, mentor-led bootcamp format focused on technical depth and portfolio construction.</p>
+           <p className="sec-sub">Experience a structured, mentor-led program format focused on technical depth and portfolio construction.</p>
            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(260px, 1fr))', gap:'20px'}}>
-              {[{t:"Live Bootcamp", d:"Interactive technical lectures focused on real behavior patterns.", i:<Video size={20}/>}, {t:"Mentor Feedback", d:"Regular 1-on-1 reviews for your prompt architectures and code.", i:<UserCheck size={20}/>}, {t:"Practical Labs", d:"Weekly hands-on tasks to build and test prompt libraries.", i:<Terminal size={20}/>}, {t:"Career Hub", d:"Direct referral and interview support for emerging AI roles.", i:<MessagesSquare size={20}/>}].map((item, i) => (
+              {[{t:"Live Program", d:"Interactive technical lectures focused on real behavior patterns.", i:<Video size={20}/>}, {t:"Mentor Feedback", d:"Regular 1-on-1 reviews for your prompt architectures and code.", i:<UserCheck size={20}/>}, {t:"Practical Labs", d:"Weekly hands-on tasks to build and test prompt libraries.", i:<Terminal size={20}/>}, {t:"Career Hub", d:"Direct referral and interview support for emerging AI roles.", i:<MessagesSquare size={20}/>}].map((item, i) => (
                  <div key={i} className="p-card text-center">
                     <div style={{color:'var(--pe-primary)', margin:'0 auto 20px', width:'fit-content'}}>{item.i}</div>
                     <div style={{fontWeight:800, marginBottom:'8px'}}>{item.t}</div>
@@ -314,7 +340,7 @@ const PromptEngineering = () => {
       <section className="pe-sec-white">
         <div className="shell">
            <h2 className="sec-title">Career Support Process</h2>
-           <p className="sec-sub">A structured 5‑step support system to convert your technical skills into real, high‑growth job offers.</p>
+           <p className="sec-sub">A structured 5Ã¢â‚¬â€˜step support system to convert your technical skills into real, highÃ¢â‚¬â€˜growth job offers.</p>
            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'20px'}}>
               {careerSupport.map((step, i) => (
                  <div key={i} className="p-card" style={{background:'#F9FAFB'}}>
@@ -349,7 +375,7 @@ const PromptEngineering = () => {
            <h2 className="sec-title">Program Outcomes at a Glance</h2>
            <p className="sec-sub">Direct access to industry-recognized benchmarks and professional validation in the GenAI space.</p>
            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(240px, 1fr))', gap:'24px', marginBottom:'48px'}}>
-              {[{l:"Skill Validation", d:"Certified expertise in 15+ advanced prompting frameworks."}, {l:"Portfolio", d:"Four production-grade systems ready for hiring reviews."}, {l:"Hiring Pipeline", d:"Referrals to our 250+ technology and product partners."}].map((item, i) => (
+              {[{l:"Skill Validation", d:"Certified expertise in 15+ advanced prompting frameworks."}, {l:"Portfolio", d:"Four production-grade systems ready for hiring reviews."}, {l:"Hiring Pipeline", d:"Referrals to our 500+ technology and product partners."}].map((item, i) => (
                  <div key={i} className="p-card">
                     <div style={{fontWeight:800, marginBottom:'10px', color:'var(--pe-primary)'}}>{item.l}</div>
                     <p style={{fontSize:'14px', color:'var(--pe-text-dim)'}}>{item.d}</p>
@@ -377,7 +403,7 @@ const PromptEngineering = () => {
                  <div style={{fontSize:'13px', fontWeight:800, color:'var(--pe-primary)', textTransform:'uppercase', marginBottom:'16px'}}>Professional Certification</div>
                  <div style={{fontSize:'64px', fontWeight:950, letterSpacing:'-3px', marginBottom:'16px'}}>₹65,999</div>
                  <p style={{color:'var(--pe-text-dim)', marginBottom:'40px', lineHeight:1.7}}>Inclusive of all training credits, live sessions, project reviews, and placement assistance.</p>
-                 <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="Prompt Engineering" /><a href={peBrochure} className="btn-sec">Full Syllabus</a></div>
+                 <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="Prompt Engineering" /><DownloadBrochureButton courseValue="Prompt Engineering" brochureLink={peBrochure} /></div>
               </div>
               <div style={{display:'grid', gap:'12px'}}>
                  {[{l:"Booking Seat", v:"₹10,000"}, {l:"Phase 1 Due", v:"₹28,000"}, {l:"Phase 2 Balance", v:"₹27,999"}].map((row, i) => (
@@ -385,7 +411,7 @@ const PromptEngineering = () => {
                        <span style={{fontSize:'13px', fontWeight:700}}>{row.l}</span><span style={{fontWeight:800}}>{row.v}</span>
                     </div>
                  ))}
-                 <div style={{marginTop:'12px', display:'flex', alignItems:'center', gap:'12px', opacity:0.6}}><Zap size={18} /> <img src={Flashaidlogo} alt="Flashaid" style={{height:'14px', grayscale:1}} /> <span style={{fontSize:'12px'}}>EMI starting at ₹4,000/month</span></div>
+                 <div style={{marginTop:'12px', display:'flex', alignItems:'center', gap:'12px', opacity:0.6}}><Zap size={18} /> <img src={Flashaidlogo} alt="Flashaid" style={{height:'14px', grayscale:1}} /> <span style={{fontSize:'12px'}}>EMI ₹7,333/MO</span></div>
               </div>
            </div>
         </div>
@@ -437,10 +463,27 @@ const PromptEngineering = () => {
 
       <div className={`sticky-bar ${scrolled ? 'visible' : ''}`}>
         <div className="shell flex justify-between items-center w-full">
-           <div className="hidden sm:block"><div style={{fontSize:'10px', fontWeight:800, color:'var(--pe-text-dim)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:'2px'}}>Prompt Strategy Pro</div><div style={{fontWeight:800}}>₹65,999 <span style={{fontSize:'12px', color:'var(--pe-primary)', marginLeft:'12px'}}>EMI ₹4,000/MO</span></div></div>
+           <div className="flex items-center gap-2 md:gap-6">
+              <div className="flex items-center gap-2 text-sm md:text-lg font-bold">
+                 <span className="animate-pulse">🚨</span>
+                 <span>30% Scholarship closing in just 2 days.</span>
+              </div>
+              <div className="hidden lg:flex items-center gap-3 text-sm font-bold opacity-90">
+                 <span>Batch closing in</span>
+                 <div className="flex gap-1.5 items-center">
+                    <span className="countdown-box">23</span> :
+                    <span className="countdown-box">07</span> :
+                    <span className="countdown-box">57</span>
+                 </div>
+              </div>
+           </div>
            <div className="flex gap-4 items-center">
-              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-bold uppercase hidden lg:flex items-center gap-2 hover:text-violet-700 transition-all"><PhoneCall size={14} /> Talk to Advisor</button>
-              <ApplyNowButton courseValue="Prompt Engineering" />
+              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Talk to Advisor</button>
+              <ApplyNowButton 
+                 courseValue="Prompt Engineering" 
+                 label="Connect Now" 
+                 className="!bg-white !from-white !to-white !text-[#6D28D9] !px-8 !py-2.5 !rounded-lg !shadow-none hover:!scale-105"
+              />
            </div>
         </div>
       </div>
@@ -449,3 +492,7 @@ const PromptEngineering = () => {
 };
 
 export default PromptEngineering;
+
+
+
+

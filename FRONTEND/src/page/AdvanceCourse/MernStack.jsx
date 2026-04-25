@@ -39,13 +39,14 @@ import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
 import CourseInfoStrip from "./Components/CourseInfoStrip";
 import ToolStack from "./Components/ToolStack";
+import DownloadBrochureButton from "./Components/DownloadBrochureButton";
 import mernBrochure from "../../../krutanic/Mern Stack Web Development Advanced Program.pdf";
 
 const heroStats = [
   { label: "Mentees Placed", value: "280+" },
   { label: "Avg. CTC Range", value: "11+ LPA" },
   { label: "Placement Rate", value: "92%" },
-  { label: "Hiring Partners", value: "250+" },
+  { label: "Hiring Partners", value: "500+" },
 ];
 
 const audience = [
@@ -123,19 +124,29 @@ const careerSupport = [
 ];
 
 const faqCategories = {
-  "Progrm Basics": [
-    { q: "Is prior coding experience required?", a: "While helpful, we start from foundations. If you can logic through problems, we will teach you the syntax." },
-    { q: "Which database will we master?", a: "We focus on MongoDB (NoSQL) for high-velocity scalability, but teach concepts applicable across DBs." }
+  "Program Details": [
+    { q: "Is this program for beginners?", a: "Yes. Our curriculum is designed to take you from fundamentals to advanced execution, ensuring a smooth learning curve for all skill levels." },
+    { q: "What is the duration and format?", a: "The program spans 24 weeks with live interactive sessions on weekends and weekday evenings to accommodate working professionals." },
+    { q: "Do I need any prior knowledge?", a: "No prior experience is required. We teach you everything from scratch, focusing on logic, psychology, and technical execution." },
+    { q: "What are the timings?", a: "Live sessions happen on weekends and weekday evenings to accommodate work schedules." }
   ],
-  "Job Support": [
-    { q: "How do mock interviews work?", a: "You undergo 3 rounds of technical and architectural mock interviews with real dev leads." },
-    { q: "What is the hire rate?", a: "92% of our graduates transition into product roles within 6 months of completion." }
+  "Career & Certification": [
+    { q: "Do you offer placement support?", a: "We provide 100% career support, including resume audits, mock interviews, LinkedIn optimization, and direct referrals to our 500+ hiring partners." },
+    { q: "Will I receive a certificate?", a: "Yes, upon successful completion of the program and projects, you will receive an industry-recognized Professional Certification." },
+    { q: "What projects will I build?", a: "You will work on multiple industry-grade projects and capstones that mimic real-world challenges, allowing you to build a production-ready portfolio." },
+    { q: "How many case studies or projects will I complete?", a: "You will graduate with at least 3-4 deep, evidence-based case studies or production-ready projects in your portfolio." }
+  ],
+  "Admissions & Policy": [
+    { q: "How do I attend the classes?", a: "You will receive meeting links on your registered email. Classes are conducted via premium platforms like Zoom or Google Meet." },
+    { q: "Do I get access to recorded sessions?", a: "Yes! Simply log in to the LMS portal to access the recorded sessions of any classes you missed." },
+    { q: "What is the refund policy?", a: "Our courses are crafted with care and commitment. Therefore, we do not offer refunds as we provide immediate access to high-value resources." },
+    { q: "Are there any prerequisites before starting?", a: "There are no prerequisites required! Our courses are designed for all skill levels." }
   ]
 };
 
 const MernStack = () => {
   const [expandedModule, setExpandedModule] = useState(null);
-  const [activeFaqCat, setActiveFaqCat] = useState("Progrm Basics");
+  const [activeFaqCat, setActiveFaqCat] = useState("Program Details");
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
   const [scrolled, setScrolled] = useState(false);
 
@@ -184,8 +195,23 @@ const MernStack = () => {
         .faq-quest { width:100%; text-align:left; padding: 22px 24px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .faq-ans { padding: 0 24px 24px; font-size: 14px; color: var(--ms-text-dim); line-height: 1.6; }
 
-        .sticky-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 72px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--ms-border); z-index: 99; transform: translateY(100%); transition: 0.4s; display: flex; align-items: center; }
+        .sticky-bar { 
+          position: fixed; 
+          bottom: 0; 
+          left: 0; 
+          width: 100%; 
+          height: 72px; 
+          background: var(--ms-primary); 
+          color: #fff;
+          z-index: 100; 
+          transform: translateY(100%); 
+          transition: 0.4s; 
+          display: flex; 
+          align-items: center; 
+          box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+        }
         .sticky-bar.visible { transform: translateY(0); }
+        .countdown-box { background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 6px; font-variant-numeric: tabular-nums; }
 
         @media (max-width: 768px) { 
           .sec-title { font-size: 28px; } 
@@ -378,7 +404,7 @@ const MernStack = () => {
                  <div style={{fontSize:'13px', fontWeight:800, color:'var(--ms-accent)', textTransform:'uppercase', marginBottom:'16px'}}>Full-Stack Certification</div>
                  <div style={{fontSize:'64px', fontWeight:950, letterSpacing:'-3px', marginBottom:'16px'}}>₹61,999</div>
                  <p style={{color:'var(--ms-text-dim)', marginBottom:'40px', lineHeight:1.7}}>Inclusive of all training frameworks, live labs, project PR reviews, and job assistance.</p>
-                 <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="MERN Stack" /><a href={mernBrochure} className="btn-sec">Full Syllabus</a></div>
+                 <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="MERN Stack" /><DownloadBrochureButton courseValue="MERN Stack" brochureLink={mernBrochure} /></div>
               </div>
               <div style={{display:'grid', gap:'12px'}}>
                  {[{l:"Registration", v:"₹10,000"}, {l:"Installment 1", v:"₹26,000"}, {l:"Installment 2", v:"₹25,999"}].map((row, i) => (
@@ -386,7 +412,7 @@ const MernStack = () => {
                        <span style={{fontSize:'13px', fontWeight:700}}>{row.l}</span><span style={{fontWeight:800}}>{row.v}</span>
                     </div>
                  ))}
-                 <div style={{marginTop:'12px', display:'flex', alignItems:'center', gap:'12px', opacity:0.6}}><Zap size={18} /> <img src={Flashaidlogo} alt="Flashaid" style={{height:'14px', grayscale:1}} /> <span style={{fontSize:'12px'}}>EMI starting at ₹4,000/month</span></div>
+                 <div style={{marginTop:'12px', display:'flex', alignItems:'center', gap:'12px', opacity:0.6}}><Zap size={18} /> <img src={Flashaidlogo} alt="Flashaid" style={{height:'14px', grayscale:1}} /> <span style={{fontSize:'12px'}}>EMI ₹6,888/MO</span></div>
               </div>
            </div>
         </div>
@@ -438,10 +464,27 @@ const MernStack = () => {
 
       <div className={`sticky-bar ${scrolled ? 'visible' : ''}`}>
         <div className="shell flex justify-between items-center w-full">
-           <div className="hidden sm:block"><div style={{fontSize:'10px', fontWeight:800, color:'var(--ms-text-dim)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:'2px'}}>Full-Stack Pro</div><div style={{fontWeight:800}}>₹61,999 <span style={{fontSize:'12px', color:'var(--ms-accent)', marginLeft:'12px'}}>EMI ₹4,000/MO</span></div></div>
+           <div className="flex items-center gap-2 md:gap-6">
+              <div className="flex items-center gap-2 text-sm md:text-lg font-bold">
+                 <span className="animate-pulse">🚨</span>
+                 <span>30% Scholarship closing in just 2 days.</span>
+              </div>
+              <div className="hidden lg:flex items-center gap-3 text-sm font-bold opacity-90">
+                 <span>Batch closing in</span>
+                 <div className="flex gap-1.5 items-center">
+                    <span className="countdown-box">23</span> :
+                    <span className="countdown-box">07</span> :
+                    <span className="countdown-box">57</span>
+                 </div>
+              </div>
+           </div>
            <div className="flex gap-4 items-center">
-              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-bold uppercase hidden lg:flex items-center gap-2 hover:text-emerald-700 transition-all"><PhoneCall size={14} /> Talk to Advisor</button>
-              <ApplyNowButton courseValue="MERN Stack" />
+              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Talk to Advisor</button>
+              <ApplyNowButton 
+                 courseValue="MERN Stack" 
+                 label="Connect Now" 
+                 className="!bg-white !from-white !to-white !text-emerald-700 !px-8 !py-2.5 !rounded-lg !shadow-none hover:!scale-105"
+              />
            </div>
         </div>
       </div>
@@ -450,3 +493,7 @@ const MernStack = () => {
 };
 
 export default MernStack;
+
+
+
+

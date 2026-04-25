@@ -40,13 +40,14 @@ import ApplyForm from "./Components/ApplyForm";
 import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
 import CourseInfoStrip from "./Components/CourseInfoStrip";
+import DownloadBrochureButton from "./Components/DownloadBrochureButton";
 import ibBrochure from "../../../krutanic/Investment Banking Advanced Program.pdf";
 
 const heroStats = [
   { label: "Duration", value: "24 Weeks" },
   { label: "Portfolio Projects", value: "12+ Live Cases" },
   { label: "Avg. Salary Range", value: "10-22 LPA" },
-  { label: "Hiring Partners", value: "250+" },
+  { label: "Hiring Partners", value: "500+" },
 ];
 
 const audience = [
@@ -68,7 +69,7 @@ const curriculumRoadmap = [
   { weeks: "Weeks 1-2", title: "Banking Foundations", topics: "Structure, functions, capital raising, markets.", details: "Understand the lifecycle of a deal and the role of various desks in a global investment bank." },
   { weeks: "Weeks 3-4", title: "Valuation Frameworks", topics: "DCF, Comps, Precedents, LBO concepts.", details: "Learn the core methodologies used to price companies and justify transaction premiums." },
   { weeks: "Weeks 5-6", title: "Capital Markets", topics: "IPOs, Underwriting, Book building, Debt pricing.", details: "Master the mechanics of public offerings and how companies access institutional capital." },
-  { weeks: "Weeks 7-9", title: "Advanced M&A Dynamics", topics: "Due diligence, deal structuring, integration planning.", details: "Navigate the complex workflows of mergers—from initial bid to final integration logic." },
+  { weeks: "Weeks 7-9", title: "Advanced M&A Dynamics", topics: "Due diligence, deal structuring, integration planning.", details: "Navigate the complex workflows of mergersÃ¢â‚¬â€from initial bid to final integration logic." },
   { weeks: "Weeks 10-12", title: "Financial Modeling", topics: "3-Statement models, Scenario analysis, Forecasting.", details: "Build production-grade Excel models that can withstand the rigors of executive review." },
   { weeks: "Weeks 13-14", title: "Governance & Ethics", topics: "Compliance, insider trading, conflict management.", details: "Learn the regulatory guardrails and high ethical standards required in high-stakes banking." },
   { weeks: "Weeks 15-16", title: "PE & Venture Capital", topics: "Fund structures, term sheets, exit strategies.", details: "Understand the private investment lifecycle from deal sourcing to multi-billion dollar exits." },
@@ -116,19 +117,29 @@ const careerSupport = [
 ];
 
 const faqCategories = {
-  "Progrm Logic": [
-    { q: "Is this program for non-finance students?", a: "Yes. While a finance background is helpful, we start with banking first-principles and build upwards." },
-    { q: "Do we learn advanced Excel?", a: "Exclusively. You will master keyboard-only modeling, recursive formulas, and professional forecast design." }
+  "Program Details": [
+    { q: "Is this program for beginners?", a: "Yes. Our curriculum is designed to take you from fundamentals to advanced execution, ensuring a smooth learning curve for all skill levels." },
+    { q: "What is the duration and format?", a: "The program spans 24 weeks with live interactive sessions on weekends and weekday evenings to accommodate working professionals." },
+    { q: "Do I need any prior knowledge?", a: "No prior experience is required. We teach you everything from scratch, focusing on logic, psychology, and technical execution." },
+    { q: "What are the timings?", a: "Live sessions happen on weekends and weekday evenings to accommodate work schedules." }
   ],
-  "Career & Prep": [
-    { q: "How is job support delivered?", a: "Through direct referrals to our 250+ partners and intensive technical mock interviews." },
-    { q: "What is the certification value?", a: "It is an evidence-based certification backed by your capstone investment memo and financial models." }
+  "Career & Certification": [
+    { q: "Do you offer placement support?", a: "We provide 100% career support, including resume audits, mock interviews, LinkedIn optimization, and direct referrals to our 500+ hiring partners." },
+    { q: "Will I receive a certificate?", a: "Yes, upon successful completion of the program and projects, you will receive an industry-recognized Professional Certification." },
+    { q: "What projects will I build?", a: "You will work on multiple industry-grade projects and capstones that mimic real-world challenges, allowing you to build a production-ready portfolio." },
+    { q: "How many case studies or projects will I complete?", a: "You will graduate with at least 3-4 deep, evidence-based case studies or production-ready projects in your portfolio." }
+  ],
+  "Admissions & Policy": [
+    { q: "How do I attend the classes?", a: "You will receive meeting links on your registered email. Classes are conducted via premium platforms like Zoom or Google Meet." },
+    { q: "Do I get access to recorded sessions?", a: "Yes! Simply log in to the LMS portal to access the recorded sessions of any classes you missed." },
+    { q: "What is the refund policy?", a: "Our courses are crafted with care and commitment. Therefore, we do not offer refunds as we provide immediate access to high-value resources." },
+    { q: "Are there any prerequisites before starting?", a: "There are no prerequisites required! Our courses are designed for all skill levels." }
   ]
 };
 
 const Investmentbanking = () => {
   const [expandedModule, setExpandedModule] = useState(null);
-  const [activeFaqCat, setActiveFaqCat] = useState("Progrm Logic");
+  const [activeFaqCat, setActiveFaqCat] = useState("Program Details");
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
   const [scrolled, setScrolled] = useState(false);
 
@@ -177,8 +188,23 @@ const Investmentbanking = () => {
         .faq-quest { width:100%; text-align:left; padding: 22px 24px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .faq-ans { padding: 0 24px 24px; font-size: 14px; color: var(--ib-text-dim); line-height: 1.6; }
 
-        .sticky-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 72px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--ib-border); z-index: 99; transform: translateY(100%); transition: 0.4s; display: flex; align-items: center; }
+        .sticky-bar { 
+          position: fixed; 
+          bottom: 0; 
+          left: 0; 
+          width: 100%; 
+          height: 72px; 
+          background: var(--ib-primary); 
+          color: #fff;
+          z-index: 100; 
+          transform: translateY(100%); 
+          transition: 0.4s; 
+          display: flex; 
+          align-items: center; 
+          box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+        }
         .sticky-bar.visible { transform: translateY(0); }
+        .countdown-box { background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 6px; font-variant-numeric: tabular-nums; }
 
         @media (max-width: 768px) { .sec-title { font-size: 28px; } }
       `}</style>
@@ -186,7 +212,7 @@ const Investmentbanking = () => {
       {/* 1. HERO */}
       <CourseHeroBanner
         badge="Elite Financial Mastery"
-        icon="⚖️"
+        icon="Ã¢Å¡â€“Ã¯Â¸Â"
         title="Investment Banking"
         highlight="Valuation & M&A"
         sub="A comprehensive 24-week engineering of your financial career. Master valuation, mergers, and capital modeling with absolute technical precision."
@@ -226,7 +252,7 @@ const Investmentbanking = () => {
       <section className="ib-sec-white">
         <div className="shell">
           <h2 className="sec-title">The Banking Advantage</h2>
-          <p className="sec-sub">Investment banking is more than just valuation—it is the strategic bedrock of institutional growth and capital excellence.</p>
+          <p className="sec-sub">Investment banking is more than just valuationÃ¢â‚¬â€it is the strategic bedrock of institutional growth and capital excellence.</p>
           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(300px, 1fr))', gap:'40px'}}>
              {marketOpportunity.map((item, i) => (
                <div key={i}>
@@ -283,7 +309,7 @@ const Investmentbanking = () => {
            <h2 className="sec-title">How Learning Works</h2>
            <p className="sec-sub">A premium experience balancing technical rigor, mentor review, and institutional networking.</p>
            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(260px, 1fr))', gap:'20px'}}>
-              {[{t:"Live Modeling", d:"Sessions focused on keyboard-only efficiency and forecast logic.", i:<FileSpreadsheet size={20}/>}, {t:"Deal Reviews", d:"Regular defense of your valuation assumptions before mentors.", i:<GanttChartSquare size={20}/>}, {t:"Technical Drills", d:"Weekly quizzes and drills on banking-specific technical questions.", i:<Zap size={20}/>}, {t:"Institutional Access", d:"Referral pathways to our network of 250+ hiring brands.", i:<Building2 size={20}/>}].map((item, i) => (
+              {[{t:"Live Modeling", d:"Sessions focused on keyboard-only efficiency and forecast logic.", i:<FileSpreadsheet size={20}/>}, {t:"Deal Reviews", d:"Regular defense of your valuation assumptions before mentors.", i:<GanttChartSquare size={20}/>}, {t:"Technical Drills", d:"Weekly quizzes and drills on banking-specific technical questions.", i:<Zap size={20}/>}, {t:"Institutional Access", d:"Referral pathways to our network of 500+ hiring brands.", i:<Building2 size={20}/>}].map((item, i) => (
                  <div key={i} className="p-card text-center">
                     <div style={{color:'var(--ib-primary)', margin:'0 auto 20px', width:'fit-content'}}>{item.i}</div>
                     <div style={{fontWeight:800, marginBottom:'8px'}}>{item.t}</div>
@@ -298,7 +324,7 @@ const Investmentbanking = () => {
       <section className="ib-sec-white">
         <div className="shell">
            <h2 className="sec-title">Career Support Process</h2>
-           <p className="sec-sub">A structured 5‑step support system to convert your technical skills into real, high‑growth job offers.</p>
+           <p className="sec-sub">A structured 5Ã¢â‚¬â€˜step support system to convert your technical skills into real, highÃ¢â‚¬â€˜growth job offers.</p>
            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'20px'}}>
               {careerSupport.map((step, i) => (
                  <div key={i} className="p-card" style={{background:'#F9FAFB'}}>
@@ -334,7 +360,7 @@ const Investmentbanking = () => {
            <p className="sec-sub">Graduates from our advanced programs have transitioned into elite roles across global financial hubs.</p>
            <ClientsCarousel />
            <div style={{marginTop:'48px', display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(240px, 1fr))', gap:'24px'}}>
-              {[{l:"200+ Mentees Placed", d:"Across banking, PE, and corporate finance tracks."}, {l:"₹10-22 LPA Avg CTC", d:"Focusing on high-value entry-to-mid career transitions."}, {l:"250+ Hiring Partners", d:"Representing the full spectrum of global banking orgs."}].map((item, i) => (
+              {[{l:"200+ Mentees Placed", d:"Across banking, PE, and corporate finance tracks."}, {l:"₹10-22 LPA Avg CTC", d:"Focusing on high-value entry-to-mid career transitions."}, {l:"500+ Hiring Partners", d:"Representing the full spectrum of global banking orgs."}].map((item, i) => (
                  <div key={i} className="p-card">
                     <div style={{fontWeight:800, marginBottom:'10px', color:'var(--ib-accent)'}}>{item.l}</div>
                     <p style={{fontSize:'14px', color:'var(--ib-text-dim)'}}>{item.d}</p>
@@ -361,7 +387,7 @@ const Investmentbanking = () => {
                  <div style={{fontSize:'13px', fontWeight:800, color:'var(--ib-accent)', textTransform:'uppercase', marginBottom:'16px'}}>Professional Banking Certification</div>
                  <div style={{fontSize:'64px', fontWeight:950, letterSpacing:'-3px', marginBottom:'16px'}}>₹65,999</div>
                  <p style={{color:'var(--ib-text-dim)', marginBottom:'40px', lineHeight:1.7}}>Inclusive of all analytical frameworks, live modeling labs, PR reviews, and job assistance.</p>
-                 <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="Investment Banking" /><a href={ibBrochure} className="btn-sec">Official Syllabus</a></div>
+                 <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="Investment Banking" /><DownloadBrochureButton courseValue="Investment Banking" brochureLink={ibBrochure} /></div>
               </div>
               <div style={{display:'grid', gap:'12px'}}>
                  {[{l:"Seat Reservation", v:"₹10,000"}, {l:"Phase 1 Portfolio", v:"₹28,000"}, {l:"Phase 2 Balance", v:"₹27,999"}].map((row, i) => (
@@ -369,7 +395,7 @@ const Investmentbanking = () => {
                        <span style={{fontSize:'13px', fontWeight:700}}>{row.l}</span><span style={{fontWeight:800}}>{row.v}</span>
                     </div>
                  ))}
-                 <div style={{marginTop:'12px', display:'flex', alignItems:'center', gap:'12px', opacity:0.6}}><Zap size={18} /> <img src={Flashaidlogo} alt="Flashaid" style={{height:'14px', grayscale:1}} /> <span style={{fontSize:'12px'}}>EMI starting at ₹4,000/month</span></div>
+                 <div style={{marginTop:'12px', display:'flex', alignItems:'center', gap:'12px', opacity:0.6}}><Zap size={18} /> <img src={Flashaidlogo} alt="Flashaid" style={{height:'14px', grayscale:1}} /> <span style={{fontSize:'12px'}}>EMI ₹7,333/MO</span></div>
               </div>
            </div>
         </div>
@@ -421,10 +447,27 @@ const Investmentbanking = () => {
 
       <div className={`sticky-bar ${scrolled ? 'visible' : ''}`}>
         <div className="shell flex justify-between items-center w-full">
-           <div className="hidden sm:block"><div style={{fontSize:'10px', fontWeight:800, color:'var(--ib-text-dim)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:'2px'}}>Financial Mastery</div><div style={{fontWeight:800}}>₹65,999 <span style={{fontSize:'12px', color:'var(--ib-accent)', marginLeft:'12px'}}>EMI ₹4,000/MO</span></div></div>
+           <div className="flex items-center gap-2 md:gap-6">
+              <div className="flex items-center gap-2 text-sm md:text-lg font-bold">
+                 <span className="animate-pulse">🚨</span>
+                 <span>30% Scholarship closing in just 2 days.</span>
+              </div>
+              <div className="hidden lg:flex items-center gap-3 text-sm font-bold opacity-90">
+                 <span>Batch closing in</span>
+                 <div className="flex gap-1.5 items-center">
+                    <span className="countdown-box">23</span> :
+                    <span className="countdown-box">07</span> :
+                    <span className="countdown-box">57</span>
+                 </div>
+              </div>
+           </div>
            <div className="flex gap-4 items-center">
-              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-bold uppercase hidden lg:flex items-center gap-2 hover:text-blue-700 transition-all"><PhoneCall size={14} /> Talk to Advisor</button>
-              <ApplyNowButton courseValue="Investment Banking" />
+              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Talk to Advisor</button>
+              <ApplyNowButton 
+                 courseValue="Investment Banking" 
+                 label="Connect Now" 
+                 className="!bg-white !from-white !to-white !text-blue-900 !px-8 !py-2.5 !rounded-lg !shadow-none hover:!scale-105"
+              />
            </div>
         </div>
       </div>
@@ -433,3 +476,7 @@ const Investmentbanking = () => {
 };
 
 export default Investmentbanking;
+
+
+
+

@@ -41,13 +41,14 @@ import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
 import CourseInfoStrip from "./Components/CourseInfoStrip";
 import ToolStack from "./Components/ToolStack";
+import DownloadBrochureButton from "./Components/DownloadBrochureButton";
 import atBrochure from "../../../krutanic/Automation testing Advanced Program.pdf";
 
 const heroStats = [
   { label: "Duration", value: "24 Weeks" },
   { label: "Industrial Projects", value: "10+ Test Suites" },
   { label: "Avg. Salary Hike", value: "54%" },
-  { label: "Hiring Partners", value: "250+" },
+  { label: "Hiring Partners", value: "500+" },
 ];
 
 const audience = [
@@ -77,9 +78,9 @@ const curriculumRoadmap = [
   { weeks: "Weeks 3-4", title: "Web Automation Mastery", topics: "Selenium/Playwright, Grid, Cross-browser.", details: "Learn the core methodologies used to interact with modern web elements and handle dynamic content." },
   { weeks: "Weeks 5-8", title: "Architectural Patterns", topics: "Page Object Model (POM), Data-driven, Hybrid.", details: "Deep-dive into production-ready framework design that ensures your test suites are scalable and lean." },
   { weeks: "Weeks 9-10", title: "API Automation", topics: "REST APIs, OAuth, Payload validation, Mocking.", details: "Master the mechanics of validating backend services without relying on the UI layers." },
-  { weeks: "Weeks 11-12", title: "Mobile & Hybrid Apps", topics: "Appium, Emulator/Simulator, Mobile Gestures.", details: "Extend your quality skills to the mobile ecosystem—handling iOS and Android application lifecycles." },
+  { weeks: "Weeks 11-12", title: "Mobile & Hybrid Apps", topics: "Appium, Emulator/Simulator, Mobile Gestures.", details: "Extend your quality skills to the mobile ecosystemÃ¢â‚¬â€handling iOS and Android application lifecycles." },
   { weeks: "Weeks 13-16", title: "CI/CD & DevOps Integration", topics: "Jenkins, Docker, Cloud-native testing.", details: "Transition from local execution to integrated, automated pipelines that trigger on every code push." },
-  { weeks: "Weeks 17-20", title: "Capstone Quality Suite", topics: "Framework from scratch, Performance, Report.", details: "Execute a full quality cycle—from test planning to a high-fidelity automated suite with cloud reporting." },
+  { weeks: "Weeks 17-20", title: "Capstone Quality Suite", topics: "Framework from scratch, Performance, Report.", details: "Execute a full quality cycleÃ¢â‚¬â€from test planning to a high-fidelity automated suite with cloud reporting." },
   { weeks: "Weeks 21-24", title: "SDET Interview Engineering", topics: "DSA for QA, Framework design drills, Live coding.", details: "Final phase focused on cracking competitive SDET and QE Lead interviews with architectural clarity." }
 ];
 
@@ -123,19 +124,29 @@ const careerSupport = [
 ];
 
 const faqCategories = {
-  "Progrm Logic": [
-    { q: "Do I need manual testing experience?", a: "While helpful, we start with foundations. If you understand app logic, we will teach you the automation syntax." },
-    { q: "Which programming language is used?", a: "We focus on Java and JavaScript (Playwright), the two most in-demand languages for SDET roles." }
+  "Program Details": [
+    { q: "Is this program for beginners?", a: "Yes. Our curriculum is designed to take you from fundamentals to advanced execution, ensuring a smooth learning curve for all skill levels." },
+    { q: "What is the duration and format?", a: "The program spans 24 weeks with live interactive sessions on weekends and weekday evenings to accommodate working professionals." },
+    { q: "Do I need any prior knowledge?", a: "No prior experience is required. We teach you everything from scratch, focusing on logic, psychology, and technical execution." },
+    { q: "What are the timings?", a: "Live sessions happen on weekends and weekday evenings to accommodate work schedules." }
   ],
-  "Career Support": [
-    { q: "Is job support included?", a: "Yes. 100% assistance including architecture reviews, mock SDET coding rounds, and referral access." },
-    { q: "What is the certification value?", a: "It is an evidence-based professional certification backed by your capstone automation framework and cloud suites." }
+  "Career & Certification": [
+    { q: "Do you offer placement support?", a: "We provide 100% career support, including resume audits, mock interviews, LinkedIn optimization, and direct referrals to our 500+ hiring partners." },
+    { q: "Will I receive a certificate?", a: "Yes, upon successful completion of the program and projects, you will receive an industry-recognized Professional Certification." },
+    { q: "What projects will I build?", a: "You will work on multiple industry-grade projects and capstones that mimic real-world challenges, allowing you to build a production-ready portfolio." },
+    { q: "How many case studies or projects will I complete?", a: "You will graduate with at least 3-4 deep, evidence-based case studies or production-ready projects in your portfolio." }
+  ],
+  "Admissions & Policy": [
+    { q: "How do I attend the classes?", a: "You will receive meeting links on your registered email. Classes are conducted via premium platforms like Zoom or Google Meet." },
+    { q: "Do I get access to recorded sessions?", a: "Yes! Simply log in to the LMS portal to access the recorded sessions of any classes you missed." },
+    { q: "What is the refund policy?", a: "Our courses are crafted with care and commitment. Therefore, we do not offer refunds as we provide immediate access to high-value resources." },
+    { q: "Are there any prerequisites before starting?", a: "There are no prerequisites required! Our courses are designed for all skill levels." }
   ]
 };
 
 const AutomationTesting = () => {
   const [expandedModule, setExpandedModule] = useState(null);
-  const [activeFaqCat, setActiveFaqCat] = useState("Progrm Logic");
+  const [activeFaqCat, setActiveFaqCat] = useState("Program Details");
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
   const [scrolled, setScrolled] = useState(false);
 
@@ -184,8 +195,23 @@ const AutomationTesting = () => {
         .faq-quest { width:100%; text-align:left; padding: 22px 24px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .faq-ans { padding: 0 24px 24px; font-size: 14px; color: var(--at-text-dim); line-height: 1.6; }
 
-        .sticky-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 72px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--at-border); z-index: 99; transform: translateY(100%); transition: 0.4s; display: flex; align-items: center; }
+        .sticky-bar { 
+          position: fixed; 
+          bottom: 0; 
+          left: 0; 
+          width: 100%; 
+          height: 72px; 
+          background: var(--at-primary); 
+          color: #fff;
+          z-index: 100; 
+          transform: translateY(100%); 
+          transition: 0.4s; 
+          display: flex; 
+          align-items: center; 
+          box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+        }
         .sticky-bar.visible { transform: translateY(0); }
+        .countdown-box { background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 6px; font-variant-numeric: tabular-nums; }
 
         @media (max-width: 768px) { 
           .sec-title { font-size: 28px; } 
@@ -196,7 +222,7 @@ const AutomationTesting = () => {
       {/* 1. HERO */}
       <CourseHeroBanner
         badge="Quality Engineering Mastery"
-        icon="🛡️"
+        icon="Ã°Å¸â€ºÂ¡Ã¯Â¸Â"
         title="Automation Testing"
         highlight="& SDET Engineering"
         sub="Master the architecture of quality. From elite automation frameworks to high-performance CI/CD integration, build the products that ensure global tech reliability."
@@ -236,7 +262,7 @@ const AutomationTesting = () => {
       <section className="at-sec-white">
         <div className="shell">
           <h2 className="sec-title">The SDET Advantage</h2>
-          <p className="sec-sub">Automation is no longer a luxury—it is the strategic engine of high-velocity deployment and global software excellence.</p>
+          <p className="sec-sub">Automation is no longer a luxuryÃ¢â‚¬â€it is the strategic engine of high-velocity deployment and global software excellence.</p>
           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(300px, 1fr))', gap:'40px'}}>
              {marketOpportunity.map((item, i) => (
                <div key={i}>
@@ -315,7 +341,7 @@ const AutomationTesting = () => {
       <section className="at-sec-white">
         <div className="shell">
            <h2 className="sec-title">Career Support Process</h2>
-           <p className="sec-sub">A structured 5‑step support system to convert your technical skills into real, high‑growth job offers.</p>
+           <p className="sec-sub">A structured 5Ã¢â‚¬â€˜step support system to convert your technical skills into real, highÃ¢â‚¬â€˜growth job offers.</p>
            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'20px'}}>
               {careerSupport.map((step, i) => (
                  <div key={i} className="p-card" style={{background:'#F9FAFB'}}>
@@ -351,7 +377,7 @@ const AutomationTesting = () => {
            <p className="sec-sub">Graduates from our advanced programs have transitioned into elite roles across global technology hubs.</p>
            <ClientsCarousel />
            <div style={{marginTop:'48px', display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(240px, 1fr))', gap:'24px'}}>
-              {[{l:"200+ Mentees Placed", d:"Across SDET, automation lead, and research tracks."}, {l:"₹09-18 LPA Range", d:"Typical entry-to-senior role transition packages."}, {l:"250+ Hiring Partners", d:"Representing the full spectrum of SaaS and IT orgs."}].map((item, i) => (
+              {[{l:"200+ Mentees Placed", d:"Across SDET, automation lead, and research tracks."}, {l:"₹09-18 LPA Range", d:"Typical entry-to-senior role transition packages."}, {l:"500+ Hiring Partners", d:"Representing the full spectrum of SaaS and IT orgs."}].map((item, i) => (
                  <div key={i} className="p-card">
                     <div style={{fontWeight:800, marginBottom:'10px', color:'var(--at-accent)'}}>{item.l}</div>
                     <p style={{fontSize:'14px', color:'var(--at-text-dim)'}}>{item.d}</p>
@@ -378,7 +404,7 @@ const AutomationTesting = () => {
                  <div style={{fontSize:'13px', fontWeight:800, color:'var(--at-accent)', textTransform:'uppercase', marginBottom:'16px'}}>Professional SDET Certification</div>
                  <div style={{fontSize:'64px', fontWeight:950, letterSpacing:'-3px', marginBottom:'16px'}}>₹61,999</div>
                  <p style={{color:'var(--at-text-dim)', marginBottom:'40px', lineHeight:1.7}}>Inclusive of all training frameworks, design labs, portfolio reviews, and job assistance.</p>
-                 <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="Automation Testing" /><a href={atBrochure} className="btn-sec">Official Syllabus</a></div>
+                 <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="Automation Testing" /><DownloadBrochureButton courseValue="Automation Testing" brochureLink={atBrochure} /></div>
               </div>
               <div style={{display:'grid', gap:'12px'}}>
                  {[{l:"Seat Reservation", v:"₹10,000"}, {l:"Phase 1 Portfolio", v:"₹26,000"}, {l:"Phase 2 Balance", v:"₹25,999"}].map((row, i) => (
@@ -386,7 +412,7 @@ const AutomationTesting = () => {
                        <span style={{fontSize:'13px', fontWeight:700}}>{row.l}</span><span style={{fontWeight:800}}>{row.v}</span>
                     </div>
                  ))}
-                 <div style={{marginTop:'12px', display:'flex', alignItems:'center', gap:'12px', opacity:0.6}}><Zap size={18} /> <img src={Flashaidlogo} alt="Flashaid" style={{height:'14px', grayscale:1}} /> <span style={{fontSize:'12px'}}>EMI starting at ₹4,000/month</span></div>
+                 <div style={{marginTop:'12px', display:'flex', alignItems:'center', gap:'12px', opacity:0.6}}><Zap size={18} /> <img src={Flashaidlogo} alt="Flashaid" style={{height:'14px', grayscale:1}} /> <span style={{fontSize:'12px'}}>EMI ₹6,888/MO</span></div>
               </div>
            </div>
         </div>
@@ -438,10 +464,27 @@ const AutomationTesting = () => {
 
       <div className={`sticky-bar ${scrolled ? 'visible' : ''}`}>
         <div className="shell flex justify-between items-center w-full">
-           <div className="hidden sm:block"><div style={{fontSize:'10px', fontWeight:800, color:'var(--at-text-dim)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:'2px'}}>Quality Authority</div><div style={{fontWeight:800}}>₹61,999 <span style={{fontSize:'12px', color:'var(--at-accent)', marginLeft:'12px'}}>EMI ₹4,000/MO</span></div></div>
+           <div className="flex items-center gap-2 md:gap-6">
+              <div className="flex items-center gap-2 text-sm md:text-lg font-bold">
+                 <span className="animate-pulse">🚨</span>
+                 <span>30% Scholarship closing in just 2 days.</span>
+              </div>
+              <div className="hidden lg:flex items-center gap-3 text-sm font-bold opacity-90">
+                 <span>Batch closing in</span>
+                 <div className="flex gap-1.5 items-center">
+                    <span className="countdown-box">23</span> :
+                    <span className="countdown-box">07</span> :
+                    <span className="countdown-box">57</span>
+                 </div>
+              </div>
+           </div>
            <div className="flex gap-4 items-center">
-              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-bold uppercase hidden lg:flex items-center gap-2 hover:text-blue-700 transition-all"><PhoneCall size={14} /> Talk to Advisor</button>
-              <ApplyNowButton courseValue="Automation Testing" />
+              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Talk to Advisor</button>
+              <ApplyNowButton 
+                 courseValue="Automation Testing" 
+                 label="Connect Now" 
+                 className="!bg-white !from-white !to-white !text-blue-700 !px-8 !py-2.5 !rounded-lg !shadow-none hover:!scale-105"
+              />
            </div>
         </div>
       </div>
@@ -450,3 +493,7 @@ const AutomationTesting = () => {
 };
 
 export default AutomationTesting;
+
+
+
+
