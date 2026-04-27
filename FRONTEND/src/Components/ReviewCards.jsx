@@ -1,4 +1,3 @@
-import React from 'react';
 import { Star, Quote } from 'lucide-react';
 import rajaImg from '../assets/alumni/raja_singh.png';
 import birendraImg from '../assets/alumni/birendra_kumar.png';
@@ -72,7 +71,7 @@ const ReviewCards = () => {
               </div>
 
               <p className="text-slate-600 text-lg leading-relaxed mb-10 italic relative z-10">
-                "{review.quote}"
+                &quot;{review.quote}&quot;
               </p>
 
               <div className="flex items-center gap-5 pt-8 border-t border-slate-50">

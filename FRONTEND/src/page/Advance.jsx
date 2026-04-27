@@ -1,14 +1,14 @@
 import { Helmet } from 'react-helmet-async';
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
-  ArrowRight, Users, Target, Briefcase, Zap, Globe, 
-  Search, CheckCircle2, Clock, Code2, LineChart, 
-  Megaphone, Kanban, BrainCircuit, GraduationCap,
-  Sparkles, FileText, MessageSquare, MonitorPlay, 
-  Award, ChevronRight, Check, Workflow, Star, ShieldCheck
+  ArrowRight, Users, Target, 
+  CheckCircle2, Clock, Code2, LineChart, 
+  Megaphone, Kanban, BrainCircuit,
+  FileText, MessageSquare, MonitorPlay, 
+  Award, Star, ShieldCheck, Workflow
 } from "lucide-react";
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
 import ClientsCarousel from "../Components/our_alumni";
 import AdvancedApplyPopup from "../Components/AdvancedApplyPopup";
@@ -108,14 +108,6 @@ const programs = [
 //   },
 ];
 
-function TrendingUpIcon(props) {
-   return (
-      <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-         <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
-         <polyline points="16 7 22 7 22 13"></polyline>
-      </svg>
-   )
-}
 
 function DatabaseIcon(props) {
    return (

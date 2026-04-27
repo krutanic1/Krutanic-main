@@ -1,9 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
+/* eslint-disable react/prop-types, no-unused-vars */
+import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import axios from "axios";
 import API from "../API";
 import toast from "react-hot-toast";
-import { FaUser, FaPhone, FaEnvelope, FaBriefcase, FaGraduationCap, FaBullseye, FaCheckCircle, FaTimes, FaChevronDown } from "react-icons/fa";
+import { FaUser, FaPhone, FaEnvelope, FaBriefcase, FaGraduationCap, FaBullseye, FaCheckCircle, FaChevronDown } from "react-icons/fa";
 import krutanicLogo from "../assets/logowhite.png";
 import alumni1 from "../assets/alumni/alumni_1.png";
 import alumni2 from "../assets/alumni/alumni_2.png";
@@ -94,7 +95,7 @@ const AdvancedApplyPopup = ({ onClose, initialDomain = "", onSuccess, popupType 
         }
         setLoading(true);
         try {
-            const response = await axios.post(`${API}/advance-send-otp`, { email: trimmedEmail });
+            await axios.post(`${API}/advance-send-otp`, { email: trimmedEmail });
             setOtpSent(true);
             toast.success("OTP sent to your email");
         } catch (error) {
