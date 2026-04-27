@@ -56,7 +56,7 @@ const Header = () => {
               onClick={() => setShowPopup(true)}
               className="ml-2 rounded-2xl border-2 border-[#ff6b2d] text-[#ff6b2d] hover:bg-[#ff6b2d] hover:text-white px-5 py-2 text-sm font-semibold uppercase transition-all"
             >
-              Call Back
+              Request a Callback
             </button>
           </nav>
 
@@ -90,7 +90,7 @@ const Header = () => {
                   onClick={() => setShowPopup(true)}
                   className="rounded-xl border-2 border-[#ff6b2d] text-[#ff6b2d] px-3 py-2 text-center text-sm font-semibold uppercase hover:bg-[#ff6b2d] hover:text-white transition-all"
                 >
-                  Call Back
+                  Request a Callback
                 </button>
               </div>
             </div>

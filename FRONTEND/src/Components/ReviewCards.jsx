@@ -1,5 +1,8 @@
 import React from 'react';
 import { Star, Quote } from 'lucide-react';
+import rajaImg from '../assets/alumni/raja_singh.png';
+import birendraImg from '../assets/alumni/birendra_kumar.png';
+import mithunImg from '../assets/alumni/mithun_prajapati.png';
 
 const reviewsValue = [
   {
@@ -8,7 +11,7 @@ const reviewsValue = [
     experience: "4 Years",
     rating: 5,
     quote: "Recently completed the stock market course and found it exceptionally informative and beneficial. The mentorship and training made a significant positive impact on my learning journey.",
-    image: "https://i.pravatar.cc/150?u=raja"
+    image: rajaImg
   },
   {
     name: "Birendra Kumar",
@@ -16,7 +19,7 @@ const reviewsValue = [
     experience: "10 Years",
     rating: 5,
     quote: "I completed my internship in stock market and also pursued more courses here. Great mentorship. The practical approach to complex concepts is what sets Krutanic apart.",
-    image: "https://i.pravatar.cc/150?u=birendra"
+    image: birendraImg
   },
   {
     name: "Mithun Prajapati",
@@ -24,7 +27,7 @@ const reviewsValue = [
     experience: "2 Years",
     rating: 5,
     quote: "Successfully completed my full stack web development internship at Krutanic. Sessions were interactive and highly engaging with excellent mentor support. Truly career-transforming.",
-    image: "https://i.pravatar.cc/150?u=mithun"
+    image: mithunImg
   }
 ];
 

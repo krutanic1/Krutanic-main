@@ -44,6 +44,7 @@ import ImageSlider from "./Components/ImageSlider";
 import CourseInfoStrip from "./Components/CourseInfoStrip";
 import ToolStack from "./Components/ToolStack";
 import DownloadBrochureButton from "./Components/DownloadBrochureButton";
+import CountdownTimer from "./Components/CountdownTimer";
 import dmBrochure from "../../../krutanic/Digital Marketing Advanced Program.pdf";
 
 const heroStats = [
@@ -209,7 +210,7 @@ const DigitalMarket = () => {
           bottom: 0; 
           left: 0; 
           width: 100%; 
-          height: 72px; 
+          height: 80px; 
           background: var(--dm-primary); 
           color: #fff;
           z-index: 100; 
@@ -473,7 +474,7 @@ const DigitalMarket = () => {
            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'80px', alignItems:'start'}}>
               <div>
                  <h2 className="sec-title">Request a Consultation</h2>
-                 <p className="sec-sub">Speak with our technical advisors to review your career roadmap and cohort eligibility.</p>
+                 <p className="sec-sub">Request a Callback to review your career roadmap and cohort eligibility.</p>
                  <div style={{display:'grid', gap:'16px'}}>
                     {['24-hour advisor response', 'One-on-one session planning', 'Program suitability audit'].map(t => (
                        <div key={t} style={{display:'flex', alignItems:'center', gap:'12px', fontSize:'14px', fontWeight:700}}><CheckCircle2 size={18} className="text-indigo-600" /> {t}</div>
@@ -481,7 +482,7 @@ const DigitalMarket = () => {
                  </div>
               </div>
               <div className="p-card" style={{padding:'32px', maxWidth:'520px'}}>
-                 <div style={{marginBottom:'24px'}}><h3 style={{fontSize:'20px', fontWeight:800, marginBottom:'4px'}}>Advisor Callback Request</h3><p style={{fontSize:'13px', color:'var(--dm-text-dim)'}}>Connect with the KRUTANIC team today.</p></div>
+                 <div style={{marginBottom:'24px'}}><h3 style={{fontSize:'20px', fontWeight:800, marginBottom:'4px'}}>Request a Callback</h3><p style={{fontSize:'13px', color:'var(--dm-text-dim)'}}>Connect with the KRUTANIC team today.</p></div>
                  <ApplyForm courseValue="Digital Marketing" isPremium={true} />
               </div>
            </div>
@@ -497,19 +498,15 @@ const DigitalMarket = () => {
               </div>
               <div className="hidden lg:flex items-center gap-3 text-sm font-bold opacity-90">
                  <span>Batch closing in</span>
-                 <div className="flex gap-1.5 items-center">
-                    <span className="countdown-box">23</span> :
-                    <span className="countdown-box">07</span> :
-                    <span className="countdown-box">57</span>
-                 </div>
+                 <CountdownTimer />
               </div>
            </div>
-           <div className="flex gap-4 items-center">
-              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Talk to Advisor</button>
+           <div className="flex gap-6 items-center">
+              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Request a Callback</button>
               <ApplyNowButton 
                  courseValue="Digital Marketing" 
                  label="Connect Now" 
-                 className="!bg-white !from-white !to-white !text-indigo-700 !px-8 !py-2.5 !rounded-lg !shadow-none hover:!scale-105"
+                 className="!bg-white !from-white !to-white !text-indigo-700 !px-10 !py-3 !rounded-lg !shadow-none hover:!scale-105"
               />
            </div>
         </div>

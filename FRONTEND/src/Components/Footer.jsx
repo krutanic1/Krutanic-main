@@ -21,7 +21,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-[#0A0A0A] text-white pt-20 pb-10 px-6 sm:px-12 font-sans relative overflow-hidden mt-10 shadow-2xl border-t border-white/5">
+    <footer className="bg-[#0A0A0A] text-white pt-20 pb-10 px-6 sm:px-12 font-sans relative overflow-hidden shadow-2xl border-t border-white/5">
       
       <div className="max-w-7xl mx-auto align-top">
         

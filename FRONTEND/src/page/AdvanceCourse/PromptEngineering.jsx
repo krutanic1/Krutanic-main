@@ -39,6 +39,7 @@ import ImageSlider from "./Components/ImageSlider";
 import CourseInfoStrip from "./Components/CourseInfoStrip";
 import ToolStack from "./Components/ToolStack";
 import DownloadBrochureButton from "./Components/DownloadBrochureButton";
+import CountdownTimer from "./Components/CountdownTimer";
 import peBrochure from "../../../krutanic/Prompt engineering for generative AI Advanced Program.pdf";
 
 const heroStats = [
@@ -199,7 +200,7 @@ const PromptEngineering = () => {
           bottom: 0; 
           left: 0; 
           width: 100%; 
-          height: 72px; 
+          height: 80px; 
           background: #6D28D9; 
           color: #fff;
           z-index: 100; 
@@ -454,7 +455,7 @@ const PromptEngineering = () => {
                  </div>
               </div>
               <div className="p-card" style={{padding:'32px', maxWidth:'520px'}}>
-                 <div style={{marginBottom:'24px'}}><h3 style={{fontSize:'21px', fontWeight:800, marginBottom:'4px'}}>Advisor Callback</h3><p style={{fontSize:'13px', color:'var(--pe-text-dim)'}}>Receive personalized program guidance.</p></div>
+                 <div style={{marginBottom:'24px'}}><h3 style={{fontSize:'21px', fontWeight:800, marginBottom:'4px'}}>Request a Callback</h3><p style={{fontSize:'13px', color:'var(--pe-text-dim)'}}>Receive personalized program guidance.</p></div>
                  <ApplyForm courseValue="Prompt Engineering" isPremium={true} />
               </div>
            </div>
@@ -468,21 +469,17 @@ const PromptEngineering = () => {
                  <span className="animate-pulse">🚨</span>
                  <span>30% Scholarship closing in just 2 days.</span>
               </div>
-              <div className="hidden lg:flex items-center gap-3 text-sm font-bold opacity-90">
-                 <span>Batch closing in</span>
-                 <div className="flex gap-1.5 items-center">
-                    <span className="countdown-box">23</span> :
-                    <span className="countdown-box">07</span> :
-                    <span className="countdown-box">57</span>
-                 </div>
-              </div>
+               <div className="hidden lg:flex items-center gap-3 text-sm font-bold opacity-90">
+                  <span>Batch closing in</span>
+                  <CountdownTimer />
+               </div>
            </div>
-           <div className="flex gap-4 items-center">
-              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Talk to Advisor</button>
+           <div className="flex gap-6 items-center">
+              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Request a Callback</button>
               <ApplyNowButton 
                  courseValue="Prompt Engineering" 
                  label="Connect Now" 
-                 className="!bg-white !from-white !to-white !text-[#6D28D9] !px-8 !py-2.5 !rounded-lg !shadow-none hover:!scale-105"
+                 className="!bg-white !from-white !to-white !text-[#6D28D9] !px-10 !py-3 !rounded-lg !shadow-none hover:!scale-105"
               />
            </div>
         </div>

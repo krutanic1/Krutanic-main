@@ -389,7 +389,7 @@ const ApplyForm = ({ courseValue = "this program", isPremium = false }) => {
                 disabled={loading || !emailVerified}
                 className={`w-full ${isPremium ? 'py-4' : 'py-6'} bg-[#f15b29] text-white font-black text-lg rounded-2xl hover:bg-[#d64a1d] transition-all shadow-[0_20px_40px_rgba(241,91,41,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group flex items-center justify-center gap-3 uppercase tracking-widest`}
               >
-                {loading ? "Processing..." : isPremium ? "Request Consultation" : "Submit My Application"}
+                {loading ? "Processing..." : isPremium ? "Request a Callback" : "Submit My Application"}
                 <FaArrowRight className="group-hover:translate-x-2 transition-transform" />
               </button>
               {!isPremium && (

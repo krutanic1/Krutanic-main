@@ -40,7 +40,8 @@ import ImageSlider from "./Components/ImageSlider";
 import CourseInfoStrip from "./Components/CourseInfoStrip";
 import ToolStack from "./Components/ToolStack";
 import DownloadBrochureButton from "./Components/DownloadBrochureButton";
-import daBrochure from "../../../krutanic/Data Analytics Advanced program.pdf";
+import CountdownTimer from "./Components/CountdownTimer";
+import daBrochure from "../../../krutanic/Data Analytics Advanced Program.pdf";
 
 const heroStats = [
   { label: "Duration", value: "24 Weeks" },
@@ -203,7 +204,7 @@ const DataAnalytics = () => {
           bottom: 0; 
           left: 0; 
           width: 100%; 
-          height: 72px; 
+          height: 80px; 
           background: var(--da-primary); 
           color: #fff;
           z-index: 100; 
@@ -435,7 +436,7 @@ const DataAnalytics = () => {
         <div className="shell">
            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'80px', alignItems:'start'}}>
               <div>
-                 <h2 className="sec-title">Speak with an advisor</h2>
+                 <h2 className="sec-title">Request a Callback</h2>
                  <p className="sec-sub">Get a personalized program walkthrough and review your cohort fit with our technical counselors.</p>
                  <div style={{display:'grid', gap:'16px'}}>
                     {['24-hour response turnaround', 'Expert technical counseling', 'No marketing spam policy'].map(t => (
@@ -460,19 +461,15 @@ const DataAnalytics = () => {
               </div>
               <div className="hidden lg:flex items-center gap-3 text-sm font-bold opacity-90">
                  <span>Batch closing in</span>
-                 <div className="flex gap-1.5 items-center">
-                    <span className="countdown-box">23</span> :
-                    <span className="countdown-box">07</span> :
-                    <span className="countdown-box">57</span>
-                 </div>
+                 <CountdownTimer />
               </div>
            </div>
-           <div className="flex gap-4 items-center">
-              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Talk to Advisor</button>
+           <div className="flex gap-6 items-center">
+              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Request a Callback</button>
               <ApplyNowButton 
                  courseValue="Data Analytics" 
                  label="Connect Now" 
-                 className="!bg-white !from-white !to-white !text-teal-800 !px-8 !py-2.5 !rounded-lg !shadow-none hover:!scale-105"
+                 className="!bg-white !from-white !to-white !text-teal-800 !px-10 !py-3 !rounded-lg !shadow-none hover:!scale-105"
               />
            </div>
         </div>

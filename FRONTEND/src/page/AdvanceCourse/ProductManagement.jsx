@@ -38,6 +38,7 @@ import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
 import CourseInfoStrip from "./Components/CourseInfoStrip";
 import DownloadBrochureButton from "./Components/DownloadBrochureButton";
+import CountdownTimer from "./Components/CountdownTimer";
 import pmBrochure from "../../../krutanic/Product management Advanced program.pdf";
 
 const heroStats = [
@@ -69,7 +70,7 @@ const curriculumRoadmap = [
   { weeks: "Weeks 7-8", title: "Agile Development Cycles", topics: "Scrum, Kanban, User Stories, Backlog Grooming.", details: "Master the execution rituals required to lead engineering teams with clarity and iterative precision." },
   { weeks: "Weeks 9-10", title: "Product Design & UX", topics: "Design thinking, wireframing, usability testing.", details: "Collaborate effectively with designers to translate user empathy into seamless product experiences." },
   { weeks: "Weeks 11-12", title: "Data-Driven Decision Making", topics: "KPI frameworks, A/B testing, product analytics.", details: "Use behavioral data and structured experiments to validate hypotheses and optimize product value." },
-  { weeks: "Weeks 13-16", title: "Monetization & Stakeholders", topics: "Pricing models, unit economics, executive alignment.", details: "Learn the business side of productÃ¢â‚¬â€from pricing strategy to navigating complex stakeholder hierarchies." },
+  { weeks: "Weeks 13-16", title: "Monetization & Stakeholders", topics: "Pricing models, unit economics, executive alignment.", details: "Learn the business side of productÃ¢â‚¬â€ from pricing strategy to navigating complex stakeholder hierarchies." },
   { weeks: "Weeks 17-20", title: "Launch & GTM Execution", topics: "Launch planning, positioning, messaging, scaling.", details: "Plan and execute a high-impact go-to-market strategy that ensures adoption and market resonance." },
   { weeks: "Weeks 21-24", title: "Capstone & Placement Prep", topics: "End-to-end case, Resume, Mock interviews.", details: "Crystalize your learning into a portfolio-grade deck and prepare for the rigors of PM hiring cycles." }
 ];
@@ -190,7 +191,7 @@ const ProductManagement = () => {
           bottom: 0; 
           left: 0; 
           width: 100%; 
-          height: 72px; 
+          height: 80px; 
           background: var(--pm-primary); 
           color: #fff;
           z-index: 100; 
@@ -426,7 +427,7 @@ const ProductManagement = () => {
         <div className="shell">
            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'80px', alignItems:'start'}}>
               <div>
-                 <h2 className="sec-title">Speak with an Advisor</h2>
+                 <h2 className="sec-title">Request a Callback</h2>
                  <p className="sec-sub">Get a personalized transition plan into Product Management and review your personal case-study roadmap.</p>
                  <div style={{display:'grid', gap:'16px'}}>
                     {['24-hour turnaround response', 'Deep syllabus walkthrough', 'Program suitability review'].map(t => (
@@ -435,7 +436,7 @@ const ProductManagement = () => {
                  </div>
               </div>
               <div className="p-card" style={{padding:'32px', maxWidth:'520px'}}>
-                 <div style={{marginBottom:'24px'}}><h3 style={{fontSize:'21px', fontWeight:800, marginBottom:'4px'}}>Advisor Call Request</h3><p style={{fontSize:'13px', color:'var(--pm-text-dim)'}}>Plan your product leadership journey.</p></div>
+                 <div style={{marginBottom:'24px'}}><h3 style={{fontSize:'21px', fontWeight:800, marginBottom:'4px'}}>Request a Callback</h3><p style={{fontSize:'13px', color:'var(--pm-text-dim)'}}>Plan your product leadership journey.</p></div>
                  <ApplyForm courseValue="Product Management" isPremium={true} />
               </div>
            </div>
@@ -451,19 +452,15 @@ const ProductManagement = () => {
               </div>
               <div className="hidden lg:flex items-center gap-3 text-sm font-bold opacity-90">
                  <span>Batch closing in</span>
-                 <div className="flex gap-1.5 items-center">
-                    <span className="countdown-box">23</span> :
-                    <span className="countdown-box">07</span> :
-                    <span className="countdown-box">57</span>
-                 </div>
+                 <CountdownTimer />
               </div>
            </div>
-           <div className="flex gap-4 items-center">
+           <div className="flex gap-6 items-center">
               <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Request Callback</button>
               <ApplyNowButton 
                  courseValue="Product Management" 
                  label="Connect Now" 
-                 className="!bg-white !from-white !to-white !text-slate-800 !px-8 !py-2.5 !rounded-lg !shadow-none hover:!scale-105"
+                 className="!bg-white !from-white !to-white !text-slate-800 !px-10 !py-3 !rounded-lg !shadow-none hover:!scale-105"
               />
            </div>
         </div>

@@ -33,6 +33,7 @@ import CourseHeroBanner from "./Components/CourseHeroBanner";
 import CourseInfoStrip from "./Components/CourseInfoStrip";
 import ToolStack from "./Components/ToolStack";
 import DownloadBrochureButton from "./Components/DownloadBrochureButton";
+import CountdownTimer from "./Components/CountdownTimer";
 import genaiBrochure from "../../../krutanic/Prompt engineering for generative AI Advanced Program.pdf";
 
 const heroStats = [
@@ -196,7 +197,14 @@ const GenerativeAI = () => {
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 80);
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    
+    // Set body background for dark theme
+    document.body.style.backgroundColor = "#06040e";
+    
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      document.body.style.backgroundColor = ""; // Reset on unmount
+    };
   }, []);
 
 
@@ -414,7 +422,7 @@ const GenerativeAI = () => {
           bottom: 0; 
           left: 0; 
           width: 100%; 
-          height: 72px; 
+          height: 80px; 
           background: #7c3aed; 
           color: #fff;
           z-index: 100; 
@@ -749,8 +757,8 @@ const GenerativeAI = () => {
 
             <div className="space-y-4">
               {[
-                { label: "Booking Amount", value: "₹20,000", desc: "Secure your seat in the upcoming cohort" },
-                { label: "Phase 1 Installment", value: "₹51,000", desc: "Pay before Core Training starts" },
+                { label: "Booking Amount", value: "₹10,000", desc: "Secure your seat in the upcoming cohort" },
+                { label: "Phase 1 Installment", value: "₹61,000", desc: "Pay before Core Training starts" },
                 { label: "Phase 2 Final", value: "₹50,999", desc: "Pay before Advanced Agentic modules" }
               ].map((item, i) => (
                 <div key={i} className="p-6 rounded-2xl bg-white/5 border border-white/5 hover:border-purple-500/20 transition-all group">
@@ -833,7 +841,7 @@ const GenerativeAI = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                <ApplyNowButton courseValue="Generative AI" />
                <button onClick={() => window.location.href='tel:9380736449'} className="px-8 py-3 rounded-full border border-white/10 hover:bg-white/5 transition-all flex items-center gap-2 font-bold">
-                  <PhoneCall size={18} /> Speak with an Advisor
+                  <PhoneCall size={18} /> Request a Callback
                </button>
             </div>
          </div>
@@ -848,19 +856,15 @@ const GenerativeAI = () => {
               </div>
               <div className="hidden lg:flex items-center gap-3 text-sm font-bold opacity-90">
                  <span>Batch closing in</span>
-                 <div className="flex gap-1.5 items-center">
-                    <span className="countdown-box">23</span> :
-                    <span className="countdown-box">07</span> :
-                    <span className="countdown-box">57</span>
-                 </div>
+                 <CountdownTimer />
               </div>
            </div>
-           <div className="flex gap-4 items-center">
-              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Talk to Advisor</button>
+           <div className="flex gap-6 items-center">
+              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Request a Callback</button>
               <ApplyNowButton 
                  courseValue="Generative AI" 
                  label="Connect Now" 
-                 className="!bg-white !from-white !to-white !text-purple-600 !px-8 !py-2.5 !rounded-lg !shadow-none hover:!scale-105"
+                 className="!bg-white !from-white !to-white !text-purple-600 !px-10 !py-3 !rounded-lg !shadow-none hover:!scale-105"
               />
            </div>
         </div>

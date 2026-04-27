@@ -12,6 +12,7 @@ import toast, { Toaster } from "react-hot-toast";
 
 import ClientsCarousel from "../Components/our_alumni";
 import AdvancedApplyPopup from "../Components/AdvancedApplyPopup";
+import CountdownTimer from "./AdvanceCourse/Components/CountdownTimer";
 
 const programs = [
   { 
@@ -92,19 +93,19 @@ const programs = [
     accent: "bg-purple-600",
     lightAccent: "bg-purple-50 text-purple-700 border-purple-100" 
   },
-  { 
-    id: "genai", 
-    icon: <Sparkles size={24}/>, 
-    name: "Generative AI", 
-    positioning: "Architect multi-agent systems and RAG pipelines.", 
-    dur: "24 Weeks", 
-    idealFor: "Software engineers & AI architects.", 
-    tools: ["RAG", "Multi-Agent", "LangGraph"], 
-    link: "/GenerativeAI", 
-    cat: "GenAI", 
-    accent: "bg-fuchsia-600",
-    lightAccent: "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-100" 
-  },
+//   { 
+//     id: "genai", 
+//     icon: <Sparkles size={24}/>, 
+//     name: "Generative AI", 
+//     positioning: "Architect multi-agent systems and RAG pipelines.", 
+//     dur: "24 Weeks", 
+//     idealFor: "Software engineers & AI architects.", 
+//     tools: ["RAG", "Multi-Agent", "LangGraph"], 
+//     link: "/GenerativeAI", 
+//     cat: "GenAI", 
+//     accent: "bg-fuchsia-600",
+//     lightAccent: "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-100" 
+//   },
 ];
 
 function TrendingUpIcon(props) {
@@ -241,7 +242,7 @@ const Advance = () => {
           bottom: 0; 
           left: 0; 
           width: 100%; 
-          height: 72px; 
+          height: 80px; 
           background: #6D28D9; 
           color: #fff;
           z-index: 100; 
@@ -765,7 +766,7 @@ const Advance = () => {
                      Compare Catalog
                   </button>
                   <button onClick={() => setShowApplyForm(true)} className="px-8 py-4 rounded-xl bg-white text-slate-900 font-bold text-[15px] hover:bg-slate-100 transition-colors text-center shadow-[0_0_20px_rgba(255,255,255,0.1)] flex justify-center items-center gap-2">
-                     Speak with Advisor
+                     Request a Callback
                   </button>
                </div>
             </div>
@@ -784,16 +785,12 @@ const Advance = () => {
               </div>
               <div className="hidden lg:flex items-center gap-3 text-sm font-bold opacity-90">
                  <span>Batch closing in</span>
-                 <div className="flex gap-1.5 items-center">
-                    <span className="countdown-box">23</span> :
-                    <span className="countdown-box">07</span> :
-                    <span className="countdown-box">57</span>
-                 </div>
+                 <CountdownTimer />
               </div>
            </div>
-           <div className="flex gap-4 items-center">
+           <div className="flex gap-8 items-center">
               <button onClick={() => setShowApplyForm(true)} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white">
-                 Contact Admissions
+                 Request a Callback
               </button>
               <button onClick={() => document.getElementById('catalog').scrollIntoView({behavior:'smooth'})} className="bg-white text-[#6D28D9] hover:scale-105 py-2.5 px-6 rounded-lg text-sm font-black transition-all shadow-sm flex items-center gap-2">
                  View Catalog

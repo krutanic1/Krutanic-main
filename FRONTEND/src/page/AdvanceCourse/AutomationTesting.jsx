@@ -42,6 +42,7 @@ import ImageSlider from "./Components/ImageSlider";
 import CourseInfoStrip from "./Components/CourseInfoStrip";
 import ToolStack from "./Components/ToolStack";
 import DownloadBrochureButton from "./Components/DownloadBrochureButton";
+import CountdownTimer from "./Components/CountdownTimer";
 import atBrochure from "../../../krutanic/Automation testing Advanced Program.pdf";
 
 const heroStats = [
@@ -78,9 +79,9 @@ const curriculumRoadmap = [
   { weeks: "Weeks 3-4", title: "Web Automation Mastery", topics: "Selenium/Playwright, Grid, Cross-browser.", details: "Learn the core methodologies used to interact with modern web elements and handle dynamic content." },
   { weeks: "Weeks 5-8", title: "Architectural Patterns", topics: "Page Object Model (POM), Data-driven, Hybrid.", details: "Deep-dive into production-ready framework design that ensures your test suites are scalable and lean." },
   { weeks: "Weeks 9-10", title: "API Automation", topics: "REST APIs, OAuth, Payload validation, Mocking.", details: "Master the mechanics of validating backend services without relying on the UI layers." },
-  { weeks: "Weeks 11-12", title: "Mobile & Hybrid Apps", topics: "Appium, Emulator/Simulator, Mobile Gestures.", details: "Extend your quality skills to the mobile ecosystemÃ¢â‚¬â€handling iOS and Android application lifecycles." },
+  { weeks: "Weeks 11-12", title: "Mobile & Hybrid Apps", topics: "Appium, Emulator/Simulator, Mobile Gestures.", details: "Extend your quality skills to the mobile ecosystemÃ¢â‚¬â€ handling iOS and Android application lifecycles." },
   { weeks: "Weeks 13-16", title: "CI/CD & DevOps Integration", topics: "Jenkins, Docker, Cloud-native testing.", details: "Transition from local execution to integrated, automated pipelines that trigger on every code push." },
-  { weeks: "Weeks 17-20", title: "Capstone Quality Suite", topics: "Framework from scratch, Performance, Report.", details: "Execute a full quality cycleÃ¢â‚¬â€from test planning to a high-fidelity automated suite with cloud reporting." },
+  { weeks: "Weeks 17-20", title: "Capstone Quality Suite", topics: "Framework from scratch, Performance, Report.", details: "Execute a full quality cycleÃ¢â‚¬â€ from test planning to a high-fidelity automated suite with cloud reporting." },
   { weeks: "Weeks 21-24", title: "SDET Interview Engineering", topics: "DSA for QA, Framework design drills, Live coding.", details: "Final phase focused on cracking competitive SDET and QE Lead interviews with architectural clarity." }
 ];
 
@@ -200,7 +201,7 @@ const AutomationTesting = () => {
           bottom: 0; 
           left: 0; 
           width: 100%; 
-          height: 72px; 
+          height: 80px; 
           background: var(--at-primary); 
           color: #fff;
           z-index: 100; 
@@ -222,7 +223,7 @@ const AutomationTesting = () => {
       {/* 1. HERO */}
       <CourseHeroBanner
         badge="Quality Engineering Mastery"
-        icon="Ã°Å¸â€ºÂ¡Ã¯Â¸Â"
+        icon="Ã°Å¸â€ºÂ¡Ã¯Â¸Â "
         title="Automation Testing"
         highlight="& SDET Engineering"
         sub="Master the architecture of quality. From elite automation frameworks to high-performance CI/CD integration, build the products that ensure global tech reliability."
@@ -262,7 +263,7 @@ const AutomationTesting = () => {
       <section className="at-sec-white">
         <div className="shell">
           <h2 className="sec-title">The SDET Advantage</h2>
-          <p className="sec-sub">Automation is no longer a luxuryÃ¢â‚¬â€it is the strategic engine of high-velocity deployment and global software excellence.</p>
+          <p className="sec-sub">Automation is no longer a luxuryÃ¢â‚¬â€ it is the strategic engine of high-velocity deployment and global software excellence.</p>
           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(300px, 1fr))', gap:'40px'}}>
              {marketOpportunity.map((item, i) => (
                <div key={i}>
@@ -446,7 +447,7 @@ const AutomationTesting = () => {
         <div className="shell">
            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'80px', alignItems:'start'}}>
               <div>
-                 <h2 className="sec-title">Speak with an Advisor</h2>
+                 <h2 className="sec-title">Request a Callback</h2>
                  <p className="sec-sub">Get a personalized transition plan into SDET Engineering and review your institutional career roadmap.</p>
                  <div style={{display:'grid', gap:'16px'}}>
                     {['24-hour turnaround response', 'Deep technical walkthrough', 'QA suitability review'].map(t => (
@@ -471,19 +472,15 @@ const AutomationTesting = () => {
               </div>
               <div className="hidden lg:flex items-center gap-3 text-sm font-bold opacity-90">
                  <span>Batch closing in</span>
-                 <div className="flex gap-1.5 items-center">
-                    <span className="countdown-box">23</span> :
-                    <span className="countdown-box">07</span> :
-                    <span className="countdown-box">57</span>
-                 </div>
+                 <CountdownTimer />
               </div>
            </div>
-           <div className="flex gap-4 items-center">
-              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Talk to Advisor</button>
+           <div className="flex gap-6 items-center">
+              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Request a Callback</button>
               <ApplyNowButton 
                  courseValue="Automation Testing" 
                  label="Connect Now" 
-                 className="!bg-white !from-white !to-white !text-blue-700 !px-8 !py-2.5 !rounded-lg !shadow-none hover:!scale-105"
+                 className="!bg-white !from-white !to-white !text-blue-700 !px-10 !py-3 !rounded-lg !shadow-none hover:!scale-105"
               />
            </div>
         </div>

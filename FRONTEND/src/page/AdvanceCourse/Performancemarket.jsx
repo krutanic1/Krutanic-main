@@ -41,6 +41,7 @@ import ImageSlider from "./Components/ImageSlider";
 import CourseInfoStrip from "./Components/CourseInfoStrip";
 import ToolStack from "./Components/ToolStack";
 import DownloadBrochureButton from "./Components/DownloadBrochureButton";
+import CountdownTimer from "./Components/CountdownTimer";
 import pfBrochure from "../../../krutanic/Performance marketing Advanced Program.pdf";
 
 const heroStats = [
@@ -79,7 +80,7 @@ const curriculumRoadmap = [
   { weeks: "Weeks 9-10", title: "Advanced CRO", topics: "A/B testing, Heatmaps, Multivariate logic.", details: "Master the scientific methods used to lower acquisition costs by optimizing the post-click experience." },
   { weeks: "Weeks 11-12", title: "Social Scaling", topics: "Lookalikes, Retargeting, Dynamic creative.", details: "Learn to scale social campaigns through sophisticated audience modeling and creative iteration." },
   { weeks: "Weeks 13-16", title: "Growth Analytics", topics: "Attribution models, ROAS modeling, Dashboarding.", details: "Understand the 'why' behind performance and how to reallocate budget for maximum efficiency." },
-  { weeks: "Weeks 17-20", title: "Capstone Campaign", topics: "Full-funnel execution, Audit, ROI report.", details: "Execute a full performance cycleÃ¢â‚¬â€from budget planning to a high-ROAS live campaign simulation." },
+  { weeks: "Weeks 17-20", title: "Capstone Campaign", topics: "Full-funnel execution, Audit, ROI report.", details: "Execute a full performance cycleÃ¢â‚¬â€ from budget planning to a high-ROAS live campaign simulation." },
   { weeks: "Weeks 21-24", title: "Hiring Acceleration", topics: "Growth CV, Case presentation, Mock interviews.", details: "Final phase focused on positioning your technical campaign evidence to crack elite growth roles." }
 ];
 
@@ -199,7 +200,7 @@ const Performancemarket = () => {
           bottom: 0; 
           left: 0; 
           width: 100%; 
-          height: 72px; 
+          height: 80px; 
           background: var(--pf-primary); 
           color: #fff;
           z-index: 100; 
@@ -221,7 +222,7 @@ const Performancemarket = () => {
       {/* 1. HERO */}
       <CourseHeroBanner
         badge="Growth Analytics Certification"
-        icon="Ã°Å¸Å¡â‚¬"
+        icon="🚀"
         title="Performance Marketing"
         highlight="& Growth Engineering"
         sub="Master the architecture of measurable growth. From elite paid media scaling to scientific conversion optimization, build the funnels that drive global business revenue."
@@ -261,7 +262,7 @@ const Performancemarket = () => {
       <section className="at-sec-white">
         <div className="shell">
           <h2 className="sec-title">The Performance Edge</h2>
-          <p className="sec-sub">Performance marketing is no longer a luxuryÃ¢â‚¬â€it is the strategic engine of trackable growth and global market dominance.</p>
+          <p className="sec-sub">Performance marketing is no longer a luxuryÃ¢â‚¬â€ it is the strategic engine of trackable growth and global market dominance.</p>
           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(300px, 1fr))', gap:'40px'}}>
              {marketOpportunity.map((item, i) => (
                <div key={i}>
@@ -445,7 +446,7 @@ const Performancemarket = () => {
         <div className="shell">
            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'80px', alignItems:'start'}}>
               <div>
-                 <h2 className="sec-title">Speak with an Advisor</h2>
+                 <h2 className="sec-title">Request a Callback</h2>
                  <p className="sec-sub">Get a personalized transition plan into Performance Marketing and review your institutional career roadmap.</p>
                  <div style={{display:'grid', gap:'16px'}}>
                     {['24-hour turnaround response', 'Deep technical walkthrough', 'Growth suitability review'].map(t => (
@@ -470,19 +471,15 @@ const Performancemarket = () => {
               </div>
               <div className="hidden lg:flex items-center gap-3 text-sm font-bold opacity-90">
                  <span>Batch closing in</span>
-                 <div className="flex gap-1.5 items-center">
-                    <span className="countdown-box">23</span> :
-                    <span className="countdown-box">07</span> :
-                    <span className="countdown-box">57</span>
-                 </div>
+                 <CountdownTimer />
               </div>
            </div>
-           <div className="flex gap-4 items-center">
-              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Talk to Advisor</button>
+           <div className="flex gap-6 items-center">
+              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Request a Callback</button>
               <ApplyNowButton 
                  courseValue="Performance Marketing" 
                  label="Connect Now" 
-                 className="!bg-white !from-white !to-white !text-indigo-900 !px-8 !py-2.5 !rounded-lg !shadow-none hover:!scale-105"
+                 className="!bg-white !from-white !to-white !text-indigo-900 !px-10 !py-3 !rounded-lg !shadow-none hover:!scale-105"
               />
            </div>
         </div>

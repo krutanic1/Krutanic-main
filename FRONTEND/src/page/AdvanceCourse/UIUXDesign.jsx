@@ -43,6 +43,7 @@ import ImageSlider from "./Components/ImageSlider";
 import CourseInfoStrip from "./Components/CourseInfoStrip";
 import ToolStack from "./Components/ToolStack";
 import DownloadBrochureButton from "./Components/DownloadBrochureButton";
+import CountdownTimer from "./Components/CountdownTimer";
 import uiuxBrochure from "../../../krutanic/UI  UX-min.pdf";
 
 const heroStats = [
@@ -81,7 +82,7 @@ const curriculumRoadmap = [
   { weeks: "Weeks 7-10", title: "UI Engineering in Figma", topics: "Auto-layout, components, variants, styles.", details: "Deep-dive into Figma to build production-ready interfaces with systematic precision." },
   { weeks: "Weeks 11-12", title: "UX Psychology", topics: "Gestalt laws, cognitive load, behavioral triggers.", details: "Understand the 'why' behind user behavior and design interfaces that align with human intuition." },
   { weeks: "Weeks 13-16", title: "Advanced Design Systems", topics: "Tokenization, documentation, scalability.", details: "Learn to build and manage cohesive design systems that scale across platforms and teams." },
-  { weeks: "Weeks 17-20", title: "Capstone Product Design", topics: "End-to-end case, Prototyping, Usability testing.", details: "Execute a full product cycleÃ¢â‚¬â€from research to a high-fidelity interactive prototype." },
+  { weeks: "Weeks 17-20", title: "Capstone Product Design", topics: "End-to-end case, Prototyping, Usability testing.", details: "Execute a full product cycleÃ¢â‚¬â€ from research to a high-fidelity interactive prototype." },
   { weeks: "Weeks 21-24", title: "Portfolio Engineering", topics: "Case study writing, Behance/Dribbble, CV prep.", details: "Translate your projects into a world-class portfolio that captures the attention of elite design leads." }
 ];
 
@@ -201,7 +202,7 @@ const UIUXDesign = () => {
           bottom: 0; 
           left: 0; 
           width: 100%; 
-          height: 72px; 
+          height: 80px; 
           background: var(--ux-primary); 
           color: #fff;
           z-index: 100; 
@@ -220,7 +221,7 @@ const UIUXDesign = () => {
       {/* 1. HERO */}
       <CourseHeroBanner
         badge="Product Design Authority"
-        icon="Ã°Å¸Å½Â¨"
+        icon="🎨"
         title="UI/UX Design"
         highlight="& Product Strategy"
         sub="Master the architecture of user experience. From deep discovery to high-fidelity design systems, build the products that shape the future."
@@ -260,7 +261,7 @@ const UIUXDesign = () => {
       <section className="ux-sec-white">
         <div className="shell">
           <h2 className="sec-title">The Design Edge</h2>
-          <p className="sec-sub">UX is no longer a luxuryÃ¢â‚¬â€it is the strategic engine of high-growth product companies and market disruptors.</p>
+          <p className="sec-sub">UX is no longer a luxuryÃ¢â‚¬â€ it is the strategic engine of high-growth product companies and market disruptors.</p>
           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(300px, 1fr))', gap:'40px'}}>
              {marketOpportunity.map((item, i) => (
                <div key={i}>
@@ -444,7 +445,7 @@ const UIUXDesign = () => {
         <div className="shell">
            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'80px', alignItems:'start'}}>
               <div>
-                 <h2 className="sec-title">Speak with an Advisor</h2>
+                 <h2 className="sec-title">Request a Callback</h2>
                  <p className="sec-sub">Get a personalized transition plan into UI/UX Design and review your institutional career roadmap.</p>
                  <div style={{display:'grid', gap:'16px'}}>
                     {['24-hour turnaround response', 'Deep technical walkthrough', 'Design suitability review'].map(t => (
@@ -469,19 +470,15 @@ const UIUXDesign = () => {
               </div>
               <div className="hidden lg:flex items-center gap-3 text-sm font-bold opacity-90">
                  <span>Batch closing in</span>
-                 <div className="flex gap-1.5 items-center">
-                    <span className="countdown-box">23</span> :
-                    <span className="countdown-box">07</span> :
-                    <span className="countdown-box">57</span>
-                 </div>
+                 <CountdownTimer />
               </div>
            </div>
-           <div className="flex gap-4 items-center">
-              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Talk to Advisor</button>
+           <div className="flex gap-6 items-center">
+              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Request a Callback</button>
               <ApplyNowButton 
                  courseValue="UIUX Design" 
                  label="Connect Now" 
-                 className="!bg-white !from-white !to-white !text-purple-700 !px-8 !py-2.5 !rounded-lg !shadow-none hover:!scale-105"
+                 className="!bg-white !from-white !to-white !text-purple-700 !px-10 !py-3 !rounded-lg !shadow-none hover:!scale-105"
               />
            </div>
         </div>

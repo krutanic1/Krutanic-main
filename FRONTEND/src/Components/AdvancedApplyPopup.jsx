@@ -5,6 +5,10 @@ import API from "../API";
 import toast from "react-hot-toast";
 import { FaUser, FaPhone, FaEnvelope, FaBriefcase, FaGraduationCap, FaBullseye, FaCheckCircle, FaTimes, FaChevronDown } from "react-icons/fa";
 import krutanicLogo from "../assets/logowhite.png";
+import alumni1 from "../assets/alumni/alumni_1.png";
+import alumni2 from "../assets/alumni/alumni_2.png";
+import alumni3 from "../assets/alumni/alumni_3.png";
+import alumni4 from "../assets/alumni/alumni_4.png";
 
 // Custom Select Component for a more professional look
 const CustomSelect = ({ label, icon, options, name, value, onChange, placeholder, required }) => {
@@ -223,9 +227,9 @@ const AdvancedApplyPopup = ({ onClose, initialDomain = "", onSuccess, popupType 
 
                     <div className="relative z-10 pt-10 border-t border-white/10">
                         <div className="flex -space-x-3 mb-4">
-                            {[1, 2, 3, 4].map(i => (
+                            {[alumni1, alumni2, alumni3, alumni4].map((img, i) => (
                                 <div key={i} className="w-8 h-8 rounded-full border-2 border-[#050d2f] bg-slate-800 overflow-hidden shadow-xl">
-                                    <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="alumni" />
+                                    <img src={img} alt="alumni" className="w-full h-full object-cover" />
                                 </div>
                             ))}
                             <div className="w-8 h-8 rounded-full border-2 border-[#050d2f] bg-orange-600 flex items-center justify-center text-[10px] font-bold text-white shadow-xl">

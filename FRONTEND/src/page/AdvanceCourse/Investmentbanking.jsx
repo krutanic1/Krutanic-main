@@ -16,9 +16,8 @@ import {
   LineChart, 
   BarChart4, 
   Globe,
-  BalanceBeam,
   Calculator,
-  GanttChartSquare,
+  GanttChart,
   Landmark,
   Building2,
   FileSpreadsheet,
@@ -41,6 +40,7 @@ import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
 import CourseInfoStrip from "./Components/CourseInfoStrip";
 import DownloadBrochureButton from "./Components/DownloadBrochureButton";
+import CountdownTimer from "./Components/CountdownTimer";
 import ibBrochure from "../../../krutanic/Investment Banking Advanced Program.pdf";
 
 const heroStats = [
@@ -69,7 +69,7 @@ const curriculumRoadmap = [
   { weeks: "Weeks 1-2", title: "Banking Foundations", topics: "Structure, functions, capital raising, markets.", details: "Understand the lifecycle of a deal and the role of various desks in a global investment bank." },
   { weeks: "Weeks 3-4", title: "Valuation Frameworks", topics: "DCF, Comps, Precedents, LBO concepts.", details: "Learn the core methodologies used to price companies and justify transaction premiums." },
   { weeks: "Weeks 5-6", title: "Capital Markets", topics: "IPOs, Underwriting, Book building, Debt pricing.", details: "Master the mechanics of public offerings and how companies access institutional capital." },
-  { weeks: "Weeks 7-9", title: "Advanced M&A Dynamics", topics: "Due diligence, deal structuring, integration planning.", details: "Navigate the complex workflows of mergersÃ¢â‚¬â€from initial bid to final integration logic." },
+  { weeks: "Weeks 7-9", title: "Advanced M&A Dynamics", topics: "Due diligence, deal structuring, integration planning.", details: "Navigate the complex workflows of mergersÃ¢â‚¬â€ from initial bid to final integration logic." },
   { weeks: "Weeks 10-12", title: "Financial Modeling", topics: "3-Statement models, Scenario analysis, Forecasting.", details: "Build production-grade Excel models that can withstand the rigors of executive review." },
   { weeks: "Weeks 13-14", title: "Governance & Ethics", topics: "Compliance, insider trading, conflict management.", details: "Learn the regulatory guardrails and high ethical standards required in high-stakes banking." },
   { weeks: "Weeks 15-16", title: "PE & Venture Capital", topics: "Fund structures, term sheets, exit strategies.", details: "Understand the private investment lifecycle from deal sourcing to multi-billion dollar exits." },
@@ -193,7 +193,7 @@ const Investmentbanking = () => {
           bottom: 0; 
           left: 0; 
           width: 100%; 
-          height: 72px; 
+          height: 80px; 
           background: var(--ib-primary); 
           color: #fff;
           z-index: 100; 
@@ -212,7 +212,7 @@ const Investmentbanking = () => {
       {/* 1. HERO */}
       <CourseHeroBanner
         badge="Elite Financial Mastery"
-        icon="Ã¢Å¡â€“Ã¯Â¸Â"
+        icon="Ã¢Å¡â€“Ã¯Â¸Â "
         title="Investment Banking"
         highlight="Valuation & M&A"
         sub="A comprehensive 24-week engineering of your financial career. Master valuation, mergers, and capital modeling with absolute technical precision."
@@ -252,7 +252,7 @@ const Investmentbanking = () => {
       <section className="ib-sec-white">
         <div className="shell">
           <h2 className="sec-title">The Banking Advantage</h2>
-          <p className="sec-sub">Investment banking is more than just valuationÃ¢â‚¬â€it is the strategic bedrock of institutional growth and capital excellence.</p>
+          <p className="sec-sub">Investment banking is more than just valuationÃ¢â‚¬â€ it is the strategic bedrock of institutional growth and capital excellence.</p>
           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(300px, 1fr))', gap:'40px'}}>
              {marketOpportunity.map((item, i) => (
                <div key={i}>
@@ -309,7 +309,7 @@ const Investmentbanking = () => {
            <h2 className="sec-title">How Learning Works</h2>
            <p className="sec-sub">A premium experience balancing technical rigor, mentor review, and institutional networking.</p>
            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(260px, 1fr))', gap:'20px'}}>
-              {[{t:"Live Modeling", d:"Sessions focused on keyboard-only efficiency and forecast logic.", i:<FileSpreadsheet size={20}/>}, {t:"Deal Reviews", d:"Regular defense of your valuation assumptions before mentors.", i:<GanttChartSquare size={20}/>}, {t:"Technical Drills", d:"Weekly quizzes and drills on banking-specific technical questions.", i:<Zap size={20}/>}, {t:"Institutional Access", d:"Referral pathways to our network of 500+ hiring brands.", i:<Building2 size={20}/>}].map((item, i) => (
+              {[{t:"Live Modeling", d:"Sessions focused on keyboard-only efficiency and forecast logic.", i:<FileSpreadsheet size={20}/>}, {t:"Deal Reviews", d:"Regular defense of your valuation assumptions before mentors.", i:<GanttChart size={20}/>}, {t:"Technical Drills", d:"Weekly quizzes and drills on banking-specific technical questions.", i:<Zap size={20}/>}, {t:"Institutional Access", d:"Referral pathways to our network of 500+ hiring brands.", i:<Building2 size={20}/>}].map((item, i) => (
                  <div key={i} className="p-card text-center">
                     <div style={{color:'var(--ib-primary)', margin:'0 auto 20px', width:'fit-content'}}>{item.i}</div>
                     <div style={{fontWeight:800, marginBottom:'8px'}}>{item.t}</div>
@@ -429,7 +429,7 @@ const Investmentbanking = () => {
         <div className="shell">
            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'80px', alignItems:'start'}}>
               <div>
-                 <h2 className="sec-title">Consult with an Advisor</h2>
+                 <h2 className="sec-title">Request a Callback</h2>
                  <p className="sec-sub">Get a personalized transition plan into Investment Banking and review your institutional career roadmap.</p>
                  <div style={{display:'grid', gap:'16px'}}>
                     {['24-hour turnaround response', 'Deep technical walkthrough', 'Banking suitability review'].map(t => (
@@ -454,19 +454,15 @@ const Investmentbanking = () => {
               </div>
               <div className="hidden lg:flex items-center gap-3 text-sm font-bold opacity-90">
                  <span>Batch closing in</span>
-                 <div className="flex gap-1.5 items-center">
-                    <span className="countdown-box">23</span> :
-                    <span className="countdown-box">07</span> :
-                    <span className="countdown-box">57</span>
-                 </div>
+                 <CountdownTimer />
               </div>
            </div>
-           <div className="flex gap-4 items-center">
-              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Talk to Advisor</button>
+           <div className="flex gap-6 items-center">
+              <button onClick={() => window.location.href='tel:9380736449'} className="text-xs font-black uppercase hidden xl:flex items-center gap-2 hover:opacity-80 transition-all text-white"><PhoneCall size={14} /> Request a Callback</button>
               <ApplyNowButton 
                  courseValue="Investment Banking" 
                  label="Connect Now" 
-                 className="!bg-white !from-white !to-white !text-blue-900 !px-8 !py-2.5 !rounded-lg !shadow-none hover:!scale-105"
+                 className="!bg-white !from-white !to-white !text-blue-900 !px-10 !py-3 !rounded-lg !shadow-none hover:!scale-105"
               />
            </div>
         </div>
