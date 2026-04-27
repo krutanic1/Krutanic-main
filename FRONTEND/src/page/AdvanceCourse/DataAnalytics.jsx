@@ -41,7 +41,7 @@ import CourseInfoStrip from "./Components/CourseInfoStrip";
 import ToolStack from "./Components/ToolStack";
 import DownloadBrochureButton from "./Components/DownloadBrochureButton";
 import CountdownTimer from "./Components/CountdownTimer";
-import daBrochure from "../../../krutanic/Data Analytics Advanced Program.pdf";
+import daBrochure from "../../../krutanic/Data Analytics Advanced program.pdf";
 
 const heroStats = [
   { label: "Duration", value: "24 Weeks" },
