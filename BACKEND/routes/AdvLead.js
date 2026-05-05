@@ -370,18 +370,26 @@ router.get("/get-outcome-counts", async (req, res) => {
             }
         }
 
-        const outcomes = ["interested", "follow_up", "callback_requested", "no_answer", "not_interested", "junk", "converted", "qualified"];
+        const stages = [
+            "Fresh Lead",
+            "Attempting Contact",
+            "First Call Connected",
+            "Demo Conducted",
+            "Closed Won",
+            "Closed Lost"
+        ];
         const counts = {};
 
-        // 1. Count Fresh (no interaction yet)
-        counts.fresh = await AdvLead.countDocuments({ ...baseQuery, last_interaction_at: { $exists: false } });
-
-        // 2. Count by last_outcome
-        await Promise.all(outcomes.map(async (outcome) => {
-            counts[outcome] = await AdvLead.countDocuments({ ...baseQuery, last_outcome: outcome });
+        // Count by stage
+        await Promise.all(stages.map(async (stage) => {
+            counts[stage] = await AdvLead.countDocuments({ ...baseQuery, stage });
         }));
 
-        // 3. Total Owned (Simplified)
+        // Compatibility mapping for frontend (if needed)
+        counts.fresh = counts["Fresh Lead"];
+        counts.converted = counts["Closed Won"];
+        
+        // Total Owned
         counts.total = await AdvLead.countDocuments(baseQuery);
 
         res.status(200).json(counts);
@@ -1225,23 +1233,34 @@ router.post("/bulk-import", upload.single("file"), async (req, res) => {
     }
 });
 
-// POST: Log a call activity from Leads Book (SR Inside Sales Specialist)
+// POST: Log an activity (call/email/whatsapp/note) from CRM (CRM Lead Disposition Framework)
 router.post("/log-call-activity", async (req, res) => {
     const {
         leadId, specialistId, specialistName, remark,
-        summary, callOutcome, demoScheduleDate, followUpDate, duration, recordingUrl
+        summary, actionType, stage, disposition, 
+        demoScheduleDate, followUpDate, duration, recordingUrl,
+        expectedPaymentDate
     } = req.body;
-    if (!leadId || !specialistId || !callOutcome) {
-        return res.status(400).json({ message: "leadId, specialistId, and callOutcome are required" });
+
+    if (!leadId || !specialistId || !stage || !disposition) {
+        return res.status(400).json({ message: "leadId, specialistId, stage, and disposition are required" });
     }
+
     try {
-        // Fetch lead and team context
         const lead = await AdvLead.findById(leadId);
         if (!lead) return res.status(404).json({ message: "Lead not found" });
 
         const team = await AdvTeamStructure.findOne({ "members.userId": specialistId });
 
-        // Save call activity with team/manager context from lead's history
+        // 1. Mandatory Rules Validation
+        if (disposition === "Callback Requested" && !followUpDate) {
+            return res.status(400).json({ message: "Next Follow-up Date is mandatory for Callback Requested" });
+        }
+        if (disposition === "Demo Booked" && !demoScheduleDate) {
+            return res.status(400).json({ message: "Demo Date is required for Demo Booked" });
+        }
+
+        // 2. Activity Logging (Mandatory - No Overwriting)
         const activity = new AdvCallActivity({
             leadId,
             teamId: lead.team_id || team?._id,
@@ -1250,9 +1269,11 @@ router.post("/log-call-activity", async (req, res) => {
             specialistStringId: specialistId,
             specialistName: specialistName,
             specialistId: mongoose.Types.ObjectId.isValid(specialistId) ? specialistId : undefined,
+            actionType: actionType || "call",
+            stage,
+            disposition,
             remark,
             summary,
-            callOutcome,
             duration,
             recordingUrl,
             demoScheduleDate: demoScheduleDate || undefined,
@@ -1261,62 +1282,89 @@ router.post("/log-call-activity", async (req, res) => {
         });
         await activity.save();
 
-        // Update lead status and stage based on outcome
-        const statusMap = {
-            interested: "in_followup",
-            converted: "converted",
-            not_interested: "closed",
-            no_answer: undefined,
-            callback_requested: "in_followup",
-            junk: "closed",
-            follow_up: "in_followup",
-            qualified: "in_followup",
-        };
-
-        const stageMap = {
-            interested: "interested",
-            converted: "converted",
-            not_interested: "lost",
-            callback_requested: "contacted",
-            no_answer: "contacted",
-            junk: "lost",
-            follow_up: "contacted",
-            qualified: "interested",
-        };
-
-        // Define funnel hierarchy to prevent moving backward
-        const stageOrder = ["new", "contacted", "interested", "demo_scheduled", "converted"];
-
-        // Special handling for Demo Scheduled (if date provided)
-        let newStage = stageMap[callOutcome];
-        if (demoScheduleDate) newStage = "demo_scheduled";
-
-        const newStatus = statusMap[callOutcome];
-        const updateFields = { 
-            last_outcome: callOutcome,
+        // 3. Lead Update Logic
+        const updateFields = {
+            stage,
+            disposition,
+            last_note: summary || remark,
             last_interaction_at: new Date()
         };
+
+        if (stage !== lead.stage) {
+            updateFields.stage_updated_at = new Date();
+        }
+
+        if (actionType === "call") {
+            updateFields.attempt_count = (lead.attempt_count || 0) + 1;
+            updateFields.last_contacted_at = new Date();
+        }
+
+        // 4. Automation Rules
+        // Rule: If RNR >= 15 attempts -> Suggest move to Closed Lost
+        if (disposition === "RNR" && (lead.attempt_count + 1) >= 15) {
+            updateFields.stage = "Closed Lost";
+            updateFields.disposition = "No Response";
+            updateFields.closed = true;
+        }
+
+        if (followUpDate) {
+            updateFields.next_followup_at = followUpDate;
+        }
+
+        if (disposition === "Callback Requested" && followUpDate) {
+            // Auto-create task
+            await new AdvFollowup({
+                leadId,
+                specialistId,
+                followupDate: followUpDate,
+                taskType: "call",
+                note: summary || "Follow-up call requested",
+                assignedTo: specialistId
+            }).save();
+        }
+
+        if (disposition === "Demo Booked" && demoScheduleDate) {
+            updateFields.demo_date = demoScheduleDate;
+            updateFields.stage = "Demo Conducted"; // Move to Demo Conducted if booked? Or wait for date? 
+            // User says: Demo Booked -> Demo Conducted.
+            // Actually flow says: Demo Booked -> Demo Conducted.
+            
+            // Auto-create task
+            await new AdvFollowup({
+                leadId,
+                specialistId,
+                followupDate: demoScheduleDate,
+                taskType: "demo",
+                note: summary || "Demo session",
+                assignedTo: specialistId
+            }).save();
+        }
+
+        if (disposition === "Expected Payment Date" || expectedPaymentDate) {
+            updateFields.expected_payment_date = expectedPaymentDate || demoScheduleDate;
+            // Mark as Expected Revenue (could be a status or flag)
+            updateFields.status = "expected_revenue";
+        }
+
+        if (disposition === "Converted") {
+            updateFields.converted = true;
+            updateFields.closed = true;
+            updateFields.status = "converted";
+            // Phase 1 Expected Payment Date and Time
+            // (Setting current date as payment date if not provided)
+            if (!updateFields.expected_payment_date) {
+                updateFields.expected_payment_date = new Date();
+            }
+        }
+
+        if (stage === "Closed Lost") {
+            updateFields.closed = true;
+            updateFields.status = "closed";
+        }
 
         if (recordingUrl) {
             updateFields.last_recording_url = recordingUrl;
         }
-
-        if (newStatus) updateFields.status = newStatus;
-
-        // Update stage if it's 'lost' or if it's a forward move in the funnel
-        if (newStage) {
-            const currentStageIndex = stageOrder.indexOf(lead.stage || "new");
-            const newStageIndex = stageOrder.indexOf(newStage);
-
-            if (newStage === "lost" || newStageIndex > currentStageIndex) {
-                updateFields.stage = newStage;
-            }
-        }
-
-        if (demoScheduleDate) updateFields.demo_date = demoScheduleDate;
-        
-        // NEW: Update last interaction time to push to bottom of list
-        updateFields.last_interaction_at = new Date();
 
         await AdvLead.findByIdAndUpdate(leadId, { $set: updateFields });
 

@@ -139,7 +139,7 @@ const AdvTeamRecord = () => {
     const styles = {
         container: {
             padding: '24px',
-            marginLeft: '270px',
+            marginLeft: '280px',
             background: '#F8FAFC',
             minHeight: '100vh',
             fontFamily: "'Inter', system-ui, -apple-system, sans-serif"

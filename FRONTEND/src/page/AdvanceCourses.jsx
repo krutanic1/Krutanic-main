@@ -77,7 +77,7 @@ const columnsData = [
         title: "Data Science Advanced Program",
         desc: "Master Machine Learning, AI ethics, and large-scale neural architectures.",
         link: "/DataScience",
-        batch: "Upcoming"
+        batch: "31st May"
       },
       {
         type: "icon",
@@ -85,7 +85,7 @@ const columnsData = [
         title: "Data Analytics Advanced Program",
         desc: "Master Excel, SQL, Python, and Power BI to drive business decisions with data.",
         link: "/DataAnalytics",
-        batch: "1 May 2026"
+        batch: "31st May"
       }
     ]
   },
@@ -100,7 +100,7 @@ const columnsData = [
         title: "Digital Marketing Advanced Program",
         desc: "Multi-channel strategies, consumer psychology, and scalable digital campaigns.",
         link: "/DigitalMarket",
-        batch: "10 May 2026"
+        batch: "31st May"
       },
       {
         type: "icon",

@@ -46,12 +46,11 @@ import ToolStack from "./Components/ToolStack";
 import DownloadBrochureButton from "./Components/DownloadBrochureButton";
 import CountdownTimer from "./Components/CountdownTimer";
 import dmBrochure from "../../../krutanic/Digital Marketing Advanced Program.pdf";
-
 const heroStats = [
   { label: "Placement Rate", value: "93%" },
   { label: "Hiring Partners", value: "500+" },
   { label: "Student Rating", value: "4.7/5" },
-  { label: "Students Placed", value: "200+" },
+  { label: "Batch Starting", value: "31st May" },
 ];
 
 const audience = [

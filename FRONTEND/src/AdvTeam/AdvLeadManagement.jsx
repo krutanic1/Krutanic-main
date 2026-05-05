@@ -318,12 +318,12 @@ const AdvLeadManagement = () => {
 
     const getStatusStyle = (status) => {
         const map = {
-            'fresh': { bg: '#e6f7ff', border: '#91d5ff', color: '#1890ff' },
-            'assigned_to_manager': { bg: '#fff7e6', border: '#ffd591', color: '#fa8c16' },
-            'assigned_to_leader': { bg: '#f9f0ff', border: '#d3adf7', color: '#722ed1' },
-            'assigned_to_specialist': { bg: '#f6ffed', border: '#b7eb8f', color: '#52c41a' },
-            'converted': { bg: '#fff0f6', border: '#ffadd2', color: '#eb2f96' },
-            'closed': { bg: '#f5f5f5', border: '#d9d9d9', color: '#8c8c8c' }
+            "Fresh Lead": { bg: '#f5f5f5', border: '#d9d9d9', color: '#666' },
+            "Attempting Contact": { bg: '#fff7e6', border: '#ffd591', color: '#fa8c16' },
+            "First Call Connected": { bg: '#e6f7ff', border: '#91d5ff', color: '#1890ff' },
+            "Demo Conducted": { bg: '#f9f0ff', border: '#d3adf7', color: '#722ed1' },
+            "Closed Won": { bg: '#f6ffed', border: '#b7eb8f', color: '#52c41a' },
+            "Closed Lost": { bg: '#fff1f0', border: '#ffa39e', color: '#f5222d' }
         };
         return map[status] || { bg: '#f5f5f5', border: '#d9d9d9', color: '#595959' };
     };
@@ -482,12 +482,13 @@ const AdvLeadManagement = () => {
                         }}
                         style={{ padding: '10px', border: '1px solid #ddd', borderRadius: '8px', minWidth: '150px' }}
                     >
-                        <option value="">All Statuses</option>
-                        <option value="fresh">Fresh</option>
-                        <option value="assigned_to_manager">Assigned to Manager</option>
-                        <option value="assigned_to_leader">Assigned to Leader</option>
-                        <option value="assigned_to_specialist">Assigned to Specialist</option>
-                        <option value="converted">Converted</option>
+                        <option value="">All Stages</option>
+                        <option value="Fresh Lead">Fresh Lead</option>
+                        <option value="Attempting Contact">Attempting Contact</option>
+                        <option value="First Call Connected">First Call Connected</option>
+                        <option value="Demo Conducted">Demo Conducted</option>
+                        <option value="Closed Won">Closed Won</option>
+                        <option value="Closed Lost">Closed Lost</option>
                     </select>
 
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: '#fff', padding: '10px 15px', borderRadius: '8px', border: '1px solid #ddd' }}>
@@ -522,13 +523,8 @@ const AdvLeadManagement = () => {
                                         <th>Email</th>
                                         <th>Phone</th>
                                         <th>Domain</th>
-                                        <th>Education</th>
-                                        <th style={{ minWidth: '150px' }}>Situation</th>
-                                        <th style={{ minWidth: '150px' }}>Goal</th>
-                                        <th style={{ minWidth: '150px' }}>Challenge</th>
-                                        <th style={{ minWidth: '150px' }}>Willingness</th>
-                                        <th>Status Info</th>
-                                        <th>Backend Status</th>
+                                        <th>Pipeline Stage</th>
+                                        <th>Disposition</th>
                                         <th>ASSISTED TO</th>
                                         <th>Score</th>
                                         <th>Details</th>
@@ -539,12 +535,12 @@ const AdvLeadManagement = () => {
                                     {Object.keys(groupedLeads).map((date) => (
                                         <React.Fragment key={date}>
                                             <tr style={{ background: '#f8f9fa' }}>
-                                                <td colSpan="16" style={{ fontWeight: '800', textAlign: 'center', padding: '10px', fontSize: '14px', letterSpacing: '1px', borderBottom: '2px solid #ddd' }}>
+                                                <td colSpan="11" style={{ fontWeight: '800', textAlign: 'center', padding: '10px', fontSize: '14px', letterSpacing: '1px', borderBottom: '2px solid #ddd' }}>
                                                     📅 {date}
                                                 </td>
                                             </tr>
                                             {groupedLeads[date].map((lead, idx) => {
-                                                const s = getStatusStyle(lead.status);
+                                                const s = getStatusStyle(lead.stage || "Fresh Lead");
                                                 return (
                                                     <tr key={lead._id} style={{ background: lead.source === "Website Lead" ? "#fff7e6" : "transparent" }}>
                                                         <td>{(currentPage - 1) * limit + idx + 1}</td>
@@ -552,28 +548,17 @@ const AdvLeadManagement = () => {
                                                         <td style={{ fontSize: '12px' }}>{lead.email || '—'}</td>
                                                         <td>{lead.phone_number}</td>
                                                         <td>{lead.opted_domain || '—'}</td>
-                                                        <td style={{ fontSize: '12px' }}>{lead.education_background || '—'}</td>
-                                                        <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={lead.extra_fields?.['what_best_describes_your_current_situation?']}>
-                                                            {lead.extra_fields?.['what_best_describes_your_current_situation?'] || '—'}
-                                                        </td>
-                                                        <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={lead.extra_fields?.['what_is_your_primary_goal_right_now?']}>
-                                                            {lead.extra_fields?.['what_is_your_primary_goal_right_now?'] || '—'}
-                                                        </td>
-                                                        <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={lead.extra_fields?.['what_is_your_biggest_career_challenge?']}>
-                                                            {lead.extra_fields?.['what_is_your_biggest_career_challenge?'] || '—'}
-                                                        </td>
-                                                        <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={lead.upskilling_ready || lead.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+internship+100%_placement_support?'] || lead.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?']}>
-                                                            {lead.upskilling_ready || lead.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+internship+100%_placement_support?'] || lead.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?'] || '—'}
-                                                        </td>
-                                                        <td style={{ fontSize: '12px' }}>{lead.current_status || '—'}</td>
                                                         <td>
                                                             <span style={{
                                                                 padding: '4px 10px', borderRadius: '12px', fontSize: '11px',
                                                                 fontWeight: 'bold', background: s.bg, color: s.color,
-                                                                border: `1px solid ${s.border}`, textTransform: 'lowercase'
+                                                                border: `1px solid ${s.border}`
                                                             }}>
-                                                                {lead.status.replace(/_/g, ' ')}
+                                                                {lead.stage || "Fresh Lead"}
                                                             </span>
+                                                        </td>
+                                                        <td style={{ fontSize: '12px', fontWeight: '600', color: '#666' }}>
+                                                            {lead.disposition || "New Lead"}
                                                         </td>
                                                         <td style={{ fontSize: '13px' }}>
                                                             {lead.owner_name || '—'}

@@ -38,7 +38,7 @@ const AdvTeamHeader = () => {
       localStorage.removeItem("advTeamName");
       localStorage.removeItem("advTeamToken");
       localStorage.removeItem("advTeamSessionStartTime");
-      localStorage.removeItem("advTeamReadOnly");
+
       navigate("/AdvTeamLogin");
     }, 1500);
   };
@@ -54,7 +54,7 @@ const AdvTeamHeader = () => {
         localStorage.removeItem("advTeamName");
         localStorage.removeItem("advTeamToken");
         localStorage.removeItem("advTeamSessionStartTime");
-        localStorage.removeItem("advTeamReadOnly");
+
         navigate("/AdvTeamLogin");
       }
     } else {
@@ -128,7 +128,7 @@ const AdvTeamHeader = () => {
         </div>
       </div>
       {isMobileVisible && (
-        <div className="sidebar">
+        <div className="sidebar" style={{ width: "280px" }}>
           <div className="detail">
             {advTeamData ? (
               <>
@@ -208,7 +208,7 @@ const AdvTeamHeader = () => {
           {/* <Link to="/advteam/reference">
             <i className="fa fa-bell"></i> Your Reference
           </Link> */}
-          {["LEADER", "MANAGER"].includes(advTeamData?.designation) && (
+          {["LEADER", "MANAGER", "ADV Leader", "ADV Manager"].includes(advTeamData?.designation) && (
             <>
               <Link to="/advteam/teamdetail">
                 <i className="fa fa-users"></i> Team

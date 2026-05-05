@@ -155,14 +155,52 @@ const AdvTeamHome = () => {
       
       {/* Detailed Pipeline Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '40px' }}>
-        <LeadStatCard label="Fresh Leads" count={outcomeCounts.fresh} icon="🆕" color="#64748B" />
-        <LeadStatCard label="Interested" count={outcomeCounts.interested} icon="✅" color="#10B981" />
-        <LeadStatCard label="Qualified" count={outcomeCounts.qualified} icon="🌟" color="#FBBF24" />
-        <LeadStatCard label="Follow Up" count={outcomeCounts.follow_up} icon="📞" color="#3B82F6" />
-        <LeadStatCard label="Callback Requested" count={outcomeCounts.callback_requested} icon="🔄" color="#3B82F6" />
-        <LeadStatCard label="No Answer" count={outcomeCounts.no_answer} icon="📵" color="#F59E0B" />
-        <LeadStatCard label="Not Interested" count={outcomeCounts.not_interested} icon="❌" color="#EF4444" />
-        <LeadStatCard label="Junk Leads" count={outcomeCounts.junk} icon="🗑️" color="#94A3B8" />
+        <LeadStatCard label="Fresh Leads" count={outcomeCounts["Fresh Lead"]} icon="🆕" color="#64748B" />
+        <LeadStatCard label="Attempting Contact" count={outcomeCounts["Attempting Contact"]} icon="📞" color="#F59E0B" />
+        <LeadStatCard label="First Call Connected" count={outcomeCounts["First Call Connected"]} icon="🤝" color="#3B82F6" />
+        <LeadStatCard label="Demo Conducted" count={outcomeCounts["Demo Conducted"]} icon="🖥️" color="#8B5CF6" />
+        <LeadStatCard label="Closed Won" count={outcomeCounts["Closed Won"]} icon="🏆" color="#10B981" />
+        <LeadStatCard label="Closed Lost" count={outcomeCounts["Closed Lost"]} icon="❌" color="#EF4444" />
+      </div>
+
+      {/* Funnel Visualization */}
+      <div style={{ background: '#fff', padding: '30px', borderRadius: '24px', border: '1px solid #E2E8F0', marginBottom: '40px' }}>
+          <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '30px', color: '#1E293B' }}>Conversion Funnel Efficiency</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              {[
+                  { label: "Fresh Leads", count: outcomeCounts["Fresh Lead"] || 0, color: "#64748B" },
+                  { label: "Attempting Contact", count: outcomeCounts["Attempting Contact"] || 0, color: "#F59E0B" },
+                  { label: "First Call Connected", count: outcomeCounts["First Call Connected"] || 0, color: "#3B82F6" },
+                  { label: "Demo Conducted", count: outcomeCounts["Demo Conducted"] || 0, color: "#8B5CF6" },
+                  { label: "Closed Won", count: outcomeCounts["Closed Won"] || 0, color: "#10B981" }
+              ].map((stage, idx, arr) => {
+                  const total = outcomeCounts.total || 1;
+                  const percentage = ((stage.count / total) * 100).toFixed(1);
+                  const width = `${Math.max(percentage, 10)}%`;
+                  
+                  return (
+                      <div key={stage.label} style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                          <div style={{ width: '180px', fontSize: '13px', fontWeight: '700', color: '#64748B' }}>{stage.label}</div>
+                          <div style={{ flex: 1, height: '32px', background: '#F1F5F9', borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
+                              <div style={{ 
+                                  width: width, 
+                                  height: '100%', 
+                                  background: `linear-gradient(90deg, ${stage.color}dd, ${stage.color})`,
+                                  transition: 'width 1s ease-out',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  paddingLeft: '12px',
+                                  color: '#fff',
+                                  fontSize: '11px',
+                                  fontWeight: '800'
+                              }}>
+                                  {stage.count} ({percentage}%)
+                              </div>
+                          </div>
+                      </div>
+                  );
+              })}
+          </div>
       </div>
 
       <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#1E293B', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>

@@ -27,7 +27,21 @@ const AdvanceCounses = () => {
       support: "Live Project Mentoring",
       credential: "Certification",
       duration: "6 Months",
+      batch: "31st May",
       brochure: dataScienceBrochure,
+    },
+    {
+      institute: "KRUTANIC School Of Technology",
+      title: "Data Analytics",
+      description: "Master Excel, SQL, Python, and Power BI to drive business decisions with data.",
+      icon: <i className="fa fa-bar-chart" aria-hidden="true"></i>,
+      badge: "In Demand",
+      badgeClass: "bg-[#086f70] text-white",
+      support: "Industrial Project Case Studies",
+      credential: "Professional Certificate",
+      duration: "6 Months",
+      batch: "31st May",
+      brochure: "", 
     },
     {
       institute: "KRUTANIC School Of Technology",
@@ -39,6 +53,7 @@ const AdvanceCounses = () => {
       support: "Placement & Portfolio Support",
       credential: "Advanced Certificate",
       duration: "6 Months",
+      batch: "31st May",
       brochure: digitalMarketingBrochure,
     },
 
@@ -199,8 +214,11 @@ const AdvanceCounses = () => {
               <span className="mt-3 inline-flex w-fit rounded-lg bg-[#eef6ff] px-3 py-1 text-xs font-semibold text-[#0d58a6]">
                 {course.support}
               </span>
-
               <div className="mt-4 space-y-2 text-sm text-[#111827]">
+                <p className="flex items-center gap-2 text-orange-600 font-bold">
+                  <i className="fa fa-clock-o" aria-hidden="true"></i>
+                  <span>Cohort: {course.batch || "Upcoming"}</span>
+                </p>
                 <p className="flex items-center gap-2">
                   <i className="fa fa-id-card-o" aria-hidden="true"></i>
                   <span>{course.credential}</span>

@@ -3,17 +3,21 @@ import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import API from "../API";
 
-const CALL_OUTCOMES = [
-    { value: "fresh", label: "🆕 Fresh Leads", color: "#64748B", icon: "fiber_new" },
-    { value: "interested", label: "✅ Interested", color: "#10B981", icon: "check_circle" },
-    { value: "follow_up", label: "📞 Follow Up", color: "#3B82F6", icon: "call" },
-    { value: "callback_requested", label: "🔄 Callback Requested", color: "#8B5CF6", icon: "history" },
-    { value: "no_answer", label: "📵 No Answer", color: "#F59E0B", icon: "phone_disabled" },
-    { value: "not_interested", label: "❌ Not Interested", color: "#EF4444", icon: "cancel" },
-    { value: "junk", label: "🗑️ Junk Leads", color: "#94A3B8", icon: "delete" },
-    { value: "qualified", label: "🌟 Qualified", color: "#FBBF24", icon: "star" },
-    { value: "converted", label: "🏆 Converted", color: "#EC4899", icon: "stars" },
-    { value: "unused", label: "🚫 Unused", color: "#CBD5E1", icon: "block" },
+const STAGES_AND_DISPOSITIONS = {
+    "Fresh Lead": ["New Lead", "Invalid Lead"],
+    "Attempting Contact": ["RNR", "Callback Requested", "No Response (Multi-touch)"],
+    "First Call Connected": ["In Conversation", "Demo Booked"],
+    "Demo Conducted": ["Decision Pending", "Negotiation Review", "Expected Payment Date"],
+    "Closed Won": ["Converted"],
+    "Closed Lost": ["Irrelevant Lead", "Not Interested", "Pricing Does Not Match", "No Response"]
+};
+
+const ACTION_TYPES = [
+    { value: "call", label: "📞 Call", icon: "call" },
+    { value: "email", label: "📧 Email", icon: "mail" },
+    { value: "whatsapp", label: "💬 WhatsApp", icon: "chat" },
+    { value: "meeting", label: "🤝 Meeting", icon: "groups" },
+    { value: "note", label: "📝 Note", icon: "note" }
 ];
 
 const designTokens = {
@@ -240,15 +244,34 @@ const AdvLeadsBook = () => {
     };
 
     const updateForm = (leadId, field, value) => {
-        setFormState(prev => ({
-            ...prev,
-            [leadId]: { ...(prev[leadId] || {}), [field]: value }
-        }));
+        setFormState(prev => {
+            const newState = {
+                ...prev,
+                [leadId]: { ...(prev[leadId] || {}), [field]: value }
+            };
+            // If stage changes, reset disposition
+            if (field === "stage") {
+                newState[leadId].disposition = "";
+            }
+            return newState;
+        });
     };
 
     const handleLogCall = async (lead) => {
         const form = formState[lead._id] || {};
-        if (!form.callOutcome) { toast.error("Please select a call outcome"); return; }
+        if (!form.stage) { toast.error("Please select a lead stage"); return; }
+        if (!form.disposition) { toast.error("Please select a disposition"); return; }
+        if (!form.actionType) { toast.error("Please select an action type"); return; }
+
+        // Mandatory rules
+        if (form.disposition === "Callback Requested" && !form.followUpDate) {
+            toast.error("Next Follow-up Date is mandatory for Callback Requested");
+            return;
+        }
+        if (form.disposition === "Demo Booked" && !form.demoScheduleDate) {
+            toast.error("Demo Date is required for Demo Booked");
+            return;
+        }
 
         setSubmitting(lead._id);
         try {
@@ -256,18 +279,22 @@ const AdvLeadsBook = () => {
                 leadId: lead._id,
                 specialistId: userId,
                 specialistName: userName,
-                callOutcome: form.callOutcome,
+                actionType: form.actionType,
+                stage: form.stage,
+                disposition: form.disposition,
                 summary: form.summary || "",
                 remark: form.remark || "",
                 demoScheduleDate: form.demoScheduleDate || undefined,
+                followUpDate: form.followUpDate || undefined,
+                expectedPaymentDate: form.expectedPaymentDate || undefined
             });
-            toast.success("Call logged successfully!");
+            toast.success("Activity logged successfully!");
             setFormState(prev => ({ ...prev, [lead._id]: {} }));
             setCallHistory(prev => { const n = { ...prev }; delete n[lead._id]; return n; });
             fetchHistory(lead._id);
             fetchMyLeads(currentPage);
         } catch (err) {
-            toast.error(err.response?.data?.message || "Failed to log call");
+            toast.error(err.response?.data?.message || "Failed to log activity");
         } finally {
             setSubmitting(null);
         }
@@ -282,23 +309,22 @@ const AdvLeadsBook = () => {
         window.location.href = `tel:${dialNumber}`;
     };
 
-    const StatusBadge = ({ status }) => {
+    const StatusBadge = ({ lead }) => {
         const getStyles = (s) => {
             const map = {
-                fresh: { color: designTokens.colors.textSecondary },
-                assigned_to_manager: { color: designTokens.colors.warning },
-                assigned_to_leader: { color: designTokens.colors.secondary },
-                assigned_to_specialist: { color: designTokens.colors.info },
-                in_followup: { color: "#08979C" },
-                converted: { color: designTokens.colors.success },
-                closed: { color: designTokens.colors.textSecondary }
+                "Fresh Lead": { color: "#64748B" },
+                "Attempting Contact": { color: designTokens.colors.warning },
+                "First Call Connected": { color: designTokens.colors.info },
+                "Demo Conducted": { color: designTokens.colors.secondary },
+                "Closed Won": { color: designTokens.colors.success },
+                "Closed Lost": { color: designTokens.colors.danger }
             };
             return map[s] || { color: designTokens.colors.textSecondary };
         };
-        const styles_badge = getStyles(status);
+        const styles_badge = getStyles(lead.stage || "Fresh Lead");
         return (
             <span style={styles.badge(styles_badge.color)}>
-                {status?.replace(/_/g, ' ')}
+                {lead.stage || "Fresh Lead"}
             </span>
         );
     };
@@ -306,7 +332,7 @@ const AdvLeadsBook = () => {
     const styles = {
         container: {
             padding: '40px',
-            marginLeft: '270px',
+            marginLeft: '280px',
             background: designTokens.colors.background,
             minHeight: '100vh',
             fontFamily: "'Lexend', 'Inter', sans-serif"
@@ -621,14 +647,14 @@ const AdvLeadsBook = () => {
                                 <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>list_alt</span>
                                 <span>All Records</span>
                             </button>
-                            {CALL_OUTCOMES.map(o => (
+                            {Object.keys(STAGES_AND_DISPOSITIONS).map(stage => (
                                 <button
-                                    key={o.value}
-                                    onClick={() => setSelectedOutcome(o.value)}
-                                    style={styles.filterBtn(selectedOutcome === o.value, o.color)}
+                                    key={stage}
+                                    onClick={() => setSelectedOutcome(stage)}
+                                    style={styles.filterBtn(selectedOutcome === stage, designTokens.colors.primary)}
                                 >
-                                    <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>{o.icon}</span>
-                                    <span>{o.label.split(' ').slice(1).join(' ')}</span>
+                                    <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>account_tree</span>
+                                    <span>{stage}</span>
                                 </button>
                             ))}
                         </div>
@@ -841,7 +867,7 @@ const AdvLeadsBook = () => {
                                                                 </audio>
                                                             </div>
                                                         )}
-                                                        <StatusBadge status={lead.status} />
+                                                        <StatusBadge lead={lead} />
                                                         <div className="material-symbols-outlined" style={{
                                                             width: '32px', height: '32px', borderRadius: '10px', background: isOpen ? designTokens.colors.primary : designTokens.colors.background,
                                                             display: 'flex', alignItems: 'center', justifyContent: 'center', color: isOpen ? '#fff' : designTokens.colors.textSecondary,
@@ -875,15 +901,14 @@ const AdvLeadsBook = () => {
                                                                 scrollbarWidth: 'thin'
                                                             }}>
                                                                 {[
+                                                                    { label: 'Pipeline Stage', value: lead.stage, icon: 'account_tree' },
+                                                                    { label: 'Disposition', value: lead.disposition, icon: 'label_important' },
+                                                                    { label: 'Contact Attempts', value: `${lead.attempt_count || 0} Attempts`, icon: 'call_log' },
+                                                                    { label: 'Next Follow-up', value: lead.next_followup_at ? new Date(lead.next_followup_at).toLocaleString() : 'Not Scheduled', icon: 'schedule' },
                                                                     { label: 'Primary Contact', value: lead.email, icon: 'mail' },
                                                                     { label: 'Workplace', value: lead.company_name, icon: 'business' },
                                                                     { label: 'Educational Background', value: lead.education_background, icon: 'school' },
                                                                     { label: 'Growth Readiness', value: lead.upskilling_ready, icon: 'trending_up' },
-                                                                    { label: 'Current Situation', value: lead.extra_fields?.['what_best_describes_your_current_situation?'], icon: 'person' },
-                                                                    { label: 'Primary Goal', value: lead.extra_fields?.['what_is_your_primary_goal_right_now?'], icon: 'ads_click' },
-                                                                    { label: 'Career Challenge', value: lead.extra_fields?.['what_is_your_biggest_career_challenge?'], icon: 'report_problem' },
-                                                                    { label: 'Investment Readiness', value: lead.upskilling_ready || lead.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+internship+100%_placement_support?'] || lead.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?'], icon: 'payments' },
-                                                                    { label: 'Source Stream', value: lead.source?.replace(/_/g, ' '), icon: 'hub' },
                                                                 ].map((item, i) => (
                                                                     item.value && (
                                                                         <div key={i} style={{ display: 'flex', gap: '12px' }}>
@@ -922,20 +947,52 @@ const AdvLeadsBook = () => {
 
                                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                                                    <label style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase' }}>Current Disposition</label>
+                                                                    <label style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase' }}>Action Type</label>
                                                                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                                                                        {CALL_OUTCOMES.map(o => (
+                                                                        {ACTION_TYPES.map(a => (
                                                                             <button
-                                                                                key={o.value}
-                                                                                onClick={() => updateForm(lead._id, 'callOutcome', o.value)}
-                                                                                style={styles.outcomeBtn(form.callOutcome === o.value, o.color)}
+                                                                                key={a.value}
+                                                                                onClick={() => updateForm(lead._id, 'actionType', a.value)}
+                                                                                style={styles.outcomeBtn(form.actionType === a.value, designTokens.colors.primary)}
                                                                             >
-                                                                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>{o.icon}</span>
-                                                                                {o.label.replace(/[^a-zA-Z\s]/g, '').trim()}
+                                                                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>{a.icon}</span>
+                                                                                {a.label}
                                                                             </button>
                                                                         ))}
                                                                     </div>
                                                                 </div>
+
+                                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                                                    <label style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase' }}>Lead Stage</label>
+                                                                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                                                        {Object.keys(STAGES_AND_DISPOSITIONS).map(s => (
+                                                                            <button
+                                                                                key={s}
+                                                                                onClick={() => updateForm(lead._id, 'stage', s)}
+                                                                                style={styles.outcomeBtn(form.stage === s, designTokens.colors.secondary)}
+                                                                            >
+                                                                                {s}
+                                                                            </button>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+
+                                                                {form.stage && (
+                                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                                                        <label style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase' }}>Disposition</label>
+                                                                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                                                            {STAGES_AND_DISPOSITIONS[form.stage].map(d => (
+                                                                                <button
+                                                                                    key={d}
+                                                                                    onClick={() => updateForm(lead._id, 'disposition', d)}
+                                                                                    style={styles.outcomeBtn(form.disposition === d, designTokens.colors.success)}
+                                                                                >
+                                                                                    {d}
+                                                                                </button>
+                                                                            ))}
+                                                                        </div>
+                                                                    </div>
+                                                                )}
 
                                                                 <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '24px' }}>
                                                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -957,7 +1014,8 @@ const AdvLeadsBook = () => {
                                                                                 onChange={e => updateForm(lead._id, 'remark', e.target.value)}
                                                                             />
                                                                         </div>
-                                                                        {demoNeeded && (
+                                                                        
+                                                                        {(!["Closed Won", "Closed Lost"].includes(form.stage)) && (
                                                                             <div style={{ 
                                                                                 display: 'flex', 
                                                                                 flexDirection: 'column', 
@@ -968,8 +1026,31 @@ const AdvLeadsBook = () => {
                                                                                 border: `1px solid ${designTokens.colors.info}30`
                                                                             }}>
                                                                                 <label style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.info, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>event_repeat</span>
+                                                                                    Next Follow-up
+                                                                                </label>
+                                                                                <input
+                                                                                    type="datetime-local"
+                                                                                    style={{ ...styles.input, border: 'none', background: '#FFFFFF', padding: '10px 14px' }}
+                                                                                    value={form.followUpDate || ""}
+                                                                                    onChange={e => updateForm(lead._id, 'followUpDate', e.target.value)}
+                                                                                />
+                                                                            </div>
+                                                                        )}
+
+                                                                        {form.disposition === "Demo Booked" && (
+                                                                            <div style={{ 
+                                                                                display: 'flex', 
+                                                                                flexDirection: 'column', 
+                                                                                gap: '10px', 
+                                                                                padding: '16px', 
+                                                                                background: `${designTokens.colors.warning}10`, 
+                                                                                borderRadius: '16px',
+                                                                                border: `1px solid ${designTokens.colors.warning}30`
+                                                                            }}>
+                                                                                <label style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.warning, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                                                     <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>calendar_month</span>
-                                                                                    Schedule Session
+                                                                                    Schedule Demo
                                                                                 </label>
                                                                                 <input
                                                                                     type="datetime-local"
@@ -979,24 +1060,47 @@ const AdvLeadsBook = () => {
                                                                                 />
                                                                             </div>
                                                                         )}
+
+                                                                        {(form.disposition === "Expected Payment Date" || form.disposition === "Converted") && (
+                                                                            <div style={{ 
+                                                                                display: 'flex', 
+                                                                                flexDirection: 'column', 
+                                                                                gap: '10px', 
+                                                                                padding: '16px', 
+                                                                                background: `${designTokens.colors.success}10`, 
+                                                                                borderRadius: '16px',
+                                                                                border: `1px solid ${designTokens.colors.success}30`
+                                                                            }}>
+                                                                                <label style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.success, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>payments</span>
+                                                                                    Payment Date
+                                                                                </label>
+                                                                                <input
+                                                                                    type="date"
+                                                                                    style={{ ...styles.input, border: 'none', background: '#FFFFFF', padding: '10px 14px' }}
+                                                                                    value={form.expectedPaymentDate || ""}
+                                                                                    onChange={e => updateForm(lead._id, 'expectedPaymentDate', e.target.value)}
+                                                                                />
+                                                                            </div>
+                                                                        )}
                                                                     </div>
                                                                 </div>
 
                                                                 <button
-                                                                    disabled={submitting === lead._id || !form.callOutcome}
+                                                                    disabled={submitting === lead._id || !form.disposition}
                                                                     onClick={() => handleLogCall(lead)}
                                                                     style={{
                                                                         marginTop: '12px', 
                                                                         padding: '18px', 
                                                                         borderRadius: '16px', 
                                                                         border: 'none',
-                                                                        background: !form.callOutcome ? designTokens.colors.border : `linear-gradient(135deg, ${designTokens.colors.primary}, ${designTokens.colors.secondary})`,
+                                                                        background: !form.disposition ? designTokens.colors.border : `linear-gradient(135deg, ${designTokens.colors.primary}, ${designTokens.colors.secondary})`,
                                                                         color: '#fff',
                                                                         fontWeight: '800', 
                                                                         fontSize: '16px', 
                                                                         cursor: 'pointer',
                                                                         transition: 'all 0.3s ease', 
-                                                                        boxShadow: form.callOutcome ? `0 12px 24px ${designTokens.colors.primary}40` : 'none',
+                                                                        boxShadow: form.disposition ? `0 12px 24px ${designTokens.colors.primary}40` : 'none',
                                                                         display: 'flex',
                                                                         alignItems: 'center',
                                                                         justifyContent: 'center',
@@ -1038,12 +1142,42 @@ const AdvLeadsBook = () => {
                                                                         <div key={i} style={styles.timelineItem(expandedLogId === h._id)} onClick={() => setExpandedLogId(expandedLogId === h._id ? null : h._id)}>
                                                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
                                                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                                                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: CALL_OUTCOMES.find(o => o.value === h.callOutcome)?.color || designTokens.colors.primary }}></div>
-                                                                                    <span style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.textPrimary }}>{h.callOutcome?.toUpperCase()}</span>
+                                                                                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: designTokens.colors.primary }}></div>
+                                                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                                                                        <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.primary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                                                                            {ACTION_TYPES.find(a => a.value === h.actionType)?.label || "📞 Interaction"}
+                                                                                        </div>
+                                                                                        <span style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.textPrimary }}>
+                                                                                            {h.stage ? `${h.stage} (${h.disposition})` : (h.callOutcome || "Unknown").toUpperCase()}
+                                                                                        </span>
+                                                                                    </div>
                                                                                 </div>
-                                                                                <span style={{ fontSize: '11px', color: designTokens.colors.textSecondary, fontWeight: '600' }}>{new Date(h.createdAt).toLocaleDateString()}</span>
-                                                                            </div>
-                                                                            <p style={{ margin: 0, fontSize: '13px', color: designTokens.colors.textSecondary, display: '-webkit-box', WebkitLineClamp: expandedLogId === h._id ? 'unset' : 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{h.summary || "Archived interactions trace."}</p>
+                                                                                    <span style={{ fontSize: '11px', color: designTokens.colors.textSecondary, fontWeight: '600' }}>{new Date(h.createdAt).toLocaleDateString()}</span>
+                                                                                </div>
+                                                                                
+                                                                                {/* Scheduled Dates Display */}
+                                                                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '8px' }}>
+                                                                                    {h.followUpDate && (
+                                                                                        <div style={{ fontSize: '11px', background: `${designTokens.colors.info}15`, color: designTokens.colors.info, padding: '4px 8px', borderRadius: '6px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                                                            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>event_repeat</span>
+                                                                                            Follow-up: {new Date(h.followUpDate).toLocaleString()}
+                                                                                        </div>
+                                                                                    )}
+                                                                                    {h.demoScheduleDate && (
+                                                                                        <div style={{ fontSize: '11px', background: `${designTokens.colors.warning}15`, color: designTokens.colors.warning, padding: '4px 8px', borderRadius: '6px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                                                            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>calendar_month</span>
+                                                                                            Demo: {new Date(h.demoScheduleDate).toLocaleString()}
+                                                                                        </div>
+                                                                                    )}
+                                                                                    {h.expectedPaymentDate && (
+                                                                                        <div style={{ fontSize: '11px', background: `${designTokens.colors.success}15`, color: designTokens.colors.success, padding: '4px 8px', borderRadius: '6px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                                                            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>payments</span>
+                                                                                            Payment: {new Date(h.expectedPaymentDate).toLocaleDateString()}
+                                                                                        </div>
+                                                                                    )}
+                                                                                </div>
+
+                                                                                <p style={{ margin: 0, fontSize: '13px', color: designTokens.colors.textSecondary, display: '-webkit-box', WebkitLineClamp: expandedLogId === h._id ? 'unset' : 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{h.summary || "Archived interactions trace."}</p>
                                                                             
                                                                             {h.recordingUrl && (
                                                                                 <div style={{ marginTop: '12px' }} onClick={(e) => e.stopPropagation()}>

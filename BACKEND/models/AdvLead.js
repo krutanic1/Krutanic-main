@@ -33,9 +33,29 @@ const AdvLeadSchema = new mongoose.Schema({
     status: { type: String, default: "fresh" },
     stage: {
         type: String,
-        enum: ["new", "contacted", "interested", "demo_scheduled", "converted", "lost"],
-        default: "new"
+        enum: [
+            "Fresh Lead",
+            "Attempting Contact",
+            "First Call Connected",
+            "Demo Conducted",
+            "Closed Won",
+            "Closed Lost"
+        ],
+        default: "Fresh Lead",
+        required: true
     },
+    disposition: {
+        type: String,
+        required: true,
+        default: "New Lead"
+    },
+    attempt_count: { type: Number, default: 0 },
+    last_contacted_at: { type: Date },
+    next_followup_at: { type: Date },
+    last_note: { type: String },
+    stage_updated_at: { type: Date, default: Date.now },
+    demo_date: { type: Date },
+    expected_payment_date: { type: Date },
     last_outcome: { type: String },
     score: { type: Number, default: 0 },
     isLocked: { type: Boolean, default: false },
@@ -47,6 +67,8 @@ const AdvLeadSchema = new mongoose.Schema({
     last_interaction_at: { type: Date }, // Track last worked-on time
     assigned_at: { type: Date }, // NEW: Track when the lead was last assigned
     last_recording_url: { type: String }, // NEW: Store the most recent Cloudinary recording link
+    converted: { type: Boolean, default: false }, // For Closed Won
+    closed: { type: Boolean, default: false }, // For Closed Won/Lost
     created_at: { type: Date, default: Date.now }
 });
 
