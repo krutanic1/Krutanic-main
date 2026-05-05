@@ -61,7 +61,9 @@ const AdvLeadsBook = () => {
     const [formState, setFormState] = useState({});
     const [expandedLogId, setExpandedLogId] = useState(null);
     const [selectedOutcome, setSelectedOutcome] = useState("");
+    const [sourceFilter, setSourceFilter] = useState("");
     const [dateFilter, setDateFilter] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -98,7 +100,7 @@ const AdvLeadsBook = () => {
         setLoading(true);
         try {
             const res = await axios.get(`${API}/api/adv-leads/get-adv-leads`, {
-                params: { role: designation, userId, page, limit, outcome: selectedOutcome, strictlyOwned: true, date: dateFilter }
+                params: { role: designation, userId, page, limit, outcome: selectedOutcome, source: sourceFilter, strictlyOwned: true, date: dateFilter }
             });
             if (res.data && res.data.leads) {
                 setLeads(res.data.leads);
@@ -114,6 +116,12 @@ const AdvLeadsBook = () => {
             setLoading(false);
         }
     };
+    const filteredLeads = leads.filter(l => 
+        l.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        l.email?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        l.phone_number?.includes(searchTerm)
+    );
+
     useEffect(() => {
         const fetchTemplates = async () => {
             if (!userId) return;
@@ -146,7 +154,7 @@ const AdvLeadsBook = () => {
         fetchTemplates();
         fetchSMTPConfig();
         fetchDomains();
-    }, [currentPage, userId, selectedOutcome, dateFilter]);
+    }, [currentPage, userId, selectedOutcome, sourceFilter, dateFilter]);
 
     const handleSaveSMTP = async () => {
         if (!personalEmail || !appPassword) return toast.error("Both fields are required");
@@ -207,7 +215,7 @@ const AdvLeadsBook = () => {
     };
 
     // Grouping logic for the leads
-    const groupedLeads = leads.reduce((acc, lead) => {
+    const groupedLeads = filteredLeads.reduce((acc, lead) => {
         const date = formatDate(lead.assigned_at || lead.created_at);
         if (!acc[date]) {
             acc[date] = [];
@@ -216,7 +224,7 @@ const AdvLeadsBook = () => {
         return acc;
     }, {});
 
-    useEffect(() => { fetchMyLeads(currentPage); }, [currentPage, selectedOutcome, dateFilter]);
+    useEffect(() => { fetchMyLeads(currentPage); }, [currentPage, selectedOutcome, sourceFilter, dateFilter]);
 
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
@@ -388,8 +396,8 @@ const AdvLeadsBook = () => {
             boxShadow: designTokens.shadows.sm
         },
         filterRow: {
-            display: 'flex', 
-            gap: '6px', 
+            display: 'flex',
+            gap: '6px',
             alignItems: 'center',
             background: '#fff',
             padding: '4px',
@@ -418,6 +426,22 @@ const AdvLeadsBook = () => {
             whiteSpace: 'nowrap',
             fontWeight: active ? '700' : '600',
             fontSize: '13px',
+            border: active ? `1px solid ${color}30` : '1px solid transparent'
+        }),
+        compactBtn: (active, color) => ({
+            padding: '5px 12px',
+            height: '32px',
+            borderRadius: '10px',
+            background: active ? `${color}15` : 'transparent',
+            color: active ? color : designTokens.colors.textSecondary,
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            whiteSpace: 'nowrap',
+            fontWeight: active ? '700' : '600',
+            fontSize: '12px',
             border: active ? `1px solid ${color}30` : '1px solid transparent'
         }),
         leadCard: {
@@ -618,92 +642,139 @@ const AdvLeadsBook = () => {
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-                    <div style={styles.filterRow} className="filter-row">
-                         {/* Date Picker Section */}
-                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0 12px', borderRight: `1px solid ${designTokens.colors.border}` }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: '20px', color: designTokens.colors.textSecondary }}>event</span>
-                            <input 
-                                type="date" 
-                                value={dateFilter} 
-                                onChange={e => { setDateFilter(e.target.value); setCurrentPage(1); }} 
-                                style={{ 
-                                    border: 'none', 
-                                    background: 'transparent', 
-                                    fontSize: '13px', 
-                                    fontWeight: '700', 
-                                    color: designTokens.colors.textPrimary,
-                                    outline: 'none',
-                                    cursor: 'pointer'
-                                }} 
-                            />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'flex-end', flex: 1, maxWidth: 'calc(100% - 300px)' }}>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center', width: '100%', justifyContent: 'flex-end' }}>
+                        <div style={styles.statsRow}>
+                            <div style={styles.statCard}>
+                                <span style={{ fontSize: '20px', fontWeight: '800', color: designTokens.colors.primary }}>{totalCount}</span>
+                                <span style={{ fontSize: '9px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Group</span>
+                            </div>
+                            <button
+                                onClick={() => fetchMyLeads(1)}
+                                className={`material-symbols-outlined ${loading ? 'spinning' : ''}`}
+                                style={{
+                                    ...styles.statCard,
+                                    cursor: 'pointer',
+                                    background: designTokens.colors.surface,
+                                    color: loading ? designTokens.colors.primary : designTokens.colors.textSecondary,
+                                    fontSize: '24px',
+                                    width: '48px',
+                                    height: '48px',
+                                    padding: 0,
+                                    borderRadius: '14px'
+                                }}
+                                title="Sync Leads"
+                            >
+                                sync
+                            </button>
+                            <button
+                                onClick={() => setShowSMTPModal(true)}
+                                style={{
+                                    ...styles.statCard,
+                                    background: designTokens.colors.surface,
+                                    color: designTokens.colors.secondary,
+                                    cursor: 'pointer',
+                                    padding: '0 12px',
+                                    borderRadius: '14px',
+                                    height: '48px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '5px',
+                                    border: `1px solid ${designTokens.colors.secondary}30`
+                                }}
+                                title="Mail Settings"
+                            >
+                                <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>settings_suggest</span>
+                                <span style={{ fontSize: '10px', fontWeight: '800', textTransform: 'uppercase' }}>Mail Settings</span>
+                            </button>
                         </div>
 
-                        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                        <div style={styles.filterRow} className="filter-row">
+                            {/* Date Picker Section */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0 12px', borderRight: `1px solid ${designTokens.colors.border}` }}>
+                                <span className="material-symbols-outlined" style={{ fontSize: '20px', color: designTokens.colors.textSecondary }}>event</span>
+                                <input
+                                    type="date"
+                                    value={dateFilter}
+                                    onChange={e => { setDateFilter(e.target.value); setCurrentPage(1); }}
+                                    style={{
+                                        border: 'none',
+                                        background: 'transparent',
+                                        fontSize: '13px',
+                                        fontWeight: '700',
+                                        color: designTokens.colors.textPrimary,
+                                        outline: 'none',
+                                        cursor: 'pointer'
+                                    }}
+                                />
+                            </div>
+                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '0 15px', background: '#F8FAFC', borderRadius: '12px', border: `1px solid ${designTokens.colors.border}`, flex: 1, minWidth: '200px' }}>
+                                <span className="material-symbols-outlined" style={{ color: designTokens.colors.textSecondary, fontSize: '20px' }}>search</span>
+                                <input 
+                                    type="text" 
+                                    placeholder="Search current page..." 
+                                    value={searchTerm} 
+                                    onChange={e => setSearchTerm(e.target.value)} 
+                                    style={{ border: 'none', background: 'transparent', width: '100%', padding: '8px 0', fontSize: '13px', outline: 'none', color: designTokens.colors.textPrimary, fontWeight: '500' }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '4px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                        <button
+                            onClick={() => setSelectedOutcome("")}
+                            style={styles.filterBtn(selectedOutcome === "", designTokens.colors.primary)}
+                        >
+                            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>list_alt</span>
+                            <span>All Records</span>
+                        </button>
+                        {Object.keys(STAGES_AND_DISPOSITIONS).map(stage => (
                             <button
-                                onClick={() => setSelectedOutcome("")}
-                                style={styles.filterBtn(selectedOutcome === "", designTokens.colors.primary)}
+                                key={stage}
+                                onClick={() => setSelectedOutcome(stage)}
+                                style={styles.filterBtn(selectedOutcome === stage, designTokens.colors.primary)}
                             >
-                                <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>list_alt</span>
-                                <span>All Records</span>
+                                <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>account_tree</span>
+                                <span>{stage}</span>
                             </button>
-                            {Object.keys(STAGES_AND_DISPOSITIONS).map(stage => (
+                        ))}
+                    </div>
+
+                    {(userId === "69d4a881cb9305f0d5ecbeb2" || (userName && userName.toLowerCase().includes("sumeetha"))) && (
+                        <div style={{ ...styles.filterRow, marginTop: '5px', maxWidth: '100%', padding: '4px 8px' }} className="filter-row">
+                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center', padding: '0 8px', borderRight: `1px solid ${designTokens.colors.border}` }}>
+                                <span className="material-symbols-outlined" style={{ fontSize: '18px', color: designTokens.colors.primary }}>fiber_new</span>
+                                <span style={{ fontSize: '11px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase' }}>Old CRM:</span>
+                            </div>
+                            <div style={{ display: 'flex', gap: '3px', alignItems: 'center' }}>
+                                {[
+                                    "Fresh", "Interested", "Follow Up", "Callback", "No Answer", "Not Interested", "Junk", "Converted", "Unused"
+                                ].map((status) => (
+                                    <button
+                                        key={status}
+                                        onClick={() => {
+                                            setSelectedOutcome(status);
+                                            setSourceFilter("Old CRM");
+                                        }}
+                                        style={styles.compactBtn(selectedOutcome === status && sourceFilter === "Old CRM", designTokens.colors.royal)}
+                                    >
+                                        <span>{status}</span>
+                                    </button>
+                                ))}
                                 <button
-                                    key={stage}
-                                    onClick={() => setSelectedOutcome(stage)}
-                                    style={styles.filterBtn(selectedOutcome === stage, designTokens.colors.primary)}
+                                    onClick={() => {
+                                        setSourceFilter("");
+                                        setSelectedOutcome("");
+                                    }}
+                                    style={styles.compactBtn(sourceFilter === "" && selectedOutcome === "", designTokens.colors.danger)}
                                 >
-                                    <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>account_tree</span>
-                                    <span>{stage}</span>
+                                    <span>Reset</span>
                                 </button>
-                            ))}
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div style={styles.statsRow}>
-                        <div style={styles.statCard}>
-                            <span style={{ fontSize: '20px', fontWeight: '800', color: designTokens.colors.primary }}>{totalCount}</span>
-                            <span style={{ fontSize: '9px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Group</span>
-                        </div>
-                        <button
-                            onClick={() => fetchMyLeads(1)}
-                            className={`material-symbols-outlined ${loading ? 'spinning' : ''}`}
-                            style={{ 
-                                ...styles.statCard, 
-                                cursor: 'pointer', 
-                                background: designTokens.colors.surface, 
-                                color: loading ? designTokens.colors.primary : designTokens.colors.textSecondary,
-                                fontSize: '24px',
-                                width: '48px',
-                                height: '48px',
-                                padding: 0,
-                                borderRadius: '14px'
-                            }}
-                            title="Sync Leads"
-                        >
-                            sync
-                        </button>
-                        <button
-                            onClick={() => setShowSMTPModal(true)}
-                            style={{
-                                ...styles.statCard,
-                                background: designTokens.colors.surface,
-                                color: designTokens.colors.secondary,
-                                cursor: 'pointer',
-                                padding: '0 12px',
-                                borderRadius: '14px',
-                                height: '48px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '5px',
-                                border: `1px solid ${designTokens.colors.secondary}30`
-                            }}
-                            title="Mail Settings"
-                        >
-                            <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>settings_suggest</span>
-                            <span style={{ fontSize: '10px', fontWeight: '800', textTransform: 'uppercase' }}>Mail Settings</span>
-                        </button>
-                    </div>
+                    )}
+
                 </div>
             </header>
 
@@ -717,7 +788,7 @@ const AdvLeadsBook = () => {
                         </div>
                         <p style={{ marginTop: '20px', fontWeight: '500' }}>Fetching your success pipeline...</p>
                     </div>
-                ) : leads.length === 0 ? (
+                ) : filteredLeads.length === 0 ? (
                     <div style={{
                         padding: '80px 40px', textAlign: 'center', background: '#fff',
                         borderRadius: '24px', border: '2px dashed #E2E8F0'
@@ -773,56 +844,56 @@ const AdvLeadsBook = () => {
                                                                 <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>call</span>
                                                                 {lead.phone_number}
                                                             </div>
-                                                                <div style={{ display: 'flex', gap: '10px' }}>
-                                                                    <a
-                                                                        href={`https://wa.me/${lead.phone_number.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${lead.full_name}, this is from Krutanic`)}`}
-                                                                        target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                        title="WhatsApp"
-                                                                        onClick={(e) => e.stopPropagation()}
-                                                                        style={styles.iconBtn('#25D366', 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)')}
-                                                                        onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.1)'; e.currentTarget.style.boxShadow = '0 12px 20px rgba(37, 211, 102, 0.4)'; }}
-                                                                        onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 8px 16px rgba(37, 211, 102, 0.25)'; }}
-                                                                    >
-                                                                        <i className="fa fa-whatsapp"></i>
-                                                                    </a>
-                                                                    <button
-                                                                        title="Dial"
-                                                                        onClick={(e) => { e.stopPropagation(); handleRemoteDial(lead.phone_number); }}
-                                                                        style={styles.iconBtn(designTokens.colors.warning, 'linear-gradient(135deg, #FF9966 0%, #FF5E62 100%)')}
-                                                                        onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.1)'; e.currentTarget.style.boxShadow = '0 12px 20px rgba(255, 94, 98, 0.4)'; }}
-                                                                        onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 8px 16px rgba(255, 94, 98, 0.25)'; }}
-                                                                    >
-                                                                        <i className="fa fa-phone"></i>
-                                                                    </button>
-                                                                    <a
-                                                                        href="https://meet.google.com/new"
-                                                                        target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                        title="Video Meet"
-                                                                        onClick={(e) => e.stopPropagation()}
-                                                                        style={styles.iconBtn('#EA4335', 'linear-gradient(135deg, #EE0979 0%, #FF6A00 100%)')}
-                                                                        onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.1)'; e.currentTarget.style.boxShadow = '0 12px 20px rgba(238, 9, 121, 0.4)'; }}
-                                                                        onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 8px 16px rgba(238, 9, 121, 0.25)'; }}
-                                                                    >
-                                                                        <i className="fa fa-video-camera"></i>
-                                                                    </a>
-                                                                    <button
-                                                                        title="Send Mail"
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            setSelectedLeadForEmail(lead);
-                                                                            setEmailRecipient(lead.email || "");
-                                                                            setEmailSubject(`Registration Confirmation - ${lead.opted_domain || "General"} | Krutanic`);
-                                                                            setEmailDomain(lead.opted_domain || "General");
-                                                                            setShowEmailModal(true);
-                                                                        }}
-                                                                        style={styles.iconBtn(designTokens.colors.primary, 'linear-gradient(135deg, #00B4DB 0%, #0083B0 100%)')}
-                                                                        onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.1)'; e.currentTarget.style.boxShadow = '0 12px 20px rgba(0, 180, 219, 0.4)'; }}
-                                                                        onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 180, 219, 0.25)'; }}
-                                                                    >
-                                                                        <i className="fa fa-envelope"></i>
-                                                                    </button>
+                                                            <div style={{ display: 'flex', gap: '10px' }}>
+                                                                <a
+                                                                    href={`https://wa.me/${lead.phone_number.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${lead.full_name}, this is from Krutanic`)}`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    title="WhatsApp"
+                                                                    onClick={(e) => e.stopPropagation()}
+                                                                    style={styles.iconBtn('#25D366', 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)')}
+                                                                    onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.1)'; e.currentTarget.style.boxShadow = '0 12px 20px rgba(37, 211, 102, 0.4)'; }}
+                                                                    onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 8px 16px rgba(37, 211, 102, 0.25)'; }}
+                                                                >
+                                                                    <i className="fa fa-whatsapp"></i>
+                                                                </a>
+                                                                <button
+                                                                    title="Dial"
+                                                                    onClick={(e) => { e.stopPropagation(); handleRemoteDial(lead.phone_number); }}
+                                                                    style={styles.iconBtn(designTokens.colors.warning, 'linear-gradient(135deg, #FF9966 0%, #FF5E62 100%)')}
+                                                                    onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.1)'; e.currentTarget.style.boxShadow = '0 12px 20px rgba(255, 94, 98, 0.4)'; }}
+                                                                    onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 8px 16px rgba(255, 94, 98, 0.25)'; }}
+                                                                >
+                                                                    <i className="fa fa-phone"></i>
+                                                                </button>
+                                                                <a
+                                                                    href="https://meet.google.com/new"
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    title="Video Meet"
+                                                                    onClick={(e) => e.stopPropagation()}
+                                                                    style={styles.iconBtn('#EA4335', 'linear-gradient(135deg, #EE0979 0%, #FF6A00 100%)')}
+                                                                    onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.1)'; e.currentTarget.style.boxShadow = '0 12px 20px rgba(238, 9, 121, 0.4)'; }}
+                                                                    onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 8px 16px rgba(238, 9, 121, 0.25)'; }}
+                                                                >
+                                                                    <i className="fa fa-video-camera"></i>
+                                                                </a>
+                                                                <button
+                                                                    title="Send Mail"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setSelectedLeadForEmail(lead);
+                                                                        setEmailRecipient(lead.email || "");
+                                                                        setEmailSubject(`Registration Confirmation - ${lead.opted_domain || "General"} | Krutanic`);
+                                                                        setEmailDomain(lead.opted_domain || "General");
+                                                                        setShowEmailModal(true);
+                                                                    }}
+                                                                    style={styles.iconBtn(designTokens.colors.primary, 'linear-gradient(135deg, #00B4DB 0%, #0083B0 100%)')}
+                                                                    onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.1)'; e.currentTarget.style.boxShadow = '0 12px 20px rgba(0, 180, 219, 0.4)'; }}
+                                                                    onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 180, 219, 0.25)'; }}
+                                                                >
+                                                                    <i className="fa fa-envelope"></i>
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -858,8 +929,8 @@ const AdvLeadsBook = () => {
                                                         {lead.last_recording_url && (
                                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={e => e.stopPropagation()}>
                                                                 <span className="material-symbols-outlined" style={{ color: designTokens.colors.primary, fontSize: '20px' }}>mic</span>
-                                                                <audio 
-                                                                    controls 
+                                                                <audio
+                                                                    controls
                                                                     controlsList="nodownload"
                                                                     style={{ width: '180px', height: '30px' }}
                                                                 >
@@ -891,9 +962,9 @@ const AdvLeadsBook = () => {
                                                                 <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: designTokens.colors.textPrimary }}>Intelligence</h3>
                                                             </div>
 
-                                                            <div style={{ 
-                                                                display: 'flex', 
-                                                                flexDirection: 'column', 
+                                                            <div style={{
+                                                                display: 'flex',
+                                                                flexDirection: 'column',
                                                                 gap: '20px',
                                                                 maxHeight: '600px',
                                                                 overflowY: 'auto',
@@ -920,7 +991,7 @@ const AdvLeadsBook = () => {
                                                                         </div>
                                                                     )
                                                                 ))}
-                                                                
+
                                                                 {lead.extra_fields && Object.keys(lead.extra_fields).length > 0 && (
                                                                     <div style={{ borderTop: `1px dashed ${designTokens.colors.border}`, marginTop: '10px', paddingTop: '20px' }}>
                                                                         <div style={{ display: 'grid', gap: '16px' }}>
@@ -1014,14 +1085,14 @@ const AdvLeadsBook = () => {
                                                                                 onChange={e => updateForm(lead._id, 'remark', e.target.value)}
                                                                             />
                                                                         </div>
-                                                                        
+
                                                                         {(!["Closed Won", "Closed Lost"].includes(form.stage)) && (
-                                                                            <div style={{ 
-                                                                                display: 'flex', 
-                                                                                flexDirection: 'column', 
-                                                                                gap: '10px', 
-                                                                                padding: '16px', 
-                                                                                background: `${designTokens.colors.info}10`, 
+                                                                            <div style={{
+                                                                                display: 'flex',
+                                                                                flexDirection: 'column',
+                                                                                gap: '10px',
+                                                                                padding: '16px',
+                                                                                background: `${designTokens.colors.info}10`,
                                                                                 borderRadius: '16px',
                                                                                 border: `1px solid ${designTokens.colors.info}30`
                                                                             }}>
@@ -1039,12 +1110,12 @@ const AdvLeadsBook = () => {
                                                                         )}
 
                                                                         {form.disposition === "Demo Booked" && (
-                                                                            <div style={{ 
-                                                                                display: 'flex', 
-                                                                                flexDirection: 'column', 
-                                                                                gap: '10px', 
-                                                                                padding: '16px', 
-                                                                                background: `${designTokens.colors.warning}10`, 
+                                                                            <div style={{
+                                                                                display: 'flex',
+                                                                                flexDirection: 'column',
+                                                                                gap: '10px',
+                                                                                padding: '16px',
+                                                                                background: `${designTokens.colors.warning}10`,
                                                                                 borderRadius: '16px',
                                                                                 border: `1px solid ${designTokens.colors.warning}30`
                                                                             }}>
@@ -1062,12 +1133,12 @@ const AdvLeadsBook = () => {
                                                                         )}
 
                                                                         {(form.disposition === "Expected Payment Date" || form.disposition === "Converted") && (
-                                                                            <div style={{ 
-                                                                                display: 'flex', 
-                                                                                flexDirection: 'column', 
-                                                                                gap: '10px', 
-                                                                                padding: '16px', 
-                                                                                background: `${designTokens.colors.success}10`, 
+                                                                            <div style={{
+                                                                                display: 'flex',
+                                                                                flexDirection: 'column',
+                                                                                gap: '10px',
+                                                                                padding: '16px',
+                                                                                background: `${designTokens.colors.success}10`,
                                                                                 borderRadius: '16px',
                                                                                 border: `1px solid ${designTokens.colors.success}30`
                                                                             }}>
@@ -1090,16 +1161,16 @@ const AdvLeadsBook = () => {
                                                                     disabled={submitting === lead._id || !form.disposition}
                                                                     onClick={() => handleLogCall(lead)}
                                                                     style={{
-                                                                        marginTop: '12px', 
-                                                                        padding: '18px', 
-                                                                        borderRadius: '16px', 
+                                                                        marginTop: '12px',
+                                                                        padding: '18px',
+                                                                        borderRadius: '16px',
                                                                         border: 'none',
                                                                         background: !form.disposition ? designTokens.colors.border : `linear-gradient(135deg, ${designTokens.colors.primary}, ${designTokens.colors.secondary})`,
                                                                         color: '#fff',
-                                                                        fontWeight: '800', 
-                                                                        fontSize: '16px', 
+                                                                        fontWeight: '800',
+                                                                        fontSize: '16px',
                                                                         cursor: 'pointer',
-                                                                        transition: 'all 0.3s ease', 
+                                                                        transition: 'all 0.3s ease',
                                                                         boxShadow: form.disposition ? `0 12px 24px ${designTokens.colors.primary}40` : 'none',
                                                                         display: 'flex',
                                                                         alignItems: 'center',
@@ -1152,37 +1223,37 @@ const AdvLeadsBook = () => {
                                                                                         </span>
                                                                                     </div>
                                                                                 </div>
-                                                                                    <span style={{ fontSize: '11px', color: designTokens.colors.textSecondary, fontWeight: '600' }}>{new Date(h.createdAt).toLocaleDateString()}</span>
-                                                                                </div>
-                                                                                
-                                                                                {/* Scheduled Dates Display */}
-                                                                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '8px' }}>
-                                                                                    {h.followUpDate && (
-                                                                                        <div style={{ fontSize: '11px', background: `${designTokens.colors.info}15`, color: designTokens.colors.info, padding: '4px 8px', borderRadius: '6px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                                                            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>event_repeat</span>
-                                                                                            Follow-up: {new Date(h.followUpDate).toLocaleString()}
-                                                                                        </div>
-                                                                                    )}
-                                                                                    {h.demoScheduleDate && (
-                                                                                        <div style={{ fontSize: '11px', background: `${designTokens.colors.warning}15`, color: designTokens.colors.warning, padding: '4px 8px', borderRadius: '6px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                                                            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>calendar_month</span>
-                                                                                            Demo: {new Date(h.demoScheduleDate).toLocaleString()}
-                                                                                        </div>
-                                                                                    )}
-                                                                                    {h.expectedPaymentDate && (
-                                                                                        <div style={{ fontSize: '11px', background: `${designTokens.colors.success}15`, color: designTokens.colors.success, padding: '4px 8px', borderRadius: '6px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                                                            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>payments</span>
-                                                                                            Payment: {new Date(h.expectedPaymentDate).toLocaleDateString()}
-                                                                                        </div>
-                                                                                    )}
-                                                                                </div>
+                                                                                <span style={{ fontSize: '11px', color: designTokens.colors.textSecondary, fontWeight: '600' }}>{new Date(h.createdAt).toLocaleDateString()}</span>
+                                                                            </div>
 
-                                                                                <p style={{ margin: 0, fontSize: '13px', color: designTokens.colors.textSecondary, display: '-webkit-box', WebkitLineClamp: expandedLogId === h._id ? 'unset' : 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{h.summary || "Archived interactions trace."}</p>
-                                                                            
+                                                                            {/* Scheduled Dates Display */}
+                                                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '8px' }}>
+                                                                                {h.followUpDate && (
+                                                                                    <div style={{ fontSize: '11px', background: `${designTokens.colors.info}15`, color: designTokens.colors.info, padding: '4px 8px', borderRadius: '6px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                                                        <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>event_repeat</span>
+                                                                                        Follow-up: {new Date(h.followUpDate).toLocaleString()}
+                                                                                    </div>
+                                                                                )}
+                                                                                {h.demoScheduleDate && (
+                                                                                    <div style={{ fontSize: '11px', background: `${designTokens.colors.warning}15`, color: designTokens.colors.warning, padding: '4px 8px', borderRadius: '6px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                                                        <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>calendar_month</span>
+                                                                                        Demo: {new Date(h.demoScheduleDate).toLocaleString()}
+                                                                                    </div>
+                                                                                )}
+                                                                                {h.expectedPaymentDate && (
+                                                                                    <div style={{ fontSize: '11px', background: `${designTokens.colors.success}15`, color: designTokens.colors.success, padding: '4px 8px', borderRadius: '6px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                                                        <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>payments</span>
+                                                                                        Payment: {new Date(h.expectedPaymentDate).toLocaleDateString()}
+                                                                                    </div>
+                                                                                )}
+                                                                            </div>
+
+                                                                            <p style={{ margin: 0, fontSize: '13px', color: designTokens.colors.textSecondary, display: '-webkit-box', WebkitLineClamp: expandedLogId === h._id ? 'unset' : 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{h.summary || "Archived interactions trace."}</p>
+
                                                                             {h.recordingUrl && (
                                                                                 <div style={{ marginTop: '12px' }} onClick={(e) => e.stopPropagation()}>
-                                                                                    <audio 
-                                                                                        controls 
+                                                                                    <audio
+                                                                                        controls
                                                                                         controlsList="nodownload"
                                                                                         style={{ width: '100%', height: '32px', borderRadius: '8px' }}
                                                                                     >
@@ -1216,7 +1287,7 @@ const AdvLeadsBook = () => {
                             <div style={{ color: designTokens.colors.textSecondary, fontSize: '14px', fontWeight: '600' }}>
                                 Showing <span style={{ color: designTokens.colors.textPrimary, fontWeight: '800' }}>{(currentPage - 1) * limit + 1}</span> to <span style={{ color: designTokens.colors.textPrimary, fontWeight: '800' }}>{Math.min(currentPage * limit, totalCount)}</span> of <span style={{ color: designTokens.colors.textPrimary, fontWeight: '800' }}>{totalCount}</span> records
                             </div>
-                            
+
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <button
                                     disabled={currentPage === 1}
@@ -1226,13 +1297,13 @@ const AdvLeadsBook = () => {
                                     <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>chevron_left</span>
                                     Previous
                                 </button>
-                                
+
                                 <div style={{ display: 'flex', gap: '8px' }}>
                                     {[...Array(totalPages)].map((_, i) => {
                                         const p = i + 1;
                                         const isEdge = p === 1 || p === totalPages;
                                         const isNear = Math.abs(p - currentPage) <= 1;
-                                        
+
                                         if (isEdge || isNear) {
                                             return (
                                                 <button
@@ -1313,7 +1384,7 @@ const AdvLeadsBook = () => {
                                 📋 Quick Templates
                             </label>
                             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                <select 
+                                <select
                                     value={selectedTemplateId}
                                     onChange={(e) => {
                                         const tId = e.target.value;
@@ -1332,7 +1403,7 @@ const AdvLeadsBook = () => {
                                     ))}
                                 </select>
                                 {selectedTemplateId && (
-                                    <button 
+                                    <button
                                         onClick={handleDeleteTemplate}
                                         title="Delete Selected Template"
                                         style={{ padding: '10px', background: '#fee2e2', color: '#ef4444', border: '1px solid #fca5a5', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -1350,9 +1421,9 @@ const AdvLeadsBook = () => {
                             </div>
                             <div>
                                 <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#666', marginBottom: '5px', display: 'block' }}>Domain</label>
-                                <select 
-                                    value={emailDomain} 
-                                    onChange={(e) => setEmailDomain(e.target.value)} 
+                                <select
+                                    value={emailDomain}
+                                    onChange={(e) => setEmailDomain(e.target.value)}
                                     style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', background: '#fff' }}
                                 >
                                     {advDomains.map(d => (
@@ -1365,7 +1436,7 @@ const AdvLeadsBook = () => {
                         <div style={{ marginBottom: '20px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#666', marginBottom: '5px', display: 'block' }}>Subject</label>
-                                <button 
+                                <button
                                     onClick={() => {
                                         const prompt = encodeURIComponent(`Write a professional and catchy email for a ${emailDomain} student. The email should be about: ${emailSubject || 'the Advanced Program'}. Mention Krutanic and include a strong call to action.`);
                                         window.open(`https://chatgpt.com/?q=${prompt}`, '_blank');
@@ -1375,9 +1446,9 @@ const AdvLeadsBook = () => {
                                     <span style={{ fontSize: '14px' }}>🤖</span> Generate with ChatGPT
                                 </button>
                             </div>
-                            <input 
-                                type="text" 
-                                value={emailSubject} 
+                            <input
+                                type="text"
+                                value={emailSubject}
                                 onChange={(e) => setEmailSubject(e.target.value)}
                                 placeholder="Enter your email subject..."
                                 style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #ddd' }}
@@ -1386,7 +1457,7 @@ const AdvLeadsBook = () => {
 
                         <div style={{ marginBottom: '20px' }}>
                             <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#666', marginBottom: '5px', display: 'block' }}>Body (Supports HTML)</label>
-                            <textarea 
+                            <textarea
                                 value={emailContent}
                                 onChange={(e) => setEmailContent(e.target.value)}
                                 style={{ width: '100%', height: '200px', padding: '15px', borderRadius: '12px', border: '1px solid #ddd', fontFamily: 'monospace' }}
@@ -1399,9 +1470,9 @@ const AdvLeadsBook = () => {
                         </div>
 
                         <div style={{ display: 'flex', gap: '15px' }}>
-                            <button 
+                            <button
                                 onClick={async () => {
-                                    if(!emailSubject || !emailContent) return toast.error("Subject and content are required");
+                                    if (!emailSubject || !emailContent) return toast.error("Subject and content are required");
                                     setIsSendingEmail(true);
                                     try {
                                         await axios.post(`${API}/api/adv-leads/send-lead-mail`, {
@@ -1415,7 +1486,7 @@ const AdvLeadsBook = () => {
                                         });
                                         toast.success("Email sent!");
                                         const isExisting = templates.some(t => t.subject === emailSubject && t.body === emailContent);
-                                        if(!isExisting) setShowSaveTemplateModal(true);
+                                        if (!isExisting) setShowSaveTemplateModal(true);
                                         setShowEmailModal(false);
                                     } catch {
                                         toast.error("Failed to send mail");

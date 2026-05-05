@@ -9,6 +9,7 @@ const AdvTeamMyLeads = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
+    const [sourceFilter, setSourceFilter] = useState("");
     const [dateFilter, setDateFilter] = useState("");
 
     // Pagination state
@@ -53,7 +54,7 @@ const AdvTeamMyLeads = () => {
         setLoading(true);
         try {
             const res = await axios.get(`${API}/api/adv-leads/get-adv-leads`, {
-                params: { role: apiRole, userId, page, limit, strictlyOwned: true, status: forceStatus }
+                params: { role: apiRole, userId, page, limit, strictlyOwned: true, status: forceStatus, source: sourceFilter }
             });
             if (res.data && res.data.leads) {
                 setLeads(res.data.leads);
@@ -119,7 +120,7 @@ const AdvTeamMyLeads = () => {
         if (userId) {
             fetchMyLeads(currentPage, statusFilter);
         }
-    }, [currentPage, statusFilter, userId]);
+    }, [currentPage, statusFilter, sourceFilter, userId]);
 
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
@@ -452,6 +453,62 @@ const AdvTeamMyLeads = () => {
                     <button onClick={() => fetchMyLeads(1)} style={{ padding: '8px 14px', background: '#f0f0f0', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer' }}>🔄 Refresh</button>
                 </div>
 
+                {(userId === "69d4a881cb9305f0d5ecbeb2" || (userName && userName.toLowerCase().includes("sumeetha"))) && (
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap', alignItems: 'center', background: '#f8fafc', padding: '10px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0 12px', borderRight: '1px solid #e2e8f0' }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#6366f1' }}>fiber_new</span>
+                            <span style={{ fontSize: '12px', fontWeight: '800', color: '#64748b', textTransform: 'uppercase' }}>Old CRM:</span>
+                        </div>
+                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                            {[
+                                "Fresh", "Interested", "Follow Up", "Callback", "No Answer", "Not Interested", "Junk", "Converted", "Unused"
+                            ].map((status) => (
+                                <button
+                                    key={status}
+                                    onClick={() => {
+                                        setStatusFilter(status);
+                                        setSourceFilter("Old CRM");
+                                        setCurrentPage(1);
+                                    }}
+                                    style={{
+                                        padding: '6px 14px',
+                                        borderRadius: '8px',
+                                        fontSize: '13px',
+                                        fontWeight: '700',
+                                        cursor: 'pointer',
+                                        background: (statusFilter === status && sourceFilter === "Old CRM") ? '#6366f1' : '#fff',
+                                        color: (statusFilter === status && sourceFilter === "Old CRM") ? '#fff' : '#64748b',
+                                        border: '1px solid',
+                                        borderColor: (statusFilter === status && sourceFilter === "Old CRM") ? '#6366f1' : '#e2e8f0',
+                                        transition: 'all 0.2s'
+                                    }}
+                                >
+                                    {status}
+                                </button>
+                            ))}
+                            <button
+                                onClick={() => {
+                                    setSourceFilter("");
+                                    setStatusFilter("");
+                                    setCurrentPage(1);
+                                }}
+                                style={{
+                                    padding: '6px 14px',
+                                    borderRadius: '8px',
+                                    fontSize: '13px',
+                                    fontWeight: '700',
+                                    cursor: 'pointer',
+                                    background: '#fff',
+                                    color: '#ef4444',
+                                    border: '1px solid #ef4444',
+                                }}
+                            >
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 {loading ? (
                     <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}>Loading leads...</div>
                 ) : filteredLeads.length === 0 ? (
@@ -593,7 +650,6 @@ const AdvTeamMyLeads = () => {
                         </div>
                         
                         <div style={{ padding: '25px' }}>
-                            {/* Section: Basic Information */}
                             <h3 style={{ borderLeft: '4px solid #1890ff', paddingLeft: '10px', marginBottom: '15px', fontSize: '16px', color: '#1890ff' }}>Primary Information</h3>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' }}>
                                 {[
@@ -602,24 +658,11 @@ const AdvTeamMyLeads = () => {
                                     { label: 'Phone Number', value: selectedLead.phone_number },
                                     { label: 'Opted Domain', value: selectedLead.opted_domain },
                                     { label: 'Lead Score', value: selectedLead.score || 0 },
-                                    { label: 'Current Status', value: selectedLead.status?.replace(/_/g, ' ') },
-                                    { label: 'Lead Source', value: selectedLead.source || 'Direct' },
-                                ].map((item, idx) => (
-                                    <div key={idx}>
-                                        <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', fontWeight: 'bold' }}>{item.label}</div>
-                                        <div style={{ fontSize: '14px', color: '#333', fontWeight: '500', marginTop: '4px' }}>{item.value || '—'}</div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Section: Academic & Professional */}
-                            <h3 style={{ borderLeft: '4px solid #52c41a', paddingLeft: '10px', marginBottom: '15px', fontSize: '16px', color: '#52c41a' }}>Academic & Professional</h3>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-                                {[
-                                    { label: 'Education', value: selectedLead.education_background },
-                                    { label: 'Current Job/Status', value: selectedLead.current_status },
-                                    { label: 'Company Name', value: selectedLead.company_name },
-                                    { label: 'Year of Passing', value: selectedLead.year_of_passing },
+                                    { label: 'Source', value: selectedLead.source },
+                                    { label: 'Pipeline Stage', value: selectedLead.stage },
+                                    { label: 'Disposition', value: selectedLead.last_outcome },
+                                    { label: 'Interested Domain', value: selectedLead.interested_domain },
+                                    { label: 'Work Experience', value: selectedLead.work_experience },
                                     { label: 'Upskilling Ready', value: selectedLead.upskilling_ready },
                                     { label: 'Start Timeframe', value: selectedLead.start_timeframe },
                                 ].map((item, idx) => (
@@ -630,7 +673,6 @@ const AdvTeamMyLeads = () => {
                                 ))}
                             </div>
 
-                            {/* Section: Extra/Custom Fields */}
                             {selectedLead.extra_fields && Object.keys(selectedLead.extra_fields).length > 0 && (
                                 <>
                                     <h3 style={{ borderLeft: '4px solid #faad14', paddingLeft: '10px', marginBottom: '15px', fontSize: '16px', color: '#faad14' }}>Additional Imported Data</h3>
@@ -645,7 +687,6 @@ const AdvTeamMyLeads = () => {
                                 </>
                             )}
 
-                            {/* Section: System Metadata */}
                             <h3 style={{ borderLeft: '4px solid #722ed1', paddingLeft: '10px', marginBottom: '15px', fontSize: '16px', color: '#722ed1' }}>System Metadata</h3>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
                                 {[

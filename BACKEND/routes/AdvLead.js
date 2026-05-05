@@ -471,7 +471,7 @@ router.post("/bulk-assign-to-manager", async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 });
-
+router
 // POST: Admin bulk-assigns fresh leads to anyone (Manager or Leader)
 router.post("/admin-bulk-assign", async (req, res) => {
     const { assigneeId, assigneeName, assigneeRole, count } = req.body;
@@ -715,7 +715,7 @@ router.get("/get-adv-leads", async (req, res) => {
         }
         
         // 🔍 Server-side Search support (Checks Name, Phone, Email, Domain)
-        const { search, status } = req.query;
+        const { search, status, source } = req.query;
         if (search) {
             const searchRegex = new RegExp(search, "i");
             andConditions.push({
@@ -733,7 +733,17 @@ router.get("/get-adv-leads", async (req, res) => {
             andConditions.push({ status });
         }
 
-        const { month, year } = req.query;
+        if (source) {
+            if (source === "Old CRM") {
+                // Map 'Old CRM' to all potential legacy source labels
+                andConditions.push({ source: { $in: ["csv_import", "Bulk CSV Import", "meta_ads_manual", "Old CRM", "csv-import"] } });
+            } else {
+                andConditions.push({ source });
+            }
+        }
+
+        const { month, year, date, outcome } = req.query;
+        
         if (month && year) {
             const m = parseInt(month) - 1;
             const y = parseInt(year);
@@ -743,21 +753,36 @@ router.get("/get-adv-leads", async (req, res) => {
         }
         
         if (outcome) {
-            if (outcome === "fresh") {
-                andConditions.push({ last_interaction_at: { $exists: false } });
-            } else if (outcome === "callback_requested") {
+            const outcomeLower = outcome.toLowerCase();
+            const outcomeWithUnderscore = outcomeLower.replace(/\s+/g, '_');
+            
+            if (outcomeLower === "fresh" || outcomeLower === "unused") {
+                andConditions.push({ 
+                    $or: [
+                        { status: { $in: ["fresh", "unused"] } },
+                        { last_interaction_at: { $exists: false } },
+                        { last_outcome: { $exists: false } }
+                    ]
+                });
+            } else if (outcomeLower === "callback" || outcomeLower === "callback_requested" || outcomeLower === "no answer" || outcomeLower === "follow up") {
+                // Grouping similar statuses for legacy data flexibility
+                const regex = new RegExp(`^(${outcomeLower}|${outcomeWithUnderscore})$`, "i");
                 andConditions.push({
                     $or: [
+                        { last_outcome: regex },
+                        { status: regex },
                         { last_outcome: "callback_requested" },
-                        { status: "callback_requested" },
                         { status: "in_followup" }
                     ]
                 });
             } else {
+                // General case with regex to handle spaces and underscores
+                const regex = new RegExp(`^(${outcomeLower}|${outcomeWithUnderscore})$`, "i");
                 andConditions.push({
                     $or: [
-                        { last_outcome: outcome },
-                        { status: outcome }
+                        { last_outcome: regex },
+                        { status: regex },
+                        { stage: regex }
                     ]
                 });
             }

@@ -25,6 +25,7 @@ const AdvLeadManagement = () => {
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
+    const [sourceFilter, setSourceFilter] = useState("");
 
     // Assign panel state
     const [showAssignPanel, setShowAssignPanel] = useState(false);
@@ -123,6 +124,7 @@ const AdvLeadManagement = () => {
                     page,
                     limit,
                     status: forceStatus,
+                    source: sourceFilter,
                     month: selectedMonth,
                     year: selectedYear
                 }
@@ -209,7 +211,7 @@ const AdvLeadManagement = () => {
         if (userDesignation) {
             fetchLeads(currentPage, statusFilter);
         }
-    }, [currentPage, userDesignation, statusFilter, selectedMonth, selectedYear]);
+    }, [currentPage, userDesignation, statusFilter, sourceFilter, selectedMonth, selectedYear]);
 
     const handleSaveSMTP = async () => {
         if (!personalEmail || !appPassword) return toast.error("Both fields are required");
@@ -510,6 +512,62 @@ const AdvLeadManagement = () => {
                     </div>
                 </div>
 
+                {(advTeamId === "69d4a881cb9305f0d5ecbeb2" || (userFullname && userFullname.toLowerCase().includes("sumeetha"))) && (
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap', alignItems: 'center', background: '#f8fafc', padding: '10px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0 12px', borderRight: '1px solid #e2e8f0' }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#6366f1' }}>fiber_new</span>
+                            <span style={{ fontSize: '12px', fontWeight: '800', color: '#64748b', textTransform: 'uppercase' }}>Old CRM Filters:</span>
+                        </div>
+                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                            {[
+                                "Fresh", "Interested", "Follow Up", "Callback", "No Answer", "Not Interested", "Junk", "Converted", "Unused"
+                            ].map((status) => (
+                                <button
+                                    key={status}
+                                    onClick={() => {
+                                        setStatusFilter(status);
+                                        setSourceFilter("Old CRM");
+                                        setCurrentPage(1);
+                                    }}
+                                    style={{
+                                        padding: '6px 14px',
+                                        borderRadius: '8px',
+                                        fontSize: '13px',
+                                        fontWeight: '700',
+                                        cursor: 'pointer',
+                                        background: (statusFilter === status && sourceFilter === "Old CRM") ? '#6366f1' : '#fff',
+                                        color: (statusFilter === status && sourceFilter === "Old CRM") ? '#fff' : '#64748b',
+                                        border: '1px solid',
+                                        borderColor: (statusFilter === status && sourceFilter === "Old CRM") ? '#6366f1' : '#e2e8f0',
+                                        transition: 'all 0.2s'
+                                    }}
+                                >
+                                    {status}
+                                </button>
+                            ))}
+                            <button
+                                onClick={() => {
+                                    setSourceFilter("");
+                                    setStatusFilter("");
+                                    setCurrentPage(1);
+                                }}
+                                style={{
+                                    padding: '6px 14px',
+                                    borderRadius: '8px',
+                                    fontSize: '13px',
+                                    fontWeight: '700',
+                                    cursor: 'pointer',
+                                    background: '#fff',
+                                    color: '#ef4444',
+                                    border: '1px solid #ef4444',
+                                }}
+                            >
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                )}
+// tarun sai h  y      hs ddddddd
                 {loading ? (
                     <p style={{ textAlign: 'center', padding: '40px' }}>Loading leads...</p>
                 ) : (
