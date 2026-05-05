@@ -1,8 +1,11 @@
 import React from 'react';
 import { FaPlay, FaRegFileAlt, FaChevronRight } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import heroImg from '../../assets/mentorship_hero.png';
 
 const MentorshipHero = ({ onOpenForm }) => {
+  const navigate = useNavigate();
+
   return (
     <section className="km-hero">
       <div className="km-hero__container">
@@ -17,8 +20,8 @@ const MentorshipHero = ({ onOpenForm }) => {
             <button className="km-btn-primary" onClick={onOpenForm}>
               Apply for Mentorship <FaChevronRight style={{marginLeft: '10px'}} />
             </button>
-            <button className="km-btn-secondary" onClick={() => document.getElementById('specializations').scrollIntoView({behavior: 'smooth'})}>
-              Explore Tracks
+            <button className="km-btn-secondary" onClick={() => navigate('/FeeStructure')}>
+              View Pricing
             </button>
           </div>
           <div className="km-hero__stats">
