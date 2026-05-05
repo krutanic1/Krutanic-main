@@ -1,6 +1,6 @@
 import {
   FaCode, FaDatabase, FaServer, FaShieldAlt, FaMobileAlt, FaRocket,
-  FaCheckCircle, FaStar, FaUserGraduate, FaProjectDiagram, FaBriefcase, FaArrowRight, FaChartLine, FaRobot
+  FaCheckCircle, FaStar, FaUserGraduate, FaProjectDiagram, FaBriefcase, FaArrowRight, FaChartLine, FaRobot, FaCloud
 } from 'react-icons/fa';
 
 import { fullStackData } from './fullStackData';
@@ -752,66 +752,149 @@ export const allMentorshipData = {
     id: 'ui-ux-design',
     title: 'UI/UX Design',
     thumbnail: '/course_thumbnails/ui-ux-design.jpg',
-    duration: '3 Months',
+    duration: '2 Months',
     format: 'Live Mentor-led',
     level: 'Beginner to Pro',
-    enrolled: '12,500+ Mentees',
-    rating: 4.8,
+    enrolled: '15,000+ Mentees Trained',
+    rating: 4.85,
+    pitch: 'Transform Your Passion into A Successful Career In Tech',
+    providerNote: 'We are now an accredited partner under Krutanic.',
+    contactInfo: ['www.krutanic.com', 'support@krutanic.com'],
+    aboutTitle: 'About Us',
+    aboutDescription: 'Krutanic is at the forefront of transforming education through cutting-edge technology. Our comprehensive platform empowers learners with personalized learning experiences, collaborative tools, and real-time analytics. With adaptive assessments and interactive content creation, we enhance student engagement and achievement. Join us in revolutionizing education for the digital age, driving positive outcomes and preparing learners for success in tomorrow\'s world.',
+    whyTitle: 'Why UI/UX Design?',
+    whyPoints: [
+      'Enhances user experience and satisfaction, directly impacting product success.',
+      'Boosts user retention and engagement through intuitive, delightful interfaces.',
+      'Improves accessibility, making products usable for all users including those with disabilities.',
+      'Increases conversion rates by optimizing user flows and interactions.',
+      'Strengthens brand identity and creates memorable digital experiences.',
+      'Reduces development costs by preventing costly design mistakes early in the process.'
+    ],
+    trainingProgram: [
+      {
+        phase: 'Month 1',
+        title: 'Training and Internship Program',
+        items: [
+          'Live sessions with industrial experts having experience above 10 years in the industry.',
+          'Recordings of all live sessions available with 1 year access in our LMS portal.',
+          'Industry-related curriculum designed by the working professionals in the top hierarchy.'
+        ]
+      },
+      {
+        phase: 'Month 2',
+        title: 'Training and Internship Program',
+        items: [
+          'Two real-time industrial projects: one minor project and one major project.',
+          'All mentors are assigned as project leads and guide the intern till the completion of the project.',
+          'Additional projects for personal development can be required.'
+        ]
+      }
+    ],
+    moduleOverview: [
+      'Introduction to UI/UX Design',
+      'Design Thinking Process',
+      'User Research & Personas',
+      'Information Architecture',
+      'Visual Design Principles',
+      'Prototyping Tools (Figma, Adobe XD)',
+      'Interaction Design',
+      'Responsive & Mobile Design',
+      'Wire framing & Sketching',
+      'Typography & Color Theory',
+      'Usability Testing',
+      'Portfolio & Case Study Creation'
+    ],
     mentor: {
       name: 'Akash R',
-      role: 'Graphic Design',
+      role: 'Senior UI/UX Designer',
       experience: '10+ Years',
-      bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
+      bio: 'Industry expert with over 10 years of experience in designing and deploying user-centered digital solutions for leading tech companies.',
     },
     mentorImage: akashImg,
     outcomes: [
-      { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of UI/UX Design.', icon: FaCheckCircle },
-      { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
-      { title: 'Real-world Application', desc: 'Apply your skills to solve complex problems and build scalable solutions.', icon: FaBriefcase },
-      { title: 'Job Readiness', desc: 'Prepare for top roles with interview prep and portfolio building.', icon: FaUserGraduate },
+      { title: 'Design Foundations', desc: 'Master UI vs UX, design principles, and the role of designers in product development.', icon: FaCheckCircle },
+      { title: 'Design Tools Proficiency', desc: 'Get hands-on with Figma, Adobe XD, and prototyping tools for creating professional designs.', icon: FaRocket },
+      { title: 'User-Centered Design', desc: 'Learn user research, personas, and testing to create experiences that users love.', icon: FaBriefcase },
+      { title: 'Portfolio Ready', desc: 'Build a compelling design portfolio with case studies for job opportunities and freelance projects.', icon: FaUserGraduate },
     ],
     tools: [
-      { name: 'Industry Standard Tools' }, { name: 'Modern Frameworks' }, { name: 'Analytics' }, 
-      { name: 'Cloud Platforms' }, { name: 'Version Control' }, { name: 'Agile/Scrum' }
+      { name: 'Figma' },
+      { name: 'Adobe XD' },
+      { name: 'Adobe Illustrator' },
+      { name: 'Sketch' },
+      { name: 'Whimsical' },
+      { name: 'Prototyping & Collaboration Tools' }
     ],
     curriculum: [
-      { module: 'Module 1', title: 'Introduction to UI/UX Design', topics: ['Overview of concepts', 'Setting up the environment', 'Basic principles', 'Industry use cases'] },
-      { module: 'Module 2', title: 'Core Methodologies', topics: ['In-depth exploration', 'Tools and frameworks', 'Best practices', 'Hands-on exercises'] },
-      { module: 'Module 3', title: 'Advanced Concepts', topics: ['Complex scenarios', 'Optimization techniques', 'Security and performance', 'Integration'] },
-      { module: 'Module 4', title: 'Industry Projects', topics: ['Real-world problem solving', 'Project planning', 'Execution', 'Testing and validation'] },
-      { module: 'Module 5', title: 'Capstone & Portfolio', topics: ['Building a complete project from scratch', 'Documentation', 'Portfolio enhancement', 'Interview preparation'] }
+      { module: 'Module 1', title: 'Introduction to UI/UX Design', topics: ['Basics of UI vs UX', 'Importance in product development', 'Roles and responsibilities of a UI/UX designer'] },
+      { module: 'Module 2', title: 'Design Thinking Process', topics: ['Empathize, Define, Ideate, Prototype, Test', 'Problem-solving and innovation framework'] },
+      { module: 'Module 3', title: 'User Research & Personas', topics: ['Conducting user interviews and surveys', 'Creating user personas and journey maps'] },
+      { module: 'Module 4', title: 'Wire framing & Sketching', topics: ['Low-fidelity wire frames', 'Tools for sketching UI layouts'] },
+      { module: 'Module 5', title: 'Information Architecture', topics: ['Organizing content and navigation', 'Site maps and user flows'] },
+      { module: 'Module 6', title: 'Visual Design Principles', topics: ['Layout, balance, contrast, alignment, proximity', 'UI consistency and clarity'] },
+      { module: 'Module 7', title: 'Typography & Color Theory', topics: ['Choosing fonts and typefaces', 'Color psychology and palette creation'] },
+      { module: 'Module 8', title: 'Prototyping Tools (Figma, Adobe XD)', topics: ['Creating interactive prototypes', 'Collaborating and sharing designs'] },
+      { module: 'Module 9', title: 'Interaction Design', topics: ['Micro-interactions and animations', 'Designing user-friendly controls'] },
+      { module: 'Module 10', title: 'Responsive & Mobile Design', topics: ['Designing for various screen sizes', 'Mobile-first and adaptive design'] },
+      { module: 'Module 11', title: 'Usability Testing', topics: ['Testing prototypes with users', 'Collecting feedback and iterating designs'] },
+      { module: 'Module 12', title: 'Portfolio & Case Study Creation', topics: ['Documenting design projects', 'Presenting case studies professionally'] }
     ],
     projects: [
       {
-        title: 'Industrial Capstone Project',
-        desc: 'A comprehensive project integrating all learned skills to solve a real business problem.',
-        tech: ['Modern Stack', 'Cloud Integration', 'Analytics'],
-        impact: 'Demonstrated ability to execute end-to-end solutions independently.'
+        title: 'Minor Industrial Project',
+        desc: 'A guided design project where you research, prototype, and test a UI/UX solution under mentor supervision.',
+        tech: ['Figma', 'User Research', 'Prototyping'],
+        impact: 'Strong understanding of end-to-end design workflow and user-centered principles in a mentor-led setup.'
       },
       {
-        title: 'Live Case Study Application',
-        desc: 'Hands-on implementation of a live industry case study with measurable outcomes.',
-        tech: ['Best Practices', 'Agile', 'Optimization'],
-        impact: 'Mastered practical application of theoretical concepts.'
+        title: 'Major Industrial Project',
+        desc: 'A production-style design project with complete case study, testing, and stakeholder presentation.',
+        tech: ['Adobe XD', 'Interaction Design', 'Usability Testing', 'Prototyping'],
+        impact: 'Portfolio-ready major project showcasing design thinking, user empathy, and delivery excellence.'
       }
     ],
+    milestones: [
+      { label: 'Google Ratings', value: '4.8/5' },
+      { label: 'Global Market Size', value: 'USD 200 Billion' },
+      { label: 'Hiring Partners', value: '200+' },
+      { label: 'Job Openings', value: '25,000+' },
+      { label: 'Average Salary', value: '10+ LPA' },
+      { label: 'Mentees Trained', value: '15k+' }
+    ],
+    studentReviews: [
+      { name: 'Ramshad K', text: 'I have gained a really hands on experience with UI/UX design which was delivered by Akash sir. Very supportive and endless worthy experience so far.', detail: 'Great for practical learning.' },
+      { name: 'Rajendra Prasad', text: 'I researched and found the correct certificate on Linkedin and scanned that and found it 100% genuine and verified successfully.', detail: 'Strong recommendation.' },
+      { name: 'Sahad K', text: 'I realised Krutanic solutions is the best company ever for training and internship provider. I learned a lot of new industrial things.', detail: 'Excellent mentor support.' },
+      { name: 'Sunil Kumar', text: 'I have enrolled for UI/UX Design program at Krutanic solutions and my experience is outstanding. Perfect for quality training and real world projects.', detail: 'Highly valuable experience.' },
+      { name: 'Shubham Rai', text: 'Krutanic Group is truly doing a remarkable job by creating learning spaces that are not only informative but also inspiring.', detail: 'Great for career growth.' },
+      { name: 'Tejas Kolekar', text: 'Krutanics UI/UX Design program was a fantastic learning experience. The course covered essential design tools like Figma, Adobe XD, and UX principles, providing a strong foundation for building user-centered products.', detail: 'Highly recommended.' }
+    ],
+    certifications: [
+      'Training Completion Certificate validating the skills you acquired',
+      'Internship Completion certificate certified by Adobe',
+      'Letter of Recommendation (LOR) for your job/placement',
+      'Certificate of excellence based on your performance'
+    ],
     faqs: [
-      { q: 'Do I need prior experience?', a: 'No, this program starts from the basics and gradually builds up to advanced concepts.' },
-      { q: 'Will I build real-world projects?', a: 'Yes, you will build 2 real-time industrial projects (one minor, one major) to solidify your learning and build your portfolio.' },
-      { q: 'What kind of mentor support is included?', a: 'Mentors act as project leads, guiding you through live sessions and assisting you until the completion of your projects.' },
-      { q: 'Is internship support included?', a: 'Yes, you gain access to an internship program with opportunities across 200+ hiring partners.' },
-      { q: 'What happens if I miss a live session?', a: 'Recordings of all live sessions are available with 1-year access in our LMS portal.' }
+      { q: 'Do I need prior design experience?', a: 'No, this program starts from the basics. We teach design thinking, tools, and principles from scratch to advanced levels.' },
+      { q: 'Will I work on real-world projects?', a: 'Yes, you will build 2 real-time industrial projects, one minor and one major, with mentor guidance.' },
+      { q: 'What design tools will I learn?', a: 'You will master industry-standard tools like Figma, Adobe XD, Adobe Illustrator, and Sketch.' },
+      { q: 'Is internship support included?', a: 'Yes, the program includes internship support and exposure to 200+ hiring partners.' },
+      { q: 'Can I build a portfolio during the course?', a: 'Yes, you will build portfolio-ready case studies and projects throughout the program that showcase your design expertise.' }
     ],
     careerPaths: {
-      title: 'Career Paths After the Program',
-      subtitle: 'Build skills that map to high-demand roles across startups and enterprises globally.',
+      title: 'Career Opportunities in UI/UX Design',
+      subtitle: 'Build skills that map to high-demand design roles across startups, tech companies, agencies, and enterprises globally.',
       roles: [
-        { title: 'Junior Design Specialist', desc: 'Execute foundational tasks and support senior team members.', tools: ['Basic Tools', 'Reporting'], level: 'Entry-level' },
-        { title: 'UI/UX Design Engineer/Analyst', desc: 'Design, build, and maintain core solutions and systems.', tools: ['Advanced Frameworks', 'Cloud'], level: 'Professional' },
-        { title: 'Freelance Consultant', desc: 'Work independently on custom projects for various clients.', tools: ['Client Management', 'End-to-end execution'], level: 'Independent' },
-        { title: 'Lead Design Expert', desc: 'Lead teams and architect complex solutions for enterprise clients.', tools: ['Strategy', 'Architecture', 'Leadership'], level: 'Senior' }
+        { title: 'UI Designer', desc: 'Focus on designing visually appealing and interactive interfaces that are intuitive and user-friendly.', tools: ['Figma', 'Adobe XD', 'Design Systems'], level: 'Entry-level' },
+        { title: 'UX Designer', desc: 'Enhance user experience through research, testing, and optimization of digital products and services.', tools: ['User Research', 'Prototyping', 'Usability Testing'], level: 'Professional' },
+        { title: 'Interaction Designer', desc: 'Design interactive elements like animations, transitions, and feedback systems for seamless user experiences.', tools: ['Interaction Prototyping', 'Animation', 'Micro-interactions'], level: 'Professional' },
+        { title: 'Visual Designer', desc: 'Specialize in the aesthetics, branding, and visual consistency of digital products and marketing materials.', tools: ['Adobe Suite', 'Design Systems', 'Illustration'], level: 'Specialist' },
+        { title: 'Product Designer', desc: 'Oversee the end-to-end product design process, bridging UX research, UI design, and business objectives.', tools: ['Product Strategy', 'End-to-end Design', 'Stakeholder Management'], level: 'Senior' },
+        { title: 'UX Researcher', desc: 'Conduct user research, testing, and analytics to guide design decisions and improve product usability.', tools: ['User Research', 'Testing', 'Analytics'], level: 'Specialist' }
       ],
-      progression: ['Junior Executive', 'Specialist', 'Senior Professional', 'Team Lead', 'Architect/Manager']
+      progression: ['UI Designer', 'UX Designer', 'Product Designer', 'Senior Designer', 'Design Lead/Manager']
     }
   },
 
@@ -819,65 +902,147 @@ export const allMentorshipData = {
     id: 'devops',
     title: 'DevOps',
     thumbnail: '/course_thumbnails/DevOps.jpg',
-    duration: '3 Months',
+    duration: '2 Months',
     format: 'Live Mentor-led',
     level: 'Beginner to Pro',
-    enrolled: '12,500+ Mentees',
-    rating: 4.8,
+    enrolled: '15,000+ Mentees Trained',
+    rating: 4.85,
+    pitch: 'Transform Your Passion into A Successful Career In Tech',
+    providerNote: 'We are now an accredited partner under Krutanic.',
+    contactInfo: ['www.krutanic.com', 'support@krutanic.com'],
+    aboutTitle: 'About Us',
+    aboutDescription: 'Krutanic is at the forefront of transforming education through cutting-edge technology. Our comprehensive platform empowers learners with personalized learning experiences, collaborative tools, and real-time analytics. With adaptive assessments and interactive content creation, we enhance student engagement and achievement. Join us in revolutionizing education for the digital age, driving positive outcomes and preparing learners for success in tomorrow\'s world.',
+    whyTitle: 'Why DevOps?',
+    whyPoints: [
+      'Enables CI/CD for faster and reliable software delivery.',
+      'Bridges the gap between development and operations teams.',
+      'Reduces time to market through rapid, automated deployments.',
+      'Improves product quality with early bug detection and feedback.',
+      'Enhances operational efficiency using automation and Infrastructure as Code (IaC).',
+      'High demand for DevOps professionals across industries.'
+    ],
+    trainingProgram: [
+      {
+        phase: 'Month 1',
+        title: 'Training and Internship Program',
+        items: [
+          'Live sessions with industrial experts having experience above 10 years in the industry.',
+          'Recordings of all live sessions available with 1 year access in our LMS portal.',
+          'Industry-related curriculum designed by the working professionals in the top hierarchy.'
+        ]
+      },
+      {
+        phase: 'Month 2',
+        title: 'Training and Internship Program',
+        items: [
+          'Two real-time industrial projects: one minor project and one major project.',
+          'All mentors are assigned as project leads and guide the intern till the completion of the project.',
+          'Additional projects for personal development can be required.'
+        ]
+      }
+    ],
+    moduleOverview: [
+      'Introduction to DevOps',
+      'Linux Fundamentals',
+      'Version Control with Git & GitHub',
+      'Continuous Integration with Jenkins',
+      'Containerization with Docker',
+      'Configuration Management with Ansible',
+      'Cloud Platforms (AWS / Azure Basics)',
+      'Infrastructure as Code (Terraform)',
+      'Build Tools (Maven/Gradle)',
+      'Container Orchestration with Kubernetes',
+      'Monitoring and Logging (Prometheus + Grafana)',
+      'Capstone Project & Interview Preparation'
+    ],
     mentor: {
-      name: 'Lead Cloud Mentor',
-      role: 'Senior Industry Expert',
+      name: 'Aashish Mishra',
+      role: 'Sr. Cloud & DevOps Engineer',
       experience: '10+ Years',
-      bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
+      bio: 'Industry expert with over 10 years of experience building and operating cloud-native infrastructure and CI/CD systems for enterprise teams.',
     },
+    mentorImage: aashishImg,
     outcomes: [
-      { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of DevOps.', icon: FaCheckCircle },
-      { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
-      { title: 'Real-world Application', desc: 'Apply your skills to solve complex problems and build scalable solutions.', icon: FaBriefcase },
-      { title: 'Job Readiness', desc: 'Prepare for top roles with interview prep and portfolio building.', icon: FaUserGraduate },
+      { title: 'DevOps Foundations', desc: 'Understand DevOps culture, CI/CD, and lifecycle practices.', icon: FaCheckCircle },
+      { title: 'Toolchain Mastery', desc: 'Gain hands-on experience with Docker, Kubernetes, Jenkins, Ansible, and Terraform.', icon: FaRocket },
+      { title: 'Cloud & Automation', desc: 'Deploy and manage cloud infrastructure with IaC and automation best practices.', icon: FaCloud },
+      { title: 'Career Ready', desc: 'Prepare for roles with project-based deliverables, resume support, and mock interviews.', icon: FaUserGraduate }
     ],
     tools: [
-      { name: 'Industry Standard Tools' }, { name: 'Modern Frameworks' }, { name: 'Analytics' }, 
-      { name: 'Cloud Platforms' }, { name: 'Version Control' }, { name: 'Agile/Scrum' }
+      { name: 'Docker' },
+      { name: 'Kubernetes' },
+      { name: 'Ansible' },
+      { name: 'Terraform' },
+      { name: 'Jenkins' },
+      { name: 'Git & GitHub' }
     ],
     curriculum: [
-      { module: 'Module 1', title: 'Introduction to DevOps', topics: ['Overview of concepts', 'Setting up the environment', 'Basic principles', 'Industry use cases'] },
-      { module: 'Module 2', title: 'Core Methodologies', topics: ['In-depth exploration', 'Tools and frameworks', 'Best practices', 'Hands-on exercises'] },
-      { module: 'Module 3', title: 'Advanced Concepts', topics: ['Complex scenarios', 'Optimization techniques', 'Security and performance', 'Integration'] },
-      { module: 'Module 4', title: 'Industry Projects', topics: ['Real-world problem solving', 'Project planning', 'Execution', 'Testing and validation'] },
-      { module: 'Module 5', title: 'Capstone & Portfolio', topics: ['Building a complete project from scratch', 'Documentation', 'Portfolio enhancement', 'Interview preparation'] }
+      { module: 'Module 1', title: 'Introduction to DevOps', topics: ['Understanding DevOps culture and lifecycle', 'Key differences between Agile, DevOps, and traditional SDLC', 'Benefits of DevOps in modern software delivery', 'Overview of CI/CD, IaC, and Monitoring'] },
+      { module: 'Module 2', title: 'Linux Fundamentals', topics: ['Basic Linux commands and shell scripting', 'File system navigation and permissions', 'Package management and system processes', 'Networking commands and SSH'] },
+      { module: 'Module 3', title: 'Version Control with Git & GitHub', topics: ['Git basics: init, add, commit, push, pull', 'Branching, merging, and resolving conflicts', 'Using GitHub for collaboration', 'Git workflows and version tracking'] },
+      { module: 'Module 4', title: 'Continuous Integration with Jenkins', topics: ['Installing and configuring Jenkins', 'Creating freestyle and pipeline jobs', 'Integrating Git with Jenkins', 'Automating test and build processes'] },
+      { module: 'Module 5', title: 'Containerization with Docker', topics: ['Understanding images, containers, and Dockerfile', 'Building and running containers', 'Docker Compose for multi-container setups', 'Pushing to Docker Hub'] },
+      { module: 'Module 6', title: 'Configuration Management with Ansible', topics: ['Introduction to Ansible and YAML syntax', 'Writing playbooks and managing inventories', 'Automating server configuration and app deployment', 'Roles and modular tasks'] },
+      { module: 'Module 7', title: 'Cloud Platforms (AWS / Azure Basics)', topics: ['Overview of cloud computing and services', 'Launching EC2 instances', 'S3 storage basics', 'IAM and basic networking'] },
+      { module: 'Module 8', title: 'Infrastructure as Code (Terraform)', topics: ['Introduction to IaC and Terraform syntax', 'Writing .tf files for AWS resource provisioning', 'Using Terraform CLI', 'Managing state and variable files'] },
+      { module: 'Module 9', title: 'Build Tools (Maven/Gradle)', topics: ['Introduction to build automation tools', 'Creating and managing dependencies', 'Building Java applications using Maven/Gradle', 'Customizing build lifecycles'] },
+      { module: 'Module 10', title: 'Container Orchestration with Kubernetes', topics: ['Kubernetes architecture and components', 'Deployments, pods, services, and replicas', 'Config Maps, Secrets, and Volumes', 'Managing apps with kubectl'] },
+      { module: 'Module 11', title: 'Monitoring and Logging (Prometheus + Grafana)', topics: ['Setting up Prometheus for metrics collection', 'Creating dashboards with Grafana', 'Configuring alerts', 'Monitoring containerized apps'] },
+      { module: 'Module 12', title: 'Capstone Project & Interview Preparation', topics: ['End-to-end CI/CD pipeline project', 'Integrate Docker, Jenkins, Git, and Kubernetes', 'Resume building and GitHub portfolio', 'Mock interviews and DevOps scenario questions'] }
     ],
     projects: [
       {
-        title: 'Industrial Capstone Project',
-        desc: 'A comprehensive project integrating all learned skills to solve a real business problem.',
-        tech: ['Modern Stack', 'Cloud Integration', 'Analytics'],
-        impact: 'Demonstrated ability to execute end-to-end solutions independently.'
+        title: 'Minor Industrial Project',
+        desc: 'Build a CI pipeline and containerize a sample application, deploy to a cloud environment.',
+        tech: ['Docker', 'Jenkins', 'AWS'],
+        impact: 'Hands-on experience automating builds, tests, and deployments.'
       },
       {
-        title: 'Live Case Study Application',
-        desc: 'Hands-on implementation of a live industry case study with measurable outcomes.',
-        tech: ['Best Practices', 'Agile', 'Optimization'],
-        impact: 'Mastered practical application of theoretical concepts.'
+        title: 'Major Industrial Project',
+        desc: 'Design and implement a production-ready CI/CD pipeline with infrastructure as code and monitoring.',
+        tech: ['Kubernetes', 'Terraform', 'Prometheus', 'Grafana'],
+        impact: 'A portfolio-ready project demonstrating end-to-end deployment and observability.'
       }
     ],
+    milestones: [
+      { label: 'Google Ratings', value: '4.8/5' },
+      { label: 'Global Market Size', value: 'USD 200 Billion' },
+      { label: 'Hiring Partners', value: '200+' },
+      { label: 'Job Openings', value: '25,000+' },
+      { label: 'Average Salary', value: '10+ LPA' },
+      { label: 'Mentees Trained', value: '15k+' }
+    ],
+    studentReviews: [
+      { name: 'Ramshad K', text: 'I have gained a really hands on experience with DevOps which was delivered by Aashish sir. Very supportive and endless worthy experience so far.', detail: 'Great for practical learning.' },
+      { name: 'Rajendra Prasad', text: 'I researched and found the correct certificate on Linkedin and scanned that and found it 100% genuine and verified successfully.', detail: 'Strong recommendation.' },
+      { name: 'Sahad K', text: 'I realised Krutanic solutions is the best company ever for training and internship provider. I learned a lot of new industrial things.', detail: 'Excellent mentor support.' },
+      { name: 'Sunil Kumar', text: 'I got placement at Wipro through krutanic support team. I am really grateful that I got to learn from mentor Aashish sir and support from my counsellor was really helpful.', detail: 'Highly valuable experience.' },
+      { name: 'Shubham Rai', text: 'Krutanic Group is truly doing a remarkable job by creating learning spaces that are not only informative but also inspiring.', detail: 'Great for career growth.' }
+    ],
+    certifications: [
+      'Training Completion Certificate validating the skills you acquired',
+      'Internship Completion certificate certified by industry partners',
+      'Letter of Recommendation (LOR) for your job/placement',
+      'Certificate of excellence based on your performance'
+    ],
     faqs: [
-      { q: 'Do I need prior experience?', a: 'No, this program starts from the basics and gradually builds up to advanced concepts.' },
-      { q: 'Will I build real-world projects?', a: 'Yes, you will build 2 real-time industrial projects (one minor, one major) to solidify your learning and build your portfolio.' },
-      { q: 'What kind of mentor support is included?', a: 'Mentors act as project leads, guiding you through live sessions and assisting you until the completion of your projects.' },
-      { q: 'Is internship support included?', a: 'Yes, you gain access to an internship program with opportunities across 200+ hiring partners.' },
-      { q: 'What happens if I miss a live session?', a: 'Recordings of all live sessions are available with 1-year access in our LMS portal.' }
+      { q: 'Do I need prior experience?', a: 'No prior experience is required. We start from foundational Linux and version control before moving to advanced automation.' },
+      { q: 'Will I work on real-world projects?', a: 'Yes, you will build 2 real-time industrial projects, one minor and one major, with mentor guidance.' },
+      { q: 'What cloud platforms are covered?', a: 'We cover core concepts across AWS and Azure basics, with hands-on labs for EC2, S3, and IAM.' },
+      { q: 'Is internship support included?', a: 'Yes, the program includes internship support and exposure to 200+ hiring partners.' },
+      { q: 'Are recordings available?', a: 'Yes, all live sessions are recorded and available with 1 year access in the LMS portal.' }
     ],
     careerPaths: {
-      title: 'Career Paths After the Program',
-      subtitle: 'Build skills that map to high-demand roles across startups and enterprises globally.',
+      title: 'Career Opportunities in DevOps',
+      subtitle: 'Build skills that map to high-demand roles across cloud-native engineering, SRE, and infrastructure automation.',
       roles: [
-        { title: 'Junior Cloud Specialist', desc: 'Execute foundational tasks and support senior team members.', tools: ['Basic Tools', 'Reporting'], level: 'Entry-level' },
-        { title: 'DevOps Engineer/Analyst', desc: 'Design, build, and maintain core solutions and systems.', tools: ['Advanced Frameworks', 'Cloud'], level: 'Professional' },
-        { title: 'Freelance Consultant', desc: 'Work independently on custom projects for various clients.', tools: ['Client Management', 'End-to-end execution'], level: 'Independent' },
-        { title: 'Lead Cloud Expert', desc: 'Lead teams and architect complex solutions for enterprise clients.', tools: ['Strategy', 'Architecture', 'Leadership'], level: 'Senior' }
+        { title: 'DevOps Engineer', desc: 'Design and implement automated deployment pipelines, monitor systems, and manage infrastructure.', tools: ['Docker', 'Kubernetes', 'Terraform'], level: 'Professional' },
+        { title: 'Site Reliability Engineer (SRE)', desc: 'Ensure system reliability and performance by combining software engineering with IT operations.', tools: ['Monitoring', 'Scripting', 'Automation'], level: 'Senior' },
+        { title: 'Cloud DevOps Engineer', desc: 'Focus on deploying and maintaining cloud infrastructure using tools like AWS, Azure, Docker, and Kubernetes.', tools: ['AWS', 'Azure', 'Kubernetes'], level: 'Professional' },
+        { title: 'CI/CD Pipeline Architect', desc: 'Design scalable and efficient CI/CD workflows to improve development velocity and reduce deployment errors.', tools: ['Jenkins', 'GitHub Actions', 'Pipelines'], level: 'Senior' },
+        { title: 'Infrastructure Automation Engineer', desc: 'Automate infrastructure provisioning and configuration using tools like Terraform and Ansible.', tools: ['Terraform', 'Ansible'], level: 'Professional' }
       ],
-      progression: ['Junior Executive', 'Specialist', 'Senior Professional', 'Team Lead', 'Architect/Manager']
+      progression: ['Junior Engineer', 'DevOps Engineer', 'Senior Engineer', 'Lead/Architect', 'Manager/Director']
     }
   },
 
