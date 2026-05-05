@@ -16,8 +16,26 @@ const MentorshipCourseDetails = () => {
   const [activeModule, setActiveModule] = useState(0);
   const [showForm, setShowForm] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [reviewScrollPos, setReviewScrollPos] = useState(0);
+  const [autoScrollPaused, setAutoScrollPaused] = useState(false);
+  const reviewCarouselRef = React.useRef(null);
+  const autoScrollTimeoutRef = React.useRef(null);
+  const autoScrollIntervalRef = React.useRef(null);
 
   const data = allMentorshipData[courseSlug];
+
+  const pauseAutoScroll = () => {
+    setAutoScrollPaused(true);
+    if (autoScrollTimeoutRef.current) clearTimeout(autoScrollTimeoutRef.current);
+    if (autoScrollIntervalRef.current) clearInterval(autoScrollIntervalRef.current);
+  };
+
+  const resumeAutoScroll = () => {
+    if (autoScrollTimeoutRef.current) clearTimeout(autoScrollTimeoutRef.current);
+    autoScrollTimeoutRef.current = setTimeout(() => {
+      setAutoScrollPaused(false);
+    }, 3000);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,6 +44,20 @@ const MentorshipCourseDetails = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (!reviewCarouselRef.current || autoScrollPaused) return;
+
+    autoScrollIntervalRef.current = setInterval(() => {
+      if (reviewCarouselRef.current) {
+        reviewCarouselRef.current.scrollBy({ left: 320, behavior: 'smooth' });
+      }
+    }, 5000);
+
+    return () => {
+      if (autoScrollIntervalRef.current) clearInterval(autoScrollIntervalRef.current);
+    };
+  }, [autoScrollPaused]);
 
   if (!data) {
     return <Navigate to="/Mentorship" />;
@@ -48,9 +80,12 @@ const MentorshipCourseDetails = () => {
         <div className="cd-hero__grid">
           <div className="cd-hero__content">
             <Breadcrumbs />
-            <div className="cd-hero__badge">Launch Team 2024</div>
+            <div className="cd-hero__badge">{data.providerNote || "Launch Team 2024"}</div>
             <h1 className="cd-hero__title">{data.title}</h1>
             <p className="cd-hero__pitch">{data.pitch || `Master ${data.title} and become a job-ready professional with 1:1 mentorship and real-world projects.`}</p>
+            {data.contactInfo?.length > 0 && (
+              <p className="cd-hero__contact">{data.contactInfo.join(" | ")}</p>
+            )}
             <div className="cd-hero__info-chips">
               <span className="chip"><FaCalendarAlt /> {data.duration}</span>
               <span className="chip"><FaChalkboardTeacher /> {data.format}</span>
@@ -92,6 +127,76 @@ const MentorshipCourseDetails = () => {
         </div>
       </section>
 
+      {(data.aboutDescription || (data.whyPoints && data.whyPoints.length > 0)) && (
+        <section className="cd-section cd-section--alt cd-about-why">
+          <div className="cd-section__inner">
+            {data.aboutDescription && (
+              <div className="cd-about-block">
+                <div className="cd-section__header">
+                  <h2 className="cd-section__title">{data.aboutTitle || "About Us"}</h2>
+                </div>
+                <p className="cd-about-copy">{data.aboutDescription}</p>
+              </div>
+            )}
+            {data.whyPoints?.length > 0 && (
+              <div className="cd-why-block">
+                <div className="cd-section__header">
+                  <h2 className="cd-section__title">{data.whyTitle || "Why Choose This Program?"}</h2>
+                </div>
+                <div className="cd-why-grid">
+                  {data.whyPoints.map((point, i) => (
+                    <div key={i} className="cd-why-card">
+                      <FaCheckCircle />
+                      <p>{point}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {data.trainingProgram?.length > 0 && (
+        <section className="cd-section cd-program-structure">
+          <div className="cd-section__inner">
+            <div className="cd-section__header">
+              <h2 className="cd-section__title">Training and <span>Internship Program</span></h2>
+            </div>
+            <div className="cd-program-grid">
+              {data.trainingProgram.map((phase, i) => (
+                <article key={i} className="cd-program-card">
+                  <span className="phase">{phase.phase}</span>
+                  <h3>{phase.title}</h3>
+                  <ul>
+                    {phase.items.map((item, j) => (
+                      <li key={j}><FaCheckCircle /> {item}</li>
+                    ))}
+                  </ul>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {data.moduleOverview?.length > 0 && (
+        <section className="cd-tech-strip cd-module-strip">
+          <div className="cd-section__inner">
+            <div className="cd-section__header">
+              <h2 className="cd-section__title">Modules <span>Overview</span></h2>
+            </div>
+            <div className="cd-tech-strip__inner">
+              {data.moduleOverview.map((item, i) => (
+                <div key={i} className="cd-tech-badge">
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Outcome Section */}
       <section className="cd-section cd-outcomes">
         <div className="cd-section__inner">
@@ -121,6 +226,25 @@ const MentorshipCourseDetails = () => {
           ))}
         </div>
       </section>
+
+      {data.milestones?.length > 0 && (
+        <section className="cd-section cd-section--alt cd-milestones">
+          <div className="cd-section__inner">
+            <div className="cd-section__header">
+              <h2 className="cd-section__title">Program <span>Highlights</span></h2>
+              <p className="cd-section__sub">Discover why this Full Stack Development course is essential for your learning journey.</p>
+            </div>
+            <div className="cd-milestone-grid">
+              {data.milestones.map((item, i) => (
+                <article className="cd-milestone-card" key={i}>
+                  <h3>{item.value}</h3>
+                  <p>{item.label}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Curriculum Section */}
       <section className="cd-section cd-section--alt cd-curriculum">
@@ -259,9 +383,9 @@ const MentorshipCourseDetails = () => {
           
           <div className="cd-mentor">
              <div className="cd-mentor-card">
-                <div className="cd-mentor-card__img">
-                   <img src={sachinImg} alt={data.mentor.name} />
-                </div>
+                 <div className="cd-mentor-card__img">
+                   <img src={data.mentorImage || sachinImg} alt={data.mentor.name} />
+                 </div>
                 <div className="cd-mentor-card__info">
                    <span className="domain">Lead Mentor</span>
                    <h3>{data.mentor.name}</h3>
@@ -320,6 +444,82 @@ const MentorshipCourseDetails = () => {
           </div>
         </div>
       </section>
+
+      {data.studentReviews?.length > 0 && (
+        <section className="cd-section cd-reviews">
+          <div className="cd-section__inner">
+            <div className="cd-section__header center">
+              <h2 className="cd-section__title">Students <span>Reviews</span></h2>
+            </div>
+            <div className="cd-reviews-carousel-wrapper">
+              <button 
+                className="cd-carousel-btn cd-carousel-btn-prev"
+                onClick={() => {
+                  pauseAutoScroll();
+                  if (reviewCarouselRef.current) {
+                    reviewCarouselRef.current.scrollBy({ left: -320, behavior: 'smooth' });
+                  }
+                  resumeAutoScroll();
+                }}
+                aria-label="Previous reviews"
+              >
+                <FaChevronDown style={{ transform: 'rotate(90deg)' }} />
+              </button>
+              <div 
+                className="cd-reviews-carousel" 
+                ref={reviewCarouselRef}
+                onMouseEnter={pauseAutoScroll}
+                onMouseLeave={resumeAutoScroll}
+              >
+                {data.studentReviews.map((review, i) => (
+                  <article key={i} className="cd-review-card">
+                    <div className="cd-review-card__top">
+                      <h3>{review.name}</h3>
+                      <div className="stars">
+                        {[1,2,3,4,5].map((star) => <FaStar key={star} />)}
+                      </div>
+                    </div>
+                    <p>{review.text}</p>
+                    {review.detail && <span>{review.detail}</span>}
+                  </article>
+                ))}
+              </div>
+              <button 
+                className="cd-carousel-btn cd-carousel-btn-next"
+                onClick={() => {
+                  pauseAutoScroll();
+                  if (reviewCarouselRef.current) {
+                    reviewCarouselRef.current.scrollBy({ left: 320, behavior: 'smooth' });
+                  }
+                  resumeAutoScroll();
+                }}
+                aria-label="Next reviews"
+              >
+                <FaChevronDown style={{ transform: 'rotate(-90deg)' }} />
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {data.certifications?.length > 0 && (
+        <section className="cd-section cd-section--alt cd-certifications">
+          <div className="cd-section__inner">
+            <div className="cd-section__header">
+              <h2 className="cd-section__title">Certifications</h2>
+              <p className="cd-section__sub">Credentials that validate your practical learning and internship outcomes.</p>
+            </div>
+            <div className="cd-cert-grid">
+              {data.certifications.map((item, i) => (
+                <div key={i} className="cd-cert-card">
+                  <span className="num">{String(i + 1).padStart(2, "0")}</span>
+                  <p>{item}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Final CTA */}
       <section className="cd-final-cta">

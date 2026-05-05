@@ -150,6 +150,14 @@
   margin-bottom: 28px;
 }
 
+.cd-hero__contact {
+  margin-top: -8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+}
+
 .cd-hero__info-chips {
   display: flex;
   flex-wrap: wrap;
@@ -435,6 +443,271 @@
 .cd-outcome-card:hover .icon { transform: scale(1.1) rotate(5deg); }
 .cd-outcome-card h3 { margin-bottom: var(--space-12); font-size: var(--text-xl); font-weight: 800; color: var(--primary); }
 .cd-outcome-card p { color: var(--text-sub); font-size: var(--text-base); line-height: 1.7; }
+
+/* About + Why */
+.cd-about-copy {
+  font-size: 17px;
+  color: var(--text-sub);
+  line-height: 1.8;
+  margin-bottom: 36px;
+}
+
+.cd-why-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.cd-why-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.cd-why-card svg {
+  color: var(--secondary);
+  margin-top: 3px;
+}
+
+.cd-why-card p {
+  margin: 0;
+  color: var(--text-sub);
+  line-height: 1.65;
+}
+
+/* Program Structure */
+.cd-program-grid {
+  margin-top: 36px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.cd-program-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px;
+}
+
+.cd-program-card .phase {
+  display: inline-block;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--secondary);
+  background: var(--highlight);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.cd-program-card h3 {
+  font-size: 20px;
+  margin-bottom: 14px;
+}
+
+.cd-program-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.cd-program-card li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--text-sub);
+}
+
+.cd-program-card li svg {
+  color: var(--secondary);
+  margin-top: 4px;
+}
+
+.cd-module-strip {
+  padding-top: var(--space-72, 72px);
+  padding-bottom: var(--space-72, 72px);
+}
+
+/* Milestones */
+.cd-milestone-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 34px;
+}
+
+.cd-milestone-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px;
+  text-align: center;
+}
+
+.cd-milestone-card h3 {
+  margin: 0 0 8px;
+  font-size: 30px;
+  color: var(--primary);
+}
+
+.cd-milestone-card p {
+  margin: 0;
+  color: var(--text-sub);
+  font-weight: 600;
+}
+
+/* Reviews */
+.cd-reviews-carousel-wrapper {
+  position: relative;
+  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.cd-reviews-carousel {
+  display: flex;
+  gap: 22px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  flex: 1;
+  padding: 4px 0;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #CBD5E1 #F1F5F9;
+}
+
+.cd-reviews-carousel::-webkit-scrollbar {
+  height: 6px;
+}
+
+.cd-reviews-carousel::-webkit-scrollbar-track {
+  background: #F1F5F9;
+  border-radius: 10px;
+}
+
+.cd-reviews-carousel::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 10px;
+}
+
+.cd-reviews-carousel::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+.cd-carousel-btn {
+  position: relative;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--secondary);
+  color: var(--white);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.cd-carousel-btn:hover {
+  background: #1D4ED8;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+  transform: scale(1.08);
+}
+
+.cd-carousel-btn:active {
+  transform: scale(0.95);
+}
+
+.cd-review-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  flex: 0 0 calc(50% - 11px);
+  min-width: 280px;
+  scroll-snap-align: start;
+  transition: all 0.3s;
+}
+
+.cd-review-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.cd-review-card__top h3 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--primary);
+}
+
+.cd-review-card .stars {
+  display: flex;
+  gap: 4px;
+  color: #F59E0B;
+}
+
+.cd-review-card p {
+  margin: 0 0 10px;
+  color: var(--text-sub);
+  line-height: 1.7;
+}
+
+.cd-review-card span {
+  color: #64748B;
+  font-size: 14px;
+}
+
+/* Certifications */
+.cd-cert-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.cd-cert-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.cd-cert-card .num {
+  min-width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--highlight);
+  color: var(--secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+.cd-cert-card p {
+  margin: 0;
+  line-height: 1.6;
+  color: var(--text-sub);
+}
 
 /* Tech Strip */
 .cd-tech-strip {
@@ -875,9 +1148,28 @@
   .cd-projects-grid,
   .cd-careers-grid,
   .cd-dual-grid,
-  .cd-curriculum-container {
+  .cd-curriculum-container,
+  .cd-why-grid,
+  .cd-program-grid,
+  .cd-milestone-grid,
+  .cd-cert-grid {
     grid-template-columns: 1fr;
     gap: 32px;
+  }
+
+  .cd-reviews-carousel-wrapper {
+    gap: 12px;
+  }
+
+  .cd-carousel-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .cd-review-card {
+    flex: 0 0 calc(100% - 11px);
+    min-width: 260px;
   }
 
   .cd-hero {
@@ -970,5 +1262,21 @@
 
   .cd-section__title {
     font-size: 28px;
+  }
+
+  .cd-reviews-carousel-wrapper {
+    gap: 8px;
+  }
+
+  .cd-carousel-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .cd-review-card {
+    flex: 0 0 90%;
+    min-width: 280px;
+    padding: 18px;
   }
 }
