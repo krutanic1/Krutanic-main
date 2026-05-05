@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
 import "./MentorshipForm.css";
-import { FaEnvelope, FaUser, FaPhoneAlt, FaGraduationCap, FaBriefcase, FaArrowRight, FaCheckCircle, FaTimes } from "react-icons/fa";
+import { FaEnvelope, FaUser, FaPhoneAlt, FaGraduationCap, FaBriefcase, FaArrowRight, FaCheckCircle, FaTimes, FaClock } from "react-icons/fa";
 
 const MentorshipForm = ({ isPopup, onClose }) => {
   const [showForm, setShowForm] = useState(false);
@@ -129,6 +129,7 @@ const MentorshipForm = ({ isPopup, onClose }) => {
       {!isPopup && (
         <button
           onClick={() => setShowForm(true)}
+          className="hidden"
         >
         </button>
       )}
@@ -136,180 +137,241 @@ const MentorshipForm = ({ isPopup, onClose }) => {
       {(showForm || isPopup) && (
         <div className="mentorship-modal-overlay" onClick={ClearForm}>
           <div className="mentorship-modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="mentorship-modal-header">
-              <button className="mentorship-header-close" onClick={ClearForm}>
-                <FaTimes style={{ marginRight: '8px' }} /> Close
-              </button>
-              <h2>Apply Now</h2>
-              <p>Elevate your career with expert 1:1 mentorship from industry leaders</p>
-            </div>
-
-            <div className="mentorship-form-container">
-              <form onSubmit={handleFormSubmit} className="mentorship-form-grid">
-                <div className="form-group-modern">
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    placeholder="Full Name"
-                    required
-                  />
-                </div>
-
-                <div className="form-group-modern">
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="Email id"
-                    disabled={emailVerified}
-                    required
-                  />
-                </div>
-
-                {!emailVerified ? (
-                  !otpSent ? (
-                    <button
-                      type="button"
-                      onClick={sendOTP}
-                      className="shared-form-verify mb-3"
-                    >
-                      Verify Email
-                    </button>
-                  ) : (
-                    <div className="shared-form-otp mb-3">
-                       <input
-                        type="text"
-                        value={otp}
-                        onChange={(e) => setOtp(e.target.value)}
-                        placeholder="Enter OTP"
-                        className=""
-                      />
-                      <button
-                        type="button"
-                        onClick={verifyOTP}
-                        className="shared-form-submit !bg-emerald-600 !shadow-none whitespace-nowrap"
-                      >
-                        Submit OTP
-                      </button>
-                    </div>
-                  )
-                ) : (
-                  <div className="shared-form-status mb-3">
-                    <FaCheckCircle /> Registration Email Verified
+            <div className="mentorship-modal-body">
+              {/* Left Column: Visuals & Value Prop */}
+              <div className="mentorship-modal-visual">
+                <div className="visual-branding">
+                  <div className="visual-logo">
+                    <span className="logo-k">K</span>
+                    <span className="logo-text">Mentorship</span>
                   </div>
-                )}
-
-                <div className="form-group-modern">
-                  <input
-                    type="email"
-                    name="collegeEmail"
-                    value={formData.collegeEmail}
-                    onChange={handleInputChange}
-                    placeholder="College Email id"
-                    required
-                  />
+                  <h2 className="visual-title">Begin Your <span>Professional</span> Journey</h2>
+                  <p className="visual-desc">Join 10,000+ students already learning from top industry mentors.</p>
+                </div>
+                
+                <div className="visual-features">
+                  <div className="visual-feature">
+                    <div className="feature-icon"><FaUser /></div>
+                    <div className="feature-text">
+                      <h4>1:1 Mentorship</h4>
+                      <p>Personalized guidance from experts</p>
+                    </div>
+                  </div>
+                  <div className="visual-feature">
+                    <div className="feature-icon"><FaCheckCircle /></div>
+                    <div className="feature-text">
+                      <h4>Certified Outcomes</h4>
+                      <p>Industry-recognized credentials</p>
+                    </div>
+                  </div>
+                  <div className="visual-feature">
+                    <div className="feature-icon"><FaBriefcase /></div>
+                    <div className="feature-text">
+                      <h4>Career Support</h4>
+                      <p>Internship and placement help</p>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="form-group-modern">
-                  <input
-                    type="text"
-                    name="number"
-                    value={formData.number}
-                    onChange={handleInputChange}
-                    placeholder="Whatsapp Number"
-                    required
-                  />
+                <div className="visual-image-container">
+                  <img src="/src/assets/girl.png" alt="Student" className="visual-person-img" />
+                  <div className="visual-floating-card">
+                    <div className="card-avatars">
+                      <div className="avatar">JS</div>
+                      <div className="avatar">RK</div>
+                      <div className="avatar">AM</div>
+                      <div className="avatar-plus">+12k</div>
+                    </div>
+                    <span>Active Learners</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Form */}
+              <div className="mentorship-modal-form-side">
+                <button className="mentorship-modal-close-btn" onClick={ClearForm}>
+                  <FaTimes />
+                </button>
+                
+                <div className="form-side-header">
+                  <h3>Apply for Mentorship</h3>
+                  <p>Fill in your details to get started with your preferred track.</p>
                 </div>
 
-                <div className="form-group-modern">
-                  <input
-                    type="text"
-                    name="collegeName"
-                    value={formData.collegeName}
-                    onChange={handleInputChange}
-                    placeholder="College Name"
-                    required
-                  />
-                </div>
+                <form onSubmit={handleFormSubmit} className="mentorship-form-grid-new">
+                  <div className="form-input-wrapper">
+                    <FaUser className="input-icon" />
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      placeholder="Full Name"
+                      required
+                    />
+                  </div>
 
-                <div className="form-group-modern">
-                  <select
-                    id="passingyear"
-                    name="passingyear"
-                    value={formData.passingyear}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option disabled value="">Select year of study</option>
-                    <option value="1st year">1st year</option>
-                    <option value="2nd year">2nd year</option>
-                    <option value="3rd year">3rd year</option>
-                    <option value="4th year">4th year</option>
-                    <option value="Graduated">Graduated</option>
-                    <option value="Passed Out">Passed Out</option>
-                  </select>
-                </div>
+                  <div className="form-input-wrapper">
+                    <FaEnvelope className="input-icon" />
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      placeholder="Email ID"
+                      disabled={emailVerified}
+                      required
+                    />
+                  </div>
 
-                <div className="form-group-modern">
-                  <select
-                    name="domain"
-                    value={formData.domain}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option disabled value="">Select a Domain</option>
-                    {[
-                      "Full Stack Web Development",
-                      "Android App Development",
-                      "Artificial Intelligence",
-                      "Machine Learning",
-                      "Cyber Security",
-                      "Data Science",
-                      "Data Analytics",
-                      "UI/UX Design",
-                      "DevOps",
-                      "Business Analytics",
-                      "Finance",
-                      "Human Resource",
-                      "Digital Marketing",
-                      "Stock Marketing",
-                      "Graphics Design",
-                      "Embedded System",
-                      "Cloud Computing",
-                      "IOT & Robotics",
-                      "Auto Cad",
-                    ].map((domain, index) => (
-                      <option key={index} value={domain}>
-                        {domain}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="shared-form-actions">
-                  <button
-                    type="submit"
-                    disabled={isSubmitting || !emailVerified}
-                    className="submit-btn-premium disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="form-loader"></div>
-                        Submitting...
-                      </>
+                  <div className="form-verification-zone">
+                    {!emailVerified ? (
+                      !otpSent ? (
+                        <button
+                          type="button"
+                          onClick={sendOTP}
+                          className="verify-email-btn"
+                        >
+                          Verify Email
+                        </button>
+                      ) : (
+                        <div className="otp-input-group">
+                          <input
+                            type="text"
+                            value={otp}
+                            onChange={(e) => setOtp(e.target.value)}
+                            placeholder="Enter OTP"
+                          />
+                          <button
+                            type="button"
+                            onClick={verifyOTP}
+                            className="verify-otp-btn"
+                          >
+                            Submit
+                          </button>
+                        </div>
+                      )
                     ) : (
-                      <>
-                        Submit Application <FaArrowRight />
-                      </>
+                      <div className="verification-success">
+                        <FaCheckCircle /> Email Verified
+                      </div>
                     )}
-                  </button>
+                  </div>
 
+                  <div className="form-input-wrapper">
+                    <FaEnvelope className="input-icon" />
+                    <input
+                      type="email"
+                      name="collegeEmail"
+                      value={formData.collegeEmail}
+                      onChange={handleInputChange}
+                      placeholder="College Email ID"
+                      required
+                    />
+                  </div>
 
-                </div>
-              </form>
+                  <div className="form-input-wrapper">
+                    <FaPhoneAlt className="input-icon" />
+                    <input
+                      type="text"
+                      name="number"
+                      value={formData.number}
+                      onChange={handleInputChange}
+                      placeholder="WhatsApp Number"
+                      required
+                    />
+                  </div>
+
+                  <div className="form-input-wrapper">
+                    <FaGraduationCap className="input-icon" />
+                    <input
+                      type="text"
+                      name="collegeName"
+                      value={formData.collegeName}
+                      onChange={handleInputChange}
+                      placeholder="College Name"
+                      required
+                    />
+                  </div>
+
+                  <div className="form-input-wrapper">
+                    <FaClock className="input-icon" />
+                    <select
+                      id="passingyear"
+                      name="passingyear"
+                      value={formData.passingyear}
+                      onChange={handleInputChange}
+                      required
+                    >
+                      <option disabled value="">Year of Study</option>
+                      <option value="1st year">1st year</option>
+                      <option value="2nd year">2nd year</option>
+                      <option value="3rd year">3rd year</option>
+                      <option value="4th year">4th year</option>
+                      <option value="Graduated">Graduated</option>
+                      <option value="Passed Out">Passed Out</option>
+                    </select>
+                  </div>
+
+                  <div className="form-input-wrapper full-width">
+                    <FaBriefcase className="input-icon" />
+                    <select
+                      name="domain"
+                      value={formData.domain}
+                      onChange={handleInputChange}
+                      required
+                    >
+                      <option disabled value="">Select a Domain</option>
+                      {[
+                        "Full Stack Web Development",
+                        "Android App Development",
+                        "Artificial Intelligence",
+                        "Machine Learning",
+                        "Cyber Security",
+                        "Data Science",
+                        "Data Analytics",
+                        "UI/UX Design",
+                        "DevOps",
+                        "Business Analytics",
+                        "Finance",
+                        "Human Resource",
+                        "Digital Marketing",
+                        "Stock Marketing",
+                        "Graphics Design",
+                        "Embedded System",
+                        "Cloud Computing",
+                        "IOT & Robotics",
+                        "Auto Cad",
+                        "Psychology",
+                      ].map((domain, index) => (
+                        <option key={index} value={domain}>
+                          {domain}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-submit-zone">
+                    <button
+                      type="submit"
+                      disabled={isSubmitting || !emailVerified}
+                      className="submit-application-btn"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className="submit-loader"></div>
+                          Processing...
+                        </>
+                      ) : (
+                        <>
+                          Submit Application <FaArrowRight />
+                        </>
+                      )}
+                    </button>
+                    <p className="form-privacy-note">Your data is secure and encrypted.</p>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>
