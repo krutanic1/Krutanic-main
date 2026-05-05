@@ -38,6 +38,7 @@ const AdvTeamHeader = () => {
       localStorage.removeItem("advTeamName");
       localStorage.removeItem("advTeamToken");
       localStorage.removeItem("advTeamSessionStartTime");
+      localStorage.removeItem("advTeamReadOnly");
       navigate("/AdvTeamLogin");
     }, 1500);
   };
@@ -53,6 +54,7 @@ const AdvTeamHeader = () => {
         localStorage.removeItem("advTeamName");
         localStorage.removeItem("advTeamToken");
         localStorage.removeItem("advTeamSessionStartTime");
+        localStorage.removeItem("advTeamReadOnly");
         navigate("/AdvTeamLogin");
       }
     } else {
@@ -210,6 +212,9 @@ const AdvTeamHeader = () => {
             <>
               <Link to="/advteam/teamdetail">
                 <i className="fa fa-users"></i> Team
+              </Link>
+              <Link to="/advteam/team-login">
+                <i className="fa fa-sign-in"></i> Team Login
               </Link>
             </>
           )}

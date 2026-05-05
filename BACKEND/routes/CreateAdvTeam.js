@@ -273,6 +273,62 @@ router.post("/advteamverifyotp", async (req, res) => {
   }
 });
 
+// Manager impersonation of their team members
+router.post("/manager-impersonate-advteam", async (req, res) => {
+  const { userId, managerId } = req.body;
+  try {
+    const manager = await AdvTeam.findById(managerId);
+    if (!manager || !["ADV Manager", "MANAGER", "ADV Leader", "LEADER"].includes(manager.designation)) {
+      return res.status(403).json({ message: "Unauthorized: Only managers can impersonate" });
+    }
+
+    const user = await AdvTeam.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "Team member not found" });
+    }
+
+    // Check if user is in manager's team
+    const managerTeams = manager.teams && manager.teams.length > 0 ? manager.teams : [manager.team];
+    const userTeams = user.teams && user.teams.length > 0 ? user.teams : [user.team];
+    
+    // allow if there's any intersection
+    const isInTeam = userTeams.some(t => managerTeams.includes(t)) || managerTeams.includes(user.team) || userTeams.includes(manager.team);
+    
+    if (!isInTeam) {
+      return res.status(403).json({ message: "Unauthorized: User not in your team" });
+    }
+
+    if (user.status === "Inactive") {
+      return res.status(403).json({ message: "Cannot impersonate an inactive account" });
+    }
+
+    // Generate token
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "10h" }
+    );
+
+    res.status(200).json({
+      token,
+      bdaId: user._id,
+      bdaName: user.fullname,
+      designation: user.designation,
+      message: "Impersonation successful!",
+      user: {
+        id: user._id,
+        name: user.fullname,
+        role: user.designation,
+        team: user.team
+      }
+    });
+
+  } catch (error) {
+    console.error("Manager Impersonation error:", error);
+    res.status(500).json({ message: "Server error during impersonation" });
+  }
+});
+
 /*
 router.post("/checkadvteamauth", async (req, res) => {
   const { email, password } = req.body;

@@ -19,6 +19,13 @@ axios.interceptors.request.use(
             if (advTeamToken) config.headers.Authorization = advTeamToken;
         }
 
+        const advTeamReadOnly = localStorage.getItem("advTeamReadOnly");
+        if (advTeamReadOnly === "true" && config.method && config.method.toLowerCase() !== "get") {
+            if (!config.url.includes("login") && !config.url.includes("impersonate") && !config.url.includes("mark-notification-read")) {
+                 return Promise.reject({ response: { data: { message: "Read-only mode: You cannot edit data while impersonating a team member." } } });
+            }
+        }
+
         return config;
     },
     (error) => Promise.reject(error)

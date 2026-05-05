@@ -28,6 +28,7 @@ import DataAnalytics from "./page/AdvanceCourse/DataAnalytics";
 import DigitalMarket from "./page/AdvanceCourse/DigitalMarket";
 import MernStack from "./page/AdvanceCourse/MernStack";
 import UIUXDesign from "./page/AdvanceCourse/UIUXDesign";
+import MentorshipCourseDetails from "./page/Mentorship/CourseDetails/MentorshipCourseDetails";
 
 import ProductManagement from "./page/AdvanceCourse/ProductManagement";
 import SmoothScroll from "./SmoothScroll";
@@ -186,6 +187,7 @@ import AdvTeamMyLeads from "./AdvTeam/AdvTeamMyLeads";
 import AdvLeadsBook from "./AdvTeam/AdvLeadsBook";
 import AdvTeamLeadManagement from "./AdvTeam/AdvLeadManagement";
 import AdvTeamRecord from "./AdvTeam/AdvTeamRecord";
+import AdvTeamTeamLogin from "./AdvTeam/AdvTeamTeamLogin";
 
 // MarketingLogind
 
@@ -361,6 +363,8 @@ const AppContent = () => {
     "/advance",
     "/advance-apply",
     "/mentorship",
+    // "/mentorship/:courseSlug" will be handled dynamically in the router but for the header we can let it pass,
+
     "/datascience",
     "/dataanalytics",
     "/digitalmarket",
@@ -501,7 +505,8 @@ const AppContent = () => {
     "/advteam/my-leads",
     "/advteam/leads-book",
     "/advteam/record",
-    "/advteam/lead-management"
+    "/advteam/lead-management",
+    "/advteam/team-login"
   ];
 
   const hrheaderPaths = [
@@ -560,7 +565,7 @@ const AppContent = () => {
         <HRHeader />
       ) : userheaderPaths.includes(location.pathname.toLowerCase()) ? (
         <UserHeader />
-      ) : headerPaths.includes(location.pathname.toLowerCase()) ? (
+      ) : (headerPaths.includes(location.pathname.toLowerCase()) || location.pathname.toLowerCase().startsWith('/mentorship/')) ? (
         <Header />
       ) : null}
 
@@ -584,6 +589,7 @@ const AppContent = () => {
         <Route path="/Advance" element={<Advance />} />
         <Route path="/advance-apply" element={<AdvanceApplyPage />} />
         <Route path="/Mentorship" element={<Mentorship />} />
+        <Route path="/mentorship/:courseSlug" element={<MentorshipCourseDetails />} />
         <Route path="/DataScience" element={<DataScience />} />
         <Route path="/DataAnalytics" element={<DataAnalytics />} />
         <Route path="/DigitalMarket" element={<DigitalMarket />} />
@@ -742,6 +748,7 @@ const AppContent = () => {
         <Route path="/advteam/my-leads" element={isAuthenticatedAdvTeam() ? <AdvTeamMyLeads /> : <Navigate to="/AdvTeamLogin" />} />
         <Route path="/advteam/leads-book" element={isAuthenticatedAdvTeam() ? <AdvLeadsBook /> : <Navigate to="/AdvTeamLogin" />} />
         <Route path="/advteam/record" element={isAuthenticatedAdvTeam() ? <AdvTeamRecord /> : <Navigate to="/AdvTeamLogin" />} />
+        <Route path="/advteam/team-login" element={isAuthenticatedAdvTeam() ? <AdvTeamTeamLogin /> : <Navigate to="/AdvTeamLogin" />} />
         {/* Advance Team Panel End */}
 
         {/* User Panel */}

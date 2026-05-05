@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const FAQMentor = () => {
+const FAQMentor = ({ hideHeading = false }) => {
   const [openIndex, setOpenIndex] = useState(null);
   const toggleFAQ = (index) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -37,12 +37,11 @@ const FAQMentor = () => {
   return (
     <div>
       <div className="container mx-auto">
-        <h1
-         data-aos='fade-up'
-          className=" font-bold text-[#f15b29] text-center mb-4"
-        >
-          | Frequently Asked Questions
-        </h1>
+        {!hideHeading && (
+          <h1 data-aos='fade-up' className=" font-bold text-[#f15b29] text-center mb-4">
+            | Frequently Asked Questions
+          </h1>
+        )}
         <div data-aos='fade-up' className="lg:flex gap-4">
           <div className="space-y-3 lg:w-1/2 w-full">
             {faqs.map((faq, index) => (

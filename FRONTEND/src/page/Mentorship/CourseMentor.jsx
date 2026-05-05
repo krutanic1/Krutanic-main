@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 //import supplychainmanagement from "../../assets/mentorshipcourses/supply.png";
 // import psycho from "../../assets/mentorshipcourses/psyc.png";
 // import fintech from "../../assets/mentorshipcourses/fintech.png";
@@ -36,7 +37,8 @@ import toast, { Toaster } from "react-hot-toast";
 
 const thumbnail = (fileName) => `/course_thumbnails/${encodeURIComponent(fileName)}`;
 
-const CourseMentor = ({ }) => {
+const CourseMentor = ({ hideHeading = false }) => {
+  const navigate = useNavigate();
   const [showForm, setShowForm] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [formData, setFormData] = useState({
@@ -438,9 +440,11 @@ const CourseMentor = ({ }) => {
     <div>
       <div className="container mx-auto">
         <Toaster position="top-center" reverseOrder={false} />
-        <h1 className="font-bold text-center text-[#f15b29] mb-10 text-2xl">
-          | Our Mentorship Courses
-        </h1>
+        {!hideHeading && (
+          <h1 className="font-bold text-center text-[#f15b29] mb-10 text-2xl">
+            | Our Mentorship Courses
+          </h1>
+        )}
         <div className="flex justify-center flex-wrap mb-8 gap-3 ">
           {categories.map((category) => (
             <button
@@ -462,7 +466,13 @@ const CourseMentor = ({ }) => {
             coursesData[selectedCategory].map((course) => (
               <div
                 key={course.id}
-                className="bg-white text-[#101522] border border-[#d8deea] shadow-md shadow-slate-300/40 relative rounded-xl overflow-hidden">
+                className="bg-white text-[#101522] border border-[#d8deea] shadow-md shadow-slate-300/40 relative rounded-xl overflow-hidden cursor-pointer"
+                onClick={() => {
+                  let slug = course.title.toLowerCase().replace(/ & /g, '-').replace(/\//g, '-').replace(/ /g, '-');
+                  navigate(`/mentorship/${slug}`);
+                  window.scrollTo(0, 0);
+                }}
+              >
                 <img
                   src={course.image}
                   alt={course.title}
@@ -485,9 +495,14 @@ const CourseMentor = ({ }) => {
                   <div className="flex space-x-2">
                     <button
                       className="px-5 py-2 bg-white border border-[#c6cede] text-[#1f2937] hover:bg-[#f15b29] hover:text-white hover:border-[#f15b29] flex items-center justify-center font-semibold rounded-lg transition"
-                      onClick={() => handleBrochureClick(course)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        let slug = course.title.toLowerCase().replace(/ & /g, '-').replace(/\//g, '-').replace(/ /g, '-');
+                        navigate(`/mentorship/${slug}`);
+                        window.scrollTo(0, 0);
+                      }}
                     >
-                      Brochure
+                      View Details
                     </button>
                   </div>
                 </div>
