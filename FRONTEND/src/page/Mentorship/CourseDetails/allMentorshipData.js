@@ -5,10 +5,17 @@ import {
 
 import { fullStackData } from './fullStackData';
 import { androidAppData } from './androidAppData';
+import aashishImg from '../../../assets/mentors/aashish.jpg';
+import akashImg from '../../../assets/mentors/akash.jpg';
+import deepakImg from '../../../assets/mentors/deepak.jpg';
+import sachinImg from '../../../assets/mentors/sachin.jpg';
+import rahulImg from '../../../assets/mentors/rahul.jpg';
+import rudraImg from '../../../assets/mentors/rudra.jpg';
+import subhraImg from '../../../assets/mentors/Subhra.jpg';
 
 export const allMentorshipData = {
-  'full-stack-web-development': { ...fullStackData, thumbnail: '/course_thumbnails/Full Stack Web.jpg' },
-  'android-app-development': { ...androidAppData, thumbnail: '/course_thumbnails/Android App.jpg' },
+  'full-stack-web-development': { ...fullStackData, thumbnail: '/course_thumbnails/Full Stack Web.jpg', mentorImage: sachinImg },
+  'android-app-development': { ...androidAppData, thumbnail: '/course_thumbnails/Android App.jpg', mentorImage: deepakImg },
 
   'artificial-intelligence': {
     id: 'artificial-intelligence',
@@ -17,62 +24,132 @@ export const allMentorshipData = {
     duration: '3 Months',
     format: 'Live Mentor-led',
     level: 'Beginner to Pro',
-    enrolled: '12,500+ Mentees',
-    rating: 4.8,
-    mentor: {
-      name: 'Lead AI Mentor',
-      role: 'Senior Industry Expert',
-      experience: '10+ Years',
-      bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
-    },
-    outcomes: [
-      { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of Artificial Intelligence.', icon: FaCheckCircle },
-      { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
-      { title: 'Real-world Application', desc: 'Apply your skills to solve complex problems and build scalable solutions.', icon: FaBriefcase },
-      { title: 'Job Readiness', desc: 'Prepare for top roles with interview prep and portfolio building.', icon: FaUserGraduate },
+    enrolled: '15,000+ Mentees Trained',
+    rating: 4.85,
+    pitch: 'Transform Your Passion into A Successful Career In Tech',
+    providerNote: 'We are now an accredited partner under Krutanic.',
+    contactInfo: ['www.krutanic.com', 'support@krutanic.com'],
+    aboutTitle: 'About Us',
+    aboutDescription: 'Krutanic is at the forefront of transforming education through cutting-edge technology. Our comprehensive platform empowers learners with personalized learning experiences, collaborative tools, and real-time analytics. With adaptive assessments and interactive content creation, we enhance student engagement and achievement. Join us in revolutionizing education for the digital age, driving positive outcomes and preparing learners for success in tomorrow\'s world.',
+    whyTitle: 'Why Artificial Intelligence?',
+    whyPoints: [
+      'Powers intelligent automation in industries like healthcare, finance, manufacturing, and more',
+      'Enhances user experiences through chat bots, recommendation systems, and voice assistants',
+      'Enables machines to mimic human decision-making and behavior',
+      'Drives innovation in fields like robotics, autonomous vehicles, and smart devices',
+      'Offers high-demand, future-proof careers with global opportunities',
+      'Forms the backbone of emerging technologies like machine learning, computer vision, and NLP'
     ],
-    tools: [
-      { name: 'Industry Standard Tools' }, { name: 'Modern Frameworks' }, { name: 'Analytics' }, 
-      { name: 'Cloud Platforms' }, { name: 'Version Control' }, { name: 'Agile/Scrum' }
-    ],
-    curriculum: [
-      { module: 'Module 1', title: 'Introduction to Artificial Intelligence', topics: ['Overview of concepts', 'Setting up the environment', 'Basic principles', 'Industry use cases'] },
-      { module: 'Module 2', title: 'Core Methodologies', topics: ['In-depth exploration', 'Tools and frameworks', 'Best practices', 'Hands-on exercises'] },
-      { module: 'Module 3', title: 'Advanced Concepts', topics: ['Complex scenarios', 'Optimization techniques', 'Security and performance', 'Integration'] },
-      { module: 'Module 4', title: 'Industry Projects', topics: ['Real-world problem solving', 'Project planning', 'Execution', 'Testing and validation'] },
-      { module: 'Module 5', title: 'Capstone & Portfolio', topics: ['Building a complete project from scratch', 'Documentation', 'Portfolio enhancement', 'Interview preparation'] }
-    ],
-    projects: [
+    trainingProgram: [
       {
-        title: 'Industrial Capstone Project',
-        desc: 'A comprehensive project integrating all learned skills to solve a real business problem.',
-        tech: ['Modern Stack', 'Cloud Integration', 'Analytics'],
-        impact: 'Demonstrated ability to execute end-to-end solutions independently.'
+        phase: 'Month 1',
+        title: 'Training and Internship Program',
+        items: [
+          'Live sessions with industrial experts having experience above 10 years in the industry.',
+          'Recordings of all live sessions available with 1 year access in our LMS portal.',
+          'Industry related curriculum designed by the working professionals in the top hierarchy.'
+        ]
       },
       {
-        title: 'Live Case Study Application',
-        desc: 'Hands-on implementation of a live industry case study with measurable outcomes.',
-        tech: ['Best Practices', 'Agile', 'Optimization'],
-        impact: 'Mastered practical application of theoretical concepts.'
+        phase: 'Month 2',
+        title: 'Training and Internship Program',
+        items: [
+          'Two real time industrial projects: One minor project and One major project.',
+          'All mentors will be assigned as project leads and guide the intern till the completion of the project.',
+          'Additional projects for personal development when required.'
+        ]
       }
     ],
+    moduleOverview: [
+      'Introduction to Artificial Intelligence',
+      'Python Programming for AI',
+      'Data Handling and Preprocessing',
+      'AI in Robotics and Automation',
+      'Fundamentals of Machine Learning',
+      'Computer Vision and Image Processing',
+      'Ethical AI & Responsible Development',
+      'AI Model Deployment and APIs',
+      'Natural Language Processing (NLP)',
+      'Neural Networks and Deep Learning',
+      'Reinforcement Learning Basics',
+      'Capstone Project & Interview Preparation'
+    ],
+    mentor: {
+      name: 'Dr Aashish Mishra',
+      role: 'Artificial Intelligence',
+      experience: '10+ Years',
+      bio: 'Industry expert with over 10 years of experience building and deploying robust AI solutions for top tech companies.'
+    },
+    mentorImage: aashishImg,
+    outcomes: [
+      { title: 'Core AI Fundamentals', desc: 'Understand foundational AI principles including agent-based systems, decision-making, and common algorithms.', icon: FaRobot },
+      { title: 'Practical Tooling', desc: 'Hands-on experience with TensorFlow, Keras, Scikit-learn, NumPy and OpenCV.', icon: FaCode },
+      { title: 'Production Deployment', desc: 'Build, deploy, and monitor AI models with APIs and cloud platforms.', icon: FaServer },
+      { title: 'Career Readiness', desc: 'Portfolio projects, mock interviews, and job support for placement.', icon: FaUserGraduate }
+    ],
+    tools: [
+      { name: 'TensorFlow / Keras' },
+      { name: 'Pandas / NumPy' },
+      { name: 'Python' },
+      { name: 'Scikit-learn' },
+      { name: 'OpenCV' }
+    ],
+    curriculum: [
+      { module: 'Module 1', title: 'Introduction to Artificial Intelligence', topics: ['Overview of AI concepts', 'Industry use cases', 'Setting up environment'] },
+      { module: 'Module 2', title: 'Python Programming for AI', topics: ['Python basics', 'Data structures', 'NumPy and Pandas'] },
+      { module: 'Module 3', title: 'Data Handling and Preprocessing', topics: ['Cleaning data', 'Normalization', 'Feature selection'] },
+      { module: 'Module 4', title: 'Fundamentals of Machine Learning', topics: ['Supervised vs Unsupervised', 'Regression, Classification', 'Evaluation metrics'] },
+      { module: 'Module 5', title: 'Neural Networks and Deep Learning', topics: ['ANN basics', 'Activation functions', 'TensorFlow/Keras workflows'] },
+      { module: 'Module 6', title: 'Natural Language Processing (NLP)', topics: ['Tokenization', 'TF-IDF', 'Intro to transformers'] },
+      { module: 'Module 7', title: 'Computer Vision and Image Processing', topics: ['Image transformations', 'CNNs', 'Object detection basics'] },
+      { module: 'Module 8', title: 'Reinforcement Learning Basics', topics: ['Agents, rewards, policies', 'Q-learning basics'] },
+      { module: 'Module 9', title: 'AI in Robotics and Automation', topics: ['Sensor integration', 'Path planning basics', 'RPA overview'] },
+      { module: 'Module 10', title: 'AI Model Deployment and APIs', topics: ['Flask/FastAPI for model serving', 'Cloud deployment', 'Monitoring'] },
+      { module: 'Module 11', title: 'Ethical AI & Responsible Development', topics: ['Bias and fairness', 'Explainability', 'Regulatory considerations'] },
+      { module: 'Module 12', title: 'Capstone Project & Interview Preparation', topics: ['End-to-end project', 'Resume and portfolio setup', 'Mock interviews'] }
+    ],
+    projects: [
+      { title: 'Capstone AI Project', desc: 'Build and deploy an end-to-end AI application with real data, APIs and monitoring.', tech: ['TensorFlow', 'Flask', 'Cloud'], impact: 'Portfolio-grade project demonstrating practical AI skills.' },
+      { title: 'Industry Case Study', desc: 'Solve a live business problem using AI techniques and present measurable outcomes.', tech: ['Pandas', 'Scikit-learn', 'Visualization'], impact: 'Real-world problem-solving experience.' }
+    ],
+    milestones: [
+      { label: 'Google Ratings', value: '4.8/5' },
+      { label: 'Global Market Size', value: 'USD 200 Billion' },
+      { label: 'Hiring Partners', value: '200+' },
+      { label: 'Job Openings', value: '25,000+' },
+      { label: 'Average Salary', value: '10+ LPA' },
+      { label: 'Mentees Trained', value: '15k+' }
+    ],
+    studentReviews: [
+      { name: 'Ramshad K', text: "I have gained a really hands on experience which was delivered by Akash sir. Very supportive and endless worthy experience.", detail: 'Highly recommended.' },
+      { name: 'Sahad K', text: "Got placement at Wipro through Krutanic support team. Grateful to mentors and counsellor support.", detail: 'Thanks to the Krutanic team.' },
+      { name: 'Pranali Shinde', text: "Thrilled to share my enriching experience from the AI internship — incredible opportunity to deepen knowledge and skills.", detail: 'Valuable mentorship.' },
+      { name: 'Sunil Kumar', text: "Outstanding experience in Data Science program; learned a lot of industrial things and practical skills.", detail: 'Strong recommendation.' }
+    ],
+    certifications: [
+      'Training Completion Certificate validating acquired AI skills',
+      'Internship Completion Certificate certified by Adobe',
+      'Letter of Recommendation for job and placement',
+      'Certificate of Excellence based on performance'
+    ],
     faqs: [
-      { q: 'Do I need prior experience?', a: 'No, this program starts from the basics and gradually builds up to advanced concepts.' },
-      { q: 'Will I build real-world projects?', a: 'Yes, you will build 2 real-time industrial projects (one minor, one major) to solidify your learning and build your portfolio.' },
-      { q: 'What kind of mentor support is included?', a: 'Mentors act as project leads, guiding you through live sessions and assisting you until the completion of your projects.' },
-      { q: 'Is internship support included?', a: 'Yes, you gain access to an internship program with opportunities across 200+ hiring partners.' },
-      { q: 'What happens if I miss a live session?', a: 'Recordings of all live sessions are available with 1-year access in our LMS portal.' }
+      { q: 'Do I need prior coding experience?', a: 'No, this program starts from the basics and gradually builds up to advanced AI concepts.' },
+      { q: 'Will I build real-world projects?', a: 'Yes, you will build industrial projects and a capstone to solidify learning and build your portfolio.' },
+      { q: 'What support do mentors provide?', a: 'Mentors act as project leads guiding interns through live sessions and project completion.' },
+      { q: 'Is internship support included?', a: 'Yes, internship opportunities exist across 200+ hiring partners.' },
+      { q: 'Are session recordings available?', a: 'Recordings of live sessions are available with 1-year LMS access.' }
     ],
     careerPaths: {
-      title: 'Career Paths After the Program',
-      subtitle: 'Build skills that map to high-demand roles across startups and enterprises globally.',
+      title: 'Career Opportunities in Artificial Intelligence',
+      subtitle: 'Roles across industry including AI Engineer, ML Engineer, Computer Vision Engineer, Data Scientist and NLP Engineer.',
       roles: [
-        { title: 'Junior AI Specialist', desc: 'Execute foundational tasks and support senior team members.', tools: ['Basic Tools', 'Reporting'], level: 'Entry-level' },
-        { title: 'Artificial Intelligence Engineer/Analyst', desc: 'Design, build, and maintain core solutions and systems.', tools: ['Advanced Frameworks', 'Cloud'], level: 'Professional' },
-        { title: 'Freelance Consultant', desc: 'Work independently on custom projects for various clients.', tools: ['Client Management', 'End-to-end execution'], level: 'Independent' },
-        { title: 'Lead AI Expert', desc: 'Lead teams and architect complex solutions for enterprise clients.', tools: ['Strategy', 'Architecture', 'Leadership'], level: 'Senior' }
+        { title: 'AI Engineer', desc: 'Design and deploy intelligent systems using ML and deep learning.', tools: ['TensorFlow', 'Keras'], level: 'Professional' },
+        { title: 'Machine Learning Engineer', desc: 'Build and optimize predictive models for real-world applications.', tools: ['Scikit-learn', 'Cloud'], level: 'Professional' },
+        { title: 'Computer Vision Engineer', desc: 'Develop image/video analysis solutions using CNNs and OpenCV.', tools: ['OpenCV', 'CNNs'], level: 'Specialist' },
+        { title: 'Data Scientist (AI-focused)', desc: 'Analyze complex datasets and build decision-making tools.', tools: ['Pandas', 'NumPy'], level: 'Professional' },
+        { title: 'NLP Engineer', desc: 'Work on language processing tasks like chatbots and sentiment analysis.', tools: ['Transformers', 'NLTK'], level: 'Specialist' }
       ],
-      progression: ['Junior Executive', 'Specialist', 'Senior Professional', 'Team Lead', 'Architect/Manager']
+      progression: ['Junior AI Developer', 'AI Engineer', 'Senior AI Engineer', 'Tech Lead', 'Architect']
     }
   },
 
@@ -83,62 +160,143 @@ export const allMentorshipData = {
     duration: '3 Months',
     format: 'Live Mentor-led',
     level: 'Beginner to Pro',
-    enrolled: '12,500+ Mentees',
-    rating: 4.8,
+    enrolled: '15,000+ Mentees Trained',
+    rating: 4.85,
+    pitch: 'Transform Your Passion into A Successful Career In Tech',
+    providerNote: 'We are now an accredited partner under Krutanic.',
+    contactInfo: ['www.krutanic.com', 'support@krutanic.com'],
+    aboutTitle: 'About Us',
+    aboutDescription: 'Krutanic is at the forefront of transforming education through cutting-edge technology. Our comprehensive platform empowers learners with personalized learning experiences, collaborative tools, and real-time analytics. With adaptive assessments and interactive content creation, we enhance student engagement and achievement. Join us in revolutionizing education for the digital age, driving positive outcomes and preparing learners for success in tomorrow\'s world.',
+    whyTitle: 'Why Machine Learning?',
+    whyPoints: [
+      'Automates decision-making based on data patterns',
+      'Solves complex problems beyond traditional programming',
+      'High demand across industries like healthcare, finance, and e-commerce',
+      'Foundation for AI advancements like chatbots and recommendation systems',
+      'Continuously improves with more data and usage',
+      'Offers lucrative and future-proof career opportunities'
+    ],
+    trainingProgram: [
+      {
+        phase: 'Month 1',
+        title: 'Training and Internship Program',
+        items: [
+          'Live sessions with industrial experts having experience above 10 years in the industry.',
+          'Recordings of all live sessions available with 1 year access in our LMS portal.',
+          'Industry-related curriculum designed by working professionals in top hierarchy.'
+        ]
+      },
+      {
+        phase: 'Month 2',
+        title: 'Training and Internship Program',
+        items: [
+          'Two real-time industrial projects: one minor project and one major project.',
+          'All mentors are assigned as project leads and guide interns until project completion.',
+          'Additional projects for personal development when required.'
+        ]
+      }
+    ],
+    moduleOverview: [
+      'Introduction to Machine Learning',
+      'Python for Machine Learning',
+      'Data Preprocessing & Feature Engineering',
+      'Unsupervised Learning Algorithms',
+      'Model Evaluation & Validation Techniques',
+      'Dimensionality Reduction Techniques',
+      'Introduction to Deep Learning',
+      'Model Deployment & Productionization',
+      'Supervised Learning Algorithms',
+      'Ensemble Methods (Bagging & Boosting)',
+      'Time Series Forecasting',
+      'Capstone Project & Interview Preparation'
+    ],
     mentor: {
-      name: 'Lead ML Mentor',
-      role: 'Senior Industry Expert',
+      name: 'Subra Prakash',
+      role: 'Sr. SME Data Science',
       experience: '10+ Years',
-      bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
+      bio: 'Industry expert with over 10 years of experience building and deploying robust machine learning solutions for top tech companies.'
     },
+    mentorImage: subhraImg,
     outcomes: [
-      { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of Machine Learning.', icon: FaCheckCircle },
-      { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
-      { title: 'Real-world Application', desc: 'Apply your skills to solve complex problems and build scalable solutions.', icon: FaBriefcase },
-      { title: 'Job Readiness', desc: 'Prepare for top roles with interview prep and portfolio building.', icon: FaUserGraduate },
+      { title: 'ML Foundations', desc: 'Master supervised, unsupervised, and reinforcement learning concepts with hands-on practice.', icon: FaCode },
+      { title: 'Data Handling', desc: 'Learn data preprocessing, feature engineering, and working with real-world datasets.', icon: FaDatabase },
+      { title: 'Model Development', desc: 'Build, train, and optimize ML models using Scikit-learn, TensorFlow, and modern frameworks.', icon: FaRocket },
+      { title: 'Production Deployment', desc: 'Deploy models to production environments and monitor performance in real-world applications.', icon: FaServer }
     ],
     tools: [
-      { name: 'Industry Standard Tools' }, { name: 'Modern Frameworks' }, { name: 'Analytics' }, 
-      { name: 'Cloud Platforms' }, { name: 'Version Control' }, { name: 'Agile/Scrum' }
+      { name: 'Python' },
+      { name: 'Scikit-learn' },
+      { name: 'Pandas & NumPy' },
+      { name: 'Matplotlib' },
+      { name: 'Seaborn' }
     ],
     curriculum: [
-      { module: 'Module 1', title: 'Introduction to Machine Learning', topics: ['Overview of concepts', 'Setting up the environment', 'Basic principles', 'Industry use cases'] },
-      { module: 'Module 2', title: 'Core Methodologies', topics: ['In-depth exploration', 'Tools and frameworks', 'Best practices', 'Hands-on exercises'] },
-      { module: 'Module 3', title: 'Advanced Concepts', topics: ['Complex scenarios', 'Optimization techniques', 'Security and performance', 'Integration'] },
-      { module: 'Module 4', title: 'Industry Projects', topics: ['Real-world problem solving', 'Project planning', 'Execution', 'Testing and validation'] },
-      { module: 'Module 5', title: 'Capstone & Portfolio', topics: ['Building a complete project from scratch', 'Documentation', 'Portfolio enhancement', 'Interview preparation'] }
+      { module: 'Module 1', title: 'Introduction to Machine Learning', topics: ['Understand ML concepts and types (supervised, unsupervised, reinforcement)', 'Overview of ML applications in real-world scenarios', 'Differences between ML, AI, and data science'] },
+      { module: 'Module 2', title: 'Python for Machine Learning', topics: ['Python basics and libraries (NumPy, Pandas)', 'Data manipulation and analysis', 'Introduction to Jupyter Notebooks for ML workflows'] },
+      { module: 'Module 3', title: 'Data Preprocessing & Feature Engineering', topics: ['Handling missing values and outliers', 'Data normalization and scaling', 'Feature selection and extraction techniques'] },
+      { module: 'Module 4', title: 'Supervised Learning Algorithms', topics: ['Linear and logistic regression', 'Decision trees and random forests', 'Support Vector Machines (SVM)', 'K-Nearest Neighbors (KNN)'] },
+      { module: 'Module 5', title: 'Unsupervised Learning Algorithms', topics: ['Clustering techniques: K-means, hierarchical clustering', 'Association rules and market basket analysis', 'Anomaly detection methods'] },
+      { module: 'Module 6', title: 'Model Evaluation & Validation Techniques', topics: ['Train-test split and cross-validation', 'Metrics: accuracy, precision, recall, F1-score, ROC-AUC', 'Confusion matrix interpretation'] },
+      { module: 'Module 7', title: 'Ensemble Methods (Bagging & Boosting)', topics: ['Concept of ensemble learning', 'Random Forest algorithm', 'Gradient Boosting Machines (GBM), AdaBoost, XGBoost'] },
+      { module: 'Module 8', title: 'Dimensionality Reduction Techniques', topics: ['Principal Component Analysis (PCA)', 't-SNE for visualization', 'Feature reduction benefits and use cases'] },
+      { module: 'Module 9', title: 'Time Series Forecasting', topics: ['Basics of time series data', 'Moving averages and smoothing techniques', 'ARIMA and seasonal models'] },
+      { module: 'Module 10', title: 'Introduction to Deep Learning', topics: ['Neural networks fundamentals', 'Activation functions and architectures', 'Frameworks: TensorFlow and Keras basics'] },
+      { module: 'Module 11', title: 'Model Deployment & Productionization', topics: ['Saving and loading ML models', 'Introduction to APIs for ML model serving', 'Monitoring and maintaining models in production'] },
+      { module: 'Module 12', title: 'Capstone Project & Interview Preparation', topics: ['Develop an end-to-end ML project', 'Prepare portfolio and GitHub repositories', 'Practice common ML interview questions and coding challenges'] }
     ],
     projects: [
       {
-        title: 'Industrial Capstone Project',
-        desc: 'A comprehensive project integrating all learned skills to solve a real business problem.',
-        tech: ['Modern Stack', 'Cloud Integration', 'Analytics'],
-        impact: 'Demonstrated ability to execute end-to-end solutions independently.'
+        title: 'Minor Industrial Project',
+        desc: 'A guided project where you build a complete ML application with data preprocessing, model training, and evaluation under mentor supervision.',
+        tech: ['Python', 'Scikit-learn', 'Pandas'],
+        impact: 'Strong understanding of end-to-end ML project workflow in a mentor-led setup.'
       },
       {
-        title: 'Live Case Study Application',
-        desc: 'Hands-on implementation of a live industry case study with measurable outcomes.',
-        tech: ['Best Practices', 'Agile', 'Optimization'],
-        impact: 'Mastered practical application of theoretical concepts.'
+        title: 'Major Industrial Project',
+        desc: 'A production-style ML application with ensemble methods, hyperparameter tuning, and deployment.',
+        tech: ['Python', 'XGBoost', 'Flask/FastAPI'],
+        impact: 'Portfolio-ready major project showcasing ML expertise and deployment readiness.'
       }
     ],
+    milestones: [
+      { label: 'Google Ratings', value: '4.8/5' },
+      { label: 'Global Market Size', value: 'USD 200 Billion' },
+      { label: 'Hiring Partners', value: '200+' },
+      { label: 'Job Openings', value: '25,000+' },
+      { label: 'Average Salary', value: '10+ LPA' },
+      { label: 'Mentees Trained', value: '15k+' }
+    ],
+    studentReviews: [
+      { name: 'Ramshad K', text: 'I have gained really hands on experience with ML which was delivered excellently. Akash sir was very supportive and an endless worthy experience.', detail: 'Perfect for anyone looking to master Machine Learning.' },
+      { name: 'Tejas Kolekar', text: 'Thrilled to share my enriching experience from the ML internship with Krutanic. This 3-month program was an incredible opportunity to deepen knowledge and skills in ML.', detail: 'Great mentorship and real-world projects.' },
+      { name: 'Pranali Shinde', text: 'Excited to share that I\'ve completed a Data Science course from Krutanic! Amazing journey diving into data visualization, EDA, and machine learning.', detail: 'Gained valuable skills applicable to real-world projects.' },
+      { name: 'Sunil Kumar', text: 'Outstanding experience in ML program at Krutanic; learned a lot of new industrial things and practical skills.', detail: 'Strong recommendation for ML enthusiasts.' }
+    ],
+    certifications: [
+      'Training Completion Certificate validating acquired Machine Learning skills',
+      'Internship Completion Certificate certified by Adobe',
+      'Letter of Recommendation for job and placement',
+      'Certificate of Excellence based on performance'
+    ],
     faqs: [
-      { q: 'Do I need prior experience?', a: 'No, this program starts from the basics and gradually builds up to advanced concepts.' },
+      { q: 'Do I need prior coding experience?', a: 'No, this program starts from Python basics and gradually builds up to advanced ML concepts.' },
       { q: 'Will I build real-world projects?', a: 'Yes, you will build 2 real-time industrial projects (one minor, one major) to solidify your learning and build your portfolio.' },
       { q: 'What kind of mentor support is included?', a: 'Mentors act as project leads, guiding you through live sessions and assisting you until the completion of your projects.' },
       { q: 'Is internship support included?', a: 'Yes, you gain access to an internship program with opportunities across 200+ hiring partners.' },
       { q: 'What happens if I miss a live session?', a: 'Recordings of all live sessions are available with 1-year access in our LMS portal.' }
     ],
     careerPaths: {
-      title: 'Career Paths After the Program',
-      subtitle: 'Build skills that map to high-demand roles across startups and enterprises globally.',
+      title: 'Career Opportunities in Machine Learning',
+      subtitle: 'Build skills that map to high-demand ML and data roles across startups, enterprises, and freelance platforms.',
       roles: [
-        { title: 'Junior ML Specialist', desc: 'Execute foundational tasks and support senior team members.', tools: ['Basic Tools', 'Reporting'], level: 'Entry-level' },
-        { title: 'Machine Learning Engineer/Analyst', desc: 'Design, build, and maintain core solutions and systems.', tools: ['Advanced Frameworks', 'Cloud'], level: 'Professional' },
-        { title: 'Freelance Consultant', desc: 'Work independently on custom projects for various clients.', tools: ['Client Management', 'End-to-end execution'], level: 'Independent' },
-        { title: 'Lead ML Expert', desc: 'Lead teams and architect complex solutions for enterprise clients.', tools: ['Strategy', 'Architecture', 'Leadership'], level: 'Senior' }
+        { title: 'Machine Learning Engineer', desc: 'Design, build, and deploy ML models into scalable applications.', tools: ['Python', 'Scikit-learn', 'TensorFlow'], level: 'Professional' },
+        { title: 'Data Scientist', desc: 'Use machine learning to analyze data, generate insights, and create predictive models.', tools: ['Python', 'Pandas', 'Visualization'], level: 'Professional' },
+        { title: 'Research Scientist (AI/ML)', desc: 'Focus on developing new algorithms and advancing the field of machine learning.', tools: ['TensorFlow', 'PyTorch', 'Research'], level: 'Specialist' },
+        { title: 'Natural Language Processing Engineer', desc: 'Specialize in language-based models for chatbots, translation, sentiment analysis.', tools: ['NLP Libraries', 'Transformers', 'NLTK'], level: 'Specialist' },
+        { title: 'AI Engineer', desc: 'Develop intelligent systems using ML, deep learning, and algorithms for real-world applications.', tools: ['Python', 'Deep Learning', 'APIs'], level: 'Professional' },
+        { title: 'Computer Vision Engineer', desc: 'Build models for image and video analysis in areas like facial recognition and autonomous driving.', tools: ['OpenCV', 'CNNs', 'Computer Vision'], level: 'Specialist' }
       ],
-      progression: ['Junior Executive', 'Specialist', 'Senior Professional', 'Team Lead', 'Architect/Manager']
+      progression: ['Junior ML Developer', 'ML Engineer', 'Senior ML Engineer', 'Tech Lead (ML)', 'ML Architect']
     }
   },
 
@@ -149,62 +307,144 @@ export const allMentorshipData = {
     duration: '3 Months',
     format: 'Live Mentor-led',
     level: 'Beginner to Pro',
-    enrolled: '12,500+ Mentees',
-    rating: 4.8,
+    enrolled: '15,000+ Mentees Trained',
+    rating: 4.85,
+    pitch: 'Transform Your Passion into A Successful Career In Tech',
+    providerNote: 'We are now an accredited partner under Krutanic.',
+    contactInfo: ['www.krutanic.com', 'support@krutanic.com'],
+    aboutTitle: 'About Us',
+    aboutDescription: 'Krutanic is at the forefront of transforming education through cutting-edge technology. Our comprehensive platform empowers learners with personalized learning experiences, collaborative tools, and real-time analytics. With adaptive assessments and interactive content creation, we enhance student engagement and achievement. Join us in revolutionizing education for the digital age, driving positive outcomes and preparing learners for success in tomorrow\'s world.',
+    whyTitle: 'Why Cyber Security?',
+    whyPoints: [
+      'Protects organizations from cyber threats, data breaches, and financial loss',
+      'High demand across industries like banking, healthcare, government, and e-commerce',
+      'Enables secure digital transformation and trust in online systems',
+      'Creates future-proof careers with strong growth and competitive salaries',
+      'Supports compliance, privacy, and risk management across modern businesses',
+      'Builds expertise in defense, detection, incident response, and ethical hacking'
+    ],
+    trainingProgram: [
+      {
+        phase: 'Month 1',
+        title: 'Training and Internship Program',
+        items: [
+          'Live sessions with industrial experts having experience above 10 years in the industry.',
+          'Recordings of all live sessions available with 1 year access in our LMS portal.',
+          'Industry-related curriculum designed by working professionals in the top hierarchy.'
+        ]
+      },
+      {
+        phase: 'Month 2',
+        title: 'Training and Internship Program',
+        items: [
+          'Two real-time industrial projects: one minor project and one major project.',
+          'All mentors are assigned as project leads and guide interns until project completion.',
+          'Additional projects for personal development when required.'
+        ]
+      }
+    ],
+    moduleOverview: [
+      'Introduction to Cyber Security',
+      'Networking Fundamentals',
+      'Operating Systems & Linux Basics',
+      'Web Application Security',
+      'Network Security & Firewalls',
+      'Vulnerability Assessment Tools',
+      'Malware Analysis and Prevention',
+      'Incident Response & Digital Forensics',
+      'Cryptography and Encryption',
+      'Ethical Hacking and Penetration Testing',
+      'Security Information & Event Management (SIEM)',
+      'Capstone Project & Interview Preparation'
+    ],
     mentor: {
-      name: 'Lead Security Mentor',
-      role: 'Senior Industry Expert',
+      name: 'Rudra Pratap',
+      role: 'Cyber Security',
       experience: '10+ Years',
-      bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
+      bio: 'Industry expert with over 10 years of experience securing systems, leading incident response, and building practical cyber security teams.'
     },
+    mentorImage: rudraImg,
     outcomes: [
-      { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of Cyber Security.', icon: FaCheckCircle },
-      { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
-      { title: 'Real-world Application', desc: 'Apply your skills to solve complex problems and build scalable solutions.', icon: FaBriefcase },
-      { title: 'Job Readiness', desc: 'Prepare for top roles with interview prep and portfolio building.', icon: FaUserGraduate },
+      { title: 'Security Fundamentals', desc: 'Understand cyber threats, attack surfaces, defensive controls, and the CIA triad.', icon: FaShieldAlt },
+      { title: 'Network Defense', desc: 'Build confidence with networking concepts, firewalls, IDS/IPS, and secure communication.', icon: FaServer },
+      { title: 'Hands-on Tools', desc: 'Practice with Kali Linux, Wireshark, Nmap, Metasploit, Burp Suite, Nessus, and SIEM tools.', icon: FaCode },
+      { title: 'Career Readiness', desc: 'Prepare for real-world cyber security roles with projects, mock interviews, and portfolio support.', icon: FaUserGraduate }
     ],
     tools: [
-      { name: 'Industry Standard Tools' }, { name: 'Modern Frameworks' }, { name: 'Analytics' }, 
-      { name: 'Cloud Platforms' }, { name: 'Version Control' }, { name: 'Agile/Scrum' }
+      { name: 'Wireshark' },
+      { name: 'Nmap' },
+      { name: 'Kali Linux' },
+      { name: 'Metasploit Framework' },
+      { name: 'Burp Suite' },
+      { name: 'Splunk' }
     ],
     curriculum: [
-      { module: 'Module 1', title: 'Introduction to Cyber Security', topics: ['Overview of concepts', 'Setting up the environment', 'Basic principles', 'Industry use cases'] },
-      { module: 'Module 2', title: 'Core Methodologies', topics: ['In-depth exploration', 'Tools and frameworks', 'Best practices', 'Hands-on exercises'] },
-      { module: 'Module 3', title: 'Advanced Concepts', topics: ['Complex scenarios', 'Optimization techniques', 'Security and performance', 'Integration'] },
-      { module: 'Module 4', title: 'Industry Projects', topics: ['Real-world problem solving', 'Project planning', 'Execution', 'Testing and validation'] },
-      { module: 'Module 5', title: 'Capstone & Portfolio', topics: ['Building a complete project from scratch', 'Documentation', 'Portfolio enhancement', 'Interview preparation'] }
+      { module: 'Module 1', title: 'Introduction to Cyber Security', topics: ['Understanding cyber threats, attacks, and vulnerabilities', 'Types of cyber attacks: phishing, ransomware, DoS, etc.', 'CIA triad: Confidentiality, Integrity, Availability'] },
+      { module: 'Module 2', title: 'Networking Fundamentals', topics: ['OSI and TCP/IP models', 'IP addressing, subnets, and ports', 'Protocols: HTTP, HTTPS, FTP, DNS, etc.'] },
+      { module: 'Module 3', title: 'Operating Systems & Linux Basics', topics: ['Linux command line essentials', 'File systems and permissions', 'System processes, services, user management, and scripting basics'] },
+      { module: 'Module 4', title: 'Web Application Security', topics: ['OWASP Top 10 vulnerabilities', 'SQL Injection, Cross-Site Scripting (XSS), CSRF', 'Input validation and secure coding practices'] },
+      { module: 'Module 5', title: 'Network Security & Firewalls', topics: ['Firewall types and configurations', 'Intrusion Detection & Prevention Systems (IDS/IPS)', 'VPNs and secure tunneling protocols'] },
+      { module: 'Module 6', title: 'Vulnerability Assessment Tools', topics: ['Using Nmap, Nessus, and OpenVAS', 'Automated scanning techniques', 'Analyzing vulnerability reports and remediation'] },
+      { module: 'Module 7', title: 'Ethical Hacking and Penetration Testing', topics: ['Phases of penetration testing', 'Information gathering and scanning', 'Exploitation, post-exploitation, reporting and documentation'] },
+      { module: 'Module 8', title: 'Malware Analysis and Prevention', topics: ['Types of malware: viruses, trojans, worms, ransomware', 'Static and dynamic malware analysis', 'Sandboxing and reverse engineering basics'] },
+      { module: 'Module 9', title: 'Incident Response & Digital Forensics', topics: ['Incident response lifecycle', 'Evidence collection and chain of custody', 'Disk imaging, data recovery, and forensics tools'] },
+      { module: 'Module 10', title: 'Cryptography and Encryption', topics: ['Symmetric vs asymmetric encryption', 'Hashing algorithms (MD5, SHA)', 'Public Key Infrastructure (PKI) and SSL/TLS'] },
+      { module: 'Module 11', title: 'Security Information & Event Management (SIEM)', topics: ['Introduction to SIEM tools like Splunk', 'Log analysis and correlation', 'Threat detection, real-time monitoring, and alerting'] },
+      { module: 'Module 12', title: 'Capstone Project & Interview Preparation', topics: ['Conduct a complete security assessment', 'Simulate attack and defense scenarios', 'Resume and LinkedIn optimization and interview prep'] }
     ],
     projects: [
       {
-        title: 'Industrial Capstone Project',
-        desc: 'A comprehensive project integrating all learned skills to solve a real business problem.',
-        tech: ['Modern Stack', 'Cloud Integration', 'Analytics'],
-        impact: 'Demonstrated ability to execute end-to-end solutions independently.'
+        title: 'Minor Security Project',
+        desc: 'A guided project where you assess a small system or web app, identify vulnerabilities, and document remediations.',
+        tech: ['Nmap', 'Burp Suite', 'OWASP'],
+        impact: 'Strong understanding of practical vulnerability assessment and reporting.'
       },
       {
-        title: 'Live Case Study Application',
-        desc: 'Hands-on implementation of a live industry case study with measurable outcomes.',
-        tech: ['Best Practices', 'Agile', 'Optimization'],
-        impact: 'Mastered practical application of theoretical concepts.'
+        title: 'Major Security Project',
+        desc: 'A production-style project covering network defense, incident response, and SIEM monitoring for a simulated environment.',
+        tech: ['Splunk', 'Kali Linux', 'Wireshark'],
+        impact: 'Portfolio-ready major project showcasing defensive and offensive security capabilities.'
       }
     ],
+    milestones: [
+      { label: 'Google Ratings', value: '4.8/5' },
+      { label: 'Global Market Size', value: 'USD 200 Billion' },
+      { label: 'Hiring Partners', value: '200+' },
+      { label: 'Job Openings', value: '25,000+' },
+      { label: 'Average Salary', value: '10+ LPA' },
+      { label: 'Mentees Trained', value: '15k+' }
+    ],
+    studentReviews: [
+      { name: 'Ramshad K', text: 'I have gained a really hands on experience with security tools and techniques. The mentorship was supportive and the experience was valuable.', detail: 'Highly recommended for cyber security beginners.' },
+      { name: 'Rajendra Prasad', text: 'I researched the certificate and found it genuine and verified. The training and real-world projects were excellent.', detail: 'Perfect for quality training and practical learning.' },
+      { name: 'Sahad K', text: 'I realised Krutanic solutions is the best company ever for training and internship provider. I learned a lot of new industrial things.', detail: 'Strong support from mentors and counsellors.' },
+      { name: 'Sunil Kumar', text: 'My experience was outstanding. The program gave me practical exposure and helped build confidence for real cyber security work.', detail: 'Very useful for career growth.' }
+    ],
+    certifications: [
+      'Training Completion Certificate validating acquired Cyber Security skills',
+      'Internship Completion Certificate certified by Adobe',
+      'Letter of Recommendation for job and placement',
+      'Certificate of Excellence based on performance'
+    ],
     faqs: [
-      { q: 'Do I need prior experience?', a: 'No, this program starts from the basics and gradually builds up to advanced concepts.' },
+      { q: 'Do I need prior experience?', a: 'No, this program starts from the basics and gradually builds up to advanced cyber security concepts.' },
       { q: 'Will I build real-world projects?', a: 'Yes, you will build 2 real-time industrial projects (one minor, one major) to solidify your learning and build your portfolio.' },
       { q: 'What kind of mentor support is included?', a: 'Mentors act as project leads, guiding you through live sessions and assisting you until the completion of your projects.' },
       { q: 'Is internship support included?', a: 'Yes, you gain access to an internship program with opportunities across 200+ hiring partners.' },
       { q: 'What happens if I miss a live session?', a: 'Recordings of all live sessions are available with 1-year access in our LMS portal.' }
     ],
     careerPaths: {
-      title: 'Career Paths After the Program',
-      subtitle: 'Build skills that map to high-demand roles across startups and enterprises globally.',
+      title: 'Career Opportunities in Cyber Security',
+      subtitle: 'Build skills that map to high-demand security roles across enterprises, SOC teams, consulting, and response functions.',
       roles: [
-        { title: 'Junior Security Specialist', desc: 'Execute foundational tasks and support senior team members.', tools: ['Basic Tools', 'Reporting'], level: 'Entry-level' },
-        { title: 'Cyber Security Engineer/Analyst', desc: 'Design, build, and maintain core solutions and systems.', tools: ['Advanced Frameworks', 'Cloud'], level: 'Professional' },
-        { title: 'Freelance Consultant', desc: 'Work independently on custom projects for various clients.', tools: ['Client Management', 'End-to-end execution'], level: 'Independent' },
-        { title: 'Lead Security Expert', desc: 'Lead teams and architect complex solutions for enterprise clients.', tools: ['Strategy', 'Architecture', 'Leadership'], level: 'Senior' }
+        { title: 'Cyber Security Analyst', desc: 'Monitor networks, detect vulnerabilities, and respond to security incidents.', tools: ['SIEM', 'Wireshark', 'Nmap'], level: 'Entry-level' },
+        { title: 'Ethical Hacker / Penetration Tester', desc: 'Simulate cyberattacks to identify and fix security flaws before malicious actors exploit them.', tools: ['Kali Linux', 'Burp Suite', 'Metasploit'], level: 'Specialist' },
+        { title: 'SOC Analyst', desc: 'Continuously monitor and analyze security posture on an organizational level.', tools: ['Splunk', 'Alerting', 'Threat Intel'], level: 'Professional' },
+        { title: 'Incident Response Specialist', desc: 'Respond rapidly to breaches, conduct forensic analysis, and mitigate damage caused by cyber attacks.', tools: ['Forensics', 'Playbooks', 'IR Tools'], level: 'Specialist' },
+        { title: 'Security Engineer', desc: 'Design and implement secure network solutions to defend against hacking, malware, and other cyber threats.', tools: ['Firewalls', 'IDS/IPS', 'Hardening'], level: 'Professional' },
+        { title: 'Information Security Manager', desc: 'Oversee security strategies, compliance, and risk management policies within an organization.', tools: ['Risk Management', 'Compliance', 'Leadership'], level: 'Senior' }
       ],
-      progression: ['Junior Executive', 'Specialist', 'Senior Professional', 'Team Lead', 'Architect/Manager']
+      progression: ['Junior Security Analyst', 'Security Analyst', 'Senior Security Analyst', 'Security Lead', 'Security Architect']
     }
   },
 
@@ -215,62 +455,146 @@ export const allMentorshipData = {
     duration: '3 Months',
     format: 'Live Mentor-led',
     level: 'Beginner to Pro',
-    enrolled: '12,500+ Mentees',
-    rating: 4.8,
+    enrolled: '15,000+ Mentees Trained',
+    rating: 4.85,
+    pitch: 'Transform Your Passion into A Successful Career In Tech',
+    providerNote: 'We are now an accredited partner under Krutanic.',
+    contactInfo: ['www.krutanic.com', 'support@krutanic.com'],
+    aboutTitle: 'About Us',
+    aboutDescription: 'Krutanic is at the forefront of transforming education through cutting-edge technology. Our comprehensive platform empowers learners with personalized learning experiences, collaborative tools, and real-time analytics. With adaptive assessments and interactive content creation, we enhance student engagement and achievement. Join us in revolutionizing education for the digital age, driving positive outcomes and preparing learners for success in tomorrow\'s world.',
+    whyTitle: 'Why Data Science?',
+    whyPoints: [
+      'Data analysts turn raw data into actionable insights, helping businesses make smarter decisions.',
+      'Their ability to identify patterns and trends improves operational efficiency and strategy.',
+      'High demand across industries like finance, healthcare, marketing, and e-commerce fuels strong career growth.',
+      'Data analytics skills are practical and versatile — from Excel and SQL to Python and Power BI.',
+      'Analysts often collaborate with stakeholders, enhancing their communication and business acumen.',
+      'It serves as a stepping stone to advanced roles like data scientist, BI analyst, and machine learning engineer.'
+    ],
+    trainingProgram: [
+      {
+        phase: 'Month 1',
+        title: 'Training and Internship Program',
+        items: [
+          'Live sessions with industrial experts having experience above 10 years in the industry.',
+          'Recordings of all live sessions available with 1 year access in our LMS portal.',
+          'Industry-related curriculum designed by the working professionals in the top hierarchy.'
+        ]
+      },
+      {
+        phase: 'Month 2',
+        title: 'Training and Internship Program',
+        items: [
+          'Two real-time industrial projects: one minor project and one major project.',
+          'All mentors are assigned as project leads and guide the intern till the completion of the project.',
+          'Additional projects for personal development can be required.'
+        ]
+      }
+    ],
+    moduleOverview: [
+      'Introduction to Data Analytics',
+      'Excel for Data Analysis',
+      'SQL for Data Extraction',
+      'Data Cleaning and Preprocessing',
+      'Exploratory Data Analysis (EDA)',
+      'Statistics for Data Analytics',
+      'Dashboarding and Reporting',
+      'Case Studies & Industry Applications',
+      'Python for Data Analytics',
+      'Data Visualization with Power BI/Tableau',
+      'Business Analytics Concepts',
+      'Capstone Project & Interview Preparation'
+    ],
     mentor: {
-      name: 'Lead Data Mentor',
-      role: 'Senior Industry Expert',
+      name: 'Subra Prakash',
+      role: 'Sr. SME Data Science',
       experience: '10+ Years',
-      bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
+      bio: 'Industry expert with over 10 years of experience building and deploying robust data analytics and data science solutions for top tech companies.',
     },
+    mentorImage: subhraImg,
     outcomes: [
-      { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of Data Science.', icon: FaCheckCircle },
-      { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
-      { title: 'Real-world Application', desc: 'Apply your skills to solve complex problems and build scalable solutions.', icon: FaBriefcase },
-      { title: 'Job Readiness', desc: 'Prepare for top roles with interview prep and portfolio building.', icon: FaUserGraduate },
+      { title: 'Data Storytelling', desc: 'Transform raw data into actionable insights and clear recommendations for business stakeholders.', icon: FaChartLine },
+      { title: 'Excel, SQL & Python', desc: 'Work fluently with spreadsheets, SQL queries, and Python-based data workflows.', icon: FaCode },
+      { title: 'Visualization & BI', desc: 'Build dashboards and reports using Power BI, Tableau, and exploratory data analysis techniques.', icon: FaBriefcase },
+      { title: 'Career Readiness', desc: 'Prepare for analyst roles with capstone projects, interview prep, and portfolio support.', icon: FaUserGraduate },
     ],
     tools: [
-      { name: 'Industry Standard Tools' }, { name: 'Modern Frameworks' }, { name: 'Analytics' }, 
-      { name: 'Cloud Platforms' }, { name: 'Version Control' }, { name: 'Agile/Scrum' }
+      { name: 'Microsoft Excel' },
+      { name: 'SQL (MySQL/PostgreSQL)' },
+      { name: 'Python (Pandas & NumPy)' },
+      { name: 'Jupyter Notebook' },
+      { name: 'Google Sheets / Looker Studio' },
+      { name: 'Power BI / Tableau' }
     ],
     curriculum: [
-      { module: 'Module 1', title: 'Introduction to Data Science', topics: ['Overview of concepts', 'Setting up the environment', 'Basic principles', 'Industry use cases'] },
-      { module: 'Module 2', title: 'Core Methodologies', topics: ['In-depth exploration', 'Tools and frameworks', 'Best practices', 'Hands-on exercises'] },
-      { module: 'Module 3', title: 'Advanced Concepts', topics: ['Complex scenarios', 'Optimization techniques', 'Security and performance', 'Integration'] },
-      { module: 'Module 4', title: 'Industry Projects', topics: ['Real-world problem solving', 'Project planning', 'Execution', 'Testing and validation'] },
-      { module: 'Module 5', title: 'Capstone & Portfolio', topics: ['Building a complete project from scratch', 'Documentation', 'Portfolio enhancement', 'Interview preparation'] }
+      { module: 'Module 1', title: 'Introduction to Data Analytics', topics: ['Understand the role of a data analyst', 'Overview of data types and sources', 'Analytics process and life cycle', 'Real-world use cases across industries'] },
+      { module: 'Module 2', title: 'Excel for Data Analysis', topics: ['Data sorting, filtering, and formatting', 'Formulas, functions, and pivot tables', 'Charts and graphs for visualization', 'Lookup functions (VLOOKUP, INDEX-MATCH)'] },
+      { module: 'Module 3', title: 'SQL for Data Extraction', topics: ['Basic to advanced SQL queries', 'Filtering, joining, grouping, and aggregating data', 'Subqueries and nested queries', 'Creating and managing relational databases'] },
+      { module: 'Module 4', title: 'Data Cleaning and Preprocessing', topics: ['Handling missing and duplicate values', 'Data type conversions', 'Outlier detection and treatment', 'Normalization and standardization'] },
+      { module: 'Module 5', title: 'Exploratory Data Analysis (EDA)', topics: ['Analyzing distributions and patterns', 'Correlation and feature relationships', 'Univariate and bivariate analysis', 'Visualizing trends and summaries'] },
+      { module: 'Module 6', title: 'Statistics for Data Analytics', topics: ['Descriptive statistics: mean, median, mode', 'Probability distributions', 'Hypothesis testing and p-values', 'Statistical significance and confidence intervals'] },
+      { module: 'Module 7', title: 'Dashboarding and Reporting', topics: ['Creating dashboards and reports', 'Charts: bar, line, pie, maps, and more', 'Filtering and slicers for interactivity', 'Sharing reports and publishing dashboards'] },
+      { module: 'Module 8', title: 'Case Studies & Industry Applications', topics: ['Domain-wise analytics: healthcare, e-commerce, finance', 'Solving business problems with data', 'End-to-end project simulations', 'Interpreting analytics results for stakeholders'] },
+      { module: 'Module 9', title: 'Python for Data Analytics', topics: ['Python basics: variables, loops, functions', 'Using Pandas and NumPy for data manipulation', 'Reading and writing datasets (CSV, Excel)', 'Data wrangling and transformation'] },
+      { module: 'Module 10', title: 'Data Visualization with Power BI/Tableau', topics: ['Creating dashboards and reports', 'Charts: bar, line, pie, maps, and more', 'Filtering and slicers for interactivity', 'Sharing reports and publishing dashboards'] },
+      { module: 'Module 11', title: 'Business Analytics Concepts', topics: ['KPI identification and tracking', 'A/B testing and experimentation', 'Forecasting and trend analysis', 'Use cases in sales, marketing, finance, and HR'] },
+      { module: 'Module 12', title: 'Capstone Project & Interview Preparation', topics: ['Execute a real-world data analytics project', 'Prepare portfolio-ready visualizations and reports', 'Practice interview questions and analytics case rounds', 'Placement assistance mock interview preparation'] }
     ],
     projects: [
       {
-        title: 'Industrial Capstone Project',
-        desc: 'A comprehensive project integrating all learned skills to solve a real business problem.',
-        tech: ['Modern Stack', 'Cloud Integration', 'Analytics'],
-        impact: 'Demonstrated ability to execute end-to-end solutions independently.'
+        title: 'Minor Industrial Project',
+        desc: 'A guided project where you clean, analyze, and visualize a real business dataset under mentor supervision.',
+        tech: ['Excel', 'SQL', 'Power BI'],
+        impact: 'Strong understanding of end-to-end data analytics project workflow in a mentor-led setup.'
       },
       {
-        title: 'Live Case Study Application',
-        desc: 'Hands-on implementation of a live industry case study with measurable outcomes.',
-        tech: ['Best Practices', 'Agile', 'Optimization'],
-        impact: 'Mastered practical application of theoretical concepts.'
+        title: 'Major Industrial Project',
+        desc: 'A production-style analytics project with dashboards, reporting, and actionable stakeholder insights.',
+        tech: ['Python', 'SQL', 'Tableau', 'Power BI'],
+        impact: 'Portfolio-ready major project showcasing ownership, scalability, and delivery readiness.'
       }
     ],
+    milestones: [
+      { label: 'Google Ratings', value: '4.8/5' },
+      { label: 'Global Market Size', value: 'USD 200 Billion' },
+      { label: 'Hiring Partners', value: '200+' },
+      { label: 'Job Openings', value: '25,000+' },
+      { label: 'Average Salary', value: '10+ LPA' },
+      { label: 'Mentees Trained', value: '15k+' }
+    ],
+    studentReviews: [
+      { name: 'Ramshad K', text: 'I have gained a really hands on experience with graphic design which was delivered by Akash sir was very supportive and endless worthy experience so far.', detail: 'Great for practical learning.' },
+      { name: 'Rajendra Prasad', text: 'I researched and found the correct certificate on Linkedin and scan that and found it 100% genuine and verified successfully. Krutanic company is perfect with quality training and real world projects.', detail: 'Strong recommendation.' },
+      { name: 'Sahad K', text: 'I got placement at Wipro through krutanic support team. I am really grateful that I got to learn from Al Mentor Ashish sir and support from my counsellor was really helpful.', detail: 'Excellent mentor support.' },
+      { name: 'Sunil Kumar', text: 'I have enrolled for Data Science program at Krutanic solutions and my experience is outstanding. Perfect for quality training and real world projects.', detail: 'Highly valuable experience.' },
+      { name: 'Shubham Rai', text: 'Krutanic Group is truly doing a remarkable job by creating learning spaces that are not only informative but also inspiring.', detail: 'Great for career growth.' },
+      { name: 'Pranali Shinde', text: 'It was an amazing journey diving into data visualization, exploratory data analysis, SQL, and machine learning. Valuable skills for real-world projects.', detail: 'Very enriching experience.' }
+    ],
+    certifications: [
+      'Training Completion Certificate validating the skills you acquired',
+      'Internship Completion certificate certified by Accenture/Adobe',
+      'Letter of Recommendation (LOR) for your job/placement',
+      'Certificate of excellence based on your performance'
+    ],
     faqs: [
-      { q: 'Do I need prior experience?', a: 'No, this program starts from the basics and gradually builds up to advanced concepts.' },
-      { q: 'Will I build real-world projects?', a: 'Yes, you will build 2 real-time industrial projects (one minor, one major) to solidify your learning and build your portfolio.' },
-      { q: 'What kind of mentor support is included?', a: 'Mentors act as project leads, guiding you through live sessions and assisting you until the completion of your projects.' },
-      { q: 'Is internship support included?', a: 'Yes, you gain access to an internship program with opportunities across 200+ hiring partners.' },
-      { q: 'What happens if I miss a live session?', a: 'Recordings of all live sessions are available with 1-year access in our LMS portal.' }
+      { q: 'Do I need prior knowledge?', a: 'No prior experience is required. We teach you everything from scratch, focusing on logic, analytics, and technical execution.' },
+      { q: 'Will I work on real-world projects?', a: 'Yes, you will build 2 real-time industrial projects, one minor and one major, with mentor guidance.' },
+      { q: 'What support do mentors provide?', a: 'Mentors act as project leads and guide you through live sessions, projects, and completion support.' },
+      { q: 'Is internship support included?', a: 'Yes, the program includes internship support and exposure to 200+ hiring partners.' },
+      { q: 'Are recordings available?', a: 'Yes, all live sessions are recorded and available with 1 year access in the LMS portal.' }
     ],
     careerPaths: {
-      title: 'Career Paths After the Program',
-      subtitle: 'Build skills that map to high-demand roles across startups and enterprises globally.',
+      title: 'Career Opportunities in Data Science',
+      subtitle: 'Build skills that map to high-demand analytics roles across startups, enterprises, and product teams.',
       roles: [
-        { title: 'Junior Data Specialist', desc: 'Execute foundational tasks and support senior team members.', tools: ['Basic Tools', 'Reporting'], level: 'Entry-level' },
-        { title: 'Data Science Engineer/Analyst', desc: 'Design, build, and maintain core solutions and systems.', tools: ['Advanced Frameworks', 'Cloud'], level: 'Professional' },
-        { title: 'Freelance Consultant', desc: 'Work independently on custom projects for various clients.', tools: ['Client Management', 'End-to-end execution'], level: 'Independent' },
-        { title: 'Lead Data Expert', desc: 'Lead teams and architect complex solutions for enterprise clients.', tools: ['Strategy', 'Architecture', 'Leadership'], level: 'Senior' }
+        { title: 'Data Scientist', desc: 'Analyze complex data sets to derive actionable insights and build predictive models.', tools: ['Python', 'Pandas', 'Scikit-learn'], level: 'Professional' },
+        { title: 'Data Engineer', desc: 'Build and maintain data pipelines, ensuring efficient data flow and storage.', tools: ['Python', 'Spark', 'SQL'], level: 'Professional' },
+        { title: 'Business Intelligence Analyst', desc: 'Create dashboards and visualizations to help stakeholders understand key metrics.', tools: ['Power BI', 'Tableau', 'SQL'], level: 'Entry-level' },
+        { title: 'Big Data Engineer', desc: 'Work with big data technologies like Hadoop and Spark to process and analyze large-scale data.', tools: ['Hadoop', 'Spark', 'HDFS'], level: 'Specialist' },
+        { title: 'Data Analyst', desc: 'Interpret data trends and generate reports to support business decision-making.', tools: ['Excel', 'SQL', 'Visualization'], level: 'Entry-level' },
+        { title: 'Machine Learning Engineer', desc: 'Design, develop, and deploy machine learning models into production.', tools: ['Python', 'TensorFlow', 'Scikit-learn'], level: 'Professional' }
       ],
-      progression: ['Junior Executive', 'Specialist', 'Senior Professional', 'Team Lead', 'Architect/Manager']
+      progression: ['Data Analyst', 'Data Scientist', 'Senior Data Scientist', 'Lead Data Scientist', 'Data/AI Architect']
     }
   },
 
@@ -281,62 +605,146 @@ export const allMentorshipData = {
     duration: '3 Months',
     format: 'Live Mentor-led',
     level: 'Beginner to Pro',
-    enrolled: '12,500+ Mentees',
-    rating: 4.8,
+    enrolled: '15,000+ Mentees Trained',
+    rating: 4.85,
+    pitch: 'Transform Your Passion into A Successful Career In Tech',
+    providerNote: 'We are now an accredited partner under Krutanic.',
+    contactInfo: ['www.krutanic.com', 'support@krutanic.com'],
+    aboutTitle: 'About Us',
+    aboutDescription: 'Krutanic is at the forefront of transforming education through cutting-edge technology. Our comprehensive platform empowers learners with personalized learning experiences, collaborative tools, and real-time analytics. With adaptive assessments and interactive content creation, we enhance student engagement and achievement. Join us in revolutionizing education for the digital age, driving positive outcomes and preparing learners for success in tomorrow\'s world.',
+    whyTitle: 'Why Data Analytics?',
+    whyPoints: [
+      'Data analysts turn raw data into actionable insights, helping businesses make smarter decisions.',
+      'Their ability to identify patterns and trends improves operational efficiency and strategy.',
+      'High demand across industries like finance, healthcare, marketing, and e-commerce fuels strong career growth.',
+      'Data analytics skills are practical and versatile — from Excel and SQL to Python and Power BI.',
+      'Analysts often collaborate with stakeholders, enhancing their communication and business acumen.',
+      'It serves as a stepping stone to advanced roles like data scientist, BI analyst, and machine learning engineer.'
+    ],
+    trainingProgram: [
+      {
+        phase: 'Month 1',
+        title: 'Training and Internship Program',
+        items: [
+          'Live sessions with industrial experts having experience above 10 years in the industry.',
+          'Recordings of all live sessions available with 1 year access in our LMS portal.',
+          'Industry-related curriculum designed by the working professionals in the top hierarchy.'
+        ]
+      },
+      {
+        phase: 'Month 2',
+        title: 'Training and Internship Program',
+        items: [
+          'Two real-time industrial projects: one minor project and one major project.',
+          'All mentors are assigned as project leads and guide the intern till the completion of the project.',
+          'Additional projects for personal development can be required.'
+        ]
+      }
+    ],
+    moduleOverview: [
+      'Introduction to Data Analytics',
+      'Excel for Data Analysis',
+      'SQL for Data Extraction',
+      'Data Cleaning and Preprocessing',
+      'Exploratory Data Analysis (EDA)',
+      'Statistics for Data Analytics',
+      'Dashboarding and Reporting',
+      'Case Studies & Industry Applications',
+      'Python for Data Analytics',
+      'Data Visualization with Power BI/Tableau',
+      'Business Analytics Concepts',
+      'Capstone Project & Interview Preparation'
+    ],
     mentor: {
-      name: 'Lead Data Mentor',
-      role: 'Senior Industry Expert',
+      name: 'Subra Prakash',
+      role: 'Sr. SME Data Science',
       experience: '10+ Years',
-      bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
+      bio: 'Industry expert with over 10 years of experience building and deploying robust data analytics solutions for top tech companies.',
     },
+    mentorImage: subhraImg,
     outcomes: [
-      { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of Data Analytics.', icon: FaCheckCircle },
-      { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
-      { title: 'Real-world Application', desc: 'Apply your skills to solve complex problems and build scalable solutions.', icon: FaBriefcase },
-      { title: 'Job Readiness', desc: 'Prepare for top roles with interview prep and portfolio building.', icon: FaUserGraduate },
+      { title: 'Analytics Foundations', desc: 'Understand the role of a data analyst, analytics life cycle, and real-world business use cases.', icon: FaChartLine },
+      { title: 'Excel, SQL & Python', desc: 'Work with Excel, SQL, Python, Pandas, and NumPy to handle, query, and transform data.', icon: FaCode },
+      { title: 'Dashboards & Reporting', desc: 'Create interactive dashboards and stakeholder-ready reports using Power BI and Tableau.', icon: FaBriefcase },
+      { title: 'Career Readiness', desc: 'Prepare for analyst roles with capstone projects, interview prep, and portfolio support.', icon: FaUserGraduate },
     ],
     tools: [
-      { name: 'Industry Standard Tools' }, { name: 'Modern Frameworks' }, { name: 'Analytics' }, 
-      { name: 'Cloud Platforms' }, { name: 'Version Control' }, { name: 'Agile/Scrum' }
+      { name: 'Microsoft Excel' },
+      { name: 'SQL (MySQL/PostgreSQL)' },
+      { name: 'Python (Pandas & NumPy)' },
+      { name: 'Jupyter Notebook' },
+      { name: 'Google Sheets / Looker Studio' },
+      { name: 'Power BI / Tableau' }
     ],
     curriculum: [
-      { module: 'Module 1', title: 'Introduction to Data Analytics', topics: ['Overview of concepts', 'Setting up the environment', 'Basic principles', 'Industry use cases'] },
-      { module: 'Module 2', title: 'Core Methodologies', topics: ['In-depth exploration', 'Tools and frameworks', 'Best practices', 'Hands-on exercises'] },
-      { module: 'Module 3', title: 'Advanced Concepts', topics: ['Complex scenarios', 'Optimization techniques', 'Security and performance', 'Integration'] },
-      { module: 'Module 4', title: 'Industry Projects', topics: ['Real-world problem solving', 'Project planning', 'Execution', 'Testing and validation'] },
-      { module: 'Module 5', title: 'Capstone & Portfolio', topics: ['Building a complete project from scratch', 'Documentation', 'Portfolio enhancement', 'Interview preparation'] }
+      { module: 'Module 1', title: 'Introduction to Data Analytics', topics: ['Understand the role of a data analyst', 'Overview of data types and sources', 'Analytics process and life cycle', 'Real-world use cases across industries'] },
+      { module: 'Module 2', title: 'Excel for Data Analysis', topics: ['Data sorting, filtering, and formatting', 'Formulas, functions, and pivot tables', 'Charts and graphs for visualization', 'Lookup functions (VLOOKUP, INDEX-MATCH)'] },
+      { module: 'Module 3', title: 'SQL for Data Extraction', topics: ['Basic to advanced SQL queries', 'Filtering, joining, grouping, and aggregating data', 'Subqueries and nested queries', 'Creating and managing relational databases'] },
+      { module: 'Module 4', title: 'Data Cleaning and Preprocessing', topics: ['Handling missing and duplicate values', 'Data type conversions', 'Outlier detection and treatment', 'Normalization and standardization'] },
+      { module: 'Module 5', title: 'Exploratory Data Analysis (EDA)', topics: ['Analyzing distributions and patterns', 'Correlation and feature relationships', 'Univariate and bivariate analysis', 'Visualizing trends and summaries'] },
+      { module: 'Module 6', title: 'Statistics for Data Analytics', topics: ['Descriptive statistics: mean, median, mode', 'Probability distributions', 'Hypothesis testing and p-values', 'Statistical significance and confidence intervals'] },
+      { module: 'Module 7', title: 'Dashboarding and Reporting', topics: ['Creating dashboards and reports', 'Charts: bar, line, pie, maps, and more', 'Filtering and slicers for interactivity', 'Sharing reports and publishing dashboards'] },
+      { module: 'Module 8', title: 'Case Studies & Industry Applications', topics: ['Domain-wise analytics: healthcare, e-commerce, finance', 'Solving business problems with data', 'End-to-end project simulations', 'Interpreting analytics results for stakeholders'] },
+      { module: 'Module 9', title: 'Python for Data Analytics', topics: ['Python basics: variables, loops, functions', 'Using Pandas and NumPy for data manipulation', 'Reading and writing datasets (CSV, Excel)', 'Data wrangling and transformation'] },
+      { module: 'Module 10', title: 'Data Visualization with Power BI/Tableau', topics: ['Creating dashboards and reports', 'Charts: bar, line, pie, maps, and more', 'Filtering and slicers for interactivity', 'Sharing reports and publishing dashboards'] },
+      { module: 'Module 11', title: 'Business Analytics Concepts', topics: ['KPI identification and tracking', 'A/B testing and experimentation', 'Forecasting and trend analysis', 'Use cases in sales, marketing, finance, and HR'] },
+      { module: 'Module 12', title: 'Capstone Project & Interview Preparation', topics: ['Execute a real-world data analytics project', 'Prepare portfolio-ready visualizations and reports', 'Practice interview questions and analytics case rounds', 'Placement assistance program mock interview preparation'] }
     ],
     projects: [
       {
-        title: 'Industrial Capstone Project',
-        desc: 'A comprehensive project integrating all learned skills to solve a real business problem.',
-        tech: ['Modern Stack', 'Cloud Integration', 'Analytics'],
-        impact: 'Demonstrated ability to execute end-to-end solutions independently.'
+        title: 'Minor Industrial Project',
+        desc: 'A guided project where you clean, analyze, and visualize a real business dataset under mentor supervision.',
+        tech: ['Excel', 'SQL', 'Power BI'],
+        impact: 'Strong understanding of end-to-end data analytics project workflow in a mentor-led setup.'
       },
       {
-        title: 'Live Case Study Application',
-        desc: 'Hands-on implementation of a live industry case study with measurable outcomes.',
-        tech: ['Best Practices', 'Agile', 'Optimization'],
-        impact: 'Mastered practical application of theoretical concepts.'
+        title: 'Major Industrial Project',
+        desc: 'A production-style analytics project with dashboards, reporting, and actionable stakeholder insights.',
+        tech: ['Python', 'SQL', 'Tableau', 'Power BI'],
+        impact: 'Portfolio-ready major project showcasing ownership, scalability, and delivery readiness.'
       }
     ],
+    milestones: [
+      { label: 'Google Ratings', value: '4.8/5' },
+      { label: 'Global Market Size', value: 'USD 200 Billion' },
+      { label: 'Hiring Partners', value: '200+' },
+      { label: 'Job Openings', value: '25,000+' },
+      { label: 'Average Salary', value: '10+ LPA' },
+      { label: 'Mentees Trained', value: '15k+' }
+    ],
+    studentReviews: [
+      { name: 'Ramshad K', text: 'I have gained a really hands on experience with data analytics which was delivered by Akash sir. Very supportive and endless worthy experience so far.', detail: 'Great for practical learning.' },
+      { name: 'Rajendra Prasad', text: 'I researched and found the correct certificate on Linkedin and scan that and found it 100% genuine and verified successfully.', detail: 'Strong recommendation.' },
+      { name: 'Sahad K', text: 'I realised Krutanic solutions is the best company ever for training and internship provider. I learned a lot of new industrial things.', detail: 'Excellent mentor support.' },
+      { name: 'Sunil Kumar', text: 'I have enrolled for Data Science program at Krutanic solutions and my experience is outstanding. Perfect for quality training and real world projects.', detail: 'Highly valuable experience.' },
+      { name: 'Shubham Rai', text: 'Krutanic Group is truly doing a remarkable job by creating learning spaces that are not only informative but also inspiring.', detail: 'Great for career growth.' },
+      { name: 'Pranali Shinde', text: 'Amazing journey diving into data visualization, exploratory data analysis, SQL, and machine learning. Valuable skills for real-world projects.', detail: 'Very enriching experience.' }
+    ],
+    certifications: [
+      'Training Completion Certificate validating the skills you acquired',
+      'Internship Completion certificate certified by Adobe',
+      'Letter of Recommendation (LOR) for your job/placement',
+      'Certificate of excellence based on your performance'
+    ],
     faqs: [
-      { q: 'Do I need prior experience?', a: 'No, this program starts from the basics and gradually builds up to advanced concepts.' },
-      { q: 'Will I build real-world projects?', a: 'Yes, you will build 2 real-time industrial projects (one minor, one major) to solidify your learning and build your portfolio.' },
-      { q: 'What kind of mentor support is included?', a: 'Mentors act as project leads, guiding you through live sessions and assisting you until the completion of your projects.' },
-      { q: 'Is internship support included?', a: 'Yes, you gain access to an internship program with opportunities across 200+ hiring partners.' },
-      { q: 'What happens if I miss a live session?', a: 'Recordings of all live sessions are available with 1-year access in our LMS portal.' }
+      { q: 'Do I need prior knowledge?', a: 'No prior experience is required. We teach you everything from scratch, focusing on logic, analytics, and technical execution.' },
+      { q: 'Will I work on real-world projects?', a: 'Yes, you will build 2 real-time industrial projects, one minor and one major, with mentor guidance.' },
+      { q: 'What support do mentors provide?', a: 'Mentors act as project leads and guide you through live sessions, projects, and completion support.' },
+      { q: 'Is internship support included?', a: 'Yes, the program includes internship support and exposure to 200+ hiring partners.' },
+      { q: 'Are recordings available?', a: 'Yes, all live sessions are recorded and available with 1 year access in the LMS portal.' }
     ],
     careerPaths: {
-      title: 'Career Paths After the Program',
-      subtitle: 'Build skills that map to high-demand roles across startups and enterprises globally.',
+      title: 'Career Opportunities in Data Analytics',
+      subtitle: 'Build skills that map to high-demand analytics roles across finance, healthcare, marketing, e-commerce, and product teams.',
       roles: [
-        { title: 'Junior Data Specialist', desc: 'Execute foundational tasks and support senior team members.', tools: ['Basic Tools', 'Reporting'], level: 'Entry-level' },
-        { title: 'Data Analytics Engineer/Analyst', desc: 'Design, build, and maintain core solutions and systems.', tools: ['Advanced Frameworks', 'Cloud'], level: 'Professional' },
-        { title: 'Freelance Consultant', desc: 'Work independently on custom projects for various clients.', tools: ['Client Management', 'End-to-end execution'], level: 'Independent' },
-        { title: 'Lead Data Expert', desc: 'Lead teams and architect complex solutions for enterprise clients.', tools: ['Strategy', 'Architecture', 'Leadership'], level: 'Senior' }
+        { title: 'Data Analyst', desc: 'Interpret and analyze data to help organizations make strategic decisions using tools like Excel, SQL, and BI software.', tools: ['Excel', 'SQL', 'Power BI'], level: 'Entry-level' },
+        { title: 'Business Analyst', desc: 'Bridge the gap between data and business needs by interpreting trends and providing actionable insights.', tools: ['Reporting', 'Stakeholder management', 'SQL'], level: 'Professional' },
+        { title: 'Operations Analyst', desc: 'Use analytics to streamline processes, reduce costs, and improve efficiency in business operations.', tools: ['Excel', 'Dashboards', 'Process analytics'], level: 'Professional' },
+        { title: 'Product Analyst', desc: 'Leverage product usage data to optimize features, improve user experience, and drive growth.', tools: ['Product metrics', 'A/B testing', 'SQL'], level: 'Specialist' },
+        { title: 'Data Visualization Specialist', desc: 'Design interactive dashboards and reports to communicate data findings clearly and effectively.', tools: ['Tableau', 'Power BI', 'Looker Studio'], level: 'Specialist' },
+        { title: 'Marketing Analyst', desc: 'Analyze campaign performance, customer behavior, and ROI to guide marketing strategies.', tools: ['Excel', 'SQL', 'Analytics'], level: 'Professional' }
       ],
-      progression: ['Junior Executive', 'Specialist', 'Senior Professional', 'Team Lead', 'Architect/Manager']
+      progression: ['Data Analyst', 'Senior Analyst', 'Business/BI Analyst', 'Lead Analyst', 'Analytics Manager']
     }
   },
 
@@ -350,11 +758,12 @@ export const allMentorshipData = {
     enrolled: '12,500+ Mentees',
     rating: 4.8,
     mentor: {
-      name: 'Lead Design Mentor',
-      role: 'Senior Industry Expert',
+      name: 'Akash R',
+      role: 'Graphic Design',
       experience: '10+ Years',
       bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
     },
+    mentorImage: akashImg,
     outcomes: [
       { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of UI/UX Design.', icon: FaCheckCircle },
       { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
@@ -878,11 +1287,12 @@ export const allMentorshipData = {
     enrolled: '12,500+ Mentees',
     rating: 4.8,
     mentor: {
-      name: 'Lead Hardware Mentor',
-      role: 'Senior Industry Expert',
+      name: 'Rahul Srivastava',
+      role: 'Embedded System',
       experience: '10+ Years',
       bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
     },
+    mentorImage: rahulImg,
     outcomes: [
       { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of Embedded System.', icon: FaCheckCircle },
       { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
