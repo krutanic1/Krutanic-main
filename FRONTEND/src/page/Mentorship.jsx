@@ -12,7 +12,6 @@ import CareerTracksSection from './Mentorship/CareerTracksSection';
 import CredentialSection from './Mentorship/CredentialSection';
 import MentorShowcase from './Mentorship/MentorShowcase';
 import EnrollmentSteps from './Mentorship/EnrollmentSteps';
-import PricingSection from './Mentorship/PricingSection';
 import FAQSection from './Mentorship/FAQSection';
 import FinalCTASection from './Mentorship/FinalCTASection';
 import MentorshipForm from './MentorshipForm';
@@ -59,7 +58,6 @@ const Mentorship = () => {
         <CredentialSection />
         <MentorShowcase />
         <EnrollmentSteps />
-        <PricingSection />
         <FAQSection />
         <FinalCTASection onOpenForm={togglePopup} />
       </main>

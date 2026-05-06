@@ -3,11 +3,14 @@ import { Link, useNavigate, useParams, Navigate } from "react-router-dom";
 import { 
   FaStar, FaCalendarAlt, FaChalkboardTeacher, FaProjectDiagram, 
   FaUserGraduate, FaChevronDown, FaChevronUp, FaFileDownload, 
-  FaHeadset, FaCheckCircle, FaArrowRight, FaHome, FaChevronRight, FaBriefcase 
+  FaHeadset, FaCheckCircle, FaArrowRight, FaHome, FaChevronRight, FaBriefcase,
+  FaDownload, FaShareAlt, FaAward, FaIdCard
 } from "react-icons/fa";
 import { allMentorshipData } from "./allMentorshipData";
 import MentorshipForm from "../../MentorshipForm";
 import sachinImg from "../../../assets/mentors/sachin.jpg";
+import certInternship from '../../../assets/certificates/c/internship.jpg';
+import certTraining from '../../../assets/certificates/c/training.jpg';
 import "./CourseDetails.css";
 
 const learningCategories = [
@@ -39,7 +42,7 @@ const learningCategories = [
       "No Placement Assistance",
       "No Mock Interviews"
     ],
-    links: ["Slot Booking Link"]
+    links: ["Slot Booking Link", "Full Registration Link"]
   },
   {
     title: "Career Advancement",
@@ -57,7 +60,7 @@ const learningCategories = [
       "ATS-Friendly Resume Building",
       "Personality Development"
     ],
-    links: ["Slot Booking Link"]
+    links: ["Slot Booking Link", "Career Advancement Full Registration"]
   }
 ];
 
@@ -458,19 +461,72 @@ const MentorshipCourseDetails = () => {
       </section>
 
       {data.certifications?.length > 0 && (
-        <section className="cd-section cd-section--alt cd-certifications">
-          <div className="cd-section__inner">
-            <div className="cd-section__header">
-              <h2 className="cd-section__title">Certifications</h2>
-              <p className="cd-section__sub">Credentials that validate your practical learning and internship outcomes.</p>
-            </div>
-            <div className="cd-cert-grid">
-              {data.certifications.map((item, i) => (
-                <div key={i} className="cd-cert-card">
-                  <span className="num">{String(i + 1).padStart(2, "0")}</span>
-                  <p>{item}</p>
+        <section className="km-creds">
+          <div className="km-creds__container">
+            <div className="km-creds__left" data-aos="fade-right">
+              <div className="km-section-chip" style={{ color: '#2563EB', borderColor: '#2563EB', backgroundColor: 'rgba(37, 99, 235, 0.1)' }}>Certifications</div>
+              <h2 className="km-section-title">Credentials That <span style={{ color: '#2563EB' }}>Matter</span></h2>
+              <p className="km-creds__sub">Validate your hard work with dual certifications that are recognized by top hiring partners and industry leaders.</p>
+              
+              <div className="km-creds__highlights">
+                <div className="km-creds__highlight">
+                  <div className="km-creds__highlight-icon" style={{ color: '#2563EB' }}><FaAward /></div>
+                  <div>
+                    <h4>Verified Training</h4>
+                    <p>Certification of technical mastery in your chosen domain.</p>
+                  </div>
                 </div>
-              ))}
+                <div className="km-creds__highlight">
+                  <div className="km-creds__highlight-icon" style={{ color: '#2563EB' }}><FaIdCard /></div>
+                  <div>
+                    <h4>Work Experience</h4>
+                    <p>Official internship certificate for your real-world contributions.</p>
+                  </div>
+                </div>
+                <div className="km-creds__highlight">
+                  <div className="km-creds__highlight-icon" style={{ color: '#2563EB' }}><FaProjectDiagram /></div>
+                  <div>
+                    <h4>Project Verified</h4>
+                    <p>Portfolio-ready validation for your capstone project work.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="km-creds__stats">
+                <div className="km-creds__stat">
+                  <strong style={{ color: '#2563EB' }}>12k+</strong>
+                  <span>Verified Profiles</span>
+                </div>
+                <div className="km-creds__stat">
+                  <strong style={{ color: '#2563EB' }}>500+</strong>
+                  <span>Colleges Impacted</span>
+                </div>
+              </div>
+              <p className="km-creds__note">*All certificates include unique QR codes for instant recruiter verification.</p>
+            </div>
+
+            <div className="km-creds__right" data-aos="fade-left">
+              <div className="km-cert-card">
+                <img src={certTraining} alt="Training Certificate" className="km-cert-card__img" />
+                <div className="km-cert-card__footer">
+                  <span>Training Certificate</span>
+                  <div className="km-cert-card__actions">
+                    <a href={certTraining} target="_blank" rel="noreferrer" style={{ color: '#2563EB' }}><FaDownload /></a>
+                    <a href="#" style={{ color: '#2563EB' }}><FaShareAlt /></a>
+                  </div>
+                </div>
+              </div>
+
+              <div className="km-cert-card">
+                <img src={certInternship} alt="Internship Certificate" className="km-cert-card__img" />
+                <div className="km-cert-card__footer">
+                  <span>Experience Certificate</span>
+                  <div className="km-cert-card__actions">
+                    <a href={certInternship} target="_blank" rel="noreferrer" style={{ color: '#2563EB' }}><FaDownload /></a>
+                    <a href="#" style={{ color: '#2563EB' }}><FaShareAlt /></a>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -566,16 +622,57 @@ const MentorshipCourseDetails = () => {
                 </div>
 
                 <div className="space-y-3">
-                  {cat.links.map((link, j) => (
-                    <button
-                      key={j}
-                      type="button"
-                      onClick={() => setShowForm(true)}
-                      className="w-full rounded-xl bg-[#2563EB] px-4 py-3 text-sm font-bold text-white transition hover:opacity-90"
-                    >
-                      {link}
-                    </button>
-                  ))}
+                  {cat.links.map((link, j) => {
+                    if (link === "Slot Booking Link") {
+                      return (
+                        <a
+                          key={j}
+                          href="https://pages.razorpay.com/Instructor_Led_Slot_Booking"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block text-center w-full rounded-xl bg-[#2563EB] px-4 py-3 text-sm font-bold text-white transition hover:opacity-90"
+                        >
+                          Book Slot Now
+                        </a>
+                      );
+                    }
+                    if (link === "Full Registration Link") {
+                      return (
+                        <a
+                          key={j}
+                          href="https://pages.razorpay.com/Instructor_Led_Full_Enrollment"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block text-center w-full rounded-xl bg-[#2563EB] px-4 py-3 text-sm font-bold text-white transition hover:opacity-90"
+                        >
+                          Full Registration
+                        </a>
+                      );
+                    }
+                    if (link === "Career Advancement Full Registration") {
+                      return (
+                        <a
+                          key={j}
+                          href="https://pages.razorpay.com/Career_Advancement_Full_Reg"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block text-center w-full rounded-xl bg-[#2563EB] px-4 py-3 text-sm font-bold text-white transition hover:opacity-90"
+                        >
+                          Full Registration
+                        </a>
+                      );
+                    }
+                    return (
+                      <button
+                        key={j}
+                        type="button"
+                        onClick={() => setShowForm(true)}
+                        className="w-full rounded-xl bg-[#2563EB] px-4 py-3 text-sm font-bold text-white transition hover:opacity-90"
+                      >
+                        {link}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             ))}
