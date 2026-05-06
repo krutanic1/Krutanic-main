@@ -379,6 +379,9 @@ const AdvOnBoardingDetails = () => {
                     {dialogData.offerlettersended ? "Yes ✓" : "No ✗"}
                   </span>
                 </p>
+                <p>
+                  <strong>Batch Timing:</strong> {dialogData.batchTiming || "N/A"}
+                </p>
               </div>
               <button
                 className="bg-black px-4 py-1 text-white rounded-md mt-2"

@@ -83,6 +83,7 @@ const advEnrollSchema = new Schema(
     watchedSessions: [{ type: String }],
     selectedProject: { type: String, default: null },
     projectProgress: { type: Map, of: Object, default: {} },
+    batchTiming: { type: String },
   },
   {
     timestamps: true,

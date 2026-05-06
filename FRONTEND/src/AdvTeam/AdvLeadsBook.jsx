@@ -970,13 +970,13 @@ const AdvLeadsBook = () => {
                                                             <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                                 <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>history_toggle_off</span> Created On
                                                             </div>
-                                                            <div style={{ fontSize: '13px', fontWeight: '700', color: designTokens.colors.textPrimary }}>{lead.created_at ? new Date(lead.created_at).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}</div>
+                                                            <div style={{ fontSize: '13px', fontWeight: '700', color: designTokens.colors.textPrimary }}>{lead.created_at ? new Date(lead.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}</div>
                                                         </div>
                                                         <div style={{ minWidth: '130px' }}>
                                                             <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                                 <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>assignment_ind</span> Assigned On
                                                             </div>
-                                                            <div style={{ fontSize: '13px', fontWeight: '700', color: designTokens.colors.textPrimary }}>{lead.assigned_at ? new Date(lead.assigned_at).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}</div>
+                                                            <div style={{ fontSize: '13px', fontWeight: '700', color: designTokens.colors.textPrimary }}>{lead.assigned_at ? new Date(lead.assigned_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}</div>
                                                         </div>
                                                     </div>
 
@@ -1029,8 +1029,9 @@ const AdvLeadsBook = () => {
                                                                 {[
                                                                     { label: 'Pipeline Stage', value: lead.stage, icon: 'account_tree' },
                                                                     { label: 'Disposition', value: lead.disposition, icon: 'label_important' },
-                                                                    { label: 'Contact Attempts', value: `${lead.attempt_count || 0} Attempts`, icon: 'call_log' },
-                                                                    { label: 'Next Follow-up', value: lead.next_followup_at ? new Date(lead.next_followup_at).toLocaleString() : 'Not Scheduled', icon: 'schedule' },
+                                                                     { label: 'Contact Attempts', value: `${lead.attempt_count || 0} Attempts`, icon: 'call_log' },
+                                                                     { label: 'Last called at', value: lead.last_contacted_at ? new Date(lead.last_contacted_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'Never Called', icon: 'history' },
+                                                                    { label: 'Next Follow-up', value: lead.next_followup_at ? new Date(lead.next_followup_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'Not Scheduled', icon: 'schedule' },
                                                                     { label: 'Primary Contact', value: lead.email, icon: 'mail' },
                                                                     { label: 'Workplace', value: lead.company_name, icon: 'business' },
                                                                     { label: 'Educational Background', value: lead.education_background, icon: 'school' },
@@ -1278,7 +1279,9 @@ const AdvLeadsBook = () => {
                                                                                         </span>
                                                                                     </div>
                                                                                 </div>
-                                                                                <span style={{ fontSize: '11px', color: designTokens.colors.textSecondary, fontWeight: '600' }}>{new Date(h.createdAt).toLocaleDateString()}</span>
+                                                                                <span style={{ fontSize: '11px', color: designTokens.colors.textSecondary, fontWeight: '600' }}>
+                                                                                    {new Date(h.createdAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })} {new Date(h.createdAt).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' })}
+                                                                                </span>
                                                                             </div>
 
                                                                             {/* Scheduled Dates Display */}
@@ -1286,19 +1289,19 @@ const AdvLeadsBook = () => {
                                                                                 {h.followUpDate && (
                                                                                     <div style={{ fontSize: '11px', background: `${designTokens.colors.info}15`, color: designTokens.colors.info, padding: '4px 8px', borderRadius: '6px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                                                         <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>event_repeat</span>
-                                                                                        Follow-up: {new Date(h.followUpDate).toLocaleString()}
+                                                                                        Follow-up: {new Date(h.followUpDate).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
                                                                                     </div>
                                                                                 )}
                                                                                 {h.demoScheduleDate && (
                                                                                     <div style={{ fontSize: '11px', background: `${designTokens.colors.warning}15`, color: designTokens.colors.warning, padding: '4px 8px', borderRadius: '6px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                                                         <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>calendar_month</span>
-                                                                                        Demo: {new Date(h.demoScheduleDate).toLocaleString()}
+                                                                                        Demo: {new Date(h.demoScheduleDate).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
                                                                                     </div>
                                                                                 )}
                                                                                 {h.expectedPaymentDate && (
                                                                                     <div style={{ fontSize: '11px', background: `${designTokens.colors.success}15`, color: designTokens.colors.success, padding: '4px 8px', borderRadius: '6px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                                                         <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>payments</span>
-                                                                                        Payment: {new Date(h.expectedPaymentDate).toLocaleDateString()}
+                                                                                        Payment: {new Date(h.expectedPaymentDate).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}
                                                                                     </div>
                                                                                 )}
                                                                             </div>

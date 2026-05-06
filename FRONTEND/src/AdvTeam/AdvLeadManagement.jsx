@@ -512,7 +512,7 @@ const AdvLeadManagement = () => {
                     </div>
                 </div>
 
-                {(advTeamId === "69d4a881cb9305f0d5ecbeb2" || (userFullname && userFullname.toLowerCase().includes("sumeetha"))) && (
+                {(advTeamId === "69d4a881cb9305f0d5ecbeb2" || (userName && userName.toLowerCase().includes("sumeetha"))) && (
                     <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap', alignItems: 'center', background: '#f8fafc', padding: '10px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0 12px', borderRight: '1px solid #e2e8f0' }}>
                             <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#6366f1' }}>fiber_new</span>
@@ -567,7 +567,7 @@ const AdvLeadManagement = () => {
                         </div>
                     </div>
                 )}
-// tarun sai h  y      hs ddddddd
+
                 {loading ? (
                     <p style={{ textAlign: 'center', padding: '40px' }}>Loading leads...</p>
                 ) : (

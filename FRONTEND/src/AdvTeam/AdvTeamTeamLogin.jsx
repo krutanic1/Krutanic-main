@@ -72,14 +72,14 @@ const AdvTeamTeamLogin = () => {
       const response = await axios.post(`${API}/manager-impersonate-advteam`, { userId, managerId });
       if (response.status === 200) {
         toast.success("Impersonation successful!");
-        const loginTime = new Date().getTime();
+        const { token, bdaId, bdaName, designation } = response.data;
+        
+        // Pass credentials via URL so the new tab can save them to its own sessionStorage
+        // This prevents conflicts between different tabs (Solution 2)
+        const impersonateUrl = `/advteam/home?impToken=${encodeURIComponent(token)}&impId=${bdaId}&impName=${encodeURIComponent(bdaName)}&impRole=${encodeURIComponent(designation || "")}&impType=advTeamToken`;
+        
         setTimeout(() => {
-          localStorage.setItem("advTeamId", response.data.bdaId);
-          localStorage.setItem("advTeamName", response.data.bdaName);
-          localStorage.setItem("advTeamToken", response.data.token);
-          localStorage.setItem("advTeamSessionStartTime", loginTime);
-          localStorage.setItem("advTeamDesignation", response.data.designation || "");
-          window.open("/advteam/home", "_blank");
+          window.open(impersonateUrl, "_blank");
         }, 500);
       }
     } catch (err) {

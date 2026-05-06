@@ -33,6 +33,7 @@ const BookedAmount = () => {
     setTransactionId("");
     setInternshipstartsmonth("");
     setInternshipendsmonth("");
+    setBatchTiming("");
     setReferFriend("");
     setLanguages(["English"]);
     setEditingStudentId(null);
@@ -141,6 +142,7 @@ const BookedAmount = () => {
   const [transactionId, setTransactionId] = useState("");
   const [internshipstartsmonth, setInternshipstartsmonth] = useState("");
   const [internshipendsmonth, setInternshipendsmonth] = useState("");
+  const [batchTiming, setBatchTiming] = useState("");
   const [referFriend, setReferFriend] = useState("");
   const [languages, setLanguages] = useState(["English"]);
   const [newStudent, setNewStudent] = useState([]);
@@ -190,6 +192,7 @@ const BookedAmount = () => {
       clearPaymentMonth,
       operationName: operationData.fullname,
       operationId: operationData._id,
+      batchTiming,
     };
     try {
       let response;
@@ -314,6 +317,7 @@ const BookedAmount = () => {
       setTransactionId(student.transactionId || "");
       setInternshipstartsmonth(student.internshipstartsmonth || "");
       setInternshipendsmonth(student.internshipendsmonth || "");
+      setBatchTiming(student.batchTiming || "");
       setReferFriend(student.referFriend || "");
       setLanguages(student.languages || ["English"]);
       setiscourseFormVisible(true);
@@ -920,9 +924,15 @@ const BookedAmount = () => {
                   className="border border-gray-300 p-2.5 rounded-md focus:ring-2 focus:ring-blue-500 outline-none transition h-[45px]"
                 >
                   <option value="" disabled>Mode of Payment</option>
-                  <option value="Online">Online</option>
+                   <option value="Online">Online</option>
                   <option value="Cash">Cash</option>
                   <option value="Transfer">Transfer</option>
+                  <option value="RazorPay">RazorPay</option>
+                  <option value="QR Code">QR Code</option>
+                  <option value="EaseBuZZ">EaseBuZZ</option>
+                  <option value="PayPal">PayPal</option>
+                  <option value="Credit Card">Credit Card</option>
+                  <option value="Debit Card">Debit Card</option>
                 </select>
               </div>
 
@@ -1111,6 +1121,20 @@ const BookedAmount = () => {
                   {monthsToShow.map((month, index) => (
                     <option key={index} value={month}>{month}</option>
                   ))}
+                </select>
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-xs font-bold text-gray-600 mb-1 uppercase tracking-wider">Batch Timing</label>
+                <select
+                  value={batchTiming}
+                  onChange={(e) => setBatchTiming(e.target.value)}
+                  required
+                  className="border border-gray-300 p-2.5 rounded-md focus:ring-2 focus:ring-blue-500 outline-none transition h-[45px]"
+                >
+                  <option value="" disabled>Select Batch Timing</option>
+                  <option value="Monday-Friday (8:00 pm - 9:30 pm)">Monday-Friday (8:00 pm - 9:30 pm)</option>
+                  <option value="Saturday-Sunday (1 to 2 hours per day)">Saturday-Sunday (1 to 2 hours per day)</option>
                 </select>
               </div>
 
@@ -1475,6 +1499,12 @@ Team Krutanic`
               </p>
               <p>
                 <strong>Aadhar No:</strong> {dialogData.aadharNumber}
+              </p>
+              <p>
+                <strong>Batch Timing:</strong> {dialogData.batchTiming || "N/A"}
+              </p>
+              <p>
+                <strong>Mode of Payment:</strong> {dialogData.modeofpayment || "N/A"}
               </p>
             </div>
             <button onClick={handleDialogClose}>Close</button>

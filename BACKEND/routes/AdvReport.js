@@ -57,7 +57,7 @@ router.get("/specialist-stats/:id", async (req, res) => {
 // Leader Dashboard (Specialist Productivity in Team)
 router.get("/leader-productivity/:teamId", async (req, res) => {
     try {
-        const teamLeads = await AdvUser.find({ team_id: req.params.teamId, role: "sr_inside_sales_specialist" });
+        const teamLeads = await AdvUser.find({ team_id: req.params.teamId, role: "sr_inside_sales_specialist", status: "Active" });
 
         const stats = await Promise.all(teamLeads.map(async (user) => {
             const today = new Date();
@@ -144,6 +144,7 @@ router.get("/leaderboard", async (req, res) => {
             { $limit: 10 },
             { $lookup: { from: "advusers", localField: "_id", foreignField: "_id", as: "user" } },
             { $unwind: "$user" },
+            { $match: { "user.status": "Active" } },
             { $project: { name: "$user.name", conversions: "$count" } }
         ]);
         res.status(200).json(topSpecialists);
@@ -187,7 +188,7 @@ router.get("/performance-alerts", async (req, res) => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        const specialists = await AdvUser.find({ role: "sr_inside_sales_specialist" });
+        const specialists = await AdvUser.find({ role: "sr_inside_sales_specialist", status: "Active" });
         const inactiveSpecialists = [];
 
         for (const s of specialists) {
@@ -455,7 +456,7 @@ router.get("/team-analysis", async (req, res) => {
         const endDate   = new Date(targetYear, targetMonth + 1, 0, 23, 59, 59, 999);
 
         // 1. Get all team members (all roles)
-        const allMembers = await AdvTeamMember.find({}, {
+        const allMembers = await AdvTeamMember.find({ Access: true, status: "Active" }, {
             fullname: 1, designation: 1, team: 1, teams: 1, _id: 1
         }).lean();
 

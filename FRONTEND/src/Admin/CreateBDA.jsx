@@ -255,13 +255,18 @@ const CreateBDA = () => {
       );
       if (response.status === 200) {
         toast.success("Impersonation successful!");
-        const loginTime = new Date().getTime();
+        const { token, bdaId, userId: resUserId, bdaName, fullname, designation } = response.data;
+        
+        // Pass credentials via URL so the new tab can save them to its own sessionStorage
+        // We use fallbacks to ensure compatibility with different backend response formats
+        const targetId = bdaId || resUserId || userId;
+        const targetName = bdaName || fullname || "";
+        const targetRole = designation || role;
+
+        const impersonateUrl = `/Home?impToken=${encodeURIComponent(token)}&impId=${targetId}&impName=${encodeURIComponent(targetName)}&impRole=${encodeURIComponent(targetRole)}&impType=bdaToken`;
+        
         setTimeout(() => {
-          localStorage.setItem("bdaId", response.data.bdaId);
-          localStorage.setItem("bdaName", response.data.bdaName);
-          localStorage.setItem("bdaToken", response.data.token);
-          localStorage.setItem("sessionStartTime", loginTime);
-          window.open("/Home", "_blank");
+          window.open(impersonateUrl, "_blank");
         }, 500);
       }
     } catch (error) {

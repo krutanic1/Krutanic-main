@@ -263,14 +263,17 @@ const CreateAdvTeam = () => {
       );
       if (response.status === 200) {
         toast.success("Impersonation successful!");
-        const loginTime = new Date().getTime();
+        const { token, bdaId, userId: resUserId, bdaName, fullname, designation } = response.data;
+        
+        // Pass credentials via URL so the new tab can save them to its own sessionStorage
+        const targetId = bdaId || resUserId || userId;
+        const targetName = bdaName || fullname || "";
+        const targetRole = designation || role;
+
+        const impersonateUrl = `/advteam/home?impToken=${encodeURIComponent(token)}&impId=${targetId}&impName=${encodeURIComponent(targetName)}&impRole=${encodeURIComponent(targetRole)}&impType=advTeamToken`;
+        
         setTimeout(() => {
-          localStorage.setItem("advTeamId", response.data.bdaId);
-          localStorage.setItem("advTeamName", response.data.bdaName);
-          localStorage.setItem("advTeamToken", response.data.token);
-          localStorage.setItem("advTeamSessionStartTime", loginTime);
-          localStorage.setItem("advTeamDesignation", response.data.designation || "");
-          window.open("/advteam/home", "_blank");
+          window.open(impersonateUrl, "_blank");
         }, 500);
       }
     } catch (error) {

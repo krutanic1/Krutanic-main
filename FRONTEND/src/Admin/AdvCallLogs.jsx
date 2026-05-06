@@ -41,14 +41,13 @@ const AdvCallLogs = () => {
     };
 
     const getOutcomeColor = (outcome) => {
-        switch (outcome) {
-            case 'converted': return 'bg-green-100 text-green-700';
-            case 'interested': return 'bg-blue-100 text-blue-700';
-            case 'no_answer': return 'bg-red-100 text-red-700';
-            case 'junk': return 'bg-gray-100 text-gray-700';
-            case 'follow_up': return 'bg-purple-100 text-purple-700';
-            default: return 'bg-orange-100 text-orange-700';
-        }
+        const s = (outcome || "").toLowerCase();
+        if (s.includes('converted') || s.includes('booked') || s.includes('won')) return 'bg-green-100 text-green-700';
+        if (s.includes('interested') || s.includes('connected')) return 'bg-blue-100 text-blue-700';
+        if (s.includes('no_answer') || s.includes('rnr') || s.includes('busy') || s.includes('switched') || s.includes('not_reachable')) return 'bg-red-100 text-red-700';
+        if (s.includes('junk') || s.includes('wrong') || s.includes('not_interested') || s.includes('lost')) return 'bg-gray-100 text-gray-700';
+        if (s.includes('follow_up') || s.includes('callback')) return 'bg-purple-100 text-purple-700';
+        return 'bg-orange-100 text-orange-700';
     };
 
     return (
@@ -125,9 +124,14 @@ const AdvCallLogs = () => {
                                         </div>
                                     </td>
                                     <td className="px-6 py-5">
-                                        <span className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tight ${getOutcomeColor(log.callOutcome)}`}>
-                                            {log.callOutcome?.replace('_', ' ')}
-                                        </span>
+                                        <div className="flex flex-col gap-1">
+                                            <span className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tight w-fit ${getOutcomeColor(log.callOutcome || log.disposition)}`}>
+                                                {(log.callOutcome || log.disposition || 'N/A').replace('_', ' ')}
+                                            </span>
+                                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest px-1">
+                                                {log.stage || 'N/A'}
+                                            </span>
+                                        </div>
                                     </td>
                                     <td className="px-6 py-5">
                                         <div className="text-sm font-bold text-gray-900">

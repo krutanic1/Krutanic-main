@@ -104,6 +104,7 @@ const AdvanceDashboardAccess = () => {
   const [role, setRole] = useState("");
   const [internshipstartsmonth, setInternshipStartsMonth] = useState("");
   const [internshipendsmonth, setInternshipEndsMonth] = useState("");
+  const [batchTiming, setBatchTiming] = useState("");
 
   const LANGUAGE_OPTIONS = ["English", "Hindi", "Kannada", "Telugu", "Tamil", "Malayalam", "Bengali"];
 
@@ -199,6 +200,7 @@ const AdvanceDashboardAccess = () => {
     setRole("");
     setInternshipStartsMonth("");
     setInternshipEndsMonth("");
+    setBatchTiming("");
     navigate("/advancedashboardaccess");
   };
 
@@ -235,6 +237,7 @@ const AdvanceDashboardAccess = () => {
       internshipstartsmonth: internshipstartsmonth,
       internshipendsmonth: internshipendsmonth,
       program: domain.trim(),
+      batchTiming: batchTiming
     };
 
     if (isEmailVerified) {
@@ -353,7 +356,7 @@ const AdvanceDashboardAccess = () => {
   return (
     <div id="onboardingform">
       <Toaster position="top-center" reverseOrder={false} />
-      <div className="container m-auto">
+      <div className="container m-auto px-4 sm:px-6">
         <div className="marquee-container">
           <div className="marquee-text">
             <strong>Kind Reminder:</strong> Please ensure that you complete the <strong>Dashboard Access
@@ -430,6 +433,8 @@ const AdvanceDashboardAccess = () => {
               <option value="QR Code">QR Code</option>
               <option value="EaseBuZZ">EaseBuZZ</option>
               <option value="PayPal">PayPal</option>
+              <option value="Credit Card">Credit Card</option>
+              <option value="Debit Card">Debit Card</option>
             </select>
 
             <select
@@ -575,7 +580,7 @@ const AdvanceDashboardAccess = () => {
                     padding: '0 5px',
                     zIndex: 2,
                     ...(languages.length > 0 || isLangDropdownOpen 
-                      ? { top: '0', transform: 'translateY(-50%) scale(0.85)', color: '#F15B29', fontWeight: 'bold' }
+                      ? { top: '-10px', transform: 'translateY(0) scale(0.85)', color: '#F15B29', fontWeight: 'bold' }
                       : { top: '50%', transform: 'translateY(-50%)', color: '#8d8d8d' }
                     )
                   }}
@@ -633,7 +638,7 @@ const AdvanceDashboardAccess = () => {
                 min={minDate}
                 max={maxDate}
               />
-              <label htmlFor="clearPaymentMonth">Due date for clear payment ?</label>
+              <label htmlFor="clearPaymentMonth">Next instalment to clear the payment</label>
             </div>
 
             <select
@@ -664,6 +669,22 @@ const AdvanceDashboardAccess = () => {
                   {month}
                 </option>
               ))}
+            </select>
+
+            <select
+              value={batchTiming}
+              onChange={(e) => setBatchTiming(e.target.value)}
+              required
+            >
+              <option value="" disabled>
+                Select Batch Timing
+              </option>
+              <option value="Monday-Friday (8:00 pm - 9:30 pm)">
+                Monday-Friday (8:00 pm - 9:30 pm)
+              </option>
+              <option value="Saturday-Sunday (1 to 2 hours per day)">
+                Saturday-Sunday (1 to 2 hours per day)
+              </option>
             </select>
 
           </div>

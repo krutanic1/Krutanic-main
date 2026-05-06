@@ -1,5 +1,5 @@
 import React, { lazy, useEffect, useState } from "react";
-import { Routes, Route, BrowserRouter, useLocation, Navigate } from "react-router-dom";
+import { Routes, Route, BrowserRouter, useLocation, Navigate, useNavigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ReactPixel from 'react-facebook-pixel';
 import Header from "./Components/Header";
@@ -225,6 +225,112 @@ import Exercise from "./User/Excercise.jsx";
 
 const queryClient = new QueryClient();
 
+// 🛡️ 1. GLOBAL AUTH STORE & STORAGE PROXY (Zero-Latency Tab Isolation)
+// This ensures that credentials are available INSTANTLY before React even starts.
+if (typeof window !== "undefined") {
+  window.KrutanicAuth = window.KrutanicAuth || {};
+  
+  // A. Immediate URL Capture (First Frame)
+  const urlParams = new URLSearchParams(window.location.search);
+  const impToken = urlParams.get("impToken");
+  const impType = urlParams.get("impType");
+
+  if (impToken && impType) {
+    const data = {
+      token: impToken,
+      id: urlParams.get("impId"),
+      name: urlParams.get("impName"),
+      role: urlParams.get("impRole"),
+      type: impType
+    };
+    window.KrutanicAuth[impType] = data.token;
+    if (data.id) window.KrutanicAuth[impType.replace("Token", "Id")] = data.id;
+    if (data.name) window.KrutanicAuth[impType.replace("Token", "Name")] = data.name;
+    if (data.role) window.KrutanicAuth["designation"] = data.role;
+
+    // Persist to Session for future reloads in this tab
+    sessionStorage.setItem(impType, data.token);
+    if (data.id) sessionStorage.setItem(impType.replace("Token", "Id"), data.id);
+    if (data.name) sessionStorage.setItem(impType.replace("Token", "Name"), data.name);
+    if (data.role) sessionStorage.setItem("designation", data.role);
+
+    console.log("🚀 AUTH: Global handover complete for", impType);
+    
+    // Inject artificial session start time to satisfy Header session guards
+    const now = new Date().getTime().toString();
+    sessionStorage.setItem("sessionStartTime", now);
+    sessionStorage.setItem("advTeamSessionStartTime", now);
+    window.KrutanicAuth["sessionStartTime"] = now;
+    window.KrutanicAuth["advTeamSessionStartTime"] = now;
+  }
+
+  // B. Safe Storage Proxy
+  // This makes localStorage.getItem() prioritize Tab-Specific (Session) data
+  // while keeping everything isolated per tab.
+  const originalGetItem = localStorage.getItem;
+  localStorage.getItem = function(key) {
+    // 1. Try Global Store
+    if (window.KrutanicAuth[key]) return window.KrutanicAuth[key];
+    // 2. Try Session Store
+    const sessionVal = sessionStorage.getItem(key);
+    if (sessionVal !== null) return sessionVal;
+    // 3. Fallback to Local
+    return originalGetItem.call(localStorage, key);
+  };
+  
+  const originalSetItem = localStorage.setItem;
+  localStorage.setItem = function(key, value) {
+    // If we are in an impersonated tab (any token in session), save everything to session instead
+    const isIsolated = !!(sessionStorage.getItem("bdaToken") || sessionStorage.getItem("advTeamToken") || sessionStorage.getItem("operationToken"));
+    if (isIsolated) {
+      sessionStorage.setItem(key, value);
+      window.KrutanicAuth[key] = value;
+    } else {
+      originalSetItem.call(localStorage, key, value);
+    }
+  };
+
+  // C. Clean URL (After a tiny delay to let components read it if needed)
+  if (impToken) {
+    setTimeout(() => {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }, 100);
+  }
+}
+
+// 🔒 2. STABLE AUTHENTICATION UTILITY
+const getAuthToken = (key) => {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(key); // Proxy handles the isolation
+};
+
+// 🌍 3. GLOBAL TIMEZONE PROXY (IST)
+if (typeof window !== "undefined") {
+  const originalToLocaleString = Date.prototype.toLocaleString;
+  Date.prototype.toLocaleString = function(locales, options) {
+    if (!locales) {
+      return originalToLocaleString.call(this, 'en-IN', { timeZone: 'Asia/Kolkata', ...options });
+    }
+    return originalToLocaleString.call(this, locales, options);
+  };
+  
+  const originalToLocaleDateString = Date.prototype.toLocaleDateString;
+  Date.prototype.toLocaleDateString = function(locales, options) {
+    if (!locales) {
+      return originalToLocaleDateString.call(this, 'en-IN', { timeZone: 'Asia/Kolkata', ...options });
+    }
+    return originalToLocaleDateString.call(this, locales, options);
+  };
+
+  const originalToLocaleTimeString = Date.prototype.toLocaleTimeString;
+  Date.prototype.toLocaleTimeString = function(locales, options) {
+    if (!locales) {
+      return originalToLocaleTimeString.call(this, 'en-IN', { timeZone: 'Asia/Kolkata', ...options });
+    }
+    return originalToLocaleTimeString.call(this, locales, options);
+  };
+}
+
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
@@ -237,30 +343,96 @@ const App = () => {
 
 const AppContent = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [showAutoPopup, setShowAutoPopup] = useState(false);
 
+  // 🛡️ SECURITY GUARDS
+  const isAuthenticated = () => !!getAuthToken("token");
+  const isAuthenticatedBda = () => !!getAuthToken("bdaToken");
+  const isAuthenticatedOperation = () => !!getAuthToken("operationToken");
+  const isAuthenticatedAdvOperation = () => !!getAuthToken("advOperationToken");
+  const isAuthenticatedAdmin = () => !!getAuthToken("adminToken");
+  const isAuthenticatedAdvTeam = () => !!getAuthToken("advTeamToken");
+  const isAuthenticatedPC = () => !!getAuthToken("pctoken");
+  const isAuthenticatedEventUser = () => !!getAuthToken("eventToken");
+  const isAuthenticatedMarketing = () => !!getAuthToken("marketingToken");
+  const isAuthenticatedHR = () => !!getAuthToken("hrToken");
+
   useEffect(() => {
-    // Pages where auto-popup is allowed (strictly following the user's list)
+    const checkTokens = () => {
+      const currentPath = window.location.pathname.toLowerCase();
+      
+      // If we just landed with an impToken, skip the expiration check for a few seconds
+      // to allow the handover to stabilize.
+      if (window.location.search.includes("impToken")) return;
+
+      const tokenKeys = ["adminToken", "bdaToken", "advTeamToken", "operationToken", "advOperationToken", "marketingToken", "studentToken"];
+      let expiredTokenKey = null;
+
+      tokenKeys.forEach(key => {
+        const token = getAuthToken(key);
+        if (token) {
+          try {
+            const parts = token.split('.');
+            if (parts.length === 3) {
+              const decoded = JSON.parse(atob(parts[1]));
+              if (decoded.exp * 1000 < Date.now()) {
+                expiredTokenKey = key;
+              }
+            }
+          } catch (e) {
+            // ignore malformed
+          }
+        }
+      });
+
+      if (expiredTokenKey) {
+        // Path checks
+        const isAdminSection = currentPath.includes("admin") || currentPath.includes("create");
+        const isBdaSection = currentPath === "/home" || currentPath === "/booked" || currentPath.includes("bda");
+        const isAdvTeamSection = currentPath.includes("advteam");
+        const isOpSection = currentPath.includes("operation") && !currentPath.includes("adv");
+        const isAdvOpSection = currentPath.includes("advoperation");
+        const isMarketingSection = currentPath.startsWith("/marketing/");
+
+        let shouldRedirect = false;
+        if (expiredTokenKey === "adminToken" && isAdminSection) shouldRedirect = true;
+        if (expiredTokenKey === "bdaToken" && isBdaSection) shouldRedirect = true;
+        if (expiredTokenKey === "advTeamToken" && isAdvTeamSection) shouldRedirect = true;
+        if (expiredTokenKey === "operationToken" && isOpSection) shouldRedirect = true;
+        if (expiredTokenKey === "advOperationToken" && isAdvOpSection) shouldRedirect = true;
+        if (expiredTokenKey === "marketingToken" && isMarketingSection) shouldRedirect = true;
+
+        if (shouldRedirect) {
+          console.warn("Security: Session expired for", expiredTokenKey);
+          localStorage.removeItem(expiredTokenKey);
+          sessionStorage.removeItem(expiredTokenKey);
+          
+          if (isAdminSection) navigate("/AdminLogin");
+          else if (isBdaSection) navigate("/TeamLogin");
+          else if (isAdvTeamSection) navigate("/AdvTeamLogin");
+          else if (isOpSection) navigate("/OperationLogin");
+          else if (isAdvOpSection) navigate("/AdvOperationLogin");
+          else if (isMarketingSection) navigate("/marketing/login");
+        }
+      }
+    };
+
+    checkTokens();
+    const interval = setInterval(checkTokens, 20000);
+    return () => clearInterval(interval);
+  }, [location.pathname, navigate]);
+
+  useEffect(() => {
+    // Auto-popup logic
     const allowedPaths = ["/", "/advance", "/advancecourses", "/referandearn", "/events", "/masterclass", "/alumni"];
-    
-    // Normalize current path: lowercase and remove trailing slash (except for root)
-    let currentPath = location.pathname.toLowerCase();
-    if (currentPath.endsWith("/") && currentPath.length > 1) {
-      currentPath = currentPath.slice(0, -1);
-    }
+    const currentPath = location.pathname.toLowerCase().replace(/\/$/, "");
+    const isAllowed = allowedPaths.includes(currentPath || "/");
 
-    // Check if the current page is exactly in the allowlist
-    const isAllowed = allowedPaths.includes(currentPath);
-
-     if (isAllowed) {
-       const timer = setTimeout(() => {
-         console.log("Triggering auto popup for:", currentPath);
-         setShowAutoPopup(true);
-       }, 5000); // 5 seconds
-       
-       return () => clearTimeout(timer);
-     } else {
-      // If we move to a page that isn't allowed, ensure the auto-popup is closed
+    if (isAllowed) {
+      const timer = setTimeout(() => setShowAutoPopup(true), 5000);
+      return () => clearTimeout(timer);
+    } else {
       setShowAutoPopup(false);
     }
   }, [location.pathname]);
@@ -269,279 +441,18 @@ const AppContent = () => {
     ReactPixel.pageView();
   }, [location]);
 
-  useEffect(() => {
-    const checkTokens = () => {
-      const tokens = [
-        { key: "token", path: "/login" },
-        { key: "adminToken", path: "/AdminLogin" },
-        { key: "bdaToken", path: "/TeamLogin" },
-        { key: "operationToken", path: "/OperationLogin" },
-        { key: "advOperationToken", path: "/AdvOperationLogin" },
-        { key: "advTeamToken", path: "/AdvTeamLogin" },
-        { key: "pctoken", path: "/PClogin" },
-        { key: "eventToken", path: "/EventLogin" },
-        { key: "marketingToken", path: "/marketing/login" },
-        { key: "hrToken", path: "/hrlogin" },
-      ];
-
-      let hasExpired = false;
-      let redirectPath = null;
-
-      tokens.forEach(({ key, path }) => {
-        const tokenValue = localStorage.getItem(key);
-        if (tokenValue) {
-          try {
-            // Standard JWT has 3 parts separated by dots
-            const parts = tokenValue.split('.');
-            if (parts.length === 3) {
-              const payload = JSON.parse(atob(parts[1]));
-              // If token has expiration and is expired
-              if (payload.exp && payload.exp * 1000 < Date.now()) {
-                localStorage.removeItem(key);
-                hasExpired = true;
-                redirectPath = path;
-
-                // Clear associated data for standard user token
-                if (key === "token") {
-                  localStorage.removeItem("userEmail");
-                  localStorage.removeItem("userId");
-                }
-              }
-            }
-          } catch (e) {
-            console.error("Error decoding token for", key, e);
-            // Optionally remove if decoding fails 
-            // localStorage.removeItem(key);
-          }
-        }
-      });
-
-      if (hasExpired && redirectPath) {
-        const currentPath = window.location.pathname.toLowerCase();
-        if (!currentPath.includes("login") && !currentPath.includes("loginadmin") && !currentPath.includes("/marketing/login")) {
-          window.location.href = redirectPath;
-        }
-      }
-    };
-
-    // Run initially
-    checkTokens();
-
-    // Run on tab visibility change
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
-        checkTokens();
-      }
-    };
-
-    // Periodically run check every 15 seconds
-    const intervalId = setInterval(checkTokens, 15000);
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      clearInterval(intervalId);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, []);
-
-  const headerPaths = [
-    "/",
-    "/login",
-    "/loginwithotp",
-    "/forgotpassword",
-    "/contactus",
-    "/aboutus",
-    "/career",
-    "/collabration",
-    "/advancecourses",
-    "/terms",
-    "/privacy",
-    "/refundpolicy",
-    "/feestructure",
-    // "/events", // Hidden for custom navbar in TalentHunt/Events page
-    "/advance",
-    "/advance-apply",
-    "/mentorship",
-    // "/mentorship/:courseSlug" will be handled dynamically in the router but for the header we can let it pass,
-
-    "/datascience",
-    "/dataanalytics",
-    "/digitalmarket",
-    "/mernstack",
-    "/investmentbanking",
-    "/productmanagement",
-    "/automationtesting",
-    "/promptengineering",
-    "/generativeai",
-    "/operationlogin",
-    "/advoperationlogin",
-    "/teamlogin",
-    "/adminlogin",
-    "/managerlogin",
-    "/loginadmin",
-    "/pclogin",
-    "/advteamlogin",
-    "/dashboardaccessform",
-    "/advancedashboardaccess",
-    "/masterclass",
-    "/alumni",
-    "/verify",
-    "/referandearn",
-    "/referandearn",
-    "/marketing/login",
-    "/interviewer-login",
-    "/interviewerlogin", // Handle potential typo or case
-    "/hrlogin",
-  ];
-
-  const adminheaderPaths = [
-    "/admindashboard",
-    "/addcourse",
-    "/addadvcourse",
-    "/addmodule",
-    "/addadvmodule",
-    "/pendingapplication",
-    "/acceptedapplication",
-    "/bookedlist",
-    "/halfpayment",
-    "/defaultlist",
-    "/fullpaidlist",
-    "/createoperation",
-    "/createadvoperation",
-    "/createbda",
-    "/createadvteam",
-    "/createmanager",
-    "/mentorqueries",
-    "/advancequeries",
-    "/revenuesheet",
-    "/advrevenuesheet",
-    "/createplacementcoordinator",
-    "/onboardingdetails",
-    "/advonboardingdetails",
-    "/advbooked",
-    "/advfullpaid",
-    "/advdefault",
-    "/allteamdetail",
-    "/advteamdetail",
-    "/masterclasses",
-    "/addevent",
-    "/eventregistration",
-    "/target",
-    "/alumnidata",
-    "/inactivebda",
-    "/referandearnresponse",
-    "/referandearnresponse",
-    "/createmarketingteam",
-    "/createinterviewer",
-    "/createhr",
-    "/createinterview",
-    "/adminprojectpage",
-    "/advprojectpage",
-    "/advexercisepage",
-    "/advleadmanagement",
-    "/adminanalytics",
-    "/advadmindashboard",
-    "/admin/agents",
-    "/admin/teams",
-    "/admin/leadassignments",
-    "/admin/agentactivity",
-    "/admin/reports",
-
-    "/bulkimport",
-    "/admin/attendance",
-    "/advusermanagement",
-    "/admin/livemonitor",
-    "/admin/calllogs"
-  ];
-
-  const operationheaderPaths = [
-    "/operationdashboard",
-    "/fullpayment",
-    "/bookedpayment",
-    "/defaultpayment",
-    "/operationrevenuesheet"
-  ];
-
-  const advoperationheaderPaths = [
-    "/advoperationdashboard",
-    "/advfullpayment",
-    "/advbookedpayment",
-    "/advdefaultpayment",
-    "/advoperationrevenuesheet"
-  ];
-
-  const marketingheaderPaths = [
-    "/marketing/home",
-    "/marketing/previous",
-    // "/marketing/leads",  // DISABLED
-    "/marketing/addexecutive"
-  ];
-
-  const bdaheaderPaths = [
-    "/home",
-    "/fullpaid",
-    "/default",
-    "/booked",
-    "/onboarding",
-    "/adduser",
-    "/teamdetail",
-    "/bdarevenuesheet",
-    "/reference",
-    "/companyleads",
-    "/addteam",
-    "/assigntarget",
-    "/leaderboard"
-  ];
-
-  const advteamheaderPaths = [
-    "/advteam/home",
-    "/advteam/onboarding",
-    "/advteam/revenue",
-    "/advteam/booked",
-    "/advteam/fullpaid",
-    "/advteam/default",
-    "/advteam/adduser",
-    "/advteam/my-leads",
-    "/advteam/leads-book",
-    "/advteam/record",
-    "/advteam/lead-management",
-    "/advteam/team-login"
-  ];
-
-  const hrheaderPaths = [
-    "/hrdashboard"
-  ];
-
-  const userheaderPaths = [
-  ];
-
-  const placementcoodinatorHeaderPaths = [
-    "/pcdashboard",
-    "/jobpost",
-
-  ];
-
-  const lmsFooterPaths = ['/jobboard'];
-  const noFooterPaths = [
-    '/operationdashboard',
-    '/bookedpayment',
-    '/fullpayment',
-    '/defaultpayment',
-    '/operationrevenuesheet',
-  ];
-
-  const isAuthenticated = () => !!localStorage.getItem("token");
-  const isAuthenticatedBda = () => !!localStorage.getItem("bdaToken");
-  const isAuthenticatedOperation = () => !!localStorage.getItem("operationToken");
-  const isAuthenticatedAdvOperation = () => !!localStorage.getItem("advOperationToken");
-  const isAuthenticatedAdmin = () => !!localStorage.getItem("adminToken");
-  const isAuthenticatedAdvTeam = () => !!localStorage.getItem("advTeamToken");
-
-  const isAuthenticatedPC = () => !!localStorage.getItem("pctoken");
-  const isAuthenticatedEventUser = () => !!localStorage.getItem("eventToken");
-  const isAuthenticatedMarketing = () => !!localStorage.getItem("marketingToken");
-  const isAuthenticatedHR = () => !!localStorage.getItem("hrToken");
+  const adminheaderPaths = ["/admindashboard", "/addcourse", "/addadvcourse", "/addmodule", "/addadvmodule", "/pendingapplication", "/acceptedapplication", "/bookedlist", "/halfpayment", "/defaultlist", "/fullpaidlist", "/createoperation", "/createadvoperation", "/createbda", "/createadvteam", "/createmanager", "/mentorqueries", "/advancequeries", "/revenuesheet", "/advrevenuesheet", "/createplacementcoordinator", "/onboardingdetails", "/advonboardingdetails", "/advbooked", "/advfullpaid", "/advdefault", "/allteamdetail", "/advteamdetail", "/masterclasses", "/addevent", "/eventregistration", "/target", "/alumnidata", "/inactivebda", "/referandearnresponse", "/createmarketingteam", "/createinterviewer", "/createhr", "/createinterview", "/adminprojectpage", "/advprojectpage", "/advexercisepage", "/advleadmanagement", "/adminanalytics", "/advadmindashboard", "/admin/agents", "/admin/teams", "/admin/leadassignments", "/admin/agentactivity", "/admin/reports", "/bulkimport", "/admin/attendance", "/advusermanagement", "/admin/livemonitor", "/admin/calllogs"];
+  const operationheaderPaths = ["/operationdashboard", "/fullpayment", "/bookedpayment", "/defaultpayment", "/operationrevenuesheet"];
+  const advoperationheaderPaths = ["/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet"];
+  const marketingheaderPaths = ["/marketing/home", "/marketing/previous", "/marketing/addexecutive"];
+  const bdaheaderPaths = ["/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/leaderboard"];
+  const advteamheaderPaths = ["/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book"];
+  const hrheaderPaths = ["/hrdashboard"];
+  const lmsFooterPaths = ["/jobboard"];
+  const noFooterPaths = ["/operationdashboard", "/bookedpayment", "/fullpayment", "/defaultpayment", "/operationrevenuesheet", "/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/leaderboard"];
+  const placementcoodinatorHeaderPaths = ["/pcdashboard", "/jobpost"];
+  const userheaderPaths = ["/profile", "/resume-builder"];
+  const headerPaths = ["/", "/login", "/loginwithotp", "/forgotpassword", "/contactus", "/aboutus", "/career", "/collabration", "/advancecourses", "/terms", "/privacy", "/refundpolicy", "/feestructure", "/advance", "/advance-apply", "/mentorship", "/datascience", "/dataanalytics", "/digitalmarket", "/mernstack", "/investmentbanking", "/productmanagement", "/automationtesting", "/promptengineering", "/generativeai", "/operationlogin", "/advoperationlogin", "/teamlogin", "/adminlogin", "/managerlogin", "/loginadmin", "/pclogin", "/advteamlogin", "/dashboardaccessform", "/advancedashboardaccess", "/masterclass", "/alumni", "/verify", "/referandearn", "/marketing/login", "/interviewer-login", "/interviewerlogin", "/hrlogin"];
 
   return (
     <div>

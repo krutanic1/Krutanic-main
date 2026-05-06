@@ -835,7 +835,7 @@ const AdvBookedPayment = () => {
             />
 
             <div>
-              Due date for clear payment ?
+              Next instalment to clear the payment
               <input
                 value={clearPaymentMonth}
                 onChange={(e) => setClearPaymentMonth(e.target.value)}
@@ -901,7 +901,7 @@ const AdvBookedPayment = () => {
               <th>Paid Amount</th>
               <th>Remaining Amount</th>
               <th>Month Opted</th>
-              <th>Clear Month</th>
+              <th>Next instalment to clear the payment</th>
               <th>Hierarchy</th>
               <th>Actions</th>
               <th>Login Credentials</th>
@@ -1143,6 +1143,9 @@ const AdvBookedPayment = () => {
               </p>
               <p>
                 <strong>Aadhar No:</strong> {dialogData.aadharNumber}
+              </p>
+              <p>
+                <strong>Next instalment to clear the payment:</strong> {dialogData.clearPaymentMonth || "N/A"}
               </p>
             </div>
             <button onClick={handleDialogClose}>Close</button>

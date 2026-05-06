@@ -1297,6 +1297,7 @@ router.post("/log-call-activity", async (req, res) => {
             actionType: actionType || "call",
             stage,
             disposition,
+            callOutcome: disposition, // Mirroring for compatibility with older dashboard views
             remark,
             summary,
             duration,
@@ -1626,12 +1627,13 @@ router.get("/get-my-team-specialists", async (req, res) => {
 
         let query = {
             designation: { $regex: /Specialist/i },
-            status: "Active"
+            status: "Active",
+            Access: true
         };
 
         if (leader.designation === "ADV Manager") {
-            // Managers manage multiple teams
-            query.team = { $in: leader.teams || [] };
+            // Managers can see ALL specialists globally
+            // No team filter needed
         } else {
             // Leaders belong to one team
             query.team = leader.team;

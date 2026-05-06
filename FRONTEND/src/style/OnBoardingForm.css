@@ -74,12 +74,21 @@
 
   select,
   textarea {
-    padding: 5px 10px;
+    padding: 10px;
     border: 1px solid #CCCCCC;
-    margin: 2px 0;
-    margin-right: 10px;
+    margin: 5px 0;
     border-radius: 10px;
     width: 100%;
+    box-sizing: border-box;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 1em;
+  }
+
+  textarea {
+    background-image: none;
   }
 
   .cursor-pointer {
@@ -91,22 +100,52 @@
     width: 100%;
     overflow: hidden;
     position: relative;
+    background: #fff8f6;
+    padding: 10px 0;
+    border-radius: 8px;
+    margin-bottom: 20px;
   }
 
   .marquee-text {
     display: inline-block;
     white-space: nowrap;
     animation: scroll-left 40s linear infinite;
-    /* Adjust speed here */
+    color: #F15B29;
+    font-size: 13px;
   }
 
   .marquee-text:hover {
     animation-play-state: paused;
-    /* Pause on hover */
+  }
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@media screen and (max-width: 640px) {
+  #onboardingform {
+    padding: 10px;
+  }
+  
+  #onboardingform form {
+    padding: 15px;
+    margin-bottom: 30px;
   }
 
+  #onboardingform h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
 
-
+  .input-field label {
+    font-size: 13px;
+  }
 }
 
 @keyframes scroll-left {

@@ -39,7 +39,8 @@ router.post("/advenroll", async (req, res) => {
       yearOfPassingOut,
       companyName,
       role,
-      languages
+      languages,
+      batchTiming
     } = req.body;
 
     console.log(`[AdvEnroll] POST /advenroll - Looking up domain: "${domain}"`);
@@ -203,7 +204,8 @@ router.post("/advenroll", async (req, res) => {
       executive: executive,
       languages,
       companyName,
-      role
+      role,
+      batchTiming
     });
 
     console.log('[AdvEnroll] Creating new advance student with executiveId:', newAdvStudent.executiveId);
@@ -368,7 +370,8 @@ router.put("/editadvstudentdetails/:_id", verifyAnyAuth, async (req, res) => {
     role,
     internshipstartsmonth,
     internshipendsmonth,
-    yearOfPassingOut
+    yearOfPassingOut,
+    batchTiming
   } = req.body;
   try {
     // Check if domain has changed
@@ -440,7 +443,8 @@ router.put("/editadvstudentdetails/:_id", verifyAnyAuth, async (req, res) => {
         role,
         internshipstartsmonth,
         internshipendsmonth,
-        yearOfPassingOut
+        yearOfPassingOut,
+        batchTiming
       },
       { new: true }
     );

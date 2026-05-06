@@ -253,7 +253,7 @@ router.post("/bdaverifyotp", async (req, res) => {
     const token = jwt.sign(
       { id: bda._id, email: bda.email },
       process.env.JWT_SECRET,
-      { expiresIn: "10m" }
+      { expiresIn: "8h" }
     );
 
     res.status(200).json({

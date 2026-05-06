@@ -105,14 +105,14 @@ router.post("/otpverify", expressAsyncHandler(async (req, res) => {
     const token = jwt.sign(
       { email: admin.email },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "8h" }
     );
 
     res.cookie("adminToken", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-      maxAge: 60 * 60 * 1000 // 1 hour
+      maxAge: 8 * 60 * 60 * 1000 // 8 hours
     });
 
     res.status(200).json({ 

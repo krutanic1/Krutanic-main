@@ -192,13 +192,16 @@ const CreateMarketingTeam = () => {
       );
       if (response.status === 200) {
         toast.success("Impersonation successful!");
-        const loginTime = new Date().getTime();
+        const { token, user, bdaId, bdaName, fullname } = response.data;
+        
+        // Pass credentials via URL so the new tab can save them to its own sessionStorage
+        const targetId = user?.id || bdaId || userId;
+        const targetName = user?.name || bdaName || fullname || "";
+
+        const impersonateUrl = `/marketing/home?impToken=${encodeURIComponent(token)}&impId=${targetId}&impName=${encodeURIComponent(targetName)}&impType=marketingToken`;
+        
         setTimeout(() => {
-          localStorage.setItem("marketingId", response.data.user.id);
-          localStorage.setItem("marketingName", response.data.user.name);
-          localStorage.setItem("marketingToken", response.data.token);
-          localStorage.setItem("sessionStartTime", loginTime);
-          window.open("/marketing/home", "_blank");
+          window.open(impersonateUrl, "_blank");
         }, 500);
       }
     } catch (error) {

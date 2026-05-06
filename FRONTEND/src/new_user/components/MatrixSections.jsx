@@ -91,7 +91,7 @@ export const AssignmentMatrixSection = ({ assignmentMatrix, loading }) => {
     );
 };
 
-/** ── 24-Week Internship Readiness ── */
+/** ── 12-Week Internship Readiness ── */
 export const InternshipReadinessSection = ({ internshipReadiness, loading }) => {
     if (loading) {
         return (
@@ -99,7 +99,7 @@ export const InternshipReadinessSection = ({ internshipReadiness, loading }) => 
                 <div className="nd-section-header">
                     <h2 className="nd-section-title">
                         <span className="material-symbols-outlined nd-section-icon">work_history</span>
-                        24-Week Practical Progress
+                        12-Week Practical Progress
                     </h2>
                 </div>
                 <div className="nd-skeleton" style={{ height: 260, borderRadius: 12 }} />
@@ -113,17 +113,17 @@ export const InternshipReadinessSection = ({ internshipReadiness, loading }) => 
     } = internshipReadiness || {};
 
     const doneWeeks = weeklyProgress.filter(w => w.status === 'Submitted' || w.status === 'Approved').length;
-    const progressPct = Math.round((doneWeeks / 24) * 100);
+    const progressPct = Math.round((doneWeeks / 12) * 100);
 
     return (
         <section className="nd-section">
             <div className="nd-section-header">
                 <h2 className="nd-section-title">
                     <span className="material-symbols-outlined nd-section-icon">work_history</span>
-                    24-Week Practical Progress
+                    12-Week Practical Progress
                 </h2>
                 <span className="nd-tag" style={{ color: '#22c55e', background: '#f0fdf4', border: '1px solid #22c55e33', fontWeight: 600 }}>
-                    {doneWeeks}/24 Weeks
+                    {doneWeeks}/12 Weeks
                 </span>
             </div>
 

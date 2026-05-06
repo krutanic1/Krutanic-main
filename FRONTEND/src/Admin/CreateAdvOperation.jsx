@@ -238,13 +238,16 @@ const CreateAdvOperation = () => {
       );
       if (response.status === 200) {
         toast.success("Impersonation successful!");
-        const loginTime = new Date().getTime();
+        const { token, operationName, fullname, _id, userId: resUserId } = response.data;
+        
+        // Pass credentials via URL so the new tab can save them to its own sessionStorage
+        const targetId = _id || resUserId || userId;
+        const targetName = operationName || fullname || "";
+
+        const impersonateUrl = `/AdvOperationDashboard?impToken=${encodeURIComponent(token)}&impId=${targetId}&impName=${encodeURIComponent(targetName)}&impType=advOperationToken`;
+        
         setTimeout(() => {
-          localStorage.setItem("advOperationId", response.data._id);
-          localStorage.setItem("advOperationName", response.data.operationName);
-          localStorage.setItem("advOperationToken", response.data.token);
-          localStorage.setItem("sessionStartTime", loginTime);
-          window.open("/advoperationdashboard", "_blank");
+          window.open(impersonateUrl, "_blank");
         }, 500);
       }
     } catch (error) {

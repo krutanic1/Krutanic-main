@@ -4,19 +4,27 @@ axios.defaults.withCredentials = true;
 
 axios.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem("token");
         const bdaToken = localStorage.getItem("bdaToken");
         const operationToken = localStorage.getItem("operationToken");
         const advOperationToken = localStorage.getItem("advOperationToken");
         const advTeamToken = localStorage.getItem("advTeamToken");
+        const token = localStorage.getItem("token");
+
+        const currentPath = window.location.pathname.toLowerCase();
 
         // Only apply default tokens if no Authorization header is already set
         if (!config.headers.Authorization) {
-            if (token) config.headers.Authorization = token;
-            if (bdaToken) config.headers.Authorization = bdaToken;
-            if (operationToken) config.headers.Authorization = operationToken;
-            if (advOperationToken) config.headers.Authorization = advOperationToken;
-            if (advTeamToken) config.headers.Authorization = advTeamToken;
+            if ((currentPath.startsWith("/home") || currentPath.startsWith("/booked") || currentPath.includes("bda")) && bdaToken) {
+                config.headers.Authorization = bdaToken;
+            } else if (currentPath.includes("advteam") && advTeamToken) {
+                config.headers.Authorization = advTeamToken;
+            } else if (currentPath.includes("advoperation") && advOperationToken) {
+                config.headers.Authorization = advOperationToken;
+            } else if (currentPath.includes("operation") && operationToken) {
+                config.headers.Authorization = operationToken;
+            } else if (token) {
+                config.headers.Authorization = token;
+            }
         }
 
 

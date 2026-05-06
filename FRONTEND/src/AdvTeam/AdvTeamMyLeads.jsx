@@ -229,16 +229,17 @@ const AdvTeamMyLeads = () => {
     const assignTargets = (() => {
         const members = teamMembers;
         if (isManager) {
+            // Managers can assign to ANY active leader or specialist
             return members.filter(m => {
                 const desig = (m.designation || "").toUpperCase();
-                const sameTeam = !userTeam || (m.team || "").trim().toUpperCase() === userTeam.trim().toUpperCase();
-                return (desig.includes("LEADER")) && sameTeam;
+                return (desig.includes("LEADER") || desig.includes("SPECIALIST")) && m.Access === true && m.status !== "Inactive";
             });
         } else {
+            // Leaders are restricted to active specialists in their own team
             return members.filter(m => {
                 const desig = (m.designation || "").toUpperCase();
                 const sameTeam = !userTeam || (m.team || "").trim().toUpperCase() === userTeam.trim().toUpperCase();
-                return desig.includes("SPECIALIST") && sameTeam;
+                return desig.includes("SPECIALIST") && sameTeam && m.Access === true && m.status !== "Inactive";
             });
         }
     })();
