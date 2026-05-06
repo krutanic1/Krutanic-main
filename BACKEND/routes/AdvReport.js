@@ -460,7 +460,7 @@ router.get("/team-analysis", async (req, res) => {
             fullname: 1, designation: 1, team: 1, teams: 1, _id: 1
         }).lean();
 
-        if (!allMembers.length) return res.json({ managers: [], leaders: [], specialists: [] });
+        if (!allMembers.length) return res.json({ managers: [], leaders: [], specialists: [] });  
 
         const memberIds = allMembers.map(m => String(m._id));
 

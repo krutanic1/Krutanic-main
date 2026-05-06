@@ -12,18 +12,23 @@ axios.interceptors.request.use(
 
         const currentPath = window.location.pathname.toLowerCase();
 
+        // Path groups based on App.jsx routes
+        const bdaPaths = ["/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/leaderboard"];
+        const opPaths = ["/operationdashboard", "/fullpayment", "/bookedpayment", "/defaultpayment", "/operationrevenuesheet"];
+        const advOpPaths = ["/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet"];
+
         // Only apply default tokens if no Authorization header is already set
         if (!config.headers.Authorization) {
-            if ((currentPath.startsWith("/home") || currentPath.startsWith("/booked") || currentPath.includes("bda")) && bdaToken) {
-                config.headers.Authorization = bdaToken;
+            if ((bdaPaths.includes(currentPath) || currentPath.includes("bda")) && bdaToken) {
+                config.headers.Authorization = bdaToken.startsWith("Bearer ") ? bdaToken : `Bearer ${bdaToken}`;
             } else if (currentPath.includes("advteam") && advTeamToken) {
-                config.headers.Authorization = advTeamToken;
-            } else if (currentPath.includes("advoperation") && advOperationToken) {
-                config.headers.Authorization = advOperationToken;
-            } else if (currentPath.includes("operation") && operationToken) {
-                config.headers.Authorization = operationToken;
+                config.headers.Authorization = advTeamToken.startsWith("Bearer ") ? advTeamToken : `Bearer ${advTeamToken}`;
+            } else if ((advOpPaths.includes(currentPath) || currentPath.includes("advoperation")) && advOperationToken) {
+                config.headers.Authorization = advOperationToken.startsWith("Bearer ") ? advOperationToken : `Bearer ${advOperationToken}`;
+            } else if ((opPaths.includes(currentPath) || currentPath.includes("operation")) && operationToken) {
+                config.headers.Authorization = operationToken.startsWith("Bearer ") ? operationToken : `Bearer ${operationToken}`;
             } else if (token) {
-                config.headers.Authorization = token;
+                config.headers.Authorization = token.startsWith("Bearer ") ? token : `Bearer ${token}`;
             }
         }
 
