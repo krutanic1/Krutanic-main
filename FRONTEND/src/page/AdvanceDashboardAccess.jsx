@@ -64,6 +64,7 @@ const Dialog = ({ isOpen, onClose, fullname, errorMessage, email, counselor, dom
 
 const AdvanceDashboardAccess = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
 
   // Helper function to format name to Title Case
   const toTitleCase = (value) => {
@@ -365,7 +366,7 @@ const AdvanceDashboardAccess = () => {
 
         <h2 className="mt-2">Advance Program DashBoard Access Form</h2>
         <form onSubmit={handleSubmit}>
-          <div className=" grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-[10px]">
+          <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-5">
             <div className="input-field">
               <input
                 value={fullname}
@@ -551,41 +552,75 @@ const AdvanceDashboardAccess = () => {
               <label htmlFor="Transaction ID">Transaction ID</label>
             </div>
 
-            <div className="col-span-1 md:col-span-2 lg:col-span-3 border border-[#CCCCCC] rounded-[10px] p-4 relative mt-2">
-              <label style={{
-                position: 'absolute',
-                top: 0,
-                left: '10px',
-                transform: 'translateY(-50%)',
-                backgroundColor: 'white',
-                padding: '0 5px',
-                color: '#8d8d8d',
-                fontSize: '0.8rem',
-                letterSpacing: '1px'
-              }}>Languages Known</label>
-              <div className="flex flex-wrap gap-4 mt-2">
-                {LANGUAGE_OPTIONS.map((lang) => (
-                  <label key={lang} className="flex items-center space-x-2" style={{ cursor: 'pointer' }}>
-                    <input
-                      type="checkbox"
-                      value={lang}
-                      checked={languages.includes(lang)}
-                      onChange={(e) => {
-                        const { value, checked } = e.target;
-                        setLanguages((prev) => {
-                          const newLanguages = checked
-                            ? [...prev, value]
-                            : prev.filter((l) => l !== value);
-                          return newLanguages;
-                        });
-                      }}
-                      className="form-checkbox h-4 w-4 text-[#F15B29]"
-                    />
-                    <span className="text-gray-700">{lang}</span>
-                  </label>
-                ))}
+              <div className="input-field col-span-1 md:col-span-2 lg:col-span-3">
+                <div
+                  onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
+                  className="w-full p-[10px] border border-[#CCCCCC] rounded-[10px] bg-white cursor-pointer flex justify-between items-center transition-all duration-200"
+                  style={{ minHeight: '44px', backgroundColor: '#ffffff' }}
+                >
+                  <span className={`text-sm ${languages.length > 0 ? "text-gray-800" : "text-transparent"}`}>
+                    {languages.length > 0 ? languages.join(", ") : "."}
+                  </span>
+                  <svg className={`w-4 h-4 text-[#8d8d8d] transition-transform duration-200 ${isLangDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+                <label
+                  style={{
+                    position: 'absolute',
+                    left: '15px',
+                    pointerEvents: 'none',
+                    transition: 'all 0.3s ease',
+                    backgroundColor: '#ffffff',
+                    padding: '0 5px',
+                    zIndex: 2,
+                    ...(languages.length > 0 || isLangDropdownOpen 
+                      ? { top: '0', transform: 'translateY(-50%) scale(0.85)', color: '#F15B29', fontWeight: 'bold' }
+                      : { top: '50%', transform: 'translateY(-50%)', color: '#8d8d8d' }
+                    )
+                  }}
+                >
+                  Languages Known
+                </label>
+                {isLangDropdownOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setIsLangDropdownOpen(false)}
+                    ></div>
+                    <div 
+                      className="absolute z-50 w-full mt-1 border border-[#CCCCCC] rounded-[10px] shadow-xl max-h-60 overflow-y-auto lang-dropdown-list"
+                    >
+                      {LANGUAGE_OPTIONS.map((lang) => (
+                        <div
+                          key={lang}
+                          onClick={() => {
+                            setLanguages((prev) =>
+                              prev.includes(lang)
+                                ? prev.filter((l) => l !== lang)
+                                : [...prev, lang]
+                            );
+                          }}
+                          className="flex items-center p-3 cursor-pointer border-b border-gray-50 last:border-b-0 lang-dropdown-item"
+                        >
+                          <div className={`w-5 h-5 rounded border flex items-center justify-center mr-3 transition-colors duration-200 ${
+                            languages.includes(lang) ? "bg-[#F15B29] border-[#F15B29]" : "bg-white border-gray-300"
+                          }`}>
+                            {languages.includes(lang) && (
+                              <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </div>
+                          <span className={`text-sm lang-dropdown-text ${languages.includes(lang) ? "selected" : ""}`}>
+                            {lang}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
-            </div>
 
             <div className="input-field">
               <input
@@ -633,26 +668,25 @@ const AdvanceDashboardAccess = () => {
 
           </div>
 
-          <div className="mt-5">
-            Refer your friends to earn cashback.
+          <div className="mt-6">
+            <label className="text-gray-700 font-medium mb-2 block">Refer your friends to earn cashback.</label>
             <textarea
               value={referFriend}
               onChange={(e) => setReferFriend(e.target.value)}
               name="refer"
               id="refer"
               placeholder="Name and Contact Number"
-              cols={60}
               rows={3}
               required
-              className="resize-none"
+              className="resize-none w-full border border-[#CCCCCC] rounded-[10px] p-3 mt-1 focus:outline-none focus:border-[#F15B29] transition-colors duration-200"
             ></textarea>
           </div>
 
           <input
-            className="cursor-pointer"
+            className="cursor-pointer w-full mt-8 bg-black text-white py-3 rounded-lg font-bold hover:bg-gray-800 transition-colors duration-200"
             disabled={isSubmitting}
             type="submit"
-            value="Submit"
+            value={isSubmitting ? "Submitting..." : "Submit"}
           />
         </form>
         <Dialog
@@ -686,9 +720,11 @@ const styles = {
   modalContent: {
     background: "white",
     padding: "20px",
-    borderRadius: "5px",
-    width: "content",
+    borderRadius: "10px",
+    width: "90%",
+    maxWidth: "500px",
     textAlign: "center",
+    boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
   },
 };
 

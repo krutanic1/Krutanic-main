@@ -8,21 +8,6 @@
     font-size: 14px;
     margin-bottom: 50px;
 
-    /* .formgrid{
-                display:grid;
-                gap: 10px;
-                grid-template-columns: repeat(3 , 1fr);
-            } */
-
-
-    span {
-      float: right;
-      padding: 5px;
-      margin-bottom: 20;
-      cursor: pointer;
-    }
-
-
   }
 
 
@@ -46,6 +31,7 @@
 
   .input-field {
     position: relative;
+    margin-top: 10px;
   }
 
   .input-field label {
@@ -54,32 +40,36 @@
     pointer-events: none;
     background-color: transparent;
     left: 15px;
-    transform: translateY(0.6rem);
+    top: 50%;
+    transform: translateY(-50%);
     transition: all 0.3s ease;
+    z-index: 1;
   }
 
+  /* Specific handling for date inputs which often have persistent placeholders */
   .input-field input[type="date"]~label {
-    transform: translateY(-51%) translateX(-10px) scale(0.8);
+    top: 0;
+    transform: translateY(-50%) translateX(-5px) scale(0.85);
     background-color: #fff;
     padding: 0px 5px;
+    color: #8d8d8d;
   }
 
   .input-field input:focus,
   .input-field input:valid {
     outline: none;
-    border: solid 1px #00000073;
+    border: solid 1px #F15B29;
   }
 
   .input-field input:focus~label,
   .input-field input:valid~label {
-    transform: translateY(-51%) translateX(-10px) scale(0.8);
+    top: 0;
+    transform: translateY(-50%) translateX(-5px) scale(0.85);
     background-color: #fff;
     padding: 0px 5px;
     color: #F15B29;
     font-weight: bold;
-    letter-spacing: 1px;
-    border: none;
-    border-radius: 100px;
+    letter-spacing: 0.5px;
   }
 
   select,
@@ -134,3 +124,27 @@
             background-color: #0034de;
         }
     }  */
+
+.lang-dropdown-list {
+  background-color: #ffffff !important;
+  color: #333333 !important;
+}
+
+.lang-dropdown-item {
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  transition: background-color 0.2s ease;
+}
+
+.lang-dropdown-item:hover {
+  background-color: #fff7ed !important;
+}
+
+.lang-dropdown-text {
+  color: #333333 !important;
+}
+
+.lang-dropdown-text.selected {
+  color: #F15B29 !important;
+  font-weight: 600 !important;
+}
