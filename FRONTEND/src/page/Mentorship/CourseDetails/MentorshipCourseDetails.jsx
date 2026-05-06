@@ -10,6 +10,57 @@ import MentorshipForm from "../../MentorshipForm";
 import sachinImg from "../../../assets/mentors/sachin.jpg";
 import "./CourseDetails.css";
 
+const learningCategories = [
+  {
+    title: "Self-guided",
+    price: "₹6,999/-",
+    features: [
+      "Record Session",
+      "Hands On Project",
+      "Certification",
+      "No Live Sessions",
+      "No Doubt Clearing Session",
+      "No Mentor Guidance",
+      "No Placement Assistance",
+      "No Mock Interviews"
+    ],
+    links: ["Slot Booking Link"]
+  },
+  {
+    title: "Instructor Led",
+    price: "₹9,999/-",
+    features: [
+      "Record Session",
+      "Hands On Project",
+      "Certification",
+      "Live Sessions",
+      "Doubt Clearing Session",
+      "Mentor Guidance",
+      "No Placement Assistance",
+      "No Mock Interviews"
+    ],
+    links: ["Slot Booking Link"]
+  },
+  {
+    title: "Career Advancement",
+    price: "₹15,999/-",
+    features: [
+      "Record Session",
+      "Hands On Project",
+      "Certification",
+      "Live Sessions",
+      "Doubt Clearing Session",
+      "Mentor Guidance",
+      "Placement Assistance",
+      "Mock Interviews",
+      "Access to Our Hiring Partners",
+      "ATS-Friendly Resume Building",
+      "Personality Development"
+    ],
+    links: ["Slot Booking Link"]
+  }
+];
+
 const MentorshipCourseDetails = () => {
   const { courseSlug } = useParams();
   const navigate = useNavigate();
@@ -393,6 +444,56 @@ const MentorshipCourseDetails = () => {
                    <p className="bio">{data.mentor.bio}</p>
                 </div>
              </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Learning Categories */}
+      <section className="cd-section cd-section--alt">
+        <div className="cd-section__inner">
+          <div className="cd-section__header center">
+            <h2 className="cd-section__title">Learning <span>Categories</span></h2>
+            <p className="max-w-3xl mx-auto text-[15px] text-[var(--muted)] mt-4">
+              Choose the learning format that fits your schedule and career goals.
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3 mt-12">
+            {learningCategories.map((cat, i) => (
+              <div key={i} className="p-6 rounded-2xl border border-[var(--border)] bg-white shadow-[var(--shadow)] flex flex-col justify-between">
+                <div>
+                  <h3 className="text-2xl font-extrabold text-[var(--text)] mb-3">{cat.title}</h3>
+                  <div className="text-4xl font-black tracking-tight text-[#2563EB] mb-6">{cat.price}</div>
+                  <ul className="space-y-3 mb-6">
+                    {cat.features.map((feature, j) => {
+                      const isUnavailable = feature.includes("No ");
+                      return (
+                        <li
+                          key={j}
+                          className={`flex items-start gap-3 text-[15px] ${isUnavailable ? "text-gray-400 line-through opacity-70" : "text-[var(--text)]"}`}
+                        >
+                          <span className={`mt-2 h-2 w-2 rounded-full ${isUnavailable ? "bg-gray-400" : "bg-[#2563EB]"}`}></span>
+                          <span>{feature}</span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+
+                <div className="space-y-3">
+                  {cat.links.map((link, j) => (
+                    <button
+                      key={j}
+                      type="button"
+                      onClick={() => setShowForm(true)}
+                      className="w-full rounded-xl bg-[#2563EB] px-4 py-3 text-sm font-bold text-white transition hover:opacity-90"
+                    >
+                      {link}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
