@@ -100,7 +100,17 @@ const AdvLeadsBook = () => {
         setLoading(true);
         try {
             const res = await axios.get(`${API}/api/adv-leads/get-adv-leads`, {
-                params: { role: designation, userId, page, limit, outcome: selectedOutcome, source: sourceFilter, strictlyOwned: true, date: dateFilter }
+                params: { 
+                    role: designation, 
+                    userId, 
+                    page, 
+                    limit, 
+                    outcome: selectedOutcome, 
+                    source: sourceFilter, 
+                    strictlyOwned: true, 
+                    date: dateFilter,
+                    search: searchTerm // Global search parameter
+                }
             });
             if (res.data && res.data.leads) {
                 setLeads(res.data.leads);
@@ -116,11 +126,8 @@ const AdvLeadsBook = () => {
             setLoading(false);
         }
     };
-    const filteredLeads = leads.filter(l => 
-        l.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        l.email?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        l.phone_number?.includes(searchTerm)
-    );
+    // Removed frontend filtering as we now use global backend search
+    const displayedLeads = leads;
 
     useEffect(() => {
         const fetchTemplates = async () => {
@@ -150,11 +157,19 @@ const AdvLeadsBook = () => {
                 console.error("Failed to fetch domains");
             }
         };
-        fetchMyLeads(currentPage);
         fetchTemplates();
         fetchSMTPConfig();
         fetchDomains();
-    }, [currentPage, userId, selectedOutcome, sourceFilter, dateFilter]);
+    }, [userId]);
+
+    // Consolidated lead fetching effect with debouncing for search
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchMyLeads(currentPage);
+        }, searchTerm ? 500 : 0); // Debounce search only if there's a search term
+        
+        return () => clearTimeout(timer);
+    }, [currentPage, selectedOutcome, sourceFilter, dateFilter, searchTerm]);
 
     const handleSaveSMTP = async () => {
         if (!personalEmail || !appPassword) return toast.error("Both fields are required");
@@ -215,7 +230,7 @@ const AdvLeadsBook = () => {
     };
 
     // Grouping logic for the leads
-    const groupedLeads = filteredLeads.reduce((acc, lead) => {
+    const groupedLeads = displayedLeads.reduce((acc, lead) => {
         const date = formatDate(lead.assigned_at || lead.created_at);
         if (!acc[date]) {
             acc[date] = [];
@@ -224,7 +239,7 @@ const AdvLeadsBook = () => {
         return acc;
     }, {});
 
-    useEffect(() => { fetchMyLeads(currentPage); }, [currentPage, selectedOutcome, sourceFilter, dateFilter]);
+    // Redundant useEffect removed
 
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
@@ -347,12 +362,27 @@ const AdvLeadsBook = () => {
         },
         header: {
             display: 'flex',
+            flexDirection: 'column',
+            gap: '24px',
+            marginBottom: '32px',
+            maxWidth: '100%',
+        },
+        headerTop: {
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            gap: '20px',
+        },
+        headerBottom: {
+            display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            marginBottom: '40px',
-            gap: '16px',
-            maxWidth: '100%',
-            overflow: 'hidden'
+            gap: '20px',
+            background: 'rgba(255, 255, 255, 0.4)',
+            padding: '12px',
+            borderRadius: '16px',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.5)',
         },
         titleSection: {
             display: 'flex',
@@ -360,7 +390,7 @@ const AdvLeadsBook = () => {
             gap: '8px'
         },
         title: {
-            fontSize: '32px',
+            fontSize: '28px',
             fontWeight: '800',
             color: designTokens.colors.textPrimary,
             margin: 0,
@@ -384,32 +414,48 @@ const AdvLeadsBook = () => {
             flexShrink: 0
         },
         statCard: {
-            padding: '10px 16px',
+            height: '48px',
+            padding: '0 16px',
             background: '#FFFFFF',
-            borderRadius: designTokens.radius.lg,
+            borderRadius: designTokens.radius.md,
             border: `1px solid ${designTokens.colors.border}`,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             transition: 'all 0.3s ease',
-            boxShadow: designTokens.shadows.sm
+            boxShadow: designTokens.shadows.sm,
+            minWidth: '100px'
         },
         filterRow: {
             display: 'flex',
-            gap: '6px',
             alignItems: 'center',
             background: '#fff',
-            padding: '4px',
-            borderRadius: '16px',
+            padding: '2px',
+            borderRadius: '12px',
             border: `1px solid ${designTokens.colors.border}`,
             boxShadow: designTokens.shadows.sm,
-            overflowX: 'auto',
+            height: '48px',
             flex: '1',
-            minWidth: '200px',
-            maxWidth: 'calc(100vw - 920px)',
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
+            minWidth: '400px',
+            overflow: 'hidden'
+        },
+        searchSection: {
+            display: 'flex',
+            gap: '8px',
+            alignItems: 'center',
+            padding: '0 12px',
+            background: '#F8FAFC',
+            height: '100%',
+            flex: 1,
+        },
+        dateSection: {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '0 15px',
+            borderRight: `1px solid ${designTokens.colors.border}`,
+            height: '100%',
         },
         filterBtn: (active, color) => ({
             padding: '8px 16px',
@@ -634,99 +680,65 @@ const AdvLeadsBook = () => {
             <Toaster position="top-center" />
 
             <header style={styles.header}>
-                <div style={styles.titleSection}>
-                    <h1 style={styles.title}>Leads Portfolio</h1>
-                    <div style={styles.subtitle}>
-                        <span style={{ width: '10px', height: '10px', background: designTokens.colors.success, borderRadius: '50%', boxShadow: `0 0 12px ${designTokens.colors.success}50` }}></span>
-                        {userName} • <span style={{ color: designTokens.colors.primary, fontWeight: '700' }}>{designation}</span>
+                <div style={styles.headerTop}>
+                    <div style={styles.titleSection}>
+                        <h1 style={styles.title}>Leads Portfolio</h1>
+                        <div style={styles.subtitle}>
+                            <span style={{ width: '10px', height: '10px', background: designTokens.colors.success, borderRadius: '50%', boxShadow: `0 0 12px ${designTokens.colors.success}50` }}></span>
+                            {userName} • <span style={{ color: designTokens.colors.primary, fontWeight: '700' }}>{designation}</span>
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                        <div style={styles.statCard}>
+                            <span style={{ fontSize: '18px', fontWeight: '800', color: designTokens.colors.primary, lineHeight: '1.2' }}>{totalCount}</span>
+                            <span style={{ fontSize: '9px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Group</span>
+                        </div>
+                        <button
+                            onClick={() => fetchMyLeads(1)}
+                            className={`material-symbols-outlined ${loading ? 'spinning' : ''}`}
+                            style={{
+                                ...styles.statCard,
+                                cursor: 'pointer',
+                                color: loading ? designTokens.colors.primary : designTokens.colors.textSecondary,
+                                fontSize: '24px',
+                                width: '48px',
+                                minWidth: '48px',
+                                padding: 0,
+                            }}
+                            title="Sync Leads"
+                        >
+                            sync
+                        </button>
+                        <button
+                            onClick={() => setShowSMTPModal(true)}
+                            style={{
+                                ...styles.statCard,
+                                color: designTokens.colors.secondary,
+                                cursor: 'pointer',
+                                padding: '0 16px',
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                gap: '8px',
+                                border: `1px solid ${designTokens.colors.secondary}20`,
+                                minWidth: 'fit-content'
+                            }}
+                            title="Mail Settings"
+                        >
+                            <span className="material-symbols-outlined" style={{ fontSize: '22px' }}>settings_suggest</span>
+                            <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase' }}>Mail Settings</span>
+                        </button>
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'flex-end', flex: 1, maxWidth: 'calc(100% - 300px)' }}>
-                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center', width: '100%', justifyContent: 'flex-end' }}>
-                        <div style={styles.statsRow}>
-                            <div style={styles.statCard}>
-                                <span style={{ fontSize: '20px', fontWeight: '800', color: designTokens.colors.primary }}>{totalCount}</span>
-                                <span style={{ fontSize: '9px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Group</span>
-                            </div>
-                            <button
-                                onClick={() => fetchMyLeads(1)}
-                                className={`material-symbols-outlined ${loading ? 'spinning' : ''}`}
-                                style={{
-                                    ...styles.statCard,
-                                    cursor: 'pointer',
-                                    background: designTokens.colors.surface,
-                                    color: loading ? designTokens.colors.primary : designTokens.colors.textSecondary,
-                                    fontSize: '24px',
-                                    width: '48px',
-                                    height: '48px',
-                                    padding: 0,
-                                    borderRadius: '14px'
-                                }}
-                                title="Sync Leads"
-                            >
-                                sync
-                            </button>
-                            <button
-                                onClick={() => setShowSMTPModal(true)}
-                                style={{
-                                    ...styles.statCard,
-                                    background: designTokens.colors.surface,
-                                    color: designTokens.colors.secondary,
-                                    cursor: 'pointer',
-                                    padding: '0 12px',
-                                    borderRadius: '14px',
-                                    height: '48px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '5px',
-                                    border: `1px solid ${designTokens.colors.secondary}30`
-                                }}
-                                title="Mail Settings"
-                            >
-                                <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>settings_suggest</span>
-                                <span style={{ fontSize: '10px', fontWeight: '800', textTransform: 'uppercase' }}>Mail Settings</span>
-                            </button>
-                        </div>
-
-                        <div style={styles.filterRow} className="filter-row">
-                            {/* Date Picker Section */}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0 12px', borderRight: `1px solid ${designTokens.colors.border}` }}>
-                                <span className="material-symbols-outlined" style={{ fontSize: '20px', color: designTokens.colors.textSecondary }}>event</span>
-                                <input
-                                    type="date"
-                                    value={dateFilter}
-                                    onChange={e => { setDateFilter(e.target.value); setCurrentPage(1); }}
-                                    style={{
-                                        border: 'none',
-                                        background: 'transparent',
-                                        fontSize: '13px',
-                                        fontWeight: '700',
-                                        color: designTokens.colors.textPrimary,
-                                        outline: 'none',
-                                        cursor: 'pointer'
-                                    }}
-                                />
-                            </div>
-                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '0 15px', background: '#F8FAFC', borderRadius: '12px', border: `1px solid ${designTokens.colors.border}`, flex: 1, minWidth: '200px' }}>
-                                <span className="material-symbols-outlined" style={{ color: designTokens.colors.textSecondary, fontSize: '20px' }}>search</span>
-                                <input 
-                                    type="text" 
-                                    placeholder="Search current page..." 
-                                    value={searchTerm} 
-                                    onChange={e => setSearchTerm(e.target.value)} 
-                                    style={{ border: 'none', background: 'transparent', width: '100%', padding: '8px 0', fontSize: '13px', outline: 'none', color: designTokens.colors.textPrimary, fontWeight: '500' }}
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style={{ display: 'flex', gap: '4px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                <div style={styles.headerBottom}>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flex: 1, overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                         <button
                             onClick={() => setSelectedOutcome("")}
                             style={styles.filterBtn(selectedOutcome === "", designTokens.colors.primary)}
                         >
-                            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>list_alt</span>
+                            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>list_alt</span>
                             <span>All Records</span>
                         </button>
                         {Object.keys(STAGES_AND_DISPOSITIONS).map(stage => (
@@ -735,47 +747,88 @@ const AdvLeadsBook = () => {
                                 onClick={() => setSelectedOutcome(stage)}
                                 style={styles.filterBtn(selectedOutcome === stage, designTokens.colors.primary)}
                             >
-                                <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>account_tree</span>
+                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>account_tree</span>
                                 <span>{stage}</span>
                             </button>
                         ))}
                     </div>
 
-                    {(userId === "69d4a881cb9305f0d5ecbeb2" || (userName && userName.toLowerCase().includes("sumeetha"))) && (
-                        <div style={{ ...styles.filterRow, marginTop: '5px', maxWidth: '100%', padding: '4px 8px' }} className="filter-row">
-                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center', padding: '0 8px', borderRight: `1px solid ${designTokens.colors.border}` }}>
-                                <span className="material-symbols-outlined" style={{ fontSize: '18px', color: designTokens.colors.primary }}>fiber_new</span>
-                                <span style={{ fontSize: '11px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase' }}>Old CRM:</span>
-                            </div>
-                            <div style={{ display: 'flex', gap: '3px', alignItems: 'center' }}>
-                                {[
-                                    "Fresh", "Interested", "Follow Up", "Callback", "No Answer", "Not Interested", "Junk", "Converted", "Unused"
-                                ].map((status) => (
-                                    <button
-                                        key={status}
-                                        onClick={() => {
-                                            setSelectedOutcome(status);
-                                            setSourceFilter("Old CRM");
-                                        }}
-                                        style={styles.compactBtn(selectedOutcome === status && sourceFilter === "Old CRM", designTokens.colors.royal)}
-                                    >
-                                        <span>{status}</span>
-                                    </button>
-                                ))}
-                                <button
-                                    onClick={() => {
-                                        setSourceFilter("");
-                                        setSelectedOutcome("");
-                                    }}
-                                    style={styles.compactBtn(sourceFilter === "" && selectedOutcome === "", designTokens.colors.danger)}
-                                >
-                                    <span>Reset</span>
-                                </button>
-                            </div>
+                    <div style={styles.filterRow}>
+                        <div style={styles.dateSection}>
+                            <span className="material-symbols-outlined" style={{ fontSize: '20px', color: designTokens.colors.textSecondary }}>event</span>
+                            <input
+                                type="date"
+                                value={dateFilter}
+                                onChange={e => { setDateFilter(e.target.value); setCurrentPage(1); }}
+                                style={{
+                                    border: 'none',
+                                    background: 'transparent',
+                                    fontSize: '13px',
+                                    fontWeight: '700',
+                                    color: designTokens.colors.textPrimary,
+                                    outline: 'none',
+                                    cursor: 'pointer',
+                                    width: '120px'
+                                }}
+                            />
                         </div>
-                    )}
-
+                        <div style={styles.searchSection}>
+                            <span className="material-symbols-outlined" style={{ color: designTokens.colors.textSecondary, fontSize: '20px' }}>search</span>
+                            <input 
+                                type="text" 
+                                placeholder="Search all leads (Name, Phone, Email)..." 
+                                value={searchTerm} 
+                                onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} 
+                                style={{ border: 'none', background: 'transparent', width: '100%', padding: '8px 0', fontSize: '13px', outline: 'none', color: designTokens.colors.textPrimary, fontWeight: '500' }}
+                            />
+                        </div>
+                    </div>
                 </div>
+
+                {(userId === "69d4a881cb9305f0d5ecbeb2" || (userName && userName.toLowerCase().includes("sumeetha"))) && (
+                    <div style={{ 
+                        display: 'flex', 
+                        gap: '12px', 
+                        alignItems: 'center', 
+                        background: '#fff', 
+                        padding: '8px 16px', 
+                        borderRadius: '12px', 
+                        marginTop: '-12px',
+                        border: `1px solid ${designTokens.colors.border}`,
+                        boxShadow: designTokens.shadows.sm
+                    }}>
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', borderRight: `1px solid ${designTokens.colors.border}`, paddingRight: '12px' }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: '18px', color: designTokens.colors.royal }}>database</span>
+                            <span style={{ fontSize: '11px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase' }}>Old CRM Data</span>
+                        </div>
+                        <div style={{ display: 'flex', gap: '4px', alignItems: 'center', overflowX: 'auto', scrollbarWidth: 'none' }}>
+                            {[
+                                "Fresh", "Interested", "Follow Up", "Callback", "No Answer", "Not Interested", "Junk", "Converted", "Unused"
+                            ].map((status) => (
+                                <button
+                                    key={status}
+                                    onClick={() => {
+                                        setSelectedOutcome(status);
+                                        setSourceFilter("Old CRM");
+                                    }}
+                                    style={styles.compactBtn(selectedOutcome === status && sourceFilter === "Old CRM", designTokens.colors.royal)}
+                                >
+                                    <span>{status}</span>
+                                </button>
+                            ))}
+                            <button
+                                onClick={() => {
+                                    setSourceFilter("");
+                                    setSelectedOutcome("");
+                                }}
+                                style={{ ...styles.compactBtn(sourceFilter === "" && selectedOutcome === "", designTokens.colors.danger), marginLeft: '8px' }}
+                            >
+                                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>restart_alt</span>
+                                <span>Reset</span>
+                            </button>
+                        </div>
+                    </div>
+                )}
             </header>
 
             <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -788,7 +841,7 @@ const AdvLeadsBook = () => {
                         </div>
                         <p style={{ marginTop: '20px', fontWeight: '500' }}>Fetching your success pipeline...</p>
                     </div>
-                ) : filteredLeads.length === 0 ? (
+                ) : displayedLeads.length === 0 ? (
                     <div style={{
                         padding: '80px 40px', textAlign: 'center', background: '#fff',
                         borderRadius: '24px', border: '2px dashed #E2E8F0'
@@ -800,25 +853,27 @@ const AdvLeadsBook = () => {
                 ) : (
                     <>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            {Object.keys(groupedLeads).map((date) => (
-                                <React.Fragment key={date}>
-                                    <div style={{
-                                        padding: '12px 24px',
-                                        background: 'linear-gradient(90deg, #f1f5f9 0%, #fff 100%)',
-                                        borderRadius: '12px',
-                                        border: '1px solid #e2e8f0',
-                                        margin: '16px 0 8px 0',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '12px',
-                                        boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
-                                    }}>
-                                        <span className="material-symbols-outlined" style={{ color: designTokens.colors.primary, fontSize: '20px' }}>event</span>
-                                        <span style={{ fontWeight: '800', fontSize: '14px', color: '#475569', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                                            {date}
-                                        </span>
+                        {Object.keys(groupedLeads).map((date) => (
+                            <React.Fragment key={date}>
+                                <div style={{
+                                    padding: '12px 24px',
+                                    background: 'linear-gradient(90deg, #f1f5f9 0%, #fff 100%)',
+                                    borderRadius: '12px',
+                                    border: '1px solid #e2e8f0',
+                                    margin: '16px 0 8px 0',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between'
+                                }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <span className="material-symbols-outlined" style={{ color: designTokens.colors.primary, fontSize: '20px' }}>calendar_today</span>
+                                        <span style={{ fontWeight: '800', color: designTokens.colors.textPrimary, fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{date}</span>
                                     </div>
-                                    {groupedLeads[date].map((lead, idx) => {
+                                    <span style={{ fontSize: '11px', fontWeight: '700', color: designTokens.colors.textSecondary, background: '#fff', padding: '4px 12px', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
+                                        {groupedLeads[date].length} {groupedLeads[date].length === 1 ? 'Lead' : 'Leads'}
+                                    </span>
+                                </div>
+                                {groupedLeads[date].map((lead, idx) => {
                                         const isOpen = activeLead === lead._id;
                                         const form = formState[lead._id] || {};
                                         const history = callHistory[lead._id] || [];
