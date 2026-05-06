@@ -226,6 +226,15 @@ const MentorshipCourseDetails = () => {
                   </ul>
                 </article>
               ))}
+              <article className="cd-program-card">
+                <span className="phase">Post-Training</span>
+                <h3>Placement Support</h3>
+                <ul>
+                  <li><FaCheckCircle /> Dedicated placement assistance with access to 200+ hiring partners.</li>
+                  <li><FaCheckCircle /> ATS-friendly resume building and LinkedIn profile optimization.</li>
+                  <li><FaCheckCircle /> Mock interviews with industry experts to prepare for technical and HR rounds.</li>
+                </ul>
+              </article>
             </div>
           </div>
         </section>
@@ -448,103 +457,24 @@ const MentorshipCourseDetails = () => {
         </div>
       </section>
 
-      {/* Learning Categories */}
-      <section className="cd-section cd-section--alt">
-        <div className="cd-section__inner">
-          <div className="cd-section__header center">
-            <h2 className="cd-section__title">Learning <span>Categories</span></h2>
-            <p className="max-w-3xl mx-auto text-[15px] text-[var(--muted)] mt-4">
-              Choose the learning format that fits your schedule and career goals.
-            </p>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-3 mt-12">
-            {learningCategories.map((cat, i) => (
-              <div key={i} className="p-6 rounded-2xl border border-[var(--border)] bg-white shadow-[var(--shadow)] flex flex-col justify-between">
-                <div>
-                  <h3 className="text-2xl font-extrabold text-[var(--text)] mb-3">{cat.title}</h3>
-                  <div className="text-4xl font-black tracking-tight text-[#2563EB] mb-6">{cat.price}</div>
-                  <ul className="space-y-3 mb-6">
-                    {cat.features.map((feature, j) => {
-                      const isUnavailable = feature.includes("No ");
-                      return (
-                        <li
-                          key={j}
-                          className={`flex items-start gap-3 text-[15px] ${isUnavailable ? "text-gray-400 line-through opacity-70" : "text-[var(--text)]"}`}
-                        >
-                          <span className={`mt-2 h-2 w-2 rounded-full ${isUnavailable ? "bg-gray-400" : "bg-[#2563EB]"}`}></span>
-                          <span>{feature}</span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-
-                <div className="space-y-3">
-                  {cat.links.map((link, j) => (
-                    <button
-                      key={j}
-                      type="button"
-                      onClick={() => setShowForm(true)}
-                      className="w-full rounded-xl bg-[#2563EB] px-4 py-3 text-sm font-bold text-white transition hover:opacity-90"
-                    >
-                      {link}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Enrollment Steps */}
-      <section className="cd-section cd-section--alt cd-steps">
-        <div className="cd-section__inner">
-          <div className="cd-section__header">
-            <h2 className="cd-section__title">How to <span>Enroll</span></h2>
-          </div>
-          <div className="cd-steps-grid">
-             {[
-               { title: "Register", desc: "Fill out the application form with your details." },
-               { title: "Consultation", desc: "Speak with our career advisors for guidance." },
-               { title: "Onboarding", desc: "Submit documentation and complete enrollment." },
-               { title: "Start Learning", desc: "Get access to the portal and meet your mentor." }
-             ].map((step, i) => (
-               <div key={i} className="cd-step-card">
-                  <div className="step-num">{i + 1}</div>
-                  <h4>{step.title}</h4>
-                  <p>{step.desc}</p>
-               </div>
-             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="cd-section cd-faq">
-        <div className="cd-section__inner">
-          <div className="cd-faq-wrap">
-            <div className="cd-section__header center">
-              <h2 className="cd-section__title">Frequently Asked <span>Questions</span></h2>
+      {data.certifications?.length > 0 && (
+        <section className="cd-section cd-section--alt cd-certifications">
+          <div className="cd-section__inner">
+            <div className="cd-section__header">
+              <h2 className="cd-section__title">Certifications</h2>
+              <p className="cd-section__sub">Credentials that validate your practical learning and internship outcomes.</p>
             </div>
-            <div className="cd-faq-list">
-              {data.faqs.map((faq, i) => (
-                <details key={i} className="cd-faq-item">
-                   <summary>
-                     {faq.q}
-                     <span className="icon-toggle">
-                       <FaChevronDown className="down" />
-                       <FaChevronUp className="up" />
-                     </span>
-                   </summary>
-                   <div className="answer">{faq.a}</div>
-                </details>
+            <div className="cd-cert-grid">
+              {data.certifications.map((item, i) => (
+                <div key={i} className="cd-cert-card">
+                  <span className="num">{String(i + 1).padStart(2, "0")}</span>
+                  <p>{item}</p>
+                </div>
               ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {data.studentReviews?.length > 0 && (
         <section className="cd-section cd-reviews">
@@ -603,24 +533,103 @@ const MentorshipCourseDetails = () => {
         </section>
       )}
 
-      {data.certifications?.length > 0 && (
-        <section className="cd-section cd-section--alt cd-certifications">
-          <div className="cd-section__inner">
-            <div className="cd-section__header">
-              <h2 className="cd-section__title">Certifications</h2>
-              <p className="cd-section__sub">Credentials that validate your practical learning and internship outcomes.</p>
-            </div>
-            <div className="cd-cert-grid">
-              {data.certifications.map((item, i) => (
-                <div key={i} className="cd-cert-card">
-                  <span className="num">{String(i + 1).padStart(2, "0")}</span>
-                  <p>{item}</p>
+      {/* Learning Categories */}
+      <section className="cd-section cd-section--alt">
+        <div className="cd-section__inner">
+          <div className="cd-section__header center">
+            <h2 className="cd-section__title">Learning <span>Categories</span></h2>
+            <p className="max-w-3xl mx-auto text-[15px] text-[var(--muted)] mt-4">
+              Choose the learning format that fits your schedule and career goals.
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3 mt-12">
+            {learningCategories.map((cat, i) => (
+              <div key={i} className="p-6 rounded-2xl border border-[var(--border)] bg-white shadow-[var(--shadow)] flex flex-col justify-between">
+                <div>
+                  <h3 className="text-2xl font-extrabold text-[var(--text)] mb-3">{cat.title}</h3>
+                  <div className="text-4xl font-black tracking-tight text-[#2563EB] mb-6">{cat.price}</div>
+                  <ul className="space-y-3 mb-6">
+                    {cat.features.map((feature, j) => {
+                      const isUnavailable = feature.includes("No ");
+                      return (
+                        <li
+                          key={j}
+                          className={`flex items-start gap-3 text-[15px] ${isUnavailable ? "text-gray-400 line-through opacity-70" : "text-[var(--text)]"}`}
+                        >
+                          <span className={`mt-2 h-2 w-2 rounded-full ${isUnavailable ? "bg-gray-400" : "bg-[#2563EB]"}`}></span>
+                          <span>{feature}</span>
+                        </li>
+                      );
+                    })}
+                  </ul>
                 </div>
+
+                <div className="space-y-3">
+                  {cat.links.map((link, j) => (
+                    <button
+                      key={j}
+                      type="button"
+                      onClick={() => setShowForm(true)}
+                      className="w-full rounded-xl bg-[#2563EB] px-4 py-3 text-sm font-bold text-white transition hover:opacity-90"
+                    >
+                      {link}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Enrollment Steps */}
+      <section className="cd-section cd-steps">
+        <div className="cd-section__inner">
+          <div className="cd-section__header">
+            <h2 className="cd-section__title">How to <span>Enroll</span></h2>
+          </div>
+          <div className="cd-steps-grid">
+             {[
+               { title: "Register", desc: "Fill out the application form with your details." },
+               { title: "Consultation", desc: "Speak with our career advisors for guidance." },
+               { title: "Onboarding", desc: "Submit documentation and complete enrollment." },
+               { title: "Start Learning", desc: "Get access to the portal and meet your mentor." }
+             ].map((step, i) => (
+               <div key={i} className="cd-step-card">
+                  <div className="step-num">{i + 1}</div>
+                  <h4>{step.title}</h4>
+                  <p>{step.desc}</p>
+               </div>
+             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="cd-section cd-faq">
+        <div className="cd-section__inner">
+          <div className="cd-faq-wrap">
+            <div className="cd-section__header center">
+              <h2 className="cd-section__title">Frequently Asked <span>Questions</span></h2>
+            </div>
+            <div className="cd-faq-list">
+              {data.faqs.map((faq, i) => (
+                <details key={i} className="cd-faq-item">
+                   <summary>
+                     {faq.q}
+                     <span className="icon-toggle">
+                       <FaChevronDown className="down" />
+                       <FaChevronUp className="up" />
+                     </span>
+                   </summary>
+                   <div className="answer">{faq.a}</div>
+                </details>
               ))}
             </div>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* Final CTA */}
       <section className="cd-final-cta">
