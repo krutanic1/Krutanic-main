@@ -11,6 +11,8 @@ import MentorshipForm from "../../MentorshipForm";
 import sachinImg from "../../../assets/mentors/sachin.jpg";
 import certInternship from '../../../assets/certificates/c/internship.jpg';
 import certTraining from '../../../assets/certificates/c/training.jpg';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 import "./CourseDetails.css";
 
 const learningCategories = [
@@ -92,6 +94,12 @@ const MentorshipCourseDetails = () => {
   };
 
   useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: true,
+      easing: 'ease-out-cubic',
+    });
+    
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 500);
     };
