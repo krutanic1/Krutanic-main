@@ -60,7 +60,8 @@ const AdvLeadsBook = () => {
     const [submitting, setSubmitting] = useState(null);
     const [formState, setFormState] = useState({});
     const [expandedLogId, setExpandedLogId] = useState(null);
-    const [selectedOutcome, setSelectedOutcome] = useState("");
+    // Default to showing Fresh Lead on initial load instead of All Records
+    const [selectedOutcome, setSelectedOutcome] = useState("Fresh Lead");
     const [sourceFilter, setSourceFilter] = useState("");
     const [dateFilter, setDateFilter] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
