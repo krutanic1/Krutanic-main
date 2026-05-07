@@ -13,6 +13,9 @@ import certInternship from '../../../assets/certificates/c/internship.jpg';
 import certTraining from '../../../assets/certificates/c/training.jpg';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import "./CourseDetails.css";
 
 const learningCategories = [
@@ -72,26 +75,8 @@ const MentorshipCourseDetails = () => {
   const [activeModule, setActiveModule] = useState(0);
   const [showForm, setShowForm] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [reviewScrollPos, setReviewScrollPos] = useState(0);
-  const [autoScrollPaused, setAutoScrollPaused] = useState(false);
-  const reviewCarouselRef = React.useRef(null);
-  const autoScrollTimeoutRef = React.useRef(null);
-  const autoScrollIntervalRef = React.useRef(null);
 
   const data = allMentorshipData[courseSlug];
-
-  const pauseAutoScroll = () => {
-    setAutoScrollPaused(true);
-    if (autoScrollTimeoutRef.current) clearTimeout(autoScrollTimeoutRef.current);
-    if (autoScrollIntervalRef.current) clearInterval(autoScrollIntervalRef.current);
-  };
-
-  const resumeAutoScroll = () => {
-    if (autoScrollTimeoutRef.current) clearTimeout(autoScrollTimeoutRef.current);
-    autoScrollTimeoutRef.current = setTimeout(() => {
-      setAutoScrollPaused(false);
-    }, 3000);
-  };
 
   useEffect(() => {
     AOS.init({
@@ -107,20 +92,6 @@ const MentorshipCourseDetails = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => {
-    if (!reviewCarouselRef.current || autoScrollPaused) return;
-
-    autoScrollIntervalRef.current = setInterval(() => {
-      if (reviewCarouselRef.current) {
-        reviewCarouselRef.current.scrollBy({ left: 320, behavior: 'smooth' });
-      }
-    }, 5000);
-
-    return () => {
-      if (autoScrollIntervalRef.current) clearInterval(autoScrollIntervalRef.current);
-    };
-  }, [autoScrollPaused]);
-
   if (!data) {
     return <Navigate to="/Mentorship" />;
   }
@@ -134,6 +105,27 @@ const MentorshipCourseDetails = () => {
       <span className="current">{data.title}</span>
     </nav>
   );
+
+  const reviewSliderSettings = {
+    infinite: true,
+    autoplay: true,
+    autoplaySpeed: 0,
+    speed: 9000,
+    cssEase: 'linear',
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    arrows: false,
+    dots: false,
+    pauseOnHover: false,
+    pauseOnFocus: false,
+    swipeToSlide: false,
+    responsive: [
+      { breakpoint: 1024, settings: { slidesToShow: 2, speed: 7000 } },
+      { breakpoint: 640, settings: { slidesToShow: 1, speed: 5000 } }
+    ]
+  };
+
+  const reviewLoopItems = data.studentReviews ? [...data.studentReviews, ...data.studentReviews] : [];
 
   return (
     <div className="cd-container">
@@ -546,52 +538,30 @@ const MentorshipCourseDetails = () => {
             <div className="cd-section__header center">
               <h2 className="cd-section__title">Students <span>Reviews</span></h2>
             </div>
-            <div className="cd-reviews-carousel-wrapper">
-              <button 
-                className="cd-carousel-btn cd-carousel-btn-prev"
-                onClick={() => {
-                  pauseAutoScroll();
-                  if (reviewCarouselRef.current) {
-                    reviewCarouselRef.current.scrollBy({ left: -320, behavior: 'smooth' });
-                  }
-                  resumeAutoScroll();
-                }}
-                aria-label="Previous reviews"
-              >
-                <FaChevronDown style={{ transform: 'rotate(90deg)' }} />
-              </button>
-              <div 
-                className="cd-reviews-carousel" 
-                ref={reviewCarouselRef}
-                onMouseEnter={pauseAutoScroll}
-                onMouseLeave={resumeAutoScroll}
-              >
-                {data.studentReviews.map((review, i) => (
-                  <article key={i} className="cd-review-card">
-                    <div className="cd-review-card__top">
-                      <h3>{review.name}</h3>
-                      <div className="stars">
-                        {[1,2,3,4,5].map((star) => <FaStar key={star} />)}
+            <div className="cd-reviews-carousel-wrapper cd-reviews-carousel-wrapper--slick">
+              <Slider {...reviewSliderSettings}>
+                {reviewLoopItems.map((review, i) => (
+                  <div key={i} className="cd-review-slide">
+                    <article className="cd-review-card cd-review-card--slick">
+                      <div className="cd-review-card__glow"></div>
+                      <div className="cd-review-card__top cd-review-card__top--slick">
+                        <div className="cd-review-card__profile">
+                          <div className="cd-review-card__avatar">{review.name.charAt(0)}</div>
+                          <div>
+                            <h3>{review.name}</h3>
+                            <span>Mentorship learner</span>
+                          </div>
+                        </div>
+                        <div className="stars">
+                          {[1,2,3,4,5].map((star) => <FaStar key={star} />)}
+                        </div>
                       </div>
-                    </div>
-                    <p>{review.text}</p>
-                    {review.detail && <span>{review.detail}</span>}
-                  </article>
+                      <p>{review.text}</p>
+                      {review.detail && <span>{review.detail}</span>}
+                    </article>
+                  </div>
                 ))}
-              </div>
-              <button 
-                className="cd-carousel-btn cd-carousel-btn-next"
-                onClick={() => {
-                  pauseAutoScroll();
-                  if (reviewCarouselRef.current) {
-                    reviewCarouselRef.current.scrollBy({ left: 320, behavior: 'smooth' });
-                  }
-                  resumeAutoScroll();
-                }}
-                aria-label="Next reviews"
-              >
-                <FaChevronDown style={{ transform: 'rotate(-90deg)' }} />
-              </button>
+              </Slider>
             </div>
           </div>
         </section>

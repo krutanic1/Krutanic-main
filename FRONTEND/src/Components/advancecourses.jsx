@@ -2,11 +2,12 @@ import React from "react";
 import { Link } from "react-router-dom";
 import mernBrochure from "../../krutanic/Mern Stack Web Development Advanced Program.pdf";
 import dataScienceBrochure from "../../krutanic/DataScienceAdvancedProgram.pdf";
+import dataAnalyticsBrochure from "../../krutanic/Data Analytics Advanced program.pdf";
 import digitalMarketingBrochure from "../../krutanic/Digital Marketing Advanced Program.pdf";
 import investmentBankingBrochure from "../../krutanic/Investment Banking Advanced Program.pdf";
 import productManagementBrochure from "../../krutanic/Product management Advanced program.pdf";
-import automationTestingBrochure from "../../krutanic/Automation testing Advanced Program.pdf";
 import promptEngineeringBrochure from "../../krutanic/Prompt engineering for generative AI Advanced Program.pdf";
+import DownloadBrochureButton from "../page/AdvanceCourse/Components/DownloadBrochureButton";
 
 // import ds from '../assets/Advanced Course Images/Data science/DS 3.jpg'
 // import dm from '../assets/Advanced Course Images/Digital Markting/DM 1.jpg'
@@ -41,7 +42,7 @@ const AdvanceCounses = () => {
       credential: "Professional Certificate",
       duration: "6 Months",
       batch: "31st May",
-      brochure: "", 
+      brochure: dataAnalyticsBrochure,
     },
     {
       institute: "KRUTANIC School Of Technology",
@@ -92,18 +93,6 @@ const AdvanceCounses = () => {
       credential: "Executive Diploma",
       duration: "6 Months",
       brochure: mernBrochure,
-    },
-    {
-      institute: "KRUTANIC QA School",
-      title: "Automation Testing",
-      description: "Build robust test automation pipelines for web apps with real-world QA workflows.",
-      icon: <i className="fa fa-refresh" aria-hidden="true"></i>,
-      badge: "In Demand",
-      badgeClass: "bg-[#2563eb] text-white",
-      support: "Job Ready Assessments",
-      credential: "Advanced Certificate",
-      duration: "6 Months",
-      brochure: automationTestingBrochure,
     },
   ];
 
@@ -236,24 +225,12 @@ const AdvanceCounses = () => {
                 >
                   View Program
                 </Link>
-                {(course.title === "Digital Marketing" || course.title === "Data Analytics") ? (
-                  <a
-                    href={course.brochure}
-                    download={`${course.title} - Brochure.pdf`}
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#f15b29] px-3 py-2.5 text-base font-semibold text-white transition hover:bg-[#d94f21]"
-                  >
-                    <i className="fa fa-arrow-down" aria-hidden="true"></i>
-                    Syllabus
-                  </a>
-                ) : (
-                  <button
-                    disabled
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-400 px-3 py-2.5 text-base font-semibold text-white cursor-not-allowed"
-                  >
-                    <i className="fa fa-lock" aria-hidden="true"></i>
-                    Syllabus
-                  </button>
-                )}
+                <DownloadBrochureButton
+                  courseValue={course.title}
+                  brochureLink={course.brochure}
+                  label="Syllabus"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#f15b29] px-3 py-2.5 text-base font-semibold text-white transition hover:bg-[#d94f21]"
+                />
               </div>
             </div>
           ))}

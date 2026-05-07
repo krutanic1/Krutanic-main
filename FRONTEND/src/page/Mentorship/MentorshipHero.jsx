@@ -1,11 +1,8 @@
 import React from 'react';
 import { FaPlay, FaRegFileAlt, FaChevronRight } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
 import heroImg from '../../assets/mentorship_hero.png';
 
 const MentorshipHero = ({ onOpenForm }) => {
-  const navigate = useNavigate();
-
   return (
     <section className="km-hero">
       <div className="km-hero__container">
@@ -19,9 +16,6 @@ const MentorshipHero = ({ onOpenForm }) => {
           <div className="km-hero__ctas">
             <button className="km-btn-primary" onClick={onOpenForm}>
               Apply for Mentorship <FaChevronRight style={{marginLeft: '10px'}} />
-            </button>
-            <button className="km-btn-secondary" onClick={() => navigate('/FeeStructure')}>
-              View Pricing
             </button>
           </div>
           <div className="km-hero__stats">
@@ -37,6 +31,13 @@ const MentorshipHero = ({ onOpenForm }) => {
               <div>
                 <strong>500+</strong>
                 <span>Hiring Partners</span>
+              </div>
+            </div>
+            <div className="km-hero__stat">
+              <div className="km-hero__stat-icon">🚀</div>
+              <div>
+                <strong>100%</strong>
+                <span>Placement Support</span>
               </div>
             </div>
           </div>

@@ -6,7 +6,7 @@ import {
 export const androidAppData = {
   id: "android-app-development",
   title: "Android App Development",
-  duration: "3 Months",
+  duration: "2/3 Months",
   format: "Live Mentor-led",
   level: "Beginner to Pro",
   enrolled: "15,000+ Mentees Trained",

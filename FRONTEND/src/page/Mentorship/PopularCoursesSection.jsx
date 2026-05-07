@@ -13,7 +13,7 @@ const PopularCoursesSection = () => {
       desc: "Building and managing both the front-end and back-end of websites",
       rating: 4.7,
       students: "2,298+",
-      duration: "6 Months",
+      duration: "3 Months",
       link: "/mentorship/full-stack-web-development"
     },
     {
@@ -21,7 +21,7 @@ const PopularCoursesSection = () => {
       desc: "Creating systems that simulate human intelligence for tasks like decision-making.",
       rating: 4.8,
       students: "2,340+",
-      duration: "6 Months",
+      duration: "3 Months",
       link: "/mentorship/artificial-intelligence"
     },
     {
@@ -29,7 +29,7 @@ const PopularCoursesSection = () => {
       desc: "Interpreting data to help businesses improve performance and make decisions.",
       rating: 4.7,
       students: "2,690+",
-      duration: "6 Months",
+      duration: "3 Months",
       link: "/mentorship/data-analytics"
     },
     {
@@ -37,7 +37,7 @@ const PopularCoursesSection = () => {
       desc: "Providing scalable computing resources and storage via the internet.",
       rating: 4.8,
       students: "2,156+",
-      duration: "6 Months",
+      duration: "3 Months",
       link: "/mentorship/cloud-computing"
     },
     {
@@ -45,7 +45,7 @@ const PopularCoursesSection = () => {
       desc: "Analyzing large data sets to extract insights and inform decisions.",
       rating: 4.8,
       students: "2,699+",
-      duration: "6 Months",
+      duration: "3 Months",
       link: "/mentorship/data-science"
     },
     {

@@ -10,15 +10,15 @@ const SpecializationsSection = () => {
 
   const courses = [
     // Computer Science
-    { title: "Full Stack Web Development", domain: "Computer Science", rating: 4.9, students: "2,298+", duration: "6 Months", link: "/mentorship/full-stack-web-development", desc: "Master MERN stack and build production-ready applications." },
-    { title: "Artificial Intelligence", domain: "Computer Science", rating: 4.8, students: "2,340+", duration: "6 Months", link: "/mentorship/artificial-intelligence", desc: "Learn neural networks, deep learning, and AI implementation." },
-    { title: "Data Science", domain: "Computer Science", rating: 4.9, students: "2,690+", duration: "6 Months", link: "/mentorship/data-science", desc: "Analyze complex data sets and derive actionable insights." },
-    { title: "Cyber Security", domain: "Computer Science", rating: 4.7, students: "1,850+", duration: "6 Months", link: "/mentorship/cyber-security", desc: "Protect systems and networks from digital attacks and threats." },
-    { title: "Cloud Computing", domain: "Computer Science", rating: 4.8, students: "2,156+", duration: "6 Months", link: "/mentorship/cloud-computing", desc: "Build scalable infrastructure on AWS and Azure platforms." },
-    { title: "Android App Development", domain: "Computer Science", rating: 4.7, students: "1,520+", duration: "6 Months", link: "/mentorship/android-app-development", desc: "Build native Android applications with Java and Kotlin." },
+    { title: "Full Stack Web Development", domain: "Computer Science", rating: 4.9, students: "2,298+", duration: "3 Months", link: "/mentorship/full-stack-web-development", desc: "Master MERN stack and build production-ready applications." },
+    { title: "Artificial Intelligence", domain: "Computer Science", rating: 4.8, students: "2,340+", duration: "3 Months", link: "/mentorship/artificial-intelligence", desc: "Learn neural networks, deep learning, and AI implementation." },
+    { title: "Data Science", domain: "Computer Science", rating: 4.9, students: "2,690+", duration: "3 Months", link: "/mentorship/data-science", desc: "Analyze complex data sets and derive actionable insights." },
+    { title: "Cyber Security", domain: "Computer Science", rating: 4.7, students: "1,850+", duration: "3 Months", link: "/mentorship/cyber-security", desc: "Protect systems and networks from digital attacks and threats." },
+    { title: "Cloud Computing", domain: "Computer Science", rating: 4.8, students: "2,156+", duration: "3 Months", link: "/mentorship/cloud-computing", desc: "Build scalable infrastructure on AWS and Azure platforms." },
+    { title: "Android App Development", domain: "Computer Science", rating: 4.7, students: "1,520+", duration: "3 Months", link: "/mentorship/android-app-development", desc: "Build native Android applications with Java and Kotlin." },
     { title: "UI/UX Design", domain: "Computer Science", rating: 4.9, students: "1,840+", duration: "4 Months", link: "/mentorship/ui-ux-design", desc: "Design stunning user interfaces and great user experiences." },
-    { title: "DevOps", domain: "Computer Science", rating: 4.8, students: "1,260+", duration: "6 Months", link: "/mentorship/devops", desc: "Bridge the gap between development and operations teams." },
-    { title: "Machine Learning", domain: "Computer Science", rating: 4.9, students: "2,140+", duration: "6 Months", link: "/mentorship/machine-learning", desc: "Train models to learn from data and make predictions." },
+    { title: "DevOps", domain: "Computer Science", rating: 4.8, students: "1,260+", duration: "3 Months", link: "/mentorship/devops", desc: "Bridge the gap between development and operations teams." },
+    { title: "Machine Learning", domain: "Computer Science", rating: 4.9, students: "2,140+", duration: "3 Months", link: "/mentorship/machine-learning", desc: "Train models to learn from data and make predictions." },
     
     // Management
     { title: "Digital Marketing", domain: "Management", rating: 4.8, students: "2,257+", duration: "4 Months", link: "/mentorship/digital-marketing", desc: "Master SEO, SEM, and social media marketing strategies." },
@@ -28,9 +28,9 @@ const SpecializationsSection = () => {
     { title: "Stock Marketing", domain: "Management", rating: 4.8, students: "3,140+", duration: "3 Months", link: "/mentorship/stock-marketing", desc: "Learn trading, investment strategies, and market analysis." },
 
     // Electronics/Electrical
-    { title: "Embedded Systems", domain: "Electronics/Electrical", rating: 4.7, students: "1,200+", duration: "6 Months", link: "/mentorship/embedded-systems", desc: "Design and program hardware systems for real-world apps." },
-    { title: "VLSI Design", domain: "Electronics/Electrical", rating: 4.6, students: "980+", duration: "6 Months", link: "/mentorship/vlsi-design", desc: "Learn integrated circuit design and semiconductor technology." },
-    { title: "IOT & Robotics", domain: "Electronics/Electrical", rating: 4.8, students: "1,450+", duration: "6 Months", link: "/mentorship/iot-robotics", desc: "Connect devices and build intelligent robotic systems." },
+    { title: "Embedded Systems", domain: "Electronics/Electrical", rating: 4.7, students: "1,200+", duration: "3 Months", link: "/mentorship/embedded-systems", desc: "Design and program hardware systems for real-world apps." },
+    { title: "VLSI Design", domain: "Electronics/Electrical", rating: 4.6, students: "980+", duration: "3 Months", link: "/mentorship/vlsi-design", desc: "Learn integrated circuit design and semiconductor technology." },
+    { title: "IOT & Robotics", domain: "Electronics/Electrical", rating: 4.8, students: "1,450+", duration: "3 Months", link: "/mentorship/iot-robotics", desc: "Connect devices and build intelligent robotic systems." },
 
     // Mechanical
     { title: "Auto CAD", domain: "Mechanical", rating: 4.8, students: "1,340+", duration: "4 Months", link: "/mentorship/auto-cad", desc: "Master precision engineering design and manufacturing tools." },
