@@ -96,6 +96,7 @@ const AdvLeadsBook = () => {
     const [isSavingTemplate, setIsSavingTemplate] = useState(false);
 
     const [advDomains, setAdvDomains] = useState(["General"]);
+    const [outcomeCounts, setOutcomeCounts] = useState({});
 
     const fetchMyLeads = async (page = 1) => {
         setLoading(true);
@@ -118,6 +119,8 @@ const AdvLeadsBook = () => {
                 setTotalPages(res.data.totalPages);
                 setTotalCount(res.data.totalCount);
                 setCurrentPage(res.data.currentPage);
+                // Refresh outcome counts after successful lead fetch
+                fetchOutcomeCounts();
             } else {
                 setLeads([]);
             }
@@ -125,6 +128,19 @@ const AdvLeadsBook = () => {
             toast.error("Failed to fetch leads");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchOutcomeCounts = async () => {
+        try {
+            const res = await axios.get(`${API}/api/adv-leads/get-outcome-counts`, {
+                params: { role: designation, userId, strictlyOwned: true }
+            });
+            if (res.data) {
+                setOutcomeCounts(res.data);
+            }
+        } catch (err) {
+            console.error("Failed to fetch outcome counts", err?.message || err);
         }
     };
     // Removed frontend filtering as we now use global backend search
@@ -161,6 +177,7 @@ const AdvLeadsBook = () => {
         fetchTemplates();
         fetchSMTPConfig();
         fetchDomains();
+        fetchOutcomeCounts();
     }, [userId]);
 
     // Consolidated lead fetching effect with debouncing for search
@@ -736,20 +753,26 @@ const AdvLeadsBook = () => {
                 <div style={styles.headerBottom}>
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flex: 1, overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                         <button
-                            onClick={() => setSelectedOutcome("")}
-                            style={styles.filterBtn(selectedOutcome === "", designTokens.colors.primary)}
+                                    onClick={() => setSelectedOutcome("")}
+                                    style={styles.filterBtn(selectedOutcome === "", designTokens.colors.primary)}
                         >
                             <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>list_alt</span>
-                            <span>All Records</span>
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <span>All Records</span>
+                                        <span style={{ background: '#EEF2FF', color: designTokens.colors.primary, padding: '4px 8px', borderRadius: '999px', fontWeight: 800, fontSize: '12px' }}>{outcomeCounts.total ?? totalCount ?? 0}</span>
+                                    </span>
                         </button>
                         {Object.keys(STAGES_AND_DISPOSITIONS).map(stage => (
                             <button
                                 key={stage}
-                                onClick={() => setSelectedOutcome(stage)}
-                                style={styles.filterBtn(selectedOutcome === stage, designTokens.colors.primary)}
+                                        onClick={() => setSelectedOutcome(stage)}
+                                        style={styles.filterBtn(selectedOutcome === stage, designTokens.colors.primary)}
                             >
                                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>account_tree</span>
-                                <span>{stage}</span>
+                                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <span>{stage}</span>
+                                            <span style={{ background: '#F1F5F9', color: designTokens.colors.textPrimary, padding: '4px 8px', borderRadius: '999px', fontWeight: 800, fontSize: '12px' }}>{outcomeCounts[stage] ?? 0}</span>
+                                        </span>
                             </button>
                         ))}
                     </div>
