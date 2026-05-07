@@ -96,7 +96,6 @@ const AdvLeadsBook = () => {
     const [isSavingTemplate, setIsSavingTemplate] = useState(false);
 
     const [advDomains, setAdvDomains] = useState(["General"]);
-    const [outcomeCounts, setOutcomeCounts] = useState({});
 
     const fetchMyLeads = async (page = 1) => {
         setLoading(true);
@@ -119,8 +118,6 @@ const AdvLeadsBook = () => {
                 setTotalPages(res.data.totalPages);
                 setTotalCount(res.data.totalCount);
                 setCurrentPage(res.data.currentPage);
-                // Refresh outcome counts after successful lead fetch
-                fetchOutcomeCounts();
             } else {
                 setLeads([]);
             }
@@ -128,19 +125,6 @@ const AdvLeadsBook = () => {
             toast.error("Failed to fetch leads");
         } finally {
             setLoading(false);
-        }
-    };
-
-    const fetchOutcomeCounts = async () => {
-        try {
-            const res = await axios.get(`${API}/api/adv-leads/get-outcome-counts`, {
-                params: { role: designation, userId, strictlyOwned: true }
-            });
-            if (res.data) {
-                setOutcomeCounts(res.data);
-            }
-        } catch (err) {
-            console.error("Failed to fetch outcome counts", err?.message || err);
         }
     };
     // Removed frontend filtering as we now use global backend search
@@ -177,7 +161,6 @@ const AdvLeadsBook = () => {
         fetchTemplates();
         fetchSMTPConfig();
         fetchDomains();
-        fetchOutcomeCounts();
     }, [userId]);
 
     // Consolidated lead fetching effect with debouncing for search
@@ -245,6 +228,16 @@ const AdvLeadsBook = () => {
     const formatDate = (date) => {
         if (!date) return "Unknown Date";
         return new Date(date).toLocaleDateString("en-GB");
+    };
+
+    // Subtract 5 hours 30 minutes from a stored datetime and format for display
+    const subtractFiveThirtyAndFormat = (val, opts = { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) => {
+        if (!val) return '—';
+        const ms = Date.parse(val);
+        if (isNaN(ms)) return '—';
+        const offsetMs = (5 * 60 + 30) * 60 * 1000; // 5h30m in ms
+        const adjusted = new Date(ms - offsetMs);
+        return adjusted.toLocaleString('en-IN', opts);
     };
 
     // Grouping logic for the leads
@@ -753,26 +746,20 @@ const AdvLeadsBook = () => {
                 <div style={styles.headerBottom}>
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flex: 1, overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                         <button
-                                    onClick={() => setSelectedOutcome("")}
-                                    style={styles.filterBtn(selectedOutcome === "", designTokens.colors.primary)}
+                            onClick={() => setSelectedOutcome("")}
+                            style={styles.filterBtn(selectedOutcome === "", designTokens.colors.primary)}
                         >
                             <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>list_alt</span>
-                                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <span>All Records</span>
-                                        <span style={{ background: '#EEF2FF', color: designTokens.colors.primary, padding: '4px 8px', borderRadius: '999px', fontWeight: 800, fontSize: '12px' }}>{outcomeCounts.total ?? totalCount ?? 0}</span>
-                                    </span>
+                            <span>All Records</span>
                         </button>
                         {Object.keys(STAGES_AND_DISPOSITIONS).map(stage => (
                             <button
                                 key={stage}
-                                        onClick={() => setSelectedOutcome(stage)}
-                                        style={styles.filterBtn(selectedOutcome === stage, designTokens.colors.primary)}
+                                onClick={() => setSelectedOutcome(stage)}
+                                style={styles.filterBtn(selectedOutcome === stage, designTokens.colors.primary)}
                             >
                                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>account_tree</span>
-                                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <span>{stage}</span>
-                                            <span style={{ background: '#F1F5F9', color: designTokens.colors.textPrimary, padding: '4px 8px', borderRadius: '999px', fontWeight: 800, fontSize: '12px' }}>{outcomeCounts[stage] ?? 0}</span>
-                                        </span>
+                                <span>{stage}</span>
                             </button>
                         ))}
                     </div>
@@ -1054,8 +1041,8 @@ const AdvLeadsBook = () => {
                                                                     { label: 'Pipeline Stage', value: lead.stage, icon: 'account_tree' },
                                                                     { label: 'Disposition', value: lead.disposition, icon: 'label_important' },
                                                                      { label: 'Contact Attempts', value: `${lead.attempt_count || 0} Attempts`, icon: 'call_log' },
-                                                                     { label: 'Last called at', value: lead.last_contacted_at ? new Date(lead.last_contacted_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'Never Called', icon: 'history' },
-                                                                    { label: 'Next Follow-up', value: lead.next_followup_at ? new Date(lead.next_followup_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'Not Scheduled', icon: 'schedule' },
+                                                                    { label: 'Last called at', value: lead.last_contacted_at ? new Date(lead.last_contacted_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'Never Called', icon: 'history' },
+                                                                    { label: 'Next Follow-up', value: lead.next_followup_at ? subtractFiveThirtyAndFormat(lead.next_followup_at) : 'Not Scheduled', icon: 'schedule' },
                                                                     { label: 'Primary Contact', value: lead.email, icon: 'mail' },
                                                                     { label: 'Workplace', value: lead.company_name, icon: 'business' },
                                                                     { label: 'Educational Background', value: lead.education_background, icon: 'school' },
@@ -1313,13 +1300,13 @@ const AdvLeadsBook = () => {
                                                                                 {h.followUpDate && (
                                                                                     <div style={{ fontSize: '11px', background: `${designTokens.colors.info}15`, color: designTokens.colors.info, padding: '4px 8px', borderRadius: '6px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                                                         <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>event_repeat</span>
-                                                                                        Follow-up: {new Date(h.followUpDate).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                                                                                        Follow-up: {subtractFiveThirtyAndFormat(h.followUpDate)}
                                                                                     </div>
                                                                                 )}
                                                                                 {h.demoScheduleDate && (
                                                                                     <div style={{ fontSize: '11px', background: `${designTokens.colors.warning}15`, color: designTokens.colors.warning, padding: '4px 8px', borderRadius: '6px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                                                         <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>calendar_month</span>
-                                                                                        Demo: {new Date(h.demoScheduleDate).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                                                                                        Demo: {subtractFiveThirtyAndFormat(h.demoScheduleDate)}
                                                                                     </div>
                                                                                 )}
                                                                                 {h.expectedPaymentDate && (

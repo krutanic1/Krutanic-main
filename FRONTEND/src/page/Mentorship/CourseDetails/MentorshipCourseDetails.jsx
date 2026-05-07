@@ -80,7 +80,7 @@ const learningCategories = [
       "ATS-Friendly Resume Building",
       "Personality Development"
     ],
-    links: ["Slot Booking Link", "Career Advancement Full Registration"]
+    links: ["https://rzp.io/rzp/Career_Advance_Slot_Booking", "Career Advancement Full Registration"]
   }
 ];
 
@@ -620,6 +620,19 @@ const MentorshipCourseDetails = () => {
                         <a
                           key={j}
                           href="https://pages.razorpay.com/Instructor_Led_Slot_Booking"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block text-center w-full rounded-xl bg-[#2563EB] px-4 py-3 text-sm font-bold text-white transition hover:opacity-90"
+                        >
+                          Book Slot Now
+                        </a>
+                      );
+                    }
+                    if (link === "https://rzp.io/rzp/Career_Advance_Slot_Booking") {
+                      return (
+                        <a
+                          key={j}
+                          href={link}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="block text-center w-full rounded-xl bg-[#2563EB] px-4 py-3 text-sm font-bold text-white transition hover:opacity-90"
