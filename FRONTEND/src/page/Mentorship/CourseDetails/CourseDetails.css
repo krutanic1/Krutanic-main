@@ -398,6 +398,36 @@
   letter-spacing: -0.02em;
   line-height: 1.1;
 }
+
+/* AI sticky promo bar (mobile) */
+.ai-sticky-bar {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  background: var(--secondary); /* blue */
+  color: #fff;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  z-index: 9999;
+  box-shadow: 0 20px 50px rgba(37, 99, 235, 0.18);
+}
+.ai-sticky-bar .ai-left { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.ai-sticky-bar .ai-emoji { font-size:18px; }
+.ai-sticky-bar .ai-text { font-weight:700; font-size:15px; }
+.ai-sticky-bar .ai-batch { font-size:16px; font-weight:700; opacity:0.98; margin-left:6px; }
+.ai-sticky-bar .ai-countdown { margin-left:6px; font-size:18px; font-weight:800; }
+.ai-sticky-bar .ai-actions { display:flex; gap:10px; align-items:center; }
+.ai-sticky-bar .ai-cta { padding:10px 14px; border-radius:10px; font-weight:700; border: none; cursor: pointer; }
+.ai-sticky-bar .ai-cta-outline { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.12); }
+.ai-sticky-bar .ai-cta-primary { background: #fff; color: var(--secondary); }
+
+/* Show AI sticky bar on all viewports by default (matches requested design) */
+.ai-sticky-bar { display:flex; }
 .cd-section__title span { color: var(--secondary); }
 .cd-section__sub { 
   font-size: 18px; 
@@ -1361,6 +1391,11 @@
   .cd-module-card {
     padding: 24px;
   }
+}
+
+/* Ensure mobile sticky CTA is visible by default on small screens */
+@media (max-width: 991px) {
+  .cd-sticky-mobile { transform: translateY(0); }
 }
 
 @media (max-width: 640px) {
