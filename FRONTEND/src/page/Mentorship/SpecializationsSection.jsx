@@ -16,7 +16,7 @@ const SpecializationsSection = () => {
     { title: "Cyber Security", domain: "Computer Science", rating: 4.7, students: "1,850+", duration: "3 Months", link: "/mentorship/cyber-security", desc: "Protect systems and networks from digital attacks and threats." },
     { title: "Cloud Computing", domain: "Computer Science", rating: 4.8, students: "2,156+", duration: "3 Months", link: "/mentorship/cloud-computing", desc: "Build scalable infrastructure on AWS and Azure platforms." },
     { title: "Android App Development", domain: "Computer Science", rating: 4.7, students: "1,520+", duration: "3 Months", link: "/mentorship/android-app-development", desc: "Build native Android applications with Java and Kotlin." },
-    { title: "UI/UX Design", domain: "Computer Science", rating: 4.9, students: "1,840+", duration: "4 Months", link: "/mentorship/ui-ux-design", desc: "Design stunning user interfaces and great user experiences." },
+    { title: "UI/UX Design", domain: "Computer Science", rating: 4.9, students: "1,840+", duration: "3 Months", link: "/mentorship/ui-ux-design", desc: "Design stunning user interfaces and great user experiences." },
     { title: "DevOps", domain: "Computer Science", rating: 4.8, students: "1,260+", duration: "3 Months", link: "/mentorship/devops", desc: "Bridge the gap between development and operations teams." },
     { title: "Machine Learning", domain: "Computer Science", rating: 4.9, students: "2,140+", duration: "3 Months", link: "/mentorship/machine-learning", desc: "Train models to learn from data and make predictions." },
     

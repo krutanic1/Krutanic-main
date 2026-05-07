@@ -53,7 +53,7 @@ const PopularCoursesSection = () => {
       desc: "Promoting products and services through digital channels like social media and search engines.",
       rating: 4.7,
       students: "2,257+",
-      duration: "4 Months",
+      duration: "3 Months",
       link: "/mentorship/digital-marketing"
     }
   ];
