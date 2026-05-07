@@ -70,6 +70,7 @@ const AdvLeadsBook = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
+    const [outcomeCounts, setOutcomeCounts] = useState({});
     const limit = 25;
     const userId = localStorage.getItem("advTeamId");
     const userName = localStorage.getItem("advTeamName");
@@ -127,6 +128,17 @@ const AdvLeadsBook = () => {
             setLoading(false);
         }
     };
+
+    const fetchOutcomeCounts = async () => {
+        try {
+            const res = await axios.get(`${API}/api/adv-leads/get-outcome-counts`, {
+                params: { role: designation, userId, strictlyOwned: true }
+            });
+            setOutcomeCounts(res.data);
+        } catch (err) {
+            console.error("Failed to fetch counts", err);
+        }
+    };
     // Removed frontend filtering as we now use global backend search
     const displayedLeads = leads;
 
@@ -167,6 +179,7 @@ const AdvLeadsBook = () => {
     useEffect(() => {
         const timer = setTimeout(() => {
             fetchMyLeads(currentPage);
+            fetchOutcomeCounts();
         }, searchTerm ? 500 : 0); // Debounce search only if there's a search term
         
         return () => clearTimeout(timer);
@@ -327,6 +340,7 @@ const AdvLeadsBook = () => {
             setCallHistory(prev => { const n = { ...prev }; delete n[lead._id]; return n; });
             fetchHistory(lead._id);
             fetchMyLeads(currentPage);
+            fetchOutcomeCounts();
         } catch (err) {
             toast.error(err.response?.data?.message || "Failed to log activity");
         } finally {
@@ -750,7 +764,7 @@ const AdvLeadsBook = () => {
                             style={styles.filterBtn(selectedOutcome === "", designTokens.colors.primary)}
                         >
                             <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>list_alt</span>
-                            <span>All Records</span>
+                            <span>All Records ({outcomeCounts.total || 0})</span>
                         </button>
                         {Object.keys(STAGES_AND_DISPOSITIONS).map(stage => (
                             <button
@@ -759,7 +773,7 @@ const AdvLeadsBook = () => {
                                 style={styles.filterBtn(selectedOutcome === stage, designTokens.colors.primary)}
                             >
                                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>account_tree</span>
-                                <span>{stage}</span>
+                                <span>{stage} ({outcomeCounts[stage] || 0})</span>
                             </button>
                         ))}
                     </div>
