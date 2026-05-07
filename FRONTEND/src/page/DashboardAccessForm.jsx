@@ -108,6 +108,7 @@ const DashboardAccessForm = () => {
 
   const [monthsToShow, setMonthsToShow] = useState([]);
   const [endsMonthsToShow, setEndsMonthsToShow] = useState([]);
+  const [internshipStartsMonthsToShow, setInternshipStartsMonthsToShow] = useState([]);
 
   const monthNames = [
     "January",
@@ -145,23 +146,37 @@ const DashboardAccessForm = () => {
     const nextYear = startMonthIndex > 11 ? currentYear + 1 : currentYear;
     startMonthIndex = startMonthIndex % 12;
 
+    // Only show next 3 months in the dropdown
     months = [
       `${monthNames[startMonthIndex]} ${nextYear}`,
-      `${monthNames[(startMonthIndex + 1) % 12]} ${startMonthIndex + 1 > 11 ? nextYear + 1 : nextYear
-      }`,
-      `${monthNames[(startMonthIndex + 2) % 12]} ${startMonthIndex + 2 > 11 ? nextYear + 1 : nextYear
-      }`,
-      `${monthNames[(startMonthIndex + 3) % 12]} ${startMonthIndex + 3 > 11 ? nextYear + 1 : nextYear
-      }`,
-      `${monthNames[(startMonthIndex + 4) % 12]} ${startMonthIndex + 4 > 11 ? nextYear + 1 : nextYear
-      }`,
-      `${monthNames[(startMonthIndex + 5) % 12]} ${startMonthIndex + 5 > 11 ? nextYear + 1 : nextYear
-      }`,
+      `${monthNames[(startMonthIndex + 1) % 12]} ${startMonthIndex + 1 > 11 ? nextYear + 1 : nextYear}`,
+      `${monthNames[(startMonthIndex + 2) % 12]} ${startMonthIndex + 2 > 11 ? nextYear + 1 : nextYear}`,
     ];
 
     setMonthsToShow(months);
   }, []);
-  // Dynamically calculate next 6 months based on selected start month
+
+  // Dynamically calculate next 3 months for Internship starts month based on opted month
+  useEffect(() => {
+    if (!monthOpted) {
+      setInternshipStartsMonthsToShow(monthsToShow);
+      return;
+    }
+
+    const [optedMonthName, optedYearStr] = monthOpted.split(" ");
+    const optedMonthIndex = monthNames.indexOf(optedMonthName);
+    const optedYear = parseInt(optedYearStr);
+
+    const starts = [1, 2, 3].map((offset) => {
+      const index = (optedMonthIndex + offset) % 12;
+      const year = optedMonthIndex + offset > 11 ? optedYear + 1 : optedYear;
+      return `${monthNames[index]} ${year}`;
+    });
+
+    setInternshipStartsMonthsToShow(starts);
+    setInternshipStartsMonth(""); // Reset start month when opted month changes
+  }, [monthOpted, monthsToShow]);
+  // Dynamically calculate next 3 months based on selected start month
   useEffect(() => {
     if (!internshipstartsmonth) return;
 
@@ -169,7 +184,7 @@ const DashboardAccessForm = () => {
     const startMonthIndex = monthNames.indexOf(startMonthName);
     const startYear = parseInt(startYearStr);
 
-    const ends = [1, 2, 3, 4, 5, 6].map((offset) => {
+    const ends = [1, 2, 3].map((offset) => {
       const index = (startMonthIndex + offset) % 12;
       const year = startMonthIndex + offset > 11 ? startYear + 1 : startYear;
       return `${monthNames[index]} ${year}`;
@@ -646,7 +661,7 @@ const DashboardAccessForm = () => {
               <option value="" selected disabled>
                 Internship starts month
               </option>
-              {monthsToShow.map((month, index) => (
+              {internshipStartsMonthsToShow.map((month, index) => (
                 <option key={index} value={month}>
                   {month}
                 </option>
