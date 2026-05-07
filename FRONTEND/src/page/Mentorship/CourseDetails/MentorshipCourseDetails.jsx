@@ -549,7 +549,6 @@ const MentorshipCourseDetails = () => {
                           <div className="cd-review-card__avatar">{review.name.charAt(0)}</div>
                           <div>
                             <h3>{review.name}</h3>
-                            <span>Mentorship learner</span>
                           </div>
                         </div>
                         <div className="stars">
