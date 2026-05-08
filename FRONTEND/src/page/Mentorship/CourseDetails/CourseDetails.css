@@ -1399,6 +1399,84 @@
 }
 
 @media (max-width: 640px) {
+  .ai-sticky-bar {
+    left: 50%;
+    right: auto;
+    bottom: 10px;
+    transform: translateX(-50%);
+    width: calc(100vw - 20px);
+    max-width: calc(100vw - 20px);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    border-radius: 12px;
+    padding: 8px 10px;
+    gap: 8px;
+    overflow: hidden;
+  }
+
+  .ai-sticky-bar,
+  .ai-sticky-bar * {
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+
+  .ai-sticky-bar .ai-left {
+    flex: 1 1 100%;
+    min-width: 0;
+    gap: 6px;
+    row-gap: 3px;
+  }
+
+  .ai-sticky-bar .ai-emoji {
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .ai-sticky-bar .ai-text {
+    font-size: 12px;
+    line-height: 1.2;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ai-sticky-bar .ai-batch {
+    display: block;
+    flex-basis: 100%;
+    margin-left: 0;
+    font-size: 12px;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .ai-sticky-bar .ai-countdown {
+    margin-left: 0;
+    font-size: 14px;
+    line-height: 1.1;
+    white-space: nowrap;
+  }
+
+  .ai-sticky-bar .ai-actions {
+    flex: 0 0 auto;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .ai-sticky-bar .ai-cta {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.1;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
   .cd-section__inner,
   .cd-hero__grid {
     padding-left: 16px;

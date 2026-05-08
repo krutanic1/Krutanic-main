@@ -751,8 +751,8 @@ const MentorshipCourseDetails = () => {
           <div className="ai-left">
             <span className="ai-emoji">🎓</span>
             <div className="ai-text">30% Scholarship closing in just 2 days.</div>
-            <div className="ai-batch">Batch closing in</div>
-            <div className="ai-countdown"><Countdown targetOffsetHours={48} /></div>
+            <br />
+            <div className="ai-countdown">Batch closing in &nbsp;<Countdown targetOffsetHours={48} /></div>
           </div>
           <div className="ai-actions">
             <button className="ai-cta ai-cta-primary" onClick={() => setShowForm(true)}>Enroll in {data.title}</button>
