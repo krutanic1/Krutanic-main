@@ -1398,14 +1398,26 @@
   .cd-sticky-mobile { transform: translateY(0); }
 }
 
-@media (max-width: 640px) {
+/* Desktop/Laptop: Center sticky CTA */
+@media (min-width: 641px) {
   .ai-sticky-bar {
     left: 50%;
     right: auto;
-    bottom: 10px;
     transform: translateX(-50%);
-    width: calc(100vw - 20px);
-    max-width: calc(100vw - 20px);
+    width: min(1500px, calc(100vw - 32px));
+    max-width: 1500px;
+  }
+}
+
+/* Mobile: Align sticky CTA to left */
+@media (max-width: 640px) {
+  .ai-sticky-bar {
+    left: 16px;
+    right: auto;
+    bottom: 10px;
+    transform: none;
+    width: calc(100vw - 32px);
+    max-width: calc(100vw - 32px);
     box-sizing: border-box;
     display: flex;
     flex-direction: column;

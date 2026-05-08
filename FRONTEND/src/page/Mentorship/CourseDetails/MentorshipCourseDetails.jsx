@@ -745,24 +745,18 @@ const MentorshipCourseDetails = () => {
          </div>
       </section>
 
-      {/* Sticky Bottom CTA (Mobile) - show AI promo bar for AI course, otherwise default */}
-      {data.id === 'artificial-intelligence' ? (
-        <div className="ai-sticky-bar" role="dialog" aria-label="AI Promo">
-          <div className="ai-left">
-            <span className="ai-emoji">🎓</span>
-            <div className="ai-text">30% Scholarship closing in just 2 days.</div>
-            <br />
-            <div className="ai-countdown">Batch closing in &nbsp;<Countdown targetOffsetHours={48} /></div>
-          </div>
-          <div className="ai-actions">
-            <button className="ai-cta ai-cta-primary" onClick={() => setShowForm(true)}>Enroll in {data.title}</button>
-          </div>
+      {/* Sticky Bottom CTA - same across all mentorship courses */}
+      <div className="ai-sticky-bar" role="dialog" aria-label="Promo">
+        <div className="ai-left">
+          <span className="ai-emoji">🎓</span>
+          <div className="ai-text">30% Scholarship closing in just 2 days.</div>
+          <br />
+          <div className="ai-countdown">Batch closing in &nbsp;<Countdown targetOffsetHours={48} /></div>
         </div>
-      ) : (
-        <div className={`cd-sticky-mobile ${isScrolled ? 'visible' : ''}`}>
-           <button className="cd-btn-primary full" onClick={() => setShowForm(true)}>Enroll in {data.title}</button>
+        <div className="ai-actions">
+          <button className="ai-cta ai-cta-primary" onClick={() => setShowForm(true)}>Enroll in {data.title}</button>
         </div>
-      )}
+      </div>
 
       {showForm && <MentorshipForm isPopup onClose={() => setShowForm(false)} />}
     </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { 
   FaStar, FaCalendarAlt, FaChalkboardTeacher, FaProjectDiagram, 
@@ -9,6 +9,21 @@ import { androidAppData as data } from "./androidAppData";
 import MentorshipForm from "../../MentorshipForm";
 import sachinImg from "../../../assets/mentors/sachin.jpg";
 import "./CourseDetails.css";
+
+// Countdown component for sticky CTA
+const Countdown = ({ targetOffsetHours = 48 }) => {
+  const target = useMemo(() => Date.now() + targetOffsetHours * 3600 * 1000, [targetOffsetHours]);
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const diff = Math.max(0, Math.floor((target - now) / 1000));
+  const hrs = String(Math.floor(diff / 3600)).padStart(2, '0');
+  const mins = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
+  const secs = String(diff % 60).padStart(2, '0');
+  return <span style={{display:'inline-flex',gap:8,alignItems:'center',fontFamily:'monospace'}}>{hrs} : {mins} : {secs}</span>;
+};
 
 const AndroidAppDetails = () => {
   const navigate = useNavigate();
@@ -328,9 +343,17 @@ const AndroidAppDetails = () => {
          </div>
       </section>
 
-      {/* Sticky Bottom CTA (Mobile) */}
-      <div className={`cd-sticky-mobile ${isScrolled ? 'visible' : ''}`}>
-         <button className="cd-btn-primary full" onClick={() => setShowForm(true)}>Enroll in Android App Development</button>
+      {/* Sticky Bottom CTA - same across all mentorship courses */}
+      <div className="ai-sticky-bar" role="dialog" aria-label="Promo">
+        <div className="ai-left">
+          <span className="ai-emoji">🎓</span>
+          <div className="ai-text">30% Scholarship closing in just 2 days.</div>
+          <br />
+          <div className="ai-countdown">Batch closing in &nbsp;<Countdown targetOffsetHours={48} /></div>
+        </div>
+        <div className="ai-actions">
+          <button className="ai-cta ai-cta-primary" onClick={() => setShowForm(true)}>Enroll in {data.title}</button>
+        </div>
       </div>
 
       {showForm && <MentorshipForm isPopup onClose={() => setShowForm(false)} />}
