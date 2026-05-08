@@ -478,7 +478,7 @@ const MentorshipCourseDetails = () => {
       {data.certifications?.length > 0 && (
         <section className="km-creds">
           <div className="km-creds__container">
-            <div className="km-creds__left" data-aos="fade-right">
+            <div className="km-creds__left">
               <div className="km-section-chip" style={{ color: '#2563EB', borderColor: '#2563EB', backgroundColor: 'rgba(37, 99, 235, 0.1)' }}>Certifications</div>
               <h2 className="km-section-title">Credentials That <span style={{ color: '#2563EB' }}>Matter</span></h2>
               <p className="km-creds__sub">Validate your hard work with dual certifications that are recognized by top hiring partners and industry leaders.</p>
@@ -520,7 +520,7 @@ const MentorshipCourseDetails = () => {
               <p className="km-creds__note">*All certificates include unique QR codes for instant recruiter verification.</p>
             </div>
 
-            <div className="km-creds__right" data-aos="fade-left">
+            <div className="km-creds__right">
               <div className="km-cert-card">
                 <img src={certTraining} alt="Training Certificate" className="km-cert-card__img" />
                 <div className="km-cert-card__footer">

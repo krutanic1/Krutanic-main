@@ -7,7 +7,7 @@ const CredentialSection = () => {
   return (
     <section className="km-creds">
       <div className="km-creds__container">
-        <div className="km-creds__left" data-aos="fade-right">
+        <div className="km-creds__left">
           <div className="km-section-chip">Certifications</div>
           <h2 className="km-section-title">Credentials That <span>Matter</span></h2>
           <p className="km-creds__sub">Validate your hard work with dual certifications that are recognized by top hiring partners and industry leaders.</p>
@@ -49,7 +49,7 @@ const CredentialSection = () => {
           <p className="km-creds__note">*All certificates include unique QR codes for instant recruiter verification.</p>
         </div>
 
-        <div className="km-creds__right" data-aos="fade-left">
+        <div className="km-creds__right">
           <div className="km-cert-card">
             <img src={certTraining} alt="Training Certificate" className="km-cert-card__img" />
             <div className="km-cert-card__footer">
