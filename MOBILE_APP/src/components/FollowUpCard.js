@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, SHADOWS, TYPOGRAPHY } from '../utils/theme';
+import { formatUserDate } from '../utils/dateUtils';
+import { getCallUrl } from '../utils/phoneUtils';
 
 const FollowUpCard = ({ followUp, onOpenLead }) => {
     const lead = followUp.leadId;
@@ -9,7 +11,7 @@ const FollowUpCard = ({ followUp, onOpenLead }) => {
     const isToday = date.toDateString() === new Date().toDateString();
 
     const handleCall = () => {
-        Linking.openURL(`tel:+91${lead.phone_number}`);
+        Linking.openURL(getCallUrl(lead.phone_number));
     };
 
     return (
@@ -26,10 +28,7 @@ const FollowUpCard = ({ followUp, onOpenLead }) => {
                         color={isToday ? COLORS.primary : COLORS.textDim}
                     />
                     <Text style={[styles.timeText, isToday && styles.todayText]}>
-                        {isToday ? 'Today' : date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
-                    </Text>
-                    <Text style={[styles.hourText, isToday && styles.todayText]}>
-                        {date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                        {formatUserDate(followUp.followUpDate)}
                     </Text>
                 </View>
             </View>

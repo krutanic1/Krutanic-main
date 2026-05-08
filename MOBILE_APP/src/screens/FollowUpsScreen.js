@@ -4,6 +4,7 @@ import {
     Text,
     StyleSheet,
     FlatList,
+    ScrollView,
     ActivityIndicator,
     RefreshControl,
     Platform,
@@ -23,15 +24,20 @@ const FollowUpsScreen = () => {
     const [followUps, setFollowUps] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
+    const [error, setError] = useState(null);
 
-    const fetchFollowUps = useCallback(async () => {
+    const fetchFollowUps = useCallback(async (isRefreshing = false) => {
         if (!user?.id) return;
         
+        if (!isRefreshing) setLoading(true);
+        setError(null);
+
         try {
             const data = await leadService.getUpcomingFollowUps(user?.id);
             setFollowUps(data.followUps || []);
-        } catch (error) {
-            console.error('[FOLLOWUPS] Fetch failed:', error);
+        } catch (err) {
+            console.error('[FOLLOWUPS] Fetch failed:', err);
+            setError(err.toString());
         } finally {
             setLoading(false);
             setRefreshing(false);
@@ -73,31 +79,42 @@ const FollowUpsScreen = () => {
                     </View>
                 </View>
 
-                {followUps.length === 0 ? (
-                    <View style={styles.centerContainer}>
-                        <View style={styles.emptyIconCircle}>
-                            <Ionicons name="checkmark-done" size={40} color={COLORS.success} />
+                <ScrollView 
+                    contentContainerStyle={styles.scrollContent}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={() => fetchFollowUps(true)} color={COLORS.primary} />
+                    }
+                >
+                    {error ? (
+                        <View style={styles.centerContainer}>
+                            <Ionicons name="alert-circle-outline" size={48} color={COLORS.error} />
+                            <Text style={styles.noDataText}>Connection Error</Text>
+                            <Text style={styles.noDataSubtext}>{error}</Text>
+                            <TouchableOpacity style={styles.retryBtn} onPress={() => fetchFollowUps()}>
+                                <Text style={styles.retryText}>Retry Now</Text>
+                            </TouchableOpacity>
                         </View>
-                        <Text style={styles.noDataText}>All caught up!</Text>
-                        <Text style={styles.noDataSubtext}>No upcoming follow-ups scheduled.</Text>
-                    </View>
-                ) : (
-                    <FlatList
-                        data={followUps}
-                        renderItem={({ item }) => (
-                            <FollowUpCard
-                                followUp={item}
-                                onOpenLead={handleOpenLead}
-                            />
-                        )}
-                        keyExtractor={item => item._id}
-                        refreshControl={
-                            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} color={COLORS.primary} />
-                        }
-                        contentContainerStyle={styles.listContent}
-                        showsVerticalScrollIndicator={false}
-                    />
-                )}
+                    ) : followUps.length === 0 ? (
+                        <View style={styles.centerContainer}>
+                            <View style={styles.emptyIconCircle}>
+                                <Ionicons name="checkmark-done" size={40} color={COLORS.success} />
+                            </View>
+                            <Text style={styles.noDataText}>All caught up!</Text>
+                            <Text style={styles.noDataSubtext}>No upcoming follow-ups scheduled.</Text>
+                            <Text style={styles.pullHint}>Pull down to check for new tasks</Text>
+                        </View>
+                    ) : (
+                        <View style={styles.listContainer}>
+                            {followUps.map(item => (
+                                <FollowUpCard
+                                    key={item._id}
+                                    followUp={item}
+                                    onOpenLead={handleOpenLead}
+                                />
+                            ))}
+                        </View>
+                    )}
+                </ScrollView>
             </View>
         </SafeAreaView>
     );
@@ -147,8 +164,20 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 16
     },
-    noDataText: { ...TYPOGRAPHY.h3, color: COLORS.text },
+    noDataText: { ...TYPOGRAPHY.h3, color: COLORS.text, marginTop: 16 },
     noDataSubtext: { ...TYPOGRAPHY.body, color: COLORS.textDim, textAlign: 'center', marginTop: 8 },
+    pullHint: { ...TYPOGRAPHY.tiny, color: COLORS.primary, marginTop: 16, fontWeight: '700', opacity: 0.6 },
+    retryBtn: {
+        marginTop: 24,
+        paddingHorizontal: 24,
+        paddingVertical: 12,
+        backgroundColor: COLORS.primary,
+        borderRadius: 14,
+        ...SHADOWS.small
+    },
+    retryText: { color: '#fff', fontWeight: '700' },
+    scrollContent: { flexGrow: 1, backgroundColor: COLORS.background },
+    listContainer: { paddingVertical: SPACING.md }
 });
 
 export default FollowUpsScreen;

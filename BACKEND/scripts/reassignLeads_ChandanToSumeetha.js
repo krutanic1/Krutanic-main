@@ -12,29 +12,29 @@ async function reassignLeads(dryRun = true) {
         await mongoose.connect(process.env.DB_NAME);
         console.log("Connected to MongoDB");
 
-        const chandan = await AdvTeam.findOne({ fullname: /chandan pv/i });
-        const sumeetha = await AdvTeam.findOne({ fullname: /sumeetha jangra/i });
+        const chandan = await AdvTeam.findOne({ fullname: /sumeetha jangra/i });
+        const sumeetha = await AdvTeam.findOne({ fullname: /fedrick sarone/i });
 
         if (!chandan) {
-            console.error("User 'chandan pv' not found in AdvTeam collection");
-            process.exit(1);
-        }
-        if (!sumeetha) {
             console.error("User 'sumeetha jangra' not found in AdvTeam collection");
             process.exit(1);
         }
+        if (!sumeetha) {
+            console.error("User 'fedrick sarone' not found in AdvTeam collection");
+            process.exit(1);
+        }
 
-        console.log(`Chandan ID: ${chandan._id} (${chandan.fullname})`);
         console.log(`Sumeetha ID: ${sumeetha._id} (${sumeetha.fullname})`);
+        console.log(`Fedrick ID: ${fedrick._id} (${fedrick.fullname})`);
 
         const leads = await AdvLead.find({ 
             $or: [
-                { owner_id: chandan._id.toString() },
-                { current_owner_id: chandan._id }
+                { owner_id: sumeetha._id.toString() },
+                { current_owner_id: sumeetha._id }
             ]
         });
 
-        console.log(`Found ${leads.length} leads assigned to Chandan PV`);
+        console.log(`Found ${leads.length} leads assigned to Sumeetha Jangra`);
 
         let count = 0;
         for (const lead of leads) {

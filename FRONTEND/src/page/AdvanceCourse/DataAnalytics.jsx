@@ -23,6 +23,11 @@ import {
   GitBranch, 
   Layout,
   PhoneCall,
+  MonitorPlay,
+  CalendarDays,
+  FileSearch,
+  Building2,
+  BadgeCheck,
   UserCheck,
   Video,
   MessagesSquare,
@@ -37,8 +42,12 @@ import ApplyNowButton from "./Components/ApplyNowButton";
 import ApplyForm from "./Components/ApplyForm";
 import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
-import CourseInfoStrip from "./Components/CourseInfoStrip";
+
 import ToolStack from "./Components/ToolStack";
+import TopOnePercent from "../../Components/TopOnePercent";
+import CareerSupport from "../../Components/CareerSupport";
+import ProgramCohorts from "./Components/ProgramCohorts";
+
 import DownloadBrochureButton from "./Components/DownloadBrochureButton";
 import CountdownTimer from "./Components/CountdownTimer";
 import daBrochure from "../../../krutanic/Data Analytics Advanced program.pdf";
@@ -51,12 +60,12 @@ const heroStats = [
 ];
 
 const audience = [
-  { title: "Fresh Graduates", desc: "Build a technical portfolio from scratch and master the tools required for entry-level analyst roles.", icon: <Award size={20} /> },
-  { title: "Working Professionals", desc: "Transition from operations or support into core analytical roles with high growth trajectories.", icon: <Briefcase size={20} /> },
-  { title: "Career Switchers", desc: "Move from Finance, Marketing, or HR into a data-driven career with our zero-to-one roadmap.", icon: <Repeat size={20} /> },
-  { title: "Business Professionals", desc: "Gain the ability to back your executive decisions with data evidence and automated reporting.", icon: <TrendingUp size={20} /> },
-  { title: "MIS & Reporting Pros", desc: "Upgrade from static Excel reports to dynamic, automated BI dashboards and SQL-driven workflows.", icon: <Layout size={20} /> },
-  { title: "Aspiring Analysts", desc: "A practical starting point for anyone looking to master Excel, SQL, and Power BI for the modern economy.", icon: <Search size={20} /> }
+  { title: "Fresh Graduates", desc: "Jumpstart your career in the high-demand data economy. Build a technical portfolio that proves your readiness to top hiring managers.", icon: <Award size={20} /> },
+  { title: "Working Professionals", desc: "Transition from operational roles into strategic data positions. Upgrade your skillset to command higher salaries and better growth paths.", icon: <Briefcase size={20} /> },
+  { title: "Career Switchers", desc: "Pivot into analytics from any background. Our zero-to-one approach ensures you master the logic and tools needed for a successful switch.", icon: <Repeat size={20} /> },
+  { title: "Business Professionals", desc: "Make smarter, evidence-based executive decisions. Learn to translate complex data into clear growth strategies and revenue insights.", icon: <TrendingUp size={20} /> },
+  { title: "MIS & Reporting Pros", desc: "Upgrade from static reporting to dynamic BI mastery. Automate your workflows and lead the digital transformation in your organization.", icon: <Layout size={20} /> },
+  { title: "Aspiring Analysts", desc: "The definitive starting point for your data journey. Master the exact stack—Excel, SQL, and Power BI—that the industry demands today.", icon: <Search size={20} /> }
 ];
 
 const techStack = [
@@ -98,33 +107,12 @@ const careerRoles = [
   { role: "Operations Analyst", range: "08 - 15 LPA" }
 ];
 
-const careerSupport = [
-  { 
-    title: "Profile Audit", 
-    desc: "Deep review of your resume, LinkedIn, and portfolio to align them with target analyst roles." 
-  },
-  { 
-    title: "Resume Design", 
-    desc: "ATS-friendly, impact-focused resume tailored to data and analytics hiring pipelines." 
-  },
-  { 
-    title: "Dashboard Portfolio", 
-    desc: "Curated project portfolio with industry-grade dashboards that you can showcase in interviews." 
-  },
-  { 
-    title: "Mock Interviews", 
-    desc: "Role-specific mock interviews with detailed feedback on problem-solving, communication, and case approach." 
-  },
-  { 
-    title: "Referral Access", 
-    desc: "Warm referrals and profile pitches to hiring partners in our recruiter and alumni network." 
-  }
-];
+
 
 const alumniOutcomes = [
   { name: "Karan Mehta", role: "Sales Exec", target: "Business Analyst", company: "Amazon", desc: "The transition from sales to analytics was possible only because of the practical SQL focus." },
   { name: "Sneha Roy", role: "Fresher", target: "Data Analyst", company: "Deloitte", desc: "I built 4 dashboards that became the highlight of my interview and landed me the offer." },
-  { name: "Vikram Das", role: "MIS Coordinator", target: "BI Developer", company: "Zomato", desc: "Upgrading from Excel to Power BI as a career move gave me a 60% salary hike." }
+  { name: "Sneha", role: "MIS Coordinator", target: "BI Developer", company: "Zomato", desc: "Upgrading from Excel to Power BI as a career move gave me a 60% salary hike." }
 ];
 
 const faqCategories = {
@@ -185,13 +173,11 @@ const DataAnalytics = () => {
 
         .p-card { 
           background: #fff; 
-          border: 1px solid var(--da-border); 
           border-radius: 12px; 
           padding: 24px; 
           transition: 0.3s;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.02);
         }
-        .p-card:hover { border-color: var(--da-accent); box-shadow: 0 8px 30px rgba(0,0,0,0.04); }
+        .p-card:hover { border-color: var(--da-accent); }
 
         .btn-sec { border: 1px solid var(--da-border); color: var(--da-text); padding: 12px 24px; border-radius: 8px; font-weight: 700; font-size: 15px; background:#fff; }
 
@@ -212,7 +198,6 @@ const DataAnalytics = () => {
           transition: 0.4s; 
           display: flex; 
           align-items: center; 
-          box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
         }
         .sticky-bar.visible { transform: translateY(0); }
         .countdown-box { background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 6px; font-variant-numeric: tabular-nums; }
@@ -238,18 +223,60 @@ const DataAnalytics = () => {
         <ImageSlider />
       </CourseHeroBanner>
 
-      <CourseInfoStrip 
-        accent="#2DD4BF" 
-        courseValue="Data Analytics" 
-        duration="24 Weeks"
-        brochureLink={daBrochure}
+      <TopOnePercent 
+        badge="CAREER TRANSITION READY"
+        title="Become Part of the Top 1% Professionals"
+        titleHighlight="Top 1% Professionals"
+        subtitle="Move beyond theory with a program designed for career transitions. Gain the technical depth and industry networking required to land high-growth analyst roles."
+        customFeatures={[
+          {
+            Icon: MonitorPlay,
+            title: "Live Classes, Not Recordings",
+            sub: "Participate in real-time labs and discussions. Build skills through interactive sessions with peers and experts.",
+          },
+          {
+            Icon: CalendarDays,
+            title: "A Clear 24-Week Learning Plan",
+            sub: "Follow a structured, week-by-week roadmap. Master everything from SQL and Python to Advanced Power BI.",
+          },
+          {
+            Icon: BarChart3,
+            title: "4+ Projects on Real Datasets",
+            sub: "Build a job-ready portfolio. Work on actual business datasets from retail, finance, and healthcare sectors.",
+          },
+          {
+            Icon: FileSearch,
+            title: "Resume, LinkedIn & Mock Interviews",
+            sub: "Get noticed by top recruiters. We optimize your professional profiles and conduct technical mock interviews.",
+          },
+          {
+            Icon: Building2,
+            title: "15 Company Referrals on Completion",
+            sub: "Fast-track your job search. Get direct access to 500+ hiring partners actively looking for data talent.",
+          },
+          {
+            Icon: BadgeCheck,
+            title: "Certifications Employers Recognise",
+            sub: "Validate your expertise. Earn industry-recognized credentials that demonstrate your data proficiency to global employers.",
+          },
+          {
+            Icon: UserCheck,
+            title: "Weekly 1:1 Sessions With a Working Mentor",
+            sub: "Get industry-specific guidance. Learn directly from professionals currently working as Lead Analysts and Data Scientists.",
+          },
+          {
+            Icon: TrendingUp,
+            title: "Built to Help You Switch Roles",
+            sub: "Targeted at career success. Every module is engineered to bridge the gap between your current role and your data career.",
+          },
+        ]}
       />
 
       {/* 2. AUDIENCE */}
       <section className="da-section">
         <div className="shell">
           <h2 className="sec-title">Who this program is for</h2>
-          <p className="sec-sub">Essential for professionals who want to transition into high-growth data roles or lead data-driven initiatives.</p>
+          <p className="sec-sub">Tailored for professionals aiming to lead with data and drive business impact.</p>
           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'20px'}}>
              {audience.map((item, i) => (
                 <div key={i} className="p-card">
@@ -325,21 +352,7 @@ const DataAnalytics = () => {
       </section>
 
       {/* 7. CAREER SUPPORT */}
-      <section className="da-sec-white">
-        <div className="shell">
-           <h2 className="sec-title">Career Support Process</h2>
-           <p className="sec-sub">A structured 5‐step support system to convert your technical skills into real, high‐growth job offers.</p>
-           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'20px'}}>
-              {careerSupport.map((step, i) => (
-                 <div key={i} className="p-card" style={{background:'#F9FAFB'}}>
-                    <div style={{fontSize:'32px', fontWeight:900, opacity:0.1, marginBottom:'12px', fontFamily:'Outfit'}}>0{i+1}</div>
-                    <h4 style={{fontWeight:800, fontSize:'18px', marginBottom:'10px', color:'var(--da-primary)'}}>{step.title}</h4>
-                    <p style={{fontSize:'14px', color:'var(--da-text-dim)', lineHeight:1.6}}>{step.desc}</p>
-                 </div>
-              ))}
-           </div>
-        </div>
-      </section>
+      <CareerSupport courseValue="Data Analytics" brochureLink={daBrochure} />
 
       {/* 8. ALUMNI */}
       <section className="da-section">
@@ -381,6 +394,7 @@ const DataAnalytics = () => {
       <section className="da-section">
         <div className="shell">
            <Certification isDark={false} />
+           <ProgramCohorts courseValue="Data Analytics" date="31st May" />
         </div>
       </section>
 
@@ -392,12 +406,12 @@ const DataAnalytics = () => {
            <div className="p-card" style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(300px, 1fr))', gap:'64px', padding:'48px', alignItems:'start'}}>
               <div>
                  <div style={{fontSize:'14px', fontWeight:800, color:'var(--da-primary)', textTransform:'uppercase', marginBottom:'20px'}}>Enrollment Fee</div>
-                 <div style={{fontSize:'64px', fontWeight:950, letterSpacing:'-3px', marginBottom:'16px'}}>₹89,999</div>
+                 <div style={{fontSize:'64px', fontWeight:950, letterSpacing:'-3px', marginBottom:'16px'}}>₹65,999</div>
                  <p style={{color:'var(--da-text-dim)', marginBottom:'40px', lineHeight:1.6}}>Inclusive of all training materials, live sessions, project reviews, and placement assistance.</p>
                  <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="Data Analytics" /><DownloadBrochureButton courseValue="Data Analytics" brochureLink={daBrochure} /></div>
               </div>
               <div style={{display:'grid', gap:'12px'}}>
-                 {[{l:"Booking Seat", v:"₹10,000"}, {l:"Phase 1 Due", v:"₹40,000"}, {l:"Phase 2 Balance", v:"₹39,999"}].map((row, i) => (
+                 {[{l:"Booking Seat", v:"₹10,000"}, {l:"Phase 1 Due", v:"₹28,000"}, {l:"Phase 2 Balance", v:"₹27,999"}].map((row, i) => (
                     <div key={i} style={{padding:'20px', background:'var(--da-bg)', borderRadius:'8px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                        <span style={{fontSize:'13px', fontWeight:700}}>{row.l}</span><span style={{fontWeight:800}}>{row.v}</span>
                     </div>
@@ -479,7 +493,3 @@ const DataAnalytics = () => {
 };
 
 export default DataAnalytics;
-
-
-
-

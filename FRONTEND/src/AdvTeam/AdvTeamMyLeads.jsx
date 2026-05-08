@@ -8,6 +8,9 @@ const AdvTeamMyLeads = () => {
     const [teamMembers, setTeamMembers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+    // stageFilter  → filters by SALES STAGE (Fresh Lead, Attempting Contact, etc.) via 'outcome' param
+    // statusFilter → filters by ASSIGNMENT STATUS (assigned_to_leader, assigned_to_specialist) via 'status' param
+    const [stageFilter, setStageFilter] = useState("Fresh Lead"); // Default: show uncalled leads
     const [statusFilter, setStatusFilter] = useState("");
     const [sourceFilter, setSourceFilter] = useState("");
     const [dateFilter, setDateFilter] = useState("");
@@ -50,12 +53,15 @@ const AdvTeamMyLeads = () => {
     // Who can the current user assign to?
     const assignTargetLabel = isManager ? "Leader" : "SR Sales Specialist";
 
-    const fetchMyLeads = async (page = 1, forceStatus = statusFilter) => {
+    const fetchMyLeads = async (page = 1, overrideStage = stageFilter, overrideStatus = statusFilter) => {
         setLoading(true);
         try {
-            const res = await axios.get(`${API}/api/adv-leads/get-adv-leads`, {
-                params: { role: apiRole, userId, page, limit, strictlyOwned: true, status: forceStatus, source: sourceFilter }
-            });
+            const params = { role: apiRole, userId, page, limit, strictlyOwned: true, source: sourceFilter };
+            // Stage filter  → uses 'outcome' backend param (checks stage/last_outcome fields)
+            if (overrideStage) params.outcome = overrideStage;
+            // Status filter → uses 'status' backend param (checks assignment status field)
+            if (overrideStatus) params.status = overrideStatus;
+            const res = await axios.get(`${API}/api/adv-leads/get-adv-leads`, { params });
             if (res.data && res.data.leads) {
                 setLeads(res.data.leads);
                 setTotalPages(res.data.totalPages);
@@ -92,15 +98,8 @@ const AdvTeamMyLeads = () => {
                 localStorage.setItem("advTeamDesignation", res.data.designation || "");
                 localStorage.setItem("advTeamTeam", res.data.team || "");
                 
-                // Automatically select the correct status filter based on role
-                const roleStr = (res.data.designation || "").toLowerCase();
-                if (roleStr.includes("leader")) {
-                    setStatusFilter("assigned_to_leader");
-                } else if (roleStr.includes("manager")) {
-                    setStatusFilter("assigned_to_manager");
-                } else if (roleStr.includes("specialist")) {
-                    setStatusFilter("assigned_to_specialist");
-                }
+                // NOTE: Do NOT auto-set a status filter — it was restricting managers from
+                // seeing fresh leads (status=fresh != assigned_to_manager). Default shows all.
             }
         } catch (err) {
             console.error("Failed to fetch user profile", err);
@@ -115,16 +114,16 @@ const AdvTeamMyLeads = () => {
         }
     }, [userId]);
 
-    // Fetch leads whenever page or statusFilter changes
+    // Fetch leads whenever page, stageFilter, or statusFilter changes
     useEffect(() => {
         if (userId) {
-            fetchMyLeads(currentPage, statusFilter);
+            fetchMyLeads(currentPage, stageFilter, statusFilter);
         }
-    }, [currentPage, statusFilter, sourceFilter, userId]);
+    }, [currentPage, stageFilter, statusFilter, sourceFilter, userId]);
 
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
-            fetchMyLeads(newPage);
+            fetchMyLeads(newPage, stageFilter, statusFilter);
         }
     };
 
@@ -149,8 +148,10 @@ const AdvTeamMyLeads = () => {
             }
             return false;
         });
-        const available = availableLeads.length;
-        if (num > available) { toast.error(`Only ${available} assignable leads available on this page`); return; }
+        if (num > availableLeadsCount) { 
+            toast.error(`Only ${availableLeadsCount} assignable leads available.`); 
+            return; 
+        }
 
         setAssigning(true);
         try {
@@ -244,14 +245,17 @@ const AdvTeamMyLeads = () => {
         }
     })();
 
-    const availableLeadsCount = leads.filter(l => {
-        if (isManager) {
-            return ["fresh", "assigned_to_team", "assigned_to_manager"].includes(l.status);
-        } else if (isLeader) {
-            return l.status === "assigned_to_leader";
-        }
-        return false;
-    }).length;
+    // Use server totalCount when a filter is active — gives the true full count, not just current page
+    const availableLeadsCount = (stageFilter || statusFilter) 
+        ? totalCount 
+        : leads.filter(l => {
+            if (isManager) {
+                return ["fresh", "assigned_to_team", "assigned_to_manager"].includes(l.status);
+            } else if (isLeader) {
+                return l.status === "assigned_to_leader";
+            }
+            return false;
+        }).length;
 
     const filteredLeads = leads.filter(l => {
         const matchSearch = (l.full_name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -439,19 +443,39 @@ const AdvTeamMyLeads = () => {
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '15px', flexWrap: 'wrap' }}>
                     <input placeholder="Search current page..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} style={{ padding: '8px 12px', border: '1px solid #ddd', borderRadius: '6px', flex: 1, minWidth: '180px' }} />
                     <input type="date" value={dateFilter} onChange={e => setDateFilter(e.target.value)} style={{ padding: '8px 12px', border: '1px solid #ddd', borderRadius: '6px' }} title="Filter by Assigned Date" />
-                    <select value={statusFilter} onChange={e => {
-                        setStatusFilter(e.target.value);
-                        setCurrentPage(1);
-                    }} style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '6px' }}>
-                        <option value="">All Statuses</option>
-                        <option value="fresh">Fresh</option>
-                        <option value="assigned_to_manager">Assigned to Manager</option>
-                        <option value="assigned_to_leader">With Leader</option>
-                        <option value="assigned_to_specialist">With Specialist</option>
+
+                    {/* STAGE filter — filters by sales interaction stage (not yet called, in conversation, etc.) */}
+                    <select
+                        value={stageFilter}
+                        onChange={e => { setStageFilter(e.target.value); setStatusFilter(""); setCurrentPage(1); }}
+                        style={{ padding: '8px', border: '2px solid #1890ff', borderRadius: '6px', fontWeight: '600', color: stageFilter ? '#096dd9' : '#333' }}
+                        title="Filter by Sales Stage"
+                    >
+                        <option value="">📊 All Stages</option>
+                        <option value="Fresh Lead">🆕 Fresh Lead (Not Called)</option>
+                        <option value="Attempting Contact">📞 Attempting Contact</option>
+                        <option value="First Call Connected">✅ First Call Connected</option>
+                        <option value="Demo Conducted">🎯 Demo Conducted</option>
+                        <option value="Closed Won">🏆 Closed Won</option>
+                        <option value="Closed Lost">❌ Closed Lost</option>
+                    </select>
+
+                    {/* ASSIGNMENT STATUS filter — filters by who currently holds the lead */}
+                    <select
+                        value={statusFilter}
+                        onChange={e => { setStatusFilter(e.target.value); setStageFilter(""); setCurrentPage(1); }}
+                        style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '6px', color: statusFilter ? '#d46b08' : '#333' }}
+                        title="Filter by Assignment Status"
+                    >
+                        <option value="">🔀 Assignment Status</option>
+                        <option value="assigned_to_manager">Held by Manager</option>
+                        <option value="assigned_to_leader">Sent to Leader</option>
+                        <option value="assigned_to_specialist">Sent to Specialist</option>
                         <option value="in_followup">In Follow-up</option>
                         <option value="converted">Converted</option>
                     </select>
-                    <button onClick={() => fetchMyLeads(1)} style={{ padding: '8px 14px', background: '#f0f0f0', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer' }}>🔄 Refresh</button>
+
+                    <button onClick={() => fetchMyLeads(1, stageFilter, statusFilter)} style={{ padding: '8px 14px', background: '#f0f0f0', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer' }}>🔄 Refresh</button>
                 </div>
 
                 {(userId === "69d4a881cb9305f0d5ecbeb2" || (userName && userName.toLowerCase().includes("sumeetha"))) && (

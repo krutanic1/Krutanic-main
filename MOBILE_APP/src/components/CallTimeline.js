@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
 import leadService from '../services/leadService';
 import { COLORS, SPACING, SHADOWS, TYPOGRAPHY } from '../utils/theme';
+import { formatSystemDate, formatUserDate } from '../utils/dateUtils';
 
 const CallTimeline = ({ leadId, refreshTrigger }) => {
     const [calls, setCalls] = useState([]);
@@ -57,13 +58,22 @@ const CallTimeline = ({ leadId, refreshTrigger }) => {
     };
 
     const getOutcomeColor = (outcome) => {
-        switch (outcome?.toLowerCase()) {
-            case 'interested': return COLORS.success;
-            case 'callback_requested': return COLORS.info;
-            case 'no_answer': return COLORS.accent;
-            case 'not_interested': return COLORS.error;
-            case 'converted': return COLORS.accent;
-            default: return COLORS.textDim;
+        const o = outcome?.toLowerCase() || '';
+        if (o.includes('interested') || o.includes('converted')) return COLORS.success;
+        if (o.includes('callback') || o.includes('follow up') || o.includes('demo')) return COLORS.info;
+        if (o.includes('no answer') || o.includes('rnr')) return COLORS.warning;
+        if (o.includes('not interested') || o.includes('rejected') || o.includes('lost') || o.includes('junk')) return COLORS.error;
+        return COLORS.textDim;
+    };
+
+    const getActionIcon = (type) => {
+        switch (type?.toLowerCase()) {
+            case 'call': return 'call-outline';
+            case 'email': return 'mail-outline';
+            case 'whatsapp': return 'logo-whatsapp';
+            case 'meeting': return 'people-outline';
+            case 'note': return 'document-text-outline';
+            default: return 'call-outline';
         }
     };
 
@@ -76,19 +86,21 @@ const CallTimeline = ({ leadId, refreshTrigger }) => {
 
             <View style={styles.contentCard}>
                 <View style={styles.cardHeader}>
-                    <View style={[styles.badge, { backgroundColor: getOutcomeColor(item.callOutcome) + '15' }]}>
-                        <Text style={[styles.badgeText, { color: getOutcomeColor(item.callOutcome) }]}>
-                            {item.callOutcome?.replace(/_/g, ' ')}
+                    <View style={[styles.badge, { backgroundColor: getOutcomeColor(item.disposition || item.callOutcome) + '15' }]}>
+                        <Text style={[styles.badgeText, { color: getOutcomeColor(item.disposition || item.callOutcome) }]}>
+                            {(item.disposition || item.callOutcome)?.replace(/_/g, ' ')}
                         </Text>
                     </View>
                     <Text style={styles.dateText}>
-                        {new Date(item.createdAt).toLocaleDateString('en-IN', {
-                            day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
-                        })}
+                        {formatSystemDate(item.createdAt)}
                     </Text>
                 </View>
 
                 <View style={styles.statsRow}>
+                    <View style={styles.stat}>
+                        <Ionicons name={getActionIcon(item.actionType)} size={12} color={COLORS.textLight} />
+                        <Text style={styles.statText}>{item.actionType || 'Call'}</Text>
+                    </View>
                     <View style={styles.stat}>
                         <Ionicons name="time-outline" size={12} color={COLORS.textLight} />
                         <Text style={styles.statText}>
@@ -103,11 +115,39 @@ const CallTimeline = ({ leadId, refreshTrigger }) => {
                     </View>
                 </View>
 
-                {item.summary && (
-                    <View style={styles.summaryContainer}>
-                        <Text style={styles.summaryText}>{item.summary}</Text>
+                {item.stage && (
+                    <View style={styles.stageContainer}>
+                        <Ionicons name="layers-outline" size={12} color={COLORS.secondary} />
+                        <Text style={styles.stageText}>{item.stage}</Text>
                     </View>
                 )}
+
+                {item.summary ? (
+                    <View style={styles.summaryContainer}>
+                        <Text style={styles.sectionLabel}>SUMMARY</Text>
+                        <Text style={styles.summaryText}>{item.summary}</Text>
+                    </View>
+                ) : null}
+
+                {(item.followUpDate || item.demoScheduleDate || item.expectedPaymentDate) && (
+                    <View style={styles.followUpLogContainer}>
+                        <Ionicons 
+                            name={item.demoScheduleDate ? "videocam-outline" : "calendar-outline"} 
+                            size={14} 
+                            color={COLORS.info} 
+                        />
+                        <Text style={styles.followUpLogText}>
+                            Scheduled: {formatUserDate(item.followUpDate || item.demoScheduleDate || item.expectedPaymentDate)}
+                        </Text>
+                    </View>
+                )}
+
+                {item.remark ? (
+                    <View style={styles.remarkContainer}>
+                        <Text style={styles.sectionLabel}>INTERNAL NOTE</Text>
+                        <Text style={styles.remarkText}>{item.remark}</Text>
+                    </View>
+                ) : null}
 
                 {item.recordingUrl && (
                     <TouchableOpacity
@@ -179,8 +219,64 @@ const styles = StyleSheet.create({
     stat: { flexDirection: 'row', alignItems: 'center', marginRight: 16 },
     statText: { fontSize: 11, color: COLORS.textLight, marginLeft: 4, fontWeight: '500' },
 
-    summaryContainer: { backgroundColor: COLORS.background, padding: 10, borderRadius: 12, marginBottom: 12 },
-    summaryText: { ...TYPOGRAPHY.caption, color: COLORS.text, lineHeight: 18, fontStyle: 'italic' },
+    summaryContainer: {
+        marginTop: 4,
+        padding: 10,
+        backgroundColor: COLORS.background,
+        borderRadius: 12,
+        marginBottom: 8,
+    },
+    summaryText: { ...TYPOGRAPHY.caption, color: COLORS.text, lineHeight: 18 },
+    sectionLabel: {
+        fontSize: 9,
+        fontWeight: '800',
+        color: COLORS.textDim,
+        marginBottom: 4,
+        letterSpacing: 0.5,
+        opacity: 0.6
+    },
+    stageContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: COLORS.secondary + '10',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 8,
+        marginBottom: 12,
+        alignSelf: 'flex-start'
+    },
+    stageText: {
+        fontSize: 10,
+        fontWeight: '700',
+        color: COLORS.secondary,
+        marginLeft: 4,
+    },
+    remarkContainer: {
+        marginTop: 4,
+        padding: 10,
+        backgroundColor: '#FFF8E1',
+        borderRadius: 12,
+        marginBottom: 8,
+    },
+    remarkText: { ...TYPOGRAPHY.caption, color: COLORS.text, fontStyle: 'italic', lineHeight: 18 },
+    followUpLogContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: COLORS.info + '10',
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 10,
+        marginTop: 8,
+        borderWidth: 1,
+        borderColor: COLORS.info + '20',
+        alignSelf: 'flex-start'
+    },
+    followUpLogText: {
+        fontSize: 11,
+        fontWeight: '700',
+        color: COLORS.info,
+        marginLeft: 6,
+    },
 
     emptyContainer: { padding: 48, alignItems: 'center' },
     emptyIconCircle: { width: 64, height: 64, borderRadius: 32, backgroundColor: COLORS.background, justifyContent: 'center', alignItems: 'center', marginBottom: 12 },
@@ -195,6 +291,7 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
         borderWidth: 1,
         borderColor: COLORS.border,
+        marginTop: 8,
     },
     playbackBtnActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
     playIconContainer: { width: 28, height: 28, borderRadius: 8, justifyContent: 'center', alignItems: 'center', marginRight: 10 },

@@ -47,7 +47,10 @@ export const scheduleFollowUpNotification = async (leadName, followUpDate) => {
                     channelId: 'follow-up',
                 },
             },
-            trigger: triggerDate,
+            trigger: {
+                date: triggerDate,
+                channelId: 'follow-up'
+            },
         });
         console.log(`[Notification] Scheduled for ${leadName} at ${triggerDate}`);
         return id;

@@ -22,6 +22,7 @@ import CallTimeline from '../components/CallTimeline';
 import { endCallTracking, startCallTracking } from '../utils/callTracker';
 import { requestNotificationPermissions, scheduleFollowUpNotification } from '../services/notificationService';
 import { COLORS, SPACING, SHADOWS, TYPOGRAPHY } from '../utils/theme';
+import { getCallUrl, getWhatsAppUrl } from '../utils/phoneUtils';
 
 const LeadDetailsScreen = ({ route, navigation }) => {
     const { leadId, autoDialerMode } = route.params;
@@ -70,7 +71,7 @@ const LeadDetailsScreen = ({ route, navigation }) => {
 
     const handleCall = async () => {
         await startCallTracking(lead._id, lead.full_name);
-        Linking.openURL(`tel:+91${lead.phone_number}`);
+        Linking.openURL(getCallUrl(lead.phone_number));
     };
 
     const handleSaveCallLog = async (logData) => {
@@ -80,7 +81,8 @@ const LeadDetailsScreen = ({ route, navigation }) => {
                 specialistId: user.id,
                 specialistName: user.name,
                 teamId: user.team_id,
-                callOutcome: logData.outcome,
+                stage: logData.stage,
+                disposition: logData.disposition,
                 summary: logData.summary,
                 remark: logData.remark,
                 duration: logData.durationSec,
@@ -90,8 +92,8 @@ const LeadDetailsScreen = ({ route, navigation }) => {
             };
             const logResponse = await leadService.logCall(payload);
 
-            if (logData.outcome === 'callback_requested' && logData.followUpDate) {
-                await scheduleFollowUpNotification(lead.full_name, logData.followUpDate);
+            if ((logData.disposition === 'Callback Requested' || logData.disposition === 'Demo Booked') && logData.rawFollowUpDate) {
+                await scheduleFollowUpNotification(lead.full_name, logData.rawFollowUpDate);
             }
 
             setCallModalVisible(false);
@@ -179,7 +181,7 @@ const LeadDetailsScreen = ({ route, navigation }) => {
                         <Text style={styles.profileName}>{lead.full_name}</Text>
                         <View style={styles.badgeRow}>
                             <View style={styles.statusBadge}>
-                                <Text style={styles.statusBadgeText}>{(lead.status || 'Fresh').replace(/_/g, ' ')}</Text>
+                                <Text style={styles.statusBadgeText}>{(lead.stage || 'Fresh Lead')}</Text>
                             </View>
                             {lead.score > 0 && (
                                 <View style={[styles.statusBadge, { backgroundColor: COLORS.accent + '15', borderColor: COLORS.accent }]}>
@@ -282,7 +284,7 @@ const LeadDetailsScreen = ({ route, navigation }) => {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={[styles.secondaryAction, { backgroundColor: '#25D366' }]}
-                        onPress={() => Linking.openURL(`https://wa.me/91${lead.phone_number}`)}
+                        onPress={() => Linking.openURL(getWhatsAppUrl(lead.phone_number))}
                     >
                         <Ionicons name="logo-whatsapp" size={24} color="#fff" />
                     </TouchableOpacity>

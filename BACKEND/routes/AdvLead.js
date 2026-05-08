@@ -1306,6 +1306,18 @@ router.post("/log-call-activity", async (req, res) => {
             followUpDate: followUpDate || undefined,
             followUpStatus: followUpDate ? "pending" : undefined
         });
+        // Mark previous follow-ups as completed for this lead
+        await Promise.all([
+            AdvCallActivity.updateMany(
+                { leadId, followUpStatus: "pending" },
+                { $set: { followUpStatus: "completed" } }
+            ),
+            AdvFollowup.updateMany(
+                { leadId, status: "pending" },
+                { $set: { status: "completed" } }
+            )
+        ]);
+
         await activity.save();
 
         // 3. Lead Update Logic
@@ -1516,21 +1528,25 @@ router.post("/upload-recording", upload.single("audioFile"), async (req, res) =>
 router.get("/upcoming-followups", async (req, res) => {
     try {
         const { specialistId } = req.query;
+        console.log(`[FOLLOWUPS] Fetching for specialistId: ${specialistId}`);
         if (!specialistId) return res.status(400).json({ message: "specialistId is required" });
 
         const now = new Date();
+        console.log(`[FOLLOWUPS] Querying with now: ${now.toISOString()}`);
         const followUps = await AdvCallActivity.find({
             specialistId: specialistId,
-            callOutcome: "callback_requested",
+            callOutcome: { $in: ["callback_requested", "Callback Requested", "demo_booked", "Demo Booked"] },
             followUpDate: { $gte: now },
             followUpStatus: "pending"
         })
             .populate("leadId", "full_name phone_number opted_domain")
             .sort({ followUpDate: 1 });
 
+        console.log(`[FOLLOWUPS] Found ${followUps.length} upcoming follow-ups`);
         res.status(200).json({ followUps });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        console.error(`[FOLLOWUPS] ROUTE ERROR:`, error);
+        res.status(500).json({ message: "Internal server error fetching follow-ups", error: error.message });
     }
 });
 
@@ -1552,7 +1568,7 @@ router.get("/followups-today-count", async (req, res) => {
 
         const count = await AdvCallActivity.countDocuments({
             specialistId: specialistId,
-            callOutcome: "callback_requested",
+            callOutcome: { $in: ["callback_requested", "Callback Requested", "demo_booked", "Demo Booked"] },
             followUpDate: { $gte: startOfDay, $lte: endOfDay },
             followUpStatus: "pending"
         });

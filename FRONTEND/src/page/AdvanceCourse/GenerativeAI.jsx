@@ -30,7 +30,7 @@ import ClientsCarousel from "../../Components/our_alumni";
 import ApplyNowButton from "./Components/ApplyNowButton";
 import ApplyForm from "./Components/ApplyForm";
 import CourseHeroBanner from "./Components/CourseHeroBanner";
-import CourseInfoStrip from "./Components/CourseInfoStrip";
+
 import ToolStack from "./Components/ToolStack";
 import DownloadBrochureButton from "./Components/DownloadBrochureButton";
 import CountdownTimer from "./Components/CountdownTimer";
@@ -730,6 +730,7 @@ const GenerativeAI = () => {
       <section className="pt-0 pb-12 px-6 relative overflow-hidden bg-[#0b0b0f]">
         <div className="max-w-7xl mx-auto relative z-10">
           <Certification isDark={true} />
+           <ProgramCohorts courseValue="Generative AI" date="Upcoming" />
         </div>
       </section>
 

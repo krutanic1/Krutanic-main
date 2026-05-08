@@ -54,7 +54,8 @@ const LeadsBookScreen = () => {
                 search: searchQuery, // Pass search to server
                 page: pageNumber,
                 limit: 25,
-                outcome: activeTab === 'all' ? undefined : activeTab
+                outcome: activeTab === 'all' || activeTab === 'old_crm' ? undefined : activeTab,
+                source: activeTab === 'old_crm' ? 'Old CRM' : undefined
             });
 
             const newLeads = data.leads || [];
@@ -123,7 +124,8 @@ const LeadsBookScreen = () => {
                 leadId: activeCallData.leadId,
                 specialistId: user.id,
                 specialistName: user.name,
-                callOutcome: logData.outcome,
+                stage: logData.stage,
+                disposition: logData.disposition,
                 summary: logData.summary,
                 remark: logData.remark,
                 duration: logData.durationSec,
@@ -133,9 +135,9 @@ const LeadsBookScreen = () => {
             };
             const logResponse = await leadService.logCall(payload);
 
-            if (logData.outcome === 'callback_requested' && logData.followUpDate) {
+            if ((logData.disposition === 'Callback Requested' || logData.disposition === 'Demo Booked') && logData.rawFollowUpDate) {
                 const lead = leads.find(l => l._id === activeCallData.leadId);
-                await scheduleFollowUpNotification(lead?.full_name || 'Lead', logData.followUpDate);
+                await scheduleFollowUpNotification(lead?.full_name || 'Lead', logData.rawFollowUpDate);
             }
 
             setCallModalVisible(false);

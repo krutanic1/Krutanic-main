@@ -20,10 +20,20 @@ import { uploadToCloudinary } from '../utils/cloudinary';
 import { COLORS, SPACING, TYPOGRAPHY, SHADOWS } from '../utils/theme';
 
 const CallLogModal = ({ visible, callData, onSave, onCancel }) => {
-    const [outcome, setOutcome] = useState('interested');
+    const [stage, setStage] = useState('Fresh Lead');
+    const [disposition, setDisposition] = useState('New Lead');
     const [summary, setSummary] = useState('');
     const [remark, setRemark] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const STAGES_AND_DISPOSITIONS = {
+        "Fresh Lead": ["New Lead", "Invalid Lead"],
+        "Attempting Contact": ["RNR", "Callback Requested", "No Response (Multi-touch)"],
+        "First Call Connected": ["In Conversation", "Demo Booked"],
+        "Demo Conducted": ["Decision Pending", "Negotiation Review", "Expected Payment Date"],
+        "Closed Won": ["Converted"],
+        "Closed Lost": ["Irrelevant Lead", "Not Interested", "Pricing Does Not Match", "No Response"]
+    };
 
     // Follow-up state
     const [followUpDate, setFollowUpDate] = useState(new Date());
@@ -127,19 +137,30 @@ const CallLogModal = ({ visible, callData, onSave, onCancel }) => {
         try {
             const finalDurationSec = (parseInt(minutes) || 0) * 60 + (parseInt(seconds) || 0);
 
+            const formatToFakeUTC = (date) => {
+                if (!date) return null;
+                // Subtracting the offset from the timestamp so that .toISOString()
+                // returns the local time as if it were UTC.
+                const tzOffset = date.getTimezoneOffset() * 60000;
+                return new Date(date.getTime() - tzOffset).toISOString();
+            };
+
             await onSave({
-                outcome,
+                stage,
+                disposition,
                 summary,
                 remark,
                 durationSec: finalDurationSec,
                 status: finalDurationSec >= 60 ? 'Connected' : 'Not Connected',
-                followUpDate: ['callback_requested', 'follow_up'].includes(outcome) ? followUpDate.toISOString() : null,
-                recordingUrl: recordingUrl // Include the Cloudinary URL
+                followUpDate: disposition === 'Callback Requested' || disposition === 'Demo Booked' ? formatToFakeUTC(followUpDate) : null,
+                rawFollowUpDate: followUpDate, // Pass original Date object for notifications
+                recordingUrl: recordingUrl 
             });
             // Reset fields on success
             setSummary('');
             setRemark('');
-            setOutcome('interested');
+            setStage('Fresh Lead');
+            setDisposition('New Lead');
             setFollowUpDate(new Date());
             setRecordingUri(null);
             setRecordingName('');
@@ -209,30 +230,55 @@ const CallLogModal = ({ visible, callData, onSave, onCancel }) => {
                             </View>
                         </View>
 
-                        {/* Outcome Section */}
-                        <Text style={styles.sectionTitle}>Call Outcome</Text>
-                        <View style={styles.outcomeGrid}>
-                            {outcomes.map((item) => (
+                        {/* Stage Section */}
+                        <Text style={styles.sectionTitle}>Lead Stage</Text>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.outcomeGrid}>
+                            {Object.keys(STAGES_AND_DISPOSITIONS).map((s) => (
                                 <TouchableOpacity
-                                    key={item.id}
+                                    key={s}
                                     style={[
                                         styles.outcomeBtn,
-                                        outcome === item.id && { backgroundColor: item.color, borderColor: item.color }
+                                        stage === s && { backgroundColor: COLORS.primary, borderColor: COLORS.primary }
                                     ]}
-                                    onPress={() => setOutcome(item.id)}
+                                    onPress={() => {
+                                        setStage(s);
+                                        setDisposition(STAGES_AND_DISPOSITIONS[s][0]);
+                                    }}
                                 >
                                     <Text style={[
                                         styles.outcomeBtnText,
-                                        outcome === item.id && { color: '#fff' }
+                                        stage === s && { color: '#fff' }
                                     ]}>
-                                        {item.label}
+                                        {s}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+
+                        {/* Disposition Section */}
+                        <Text style={styles.sectionTitle}>Disposition</Text>
+                        <View style={styles.outcomeGrid}>
+                            {STAGES_AND_DISPOSITIONS[stage].map((d) => (
+                                <TouchableOpacity
+                                    key={d}
+                                    style={[
+                                        styles.outcomeBtn,
+                                        disposition === d && { backgroundColor: COLORS.secondary, borderColor: COLORS.secondary }
+                                    ]}
+                                    onPress={() => setDisposition(d)}
+                                >
+                                    <Text style={[
+                                        styles.outcomeBtnText,
+                                        disposition === d && { color: '#fff' }
+                                    ]}>
+                                        {d}
                                     </Text>
                                 </TouchableOpacity>
                             ))}
                         </View>
 
-                        {/* Follow-Up Section (Experimental/WIP style) */}
-                        {['callback_requested', 'follow_up'].includes(outcome) && (
+                        {/* Follow-Up Section */}
+                        {(disposition === 'Callback Requested' || disposition === 'Expected Payment Date') && (
                             <View style={styles.followUpContainer}>
                                 <Text style={styles.sectionTitle}>Follow-Up Time</Text>
                                 <TouchableOpacity
@@ -293,7 +339,7 @@ const CallLogModal = ({ visible, callData, onSave, onCancel }) => {
                         {recordingName ? <Text style={styles.fileNameText}>{recordingName}</Text> : null}
 
                         {/* Summary Section */}
-                        <Text style={styles.sectionTitle}>Interaction Summary {outcome === 'callback_requested' && '(Recommended)'}</Text>
+                        <Text style={styles.sectionTitle}>Interaction Summary {disposition === 'Callback Requested' && '(Recommended)'}</Text>
                         <TextInput
                             style={styles.textArea}
                             multiline

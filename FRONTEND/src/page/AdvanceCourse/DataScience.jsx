@@ -50,6 +50,11 @@ import Certification from "./Components/Certification";
 import StoreSection from "./Components/StoreSection";
 import ClientsCarousel from "../../Components/our_alumni";
 import ApplyNowButton from "./Components/ApplyNowButton";
+import TopOnePercent from "../../Components/TopOnePercent";
+import CareerSupport from "../../Components/CareerSupport";
+import ProgramCohorts from "./Components/ProgramCohorts";
+
+
 import ApplyForm from "./Components/ApplyForm";
 import DownloadBrochureButton from "./Components/DownloadBrochureButton";
 import CountdownTimer from "./Components/CountdownTimer";
@@ -57,7 +62,7 @@ import dsBrochure from "../../../krutanic/DataScienceAdvancedProgram.pdf";
 
 import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
-import CourseInfoStrip from "./Components/CourseInfoStrip";
+
 import ToolStack from "./Components/ToolStack";
 
 const heroStats = [
@@ -84,14 +89,14 @@ const techStack = [
 ];
 
 const compactRoadmap = [
-  { weeks: "Weeks 1-2", title: "Machine Learning Foundations", topics: "Supervised & Unsupervised learning, Model evaluation", details: "Core concepts of regression, classification, clustering, and fundamental statistics." },
-  { weeks: "Weeks 3-4", title: "Advanced Deep Learning", topics: "Neural networks, CNNs, RNN architectures", details: "Building neural networks, backpropagation, and deep vision/sequence models." },
-  { weeks: "Week 5", title: "Big Data & Infrastructure", topics: "Spark, Hadoop, Data ingestion", details: "Scaling data processing with distributed systems and handling multi-TB datasets." },
-  { weeks: "Weeks 6-7", title: "Feature Engineering", topics: "Dimensionality reduction, PCA, Scaling", details: "Preparing data for production models and finding optimal features." },
-  { weeks: "Week 8", title: "Industry Applications", topics: "Fraud detection, Churn, Forecasting", details: "Real-world business case studies where data solves revenue problems." },
-  { weeks: "Weeks 9-10", title: "NLP & Transformers", topics: "Sentiment, BERT, LLM foundations", details: "Natural language processing architectures and modern transformer models." },
-  { weeks: "Weeks 11-12", title: "Data Visualization", topics: "Tableau, Power BI, Storytelling", details: "Communicate technical insights effectively to business stakeholders." },
-  { weeks: "Weeks 13-24", title: "Cloud Ops & Capstone", topics: "MLOps, Projects, Career Prep", details: "Final project, cloud deployment on AWS/Azure, and placement assistance." }
+  { weeks: "Weeks 1-2", title: "Machine Learning Foundations", topics: "Supervised & Unsupervised learning, Model evaluation", details: "Begin with the mathematical and statistical foundations of Data Science. You will master core algorithms including Linear/Logistic Regression, Decision Trees, and K-Means Clustering. We focus heavily on bias-variance tradeoffs, cross-validation techniques, and translating business problems into mathematical models that can be evaluated using real-world performance metrics." },
+  { weeks: "Weeks 3-4", title: "Advanced Deep Learning", topics: "Neural networks, CNNs, RNN architectures", details: "Dive into the architecture of modern AI. You will build feed-forward networks from scratch, understanding backpropagation and gradient descent optimization. We then transition into specialized architectures: Convolutional Neural Networks (CNNs) for complex image processing tasks, and Recurrent Neural Networks (RNNs/LSTMs) for sequential data and time-series forecasting, utilizing TensorFlow and Keras." },
+  { weeks: "Week 5", title: "Big Data & Infrastructure", topics: "Spark, Hadoop, Data ingestion", details: "Learn how to handle data at scale when memory runs out. This module covers distributed computing ecosystems like Apache Spark and Hadoop. You will learn to write PySpark jobs that can process terabytes of raw data across cluster nodes, optimize data ingestion pipelines, and manage scalable data lakes that feed into your machine learning models." },
+  { weeks: "Weeks 6-7", title: "Feature Engineering", topics: "Dimensionality reduction, PCA, Scaling", details: "Raw data is rarely ready for modeling. You will master the art of extracting highly predictive signals from noisy datasets. This includes handling missing values, encoding categorical variables, applying Principal Component Analysis (PCA) for dimensionality reduction, and using techniques like SMOTE for highly imbalanced datasets often found in fraud and medical data." },
+  { weeks: "Week 8", title: "Industry Applications", topics: "Fraud detection, Churn, Forecasting", details: "Move away from toy datasets and tackle messy, real-world business cases. You will build a real-time credit card fraud detection system, an employee/customer churn predictor using survival analysis, and a dynamic pricing optimizer for retail. The focus here is strictly on demonstrating ROI and business value to stakeholders." },
+  { weeks: "Weeks 9-10", title: "NLP & Transformers", topics: "Sentiment, BERT, LLM foundations", details: "Master the algorithms powering modern AI chatbots and text analysis. You will start with traditional NLP techniques like TF-IDF and word embeddings, before advancing to state-of-the-art Transformer architectures. You will learn to fine-tune pre-trained models like BERT for custom sentiment analysis, named entity recognition, and document classification tasks." },
+  { weeks: "Weeks 11-12", title: "Data Visualization", topics: "Tableau, Power BI, Storytelling", details: "The best model is useless if you cannot convince stakeholders to trust it. You will learn the psychology of visual perception to build intuitive, interactive dashboards using Tableau and Power BI. We focus on 'data storytelling'—the ability to present complex predictive outcomes as clear, actionable executive summaries." },
+  { weeks: "Weeks 13-24", title: "Cloud Ops & Capstone", topics: "MLOps, Projects, Career Prep", details: "Bridge the gap between a Jupyter notebook and a production environment. You will deploy your models as scalable REST APIs using Docker, AWS/Azure, and CI/CD pipelines. During this extensive final phase, you will also complete your enterprise-grade capstone project and undergo intensive interview preparation, including live coding mock interviews and portfolio audits." }
 ];
 
 const portfolioProjects = [
@@ -123,28 +128,7 @@ const careerRoles = [
   { role: "Quant Analyst", range: "18 - 35 LPA" }
 ];
 
-const careerSupport = [
-  { 
-    title: "Profile Audit", 
-    desc: "Deep review of your resume, LinkedIn, and portfolio to align them with target data science roles." 
-  },
-  { 
-    title: "Resume Design", 
-    desc: "ATS-friendly, impact-focused resume tailored to data and AI hiring pipelines." 
-  },
-  { 
-    title: "Model Portfolio", 
-    desc: "Curated project portfolio with production-grade ML models and datasets that you can showcase in interviews." 
-  },
-  { 
-    title: "Mock Interviews", 
-    desc: "Role-specific mock interviews with detailed feedback on coding, math, and case approach." 
-  },
-  { 
-    title: "Referral Access", 
-    desc: "Warm referrals and profile pitches to hiring partners in our recruiter and alumni network." 
-  }
-];
+
 
 const faqCategories = {
   "Program Details": [
@@ -261,12 +245,10 @@ const DataScience = () => {
         <ImageSlider />
       </CourseHeroBanner>
 
-      <CourseInfoStrip 
-        accent="#2DD4BF" 
-        courseValue="Data Science" 
-        duration="24 Weeks"
-        brochureLink={dsBrochure}
-      />
+      
+
+      {/* TOP 1% PROFESSIONALS */}
+      <TopOnePercent accentColor="#4DD0C3" />
 
       {/* AUDIENCE */}
       <section className="ds-section">
@@ -348,21 +330,7 @@ const DataScience = () => {
       </section>
 
       {/* CAREER SUPPORT */}
-      <section className="ds-sec-white">
-        <div className="shell">
-           <h2 className="sec-title">Career Support Process</h2>
-           <p className="sec-sub">A structured 5‑step support system to convert your technical skills into real, high‑growth job offers.</p>
-           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'20px'}}>
-              {careerSupport.map((step, i) => (
-                 <div key={i} className="p-card" style={{background:'#F9FAFB'}}>
-                    <div style={{fontSize:'32px', fontWeight:900, opacity:0.1, marginBottom:'12px', fontFamily:'Outfit'}}>0{i+1}</div>
-                    <h4 style={{fontWeight:800, fontSize:'18px', marginBottom:'10px', color:'var(--ds-primary)'}}>{step.title}</h4>
-                    <p style={{fontSize:'14px', color:'var(--ds-text-dim)', lineHeight:1.6}}>{step.desc}</p>
-                 </div>
-              ))}
-           </div>
-        </div>
-      </section>
+      <CareerSupport courseValue="Data Science" brochureLink={dsBrochure} />
 
       {/* OUTCOMES */}
       <section className="ds-section">
@@ -404,6 +372,7 @@ const DataScience = () => {
       <section className="ds-section">
         <div className="shell">
            <Certification isDark={false} />
+           <ProgramCohorts courseValue="Data Science" date="31st May" />
         </div>
       </section>
 

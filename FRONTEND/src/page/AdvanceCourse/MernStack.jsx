@@ -37,8 +37,12 @@ import ApplyNowButton from "./Components/ApplyNowButton";
 import ApplyForm from "./Components/ApplyForm";
 import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
-import CourseInfoStrip from "./Components/CourseInfoStrip";
+
 import ToolStack from "./Components/ToolStack";
+import TopOnePercent from "../../Components/TopOnePercent";
+import CareerSupport from "../../Components/CareerSupport";
+import ProgramCohorts from "./Components/ProgramCohorts";
+
 import DownloadBrochureButton from "./Components/DownloadBrochureButton";
 import CountdownTimer from "./Components/CountdownTimer";
 import mernBrochure from "../../../krutanic/Mern Stack Web Development Advanced Program.pdf";
@@ -101,28 +105,7 @@ const careerRoles = [
   { role: "Software Engineer", range: "10 - 24 LPA" }
 ];
 
-const careerSupport = [
-  { 
-    title: "Profile Audit", 
-    desc: "Deep review of your resume, LinkedIn, and portfolio to align them with target full-stack engineering roles." 
-  },
-  { 
-    title: "Resume Design", 
-    desc: "ATS-friendly, impact-focused resume tailored to modern software development hiring pipelines." 
-  },
-  { 
-    title: "Project Portfolio", 
-    desc: "Curated project portfolio with production-grade web architectures and codebases that you can showcase in interviews." 
-  },
-  { 
-    title: "Mock Interviews", 
-    desc: "Role-specific mock interviews with detailed feedback on problem-solving, communication, and technical approach." 
-  },
-  { 
-    title: "Referral Access", 
-    desc: "Warm referrals and profile pitches to hiring partners in our recruiter and alumni network." 
-  }
-];
+
 
 const faqCategories = {
   "Program Details": [
@@ -235,12 +218,9 @@ const MernStack = () => {
         <ImageSlider />
       </CourseHeroBanner>
 
-      <CourseInfoStrip 
-        accent="#34D399" 
-        courseValue="MERN Stack" 
-        duration="24 Weeks"
-        brochureLink={mernBrochure}
-      />
+      
+
+      <TopOnePercent />
 
       {/* 2. AUDIENCE */}
       <section className="ms-section">
@@ -339,21 +319,7 @@ const MernStack = () => {
       </section>
 
       {/* 8. CAREER SUPPORT */}
-      <section className="ms-sec-white">
-        <div className="shell">
-           <h2 className="sec-title">Career Support Process</h2>
-           <p className="sec-sub">A structured 5‑step support system to convert your technical skills into real, high‑growth job offers.</p>
-           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'20px'}}>
-              {careerSupport.map((step, i) => (
-                 <div key={i} className="p-card" style={{background:'#F9FAFB'}}>
-                    <div style={{fontSize:'32px', fontWeight:900, opacity:0.1, marginBottom:'12px', fontFamily:'Outfit'}}>0{i+1}</div>
-                    <h4 style={{fontWeight:800, fontSize:'18px', marginBottom:'10px', color:'var(--ms-primary)'}}>{step.title}</h4>
-                    <p style={{fontSize:'14px', color:'var(--ms-text-dim)', lineHeight:1.6}}>{step.desc}</p>
-                 </div>
-              ))}
-           </div>
-        </div>
-      </section>
+      <CareerSupport courseValue="MERN Stack" brochureLink={mernBrochure} />
 
       {/* 9. ROLES */}
       <section className="ms-section">
@@ -392,6 +358,7 @@ const MernStack = () => {
       <section className="ms-section">
         <div className="shell">
            <Certification isDark={false} />
+           <ProgramCohorts courseValue="MERN Stack" date="Upcoming" />
         </div>
       </section>
 

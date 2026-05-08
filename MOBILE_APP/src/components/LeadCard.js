@@ -4,15 +4,17 @@ import { Ionicons } from '@expo/vector-icons';
 import { startCallTracking } from '../utils/callTracker';
 import { COLORS, SPACING, SHADOWS, TYPOGRAPHY } from '../utils/theme';
 import { Audio } from 'expo-av';
+import { getCallUrl, getWhatsAppUrl } from '../utils/phoneUtils';
+import { formatSystemDate, formatUserDate } from '../utils/dateUtils';
 
 const LeadCard = ({ lead, onViewDetails }) => {
     const handleCall = async () => {
         await startCallTracking(lead._id, lead.full_name);
-        Linking.openURL(`tel:+91${lead.phone_number}`);
+        Linking.openURL(getCallUrl(lead.phone_number));
     };
 
     const handleWhatsApp = () => {
-        Linking.openURL(`https://wa.me/91${lead.phone_number}`);
+        Linking.openURL(getWhatsAppUrl(lead.phone_number));
     };
 
     const [sound, setSound] = React.useState(null);
@@ -55,14 +57,13 @@ const LeadCard = ({ lead, onViewDetails }) => {
     };
 
     const getStatusColor = (status) => {
-        switch (status?.toLowerCase()) {
-            case 'interested': return COLORS.success;
-            case 'callback_requested':
-            case 'in_followup': return COLORS.info;
-            case 'no_answer': return COLORS.accent;
-            case 'closed':
-            case 'not_interested': return COLORS.error;
-            case 'converted': return COLORS.accent;
+        switch (status) {
+            case 'Fresh Lead': return COLORS.textDim;
+            case 'Attempting Contact': return COLORS.warning;
+            case 'First Call Connected': return COLORS.info;
+            case 'Demo Conducted': return COLORS.secondary;
+            case 'Closed Won': return COLORS.success;
+            case 'Closed Lost': return COLORS.error;
             default: return COLORS.textDim;
         }
     };
@@ -81,9 +82,9 @@ const LeadCard = ({ lead, onViewDetails }) => {
                         <Text style={styles.domain}>{lead.opted_domain || 'General'}</Text>
                     </View>
                 </View>
-                <View style={[styles.statusBadge, { backgroundColor: getStatusColor(lead.status) + '15' }]}>
-                    <Text style={[styles.statusText, { color: getStatusColor(lead.status) }]}>
-                        {(lead.status || 'Fresh').replace(/_/g, ' ')}
+                <View style={[styles.statusBadge, { backgroundColor: getStatusColor(lead.stage) + '15' }]}>
+                    <Text style={[styles.statusText, { color: getStatusColor(lead.stage) }]}>
+                        {(lead.stage || 'Fresh Lead')}
                     </Text>
                 </View>
             </View>
@@ -101,6 +102,26 @@ const LeadCard = ({ lead, onViewDetails }) => {
                             <Ionicons name="business-outline" size={14} color={COLORS.textDim} />
                         </View>
                         <Text style={styles.detailText}>{lead.company_name}</Text>
+                    </View>
+                )}
+                {lead.last_contacted_at && (
+                    <View style={styles.detailItem}>
+                        <View style={styles.detailIcon}>
+                            <Ionicons name="time-outline" size={14} color={COLORS.textDim} />
+                        </View>
+                        <Text style={styles.detailText}>
+                            Last: {formatSystemDate(lead.last_contacted_at)}
+                        </Text>
+                    </View>
+                )}
+                {lead.next_followup_at && (
+                    <View style={styles.detailItem}>
+                        <View style={styles.detailIcon}>
+                            <Ionicons name="calendar-outline" size={14} color={COLORS.accent} />
+                        </View>
+                        <Text style={[styles.detailText, { color: COLORS.accent, fontWeight: '700' }]}>
+                            Next: {formatUserDate(lead.next_followup_at)}
+                        </Text>
                     </View>
                 )}
             </View>

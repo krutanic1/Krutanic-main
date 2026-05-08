@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Linking } from 'react-native';
+import { getCallUrl } from './phoneUtils';
 
 const STORAGE_KEY = '@krutanic_auto_dialer';
 
@@ -46,5 +47,5 @@ export const getCurrentLead = async () => {
 
 export const dialLead = (phoneNumber) => {
     if (!phoneNumber) return;
-    Linking.openURL(`tel:+91${phoneNumber}`);
+    Linking.openURL(getCallUrl(phoneNumber));
 };
