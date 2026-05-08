@@ -131,26 +131,12 @@ const DashboardAccessForm = () => {
     const currentDay = currentDate.getDate();
     const currentYear = currentDate.getFullYear();
 
-    let months = [];
-    let startMonthIndex;
-
-    // Agar date 1 se 7 ke beech hai, toh current month se list shuru hogi
-    if (currentDay >= 1 && currentDay <= 7) {
-      startMonthIndex = currentMonthIndex;
-    } else {
-      // Warna agle month se shuru hoga
-      startMonthIndex = currentMonthIndex + 1;
-    }
-
-    // Handle December case (Agar December hai toh agla saal start ho jayega)
-    const nextYear = startMonthIndex > 11 ? currentYear + 1 : currentYear;
-    startMonthIndex = startMonthIndex % 12;
-
-    // Only show next 3 months in the dropdown
-    months = [
-      `${monthNames[startMonthIndex]} ${nextYear}`,
-      `${monthNames[(startMonthIndex + 1) % 12]} ${startMonthIndex + 1 > 11 ? nextYear + 1 : nextYear}`,
-      `${monthNames[(startMonthIndex + 2) % 12]} ${startMonthIndex + 2 > 11 ? nextYear + 1 : nextYear}`,
+    // Always include current month as the first option, followed by the next two months
+    const startMonthIndex = currentMonthIndex;
+    const months = [
+      `${monthNames[startMonthIndex]} ${currentYear}`,
+      `${monthNames[(startMonthIndex + 1) % 12]} ${(startMonthIndex + 1) > 11 ? currentYear + 1 : currentYear}`,
+      `${monthNames[(startMonthIndex + 2) % 12]} ${(startMonthIndex + 2) > 11 ? currentYear + 1 : currentYear}`,
     ];
 
     setMonthsToShow(months);
