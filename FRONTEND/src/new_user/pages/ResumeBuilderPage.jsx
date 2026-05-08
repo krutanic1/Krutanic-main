@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 import API from "../../API";
 import { SectionHeader } from "../new-dashboad";
 
@@ -106,7 +107,7 @@ const TextArea = ({ label, value, onChange, placeholder, hint }) => (
     </div>
 );
 
-const PersonalForm = ({ data, onChange }) => (
+const PersonalForm = ({ data, onChange, showAvatar }) => (
     <div className="rb-form-section">
         <div className="rb-form-row">
             <Field label="Full Name" value={data.name} onChange={v => onChange("name", v)} placeholder="e.g. John Doe" required />
@@ -121,28 +122,30 @@ const PersonalForm = ({ data, onChange }) => (
             <Field label="GitHub URL" value={data.github} onChange={v => onChange("github", v)} placeholder="github.com/username" />
         </div>
         <Field label="Portfolio / Website" value={data.website} onChange={v => onChange("website", v)} placeholder="yoursite.dev" />
-        <div className="rb-field mt-6">
-            <label className="rb-label mb-3 block">Choose Avatar</label>
-            <div className="flex flex-wrap gap-4">
-                {[
-                    "https://api.dicebear.com/7.x/notionists/svg?seed=Felix",
-                    "https://api.dicebear.com/7.x/notionists/svg?seed=Aneka",
-                    "https://api.dicebear.com/7.x/notionists/svg?seed=Mimi",
-                    "https://api.dicebear.com/7.x/notionists/svg?seed=Jack",
-                    "https://api.dicebear.com/7.x/notionists/svg?seed=Luna"
-                ].map((url, i) => (
-                    <button
-                        key={i}
-                        type="button"
-                        onClick={() => onChange("avatar", url)}
-                        className={`w-16 h-16 rounded-full overflow-hidden border-4 transition-all duration-200 ${data.avatar === url ? "border-orange-500 scale-110 shadow-md" : "border-gray-100 hover:border-gray-300"}`}
-                        title={`Select Avatar ${i + 1}`}
-                    >
-                        <img src={url} alt={`Avatar ${i + 1}`} className="w-full h-full object-cover bg-gray-50" />
-                    </button>
-                ))}
+        {showAvatar && (
+            <div className="rb-field mt-6">
+                <label className="rb-label mb-3 block">Choose Avatar</label>
+                <div className="flex flex-wrap gap-4">
+                    {[
+                        "https://api.dicebear.com/7.x/notionists/svg?seed=Felix",
+                        "https://api.dicebear.com/7.x/notionists/svg?seed=Aneka",
+                        "https://api.dicebear.com/7.x/notionists/svg?seed=Mimi",
+                        "https://api.dicebear.com/7.x/notionists/svg?seed=Jack",
+                        "https://api.dicebear.com/7.x/notionists/svg?seed=Luna"
+                    ].map((url, i) => (
+                        <button
+                            key={i}
+                            type="button"
+                            onClick={() => onChange("avatar", url)}
+                            className={`w-16 h-16 rounded-full overflow-hidden border-4 transition-all duration-200 ${data.avatar === url ? "border-orange-500 scale-110 shadow-md" : "border-gray-100 hover:border-gray-300"}`}
+                            title={`Select Avatar ${i + 1}`}
+                        >
+                            <img src={url} alt={`Avatar ${i + 1}`} className="w-full h-full object-cover bg-gray-50" />
+                        </button>
+                    ))}
+                </div>
             </div>
-        </div>
+        )}
     </div>
 );
 
@@ -371,6 +374,8 @@ const ResumeBuilderPage = () => {
     const [step, setStep] = useState(0);
     const [data, setData] = useState(initialState);
     const previewRef = useRef(null);
+    const location = useLocation();
+    const isAdvancedDashboard = location.pathname.toLowerCase().startsWith("/advancedashboard");
 
     const updatePersonal = (field, val) => setData(d => ({ ...d, personal: { ...d.personal, [field]: val } }));
     const makeUpdater = (section) => (id, field, val) =>
@@ -428,17 +433,6 @@ const ResumeBuilderPage = () => {
 
     /* ── Print: inject resume into page, print only that div, then clean up ── */
     const handleDownload = async () => {
-        const userId = localStorage.getItem("userId");
-        if (userId) {
-            try {
-                await axios.post(`${API}/profile`, { userId, email: data.personal.email, ...data }, {
-                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-                });
-            } catch (err) {
-                console.error("Failed to auto-save profile:", err);
-            }
-        }
-
         // Remove any leftover print elements
         document.getElementById("rb-print-root")?.remove();
         document.getElementById("rb-print-css")?.remove();
@@ -508,7 +502,7 @@ const ResumeBuilderPage = () => {
 
     const renderStep = () => {
         switch (step) {
-            case 0: return <PersonalForm data={data.personal} onChange={updatePersonal} />;
+            case 0: return <PersonalForm data={data.personal} onChange={updatePersonal} showAvatar={isAdvancedDashboard} />;
             case 1: return <EducationForm data={data.education} onChange={makeUpdater("education")}
                 onAdd={makeAdder("education", { school: "", degree: "", location: "", start: "", end: "", details: "" })}
                 onRemove={makeRemover("education")} />;
@@ -574,10 +568,12 @@ const ResumeBuilderPage = () => {
                                 Next <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_forward</span>
                             </button>
                         ) : (
-                            <div style={{ display: "flex", gap: "10px" }}>
-                                <button className="rb-nav-btn rb-nav-primary" onClick={handleSave} style={{ background: "#4caf50", color: "#fff", border: "none" }}>
-                                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>save</span> Save Profile
-                                </button>
+                            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                                {isAdvancedDashboard && (
+                                    <button className="rb-nav-btn rb-nav-primary" onClick={handleSave} style={{ background: "#4caf50", color: "#fff", border: "none" }}>
+                                        <span className="material-symbols-outlined" style={{ fontSize: 16 }}>save</span> Save Profile
+                                    </button>
+                                )}
                                 <button className="rb-nav-btn rb-nav-download" onClick={handleDownload}>
                                     <span className="material-symbols-outlined" style={{ fontSize: 16 }}>download</span> Download PDF
                                 </button>

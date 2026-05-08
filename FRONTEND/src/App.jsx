@@ -673,6 +673,7 @@ const AppContent = () => {
           <Route path="/MockInterview" element={isAuthenticated() ? <MockInterviewPage /> : <Navigate to="/login" />} />
           <Route path="/ResumeATS" element={isAuthenticated() ? <ResumeATSPage /> : <Navigate to="/login" />} />
           <Route path="/Exercise" element={isAuthenticated() ? <ExercisePage /> : <Navigate to="/login" />} />
+          <Route path="/resume-builder" element={<ResumeBuilderPage />} />
         </Route>
         {/* User Panel End */}
 

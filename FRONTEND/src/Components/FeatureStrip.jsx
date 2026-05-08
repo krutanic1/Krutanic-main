@@ -18,7 +18,7 @@ const features = [
   { icon: Rocket, title: "Real-World Capstone Projects" },
   { icon: Award, title: "Elite Certification" },
   { icon: TrendingUp, title: "55% Avg. Salary Hike" },
-  { icon: CheckCircle2, title: "15 Interview Guarantee" },
+  { icon: CheckCircle2, title: "15 Interview oppurtunities Guaranteed" },
 ];
 
 const FeatureStrip = () => {

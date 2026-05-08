@@ -174,7 +174,7 @@ const CourseInfoStrip = ({
           </div>
           <div className="cis-item">
             <span className="cis-label">Assured</span>
-            <span className="cis-value">15 Interview Guarantee*</span>
+            <span className="cis-value">15 Interview oppurtunities Guaranteed</span>
           </div>
         </div>
       </div>

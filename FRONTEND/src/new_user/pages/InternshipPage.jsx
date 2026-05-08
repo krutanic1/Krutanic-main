@@ -5,8 +5,43 @@ import axios from 'axios';
 import API from "../../API";
 
 const InternshipPage = () => {
-    const { enrollment, loading } = useDashboard();
+    let contextData = { enrollment: null, loading: true };
+    try {
+        contextData = useDashboard();
+    } catch (err) {
+        // Context not available (standard dashboard), will fetch directly
+    }
+    
+    const { enrollment: contextEnrollment, loading: contextLoading } = contextData;
+    const [fetchedEnrollment, setFetchedEnrollment] = useState(null);
+    const [loading, setLoading] = useState(contextLoading);
     const [certData, setCertData] = useState(null);
+
+    // Use context enrollment if available, otherwise use fetched enrollment
+    const enrollment = contextEnrollment || fetchedEnrollment;
+
+    // Fetch enrollment from API if context is not available
+    useEffect(() => {
+        if (contextEnrollment) return; // Context available, skip API fetch
+        
+        const fetchEnrollment = async () => {
+            try {
+                const userEmail = localStorage.getItem("userEmail");
+                if (!userEmail) return;
+                setLoading(true);
+                const response = await axios.get(`${API}/enrollments`, { params: { userEmail } });
+                if (response.data && response.data.length > 0) {
+                    setFetchedEnrollment(response.data[0]);
+                }
+            } catch (error) {
+                console.error("Error fetching enrollment:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        fetchEnrollment();
+    }, [contextEnrollment]);
 
     const startMonth = enrollment?.internshipstartsmonth || null;
     const endMonth = enrollment?.internshipendsmonth || null;
@@ -27,6 +62,26 @@ const InternshipPage = () => {
         }
         return count;
     }, [progress]);
+
+    // Calculate Training Complete date (approx 30 days after enrollment or based on watched sessions)
+    const trainingCompleteDate = useMemo(() => {
+        if (!enrollment?.createdAt) return "After Training";
+        const enrollmentDate = new Date(enrollment.createdAt);
+        const trainingEndDate = new Date(enrollmentDate);
+        trainingEndDate.setDate(trainingEndDate.getDate() + 30); // Assume 30 days for training
+        return trainingEndDate.toLocaleDateString("en-IN", { month: "long", year: "numeric" });
+    }, [enrollment?.createdAt]);
+
+    // Format enrollment date
+    const enrollmentDate = useMemo(() => {
+        if (!enrollment?.createdAt) return "Enrolled";
+        return new Date(enrollment.createdAt).toLocaleDateString("en-IN", { month: "long", year: "numeric" });
+    }, [enrollment?.createdAt]);
+
+    // Check if training is complete based on watched sessions
+    const isTrainingComplete = useMemo(() => {
+        return enrollment?.watchedSessions && enrollment.watchedSessions.length > 0;
+    }, [enrollment?.watchedSessions]);
 
     useEffect(() => {
         const fetchCertificate = async () => {
@@ -51,6 +106,7 @@ const InternshipPage = () => {
 
     // Determine current step (1 to 5)
     let currentStep = 2; // Default starting point after enrollment
+    if (isTrainingComplete) currentStep = 3;
     if (isInternshipStarted) currentStep = 3;
     if (isInternshipCompleted) currentStep = 4;
     // According to user, if they received the certificate anyway, it should be marked as done
@@ -62,14 +118,14 @@ const InternshipPage = () => {
         {
             id: 1, icon: "school", label: "Program Enrolled",
             desc: "Successfully joined the program and started training.",
-            date: enrollment?.createdAt ? new Date(enrollment.createdAt).toLocaleDateString("en-IN", { month: "long", year: "numeric" }) : "Enrolled",
+            date: enrollmentDate,
             done: true,
         },
         {
             id: 2, icon: "assignment", label: "Training Complete",
             desc: "Complete all training sessions to unlock internship.",
-            date: "After Training",
-            done: true, // Assuming training is considered done if they are here, or it should be checked against video progress if available. Making it true to allow step 3 to clearly activate next.
+            date: trainingCompleteDate,
+            done: isTrainingComplete,
         },
         {
             id: 3, icon: "work", label: "Internship Started",
@@ -86,7 +142,7 @@ const InternshipPage = () => {
         {
             id: 5, icon: "emoji_events", label: "Certificate Issued",
             desc: "Internship certificate will be issued upon completion.",
-            date: "After Internship",
+            date: certData ? new Date(certData.createdAt).toLocaleDateString("en-IN", { month: "long", year: "numeric" }) : "After Internship",
             done: isCertificateIssued,
         },
     ];

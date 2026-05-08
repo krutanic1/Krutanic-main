@@ -140,6 +140,14 @@ const UserHeader = ({ onNavigate, resetNavigation }) => {
     alignItems: "center",
     gap: "10px",
   };
+          <div
+            onClick={() => handleLinkClick("/resume-builder")}
+            style={{
+              ...menuItemStyle,
+            }}
+          >
+            <i className="fa fa-file-text"></i> Resume Builder
+          </div>
 
   return (
     <div id="UserHeader">

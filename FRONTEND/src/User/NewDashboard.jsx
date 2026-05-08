@@ -416,6 +416,16 @@ const NewDashboard = () => {
                   <p className="text-gray-500 font-medium text-sm mb-2 z-10">Active Courses</p>
                   <p className="text-gray-900 text-4xl font-bold z-10">{enrollData.filter((item) => item.status === "fullPaid").length}</p>
                 </div>
+                <button
+                  onClick={() => navigate("/resume-builder")}
+                  className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col relative overflow-hidden group text-left hover:shadow-md transition-shadow"
+                >
+                  <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <span className="material-symbols-outlined text-8xl text-primary">edit_document</span>
+                  </div>
+                  <p className="text-gray-500 font-medium text-sm mb-2 z-10">Resume Builder</p>
+                  <p className="text-gray-900 text-lg font-bold z-10 leading-tight">Create and download your ATS-friendly resume</p>
+                </button>
               </div>
             </div>
 
