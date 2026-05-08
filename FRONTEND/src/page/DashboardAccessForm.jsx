@@ -131,13 +131,14 @@ const DashboardAccessForm = () => {
     const currentDay = currentDate.getDate();
     const currentYear = currentDate.getFullYear();
 
-    // Always include current month as the first option, followed by the next two months
-    const startMonthIndex = currentMonthIndex;
-    const months = [
-      `${monthNames[startMonthIndex]} ${currentYear}`,
-      `${monthNames[(startMonthIndex + 1) % 12]} ${(startMonthIndex + 1) > 11 ? currentYear + 1 : currentYear}`,
-      `${monthNames[(startMonthIndex + 2) % 12]} ${(startMonthIndex + 2) > 11 ? currentYear + 1 : currentYear}`,
-    ];
+    // If today is after the 11th, start from next month; otherwise include current month
+    const startMonthIndex = currentDay > 11 ? (currentMonthIndex + 1) : currentMonthIndex;
+
+    const months = [0, 1, 2].map((offset) => {
+      const index = (startMonthIndex + offset) % 12;
+      const year = currentYear + Math.floor((startMonthIndex + offset) / 12);
+      return `${monthNames[index]} ${year}`;
+    });
 
     setMonthsToShow(months);
   }, []);
