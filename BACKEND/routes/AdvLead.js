@@ -1398,8 +1398,8 @@ router.post("/log-call-activity", async (req, res) => {
         expectedPaymentDate
     } = req.body;
 
-    if (!leadId || !specialistId || !stage || !disposition) {
-        return res.status(400).json({ message: "leadId, specialistId, stage, and disposition are required" });
+    if (!leadId || !specialistId || !stage || !disposition || !summary) {
+        return res.status(400).json({ message: "leadId, specialistId, stage, disposition, and summary are required" });
     }
 
     try {

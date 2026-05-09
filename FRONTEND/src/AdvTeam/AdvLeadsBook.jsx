@@ -383,6 +383,10 @@ const AdvLeadsBook = () => {
         if (!form.stage) { toast.error("Please select a lead stage"); return; }
         if (!form.disposition) { toast.error("Please select a disposition"); return; }
         if (!form.actionType) { toast.error("Please select an action type"); return; }
+        if (!form.summary || form.summary.trim() === "") {
+            toast.error("Executive Summary is mandatory. Please provide conversation highlights.");
+            return;
+        }
 
         // Mandatory rules
         if (form.disposition === "Callback Requested" && !form.followUpDate) {
@@ -1183,7 +1187,13 @@ const AdvLeadsBook = () => {
                                                                     { label: 'Disposition', value: lead.disposition, icon: 'label_important' },
                                                                      { label: 'Contact Attempts', value: `${lead.attempt_count || 0} Attempts`, icon: 'call_log' },
                                                                     { label: 'Last called at', value: lead.last_contacted_at ? new Date(lead.last_contacted_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'Never Called', icon: 'history' },
-                                                                    { label: 'Next Follow-up', value: lead.next_followup_at ? subtractFiveThirtyAndFormat(lead.next_followup_at) : 'Not Scheduled', icon: 'schedule' },
+                                                                    { 
+                                                                        label: 'Next Follow-up', 
+                                                                        value: lead.next_followup_at 
+                                                                            ? subtractFiveThirtyAndFormat(lead.next_followup_at) 
+                                                                            : (Object.keys(lead.extra_fields || {}).some(k => k.toLowerCase().includes('followup') || k.toLowerCase().includes('call back') || k.toLowerCase().includes('callback')) ? '' : 'Not Scheduled'), 
+                                                                        icon: 'schedule' 
+                                                                    },
                                                                     { label: 'Primary Contact', value: lead.email, icon: 'mail' },
                                                                     { label: 'Workplace', value: lead.company_name, icon: 'business' },
                                                                     { label: 'Educational Background', value: lead.education_background, icon: 'school' },

@@ -42,6 +42,7 @@ import ImageSlider from "./Components/ImageSlider";
 import TopOnePercent from "../../Components/TopOnePercent";
 import CareerSupport from "../../Components/CareerSupport";
 import ProgramCohorts from "./Components/ProgramCohorts";
+import AdvanceBanner from "./Components/AdvanceBanner";
 
 import DownloadBrochureButton from "./Components/DownloadBrochureButton";
 import CountdownTimer from "./Components/CountdownTimer";
@@ -367,6 +368,8 @@ const Investmentbanking = () => {
            </div>
         </div>
       </section>
+
+      <AdvanceBanner />
 
       {/* 11. FAQ */}
       <section className="ib-sec-white">

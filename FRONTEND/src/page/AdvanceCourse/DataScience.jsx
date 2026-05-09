@@ -53,6 +53,7 @@ import ApplyNowButton from "./Components/ApplyNowButton";
 import TopOnePercent from "../../Components/TopOnePercent";
 import CareerSupport from "../../Components/CareerSupport";
 import ProgramCohorts from "./Components/ProgramCohorts";
+import AdvanceBanner from "./Components/AdvanceBanner";
 
 
 import ApplyForm from "./Components/ApplyForm";
@@ -399,6 +400,8 @@ const DataScience = () => {
            </div>
         </div>
       </section>
+
+      <AdvanceBanner />
 
       {/* FAQ */}
       <section className="ds-section">

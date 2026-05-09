@@ -36,6 +36,7 @@ import TopOnePercent from "../../Components/TopOnePercent";
 import DownloadBrochureButton from "./Components/DownloadBrochureButton";
 import CountdownTimer from "./Components/CountdownTimer";
 import genaiBrochure from "../../../krutanic/Prompt engineering for generative AI Advanced Program.pdf";
+import AdvanceBanner from "./Components/AdvanceBanner";
 
 const heroStats = [
   { label: "Duration", value: "24 Weeks" },
@@ -787,6 +788,8 @@ const GenerativeAI = () => {
           </div>
         </div>
       </section>
+
+      <AdvanceBanner />
 
       {/* FAQ Section */}
       <section className="py-24 px-6 relative overflow-hidden">
