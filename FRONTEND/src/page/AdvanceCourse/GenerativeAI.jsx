@@ -32,6 +32,7 @@ import ApplyForm from "./Components/ApplyForm";
 import CourseHeroBanner from "./Components/CourseHeroBanner";
 
 import ToolStack from "./Components/ToolStack";
+import TopOnePercent from "../../Components/TopOnePercent";
 import DownloadBrochureButton from "./Components/DownloadBrochureButton";
 import CountdownTimer from "./Components/CountdownTimer";
 import genaiBrochure from "../../../krutanic/Prompt engineering for generative AI Advanced Program.pdf";
@@ -585,6 +586,14 @@ const GenerativeAI = () => {
           </motion.div>
         </div>
       </section>
+
+      <div style={{ background: '#06040e' }}>
+         <TopOnePercent 
+           accentColor="#8B5CF6" 
+           badge="Advanced Program"
+           subtitle="Master the transition from traditional engineering to AI-first architectures. Gain the technical depth required to build production-grade agentic systems."
+         />
+      </div>
 
       {/* Who Should Enroll */}
       <section className="py-24 px-6 relative overflow-hidden">

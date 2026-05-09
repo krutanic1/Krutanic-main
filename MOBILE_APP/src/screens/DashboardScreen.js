@@ -19,6 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { COLORS, SPACING, SHADOWS, TYPOGRAPHY } from '../utils/theme';
 import BrandedLoading from '../components/BrandedLoading';
+import * as notificationService from '../services/notificationService';
 
 const { width } = Dimensions.get('window');
 
@@ -30,7 +31,8 @@ const DashboardScreen = () => {
         callsMade: 0,
         connectedCalls: 0,
         convertedLeads: 0,
-        followUpsToday: 0
+        followUpsToday: 0,
+        unreadNotifications: 0
     });
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
@@ -59,10 +61,12 @@ const DashboardScreen = () => {
                 const data = await teamService.getDashboardStats(user.id, role);
                 console.log('[DASHBOARD] Specialist Stats received:', data);
                 const followUpData = await leadService.getTodayFollowUpCount(user.id);
+                const notificationData = await notificationService.getUnreadNotificationCount(user.id);
                 setStats({
                     ...data,
                     totalLeads: data.totalLeads || 0, // Explicit mapping just in case
-                    followUpsToday: followUpData.count || 0
+                    followUpsToday: followUpData.count || 0,
+                    unreadNotifications: notificationData.count || 0
                 });
             }
         } catch (error) {
@@ -119,8 +123,16 @@ const DashboardScreen = () => {
                             </View>
                             <Text style={styles.brandText}>KRUTANIC</Text>
                         </View>
-                        <TouchableOpacity style={styles.notificationBtn}>
+                        <TouchableOpacity 
+                            style={styles.notificationBtn}
+                            onPress={() => navigation.navigate('FollowUps')} // Defaulting to followups for now, or could show list
+                        >
                             <Ionicons name="notifications-outline" size={20} color={COLORS.text} />
+                            {stats.unreadNotifications > 0 && (
+                                <View style={styles.badge}>
+                                    <Text style={styles.badgeText}>{stats.unreadNotifications}</Text>
+                                </View>
+                            )}
                         </TouchableOpacity>
                     </View>
 
@@ -208,7 +220,25 @@ const styles = StyleSheet.create({
     logoRing: { padding: 2, borderRadius: 20, backgroundColor: COLORS.surface, ...SHADOWS.small },
     logoMini: { width: 34, height: 34, borderRadius: 17 },
     brandText: { fontSize: 20, fontWeight: '800', color: COLORS.primary, marginLeft: 12, letterSpacing: -0.5 },
-    notificationBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#eff1f2', justifyContent: 'center', alignItems: 'center' },
+    notificationBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#eff1f2', justifyContent: 'center', alignItems: 'center', position: 'relative' },
+    badge: {
+        position: 'absolute',
+        top: -2,
+        right: -2,
+        backgroundColor: COLORS.primary,
+        width: 18,
+        height: 18,
+        borderRadius: 9,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 2,
+        borderColor: '#fff',
+    },
+    badgeText: {
+        color: '#fff',
+        fontSize: 9,
+        fontWeight: 'bold',
+    },
 
     greetingSection: { marginTop: 16, marginBottom: 24 },
     greetingText: { fontSize: 13, fontWeight: '600', color: COLORS.textDim, textTransform: 'uppercase', letterSpacing: 1 },

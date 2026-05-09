@@ -34,7 +34,15 @@ const FollowUpsScreen = () => {
 
         try {
             const data = await leadService.getUpcomingFollowUps(user?.id);
-            setFollowUps(data.followUps || []);
+            const allFollowUps = data.followUps || [];
+            
+            // Filter to only show today's follow ups
+            const today = new Date().toDateString();
+            const todayFollowUps = allFollowUps.filter(item => 
+                new Date(item.followUpDate).toDateString() === today
+            );
+            
+            setFollowUps(todayFollowUps);
         } catch (err) {
             console.error('[FOLLOWUPS] Fetch failed:', err);
             setError(err.toString());

@@ -62,6 +62,8 @@ const AdvLeadsBook = () => {
     const [expandedLogId, setExpandedLogId] = useState(null);
     // Default to showing Fresh Lead on initial load instead of All Records
     const [selectedOutcome, setSelectedOutcome] = useState("Fresh Lead");
+    const [selectedDisposition, setSelectedDisposition] = useState("");
+    const [hoveredStage, setHoveredStage] = useState(null);
     const [sourceFilter, setSourceFilter] = useState("");
     const [dateFilter, setDateFilter] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
@@ -74,7 +76,7 @@ const AdvLeadsBook = () => {
     const limit = 25;
     const userId = localStorage.getItem("advTeamId");
     const userName = localStorage.getItem("advTeamName");
-    const designation = localStorage.getItem("advTeamDesignation") || "SR Inside Sales Specialist";
+    const [userDesignation, setUserDesignation] = useState(localStorage.getItem("advTeamDesignation") || "SR Inside Sales Specialist");
 
     // New Email Modal state
     const [showEmailModal, setShowEmailModal] = useState(false);
@@ -98,19 +100,20 @@ const AdvLeadsBook = () => {
 
     const [advDomains, setAdvDomains] = useState(["General"]);
 
-    const fetchMyLeads = async (page = 1) => {
+    const fetchMyLeads = async (page = 1, currentStage = selectedOutcome, currentDisp = selectedDisposition, currentSource = sourceFilter, currentDate = dateFilter) => {
         setLoading(true);
         try {
             const res = await axios.get(`${API}/api/adv-leads/get-adv-leads`, {
                 params: { 
-                    role: designation, 
+                    role: userDesignation, 
                     userId, 
                     page, 
                     limit, 
-                    outcome: selectedOutcome, 
-                    source: sourceFilter, 
+                    stage: currentStage,
+                    disposition: currentDisp,
+                    source: currentSource, 
                     strictlyOwned: true, 
-                    date: dateFilter,
+                    date: currentDate,
                     search: searchTerm // Global search parameter
                 }
             });
@@ -132,7 +135,13 @@ const AdvLeadsBook = () => {
     const fetchOutcomeCounts = async () => {
         try {
             const res = await axios.get(`${API}/api/adv-leads/get-outcome-counts`, {
-                params: { role: designation, userId, strictlyOwned: true }
+                params: { 
+                    role: userDesignation, 
+                    userId, 
+                    strictlyOwned: true,
+                    source: sourceFilter,
+                    date: dateFilter
+                }
             });
             setOutcomeCounts(res.data);
         } catch (err) {
@@ -141,6 +150,49 @@ const AdvLeadsBook = () => {
     };
     // Removed frontend filtering as we now use global backend search
     const displayedLeads = leads;
+
+    const isManager = (userDesignation || "").toLowerCase().includes("manager") || (userName || "").toLowerCase().includes("sumeetha");
+
+    const [teamMembers, setTeamMembers] = useState([]);
+    const [showReassignModal, setShowReassignModal] = useState(false);
+    const [selectedLeadForReassign, setSelectedLeadForReassign] = useState(null);
+    const [selectedAssignee, setSelectedAssignee] = useState("");
+    const [isReassigning, setIsReassigning] = useState(false);
+
+    // Filter team members based on role
+    const assignTargets = (() => {
+        if (!isManager) return [];
+        return teamMembers.filter(m => {
+            const desig = (m.designation || "").toUpperCase();
+            return (desig.includes("LEADER") || desig.includes("SPECIALIST")) && m.Access === true && m.status !== "Inactive";
+        });
+    })();
+
+    const handleReassign = async () => {
+        if (!selectedAssignee) {
+            toast.error("Please select a team member");
+            return;
+        }
+        setIsReassigning(true);
+        try {
+            const member = teamMembers.find(m => m._id === selectedAssignee);
+            await axios.post(`${API}/api/adv-leads/manual-bulk-assign`, {
+                leadIds: [selectedLeadForReassign._id],
+                assigneeId: member._id,
+                assigneeName: member.fullname,
+                assigneeRole: member.designation
+            });
+            toast.success("Lead reassigned successfully");
+            setShowReassignModal(false);
+            setSelectedLeadForReassign(null);
+            setSelectedAssignee("");
+            fetchMyLeads(currentPage);
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Reassignment failed");
+        } finally {
+            setIsReassigning(false);
+        }
+    };
 
     useEffect(() => {
         const fetchTemplates = async () => {
@@ -170,9 +222,31 @@ const AdvLeadsBook = () => {
                 console.error("Failed to fetch domains");
             }
         };
+        const fetchTeamMembers = async () => {
+            try {
+                const res = await axios.get(`${API}/getadvteam`);
+                setTeamMembers(res.data);
+            } catch (err) {
+                console.error("Failed to fetch team members");
+            }
+        };
+        const fetchUserProfile = async () => {
+            if (!userId) return;
+            try {
+                const res = await axios.get(`${API}/getadvteam`, { params: { advTeamId: userId } });
+                if (res.data) {
+                    setUserDesignation(res.data.designation || "");
+                    localStorage.setItem("advTeamDesignation", res.data.designation || "");
+                }
+            } catch (err) {
+                console.error("Failed to fetch user profile", err);
+            }
+        };
         fetchTemplates();
         fetchSMTPConfig();
         fetchDomains();
+        fetchTeamMembers();
+        fetchUserProfile();
     }, [userId]);
 
     // Consolidated lead fetching effect with debouncing for search
@@ -183,7 +257,7 @@ const AdvLeadsBook = () => {
         }, searchTerm ? 500 : 0); // Debounce search only if there's a search term
         
         return () => clearTimeout(timer);
-    }, [currentPage, selectedOutcome, sourceFilter, dateFilter, searchTerm]);
+    }, [currentPage, selectedOutcome, selectedDisposition, sourceFilter, dateFilter, searchTerm]);
 
     const handleSaveSMTP = async () => {
         if (!personalEmail || !appPassword) return toast.error("Both fields are required");
@@ -710,7 +784,7 @@ const AdvLeadsBook = () => {
                         <h1 style={styles.title}>Leads Portfolio</h1>
                         <div style={styles.subtitle}>
                             <span style={{ width: '10px', height: '10px', background: designTokens.colors.success, borderRadius: '50%', boxShadow: `0 0 12px ${designTokens.colors.success}50` }}></span>
-                            {userName} • <span style={{ color: designTokens.colors.primary, fontWeight: '700' }}>{designation}</span>
+                            {userName} • <span style={{ color: designTokens.colors.primary, fontWeight: '700' }}>{userDesignation}</span>
                         </div>
                     </div>
 
@@ -769,8 +843,18 @@ const AdvLeadsBook = () => {
                         {Object.keys(STAGES_AND_DISPOSITIONS).map(stage => (
                             <button
                                 key={stage}
-                                onClick={() => setSelectedOutcome(stage)}
-                                style={styles.filterBtn(selectedOutcome === stage, designTokens.colors.primary)}
+                                onMouseEnter={() => setHoveredStage(stage)}
+                                onMouseLeave={() => setHoveredStage(null)}
+                                onClick={() => {
+                                    if (selectedOutcome === stage) {
+                                        setSelectedOutcome(""); // Toggle off if clicking the same
+                                    } else {
+                                        setSelectedOutcome(stage);
+                                    }
+                                    setSelectedDisposition("");
+                                    setCurrentPage(1);
+                                }}
+                                style={styles.filterBtn(selectedOutcome === stage || hoveredStage === stage, designTokens.colors.primary)}
                             >
                                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>account_tree</span>
                                 <span>{stage} ({outcomeCounts[stage] || 0})</span>
@@ -804,11 +888,44 @@ const AdvLeadsBook = () => {
                                 placeholder="Search all leads (Name, Phone, Email)..." 
                                 value={searchTerm} 
                                 onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} 
-                                style={{ border: 'none', background: 'transparent', width: '100%', padding: '8px 0', fontSize: '13px', outline: 'none', color: designTokens.colors.textPrimary, fontWeight: '500' }}
                             />
                         </div>
                     </div>
                 </div>
+
+                {/* --- Disposition Sub-Filters --- */}
+                {/* Show disposition row only when a stage is CLICKED (selectedOutcome). Hover is purely visual. */}
+                {selectedOutcome && STAGES_AND_DISPOSITIONS[selectedOutcome] && (
+                    <div style={{
+                        display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '24px',
+                        padding: '12px 20px', background: 'white', borderRadius: '16px',
+                        border: `2px solid ${designTokens.colors.border}`, overflowX: 'auto',
+                        scrollbarWidth: 'none', msOverflowStyle: 'none',
+                        transition: 'all 0.2s ease'
+                    }} className="filter-row">
+                        <span style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginRight: '8px', whiteSpace: 'nowrap' }}>
+                            {selectedOutcome} ›
+                        </span>
+                        <button
+                            onClick={() => { setSelectedDisposition(""); setCurrentPage(1); }}
+                            style={styles.compactBtn(selectedDisposition === "", designTokens.colors.primary)}
+                        >
+                            All
+                        </button>
+                        {STAGES_AND_DISPOSITIONS[selectedOutcome].map(disp => (
+                            <button
+                                key={disp}
+                                onClick={() => { 
+                                    setSelectedDisposition(disp); 
+                                    setCurrentPage(1); 
+                                }}
+                                style={styles.compactBtn(selectedDisposition === disp, designTokens.colors.secondary)}
+                            >
+                                {disp}
+                            </button>
+                        ))}
+                    </div>
+                )}
 
                 {(userId === "69d4a881cb9305f0d5ecbeb2" || (userName && userName.toLowerCase().includes("sumeetha"))) && (
                     <div style={{ 
@@ -985,12 +1102,14 @@ const AdvLeadsBook = () => {
                                                             </div>
                                                             <div style={{ fontSize: '15px', fontWeight: '800', color: designTokens.colors.textPrimary, letterSpacing: '-0.01em' }}>{lead.opted_domain || 'General'}</div>
                                                         </div>
-                                                        <div style={{ minWidth: '110px' }}>
-                                                            <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>corporate_fare</span> Entity
+                                                        {!isManager && (
+                                                            <div style={{ minWidth: '110px' }}>
+                                                                <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                    <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>corporate_fare</span> Entity
+                                                                </div>
+                                                                <div style={{ fontSize: '14px', fontWeight: '700', color: designTokens.colors.textSecondary }}>{lead.company_name || 'Individual'}</div>
                                                             </div>
-                                                            <div style={{ fontSize: '14px', fontWeight: '700', color: designTokens.colors.textSecondary }}>{lead.company_name || 'Individual'}</div>
-                                                        </div>
+                                                        )}
                                                         <div style={{ minWidth: '130px' }}>
                                                             <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                                 <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>history_toggle_off</span> Created On
@@ -1017,6 +1136,14 @@ const AdvLeadsBook = () => {
                                                                     <source src={lead.last_recording_url} type="audio/mpeg" />
                                                                 </audio>
                                                             </div>
+                                                        )}
+                                                        {isManager && (
+                                                            <button 
+                                                                onClick={(e) => { e.stopPropagation(); setSelectedLeadForReassign(lead); setShowReassignModal(true); }}
+                                                                style={{ padding: '6px 12px', borderRadius: '8px', border: `1px solid ${designTokens.colors.primary}`, background: '#fff', color: designTokens.colors.primary, fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                                            >
+                                                                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>swap_horiz</span> Reassign
+                                                            </button>
                                                         )}
                                                         <StatusBadge lead={lead} />
                                                         <div className="material-symbols-outlined" style={{
@@ -1061,7 +1188,7 @@ const AdvLeadsBook = () => {
                                                                     { label: 'Workplace', value: lead.company_name, icon: 'business' },
                                                                     { label: 'Educational Background', value: lead.education_background, icon: 'school' },
                                                                     { label: 'Growth Readiness', value: lead.upskilling_ready, icon: 'trending_up' },
-                                                                ].map((item, i) => (
+                                                                ].filter(item => !isManager || item.label !== 'Workplace').map((item, i) => (
                                                                     item.value && (
                                                                         <div key={i} style={{ display: 'flex', gap: '12px' }}>
                                                                             <span className="material-symbols-outlined" style={{ fontSize: '18px', color: designTokens.colors.textSecondary, marginTop: '2px' }}>{item.icon}</span>
@@ -1619,6 +1746,48 @@ const AdvLeadsBook = () => {
                         </div>
                         <button onClick={handleSaveSMTP} style={{ width: '100%', padding: '15px', background: designTokens.colors.secondary, color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}>✅ Save Credentials</button>
                         <button onClick={() => setShowSMTPModal(false)} style={{ width: '100%', marginTop: '10px', padding: '10px', background: 'none', border: 'none', color: '#888', cursor: 'pointer' }}>Close</button>
+                    </div>
+                </div>
+            )}
+
+            {/* ─── Reassign Modal ─── */}
+            {showReassignModal && (
+                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2100 }}>
+                    <div style={{ backgroundColor: '#fff', padding: '32px', borderRadius: '24px', width: '480px' }}>
+                        <h3 style={{ margin: '0 0 20px 0' }}>🔄 Reassign Lead</h3>
+                        <p style={{ fontSize: '13px', color: '#666', marginBottom: '20px' }}>Select a team member to assign this lead to.</p>
+                        
+                        <div style={{ marginBottom: '25px' }}>
+                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', marginBottom: '6px' }}>Assign To</label>
+                            <select 
+                                value={selectedAssignee}
+                                onChange={(e) => setSelectedAssignee(e.target.value)}
+                                style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #ddd' }}
+                            >
+                                <option value="">Select Team Member</option>
+                                {assignTargets.map(m => (
+                                    <option key={m._id} value={m._id}>
+                                        {m.fullname} - {m.designation}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <button 
+                                onClick={handleReassign} 
+                                disabled={isReassigning} 
+                                style={{ flex: 2, padding: '15px', background: designTokens.colors.primary, color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}
+                            >
+                                {isReassigning ? 'Reassigning...' : '✅ Confirm Reassignment'}
+                            </button>
+                            <button 
+                                onClick={() => { setShowReassignModal(false); setSelectedAssignee(""); setSelectedLeadForReassign(null); }} 
+                                style={{ flex: 1, padding: '15px', background: '#f5f5f5', border: '1px solid #ddd', borderRadius: '12px', cursor: 'pointer' }}
+                            >
+                                Cancel
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

@@ -3,6 +3,15 @@ import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import API from "../API";
 
+const STAGES_AND_DISPOSITIONS = {
+    "Fresh Lead": ["New Lead", "Invalid Lead"],
+    "Attempting Contact": ["RNR", "Callback Requested", "No Response (Multi-touch)"],
+    "First Call Connected": ["In Conversation", "Demo Booked"],
+    "Demo Conducted": ["Decision Pending", "Negotiation Review", "Expected Payment Date"],
+    "Closed Won": ["Converted"],
+    "Closed Lost": ["Irrelevant Lead", "Not Interested", "Pricing Does Not Match", "No Response"]
+};
+
 const AdvTeamMyLeads = () => {
     const [leads, setLeads] = useState([]);
     const [teamMembers, setTeamMembers] = useState([]);
@@ -11,9 +20,11 @@ const AdvTeamMyLeads = () => {
     // stageFilter  → filters by SALES STAGE (Fresh Lead, Attempting Contact, etc.) via 'outcome' param
     // statusFilter → filters by ASSIGNMENT STATUS (assigned_to_leader, assigned_to_specialist) via 'status' param
     const [stageFilter, setStageFilter] = useState("Fresh Lead"); // Default: show uncalled leads
+    const [dispositionFilter, setDispositionFilter] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
     const [sourceFilter, setSourceFilter] = useState("");
     const [dateFilter, setDateFilter] = useState("");
+    const [outcomeCounts, setOutcomeCounts] = useState({});
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -46,9 +57,9 @@ const AdvTeamMyLeads = () => {
 
     const isLeader = designation.toLowerCase().includes("leader");
     const isSpecialist = designation.toLowerCase().includes("specialist") || designation.toLowerCase().includes("sales");
-    const isManager = !isLeader && !isSpecialist;
+    const isManager = designation.toLowerCase().includes("manager") || userName?.toLowerCase().includes("sumeetha");
     const apiRole = isSpecialist ? "SR Inside Sales Specialist" : isLeader ? "ADV Leader" : "ADV Manager";
-    const canAssign = !isSpecialist;
+    const canAssign = isManager;
 
     // Who can the current user assign to?
     const assignTargetLabel = isManager ? "Leader" : "SR Sales Specialist";
@@ -56,11 +67,17 @@ const AdvTeamMyLeads = () => {
     const fetchMyLeads = async (page = 1, overrideStage = stageFilter, overrideStatus = statusFilter) => {
         setLoading(true);
         try {
-            const params = { role: apiRole, userId, page, limit, strictlyOwned: true, source: sourceFilter };
-            // Stage filter  → uses 'outcome' backend param (checks stage/last_outcome fields)
-            if (overrideStage) params.outcome = overrideStage;
-            // Status filter → uses 'status' backend param (checks assignment status field)
-            if (overrideStatus) params.status = overrideStatus;
+            const params = { 
+                role: apiRole, 
+                userId, 
+                page, 
+                limit, 
+                strictlyOwned: true, 
+                source: sourceFilter,
+                stage: overrideStage,
+                disposition: dispositionFilter,
+                status: overrideStatus
+            };
             const res = await axios.get(`${API}/api/adv-leads/get-adv-leads`, { params });
             if (res.data && res.data.leads) {
                 setLeads(res.data.leads);
@@ -69,6 +86,8 @@ const AdvTeamMyLeads = () => {
                 setCurrentPage(res.data.currentPage);
             } else {
                 setLeads([]);
+                setTotalCount(0);
+                setTotalPages(1);
             }
         } catch (err) {
             toast.error("Failed to fetch leads");
@@ -78,12 +97,28 @@ const AdvTeamMyLeads = () => {
         }
     };
 
+    const fetchOutcomeCounts = async () => {
+        try {
+            const res = await axios.get(`${API}/api/adv-leads/get-outcome-counts`, {
+                params: { 
+                    role: apiRole, 
+                    userId, 
+                    strictlyOwned: true,
+                    source: sourceFilter
+                }
+            });
+            setOutcomeCounts(res.data);
+        } catch (err) {
+            console.error("Failed to fetch counts", err);
+        }
+    };
+
     const fetchTeamMembers = async () => {
         try {
             const res = await axios.get(`${API}/getadvteam`);
-            setTeamMembers(res.data || []);
+            setTeamMembers(res.data);
         } catch (err) {
-            console.error("Failed to fetch team members");
+            console.error("Failed to fetch team members", err);
         }
     };
 
@@ -111,6 +146,7 @@ const AdvTeamMyLeads = () => {
         if (userId) {
             fetchUserProfile();
             fetchTeamMembers();
+            fetchOutcomeCounts();
         }
     }, [userId]);
 
@@ -118,8 +154,9 @@ const AdvTeamMyLeads = () => {
     useEffect(() => {
         if (userId) {
             fetchMyLeads(currentPage, stageFilter, statusFilter);
+            fetchOutcomeCounts();
         }
-    }, [currentPage, stageFilter, statusFilter, sourceFilter, userId]);
+    }, [currentPage, stageFilter, dispositionFilter, statusFilter, sourceFilter, userId]);
 
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
@@ -453,12 +490,29 @@ const AdvTeamMyLeads = () => {
                     >
                         <option value="">📊 All Stages</option>
                         <option value="Fresh Lead">🆕 Fresh Lead (Not Called)</option>
-                        <option value="Attempting Contact">📞 Attempting Contact</option>
-                        <option value="First Call Connected">✅ First Call Connected</option>
-                        <option value="Demo Conducted">🎯 Demo Conducted</option>
-                        <option value="Closed Won">🏆 Closed Won</option>
-                        <option value="Closed Lost">❌ Closed Lost</option>
+                        <option value="Attempting Contact">📞 Attempting Contact ({outcomeCounts["Attempting Contact"] || 0})</option>
+                        <option value="First Call Connected">✅ First Call Connected ({outcomeCounts["First Call Connected"] || 0})</option>
+                        <option value="Demo Conducted">🎯 Demo Conducted ({outcomeCounts["Demo Conducted"] || 0})</option>
+                        <option value="Closed Won">🏆 Closed Won ({outcomeCounts["Closed Won"] || 0})</option>
+                        <option value="Closed Lost">❌ Closed Lost ({outcomeCounts["Closed Lost"] || 0})</option>
                     </select>
+
+                    {/* DISPOSITION sub-filter — dynamic based on selected stage */}
+                    {stageFilter && STAGES_AND_DISPOSITIONS[stageFilter] && (
+                        <select
+                            value={dispositionFilter}
+                            onChange={e => { setDispositionFilter(e.target.value); setCurrentPage(1); }}
+                            style={{ padding: '8px', border: '2px solid #722ed1', borderRadius: '6px', fontWeight: '600', color: dispositionFilter ? '#531dab' : '#333' }}
+                            title="Filter by Disposition"
+                        >
+                            <option value="">🎯 All Dispositions</option>
+                            {STAGES_AND_DISPOSITIONS[stageFilter].map(disp => (
+                                <option key={disp} value={disp}>
+                                    {disp}
+                                </option>
+                            ))}
+                        </select>
+                    )}
 
                     {/* ASSIGNMENT STATUS filter — filters by who currently holds the lead */}
                     <select

@@ -18,6 +18,15 @@ const AdvTeamMember = require("../models/CreateAdvTeam");
 const RemoteDialQueue = require("../models/RemoteDialQueue");
 const cloudinary = require("../middleware/cloudinary");
 const axios = require("axios");
+
+const STAGES_AND_DISPOSITIONS = {
+    "Fresh Lead": ["New Lead", "Invalid Lead"],
+    "Attempting Contact": ["RNR", "Callback Requested", "No Response (Multi-touch)"],
+    "First Call Connected": ["In Conversation", "Demo Booked"],
+    "Demo Conducted": ["Decision Pending", "Negotiation Review", "Expected Payment Date"],
+    "Closed Won": ["Converted"],
+    "Closed Lost": ["Irrelevant Lead", "Not Interested", "Pricing Does Not Match", "No Response"]
+};
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const AdvTemplate = require("../models/AdvTemplate");
@@ -321,7 +330,7 @@ async function fetchLeadFromMeta(leadId) {
 
 // GET: Fetch counts for all lead outcomes with team-based isolation
 router.get("/get-outcome-counts", async (req, res) => {
-    const { role, userId, strictlyOwned } = req.query;
+    const { role, userId, strictlyOwned, source, date, month, year } = req.query;
 
     try {
         let baseQuery = {};
@@ -370,6 +379,46 @@ router.get("/get-outcome-counts", async (req, res) => {
             }
         }
 
+        // Apply same filters as get-adv-leads to keep counts in sync
+        if (source) {
+            if (source === "Old CRM") {
+                baseQuery.source = { $in: ["csv_import", "Bulk CSV Import", "meta_ads_manual", "Old CRM", "csv-import"] };
+            } else {
+                baseQuery.source = source;
+            }
+        }
+
+        if (month && year) {
+            const m = parseInt(month) - 1;
+            const y = parseInt(year);
+            const startDate = new Date(y, m, 1);
+            const endDate = new Date(y, m + 1, 0, 23, 59, 59, 999);
+            baseQuery.created_at = { $gte: startDate, $lte: endDate };
+        }
+
+        if (date) {
+            const startOfDay = new Date(date);
+            startOfDay.setHours(0, 0, 0, 0);
+            const endOfDay = new Date(date);
+            endOfDay.setHours(23, 59, 59, 999);
+            const dateQuery = {
+                $or: [
+                    { assigned_at: { $gte: startOfDay, $lte: endOfDay } },
+                    { assigned_at: { $exists: false }, created_at: { $gte: startOfDay, $lte: endOfDay } }
+                ]
+            };
+            if (baseQuery.$or && baseQuery.$or.length > 0) {
+                const existingOr = baseQuery.$or;
+                delete baseQuery.$or;
+                baseQuery.$and = [
+                    { $or: existingOr },
+                    dateQuery
+                ];
+            } else {
+                baseQuery.$or = dateQuery.$or;
+            }
+        }
+
         const stages = [
             "Fresh Lead",
             "Attempting Contact",
@@ -378,19 +427,49 @@ router.get("/get-outcome-counts", async (req, res) => {
             "Closed Won",
             "Closed Lost"
         ];
-        const counts = {};
+        
+        const counts = {
+            total: await AdvLead.countDocuments(baseQuery),
+            dispositions: {}
+        };
 
-        // Count by stage
+        // 1. Get counts for main stages
         await Promise.all(stages.map(async (stage) => {
             counts[stage] = await AdvLead.countDocuments({ ...baseQuery, stage });
         }));
 
-        // Compatibility mapping for frontend (if needed)
+        // 2. Get counts for nested dispositions per stage (uses the 'disposition' schema field)
+        const nestedAggregation = await AdvLead.aggregate([
+            { $match: baseQuery },
+            { 
+                $group: { 
+                    _id: { stage: "$stage", disposition: "$disposition" }, 
+                    count: { $sum: 1 } 
+                } 
+            }
+        ]);
+
+        nestedAggregation.forEach(item => {
+            const { stage, disposition } = item._id;
+            if (stage) {
+                if (!counts.dispositions[stage]) {
+                    counts.dispositions[stage] = {};
+                    // Pre-fill with 0 for all expected dispositions
+                    if (STAGES_AND_DISPOSITIONS[stage]) {
+                        STAGES_AND_DISPOSITIONS[stage].forEach(d => counts.dispositions[stage][d] = 0);
+                    }
+                }
+                
+                const allowed = STAGES_AND_DISPOSITIONS[stage] || [];
+                if (disposition && allowed.includes(disposition)) {
+                    counts.dispositions[stage][disposition] += item.count;
+                }
+            }
+        });
+
+        // Compatibility mapping for frontend
         counts.fresh = counts["Fresh Lead"];
         counts.converted = counts["Closed Won"];
-        
-        // Total Owned
-        counts.total = await AdvLead.countDocuments(baseQuery);
 
         res.status(200).json(counts);
     } catch (error) {
@@ -466,6 +545,14 @@ router.post("/bulk-assign-to-manager", async (req, res) => {
             { $set: { owner_id: managerId, owner_name: managerName, manager_id: managerId, current_owner_role: "manager", status: "assigned_to_manager", assigned_at: new Date() } }
         );
 
+        // 🔔 Trigger Notification
+        await new AdvNotification({
+            userId: managerId,
+            title: "Bulk Leads Assigned",
+            message: `${freshLeads.length} new leads have been assigned to you by Admin.`,
+            type: "lead_assigned"
+        }).save();
+
         res.status(200).json({ success: true, assigned: freshLeads.length, message: `${freshLeads.length} lead(s) assigned to ${managerName}` });
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -518,6 +605,14 @@ router.post("/admin-bulk-assign", async (req, res) => {
             }
         );
 
+        // 🔔 Trigger Notification
+        await new AdvNotification({
+            userId: assigneeId,
+            title: "New Leads Assigned",
+            message: `Admin has assigned ${freshLeads.length} leads to you.`,
+            type: "lead_assigned"
+        }).save();
+
         res.status(200).json({
             success: true,
             assigned: freshLeads.length,
@@ -550,6 +645,14 @@ router.post("/bulk-assign-to-leader", async (req, res) => {
             { $set: { owner_id: leaderId, owner_name: leaderName, leader_id: leaderId, current_owner_role: "leader", status: "assigned_to_leader", assigned_at: new Date() } }
         );
 
+        // 🔔 Trigger Notification
+        await new AdvNotification({
+            userId: leaderId,
+            title: "Leads Received",
+            message: `Manager has transferred ${myLeads.length} leads to you.`,
+            type: "lead_assigned"
+        }).save();
+
         res.status(200).json({ success: true, assigned: myLeads.length, message: `${myLeads.length} lead(s) assigned to ${leaderName}` });
    
     } catch (error) {
@@ -578,6 +681,14 @@ router.post("/bulk-assign-to-specialist", async (req, res) => {
             { _id: { $in: leadIds } },
             { $set: { owner_id: specialistId, owner_name: specialistName, specialist_id: specialistId, current_owner_role: "sr_inside_sales_specialist", status: "assigned_to_specialist", assigned_at: new Date() } }
         );
+
+        // 🔔 Trigger Notification
+        await new AdvNotification({
+            userId: specialistId,
+            title: "New Task: Lead Assignment",
+            message: `Leader has assigned ${myLeads.length} leads for follow-up.`,
+            type: "lead_assigned"
+        }).save();
 
         res.status(200).json({ success: true, assigned: myLeads.length, message: `${myLeads.length} lead(s) assigned to ${specialistName}` });
     } catch (error) {
@@ -628,6 +739,14 @@ router.post("/manual-bulk-assign", async (req, res) => {
             { $set: updateData }
         );
 
+        // 🔔 Trigger Notification
+        await new AdvNotification({
+            userId: assigneeId,
+            title: "Manual Assignment",
+            message: `${leadIds.length} leads have been manually assigned to you.`,
+            type: "lead_assigned"
+        }).save();
+
         res.status(200).json({
             success: true,
             assigned: leadIds.length,
@@ -640,7 +759,12 @@ router.post("/manual-bulk-assign", async (req, res) => {
 
 // GET: Fetch leads based on role with team-based isolation
 router.get("/get-adv-leads", async (req, res) => {
-    const { role, userId, page = 1, limit = 25, outcome, strictlyOwned, date, status } = req.query;
+    // Single consolidated destructuring — no variable shadowing
+    const { 
+        role, userId, page = 1, limit = 25, 
+        outcome, strictlyOwned, date, status, stage, disposition,
+        search, source, month, year
+    } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
     try {
@@ -715,7 +839,6 @@ router.get("/get-adv-leads", async (req, res) => {
         }
         
         // 🔍 Server-side Search support (Checks Name, Phone, Email, Domain)
-        const { search, status, source } = req.query;
         if (search) {
             const searchRegex = new RegExp(search, "i");
             andConditions.push({
@@ -742,8 +865,6 @@ router.get("/get-adv-leads", async (req, res) => {
             }
         }
 
-        const { month, year, date, outcome } = req.query;
-        
         if (month && year) {
             const m = parseInt(month) - 1;
             const y = parseInt(year);
@@ -752,7 +873,17 @@ router.get("/get-adv-leads", async (req, res) => {
             andConditions.push({ created_at: { $gte: startDate, $lte: endDate } });
         }
         
-        if (outcome) {
+        if (stage) {
+            // Case-insensitive regex match for stage
+            andConditions.push({ stage: new RegExp(`^${stage}$`, "i") });
+        }
+
+        if (disposition) {
+            // Exact match for disposition
+            andConditions.push({ disposition: new RegExp(`^${disposition}$`, "i") });
+        }
+
+        if (outcome && !stage && !disposition) {
             const outcomeLower = outcome.toLowerCase();
             const outcomeWithUnderscore = outcomeLower.replace(/\s+/g, '_');
             
@@ -1701,6 +1832,14 @@ router.post("/leader-bulk-assign-specialist", async (req, res) => {
             }
         );
 
+        // 🔔 Trigger Notification
+        await new AdvNotification({
+            userId: specialistId,
+            title: "Team Lead Assignment",
+            message: `${myLeads.length} leads assigned to you by ${leader?.fullname || "Leader"}.`,
+            type: "lead_assigned"
+        }).save();
+
         res.status(200).json({
             success: true,
             message: `${myLeads.length} leads assigned to ${specialistName || specialist?.fullname}`
@@ -1718,6 +1857,19 @@ router.get("/get-my-notifications", async (req, res) => {
     try {
         const notifications = await AdvNotification.find({ userId, isRead: false }).sort({ createdAt: -1 });
         res.status(200).json({ success: true, notifications });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// GET: Fetch unread notification count
+router.get("/get-notification-count", async (req, res) => {
+    const { userId } = req.query;
+    if (!userId) return res.status(400).json({ message: "userId is required" });
+
+    try {
+        const count = await AdvNotification.countDocuments({ userId, isRead: false });
+        res.status(200).json({ success: true, count });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }

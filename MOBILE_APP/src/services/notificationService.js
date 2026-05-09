@@ -1,6 +1,7 @@
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
+import api from './api';
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -56,4 +57,35 @@ export const scheduleFollowUpNotification = async (leadName, followUpDate) => {
         return id;
     }
     return null;
+};
+
+// Remote Notification API calls
+export const getUnreadNotifications = async (userId) => {
+    try {
+        const res = await api.get('/api/adv-leads/get-my-notifications', { params: { userId } });
+        return res.data;
+    } catch (err) {
+        console.error('Error fetching notifications:', err);
+        return { success: false, notifications: [] };
+    }
+};
+
+export const getUnreadNotificationCount = async (userId) => {
+    try {
+        const res = await api.get('/api/adv-leads/get-notification-count', { params: { userId } });
+        return res.data;
+    } catch (err) {
+        console.error('Error fetching notification count:', err);
+        return { success: false, count: 0 };
+    }
+};
+
+export const markRead = async (notificationId) => {
+    try {
+        const res = await api.post('/api/adv-leads/mark-notification-read', { notificationId });
+        return res.data;
+    } catch (err) {
+        console.error('Error marking notification read:', err);
+        return { success: false };
+    }
 };

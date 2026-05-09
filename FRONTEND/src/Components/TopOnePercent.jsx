@@ -13,52 +13,52 @@ import {
 const features = [
   {
     Icon: MonitorPlay,
-    title: "Live Classes, Not Recordings",
-    sub: "Join scheduled live sessions with a peer cohort. Ask questions, get answers, and stay accountable throughout.",
+    title: "Live Cohort-Based Learning",
+    sub: "Participate in real-time labs and discussions. Build skills through interactive sessions with peers and experts.",
   },
   {
     Icon: CalendarDays,
-    title: "A Clear 24-Week Learning Plan",
-    sub: "Every week has a defined goal — from Python basics and statistics to ML models and deployment.",
+    title: "24-Week Intensive Career Program",
+    sub: "Follow a structured, week-by-week roadmap. Master everything from core fundamentals to advanced industry-standard tools.",
   },
   {
     Icon: BarChart3,
-    title: "4+ Projects on Real Datasets",
-    sub: "Build a portfolio using actual industry data, not toy examples from tutorials.",
+    title: "Real Industry Projects & Case Studies",
+    sub: "Build a job-ready portfolio. Work on actual business datasets from retail, finance, and healthcare sectors.",
   },
   {
     Icon: FileSearch,
-    title: "Resume, LinkedIn & Mock Interviews",
-    sub: "We review your resume, prep you for interviews, and connect you with companies that are actively hiring.",
+    title: "Premium Career Support Ecosystem",
+    sub: "Get noticed by top recruiters. We optimize your professional profiles and conduct technical mock interviews.",
   },
   {
     Icon: Building2,
-    title: "15 Company Referrals on Completion*",
-    sub: "Finish the program and get referred to at least 15 companies hiring for data analyst and data science roles.",
+    title: "15 Guaranteed Interview Opportunities*",
+    sub: "Fast-track your job search. Get direct access to 500+ hiring partners actively looking for talent.",
   },
   {
     Icon: BadgeCheck,
-    title: "Certifications Employers Recognise",
-    sub: "Receive program certificates and tool credentials that add real weight to your job applications.",
+    title: "Multiple Industry Certifications",
+    sub: "Validate your expertise. Earn industry-recognized credentials that demonstrate your proficiency to global employers.",
   },
   {
     Icon: UserCheck,
-    title: "Weekly 1:1 Sessions With a Working Mentor",
-    sub: "Your mentor currently works in a data role. Their feedback is practical, not from a textbook.",
+    title: "Expert Mentorship from Industry Leaders",
+    sub: "Get industry-specific guidance. Learn directly from professionals currently working as Lead Experts and Senior Architects.",
   },
   {
     Icon: TrendingUp,
-    title: "Built to Help You Switch Roles",
-    sub: "This is not a course to add to your CV. It is a structured program designed to help you move into data.",
+    title: "Built for Serious Career Growth",
+    sub: "Targeted at career success. Every module is engineered to bridge the gap between your current role and your target career.",
   },
 ];
 
 const TopOnePercent = ({ 
   accentColor = "#4DD0C3",
-  badge = "Why This Program",
-  title = "Become Part of the Top 1% Professionals",
-  titleHighlight = "Top 1% Professionals",
-  subtitle = "A live, 24-week program with real projects, 1:1 mentorship, and structured placement support — built for people who want an actual job in data.",
+  badge = "Career Acceleration",
+  title = "Built for Serious Career Growth",
+  titleHighlight = "Serious Career Growth",
+  subtitle = "A live, 24-week program with real projects, 1:1 mentorship, and structured placement support — built for people who want an actual transition in their career.",
   customFeatures = null
 }) => {
   const displayFeatures = customFeatures || features;

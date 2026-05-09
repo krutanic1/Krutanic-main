@@ -182,7 +182,6 @@ const ProductManagement = () => {
           transition: 0.4s; 
           display: flex; 
           align-items: center; 
-          box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
         }
         .sticky-bar.visible { transform: translateY(0); }
         .countdown-box { background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 6px; font-variant-numeric: tabular-nums; }

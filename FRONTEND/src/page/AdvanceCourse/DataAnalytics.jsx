@@ -224,52 +224,8 @@ const DataAnalytics = () => {
       </CourseHeroBanner>
 
       <TopOnePercent 
-        badge="CAREER TRANSITION READY"
-        title="Become Part of the Top 1% Professionals"
-        titleHighlight="Top 1% Professionals"
+        accentColor="#086F70"
         subtitle="Move beyond theory with a program designed for career transitions. Gain the technical depth and industry networking required to land high-growth analyst roles."
-        customFeatures={[
-          {
-            Icon: MonitorPlay,
-            title: "Live Classes, Not Recordings",
-            sub: "Participate in real-time labs and discussions. Build skills through interactive sessions with peers and experts.",
-          },
-          {
-            Icon: CalendarDays,
-            title: "A Clear 24-Week Learning Plan",
-            sub: "Follow a structured, week-by-week roadmap. Master everything from SQL and Python to Advanced Power BI.",
-          },
-          {
-            Icon: BarChart3,
-            title: "4+ Projects on Real Datasets",
-            sub: "Build a job-ready portfolio. Work on actual business datasets from retail, finance, and healthcare sectors.",
-          },
-          {
-            Icon: FileSearch,
-            title: "Resume, LinkedIn & Mock Interviews",
-            sub: "Get noticed by top recruiters. We optimize your professional profiles and conduct technical mock interviews.",
-          },
-          {
-            Icon: Building2,
-            title: "15 Company Referrals on Completion",
-            sub: "Fast-track your job search. Get direct access to 500+ hiring partners actively looking for data talent.",
-          },
-          {
-            Icon: BadgeCheck,
-            title: "Certifications Employers Recognise",
-            sub: "Validate your expertise. Earn industry-recognized credentials that demonstrate your data proficiency to global employers.",
-          },
-          {
-            Icon: UserCheck,
-            title: "Weekly 1:1 Sessions With a Working Mentor",
-            sub: "Get industry-specific guidance. Learn directly from professionals currently working as Lead Analysts and Data Scientists.",
-          },
-          {
-            Icon: TrendingUp,
-            title: "Built to Help You Switch Roles",
-            sub: "Targeted at career success. Every module is engineered to bridge the gap between your current role and your data career.",
-          },
-        ]}
       />
 
       {/* 2. AUDIENCE */}
