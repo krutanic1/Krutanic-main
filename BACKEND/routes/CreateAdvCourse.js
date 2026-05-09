@@ -6,11 +6,12 @@ const router = express.Router();
 
 // post request to post all the advance courses
 router.post("/createadvcourse", verifyAdminCookie, async (req, res) => {
-  const { title, description } = req.body;
+  const { title, description, show } = req.body;
   try {
     const course = new CreateAdvCourse({
       title,
       description,
+      show: show !== undefined ? show : true
     });
     await course.save();
 
@@ -35,7 +36,7 @@ router.get("/getadvcourses", async (req, res) => {
       // ✅ CACHE: Courses list (titles only, 5 min TTL)
       courses = await cachedQuery(
         'advcourses:titles',
-        () => CreateAdvCourse.find({}, '_id title').sort({ _id: -1 }).lean(),
+        () => CreateAdvCourse.find({}, '_id title show').sort({ _id: -1 }).lean(),
         300,  // 5 minutes TTL
         'static'
       );
@@ -69,12 +70,11 @@ router.delete("/deleteadvcourse/:_id", verifyAdminCookie, async (req, res) => {
 //put request to edit selected advance course by id
 router.put("/editadvcourse/:_id", verifyAdminCookie, async (req, res) => {
   const { _id } = req.params;
-  const { title, description } = req.body;
-
+  const { title, description, show } = req.body;
   try {
     const course = await CreateAdvCourse.findByIdAndUpdate(
       _id,
-      { title, description },
+      { title, description, show },
       { new: true }
     );
 

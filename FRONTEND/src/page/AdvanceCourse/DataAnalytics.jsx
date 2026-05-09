@@ -363,12 +363,12 @@ const DataAnalytics = () => {
            <div className="p-card" style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(300px, 1fr))', gap:'64px', padding:'48px', alignItems:'start'}}>
               <div>
                  <div style={{fontSize:'14px', fontWeight:800, color:'var(--da-primary)', textTransform:'uppercase', marginBottom:'20px'}}>Enrollment Fee</div>
-                 <div style={{fontSize:'64px', fontWeight:950, letterSpacing:'-3px', marginBottom:'16px'}}>₹65,999</div>
+                 <div style={{fontSize:'64px', fontWeight:950, letterSpacing:'-3px', marginBottom:'16px'}}>₹89,999</div>
                  <p style={{color:'var(--da-text-dim)', marginBottom:'40px', lineHeight:1.6}}>Inclusive of all training materials, live sessions, project reviews, and placement assistance.</p>
                  <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="Data Analytics" /><DownloadBrochureButton courseValue="Data Analytics" brochureLink={daBrochure} /></div>
               </div>
               <div style={{display:'grid', gap:'12px'}}>
-                 {[{l:"Booking Seat", v:"₹10,000"}, {l:"Phase 1 Due", v:"₹28,000"}, {l:"Phase 2 Balance", v:"₹27,999"}].map((row, i) => (
+                 {[{l:"Booking Seat", v:"₹10,000"}, {l:"Phase 1 Due", v:"₹39,999"}, {l:"Phase 2 Balance", v:"₹40,000"}].map((row, i) => (
                     <div key={i} style={{padding:'20px', background:'var(--da-bg)', borderRadius:'8px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                        <span style={{fontSize:'13px', fontWeight:700}}>{row.l}</span><span style={{fontWeight:800}}>{row.v}</span>
                     </div>

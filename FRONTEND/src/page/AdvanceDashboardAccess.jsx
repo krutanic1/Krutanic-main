@@ -445,9 +445,13 @@ const AdvanceDashboardAccess = () => {
               <option value="" disabled>
                 Select Opted Domain
               </option>
-              {course.map((item) => (
-                <option key={item._id || item.title} value={item.title}>{item.title}</option>
-              ))}
+              {course
+                .filter((item) => item.show === true)
+                .map((item) => (
+                  <option key={item._id || item.title} value={item.title}>
+                    {item.title}
+                  </option>
+                ))}
             </select>
 
             <select

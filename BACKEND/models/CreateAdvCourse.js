@@ -6,6 +6,7 @@ const CreateAdvCourseSchema = new mongoose.Schema(
         description: { type: String },
         modules: [],
         sessions: [],
+        show: { type: Boolean, default: true }
     },
     {
         timestamps: true,

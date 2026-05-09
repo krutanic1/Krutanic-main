@@ -10,6 +10,7 @@ const AddAdvCourse = () => {
   const [courses, setCourses] = useState([]);
   const [editingCourseId, setEditingCourseId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [show, setShow] = useState(true);
 
   const toggleVisibility = () => {
     setiscourseFormVisible((prevState) => !prevState);
@@ -19,6 +20,7 @@ const AddAdvCourse = () => {
     setTitle("");
     setDescription("");
     setEditingCourseId(null);
+    setShow(true);
     setiscourseFormVisible(false);
   };
 
@@ -27,6 +29,7 @@ const AddAdvCourse = () => {
     const newCourse = {
       title: title.trim(),
       description: description.trim(),
+      show: show
     };
     try {
       if (editingCourseId) {
@@ -88,6 +91,7 @@ const AddAdvCourse = () => {
       const courseToEdit = courses.find((course) => course._id === courseId);
       setTitle(courseToEdit.title);
       setDescription(courseToEdit.description);
+      setShow(courseToEdit.show !== undefined ? courseToEdit.show : true);
       setEditingCourseId(courseId);
       setiscourseFormVisible(true);
     }
@@ -117,7 +121,16 @@ const AddAdvCourse = () => {
               onChange={(e) => setDescription(e.target.value)}
               required
             />
-            <input className="cursor-pointer" type="submit" value="Add Advance Course" />
+            <div className="flex items-center gap-2 mb-4">
+              <input 
+                type="checkbox" 
+                id="showCourse" 
+                checked={show} 
+                onChange={(e) => setShow(e.target.checked)} 
+              />
+              <label htmlFor="showCourse">Show in Dashboard Access Form</label>
+            </div>
+            <input className="cursor-pointer" type="submit" value={editingCourseId ? "Update Advance Course" : "Add Advance Course"} />
           </form>
         </div>
       )}
@@ -143,6 +156,7 @@ const AddAdvCourse = () => {
               <tr>
                 <th>Sl No.</th>
                 <th>Course Title</th>
+                <th>Show/Hide</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -152,6 +166,7 @@ const AddAdvCourse = () => {
                   <tr key={index}>
                     <td>{index + 1}</td>
                     <td>{course.title}</td>
+                    <td>{course.show ? "Visible" : "Hidden"}</td>
                     <td>
                       <button>
                         <i className="fa fa-edit" onClick={() => handleEdit(course._id)}></i>
