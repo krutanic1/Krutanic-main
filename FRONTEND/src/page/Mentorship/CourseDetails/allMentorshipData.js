@@ -110,7 +110,8 @@ export const allMentorshipData = {
     ],
     projects: [
       { title: 'Capstone AI Project', desc: 'Build and deploy an end-to-end AI application with real data, APIs and monitoring.', tech: ['TensorFlow', 'Flask', 'Cloud'], impact: 'Portfolio-grade project demonstrating practical AI skills.' },
-      { title: 'Industry Case Study', desc: 'Solve a live business problem using AI techniques and present measurable outcomes.', tech: ['Pandas', 'Scikit-learn', 'Visualization'], impact: 'Real-world problem-solving experience.' }
+      { title: 'Industry Case Study', desc: 'Solve a live business problem using AI techniques and present measurable outcomes.', tech: ['Pandas', 'Scikit-learn', 'Visualization'], impact: 'Real-world problem-solving experience.' },
+      { title: 'Capstone Project', desc: 'A comprehensive AI system integrating multiple models, data pipelines, and production deployment with monitoring and optimization.', tech: ['PyTorch', 'TensorFlow', 'Cloud Deployment'], impact: 'Demonstrates end-to-end AI solution architecture and production-grade implementation expertise.' }
     ],
     milestones: [
       { label: 'Google Ratings', value: '4.8/5' },
@@ -256,6 +257,12 @@ export const allMentorshipData = {
         desc: 'A production-style ML application with ensemble methods, hyperparameter tuning, and deployment.',
         tech: ['Python', 'XGBoost', 'Flask/FastAPI'],
         impact: 'Portfolio-ready major project showcasing ML expertise and deployment readiness.'
+      },
+      {
+        title: 'Capstone Project',
+        desc: 'A comprehensive ML system integrating feature engineering, advanced algorithms, hyperparameter optimization, and production deployment with monitoring.',
+        tech: ['Scikit-learn', 'TensorFlow', 'Cloud Platform'],
+        impact: 'Demonstrates complete ML system design from data ingestion to model serving with real-world scalability and performance optimization.'
       }
     ],
     milestones: [
@@ -404,6 +411,12 @@ export const allMentorshipData = {
         desc: 'A production-style project covering network defense, incident response, and SIEM monitoring for a simulated environment.',
         tech: ['Splunk', 'Kali Linux', 'Wireshark'],
         impact: 'Portfolio-ready major project showcasing defensive and offensive security capabilities.'
+      },
+      {
+        title: 'Capstone Project',
+        desc: 'A comprehensive security infrastructure assessment and hardening project including threat modeling, penetration testing, incident response planning, and compliance validation.',
+        tech: ['Splunk', 'Metasploit', 'Cloud Security'],
+        impact: 'Demonstrates enterprise-level security architecture expertise, threat analysis capability, and readiness for security operations and compliance roles.'
       }
     ],
     milestones: [
@@ -552,6 +565,12 @@ export const allMentorshipData = {
         desc: 'A production-style analytics project with dashboards, reporting, and actionable stakeholder insights.',
         tech: ['Python', 'SQL', 'Tableau', 'Power BI'],
         impact: 'Portfolio-ready major project showcasing ownership, scalability, and delivery readiness.'
+      },
+      {
+        title: 'Capstone Project',
+        desc: 'A comprehensive data analytics platform with advanced dashboarding, predictive analytics, and business intelligence features integrated into a cohesive solution.',
+        tech: ['Python', 'Advanced SQL', 'Tableau/Power BI'],
+        impact: 'Demonstrates expertise in end-to-end data pipelines, advanced analytics, and stakeholder-ready insights delivery.'
       }
     ],
     milestones: [
@@ -852,6 +871,12 @@ export const allMentorshipData = {
         desc: 'A production-style design project with complete case study, testing, and stakeholder presentation.',
         tech: ['Adobe XD', 'Interaction Design', 'Usability Testing', 'Prototyping'],
         impact: 'Portfolio-ready major project showcasing design thinking, user empathy, and delivery excellence.'
+      },
+      {
+        title: 'Capstone Project',
+        desc: 'A comprehensive design system with complete visual language, component library, interaction guidelines, and multi-platform design specifications.',
+        tech: ['Figma', 'Design Systems', 'Adobe Suite'],
+        impact: 'Demonstrates mastery of scalable design practices, enterprise-grade design thinking, and professional design system architecture.'
       }
     ],
     milestones: [
@@ -1002,6 +1027,12 @@ export const allMentorshipData = {
         desc: 'Design and implement a production-ready CI/CD pipeline with infrastructure as code and monitoring.',
         tech: ['Kubernetes', 'Terraform', 'Prometheus', 'Grafana'],
         impact: 'A portfolio-ready project demonstrating end-to-end deployment and observability.'
+      },
+      {
+        title: 'Capstone Project',
+        desc: 'A comprehensive DevOps solution with complete infrastructure automation, multi-environment deployment, security hardening, and enterprise-grade monitoring and observability.',
+        tech: ['Kubernetes', 'Terraform', 'GitOps', 'Cloud Platform'],
+        impact: 'Demonstrates production-grade DevOps expertise, infrastructure architecture mastery, and enterprise deployment practices.'
       }
     ],
     milestones: [
@@ -1090,6 +1121,12 @@ export const allMentorshipData = {
         desc: 'Hands-on implementation of a live industry case study with measurable outcomes.',
         tech: ['Best Practices', 'Agile', 'Optimization'],
         impact: 'Mastered practical application of theoretical concepts.'
+      },
+      {
+        title: 'Capstone Project',
+        desc: 'A comprehensive project that integrates all technical and business skills, demonstrating production-ready implementation with real-world impact and scalability.',
+        tech: ['Full Stack Technologies', 'Cloud Deployment', 'Best Practices'],
+        impact: 'Showcases complete mastery of the domain with enterprise-grade execution and ability to lead complex projects.'
       }
     ],
     faqs: [

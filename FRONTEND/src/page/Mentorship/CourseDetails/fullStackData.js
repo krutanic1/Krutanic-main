@@ -154,6 +154,12 @@ export const fullStackData = {
       desc: "A real-time production-style application designed with role-based workflows, API integrations, and deployment.",
       tech: ["MERN Stack", "GitHub", "Postman", "Vercel"],
       impact: "Portfolio-ready major project showcasing ownership, scalability, and delivery readiness."
+    },
+    {
+      title: "Capstone Project",
+      desc: "A comprehensive end-to-end project integrating all learned concepts: advanced frontend interactions, robust backend APIs, database optimization, and cloud deployment.",
+      tech: ["MERN Stack", "Cloud Deployment", "CI/CD Pipeline"],
+      impact: "Demonstrates mastery of full-stack development with production-ready code, portfolio validation, and job-ready credentials."
     }
   ],
   milestones: [

@@ -154,6 +154,12 @@ export const androidAppData = {
       desc: "A production-style Android application with Firebase integration, advanced UI components, and comprehensive testing.",
       tech: ["Kotlin", "Firebase", "RecyclerView", "JUnit/Espresso"],
       impact: "Portfolio-ready major project showcasing ownership, scalability, and delivery readiness."
+    },
+    {
+      title: "Capstone Project",
+      desc: "A comprehensive end-to-end Android application integrating all learned concepts: complex UI/UX, backend services, data persistence, and advanced features like push notifications and analytics.",
+      tech: ["Kotlin", "Firebase", "Jetpack Components", "Cloud Integration"],
+      impact: "Demonstrates mastery of Android development with a production-ready app, portfolio validation, and app store publication readiness."
     }
   ],
   milestones: [
