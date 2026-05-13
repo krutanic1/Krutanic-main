@@ -6,6 +6,7 @@ const AdvFollowup = require("../models/AdvFollowup");
 const AdvUser = require("../models/AdvUser");
 const AdvEnroll = require("../models/AdvEnroll");
 const AdvTeamMember = require("../models/CreateAdvTeam");
+const mongoose = require("mongoose");
 
 const META_BLACKLIST = [
     "id", "created_time", "ad_id", "ad_name", "adset_id", "adset_name", 
@@ -54,10 +55,98 @@ router.get("/specialist-stats/:id", async (req, res) => {
     }
 });
 
+// GET: Daily Targets (Today's count and talk time vs Targets)
+router.get("/daily-targets/:id", async (req, res) => {
+    const specialistId = req.params.id;
+    const { date } = req.query;
+    try {
+        const filterDate = date ? new Date(date) : new Date();
+        filterDate.setHours(0, 0, 0, 0);
+        
+        const nextDate = new Date(filterDate);
+        nextDate.setDate(nextDate.getDate() + 1);
+
+        // Fetch user designation
+        const user = await AdvTeamMember.findById(specialistId);
+        if (!user) {
+            return res.status(404).json({ message: "Specialist not found" });
+        }
+
+        const designation = (user.designation || "").toLowerCase();
+        
+        // Define Targets
+        let targets = {
+            callTarget: 0,
+            talkTimeTarget: 0 // in seconds
+        };
+
+        if (designation.includes("sr inside sales specialist") || designation.includes("sr_inside_sales_specialist")) {
+            targets.callTarget = 150;
+            targets.talkTimeTarget = 5 * 3600; // 5 hours in seconds
+        } else if (designation.includes("inside sales specialist") || designation.includes("inside_sales_specialist")) {
+            targets.callTarget = 120;
+            targets.talkTimeTarget = 4 * 3600; // 4 hours in seconds
+        }
+
+        // Calculate stats for the selected date
+        const activities = await AdvCallActivity.find({
+            $or: [
+                { specialistId: mongoose.Types.ObjectId.isValid(specialistId) ? specialistId : undefined },
+                { specialistStringId: specialistId }
+            ],
+            actionType: "call",
+            createdAt: { $gte: filterDate, $lt: nextDate }
+        });
+
+        const todayCallCount = activities.length;
+        // Only count talk time for calls >= 5 minutes (300 seconds)
+        const todayTalkTime = activities.reduce((acc, curr) => {
+            const duration = curr.duration || 0;
+            return duration >= 300 ? acc + duration : acc;
+        }, 0);
+
+        // Global Leaderboard for the day (across all specialists)
+        const teamStats = await AdvCallActivity.aggregate([
+            {
+                $match: {
+                    actionType: "call",
+                    createdAt: { $gte: filterDate, $lt: nextDate }
+                }
+            },
+            {
+                $group: {
+                    _id: "$specialistName",
+                    callCount: { $sum: 1 },
+                    talkTime: {
+                        $sum: {
+                            $cond: [{ $gte: ["$duration", 300] }, "$duration", 0]
+                        }
+                    }
+                }
+            }
+        ]);
+
+        const leadingCaller = teamStats.length > 0 ? teamStats.reduce((prev, curr) => (prev.callCount > curr.callCount ? prev : curr)) : null;
+        const leadingSpeaker = teamStats.length > 0 ? teamStats.reduce((prev, curr) => (prev.talkTime > curr.talkTime ? prev : curr)) : null;
+
+        res.status(200).json({
+            callCount: todayCallCount,
+            talkTime: todayTalkTime,
+            targets,
+            leaderboard: {
+                leadingCaller: leadingCaller ? { name: leadingCaller._id, count: leadingCaller.callCount } : null,
+                leadingSpeaker: leadingSpeaker ? { name: leadingSpeaker._id, talkTime: leadingSpeaker.talkTime } : null
+            }
+        });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
 // Leader Dashboard (Specialist Productivity in Team)
 router.get("/leader-productivity/:teamId", async (req, res) => {
     try {
-        const teamLeads = await AdvUser.find({ team_id: req.params.teamId, role: "sr_inside_sales_specialist", status: "Active" });
+        const teamLeads = await AdvUser.find({ team_id: req.params.teamId, role: { $in: ["sr_inside_sales_specialist", "inside_sales_specialist"] }, status: "Active" });
 
         const stats = await Promise.all(teamLeads.map(async (user) => {
             const today = new Date();
@@ -188,7 +277,7 @@ router.get("/performance-alerts", async (req, res) => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        const specialists = await AdvUser.find({ role: "sr_inside_sales_specialist", status: "Active" });
+        const specialists = await AdvUser.find({ role: { $in: ["sr_inside_sales_specialist", "inside_sales_specialist"] }, status: "Active" });
         const inactiveSpecialists = [];
 
         for (const s of specialists) {

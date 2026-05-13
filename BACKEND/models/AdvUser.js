@@ -7,7 +7,7 @@ const AdvUserSchema = new mongoose.Schema({
     password: { type: String, required: true },
     role: {
         type: String,
-        enum: ["admin", "manager", "leader", "sr_inside_sales_specialist"],
+        enum: ["admin", "manager", "leader", "sr_inside_sales_specialist", "inside_sales_specialist"],
         required: true
     },
     manager_id: { type: mongoose.Schema.Types.ObjectId, ref: "AdvUser" },

@@ -16,7 +16,7 @@ const AdvTeamHome = () => {
   const userId = localStorage.getItem("advTeamId");
   const designation = localStorage.getItem("advTeamDesignation") || "";
   const isLeader = designation.toLowerCase().includes("leader");
-  const isSpecialist = designation.toLowerCase().includes("specialist") || designation.toLowerCase().includes("sales");
+  const isSpecialist = designation.toLowerCase().includes("specialist") || designation.toLowerCase().includes("sales") || designation.toLowerCase().includes("inside_sales");
   const apiRole = isSpecialist ? "SR Inside Sales Specialist" : isLeader ? "ADV Leader" : "ADV Manager";
 
   const today = new Date();

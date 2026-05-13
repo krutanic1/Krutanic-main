@@ -56,7 +56,7 @@ const AdvTeamMyLeads = () => {
     const userTeam = userProfile?.team || localStorage.getItem("advTeamTeam") || "";
 
     const isLeader = designation.toLowerCase().includes("leader");
-    const isSpecialist = designation.toLowerCase().includes("specialist") || designation.toLowerCase().includes("sales");
+    const isSpecialist = designation.toLowerCase().includes("specialist") || designation.toLowerCase().includes("sales") || designation.toLowerCase().includes("inside_sales");
     const isManager = designation.toLowerCase().includes("manager") || userName?.toLowerCase().includes("sumeetha");
     const apiRole = isSpecialist ? "SR Inside Sales Specialist" : isLeader ? "ADV Leader" : "ADV Manager";
     const canAssign = isManager;

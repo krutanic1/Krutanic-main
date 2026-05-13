@@ -152,6 +152,7 @@ const AdvCRMSetup = () => {
                                 <option value="manager">Manager</option>
                                 <option value="leader">Leader</option>
                                 <option value="sr_inside_sales_specialist">SR Inside Sales Specialist</option>
+                                <option value="inside_sales_specialist">Inside Sales Specialist</option>
                             </select>
                             <button type="submit" style={{ padding: '10px', background: '#1890ff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>
                                 Create User

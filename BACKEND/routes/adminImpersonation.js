@@ -52,7 +52,9 @@ router.post("/impersonate", verifyAdminCookie, async (req, res) => {
       case "ADV MANAGER":
       case "ADV LEADER":
       case "INSIDE SALES SPECIALIST":
+      case "INSIDE_SALES_SPECIALIST":
       case "SR INSIDE SALES SPECIALIST":
+      case "SR_INSIDE_SALES_SPECIALIST":
         user = await AdvTeam.findById(userId);
         if (user) {
           tokenPayload = { id: user._id, email: user.email };
@@ -102,7 +104,7 @@ router.post("/impersonate", verifyAdminCookie, async (req, res) => {
     } else if (normalizedRole.includes("OPERATION")) {
       responseData._id = user._id;
       responseData.operationName = user.fullname;
-    } else if (normalizedRole.includes("ADV_TEAM") || normalizedRole.startsWith("ADV") || normalizedRole.includes("INSIDE SALES")) {
+    } else if (normalizedRole.includes("ADV_TEAM") || normalizedRole.startsWith("ADV") || normalizedRole.includes("INSIDE SALES") || normalizedRole.includes("INSIDE_SALES")) {
       responseData.bdaId = user._id;
       responseData.bdaName = user.fullname;
       responseData.designation = user.designation;

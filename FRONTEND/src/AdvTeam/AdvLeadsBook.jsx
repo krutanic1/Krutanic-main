@@ -60,6 +60,8 @@ const AdvLeadsBook = () => {
     const [submitting, setSubmitting] = useState(null);
     const [formState, setFormState] = useState({});
     const [expandedLogId, setExpandedLogId] = useState(null);
+    const [callStartTime, setCallStartTime] = useState(null);
+    const [activeCallLeadId, setActiveCallLeadId] = useState(null);
     // Default to showing Fresh Lead on initial load instead of All Records
     const [selectedOutcome, setSelectedOutcome] = useState("Fresh Lead");
     const [selectedDisposition, setSelectedDisposition] = useState("");
@@ -409,11 +411,14 @@ const AdvLeadsBook = () => {
                 disposition: form.disposition,
                 summary: form.summary || "",
                 remark: form.remark || "",
+                duration: activeCallLeadId === lead._id && callStartTime ? Math.floor((Date.now() - callStartTime) / 1000) : 0,
                 demoScheduleDate: form.demoScheduleDate || undefined,
                 followUpDate: form.followUpDate || undefined,
                 expectedPaymentDate: form.expectedPaymentDate || undefined
             });
             toast.success("Activity logged successfully!");
+            setCallStartTime(null);
+            setActiveCallLeadId(null);
             setFormState(prev => ({ ...prev, [lead._id]: {} }));
             setCallHistory(prev => { const n = { ...prev }; delete n[lead._id]; return n; });
             fetchHistory(lead._id);
@@ -426,12 +431,14 @@ const AdvLeadsBook = () => {
         }
     };
 
-    const handleRemoteDial = (phoneNumber) => {
+    const handleRemoteDial = (phoneNumber, leadId) => {
         const dialNumber = String(phoneNumber || "").replace(/\D/g, "");
         if (!dialNumber) {
             toast.error("Phone number is not available.");
             return;
         }
+        setCallStartTime(Date.now());
+        setActiveCallLeadId(leadId);
         window.location.href = `tel:${dialNumber}`;
     };
 
@@ -1060,8 +1067,12 @@ const AdvLeadsBook = () => {
                                                                 </a>
                                                                 <button
                                                                     title="Dial"
-                                                                    onClick={(e) => { e.stopPropagation(); handleRemoteDial(lead.phone_number); }}
-                                                                    style={styles.iconBtn(designTokens.colors.warning, 'linear-gradient(135deg, #FF9966 0%, #FF5E62 100%)')}
+                                                                    onClick={(e) => { e.stopPropagation(); handleRemoteDial(lead.phone_number, lead._id); }}
+                                                                    style={{
+                                                                        ...styles.iconBtn(designTokens.colors.warning, 'linear-gradient(135deg, #FF9966 0%, #FF5E62 100%)'),
+                                                                        border: activeCallLeadId === lead._id ? '2px solid white' : 'none',
+                                                                        boxShadow: activeCallLeadId === lead._id ? `0 0 20px ${designTokens.colors.warning}` : styles.iconBtn(designTokens.colors.warning, 'linear-gradient(135deg, #FF9966 0%, #FF5E62 100%)').boxShadow
+                                                                    }}
                                                                     onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.1)'; e.currentTarget.style.boxShadow = '0 12px 20px rgba(255, 94, 98, 0.4)'; }}
                                                                     onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 8px 16px rgba(255, 94, 98, 0.25)'; }}
                                                                 >

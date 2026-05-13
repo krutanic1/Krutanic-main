@@ -337,10 +337,11 @@ const CreateAdvTeam = () => {
               <option value="ADV Manager">ADV Manager</option>
               <option value="ADV Leader">ADV Leader</option>
               <option value="SR Inside Sales Specialist">SR Inside Sales Specialist</option>
+              <option value="inside_sales_specialist">Inside Sales Specialist</option>
             </select>
 
-            {/* Show single team select for SR Inside Sales Specialist and ADV Leader */}
-            {(formData.designation === "SR Inside Sales Specialist" || formData.designation === "ADV Leader") && (
+            {/* Show single team select for SR Inside Sales Specialist, JR Sales Executive and ADV Leader */}
+            {(formData.designation === "SR Inside Sales Specialist" || formData.designation === "inside_sales_specialist" || formData.designation === "ADV Leader") && (
               <select name="team" id="team" value={formData.team} onChange={handleChange} required>
                 <option disabled value="">Select Team</option>
                 {getteamName.map((team, index) => { return (<option key={index} value={team.teamname}>{team.teamname}</option>) })}
