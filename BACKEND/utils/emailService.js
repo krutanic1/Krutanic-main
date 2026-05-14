@@ -149,4 +149,61 @@ const sendCollegeCredentialsEmail = async (collegeEmail, authorizerName, college
     }
 };
 
-module.exports = { sendWelcomeEmail, sendCredentialsEmail, sendCollegeCredentialsEmail };
+const sendEnrollmentFormWelcomeEmail = async (userEmail, userName, domainName) => {
+    try {
+        await transporter.sendMail({
+            from: `"Krutanic Admissions" <${senderEmail}>`,
+            to: userEmail,
+            subject: "Application Received: Krutanic Advanced Program",
+            html: `
+                <div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 40px; color: #1a1a1a; max-width: 600px; margin: auto; border: 1px solid #f0f0f0; border-radius: 12px; background: #ffffff;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h1 style="color: #4f46e5; margin: 0; font-size: 28px; letter-spacing: -0.5px; font-weight: 800;">KRUTANIC</h1>
+                        <p style="margin: 5px 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; color: #64748b;">Advanced Placement Acceleration</p>
+                    </div>
+
+                    <h2 style="color: #111827; font-size: 22px; font-weight: 700; margin-bottom: 20px;">Welcome to the Journey, ${userName}!</h2>
+                    
+                    <p style="font-size: 16px; line-height: 1.6; color: #4b5563;">Thank you for your interest in the <strong>Krutanic Advanced Program</strong> for <strong>${domainName}</strong>. We've successfully received your application.</p>
+                    
+                    <p style="font-size: 16px; line-height: 1.6; color: #4b5563;">Our admissions board is currently reviewing your profile. We focus on selecting candidates who demonstrate high ambition and readiness to execute. You can expect a call from our senior career advisor within the next 24 hours.</p>
+                    
+                    <div style="background: #f8faff; border: 1px solid #eef2ff; padding: 25px; margin: 30px 0; border-radius: 12px;">
+                        <p style="margin: 0 0 10px 0; font-size: 12px; text-transform: uppercase; color: #4f46e5; font-weight: 800; letter-spacing: 1px;">What's Next?</p>
+                        <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #374151; line-height: 1.8;">
+                            <li><strong>Profile Review:</strong> Our team evaluates your career goals and current skill gaps.</li>
+                            <li><strong>Advisory Call:</strong> A 1:1 consultation to discuss your career roadmap.</li>
+                            <li><strong>Skill Evaluation Test:</strong> An assessment to gauge your technical baseline and aptitude.</li>
+                            <li><strong>Cohort Selection:</strong> Final decision on your enrollment for the 2026 cohort.</li>
+                        </ul>
+                    </div>
+
+                    <div style="text-align: center; margin: 40px 0;">
+                        <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">In the meantime, feel free to explore our success stories.</p>
+                        <a href="https://krutanic.com" style="display: inline-block; background: #4f46e5; color: #fff; padding: 16px 32px; text-decoration: none; font-size: 14px; font-weight: 700; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);">Explore Success Stories</a>
+                    </div>
+                    
+                    <p style="font-size: 13px; color: #94a3b8; line-height: 1.6; text-align: center;">
+                        Our team is committed to your career growth. We look forward to speaking with you soon.
+                    </p>
+
+                    <div style="margin-top: 50px; border-top: 1px solid #f1f5f9; padding-top: 30px; text-align: center;">
+                        <p style="font-size: 11px; color: #cbd5e1; text-transform: uppercase; letter-spacing: 1px;">© 2024 Krutanic. All rights reserved.</p>
+                    </div>
+                </div>
+            `,
+        });
+        console.log(`Enrollment welcome email sent to ${userEmail}`);
+        return true;
+    } catch (error) {
+        console.error("Enrollment welcome email failed:", error);
+        return false;
+    }
+};
+
+module.exports = { 
+    sendWelcomeEmail, 
+    sendCredentialsEmail, 
+    sendCollegeCredentialsEmail,
+    sendEnrollmentFormWelcomeEmail 
+};

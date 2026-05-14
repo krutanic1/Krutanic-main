@@ -1598,3 +1598,44 @@
   color: #f87171;
   font-weight: 400;
 }
+
+/* Success Poster View */
+.adv-success-poster-view {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: black;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.adv-full-poster {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.adv-poster-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.adv-poster-close:hover {
+  background: rgba(255, 255, 255, 0.4);
+}

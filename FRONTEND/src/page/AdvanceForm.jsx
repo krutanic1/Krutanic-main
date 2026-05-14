@@ -581,16 +581,6 @@ const EnrollmentForm = () => {
                       'Looking for a Career Switch'
                     ]}
                   />
-                  <div className="adv-input-group">
-                    <label>Preferred Communication Language</label>
-                    <div className="adv-chips">
-                      {languageOptions.map(lang => (
-                        <span key={lang} className={`adv-chip ${formData.preferredLanguages.includes(lang) ? 'selected' : ''}`} onClick={() => handleLanguageToggle(lang)}>
-                          {lang}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
                   <button type="submit" className="adv-btn-primary adv-btn-full">Proceed to Career Goals</button>
                 </div>
               )}
@@ -650,7 +640,7 @@ const EnrollmentForm = () => {
                     onChange={handleInputChange} 
                     placeholder="Select a domain"
                     options={[
-                      'Software Engineering',
+                      'Data Science',
                       'Data Analytics & Business Intelligence',
                       'Digital Marketing & Growth Accelerator'
                     ]}
@@ -687,10 +677,9 @@ const EnrollmentForm = () => {
                     onChange={handleInputChange} 
                     placeholder="Select timeline"
                     options={[
-                      'Immediately (Within 7 days)',
-                      'In 2-4 weeks',
-                      'In 1-2 months',
-                      'Just exploring for now'
+                      'Immediately',
+                      'In 1 week',
+                      'In 1 month'
                     ]}
                   />
 
@@ -723,6 +712,17 @@ const EnrollmentForm = () => {
                             <span>{item.time}</span>
                           </div>
                         </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="adv-input-group">
+                    <label>PREFERRED COMMUNICATION LANGUAGE *</label>
+                    <div className="adv-chips">
+                      {languageOptions.map(lang => (
+                        <span key={lang} className={`adv-chip ${formData.preferredLanguages.includes(lang) ? 'selected' : ''}`} onClick={() => handleLanguageToggle(lang)}>
+                          {lang}
+                        </span>
                       ))}
                     </div>
                   </div>

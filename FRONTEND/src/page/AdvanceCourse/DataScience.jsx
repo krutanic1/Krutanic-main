@@ -385,12 +385,12 @@ const DataScience = () => {
            <div className="p-card grid-pricing" style={{display:'grid', gridTemplateColumns:'1fr 340px', gap:'64px', padding:'48px', alignItems:'start'}}>
               <div>
                  <div style={{fontSize:'14px', fontWeight:800, color:'var(--ds-primary)', textTransform:'uppercase', marginBottom:'20px'}}>Full Enrollment</div>
-                 <div style={{fontSize:'64px', fontWeight:950, letterSpacing:'-3px', marginBottom:'16px'}}>₹65,999</div>
+                 <div style={{fontSize:'64px', fontWeight:950, letterSpacing:'-3px', marginBottom:'16px'}}>₹85,000</div>
                  <p style={{color:'var(--ds-text-dim)', marginBottom:'40px'}}>Fee inclusive of all live training, dashboard access, and career support services.</p>
                  <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="Data Science" /><DownloadBrochureButton courseValue="Data Science" brochureLink={dsBrochure} label="Detailed Syllabus" /></div>
               </div>
               <div style={{display:'grid', gap:'12px'}}>
-                 {[{l:"Booking Amt", v:"₹10,000"}, {l:"Installment 1", v:"₹28,000"}, {l:"Installment 2", v:"₹27,999"}].map((row, i) => (
+                 {[{l:"Booking Amt", v:"₹15,000"}, {l:"Installment 1", v:"₹35,000"}, {l:"Installment 2", v:"₹35,000"}].map((row, i) => (
                     <div key={i} style={{padding:'20px', background:'var(--ds-bg)', borderRadius:'8px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                        <span style={{fontSize:'13px', fontWeight:700}}>{row.l}</span><span style={{fontWeight:800}}>{row.v}</span>
                     </div>

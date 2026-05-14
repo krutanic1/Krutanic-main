@@ -20,6 +20,7 @@ const AdvFormLead = require("../models/AdvFormLead");
 const RemoteDialQueue = require("../models/RemoteDialQueue");
 const cloudinary = require("../middleware/cloudinary");
 const axios = require("axios");
+const { sendEnrollmentFormWelcomeEmail } = require("../utils/emailService");
 
 const STAGES_AND_DISPOSITIONS = {
     "Fresh Lead": ["New Lead", "Invalid Lead"],
@@ -520,6 +521,16 @@ router.post("/submit-adv-form-lead", submissionLimiter, async (req, res) => {
     try {
         const newLead = new AdvFormLead(req.body);
         await newLead.save();
+
+        // 2. Send Welcome Email to the User
+        if (req.body.email) {
+            sendEnrollmentFormWelcomeEmail(
+                req.body.email, 
+                req.body.fullName || "Candidate", 
+                req.body.domain || "Advanced Program"
+            ).catch(err => console.error("Async email send failed:", err));
+        }
+
         res.status(201).json({ success: true, message: "Lead saved to database successfully" });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
