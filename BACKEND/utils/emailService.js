@@ -14,6 +14,22 @@ const transporter = nodemailer.createTransport({
     pool: true,
 });
 
+const admissionsTransporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT) || 587,
+    secure: false,
+    auth: {
+        user: process.env.ADMISSIONS_MAIL,
+        pass: process.env.ADMISSIONS_PASSWORD,
+    },
+    tls: {
+        rejectUnauthorized: false,
+    },
+    pool: true,
+});
+
+const admissionsSender = process.env.ADMISSIONS_MAIL;
+
 const senderEmail = process.env.DIKSHANNT_SMTP || process.env.SMTP_MAIL || process.env.EMAIL_USER;
 const adminBcc = process.env.DIKSHANNT_ADMIN_MAIL;
 
@@ -151,46 +167,195 @@ const sendCollegeCredentialsEmail = async (collegeEmail, authorizerName, college
 
 const sendEnrollmentFormWelcomeEmail = async (userEmail, userName, domainName) => {
     try {
-        await transporter.sendMail({
-            from: `"Krutanic Admissions" <${senderEmail}>`,
+        await admissionsTransporter.sendMail({
+            from: `"Krutanic Admissions" <${admissionsSender}>`,
             to: userEmail,
             subject: "Application Received: Krutanic Advanced Program",
             html: `
-                <div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 40px; color: #1a1a1a; max-width: 600px; margin: auto; border: 1px solid #f0f0f0; border-radius: 12px; background: #ffffff;">
-                    <div style="text-align: center; margin-bottom: 30px;">
-                        <h1 style="color: #4f46e5; margin: 0; font-size: 28px; letter-spacing: -0.5px; font-weight: 800;">KRUTANIC</h1>
-                        <p style="margin: 5px 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; color: #64748b;">Advanced Placement Acceleration</p>
-                    </div>
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Application Received</title>
+                    <style>
+                        body {
+                            margin: 0;
+                            padding: 0;
+                            background-color: #f4f7fa;
+                            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                            -webkit-font-smoothing: antialiased;
+                        }
+                        .wrapper {
+                            width: 100%;
+                            table-layout: fixed;
+                            background-color: #f4f7fa;
+                            padding-bottom: 40px;
+                        }
+                        .main {
+                            background-color: #ffffff;
+                            margin: 0 auto;
+                            width: 100%;
+                            max-width: 600px;
+                            border-spacing: 0;
+                            font-family: sans-serif;
+                            color: #1e293b;
+                            border-radius: 12px;
+                            overflow: hidden;
+                            margin-top: 40px;
+                            box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+                        }
+                        .header {
+                            padding: 40px 0;
+                            text-align: center;
+                            background-color: #ffffff;
+                        }
+                        .content {
+                            padding: 0 50px 40px 50px;
+                        }
+                        .greeting {
+                            font-size: 24px;
+                            font-weight: 700;
+                            margin-bottom: 16px;
+                            color: #0f172a;
+                            letter-spacing: -0.02em;
+                        }
+                        .text {
+                            font-size: 16px;
+                            line-height: 1.6;
+                            color: #475569;
+                            margin-bottom: 24px;
+                        }
+                        .steps-container {
+                            background-color: #f8fafc;
+                            border-radius: 16px;
+                            padding: 32px;
+                            margin-bottom: 32px;
+                            border: 1px solid #f1f5f9;
+                        }
+                        .steps-title {
+                            font-size: 12px;
+                            font-weight: 800;
+                            text-transform: uppercase;
+                            letter-spacing: 0.1em;
+                            color: #6366f1;
+                            margin-bottom: 24px;
+                        }
+                        .step {
+                            margin-bottom: 20px;
+                            display: flex;
+                        }
+                        .step-num {
+                            font-weight: 800;
+                            color: #6366f1;
+                            margin-right: 16px;
+                            font-size: 14px;
+                            min-width: 20px;
+                        }
+                        .step-body {
+                            font-size: 14px;
+                            line-height: 1.5;
+                            color: #334155;
+                        }
+                        .step-body strong {
+                            color: #0f172a;
+                        }
+                        .cta-wrapper {
+                            text-align: center;
+                            margin-top: 40px;
+                        }
+                        .button {
+                            background-color: #000000;
+                            color: #ffffff !important;
+                            padding: 16px 32px;
+                            text-decoration: none;
+                            border-radius: 8px;
+                            font-weight: 600;
+                            font-size: 15px;
+                            display: inline-block;
+                        }
+                        .footer {
+                            text-align: center;
+                            padding: 40px 20px;
+                        }
+                        .footer-text {
+                            font-size: 12px;
+                            color: #94a3b8;
+                            line-height: 1.8;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="wrapper">
+                        <table class="main" width="100%">
+                            <tr>
+                                <td class="header">
+                                    <div style="font-size: 22px; font-weight: 900; letter-spacing: 4px; color: #000; text-transform: uppercase;">KRUTANIC</div>
+                                    <div style="font-size: 9px; letter-spacing: 3px; color: #94a3b8; text-transform: uppercase; margin-top: 8px; font-weight: 600;">Advanced Placement Acceleration</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="content">
+                                    <h1 class="greeting">Welcome to the Journey, ${userName}.</h1>
+                                    <p class="text">
+                                        We have successfully received your application for the <strong>Krutanic Advanced Program</strong> in <strong>${domainName}</strong>. 
+                                        Our admissions committee is currently reviewing your credentials to assess the strategic alignment with our upcoming cohort.
+                                    </p>
+                                    <p class="text">
+                                        This program is engineered for professionals who demonstrate a high readiness to execute and a commitment to career excellence.
+                                    </p>
+                                    
+                                    <div class="steps-container">
+                                        <div class="steps-title">Operational Roadmap</div>
+                                        <div style="margin-bottom: 20px;">
+                                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                <tr>
+                                                    <td width="30" valign="top" style="font-weight: 800; color: #6366f1; font-size: 14px;">01</td>
+                                                    <td style="font-size: 14px; color: #334155; line-height: 1.5;">
+                                                        <strong>Profile Review:</strong> Our team is evaluating your career goals and current skill gaps to ensure a high-impact fit.
+                                                    </td>
+                                                </tr>
+                                                <tr><td height="15"></td></tr>
+                                                <tr>
+                                                    <td width="30" valign="top" style="font-weight: 800; color: #6366f1; font-size: 14px;">02</td>
+                                                    <td style="font-size: 14px; color: #334155; line-height: 1.5;">
+                                                        <strong>Advisory Call:</strong> A 1:1 consultation with a Senior Career Advisor to architect your professional roadmap.
+                                                    </td>
+                                                </tr>
+                                                <tr><td height="15"></td></tr>
+                                                <tr>
+                                                    <td width="30" valign="top" style="font-weight: 800; color: #6366f1; font-size: 14px;">03</td>
+                                                    <td style="font-size: 14px; color: #334155; line-height: 1.5;">
+                                                        <strong>Skill Evaluation:</strong> A technical baseline assessment to gauge your aptitude and execution readiness.
+                                                    </td>
+                                                </tr>
+                                                <tr><td height="15"></td></tr>
+                                                <tr>
+                                                    <td width="30" valign="top" style="font-weight: 800; color: #6366f1; font-size: 14px;">04</td>
+                                                    <td style="font-size: 14px; color: #334155; line-height: 1.5;">
+                                                        <strong>Cohort Selection:</strong> Final enrollment decision for the 2026 Advanced Placement session.
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
 
-                    <h2 style="color: #111827; font-size: 22px; font-weight: 700; margin-bottom: 20px;">Welcome to the Journey, ${userName}!</h2>
-                    
-                    <p style="font-size: 16px; line-height: 1.6; color: #4b5563;">Thank you for your interest in the <strong>Krutanic Advanced Program</strong> for <strong>${domainName}</strong>. We've successfully received your application.</p>
-                    
-                    <p style="font-size: 16px; line-height: 1.6; color: #4b5563;">Our admissions board is currently reviewing your profile. We focus on selecting candidates who demonstrate high ambition and readiness to execute. You can expect a call from our senior career advisor within the next 24 hours.</p>
-                    
-                    <div style="background: #f8faff; border: 1px solid #eef2ff; padding: 25px; margin: 30px 0; border-radius: 12px;">
-                        <p style="margin: 0 0 10px 0; font-size: 12px; text-transform: uppercase; color: #4f46e5; font-weight: 800; letter-spacing: 1px;">What's Next?</p>
-                        <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #374151; line-height: 1.8;">
-                            <li><strong>Profile Review:</strong> Our team evaluates your career goals and current skill gaps.</li>
-                            <li><strong>Advisory Call:</strong> A 1:1 consultation to discuss your career roadmap.</li>
-                            <li><strong>Skill Evaluation Test:</strong> An assessment to gauge your technical baseline and aptitude.</li>
-                            <li><strong>Cohort Selection:</strong> Final decision on your enrollment for the 2026 cohort.</li>
-                        </ul>
+                                    <div class="cta-wrapper">
+                                        <a href="https://krutanic.com" class="button">Explore Success Stories</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="footer">
+                            <p class="footer-text">
+                                &copy; 2024 Krutanic. Professional Excellence.<br>
+                                You are receiving this because you applied for the Krutanic Advanced Program.<br>
+                                <a href="https://krutanic.com" style="color: #6366f1; text-decoration: none;">Visit Website</a> &bull; <a href="#" style="color: #6366f1; text-decoration: none;">Privacy Policy</a>
+                            </p>
+                        </div>
                     </div>
-
-                    <div style="text-align: center; margin: 40px 0;">
-                        <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">In the meantime, feel free to explore our success stories.</p>
-                        <a href="https://krutanic.com" style="display: inline-block; background: #4f46e5; color: #fff; padding: 16px 32px; text-decoration: none; font-size: 14px; font-weight: 700; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);">Explore Success Stories</a>
-                    </div>
-                    
-                    <p style="font-size: 13px; color: #94a3b8; line-height: 1.6; text-align: center;">
-                        Our team is committed to your career growth. We look forward to speaking with you soon.
-                    </p>
-
-                    <div style="margin-top: 50px; border-top: 1px solid #f1f5f9; padding-top: 30px; text-align: center;">
-                        <p style="font-size: 11px; color: #cbd5e1; text-transform: uppercase; letter-spacing: 1px;">© 2024 Krutanic. All rights reserved.</p>
-                    </div>
-                </div>
+                </body>
+                </html>
             `,
         });
         console.log(`Enrollment welcome email sent to ${userEmail}`);

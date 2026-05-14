@@ -31,7 +31,7 @@ router.post("/otpsend", expressAsyncHandler(async (req, res) => {
                 <p style="font-size: 16px; color: #334155; margin-bottom: 20px;">Welcome back, <strong>${admin.fullname || "Administrator"}</strong>,</p>
                 <p style="font-size: 14px; color: #64748B;">Your dynamic access sequence for root authorization is:</p>
                 <div style="background: #F8FAFC; border: 1px dashed #CBD5E1; padding: 20px; border-radius: 12px; margin: 25px 0;">
-                  <p style="font-size: 36px; font-weight: bold; color: #0F172A; letter-spacing: 8px; margin: 0;">${otp}</p>
+                   <p style="font-size: 36px; font-weight: bold; color: #0F172A; letter-spacing: 8px; margin: 0;">${otp}</p>
                 </div>
                 <p style="font-size: 12px; color: #94A3B8;">This sequence is valid for <strong>10 minutes</strong>. Do not expose this credentials to unauthorized personnel.</p>
               </div>

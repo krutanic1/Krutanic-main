@@ -390,7 +390,7 @@ const DataScience = () => {
                  <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="Data Science" /><DownloadBrochureButton courseValue="Data Science" brochureLink={dsBrochure} label="Detailed Syllabus" /></div>
               </div>
               <div style={{display:'grid', gap:'12px'}}>
-                 {[{l:"Booking Amt", v:"₹15,000"}, {l:"Installment 1", v:"₹35,000"}, {l:"Installment 2", v:"₹35,000"}].map((row, i) => (
+                 {[{l:"Booking Amt", v:"₹10,000"}, {l:"Installment 1", v:"₹25,000"}, {l:"Installment 2", v:"₹25,000"}, {l:"Installment 3", v:"₹25,000"}].map((row, i) => (
                     <div key={i} style={{padding:'20px', background:'var(--ds-bg)', borderRadius:'8px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                        <span style={{fontSize:'13px', fontWeight:700}}>{row.l}</span><span style={{fontWeight:800}}>{row.v}</span>
                     </div>

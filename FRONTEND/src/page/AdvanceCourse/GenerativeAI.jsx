@@ -769,8 +769,9 @@ const GenerativeAI = () => {
             <div className="space-y-4">
               {[
                 { label: "Booking Amount", value: "₹10,000", desc: "Secure your seat in the upcoming cohort" },
-                { label: "Phase 1 Installment", value: "₹61,000", desc: "Pay before Core Training starts" },
-                { label: "Phase 2 Final", value: "₹50,999", desc: "Pay before Advanced Agentic modules" }
+                { label: "Installment 1", value: "₹37,333", desc: "Pay before Core Training starts" },
+                { label: "Installment 2", value: "₹37,333", desc: "Pay before Mid-term evaluation" },
+                { label: "Installment 3", value: "₹37,333", desc: "Pay before Advanced Agentic modules" }
               ].map((item, i) => (
                 <div key={i} className="p-6 rounded-2xl bg-white/5 border border-white/5 hover:border-purple-500/20 transition-all group">
                   <div className="flex justify-between items-center mb-1">

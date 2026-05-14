@@ -508,7 +508,7 @@ const AdvanceDashboardAccess = () => {
                 Choose a payment plan that works best for you:
               </option>
               <option value="Pay in Full (One-time payment)">Pay in Full (One-time payment)</option>
-              <option value="Pay in 3 Easy Installments">Pay in 3 Easy Installments</option>
+              <option value="Pay in 4 Easy Installments">Pay in 4 Easy Installments</option>
               <option value="No Cost EMI (0% Interest) Upto 9 Months">No Cost EMI (0% Interest) Upto 9 Months</option>
             </select> 
 

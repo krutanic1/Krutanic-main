@@ -368,7 +368,7 @@ const DataAnalytics = () => {
                  <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="Data Analytics" /><DownloadBrochureButton courseValue="Data Analytics" brochureLink={daBrochure} /></div>
               </div>
               <div style={{display:'grid', gap:'12px'}}>
-                 {[{l:"Booking Seat", v:"₹10,000"}, {l:"Phase 1 Due", v:"₹39,999"}, {l:"Phase 2 Balance", v:"₹40,000"}].map((row, i) => (
+                 {[{l:"Booking Seat", v:"₹10,000"}, {l:"Installment 1", v:"₹26,666"}, {l:"Installment 2", v:"₹26,666"}, {l:"Installment 3", v:"₹26,666"}].map((row, i) => (
                     <div key={i} style={{padding:'20px', background:'var(--da-bg)', borderRadius:'8px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                        <span style={{fontSize:'13px', fontWeight:700}}>{row.l}</span><span style={{fontWeight:800}}>{row.v}</span>
                     </div>

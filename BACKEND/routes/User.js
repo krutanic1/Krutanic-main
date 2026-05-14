@@ -277,18 +277,18 @@ router.post("/send-otp", async (req, res) => {
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
         <div style="background-color: #F15B29; color: #fff; text-align: center; padding: 20px;">
             <h1>Krutanic</h1>
-        </div>
+                    </div>
         <div style="padding: 20px; text-align: center;">
             <p style="font-size: 16px; color: #333;">Hello,Login to your account using the OTP below:</p>
             <p style="font-size: 14px; color: #555;">Your One-Time Password (OTP) for verification is:</p>
             <p style="font-size: 24px; font-weight: bold; color: #4a90e2; margin: 10px 0;">${otp}</p>
             <p style="font-size: 14px; color: #555;">This OTP is valid for <strong>10 minutes</strong>. Please do not share it with anyone.</p>
-        </div>
+                </div>
         <div style="text-align: center; font-size: 12px; color: #888; padding: 10px 0; border-top: 1px solid #ddd;">
             <p>If you didn’t request this OTP, please ignore this email or contact our IT team.</p>
             <p>&copy; 2024 Krutanic. All Rights Reserved.</p>
-        </div>
-    </div>
+                </div>
+            </div>
     `;
     user.otp = otp;
     user.otpExpires = otpExpires;

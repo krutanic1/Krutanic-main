@@ -374,7 +374,7 @@ const UIUXDesign = () => {
                   <div style={{display:'flex', gap:'16px'}}><ApplyNowButton courseValue="UIUX Design" /><DownloadBrochureButton courseValue="UIUX Design" brochureLink={uiuxBrochure} /></div>
               </div>
               <div style={{display:'grid', gap:'12px'}}>
-                 {[{l:"Seat Reservation", v:"₹10,000"}, {l:"Phase 1 Due", v:"₹28,000"}, {l:"Phase 2 Balance", v:"₹27,999"}].map((row, i) => (
+                 {[{l:"Seat Reservation", v:"₹10,000"}, {l:"Installment 1", v:"₹18,666"}, {l:"Installment 2", v:"₹18,666"}, {l:"Installment 3", v:"₹18,666"}].map((row, i) => (
                     <div key={i} style={{padding:'20px', background:'var(--ux-bg)', borderRadius:'8px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                        <span style={{fontSize:'13px', fontWeight:700}}>{row.l}</span><span style={{fontWeight:800}}>{row.v}</span>
                     </div>
