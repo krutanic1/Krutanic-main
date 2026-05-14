@@ -12,9 +12,11 @@ const AdvLead = require("../models/AdvLead");
 const AdvCallActivity = require("../models/AdvCallActivity");
 const AdvFollowup = require("../models/AdvFollowup");
 const AdvTeamStructure = require("../models/AdvTeamStructure");
+const rateLimit = require("express-rate-limit");
 const AdvUser = require("../models/AdvUser");
 const AdvNotification = require("../models/AdvNotification");
 const AdvTeamMember = require("../models/CreateAdvTeam");
+const AdvFormLead = require("../models/AdvFormLead");
 const RemoteDialQueue = require("../models/RemoteDialQueue");
 const cloudinary = require("../middleware/cloudinary");
 const axios = require("axios");
@@ -339,7 +341,17 @@ router.get("/get-outcome-counts", async (req, res) => {
         if (roleNorm === "admin") {
             // Admin sees all
         } else if (strictlyOwned === "true") {
-            baseQuery = { $or: [{ owner_id: userId }, { current_owner_id: userId }] };
+            if (roleNorm === "admin" || roleNorm.includes("manager") || roleNorm.includes("leader")) {
+                baseQuery = {
+                    $or: [
+                        { owner_id: userId },
+                        { current_owner_id: userId },
+                        { status: "fresh" }
+                    ]
+                };
+            } else {
+                baseQuery = { $or: [{ owner_id: userId }, { current_owner_id: userId }] };
+            }
         } else if (roleNorm.includes("manager")) {
             const teams = await AdvTeamStructure.find({ manager_id: userId });
             const teamIds = teams.map(t => t._id);
@@ -485,6 +497,113 @@ router.post("/add-adv-lead", async (req, res) => {
         res.status(201).json({ success: true, lead });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
+    }
+});
+
+// POST: Save lead from the Advanced Enrollment Form (Custom Schema)
+// Anti-bot Rate Limiter: Max 5 submissions per 30 minutes from one IP
+const submissionLimiter = rateLimit({
+    windowMs: 30 * 60 * 1000, // 30 minutes
+    max: 5,
+    message: { message: "Too many submissions. Please try again later." },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+router.post("/submit-adv-form-lead", submissionLimiter, async (req, res) => {
+    // 1. Honeypot check: Bots usually fill all hidden fields
+    if (req.body.website && req.body.website.length > 0) {
+        console.warn("Honeypot triggered! Possible bot submission.");
+        return res.status(200).json({ success: true, message: "Submission processed" }); // Silent fail to confuse bots
+    }
+
+    try {
+        const newLead = new AdvFormLead(req.body);
+        await newLead.save();
+        res.status(201).json({ success: true, message: "Lead saved to database successfully" });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+});
+
+// POST: Fetch all Advanced Form Leads with pagination
+router.get("/get-adv-form-leads", async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 30;
+        const skip = (page - 1) * limit;
+
+        const total = await AdvFormLead.countDocuments();
+        const leads = await AdvFormLead.find()
+            .sort({ created_at: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        res.status(200).json({
+            success: true,
+            total,
+            page,
+            totalPages: Math.ceil(total / limit),
+            leads
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// POST: Add a specific AdvFormLead to the CRM (AdvLead collection)
+router.post("/add-form-lead-to-crm", async (req, res) => {
+    const { leadId } = req.body;
+    if (!leadId) return res.status(400).json({ success: false, message: "leadId is required" });
+
+    try {
+        const formLead = await AdvFormLead.findById(leadId);
+        if (!formLead) {
+            return res.status(404).json({ success: false, message: "Form lead not found" });
+        }
+
+        // Check for duplicates in AdvLead
+        const existingLead = await AdvLead.findOne({
+            $or: [
+                { email: formLead.email },
+                { phone_number: formLead.contactNumber }
+            ]
+        });
+
+        if (existingLead) {
+            await AdvFormLead.findByIdAndUpdate(leadId, { isAddedToCRM: true });
+            return res.status(200).json({ success: true, message: "This lead was already in the CRM. Marked as added." });
+        }
+
+        const newLead = new AdvLead({
+            full_name: formLead.fullName,
+            email: formLead.email,
+            phone_number: formLead.contactNumber,
+            opted_domain: formLead.domain,
+            source: formLead.source || "Krutanic Advance Form",
+            status: "fresh",
+            stage: "Fresh Lead",
+            disposition: "New Lead",
+            extra_fields: {
+                whatsappNumber: formLead.whatsappNumber,
+                currentSituation: formLead.currentSituation,
+                primaryGoal: formLead.primaryGoal,
+                currentChallenge: formLead.currentChallenge,
+                interestReason: formLead.interestReason,
+                commitmentLevel: formLead.commitmentLevel,
+                readyToInvest: formLead.readyToInvest,
+                startTime: formLead.startTime,
+                importanceReason: formLead.importanceReason,
+                connectTime: formLead.connectTime,
+                paidAgreement: formLead.paidAgreement
+            }
+        });
+
+        await newLead.save();
+        await AdvFormLead.findByIdAndUpdate(leadId, { isAddedToCRM: true });
+        res.status(201).json({ success: true, message: "Lead added to CRM successfully!", lead: newLead });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
     }
 });
 
@@ -774,13 +893,24 @@ router.get("/get-adv-leads", async (req, res) => {
         if (roleNorm === "admin") {
             // Admin sees all
         } else if (strictlyOwned === "true") {
-            // Strictly owned: only leads where user is the direct owner
-            baseQuery = {
-                $or: [
-                    { owner_id: userId },
-                    { current_owner_id: userId }
-                ]
-            };
+            // Strictly owned + Unassigned (for fresh pool access)
+            const roleNorm = (role || "").toLowerCase();
+            if (roleNorm === "admin" || roleNorm.includes("manager") || roleNorm.includes("leader")) {
+                baseQuery = {
+                    $or: [
+                        { owner_id: userId },
+                        { current_owner_id: userId },
+                        { status: "fresh" }
+                    ]
+                };
+            } else {
+                baseQuery = {
+                    $or: [
+                        { owner_id: userId },
+                        { current_owner_id: userId }
+                    ]
+                };
+            }
         } else if (roleNorm.includes("manager")) {
             const teams = await AdvTeamStructure.find({ manager_id: userId });
             const teamIds = teams.map(t => t._id);
