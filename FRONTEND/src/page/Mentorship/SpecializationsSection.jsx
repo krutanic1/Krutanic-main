@@ -21,10 +21,10 @@ const SpecializationsSection = () => {
     { title: "Machine Learning", domain: "Computer Science", rating: 4.9, students: "2,140+", duration: "3 Months", link: "/mentorship/machine-learning", desc: "Train models to learn from data and make predictions." },
     
     // Management
-    { title: "Digital Marketing", domain: "Management", rating: 4.8, students: "2,257+", duration: "4 Months", link: "/mentorship/digital-marketing", desc: "Master SEO, SEM, and social media marketing strategies." },
-    { title: "Business Analytics", domain: "Management", rating: 4.7, students: "1,940+", duration: "5 Months", link: "/mentorship/business-analytics", desc: "Bridging the gap between business and data for better decisions." },
-    { title: "Finance", domain: "Management", rating: 4.6, students: "1,120+", duration: "4 Months", link: "/mentorship/finance", desc: "Learn financial planning, investment, and analysis." },
-    { title: "Human Resource", domain: "Management", rating: 4.7, students: "950+", duration: "4 Months", link: "/mentorship/human-resource", desc: "Master recruitment, talent management, and HR operations." },
+    { title: "Digital Marketing", domain: "Management", rating: 4.8, students: "2,257+", duration: "3 Months", link: "/mentorship/digital-marketing", desc: "Master SEO, SEM, and social media marketing strategies." },
+    { title: "Business Analytics", domain: "Management", rating: 4.7, students: "1,940+", duration: "3 Months", link: "/mentorship/business-analytics", desc: "Bridging the gap between business and data for better decisions." },
+    { title: "Finance", domain: "Management", rating: 4.6, students: "1,120+", duration: "3 Months", link: "/mentorship/finance", desc: "Learn financial planning, investment, and analysis." },
+    { title: "Human Resource", domain: "Management", rating: 4.7, students: "950+", duration: "3 Months", link: "/mentorship/human-resource", desc: "Master recruitment, talent management, and HR operations." },
     { title: "Stock Marketing", domain: "Management", rating: 4.8, students: "3,140+", duration: "3 Months", link: "/mentorship/stock-marketing", desc: "Learn trading, investment strategies, and market analysis." },
 
     // Electronics/Electrical
@@ -33,8 +33,8 @@ const SpecializationsSection = () => {
     { title: "IOT & Robotics", domain: "Electronics/Electrical", rating: 4.8, students: "1,450+", duration: "3 Months", link: "/mentorship/iot-robotics", desc: "Connect devices and build intelligent robotic systems." },
 
     // Mechanical
-    { title: "Auto CAD", domain: "Mechanical", rating: 4.8, students: "1,340+", duration: "4 Months", link: "/mentorship/auto-cad", desc: "Master precision engineering design and manufacturing tools." },
-    { title: "Graphics Design", domain: "Mechanical", rating: 4.7, students: "2,100+", duration: "4 Months", link: "/mentorship/graphics-design", desc: "Learn visual storytelling and digital art creation." },
+    { title: "Auto CAD", domain: "Mechanical", rating: 4.8, students: "1,340+", duration: "3 Months", link: "/mentorship/auto-cad", desc: "Master precision engineering design and manufacturing tools." },
+    { title: "Graphics Design", domain: "Mechanical", rating: 4.7, students: "2,100+", duration: "3 Months", link: "/mentorship/graphics-design", desc: "Learn visual storytelling and digital art creation." },
   ];
 
   const filteredCourses = courses.filter(c => c.domain === activeTab);
