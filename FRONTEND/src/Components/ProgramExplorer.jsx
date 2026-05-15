@@ -114,7 +114,7 @@ const ProgramExplorer = ({ columnsData }) => {
                       <div className="pt-5 border-t border-slate-50 space-y-3 mt-auto">
                         <div className="flex items-center justify-between">
                           <span className="text-slate-400 text-[12px] font-medium uppercase tracking-wider">Duration</span>
-                          <span className="text-slate-800 font-bold text-[13px]">{program.duration || "3 Months"}</span>
+                          <span className="text-slate-800 font-bold text-[13px]">{program.duration || "2/3 Months"}</span>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-slate-400 text-[12px] font-medium uppercase tracking-wider">Starting</span>
