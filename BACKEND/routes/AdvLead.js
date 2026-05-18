@@ -598,8 +598,11 @@ router.post("/add-form-lead-to-crm", async (req, res) => {
             extra_fields: {
                 whatsappNumber: formLead.whatsappNumber,
                 currentSituation: formLead.currentSituation,
+                what_best_describes_your_current_situation: formLead.currentSituation,
                 primaryGoal: formLead.primaryGoal,
+                what_is_your_primary_goal_right_now: formLead.primaryGoal,
                 currentChallenge: formLead.currentChallenge,
+                what_is_your_biggest_career_challenge: formLead.currentChallenge,
                 interestReason: formLead.interestReason,
                 commitmentLevel: formLead.commitmentLevel,
                 readyToInvest: formLead.readyToInvest,

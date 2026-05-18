@@ -5,6 +5,14 @@ import toast, { Toaster } from "react-hot-toast";
 
 const AdvLeadManagement = () => {
 
+    const getLeadField = (lead, keys) => {
+        for (const key of keys) {
+            const value = lead?.extra_fields?.[key] ?? lead?.[key];
+            if (value) return value;
+        }
+        return "";
+    };
+
     const [leads, setLeads] = useState([]);
     const [loading, setLoading] = useState(true);
     const [managers, setManagers] = useState([]);
@@ -697,17 +705,17 @@ const AdvLeadManagement = () => {
                                                         <td style={{ fontSize: '12px', color: '#666' }}>{lead.source || '—'}</td>
                                                         <td style={{ fontSize: '13px' }}>{lead.opted_domain || '—'}</td>
                                                         <td style={{ fontSize: '12px', color: '#555' }}>{lead.education_background || '—'}</td>
-                                                        <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={lead.extra_fields?.['what_best_describes_your_current_situation?']}>
-                                                            {lead.extra_fields?.['what_best_describes_your_current_situation?'] || '—'}
+                                                        <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={getLeadField(lead, ['currentSituation', 'what_best_describes_your_current_situation?', 'what_best_describes_your_current_situation'])}>
+                                                            {getLeadField(lead, ['currentSituation', 'what_best_describes_your_current_situation?', 'what_best_describes_your_current_situation']) || '—'}
                                                         </td>
-                                                        <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={lead.extra_fields?.['what_is_your_primary_goal_right_now?']}>
-                                                            {lead.extra_fields?.['what_is_your_primary_goal_right_now?'] || '—'}
+                                                        <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={getLeadField(lead, ['primaryGoal', 'what_is_your_primary_goal_right_now?', 'what_is_your_primary_goal_right_now'])}>
+                                                            {getLeadField(lead, ['primaryGoal', 'what_is_your_primary_goal_right_now?', 'what_is_your_primary_goal_right_now']) || '—'}
                                                         </td>
-                                                        <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={lead.extra_fields?.['what_is_your_biggest_career_challenge?']}>
-                                                            {lead.extra_fields?.['what_is_your_biggest_career_challenge?'] || '—'}
+                                                        <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={getLeadField(lead, ['currentChallenge', 'what_is_your_biggest_career_challenge?', 'what_is_your_biggest_career_challenge'])}>
+                                                            {getLeadField(lead, ['currentChallenge', 'what_is_your_biggest_career_challenge?', 'what_is_your_biggest_career_challenge']) || '—'}
                                                         </td>
-                                                        <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={lead.upskilling_ready || lead.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+internship+100%_placement_support?'] || lead.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?']}>
-                                                            {lead.upskilling_ready || lead.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+internship+100%_placement_support?'] || lead.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?'] || '—'}
+                                                        <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={getLeadField(lead, ['readyToInvest', 'upskilling_ready', 'are_you_willing_to_invest_in_a_program_that_provides_training_+internship+100%_placement_support?', 'are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?'])}>
+                                                            {getLeadField(lead, ['readyToInvest', 'upskilling_ready', 'are_you_willing_to_invest_in_a_program_that_provides_training_+internship+100%_placement_support?', 'are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?']) || '—'}
                                                         </td>
                                                         <td style={{ fontSize: '12px', color: '#555' }}>{lead.current_status || '—'}</td>
                                                         <td>
@@ -1184,10 +1192,11 @@ const AdvLeadManagement = () => {
                                 <h3 style={{ marginTop: 0, marginBottom: '16px', fontSize: '14px', fontWeight: '800', color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>🚀 Candidate Screening Questionnaire</h3>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                                     {[
-                                        { label: 'Current Situation', value: selectedLeadForDetails.extra_fields?.['what_best_describes_your_current_situation?'] },
-                                        { label: 'Primary Goal', value: selectedLeadForDetails.extra_fields?.['what_is_your_primary_goal_right_now?'] },
-                                        { label: 'Career Challenge', value: selectedLeadForDetails.extra_fields?.['what_is_your_biggest_career_challenge?'] },
-                                        { label: 'Investment Readiness', value: selectedLeadForDetails.upskilling_ready || selectedLeadForDetails.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+internship+100%_placement_support?'] || selectedLeadForDetails.extra_fields?.['are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?'] },
+                                        { label: 'Current Situation', value: getLeadField(selectedLeadForDetails, ['currentSituation', 'what_best_describes_your_current_situation?', 'what_best_describes_your_current_situation']) },
+                                        { label: 'Primary Goal', value: getLeadField(selectedLeadForDetails, ['primaryGoal', 'what_is_your_primary_goal_right_now?', 'what_is_your_primary_goal_right_now']) },
+                                        { label: 'Career Challenge', value: getLeadField(selectedLeadForDetails, ['currentChallenge', 'what_is_your_biggest_career_challenge?', 'what_is_your_biggest_career_challenge']) },
+                                        { label: 'Interest Reason', value: getLeadField(selectedLeadForDetails, ['interestReason']) },
+                                        { label: 'Investment Readiness', value: getLeadField(selectedLeadForDetails, ['readyToInvest', 'upskilling_ready', 'are_you_willing_to_invest_in_a_program_that_provides_training_+internship+100%_placement_support?', 'are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?']) },
                                     ].map((item, i) => (
                                         item.value && (
                                             <div key={i} style={{ padding: '12px', background: '#f0f9ff', borderRadius: '10px', border: '1px solid #bae6fd' }}>
