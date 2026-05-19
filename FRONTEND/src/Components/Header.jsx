@@ -39,22 +39,22 @@ const Header = () => {
             <img src={logo3} alt="Krutanic" className="h-10 w-auto" />
           </Link>
 
-          <nav className="hidden items-center gap-1 xl:flex">
+          <nav className="hidden items-center gap-0.5 xl:gap-1 lg:flex">
             {topNav.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
-                className={`rounded-lg px-3 py-2 text-sm font-medium uppercase tracking-[0.02em] transition-colors hover:bg-[#f2f4ff] ${location.pathname.toLowerCase() === item.to.toLowerCase() ? "text-[#f15b29]" : "text-[#1f2937]"}`}
+                className={`rounded-lg px-2 xl:px-3 py-2 text-xs xl:text-sm font-semibold uppercase tracking-[0.02em] transition-colors hover:bg-[#f2f4ff] ${location.pathname.toLowerCase() === item.to.toLowerCase() ? "text-[#f15b29]" : "text-[#1f2937]"}`}
               >
                 {item.label}
               </Link>
             ))}
-            <Link to="/login" className="ml-2 rounded-2xl bg-[#ff6b2d] px-5 py-2 text-sm font-semibold uppercase text-white shadow-[0_8px_20px_rgba(255,107,45,0.28)]">
+            <Link to="/login" className="ml-1 xl:ml-2 rounded-2xl bg-[#ff6b2d] px-3 xl:px-5 py-1.5 xl:py-2 text-xs xl:text-sm font-semibold uppercase text-white shadow-[0_8px_20px_rgba(255,107,45,0.28)] whitespace-nowrap">
               Login
             </Link>
             <button
               onClick={() => setShowPopup(true)}
-              className="ml-2 rounded-2xl border-2 border-[#ff6b2d] text-[#ff6b2d] hover:bg-[#ff6b2d] hover:text-white px-5 py-2 text-sm font-semibold uppercase transition-all"
+              className="ml-1 xl:ml-2 rounded-2xl border-2 border-[#ff6b2d] text-[#ff6b2d] hover:bg-[#ff6b2d] hover:text-white px-3 xl:px-5 py-1.5 xl:py-2 text-xs xl:text-sm font-semibold uppercase transition-all whitespace-nowrap"
             >
               Request a Callback
             </button>
@@ -63,7 +63,7 @@ const Header = () => {
           <button
             type="button"
             onClick={() => setIsMobileOpen((v) => !v)}
-            className="rounded-lg border border-[#dbe0f3] px-3 py-2 text-[#0f172a] xl:hidden"
+            className="rounded-lg border border-[#dbe0f3] px-3 py-2 text-[#0f172a] lg:hidden"
             aria-label="Toggle menu"
           >
             <span className="text-xl">☰</span>
@@ -71,7 +71,7 @@ const Header = () => {
         </div>
 
         {isMobileOpen && (
-          <div className="border-t border-[#ececf5] bg-white xl:hidden">
+          <div className="border-t border-[#ececf5] bg-white lg:hidden">
             <div className="mx-auto grid w-[94%] max-w-7xl gap-2 py-3">
               {topNav.map((item) => (
                 <Link

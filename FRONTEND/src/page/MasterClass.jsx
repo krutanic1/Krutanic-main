@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import React, { useEffect, useState } from "react";
 import HomePopup from "../Components/HomePopup";
-// import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 // import { useNavigate } from "react-router-dom";
 import API from "../API";
 import axios from "axios";
@@ -11,6 +11,10 @@ import img from "../assets/masterclasscertificate.jpg";
 import imghero from "../assets/masterclass.jpeg";
 import imgalt from "../assets/defaultmasterclass.jpg";
 import Popularcourse from "../Components/popularcourse";
+
+import dsPoster from "../../krutanic/images/poster/datascience.png";
+import mernPoster from "../../krutanic/images/poster/mern.png";
+import pmPoster from "../../krutanic/images/poster/productmanagement.png";
 
 const MasterClass = () => {
   const [openIndex, setOpenIndex] = useState(null);
@@ -178,6 +182,52 @@ const MasterClass = () => {
       toast.error(
         error.response?.data?.message || "Error applying for MasterClass"
       );
+    }
+  };
+
+  const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/mentorship`;
+    let shared = false;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Krutanic Mentorship Program',
+          text: 'Check out the Krutanic Mentorship Program!',
+          url: shareUrl,
+        });
+        shared = true;
+      } catch (err) {
+        console.error("Error sharing:", err);
+      }
+    }
+    if (!shared) {
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(shareUrl);
+          toast.success("Mentorship link copied to clipboard!");
+        } else {
+          throw new Error("Clipboard API not available");
+        }
+      } catch (err) {
+        try {
+          const textArea = document.createElement("textarea");
+          textArea.value = shareUrl;
+          textArea.style.position = "fixed";
+          textArea.style.left = "-999999px";
+          document.body.appendChild(textArea);
+          textArea.select();
+          const successful = document.execCommand("copy");
+          document.body.removeChild(textArea);
+          if (successful) {
+            toast.success("Mentorship link copied to clipboard!");
+          } else {
+            throw new Error("execCommand copy failed");
+          }
+        } catch (fallbackErr) {
+          console.error("Failed to copy link:", fallbackErr);
+          toast.error("Failed to copy link.");
+        }
+      }
     }
   };
 
@@ -353,17 +403,27 @@ const MasterClass = () => {
                 <div className="mc-class-body">
                   <h3>{masterclass.title}</h3>
                   <p>{formatClassDate(masterclass.start)}</p>
-                  <button
-                    onClick={() =>
-                      masterclass.status === "completed"
-                        ? handleDownload(masterclass)
-                        : handleApply(masterclass)
-                    }
-                  >
-                    {masterclass.status === "completed"
-                      ? "Get Certificate"
-                      : "Register Now"}
-                  </button>
+                  <div className="mc-class-actions">
+                    <button
+                      className="mc-action-btn"
+                      onClick={() =>
+                        masterclass.status === "completed"
+                          ? handleDownload(masterclass)
+                          : handleApply(masterclass)
+                      }
+                    >
+                      {masterclass.status === "completed"
+                        ? "Get Certificate"
+                        : "Register Now"}
+                    </button>
+                    <button
+                      className="mc-share-btn"
+                      onClick={handleShare}
+                      title="Share Mentorship Link"
+                    >
+                      <i className="fa fa-share-alt"></i>
+                    </button>
+                  </div>
                 </div>
               </article>
             ))}
@@ -396,7 +456,7 @@ const MasterClass = () => {
           </section>
         </div>
 
-        <section className="mc-industrial-video">
+        {/* <section className="mc-industrial-video">
           <div className="mc-section-head">
             <h2>Industrial Talk Session</h2>
           </div>
@@ -425,7 +485,7 @@ const MasterClass = () => {
               </p>
             </div>
           </div>
-        </section>
+        </section> */}
 
         <div className="mc-web-trust">
           <section className="mc-why">
@@ -542,24 +602,6 @@ const MasterClass = () => {
           ))}
         </section>
 
-        <nav className="mc-bottom-nav">
-          <button className="active">
-            <i className="fa fa-compass"></i>
-            <span>Explore</span>
-          </button>
-          <button>
-            <i className="fa fa-users"></i>
-            <span>Community</span>
-          </button>
-          <button>
-            <i className="fa fa-briefcase"></i>
-            <span>Jobs</span>
-          </button>
-          <button>
-            <i className="fa fa-user"></i>
-            <span>Profile</span>
-          </button>
-        </nav>
       </div>
       {/* Registration Form */}
       {isRegisterForm && selectedMasterClass && (
