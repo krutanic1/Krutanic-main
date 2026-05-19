@@ -12,7 +12,7 @@ const MasterClassSchema = new mongoose.Schema({
     {
       name: String,
       email: String,
-      experience: Number,
+      experience: String,
       field: String,
       phone: String,
       appliedAt: { type: Date, default: Date.now }

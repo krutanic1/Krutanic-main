@@ -629,15 +629,19 @@ const MasterClass = () => {
                 onChange={handleChange}
                 required
               />
-              <input
-                type="number"
-                min="0"
-                placeholder="Number of year work experience"
+              <select
                 name="experience"
                 value={formData.experience}
                 onChange={handleChange}
                 required
-              />
+              >
+                <option value="" disabled>Work experience (Years)</option>
+                <option value="0-2">0-2</option>
+                <option value="2-4">2-4</option>
+                <option value="4-6">4-6</option>
+                <option value="6-8">6+</option>
+                
+              </select>
               <input
                 type="text"
                 placeholder="In which field are you currently working"
