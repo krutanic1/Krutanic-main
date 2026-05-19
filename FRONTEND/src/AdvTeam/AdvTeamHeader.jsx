@@ -15,7 +15,7 @@ const AdvTeamHeader = () => {
   const [advTeamData, setAdvTeamData] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
+  const [showNotificationDropdown, setShowNotificationDropdown] = useState(true);
   const [activeReminder, setActiveReminder] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [dailyStats, setDailyStats] = useState({ 
@@ -348,6 +348,18 @@ const AdvTeamHeader = () => {
                 <div style={{ padding: '16px', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <h4 style={{ margin: 0, fontSize: '16px', fontWeight: '700', color: '#111827' }}>Notifications</h4>
                   <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>{unreadCount} Unread</span>
+                  <button 
+                    onClick={() => setShowNotificationDropdown(false)}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', color: '#6b7280',
+                      padding: '4px 8px', borderRadius: '50%', transition: 'all 0.2s',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    }}
+                    onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
+                    onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  >
+                    &times;
+                  </button>
                 </div>
                 <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
                   {notifications.length > 0 ? (
