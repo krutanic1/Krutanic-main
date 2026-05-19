@@ -915,7 +915,7 @@
     form {
       padding: 10px 0;
 
-      input {
+      input, select {
         padding: 8px 10px;
         width: 100%;
         border: 1px solid #ccc;
