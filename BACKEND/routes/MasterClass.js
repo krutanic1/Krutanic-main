@@ -71,7 +71,7 @@ router.get("/allmasterclasswithsapplicant", async (req, res) => {
 router.post("/masterclassapply/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, clgemail, collegename, phone } = req.body;
+    const { name, email, experience, field, phone } = req.body;
 
     // Find the masterclass
     const masterClass = await MasterClass.findById(id);
@@ -85,7 +85,7 @@ router.post("/masterclassapply/:id", async (req, res) => {
     }
 
     // Add the new application
-    masterClass.applications.unshift({ name, email, clgemail, collegename, phone, appliedAt: new Date() });
+    masterClass.applications.unshift({ name, email, experience, field, phone, appliedAt: new Date() });
     await masterClass.save();
 
     res.status(201).json({ message: "Applied successfully!" });

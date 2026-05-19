@@ -230,8 +230,8 @@ const MasterClasses = () => {
                   <th>Sl</th>
                   <th>Name</th>
                   <th>Email</th>
-                  <th>Student's College Email</th>
-                  <th>College Name</th>
+                  <th>Experience (Years)</th>
+                  <th>Working Field</th>
                   <th >Number</th>
                 </tr>
               </thead>
@@ -241,8 +241,8 @@ const MasterClasses = () => {
                     <td>{index + 1}</td>
                     <td>{application.name}</td>
                     <td>{application.email}</td>
-                    <td>{application.clgemail}</td>
-                    <td>{application.collegename}</td>
+                    <td>{application.experience}</td>
+                    <td>{application.field}</td>
                     <td>{application.phone}</td>
                   </tr>
                 ))}

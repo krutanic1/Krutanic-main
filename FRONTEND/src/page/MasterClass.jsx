@@ -28,8 +28,8 @@ const MasterClass = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    clgemail: "",
-    collegename: "",
+    experience: "",
+    field: "",
     phone: "",
   });
   const faqs = [
@@ -75,8 +75,8 @@ const MasterClass = () => {
     setFormData({
       name: "",
       email: "",
-      clgemail: "",
-      collegename: "",
+      experience: "",
+      field: "",
       phone: "",
     });
   };
@@ -86,7 +86,7 @@ const MasterClass = () => {
     setFormData({
       ...formData,
       [name]:
-        name === "email" || name === "clgemail" ? value.toLowerCase() : value,
+        name === "email" ? value.toLowerCase() : value,
     });
   };
 
@@ -630,18 +630,19 @@ const MasterClass = () => {
                 required
               />
               <input
-                type="email"
-                placeholder="Student's College Email id"
-                name="clgemail"
-                value={formData.clgemail}
+                type="number"
+                min="0"
+                placeholder="Number of year work experience"
+                name="experience"
+                value={formData.experience}
                 onChange={handleChange}
                 required
               />
               <input
                 type="text"
-                placeholder="Enter College Name"
-                name="collegename"
-                value={formData.collegename}
+                placeholder="In which field are you currently working"
+                name="field"
+                value={formData.field}
                 onChange={handleChange}
                 required
               />

@@ -12,8 +12,8 @@ const MasterClassSchema = new mongoose.Schema({
     {
       name: String,
       email: String,
-      clgemail: String,
-      collegename: String,
+      experience: Number,
+      field: String,
       phone: String,
       appliedAt: { type: Date, default: Date.now }
     }
