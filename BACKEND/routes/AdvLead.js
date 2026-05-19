@@ -20,7 +20,7 @@ const AdvFormLead = require("../models/AdvFormLead");
 const RemoteDialQueue = require("../models/RemoteDialQueue");
 const cloudinary = require("../middleware/cloudinary");
 const axios = require("axios");
-const { sendEnrollmentFormWelcomeEmail } = require("../utils/emailService");
+const { sendEnrollmentFormWelcomeEmail, sendEmail } = require("../utils/emailService");
 
 const STAGES_AND_DISPOSITIONS = {
     "Fresh Lead": ["New Lead", "Invalid Lead"],
@@ -47,6 +47,50 @@ const META_BLACKLIST = [
 ];
 
 const BLACKLIST_PROJECTION = META_BLACKLIST.map(f => `-${f}`).join(" ");
+
+async function resolveAssigneeContact(assigneeId) {
+    const user = await AdvUser.findById(assigneeId).select("email name") ||
+                 await AdvTeamMember.findById(assigneeId).select("email fullname") ||
+                 await AdminMail.findById(assigneeId).select("email fullname");
+
+    if (!user || !user.email) {
+        return null;
+    }
+
+    return {
+        email: user.email,
+        name: user.name || user.fullname || "there"
+    };
+}
+
+async function sendLeadAssignmentEmail({ assigneeId, assigneeName, count, assignmentSource }) {
+    const contact = await resolveAssigneeContact(assigneeId);
+    if (!contact) {
+        console.log(`No email found for assignee ${assigneeId}; skipping assignment email.`);
+        return;
+    }
+
+    const leadLabel = count === 1 ? "lead" : "leads";
+    const subject = `${count} ${leadLabel} assigned to you`;
+    const displayName = assigneeName || contact.name || "there";
+
+    const message = `
+        <div style="font-family: Arial, sans-serif; background: #f7f9fc; padding: 24px; color: #1f2937;">
+            <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; padding: 32px; border: 1px solid #e5e7eb;">
+                <h2 style="margin: 0 0 16px; font-size: 22px; color: #111827;">Lead Assignment Update</h2>
+                <p style="font-size: 16px; line-height: 1.6; margin: 0 0 16px;">Hello ${displayName},</p>
+                <p style="font-size: 16px; line-height: 1.6; margin: 0 0 16px;">${count} ${leadLabel} have been assigned to you${assignmentSource ? ` through ${assignmentSource}` : ""}.</p>
+                <p style="font-size: 14px; line-height: 1.6; color: #6b7280; margin: 0;">Please login to review and start working on them.</p>
+            </div>
+        </div>
+    `;
+
+    await sendEmail({
+        email: contact.email,
+        subject,
+        message
+    });
+}
 
 // Direct Gemini REST API call (bypasses SDK v1beta issues)
 async function callGeminiAPI(prompt) {
@@ -746,6 +790,17 @@ router.post("/admin-bulk-assign", async (req, res) => {
             type: "lead_assigned"
         }).save();
 
+        try {
+            await sendLeadAssignmentEmail({
+                assigneeId,
+                assigneeName,
+                count: freshLeads.length,
+                assignmentSource: "admin assignment"
+            });
+        } catch (emailError) {
+            console.error("Failed to send admin assignment email:", emailError.message);
+        }
+
         res.status(200).json({
             success: true,
             assigned: freshLeads.length,
@@ -879,6 +934,17 @@ router.post("/manual-bulk-assign", async (req, res) => {
             message: `${leadIds.length} leads have been manually assigned to you.`,
             type: "lead_assigned"
         }).save();
+
+        try {
+            await sendLeadAssignmentEmail({
+                assigneeId,
+                assigneeName,
+                count: leadIds.length,
+                assignmentSource: "manual assignment"
+            });
+        } catch (emailError) {
+            console.error("Failed to send manual assignment email:", emailError.message);
+        }
 
         res.status(200).json({
             success: true,
