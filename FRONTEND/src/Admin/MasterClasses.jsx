@@ -45,6 +45,9 @@ const MasterClasses = () => {
     faqs: "",
   });
 
+  const [takeaways, setTakeaways] = useState([{ title: "", desc: "" }]);
+  const [faqsList, setFaqsList] = useState([{ q: "", a: "" }]);
+
   const resetForm = () => {
     setFormData({
       title: "",
@@ -78,6 +81,8 @@ const MasterClasses = () => {
       transformationAfter: "",
       faqs: "",
     });
+    setTakeaways([{ title: "", desc: "" }]);
+    setFaqsList([{ q: "", a: "" }]);
     setEditClassId(null);
     setisFormVisible(false);
     setActiveTab("basic");
@@ -137,6 +142,8 @@ const MasterClasses = () => {
     // Auto-convert Google Drive file share links before saving
     const sanitizedData = {
       ...formData,
+      whatYouWillLearn: JSON.stringify(takeaways),
+      faqs: JSON.stringify(faqsList),
       image: convertGoogleDriveUrl(formData.image) || formData.image,
       instructorPhoto: convertGoogleDriveUrl(formData.instructorPhoto) || formData.instructorPhoto,
     };
@@ -170,6 +177,33 @@ const MasterClasses = () => {
   const handleEdit = (masterclass) => {
     const isConfirmed = window.confirm("Are you sure you want to edit the Master Class?");
     if (isConfirmed) {
+      let parsedTakeaways = [{ title: "", desc: "" }];
+      try {
+        if (masterclass.whatYouWillLearn) {
+          const parsed = JSON.parse(masterclass.whatYouWillLearn);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            parsedTakeaways = parsed;
+          }
+        }
+      } catch (e) {
+        console.error("Error parsing takeaways", e);
+      }
+
+      let parsedFaqs = [{ q: "", a: "" }];
+      try {
+        if (masterclass.faqs) {
+          const parsed = JSON.parse(masterclass.faqs);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            parsedFaqs = parsed;
+          }
+        }
+      } catch (e) {
+        console.error("Error parsing faqs", e);
+      }
+
+      setTakeaways(parsedTakeaways);
+      setFaqsList(parsedFaqs);
+
       setFormData({
         title: masterclass.title || "",
         start: masterclass.start || "",
@@ -470,6 +504,38 @@ const MasterClasses = () => {
                     />
                   </div>
                 </div>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Registered Count Display</label>
+                    <input
+                      type="text"
+                      name="registeredCount"
+                      value={formData.registeredCount}
+                      onChange={handleChange}
+                      placeholder="e.g. 3,840+"
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Rating Display</label>
+                    <input
+                      type="text"
+                      name="rating"
+                      value={formData.rating}
+                      onChange={handleChange}
+                      placeholder="e.g. 4.8"
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Target Level Display</label>
+                    <input
+                      type="text"
+                      name="level"
+                      value={formData.level}
+                      onChange={handleChange}
+                      placeholder="e.g. Beginner to Intermediate"
+                    />
+                  </div>
+                </div>
               </div>
             )}
 
@@ -641,30 +707,106 @@ const MasterClasses = () => {
                   />
                 </div>
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Takeaway strategies (JSON array)</label>
-                    <span style={{ fontSize: '10px', color: '#f15b29' }}>Paste JSON list of takeaways</span>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555', display: 'block', marginBottom: '5px' }}>Takeaways / Strategies to Learn</label>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {takeaways.map((item, index) => (
+                      <div key={index} style={{ display: 'flex', gap: '5px', alignItems: 'center', backgroundColor: '#f9f9f9', padding: '6px', borderRadius: '6px', border: '1px solid #eee' }}>
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                          <input
+                            type="text"
+                            placeholder="Title (e.g. Career Roadmap)"
+                            value={item.title || ""}
+                            onChange={(e) => {
+                              const newTakeaways = [...takeaways];
+                              newTakeaways[index].title = e.target.value;
+                              setTakeaways(newTakeaways);
+                            }}
+                            style={{ padding: '4px 8px', fontSize: '12px', borderRadius: '4px', border: '1px solid #ccc', margin: 0 }}
+                          />
+                          <input
+                            type="text"
+                            placeholder="Description (e.g. Step-by-step path...)"
+                            value={item.desc || ""}
+                            onChange={(e) => {
+                              const newTakeaways = [...takeaways];
+                              newTakeaways[index].desc = e.target.value;
+                              setTakeaways(newTakeaways);
+                            }}
+                            style={{ padding: '4px 8px', fontSize: '11px', borderRadius: '4px', border: '1px solid #ccc', margin: 0 }}
+                          />
+                        </div>
+                        {takeaways.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setTakeaways(takeaways.filter((_, i) => i !== index));
+                            }}
+                            style={{ padding: '4px 8px', backgroundColor: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '11px' }}
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => setTakeaways([...takeaways, { title: "", desc: "" }])}
+                      style={{ padding: '5px 10px', backgroundColor: '#f15b29', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '11px', alignSelf: 'flex-start' }}
+                    >
+                      + Add Takeaway
+                    </button>
                   </div>
-                  <textarea
-                    name="whatYouWillLearn"
-                    value={formData.whatYouWillLearn}
-                    onChange={handleChange}
-                    placeholder='e.g. [{"title":"Architecture","desc":"Build scalable POM frameworks."}]'
-                    style={{ height: '75px', fontFamily: 'monospace', fontSize: '11px', padding: '8px', border: '1px solid #ccc', borderRadius: '10px' }}
-                  />
                 </div>
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Frequently Asked Questions (JSON array)</label>
-                    <span style={{ fontSize: '10px', color: '#f15b29' }}>Paste JSON list of FAQs</span>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555', display: 'block', marginBottom: '5px' }}>Frequently Asked Questions</label>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {faqsList.map((item, index) => (
+                      <div key={index} style={{ display: 'flex', gap: '5px', alignItems: 'center', backgroundColor: '#f9f9f9', padding: '6px', borderRadius: '6px', border: '1px solid #eee' }}>
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                          <input
+                            type="text"
+                            placeholder="Question"
+                            value={item.q || ""}
+                            onChange={(e) => {
+                              const newFaqs = [...faqsList];
+                              newFaqs[index].q = e.target.value;
+                              setFaqsList(newFaqs);
+                            }}
+                            style={{ padding: '4px 8px', fontSize: '12px', borderRadius: '4px', border: '1px solid #ccc', margin: 0 }}
+                          />
+                          <input
+                            type="text"
+                            placeholder="Answer"
+                            value={item.a || ""}
+                            onChange={(e) => {
+                              const newFaqs = [...faqsList];
+                              newFaqs[index].a = e.target.value;
+                              setFaqsList(newFaqs);
+                            }}
+                            style={{ padding: '4px 8px', fontSize: '11px', borderRadius: '4px', border: '1px solid #ccc', margin: 0 }}
+                          />
+                        </div>
+                        {faqsList.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setFaqsList(faqsList.filter((_, i) => i !== index));
+                            }}
+                            style={{ padding: '4px 8px', backgroundColor: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '11px' }}
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => setFaqsList([...faqsList, { q: "", a: "" }])}
+                      style={{ padding: '5px 10px', backgroundColor: '#f15b29', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '11px', alignSelf: 'flex-start' }}
+                    >
+                      + Add FAQ
+                    </button>
                   </div>
-                  <textarea
-                    name="faqs"
-                    value={formData.faqs}
-                    onChange={handleChange}
-                    placeholder='e.g. [{"q":"Will I get certificate?","a":"Yes, live attendees receive a certificate."}]'
-                    style={{ height: '75px', fontFamily: 'monospace', fontSize: '11px', padding: '8px', border: '1px solid #ccc', borderRadius: '10px' }}
-                  />
                 </div>
               </div>
             )}

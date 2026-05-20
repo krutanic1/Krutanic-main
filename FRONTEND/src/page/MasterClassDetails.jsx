@@ -114,7 +114,7 @@ const MasterClassDetails = () => {
       <div className="min-h-screen flex items-center justify-center bg-[#030712] text-white">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-[#ff6b2d] border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-slate-400 font-medium">Loading premium event details...</p>
+          <p className="text-slate-400 font-medium">Loading...</p>
         </div>
       </div>
     );
@@ -137,102 +137,133 @@ const MasterClassDetails = () => {
 
   // Fallback / auto-generated data builder for maximum premium detailing
   const getTailoredContent = () => {
-    const title = masterclass.title.toLowerCase();
+    const title = (masterclass.title || "").toLowerCase();
     
-    // Default Fallbacks
+    // Parse helper
+    const safeParseJson = (str, fallback) => {
+      if (!str) return fallback;
+      if (typeof str !== "string") return Array.isArray(str) ? str : fallback;
+      try {
+        const parsed = JSON.parse(str);
+        return Array.isArray(parsed) ? parsed : fallback;
+      } catch (e) {
+        return fallback;
+      }
+    };
+
+    // Helper for splitting strings to arrays
+    const safeSplit = (val, fallback) => {
+      if (!val) return fallback;
+      if (Array.isArray(val)) return val;
+      if (typeof val === "string") {
+        return val.split(",").map(item => item.trim()).filter(Boolean);
+      }
+      return fallback;
+    };
+
+    // Default general fallbacks
+    const defaultSubheading = "Accelerate your career path with industry-recognized frameworks, hands-on tutorials, and live Q&A with top mentors.";
+    const defaultWhyAttend = "Are you feeling stuck in your learning journey without a clear roadmap? Most self-learners get lost in random video tutorials, struggle to build real-world projects, and remain anxious about technical interviews. This masterclass cuts through the noise, providing a structured, step-by-step framework to land high-paying roles.";
+
+    // We build the primary data directly from database fields
     let data = {
-      subheading: masterclass.subheading || "Accelerate your career path with industry-recognized frameworks, hands-on tutorials, and live Q&A with top mentors.",
+      subheading: masterclass.subheading || defaultSubheading,
       duration: masterclass.duration || "90 Minutes",
       venue: masterclass.venue || "Online Live Session",
-      registeredCount: masterclass.registeredCount || "3,840+",
+      registeredCount: masterclass.registeredCount || "1000+",
       rating: masterclass.rating || "4.8",
-      level: masterclass.level || "Beginner to Intermediate Friendly",
-      price: masterclass.price || "100% Free",
+      level: masterclass.level || "Intermediate to Advanced Level",
+      price: masterclass.price ,
       language: masterclass.language || "English",
       certificateAvailable: masterclass.certificateAvailable || "Yes, Industry Recognized",
       
-      instructorName: masterclass.instructorName || "Abhijeet Gupta",
-      instructorDesignation: masterclass.instructorDesignation || "Project Engineer at WIPRO",
-      instructorExpertise: masterclass.instructorExpertise || "Automation Testing & QA Lead",
-      instructorCredibility: masterclass.instructorCredibility || "Successfully trained and mentored over 5,000+ QA professionals globally.",
+      instructorName: masterclass.instructorName || "Industry Lead Mentor",
+      instructorDesignation: masterclass.instructorDesignation || "Senior Technical Advisor",
+      instructorExpertise: masterclass.instructorExpertise || "Technology Expert",
+      instructorCredibility: masterclass.instructorCredibility || "Successfully trained and mentored professionals globally.",
       instructorExperience: masterclass.instructorExperience || "5+ Years",
       instructorLearnersMentored: masterclass.instructorLearnersMentored || "5,000+",
       instructorRating: masterclass.instructorRating || "4.9",
       instructorSessions: masterclass.instructorSessions || "40+ Live Classes",
-      instructorCompanyTags: masterclass.instructorCompanyTags ? masterclass.instructorCompanyTags.split(",") : ["WIPRO", "Industry Mentor"],
+      instructorCompanyTags: safeSplit(masterclass.instructorCompanyTags, ["Industry Mentor"]),
       instructorPhoto: masterclass.instructorPhoto || masterclass.image,
 
-      whyAttend: masterclass.whyAttend || "Are you feeling stuck in your learning journey without a clear roadmap? Most self-learners get lost in random video tutorials, struggle to build real-world projects, and remain anxious about technical interviews. This masterclass cuts through the noise, providing a structured, step-by-step framework to land high-paying roles.",
+      whyAttend: masterclass.whyAttend || defaultWhyAttend,
+      whoShouldAttend: safeSplit(masterclass.whoShouldAttend, ["Students & Freshers looking for direction", "Working professionals aiming for a transition", "Self-learners seeking industry-level validation"]),
+      before: safeSplit(masterclass.transformationBefore, ["Confused by random tutorial loops", "No portfolio to display key skills", "Fearing mock technical interviews", "Unsure of exact career roadmaps"]),
+      after: safeSplit(masterclass.transformationAfter, ["Equipped with a solid structured roadmap", "Built a deployable production-grade project", "Confident in clearing tech hiring rounds", "Clear, step-by-step career actionable plan"]),
       
-      takeaways: [],
-      whoShouldAttend: masterclass.whoShouldAttend ? masterclass.whoShouldAttend.split(",") : ["Students & Freshers looking for direction", "Working professionals aiming for a transition", "Self-learners seeking industry-level validation", "Tech enthusiasts wanting to build robust projects"],
-      
-      before: masterclass.transformationBefore ? masterclass.transformationBefore.split(",") : ["Confused by random tutorial loops", "No portfolio to display key skills", "Fearing mock technical interviews", "Unsure of exact career roadmaps"],
-      after: masterclass.transformationAfter ? masterclass.transformationAfter.split(",") : ["Equipped with a solid structured roadmap", "Built a deployable production-grade project", "Confident in clearing tech hiring rounds", "Clear, step-by-step career actionable plan"],
-      
-      faqs: []
+      takeaways: safeParseJson(masterclass.whatYouWillLearn, []),
+      faqs: safeParseJson(masterclass.faqs, [])
     };
 
-    // Theme tailored options
+    // ONLY if database fields are missing, do we apply category-specific tailored fallbacks
     if (title.includes("automation") || title.includes("testing") || title.includes("qa")) {
-      data.instructorName = masterclass.instructorName || "Abhijeet Gupta";
-      data.instructorDesignation = masterclass.instructorDesignation || "Project Engineer at WIPRO";
-      data.instructorCompanyTags = masterclass.instructorCompanyTags ? masterclass.instructorCompanyTags.split(",") : ["WIPRO", "QA Specialist", "Automation Advocate"];
+      if (!masterclass.instructorName) data.instructorName = "Abhijeet Gupta";
+      if (!masterclass.instructorDesignation) data.instructorDesignation = "Project Engineer at WIPRO";
+      if (!masterclass.instructorCredibility) data.instructorCredibility = "Successfully trained and mentored over 5,000+ QA professionals globally.";
+      if (!masterclass.instructorCompanyTags) data.instructorCompanyTags = ["WIPRO", "QA Specialist", "Automation Advocate"];
       
-      data.takeaways = [
-        { title: "Test Automation Architecture", desc: "Understand how to build scalable, maintainable Page Object Model (POM) frameworks using Selenium and Java/Python." },
-        { title: "API Testing Fundamentals", desc: "Master API verification using Postman and RestAssured, automating end-to-end user journeys." },
-        { title: "DevOps & CI/CD Pipeline", desc: "Integrate your automated suites with Jenkins, GitHub Actions, and get instant feedback loops." },
-        { title: "Industry QA Best Practices", desc: "Learn real-world defect logging, test metrics, and standard software quality benchmarks." }
-      ];
+      if (data.takeaways.length === 0) {
+        data.takeaways = [
+          { title: "Test Automation Architecture", desc: "Understand how to build scalable, maintainable Page Object Model (POM) frameworks using Selenium and Java/Python." },
+          { title: "API Testing Fundamentals", desc: "Master API verification using Postman and RestAssured, automating end-to-end user journeys." },
+          { title: "DevOps & CI/CD Pipeline", desc: "Integrate your automated suites with Jenkins, GitHub Actions, and get instant feedback loops." },
+          { title: "Industry QA Best Practices", desc: "Learn real-world defect logging, test metrics, and standard software quality benchmarks." }
+        ];
+      }
     } else if (title.includes("datascience") || title.includes("data science") || title.includes("data analytics") || title.includes("analytics") || title.includes("sql")) {
-      data.instructorName = masterclass.instructorName || "Dr. Amit Verma";
-      data.instructorDesignation = masterclass.instructorDesignation || "Senior Data Scientist (Ex-Amazon)";
-      data.instructorCompanyTags = masterclass.instructorCompanyTags ? masterclass.instructorCompanyTags.split(",") : ["Ex-Amazon", "Data Scientist", "IIT Alumnus"];
-      data.instructorCredibility = "Led data intelligence models for heavy logistics at Amazon. Mentored 8,000+ students.";
-      data.instructorExperience = "8+ Years";
-      data.instructorLearnersMentored = "8,000+";
+      if (!masterclass.instructorName) data.instructorName = "Dr. Amit Verma";
+      if (!masterclass.instructorDesignation) data.instructorDesignation = "Senior Data Scientist (Ex-Amazon)";
+      if (!masterclass.instructorCredibility) data.instructorCredibility = "Led data intelligence models for heavy logistics at Amazon. Mentored 8,000+ students.";
+      if (!masterclass.instructorExperience) data.instructorExperience = "8+ Years";
+      if (!masterclass.instructorLearnersMentored) data.instructorLearnersMentored = "8,000+";
+      if (!masterclass.instructorCompanyTags) data.instructorCompanyTags = ["Ex-Amazon", "Data Scientist", "IIT Alumnus"];
 
-      data.takeaways = [
-        { title: "Machine Learning Pipelines", desc: "Learn regression, decision trees, and validation steps to train real-world prediction engines." },
-        { title: "SQL & Pandas Data Manipulation", desc: "Clean, filter, and extract high-value insights from messy multi-million row datasets." },
-        { title: "Business Metrics Dashboards", desc: "Build interactive visual storytelling metrics using PowerBI / Tableau that executives love." },
-        { title: "Cracking Data Interviews", desc: "Study the exact case studies and coding questions asked in Amazon and Google screening rounds." }
-      ];
+      if (data.takeaways.length === 0) {
+        data.takeaways = [
+          { title: "Machine Learning Pipelines", desc: "Learn regression, decision trees, and validation steps to train real-world prediction engines." },
+          { title: "SQL & Pandas Data Manipulation", desc: "Clean, filter, and extract high-value insights from messy multi-million row datasets." },
+          { title: "Business Metrics Dashboards", desc: "Build interactive visual storytelling metrics using PowerBI / Tableau that executives love." },
+          { title: "Cracking Data Interviews", desc: "Study the exact case studies and coding questions asked in Amazon and Google screening rounds." }
+        ];
+      }
     } else if (title.includes("mern") || title.includes("full stack") || title.includes("web") || title.includes("react") || title.includes("node")) {
-      data.instructorName = masterclass.instructorName || "Sandeep Kumar";
-      data.instructorDesignation = masterclass.instructorDesignation || "Lead Tech Architect (Ex-Google)";
-      data.instructorCompanyTags = masterclass.instructorCompanyTags ? masterclass.instructorCompanyTags.split(",") : ["Ex-Google", "MERN Expert", "System Architect"];
-      data.instructorCredibility = "Built scalable cloud microservices serving millions of active users. Passionate tech educator.";
-      data.instructorExperience = "7+ Years";
-      data.instructorLearnersMentored = "10,000+";
+      if (!masterclass.instructorName) data.instructorName = "Sandeep Kumar";
+      if (!masterclass.instructorDesignation) data.instructorDesignation = "Lead Tech Architect (Ex-Google)";
+      if (!masterclass.instructorCredibility) data.instructorCredibility = "Built scalable cloud microservices serving millions of active users. Passionate tech educator.";
+      if (!masterclass.instructorExperience) data.instructorExperience = "7+ Years";
+      if (!masterclass.instructorLearnersMentored) data.instructorLearnersMentored = "10,000+";
+      if (!masterclass.instructorCompanyTags) data.instructorCompanyTags = ["Ex-Google", "MERN Expert", "System Architect"];
 
-      data.takeaways = [
-        { title: "React State & Design Patterns", desc: "Design elegant state architectures with clean rendering optimization and custom hooks." },
-        { title: "Node.js REST API Architecture", desc: "Structure robust endpoints, middleware, authentication, and error handlers from scratch." },
-        { title: "MongoDB Modeling & Queries", desc: "Model non-relational database structures for speed and consistency, avoiding common pitfalls." },
-        { title: "Production Cloud Deployment", desc: "Deploy MERN applications securely to AWS/Vercel with automated GitHub integration." }
-      ];
+      if (data.takeaways.length === 0) {
+        data.takeaways = [
+          { title: "React State & Design Patterns", desc: "Design elegant state architectures with clean rendering optimization and custom hooks." },
+          { title: "Node.js REST API Architecture", desc: "Structure robust endpoints, middleware, authentication, and error handlers from scratch." },
+          { title: "MongoDB Modeling & Queries", desc: "Model non-relational database structures for speed and consistency, avoiding common pitfalls." },
+          { title: "Production Cloud Deployment", desc: "Deploy MERN applications securely to AWS/Vercel with automated GitHub integration." }
+        ];
+      }
     } else if (title.includes("product") || title.includes("management") || title.includes("pm")) {
-      data.instructorName = masterclass.instructorName || "Neha Sharma";
-      data.instructorDesignation = masterclass.instructorDesignation || "Product Manager (Ex-Microsoft)";
-      data.instructorCompanyTags = masterclass.instructorCompanyTags ? masterclass.instructorCompanyTags.split(",") : ["Ex-Microsoft", "PM Mentor", "B-School Speaker"];
-      data.instructorCredibility = "Shipped premium product features at Microsoft. Mentored 4,000+ aspiring product leads.";
-      data.instructorExperience = "6+ Years";
-      data.instructorLearnersMentored = "4,000+";
+      if (!masterclass.instructorName) data.instructorName = "Neha Sharma";
+      if (!masterclass.instructorDesignation) data.instructorDesignation = "Product Manager (Ex-Microsoft)";
+      if (!masterclass.instructorCredibility) data.instructorCredibility = "Shipped premium product features at Microsoft. Mentored 4,000+ aspiring product leads.";
+      if (!masterclass.instructorExperience) data.instructorExperience = "6+ Years";
+      if (!masterclass.instructorLearnersMentored) data.instructorLearnersMentored = "4,000+";
+      if (!masterclass.instructorCompanyTags) data.instructorCompanyTags = ["Ex-Microsoft", "PM Mentor", "B-School Speaker"];
 
-      data.takeaways = [
-        { title: "PRDs & Feature Mapping", desc: "Learn to write crisp, comprehensive Product Requirement Documents and outline feature sets." },
-        { title: "User Research & Prototyping", desc: "Conduct qualitative user research and build high-fidelity interactive wireframes." },
-        { title: "Retention Funnels & Metrics", desc: "Analyze North Star metrics, cohort retention, and identify growth friction points." },
-        { title: "PM Case Interview Mastery", desc: "Understand product-sense and execution questions commonly asked by Tier-1 product tech companies." }
-      ];
-    } else {
-      // General Tech / Coding
-      data.instructorName = masterclass.instructorName || "Industry Lead Mentor";
-      data.instructorDesignation = masterclass.instructorDesignation || "Senior Technical Advisor";
-      data.instructorCompanyTags = masterclass.instructorCompanyTags ? masterclass.instructorCompanyTags.split(",") : ["Fortune 500 Mentor", "Tech Leader"];
-      
+      if (data.takeaways.length === 0) {
+        data.takeaways = [
+          { title: "PRDs & Feature Mapping", desc: "Learn to write crisp, comprehensive Product Requirement Documents and outline feature sets." },
+          { title: "User Research & Prototyping", desc: "Conduct qualitative user research and build high-fidelity interactive wireframes." },
+          { title: "Retention Funnels & Metrics", desc: "Analyze North Star metrics, cohort retention, and identify growth friction points." },
+          { title: "PM Case Interview Mastery", desc: "Understand product-sense and execution questions commonly asked by Tier-1 product tech companies." }
+        ];
+      }
+    }
+
+    // Default general takeaways if still empty
+    if (data.takeaways.length === 0) {
       data.takeaways = [
         { title: "Industry Production Standards", desc: "Learn how professional engineering teams structure repositories, run tests, and code clean." },
         { title: "System Design Essentials", desc: "Grasp load balancing, microservices, and database selection for high-traffic platforms." },
@@ -241,30 +272,7 @@ const MasterClassDetails = () => {
       ];
     }
 
-    // Populate custom takeaways if entered in JSON format
-    if (masterclass.whatYouWillLearn) {
-      try {
-        const parsed = JSON.parse(masterclass.whatYouWillLearn);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          data.takeaways = parsed;
-        }
-      } catch (e) {
-        // Fallback to title-based takeaways
-      }
-    }
-
-    // Populate custom FAQs
-    if (masterclass.faqs) {
-      try {
-        const parsed = JSON.parse(masterclass.faqs);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          data.faqs = parsed;
-        }
-      } catch (e) {
-        // Fallback to default FAQs
-      }
-    }
-
+    // Default FAQs if still empty
     if (data.faqs.length === 0) {
       data.faqs = [
         { q: "Is this masterclass really free?", a: "Yes, this masterclass is 100% free of charge. Our mission at Krutanic is to make top-tier industry knowledge and mentorship accessible to everyone." },
@@ -477,7 +485,7 @@ const MasterClassDetails = () => {
 
                 {/* Free Badge */}
                 <div className="absolute -top-1.5 right-6 bg-[#ff6b2d] text-white text-xs font-black uppercase py-1 px-3.5 rounded-full tracking-wider shadow-lg">
-                  {info.price}
+                  {info.price }
                 </div>
 
                 {/* Countdown Timer Wrapper */}
@@ -663,7 +671,7 @@ const MasterClassDetails = () => {
         <div className="max-w-6xl mx-auto px-4 md:px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div className="flex flex-col gap-1">
-              <span className="text-2xl md:text-3xl font-black text-[#ff6b2d]">50,000+</span>
+              <span className="text-2xl md:text-3xl font-black text-[#ff6b2d]">20,000+</span>
               <span className="text-slate-400 text-xs md:text-sm font-semibold">Active Global Learners</span>
             </div>
             <div className="flex flex-col gap-1">
@@ -925,7 +933,7 @@ const MasterClassDetails = () => {
             </div>
             <div className="border-b sm:border-b-0 sm:border-r border-white/[0.08] pb-4 sm:pb-0 sm:pr-6 flex flex-col gap-1">
               <span className="text-slate-500 text-xs uppercase tracking-wider font-semibold">Price & Certification</span>
-              <span className="text-[#ff6b2d] text-sm font-bold mt-1">100% Free Session</span>
+              <span className="text-[#ff6b2d] text-sm font-bold mt-1">{info.price || "100% Free Session"}</span>
               <span className="text-slate-400 text-xs">Certificate Available for Live Attendees</span>
             </div>
             <div className="flex flex-col gap-1">

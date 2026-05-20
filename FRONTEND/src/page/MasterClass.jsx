@@ -516,22 +516,7 @@ const MasterClass = () => {
                       KRUTANIC
                     </span>
 
-                    {/* Footer strip row — overlaid on image bottom */}
-                    <div className="absolute bottom-0 left-0 right-0 grid grid-cols-3 text-[9px] bg-[#0a0f1d]/80 backdrop-blur-sm px-4 py-2.5 border-t border-white/10">
-                      <div className="border-r border-white/10 pr-2">
-                        <span className="block text-slate-400 text-[8px] uppercase font-semibold">Mentor</span>
-                        <span className="font-extrabold block truncate text-white">{mInstructorName}</span>
-                        <span className="text-[7.5px] block text-slate-400 truncate">{mInstructorDesignation}</span>
-                      </div>
-                      <div className="border-r border-white/10 px-2 flex flex-col justify-center">
-                        <span className="block text-slate-400 text-[8px] uppercase font-semibold">Date</span>
-                        <span className="font-bold text-white truncate">{formatClassDateScaler(masterclass.start)}</span>
-                      </div>
-                      <div className="pl-2 flex flex-col justify-center">
-                        <span className="block text-slate-400 text-[8px] uppercase font-semibold">Time</span>
-                        <span className="font-bold text-white truncate">{formatClassTimeScaler(masterclass.start, masterclass.duration)}</span>
-                      </div>
-                    </div>
+
                   </div>
 
                   {/* Body (Bottom Half) */}
