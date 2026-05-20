@@ -302,7 +302,21 @@ const MasterClass = () => {
       .replace(/\-\-+/g, "-");
   };
 
-
+  // Converts any Google Drive share link to an embeddable image URL
+  const convertGoogleDriveUrl = (url) => {
+    if (!url || typeof url !== "string") return url;
+    const trimmed = url.trim();
+    if (trimmed.includes("lh3.googleusercontent.com")) return trimmed;
+    const fileMatch = trimmed.match(/drive\.google\.com\/file\/d\/([^/?&#]+)/);
+    if (fileMatch) {
+      return `https://lh3.googleusercontent.com/d/${fileMatch[1]}`;
+    }
+    const idMatch = trimmed.match(/[?&]id=([^&#]+)/);
+    if (idMatch && trimmed.includes("drive.google.com")) {
+      return `https://lh3.googleusercontent.com/d/${idMatch[1]}`;
+    }
+    return trimmed;
+  };
 
   return (
     <div id="MasterClass">
@@ -482,7 +496,7 @@ const MasterClass = () => {
                   <div className="relative overflow-hidden" style={{ minHeight: "200px" }}>
                     {/* Poster image */}
                     <img
-                      src={masterclass.image}
+                      src={convertGoogleDriveUrl(masterclass.image)}
                       alt={masterclass.title}
                       className="w-full h-[200px] object-cover"
                       onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80"; }}
@@ -659,7 +673,7 @@ const MasterClass = () => {
                 {latestCompletedMasterClass.map((masterclass) => (
                   <article className="mc-completed-item" key={masterclass._id}>
                     <img
-                      src={masterclass.image}
+                      src={convertGoogleDriveUrl(masterclass.image)}
                       alt={masterclass.title}
                       onError={(e) => (e.target.src = imgalt)}
                     />
@@ -697,7 +711,7 @@ const MasterClass = () => {
                 .map((masterclass) => (
                   <article className="mc-completed-card" key={masterclass._id}>
                     <img
-                      src={masterclass.image}
+                      src={convertGoogleDriveUrl(masterclass.image)}
                       alt={masterclass.title}
                       onError={(e) => (e.target.src = imgalt)}
                     />

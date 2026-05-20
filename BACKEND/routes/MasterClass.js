@@ -68,6 +68,11 @@ router.get("/allmasterclasswithsapplicant", async (req, res) => {
       image: 1,
       status: 1,
       pdfstatus: 1,
+      duration: 1,
+      registeredCount: 1,
+      instructorName: 1,
+      instructorDesignation: 1,
+      instructorPhoto: 1,
       applications: { $size: "$applications" } // Get only the count of applications
     }).sort({ start: 1 }).lean();
 

@@ -322,6 +322,25 @@ const MasterClassDetails = () => {
 
   const info = getTailoredContent();
 
+  // Converts any Google Drive share link to an embeddable image URL
+  const convertGoogleDriveUrl = (url) => {
+    if (!url || typeof url !== "string") return url;
+    const trimmed = url.trim();
+    // Already correct lh3 format — return as-is
+    if (trimmed.includes("lh3.googleusercontent.com")) return trimmed;
+    // /file/d/FILE_ID/...
+    const fileMatch = trimmed.match(/drive\.google\.com\/file\/d\/([^/?&#]+)/);
+    if (fileMatch) {
+      return `https://lh3.googleusercontent.com/d/${fileMatch[1]}`;
+    }
+    // ?id=FILE_ID or &id=FILE_ID (covers uc?export=view, open?id=, thumbnail?id=)
+    const idMatch = trimmed.match(/[?&]id=([^&#]+)/);
+    if (idMatch && trimmed.includes("drive.google.com")) {
+      return `https://lh3.googleusercontent.com/d/${idMatch[1]}`;
+    }
+    return trimmed;
+  };
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -776,7 +795,7 @@ const MasterClassDetails = () => {
                 <div className="absolute inset-0 bg-[#ff6b2d]/20 blur-2xl rounded-full scale-95 animate-pulse"></div>
                 <img 
                   className="w-48 h-48 md:w-56 md:h-56 rounded-full object-cover border-4 border-white/[0.08] shadow-2xl relative z-10" 
-                  src={info.instructorPhoto} 
+                  src={convertGoogleDriveUrl(info.instructorPhoto)} 
                   alt={info.instructorName} 
                   onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=256&q=80" }}
                 />

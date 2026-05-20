@@ -83,6 +83,38 @@ const MasterClasses = () => {
     setActiveTab("basic");
   };
 
+  // ─── Google Drive URL helpers ───────────────────────────────────────────────
+  // Detects if a URL is a Drive FOLDER (not an image file — cannot be embedded)
+  const isDriveFolderUrl = (url) =>
+    typeof url === "string" && url.includes("drive.google.com/drive/folders");
+
+  // Converts a Google Drive FILE share link → lh3.googleusercontent.com/d/FILE_ID
+  // This format bypasses CORS completely and works directly in <img> tags.
+  // Supported inputs:
+  //   https://drive.google.com/file/d/FILE_ID/view?usp=sharing
+  //   https://drive.google.com/open?id=FILE_ID
+  //   https://drive.google.com/uc?export=view&id=FILE_ID
+  //   https://lh3.googleusercontent.com/d/FILE_ID  (already correct)
+  const convertGoogleDriveUrl = (url) => {
+    if (!url || typeof url !== "string") return url;
+    if (isDriveFolderUrl(url)) return null; // folder — not an image
+    const trimmed = url.trim();
+    // Already the correct lh3 format
+    if (trimmed.includes("lh3.googleusercontent.com")) return trimmed;
+    // /file/d/FILE_ID/...
+    const fileMatch = trimmed.match(/drive\.google\.com\/file\/d\/([^/?&#]+)/);
+    if (fileMatch) {
+      return `https://lh3.googleusercontent.com/d/${fileMatch[1]}`;
+    }
+    // ?id=FILE_ID or &id=FILE_ID
+    const idMatch = trimmed.match(/[?&]id=([^&#]+)/);
+    if (idMatch && trimmed.includes("drive.google.com")) {
+      return `https://lh3.googleusercontent.com/d/${idMatch[1]}`;
+    }
+    return trimmed;
+  };
+  // ─────────────────────────────────────────────────────────────────────────────
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({
@@ -93,21 +125,33 @@ const MasterClasses = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+    // Block submission if a folder URL was pasted
+    if (isDriveFolderUrl(formData.image)) {
+      toast.error("Cover Image: This is a folder link, not an image. Please share the specific image FILE from Google Drive.");
+      return;
+    }
+    if (isDriveFolderUrl(formData.instructorPhoto)) {
+      toast.error("Instructor Photo: This is a folder link, not an image. Please share the specific photo FILE from Google Drive.");
+      return;
+    }
+    // Auto-convert Google Drive file share links before saving
+    const sanitizedData = {
+      ...formData,
+      image: convertGoogleDriveUrl(formData.image) || formData.image,
+      instructorPhoto: convertGoogleDriveUrl(formData.instructorPhoto) || formData.instructorPhoto,
+    };
     try {
       if (editClassId) {
-        const response = await axios.put(`${API}/masterclass/${editClassId}`, formData);
+        await axios.put(`${API}/masterclass/${editClassId}`, sanitizedData);
         toast.success("MasterClass updated successfully");
       } else {
-        const response = await axios.post(`${API}/addmasterclass`, formData);
+        await axios.post(`${API}/addmasterclass`, sanitizedData);
         toast.success("MasterClass created successfully");
       }
       fetchMasterclass();
       resetForm();
     } catch (error) {
-      toast.error(
-        "There was an error while creating or updating the MasterClass"
-      );
+      toast.error("There was an error while creating or updating the MasterClass");
       console.error("Error creating or updating MasterClass", error);
     }
   };
@@ -340,9 +384,27 @@ const MasterClasses = () => {
                     name="image"
                     value={formData.image}
                     onChange={handleChange}
-                    placeholder="Enter Image url"
+                    placeholder="Paste image URL or Google Drive FILE share link"
                     required
+                    style={{ borderColor: isDriveFolderUrl(formData.image) ? 'red' : undefined }}
                   />
+                  {isDriveFolderUrl(formData.image) ? (
+                    <span style={{ fontSize: '11px', color: 'red', fontWeight: 'bold' }}>
+                      ✗ This is a FOLDER link — it cannot be used as an image.<br/>
+                      Open the file in Drive → right-click → "Share" → copy the file share link.
+                    </span>
+                  ) : (
+                    <span style={{ fontSize: '10px', color: '#f15b29' }}>✓ Google Drive FILE links are auto-converted — paste your Drive file share URL directly</span>
+                  )}
+                  {formData.image && !isDriveFolderUrl(formData.image) && (
+                    <img
+                      src={convertGoogleDriveUrl(formData.image)}
+                      alt="Cover preview"
+                      style={{ width: '100%', maxHeight: '120px', objectFit: 'cover', borderRadius: '8px', marginTop: '6px', border: '1px solid #eee' }}
+                      onError={(e) => { e.target.style.display = 'none'; }}
+                      onLoad={(e) => { e.target.style.display = 'block'; }}
+                    />
+                  )}
                 </div>
                 <div>
                   <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Subheading (Value Proposition)</label>
@@ -436,13 +498,27 @@ const MasterClasses = () => {
                 </div>
                 <div>
                   <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Instructor Photo URL</label>
-                  <input
-                    type="text"
-                    name="instructorPhoto"
-                    value={formData.instructorPhoto}
-                    onChange={handleChange}
-                    placeholder="Leave blank to use main cover image"
-                  />
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                    <div style={{ flex: 1 }}>
+                      <input
+                        type="text"
+                        name="instructorPhoto"
+                        value={formData.instructorPhoto}
+                        onChange={handleChange}
+                        placeholder="Paste image URL or Google Drive share link"
+                      />
+                      <span style={{ fontSize: '10px', color: '#f15b29' }}>✓ Google Drive links are auto-converted — paste your Drive share URL directly</span>
+                    </div>
+                    {formData.instructorPhoto && (
+                      <img
+                        src={convertGoogleDriveUrl(formData.instructorPhoto)}
+                        alt="Instructor preview"
+                        style={{ width: '64px', height: '64px', objectFit: 'cover', borderRadius: '50%', border: '2px solid #f15b29', flexShrink: 0 }}
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                        onLoad={(e) => { e.target.style.display = 'block'; }}
+                      />
+                    )}
+                  </div>
                 </div>
                 <div>
                   <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Instructor Areas of Expertise</label>
