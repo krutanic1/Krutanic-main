@@ -111,14 +111,63 @@ const MasterClassDetails = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#030712] text-white">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-[#ff6b2d] border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-slate-400 font-medium">Loading...</p>
+      <div className="bg-[#030712] min-h-screen text-white animate-pulse">
+        {/* Announcement bar skeleton */}
+        <div className="h-10 bg-white/[0.04] w-full" />
+
+        {/* Hero skeleton */}
+        <section className="max-w-6xl mx-auto px-4 md:px-6 pt-16 pb-20 grid grid-cols-1 lg:grid-cols-12 gap-12">
+          {/* Left */}
+          <div className="lg:col-span-7 flex flex-col gap-5">
+            <div className="h-5 w-36 bg-white/[0.06] rounded-full" />
+            <div className="h-12 w-4/5 bg-white/[0.08] rounded-xl" />
+            <div className="h-12 w-3/5 bg-white/[0.06] rounded-xl" />
+            <div className="h-4 w-full bg-white/[0.05] rounded-lg" />
+            <div className="h-4 w-5/6 bg-white/[0.04] rounded-lg" />
+            <div className="grid grid-cols-4 gap-4 mt-2">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-16 bg-white/[0.04] rounded-xl border border-white/[0.06]" />
+              ))}
+            </div>
+            <div className="flex items-center gap-3 mt-2">
+              <div className="w-9 h-9 rounded-full bg-white/[0.06]" />
+              <div className="w-9 h-9 rounded-full bg-white/[0.06]" />
+              <div className="w-9 h-9 rounded-full bg-white/[0.06]" />
+              <div className="h-4 w-40 bg-white/[0.05] rounded-lg ml-2" />
+            </div>
+          </div>
+          {/* Right — form card */}
+          <div className="lg:col-span-5">
+            <div className="bg-white/[0.02] border border-white/[0.06] rounded-3xl p-8 flex flex-col gap-5">
+              <div className="grid grid-cols-4 gap-2">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="h-16 bg-white/[0.04] rounded-xl border border-white/[0.06]" />
+                ))}
+              </div>
+              <div className="h-5 w-48 bg-white/[0.06] rounded-lg mx-auto" />
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-11 bg-white/[0.04] rounded-xl border border-white/[0.06]" />
+              ))}
+              <div className="h-12 bg-[#ff6b2d]/20 rounded-xl border border-[#ff6b2d]/20" />
+            </div>
+          </div>
+        </section>
+
+        {/* Trust bar skeleton */}
+        <div className="border-y border-white/[0.06] py-6">
+          <div className="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="flex flex-col gap-2 items-center">
+                <div className="h-8 w-24 bg-white/[0.06] rounded-lg" />
+                <div className="h-3 w-32 bg-white/[0.04] rounded-lg" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
   }
+
 
   if (!masterclass) {
     return (
