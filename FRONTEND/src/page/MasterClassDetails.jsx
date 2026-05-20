@@ -568,7 +568,7 @@ const MasterClassDetails = () => {
                           onChange={handleInputChange}
                           className="w-full bg-white/[0.02] border border-white/[0.08] rounded-xl px-3 py-3 text-slate-400 text-sm focus:outline-none focus:border-[#ff6b2d] focus:bg-white/[0.05] focus:ring-2 focus:ring-[#ff6b2d]/25 transition-all"
                         >
-                          <option value="" className="bg-[#030712]">Current Role</option>
+                          <option value="" className="bg-[#030712]">Years of Experience</option>
                           <option value="student" className="bg-[#030712]">Student / Fresher</option>
                           <option value="0-2" className="bg-[#030712]">Professional (0-2 Yrs)</option>
                           <option value="2-5" className="bg-[#030712]">Professional (2-5 Yrs)</option>
@@ -577,7 +577,7 @@ const MasterClassDetails = () => {
                         <input
                           type="text"
                           name="field" 
-                          placeholder="Years of Experience"
+                          placeholder="Current Role"
                           
                           required
                           value={formData.field}
@@ -585,7 +585,7 @@ const MasterClassDetails = () => {
                           className="w-full bg-white/[0.02] border border-white/[0.08] rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#ff6b2d] focus:bg-white/[0.05] focus:ring-2 focus:ring-[#ff6b2d]/25 transition-all"
                         />
                       </div>
-                      <div>
+                      {/* <div>
                         <input
                           type="text"
                           name="gradYear"
@@ -594,7 +594,7 @@ const MasterClassDetails = () => {
                           onChange={handleInputChange}
                           className="w-full bg-white/[0.02] border border-white/[0.08] rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#ff6b2d] focus:bg-white/[0.05] focus:ring-2 focus:ring-[#ff6b2d]/25 transition-all"
                         />
-                      </div>
+                      </div> */}
                       
                       <div className="flex items-start gap-2.5 mt-1">
                         <input
