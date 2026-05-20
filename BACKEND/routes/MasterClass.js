@@ -34,6 +34,65 @@ router.get("/masterclass/:id", async (req, res) => {
     }
   });
 
+// Get a single MasterClass by slug or ID with related classes included (for high performance details page)
+router.get("/masterclass/by-slug-or-id/:identifier", async (req, res) => {
+    try {
+        const { identifier } = req.params;
+        const isObjectId = /^[0-9a-fA-F]{24}$/.test(identifier);
+        
+        let masterClass = null;
+        if (isObjectId) {
+            masterClass = await MasterClass.findById(identifier, { applications: 0 });
+        } else {
+            // Find by slugify title
+            const allClassTitles = await MasterClass.find({}, { title: 1 }).lean();
+            const slugify = (text) => {
+                if (!text) return "";
+                return text
+                    .toString()
+                    .toLowerCase()
+                    .trim()
+                    .replace(/\s+/g, "-")
+                    .replace(/[^\w\-]+/g, "")
+                    .replace(/\-\-+/g, "-");
+            };
+            const matched = allClassTitles.find(item => slugify(item.title) === identifier);
+            if (matched) {
+                masterClass = await MasterClass.findById(matched._id, { applications: 0 });
+            }
+        }
+
+        if (!masterClass) {
+            return res.status(404).json({ error: "MasterClass not found" });
+        }
+
+        // Fetch related classes (upcoming or ongoing, excluding the current one)
+        const related = await MasterClass.find({
+            _id: { $ne: masterClass._id },
+            status: { $in: ["upcoming", "ongoing"] }
+        }, {
+            title: 1,
+            start: 1,
+            end: 1,
+            link: 1,
+            image: 1,
+            status: 1,
+            duration: 1,
+            registeredCount: 1,
+            instructorName: 1,
+            instructorDesignation: 1,
+            instructorPhoto: 1
+        }).limit(3).lean();
+
+        res.status(200).json({
+            masterclass: masterClass,
+            related: related
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Update a MasterClass
 router.put("/masterclass/:id", async (req, res) => {
     try {

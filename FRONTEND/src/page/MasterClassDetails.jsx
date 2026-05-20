@@ -55,57 +55,16 @@ const MasterClassDetails = () => {
     const fetchDetails = async () => {
       try {
         setLoading(true);
-        
-        const slugify = (text) => {
-          if (!text) return "";
-          return text
-            .toString()
-            .toLowerCase()
-            .trim()
-            .replace(/\s+/g, "-")
-            .replace(/[^\w\-]+/g, "")
-            .replace(/\-\-+/g, "-");
-        };
-
-        const isObjectId = /^[0-9a-fA-F]{24}$/.test(id);
-        let targetId = id;
-
-        if (!isObjectId) {
-          // If it's a slug, fetch all masterclasses to match
-          const listRes = await axios.get(`${API}/allmasterclasswithsapplicant`);
-          const matched = listRes.data.find(
-            (item) => slugify(item.title) === id
-          );
-          if (matched) {
-            targetId = matched._id;
-          } else {
-            // Check full details list as fallback
-            const allRes = await axios.get(`${API}/allmasterclass`);
-            const matchedFull = allRes.data.find(
-              (item) => slugify(item.title) === id
-            );
-            if (matchedFull) {
-              targetId = matchedFull._id;
-            } else {
-              setMasterclass(null);
-              setLoading(false);
-              return;
-            }
-          }
+        const response = await axios.get(`${API}/masterclass/by-slug-or-id/${id}`);
+        if (response.data) {
+          setMasterclass(response.data.masterclass);
+          setRelatedClasses(response.data.related || []);
+        } else {
+          setMasterclass(null);
         }
-
-        // Get details using targetId
-        const response = await axios.get(`${API}/masterclass/${targetId}`);
-        setMasterclass(response.data);
-        
-        // Get all to filter for related classes
-        const allRes = await axios.get(`${API}/allmasterclasswithsapplicant`);
-        const ongoingOrUpcoming = allRes.data.filter(
-          (item) => item._id !== targetId && (item.status === "upcoming" || item.status === "ongoing")
-        );
-        setRelatedClasses(ongoingOrUpcoming.slice(0, 3));
       } catch (err) {
         console.error("Error fetching masterclass details:", err);
+        setMasterclass(null);
         toast.error("Failed to load masterclass details");
       } finally {
         setLoading(false);
@@ -617,8 +576,9 @@ const MasterClassDetails = () => {
                         </select>
                         <input
                           type="text"
-                          name="field"
-                          placeholder="College / Field"
+                          name="field" 
+                          placeholder="Years of Experience"
+                          
                           required
                           value={formData.field}
                           onChange={handleInputChange}
@@ -629,7 +589,7 @@ const MasterClassDetails = () => {
                         <input
                           type="text"
                           name="gradYear"
-                          placeholder="Graduation Year (Optional)"
+                          placeholder="Graduation Year"
                           value={formData.gradYear}
                           onChange={handleInputChange}
                           className="w-full bg-white/[0.02] border border-white/[0.08] rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#ff6b2d] focus:bg-white/[0.05] focus:ring-2 focus:ring-[#ff6b2d]/25 transition-all"
