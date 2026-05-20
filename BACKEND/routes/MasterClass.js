@@ -23,6 +23,17 @@ router.get("/allmasterclass", async (req, res) => {
     }
   });
 
+// Get a single MasterClass by ID (for the detailed page)
+router.get("/masterclass/:id", async (req, res) => {
+    try {
+      const masterClass = await MasterClass.findById(req.params.id, { applications: 0 });
+      if (!masterClass) return res.status(404).json({ error: "MasterClass not found" });
+      res.status(200).json(masterClass);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
 // Update a MasterClass
 router.put("/masterclass/:id", async (req, res) => {
     try {

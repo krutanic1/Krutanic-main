@@ -11,12 +11,38 @@ const MasterClasses = () => {
   const [editClassId, setEditClassId] = useState(null);
   const [allMasterClass, setAllMasterClass] = useState([]);
   const [selectedMC, setSelectedMC] = useState(null);
+  const [activeTab, setActiveTab] = useState("basic");
   const [formData, setFormData] = useState({
     title: "",
     start: "",
     end: "",
     link: "",
     image: "",
+    subheading: "",
+    duration: "",
+    venue: "",
+    registeredCount: "",
+    rating: "",
+    level: "",
+    price: "",
+    language: "",
+    certificateAvailable: "",
+    instructorName: "",
+    instructorDesignation: "",
+    instructorExpertise: "",
+    instructorCredibility: "",
+    instructorExperience: "",
+    instructorLearnersMentored: "",
+    instructorRating: "",
+    instructorSessions: "",
+    instructorCompanyTags: "",
+    instructorPhoto: "",
+    whyAttend: "",
+    whatYouWillLearn: "",
+    whoShouldAttend: "",
+    transformationBefore: "",
+    transformationAfter: "",
+    faqs: "",
   });
 
   const resetForm = () => {
@@ -26,9 +52,35 @@ const MasterClasses = () => {
       end: "",
       link: "",
       image: "",
+      subheading: "",
+      duration: "",
+      venue: "",
+      registeredCount: "",
+      rating: "",
+      level: "",
+      price: "",
+      language: "",
+      certificateAvailable: "",
+      instructorName: "",
+      instructorDesignation: "",
+      instructorExpertise: "",
+      instructorCredibility: "",
+      instructorExperience: "",
+      instructorLearnersMentored: "",
+      instructorRating: "",
+      instructorSessions: "",
+      instructorCompanyTags: "",
+      instructorPhoto: "",
+      whyAttend: "",
+      whatYouWillLearn: "",
+      whoShouldAttend: "",
+      transformationBefore: "",
+      transformationAfter: "",
+      faqs: "",
     });
     setEditClassId(null);
     setisFormVisible(false);
+    setActiveTab("basic");
   };
 
   const handleChange = (event) => {
@@ -75,14 +127,40 @@ const MasterClasses = () => {
     const isConfirmed = window.confirm("Are you sure you want to edit the Master Class?");
     if (isConfirmed) {
       setFormData({
-        title: masterclass.title,
-        start: masterclass.start,
-        end: masterclass.end,
-        link: masterclass.link,
-        image: masterclass.image,
+        title: masterclass.title || "",
+        start: masterclass.start || "",
+        end: masterclass.end || "",
+        link: masterclass.link || "",
+        image: masterclass.image || "",
+        subheading: masterclass.subheading || "",
+        duration: masterclass.duration || "",
+        venue: masterclass.venue || "",
+        registeredCount: masterclass.registeredCount || "",
+        rating: masterclass.rating || "",
+        level: masterclass.level || "",
+        price: masterclass.price || "",
+        language: masterclass.language || "",
+        certificateAvailable: masterclass.certificateAvailable || "",
+        instructorName: masterclass.instructorName || "",
+        instructorDesignation: masterclass.instructorDesignation || "",
+        instructorExpertise: masterclass.instructorExpertise || "",
+        instructorCredibility: masterclass.instructorCredibility || "",
+        instructorExperience: masterclass.instructorExperience || "",
+        instructorLearnersMentored: masterclass.instructorLearnersMentored || "",
+        instructorRating: masterclass.instructorRating || "",
+        instructorSessions: masterclass.instructorSessions || "",
+        instructorCompanyTags: masterclass.instructorCompanyTags || "",
+        instructorPhoto: masterclass.instructorPhoto || "",
+        whyAttend: masterclass.whyAttend || "",
+        whatYouWillLearn: masterclass.whatYouWillLearn || "",
+        whoShouldAttend: masterclass.whoShouldAttend || "",
+        transformationBefore: masterclass.transformationBefore || "",
+        transformationAfter: masterclass.transformationAfter || "",
+        faqs: masterclass.faqs || "",
       });
       setEditClassId(masterclass._id);
       setisFormVisible(true);
+      setActiveTab("basic");
     }
   };
 
@@ -152,62 +230,383 @@ const MasterClasses = () => {
       <Toaster position="top-center" reverseOrder={false} />
       {isFormVisible && (
         <div className="form">
-          <form onSubmit={handleSubmit}>
-            <h2>{editClassId ? "Edit MasterClass" : "Add New MasterClass"}</h2>
-            <span onClick={resetForm}>✖</span>
-            <input
-              value={formData.title}
-              onChange={handleChange}
-              type="text"
-              name="title"
-              id="title"
-              placeholder="Enter Masterclass title"
-              required
-            />
-            <label htmlFor="start" className="text-gray-500">
-              Select Start Date and Time
-            </label>
-            <input
-              value={formData.start}
-              onChange={handleChange}
-              type="datetime-local"
-              name="start"
-              id="start"
-              required
-            />
-            <label htmlFor="end" className="text-gray-500">
-              Select End Date and Time
-            </label>
-            <input
-              type="datetime-local"
-              name="end"
-              id="end"
-              value={formData.end}
-              onChange={handleChange}
-              required
-            />
-            <input
-              type="url"
-              name="link"
-              id="link"
-              value={formData.link}
-              onChange={handleChange}
-              placeholder="Enter Whatsapp group link"
-              required
-            />
-            <input
-              type="text"
-              name="image"
-              id="image"
-              value={formData.image}
-              onChange={handleChange}
-              placeholder="Enter Image url"
-              required
-            />
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px', maxWidth: '650px', height: '650px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h2>{editClassId ? "Edit MasterClass" : "Add New MasterClass"}</h2>
+              <span onClick={resetForm} style={{ fontSize: '20px', cursor: 'pointer', fontWeight: 'bold' }}>✖</span>
+            </div>
+            
+            {/* Tab Headers */}
+            <div style={{ display: 'flex', gap: '10px', borderBottom: '1px solid #ddd', paddingBottom: '10px' }}>
+              <button
+                type="button"
+                onClick={() => setActiveTab("basic")}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  backgroundColor: activeTab === "basic" ? "#f15b29" : "#eee",
+                  color: activeTab === "basic" ? "#fff" : "#333",
+                  flex: 1
+                }}
+              >
+                1. Basic Info
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("instructor")}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  backgroundColor: activeTab === "instructor" ? "#f15b29" : "#eee",
+                  color: activeTab === "instructor" ? "#fff" : "#333",
+                  flex: 1
+                }}
+              >
+                2. Instructor
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("landing")}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  backgroundColor: activeTab === "landing" ? "#f15b29" : "#eee",
+                  color: activeTab === "landing" ? "#fff" : "#333",
+                  flex: 1
+                }}
+              >
+                3. Page Content
+              </button>
+            </div>
+
+            {/* Tab 1: Basic Info */}
+            {activeTab === "basic" && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', overflowY: 'auto', flex: 1, paddingRight: '5px' }}>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Masterclass Title *</label>
+                  <input
+                    value={formData.title}
+                    onChange={handleChange}
+                    type="text"
+                    name="title"
+                    placeholder="Enter Masterclass title"
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Start Date & Time *</label>
+                  <input
+                    value={formData.start}
+                    onChange={handleChange}
+                    type="datetime-local"
+                    name="start"
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>End Date & Time *</label>
+                  <input
+                    value={formData.end}
+                    onChange={handleChange}
+                    type="datetime-local"
+                    name="end"
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>WhatsApp Group Link *</label>
+                  <input
+                    type="url"
+                    name="link"
+                    value={formData.link}
+                    onChange={handleChange}
+                    placeholder="Enter Whatsapp group link"
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Cover Card Image URL *</label>
+                  <input
+                    type="text"
+                    name="image"
+                    value={formData.image}
+                    onChange={handleChange}
+                    placeholder="Enter Image url"
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Subheading (Value Proposition)</label>
+                  <input
+                    type="text"
+                    name="subheading"
+                    value={formData.subheading}
+                    onChange={handleChange}
+                    placeholder="e.g. Master automation testing frameworks and land high-paying roles"
+                  />
+                </div>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Duration</label>
+                    <input
+                      type="text"
+                      name="duration"
+                      value={formData.duration}
+                      onChange={handleChange}
+                      placeholder="e.g. 90 Mins"
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Venue</label>
+                    <input
+                      type="text"
+                      name="venue"
+                      value={formData.venue}
+                      onChange={handleChange}
+                      placeholder="e.g. Online Live"
+                    />
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Price Option</label>
+                    <input
+                      type="text"
+                      name="price"
+                      value={formData.price}
+                      onChange={handleChange}
+                      placeholder="e.g. 100% Free"
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Language</label>
+                    <input
+                      type="text"
+                      name="language"
+                      value={formData.language}
+                      onChange={handleChange}
+                      placeholder="e.g. English"
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Certificate Available?</label>
+                    <input
+                      type="text"
+                      name="certificateAvailable"
+                      value={formData.certificateAvailable}
+                      onChange={handleChange}
+                      placeholder="e.g. Yes"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Tab 2: Instructor Info */}
+            {activeTab === "instructor" && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', overflowY: 'auto', flex: 1, paddingRight: '5px' }}>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Instructor Name</label>
+                  <input
+                    type="text"
+                    name="instructorName"
+                    value={formData.instructorName}
+                    onChange={handleChange}
+                    placeholder="e.g. Abhijeet Gupta"
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Instructor Designation</label>
+                  <input
+                    type="text"
+                    name="instructorDesignation"
+                    value={formData.instructorDesignation}
+                    onChange={handleChange}
+                    placeholder="e.g. Project Engineer at WIPRO"
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Instructor Photo URL</label>
+                  <input
+                    type="text"
+                    name="instructorPhoto"
+                    value={formData.instructorPhoto}
+                    onChange={handleChange}
+                    placeholder="Leave blank to use main cover image"
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Instructor Areas of Expertise</label>
+                  <input
+                    type="text"
+                    name="instructorExpertise"
+                    value={formData.instructorExpertise}
+                    onChange={handleChange}
+                    placeholder="e.g. Automation Testing & QA Lead"
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Short Bio / Achievements</label>
+                  <textarea
+                    name="instructorCredibility"
+                    value={formData.instructorCredibility}
+                    onChange={handleChange}
+                    placeholder="Successfully trained and mentored over 5,000+ QA professionals globally."
+                    style={{ height: '70px', padding: '8px', border: '1px solid #ccc', borderRadius: '10px' }}
+                  />
+                </div>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Years Experience</label>
+                    <input
+                      type="text"
+                      name="instructorExperience"
+                      value={formData.instructorExperience}
+                      onChange={handleChange}
+                      placeholder="e.g. 5+ Years"
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Learners Mentored</label>
+                    <input
+                      type="text"
+                      name="instructorLearnersMentored"
+                      value={formData.instructorLearnersMentored}
+                      onChange={handleChange}
+                      placeholder="e.g. 5,000+"
+                    />
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Instructor Rating</label>
+                    <input
+                      type="text"
+                      name="instructorRating"
+                      value={formData.instructorRating}
+                      onChange={handleChange}
+                      placeholder="e.g. 4.9"
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Sessions Done</label>
+                    <input
+                      type="text"
+                      name="instructorSessions"
+                      value={formData.instructorSessions}
+                      onChange={handleChange}
+                      placeholder="e.g. 40+ Live Classes"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Company Badges (Comma-separated)</label>
+                  <input
+                    type="text"
+                    name="instructorCompanyTags"
+                    value={formData.instructorCompanyTags}
+                    onChange={handleChange}
+                    placeholder="e.g. WIPRO, QA Specialist, Ex-Amazon"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Tab 3: Landing Content */}
+            {activeTab === "landing" && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', overflowY: 'auto', flex: 1, paddingRight: '5px' }}>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Why Attend (Problem Statement Paragraph)</label>
+                  <textarea
+                    name="whyAttend"
+                    value={formData.whyAttend}
+                    onChange={handleChange}
+                    placeholder="Describe user pain points and how this session resolves them..."
+                    style={{ height: '70px', padding: '8px', border: '1px solid #ccc', borderRadius: '10px' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Who Should Attend (Comma-separated list)</label>
+                  <input
+                    type="text"
+                    name="whoShouldAttend"
+                    value={formData.whoShouldAttend}
+                    onChange={handleChange}
+                    placeholder="e.g. Students & Freshers, QA Professionals, Self-learners"
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Before Attending (Comma-separated pain points)</label>
+                  <input
+                    type="text"
+                    name="transformationBefore"
+                    value={formData.transformationBefore}
+                    onChange={handleChange}
+                    placeholder="e.g. Stuck in tutorial loop, No portfolio to display"
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>After Attending (Comma-separated achievements)</label>
+                  <input
+                    type="text"
+                    name="transformationAfter"
+                    value={formData.transformationAfter}
+                    onChange={handleChange}
+                    placeholder="e.g. Equipped with clear roadmap, Built real-world framework"
+                  />
+                </div>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Takeaway strategies (JSON array)</label>
+                    <span style={{ fontSize: '10px', color: '#f15b29' }}>Paste JSON list of takeaways</span>
+                  </div>
+                  <textarea
+                    name="whatYouWillLearn"
+                    value={formData.whatYouWillLearn}
+                    onChange={handleChange}
+                    placeholder='e.g. [{"title":"Architecture","desc":"Build scalable POM frameworks."}]'
+                    style={{ height: '75px', fontFamily: 'monospace', fontSize: '11px', padding: '8px', border: '1px solid #ccc', borderRadius: '10px' }}
+                  />
+                </div>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Frequently Asked Questions (JSON array)</label>
+                    <span style={{ fontSize: '10px', color: '#f15b29' }}>Paste JSON list of FAQs</span>
+                  </div>
+                  <textarea
+                    name="faqs"
+                    value={formData.faqs}
+                    onChange={handleChange}
+                    placeholder='e.g. [{"q":"Will I get certificate?","a":"Yes, live attendees receive a certificate."}]'
+                    style={{ height: '75px', fontFamily: 'monospace', fontSize: '11px', padding: '8px', border: '1px solid #ccc', borderRadius: '10px' }}
+                  />
+                </div>
+              </div>
+            )}
+
             <input
               className="cursor-pointer"
               type="submit"
               value={editClassId ? "Update Master Class" : "Create Master Class"}
+              style={{
+                backgroundColor: 'black',
+                color: 'white',
+                padding: '12px',
+                borderRadius: '8px',
+                border: 'none',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                marginTop: 'auto'
+              }}
             />
           </form>
         </div>

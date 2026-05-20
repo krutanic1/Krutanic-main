@@ -33,6 +33,7 @@ import MentorshipCourseDetails from "./page/Mentorship/CourseDetails/MentorshipC
 import ProductManagement from "./page/AdvanceCourse/ProductManagement";
 import SmoothScroll from "./SmoothScroll";
 import MasterClass from "./page/MasterClass";
+import MasterClassDetails from "./page/MasterClassDetails";
 import AutomationTesting from "./page/AdvanceCourse/AutomationTesting";
 import PromptEngineering from "./page/AdvanceCourse/PromptEngineering";
 import GenerativeAI from "./page/AdvanceCourse/GenerativeAI";
@@ -477,7 +478,7 @@ const AppContent = () => {
         <HRHeader />
       ) : userheaderPaths.includes(location.pathname.toLowerCase()) ? (
         <UserHeader />
-      ) : (headerPaths.includes(location.pathname.toLowerCase()) || location.pathname.toLowerCase().startsWith('/mentorship/')) ? (
+      ) : (headerPaths.includes(location.pathname.toLowerCase()) || location.pathname.toLowerCase().startsWith('/mentorship/') || location.pathname.toLowerCase().startsWith('/masterclass/')) ? (
         <Header />
       ) : null}
 
@@ -518,6 +519,7 @@ const AppContent = () => {
         <Route path="/DashboardAccessForm" element={<DashboardAccessForm />} />
         <Route path="/AdvanceDashboardAccess" element={<AdvanceDashboardAccess />} />
         <Route path="/MasterClass" element={<MasterClass />} />
+        <Route path="/MasterClass/:id" element={<MasterClassDetails />} />
         <Route path="/Alumni" element={<Alumni />} />
         <Route path="/Verify" element={<Verified />} />
         <Route path="/ReferAndEarn" element={<ReferAndEarn />} />
