@@ -27,7 +27,7 @@ const AdvanceCounses = () => {
       badgeClass: "bg-[#1d5fae] text-white",
       support: "Live Project Mentoring",
       credential: "Certification",
-      duration: "3 Months",
+      duration: "6 Months",
       batch: "31st May",
       brochure: dataScienceBrochure,
     },
@@ -40,7 +40,7 @@ const AdvanceCounses = () => {
       badgeClass: "bg-[#086f70] text-white",
       support: "Industrial Project Case Studies",
       credential: "Professional Certificate",
-      duration: "3 Months",
+      duration: "6 Months",
       batch: "31st May",
       brochure: dataAnalyticsBrochure,
     },
@@ -53,7 +53,7 @@ const AdvanceCounses = () => {
       badgeClass: "bg-[#0b6b8a] text-white",
       support: "Placement & Portfolio Support",
       credential: "Advanced Certificate",
-      duration: "3 Months",
+      duration: "6 Months",
       batch: "31st May",
       brochure: digitalMarketingBrochure,
     },
@@ -67,7 +67,7 @@ const AdvanceCounses = () => {
       badgeClass: "bg-[#7c3aed] text-white",
       support: "Mentor Feedback",
       credential: "Executive Program",
-      duration: "3 Months",
+      duration: "6 Months",
       brochure: productManagementBrochure,
     },
     {
@@ -79,7 +79,7 @@ const AdvanceCounses = () => {
       badgeClass: "bg-[#dc2626] text-white",
       support: "AI Career Guidance",
       credential: "Certification",
-      duration: "3 Months",
+      duration: "6 Months",
       brochure: promptEngineeringBrochure,
     },
     {
@@ -91,7 +91,7 @@ const AdvanceCounses = () => {
       badgeClass: "bg-[#6b0f44] text-white",
       support: "360 Degree Career Support",
       credential: "Executive Diploma",
-      duration: "3 Months",
+      duration: "6 Months",
       brochure: mernBrochure,
     },
   ];
@@ -137,39 +137,36 @@ const AdvanceCounses = () => {
 
   const Difference = [
     {
-      title: "Resume Making With AI",
-      description: "Create AI-enhanced, personalized resumes.",
-      icon: "📝",
+      title: "AI-Driven Resume Building",
+      description: "Craft personalized, ATS-friendly resumes optimized by advanced AI tools.",
+      icon: <i className="fa fa-file-text-o" aria-hidden="true"></i>,
     },
     {
-      title: "Hands-on Learning",
-      description: "Learn through real-world projects.",
-      icon: "🔧",
+      title: "Project-Based Learning",
+      description: "Master complex concepts through real-world, industry-relevant projects.",
+      icon: <i className="fa fa-laptop" aria-hidden="true"></i>,
     },
     {
-      title: "Careers Counselling",
-      description: "Get personalized career advice.",
-      icon: "💼",
+      title: "Dedicated Career Counseling",
+      description: "Receive personalized mentorship to navigate your career trajectory.",
+      icon: <i className="fa fa-briefcase" aria-hidden="true"></i>,
     },
     {
       title: "AI-Powered Mock Interviews",
-      description: "Prepare with AI-driven mock interviews.",
-      icon: "🤖",
+      description: "Refine your interview skills with advanced AI simulation technologies.",
+      icon: <i className="fa fa-comments-o" aria-hidden="true"></i>,
     },
     {
-      title: "Help With Referrals",
-      description: "Receive guidance on job referrals.",
-      icon: "🔗",
+      title: "Direct Referral Support",
+      description: "Gain exclusive access to job referrals through our partner network.",
+      icon: <i className="fa fa-users" aria-hidden="true"></i>,
     },
     {
-      title: "Global Network",
-      description: "Connect with professionals worldwide.",
-      icon: "🌐",
+      title: "Global Alumni Network",
+      description: "Connect and collaborate with professionals and leaders worldwide.",
+      icon: <i className="fa fa-globe" aria-hidden="true"></i>,
     },
   ];
-
-
-
 
   return (
     <section className="space-y-12">
@@ -244,66 +241,31 @@ const AdvanceCounses = () => {
         </div>
       </div>
 
-      {/* <div className="mt-8">
-        <h1 className="text-2xl font-bold my-6">
-         | Why Choose Our Advanced Courses?
-        </h1>
-        <ul className="space-y-3">
-          <li className="flex items-center gap-2">
-            <i className="fa fa-arrow-right" aria-hidden="true"></i>
-            Expert-led instruction from industry professionals
-          </li>
-          <li className="flex items-center gap-2">
-            <i className="fa fa-arrow-right" aria-hidden="true"></i>
-            Hands-on projects and real-world applications
-          </li>
-          <li className="flex items-center gap-2">
-            <i className="fa fa-arrow-right" aria-hidden="true"></i>
-            Flexible learning schedules to fit your lifestyle
-          </li>
-          <li className="flex items-center gap-2">
-            <i className="fa fa-arrow-right" aria-hidden="true"></i>
-            Cutting-edge curriculum updated regularly
-          </li>
-          <li className="flex items-center gap-2">
-            <i className="fa fa-arrow-right" aria-hidden="true"></i>
-            Comprehensive support and mentoring
-          </li>
-          <li className="flex items-center gap-2">
-            <i className="fa fa-arrow-right" aria-hidden="true"></i>
-            Networking opportunities with professionals and peers
-          </li>
-          <li className="flex items-center gap-2">
-            <i className="fa fa-arrow-right" aria-hidden="true"></i>
-            Certification and career advancement
-          </li>
-          <li className="flex items-center gap-2">
-            <i className="fa fa-arrow-right" aria-hidden="true"></i>
-            Global learning community
-          </li>
-          <li className="flex items-center gap-2">
-            <i className="fa fa-arrow-right" aria-hidden="true"></i>
-            Tailored learning paths for every skill level
-          </li>
-        </ul>
-      </div> */}
-      <div>
-        <h1 className="my-10 text-2xl font-bold">
-          | Why Choose Our Advanced Courses?
-        </h1>
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-center">
-          {Difference.map((Difference, index) => (
+      <div className="mt-16 px-4 md:px-0">
+        <div className="mb-10 text-center">
+          <h2 className="text-3xl font-bold leading-tight text-[#030712] md:text-4xl">
+            Why Choose Our <span className="text-[#f15b29]">Advanced Courses</span>?
+          </h2>
+          <p className="mt-4 text-base text-[#4b5563]">
+            Elevate your career with our industry-leading curriculum and comprehensive support network.
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Difference.map((feature, index) => (
             <div
               key={index}
-              className="provide1 rounded-2xl border border-[#f0dfd6] bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+              className="group flex flex-col items-start rounded-2xl border border-[#e5e7eb] bg-white p-8 transition-all duration-300 hover:-translate-y-1 hover:border-[#f15b29] hover:shadow-[0_12px_24px_rgba(241,91,41,0.08)]"
             >
-              <div className="text-[#f15b29] text-4xl mb-4">
-                {Difference.icon}
+              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-[#fff5ee] text-2xl text-[#f15b29] transition-colors group-hover:bg-[#f15b29] group-hover:text-white">
+                {feature.icon}
               </div>
-              <h3 className="mb-3 text-lg font-bold text-[#f15b29]">
-                {Difference.title}
+              <h3 className="mb-3 text-xl font-bold text-[#111827]">
+                {feature.title}
               </h3>
-              <p className="text-[#334155]">{Difference.description}</p>
+              <p className="text-sm leading-relaxed text-[#4b5563]">
+                {feature.description}
+              </p>
             </div>
           ))}
         </div>
