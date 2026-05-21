@@ -366,9 +366,338 @@ const sendEnrollmentFormWelcomeEmail = async (userEmail, userName, domainName) =
     }
 };
 
+const sendMasterclassWelcomeEmail = async (userEmail, userName, masterclassTitle, startDateTime, whatsappLink) => {
+    try {
+        await admissionsTransporter.sendMail({
+            from: `"Krutanic Masterclasses" <${admissionsSender}>`,
+            to: userEmail,
+            subject: `Registration Confirmed: ${masterclassTitle}`,
+            html: `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Registration Confirmed</title>
+                    <style>
+                        body {
+                            margin: 0;
+                            padding: 0;
+                            background-color: #f4f7fa;
+                            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                            -webkit-font-smoothing: antialiased;
+                        }
+                        .wrapper {
+                            width: 100%;
+                            table-layout: fixed;
+                            background-color: #f4f7fa;
+                            padding-bottom: 40px;
+                        }
+                        .main {
+                            background-color: #ffffff;
+                            margin: 0 auto;
+                            width: 100%;
+                            max-width: 600px;
+                            border-spacing: 0;
+                            font-family: sans-serif;
+                            color: #1e293b;
+                            border-radius: 12px;
+                            overflow: hidden;
+                            margin-top: 40px;
+                            box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+                        }
+                        .header {
+                            padding: 40px 0;
+                            text-align: center;
+                            background-color: #ffffff;
+                        }
+                        .content {
+                            padding: 0 50px 40px 50px;
+                        }
+                        .greeting {
+                            font-size: 24px;
+                            font-weight: 700;
+                            margin-bottom: 16px;
+                            color: #0f172a;
+                            letter-spacing: -0.02em;
+                        }
+                        .text {
+                            font-size: 16px;
+                            line-height: 1.6;
+                            color: #475569;
+                            margin-bottom: 24px;
+                        }
+                        .steps-container {
+                            background-color: #f8fafc;
+                            border-radius: 16px;
+                            padding: 32px;
+                            margin-bottom: 32px;
+                            border: 1px solid #f1f5f9;
+                        }
+                        .steps-title {
+                            font-size: 12px;
+                            font-weight: 800;
+                            text-transform: uppercase;
+                            letter-spacing: 0.1em;
+                            color: #ff6b2d;
+                            margin-bottom: 24px;
+                        }
+                        .cta-wrapper {
+                            text-align: center;
+                            margin-top: 40px;
+                        }
+                        .button {
+                            background-color: #ff6b2d;
+                            color: #ffffff !important;
+                            padding: 16px 32px;
+                            text-decoration: none;
+                            border-radius: 8px;
+                            font-weight: 600;
+                            font-size: 15px;
+                            display: inline-block;
+                            box-shadow: 0 4px 12px rgba(255, 107, 45, 0.2);
+                        }
+                        .footer {
+                            text-align: center;
+                            padding: 40px 20px;
+                        }
+                        .footer-text {
+                            font-size: 12px;
+                            color: #94a3b8;
+                            line-height: 1.8;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="wrapper">
+                        <table class="main" width="100%">
+                            <tr>
+                                <td style="background-color: #ff6b2d; padding: 35px 0; text-align: center; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+                                    <div style="font-size: 32px; font-weight: 800; letter-spacing: 1px; color: #ffffff; margin: 0;">Krutanic</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="content">
+                                    <h1 class="greeting">Registration Confirmed, ${userName}.</h1>
+                                    <p class="text">
+                                        Congratulations! Your spot for the highly anticipated <strong>${masterclassTitle}</strong> masterclass is secured. 
+                                    </p>
+                                    <p class="text">
+                                        This session is packed with industry-level insights and frameworks designed to accelerate your career growth.
+                                    </p>
+                                    
+                                    <div class="steps-container">
+                                        <div class="steps-title">Session Details</div>
+                                        <div style="margin-bottom: 20px;">
+                                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                <tr>
+                                                    <td width="30" valign="top" style="font-weight: 800; color: #ff6b2d; font-size: 16px;"><i class="fa fa-calendar"></i></td>
+                                                    <td style="font-size: 15px; color: #0f172a; line-height: 1.5; font-weight: 600;">
+                                                        Date & Time
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="30"></td>
+                                                    <td style="font-size: 14px; color: #475569; padding-top: 4px;">
+                                                        ${new Date(startDateTime).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'full', timeStyle: 'short' })} (IST)
+                                                    </td>
+                                                </tr>
+                                                <tr><td height="20"></td></tr>
+                                                <tr>
+                                                    <td width="30" valign="top" style="font-weight: 800; color: #ff6b2d; font-size: 16px;"><i class="fa fa-video-camera"></i></td>
+                                                    <td style="font-size: 15px; color: #0f172a; line-height: 1.5; font-weight: 600;">
+                                                        Joining Info
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="30"></td>
+                                                    <td style="font-size: 14px; color: #475569; padding-top: 4px;">
+                                                        You will receive the secure joining link and community access straight to your inbox shortly before the session begins.
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="cta-wrapper">
+                                        <a href="https://krutanic.com" class="button">Visit Our Platform</a>
+                                        ${whatsappLink ? `
+                                        <div style="margin-top: 20px;">
+                                            <a href="${whatsappLink}" class="button" style="background-color: #25D366; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);">
+                                                Join WhatsApp Community
+                                            </a>
+                                        </div>
+                                        ` : ''}
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="footer">
+                            <p class="footer-text">
+                                &copy; 2024 Krutanic. Professional Excellence.<br>
+                                You are receiving this because you registered for a Krutanic Masterclass.<br>
+                                <a href="https://krutanic.com" style="color: #ff6b2d; text-decoration: none;">Visit Website</a> &bull; <a href="#" style="color: #ff6b2d; text-decoration: none;">Privacy Policy</a>
+                            </p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `,
+        });
+        console.log(`Masterclass welcome email sent to ${userEmail}`);
+        return true;
+    } catch (error) {
+        console.error("Masterclass welcome email failed:", error);
+        return false;
+    }
+};
+
+const sendMasterclassDailyReminder = async (userEmail, userName, masterclassTitle, startDateTime, whatsappLink) => {
+    try {
+        await admissionsTransporter.sendMail({
+            from: `"Krutanic Masterclasses" <${admissionsSender}>`,
+            to: userEmail,
+            subject: `Reminder: Upcoming Masterclass - ${masterclassTitle}`,
+            html: `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Upcoming Masterclass Reminder</title>
+                    <style>
+                        body { margin: 0; padding: 0; background-color: #f4f7fa; font-family: 'Inter', sans-serif; }
+                        .wrapper { width: 100%; table-layout: fixed; background-color: #f4f7fa; padding-bottom: 40px; }
+                        .main { background-color: #ffffff; margin: 0 auto; width: 100%; max-width: 600px; border-radius: 12px; margin-top: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); }
+                        .header { background-color: #ff6b2d; padding: 35px 0; text-align: center; border-top-left-radius: 12px; border-top-right-radius: 12px; }
+                        .content { padding: 0 50px 40px 50px; }
+                        .steps-container { background-color: #f8fafc; border-radius: 16px; padding: 32px; margin-bottom: 32px; border: 1px solid #f1f5f9; }
+                        .button { background-color: #ff6b2d; color: #ffffff !important; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px; display: inline-block; box-shadow: 0 4px 12px rgba(255, 107, 45, 0.2); }
+                    </style>
+                </head>
+                <body>
+                    <div class="wrapper">
+                        <table class="main" width="100%">
+                            <tr>
+                                <td class="header">
+                                    <div style="font-size: 32px; font-weight: 800; letter-spacing: 1px; color: #ffffff; margin: 0;">Krutanic</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="content">
+                                    <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 16px; color: #0f172a; margin-top: 40px;">Hi ${userName},</h1>
+                                    <p style="font-size: 16px; line-height: 1.6; color: #475569; margin-bottom: 24px;">
+                                        This is a quick reminder about your upcoming masterclass: <strong>${masterclassTitle}</strong>.
+                                    </p>
+                                    
+                                    <div class="steps-container">
+                                        <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: #ff6b2d; margin-bottom: 24px;">Session Schedule</div>
+                                        <div style="font-size: 15px; color: #0f172a; font-weight: 600;">Date & Time</div>
+                                        <div style="font-size: 14px; color: #475569; margin-bottom: 20px;">
+                                            ${new Date(startDateTime).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'full', timeStyle: 'short' })} (IST)
+                                        </div>
+                                    </div>
+
+                                    <div style="text-align: center; margin-top: 40px;">
+                                        <a href="https://krutanic.com" class="button">Visit Platform</a>
+                                        ${whatsappLink ? `
+                                        <div style="margin-top: 20px;">
+                                            <a href="${whatsappLink}" class="button" style="background-color: #25D366; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);">Join WhatsApp Community</a>
+                                        </div>
+                                        ` : ''}
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <div style="text-align: center; padding: 40px 20px; font-size: 12px; color: #94a3b8;">
+                            &copy; 2024 Krutanic. Professional Excellence.
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `,
+        });
+        return true;
+    } catch (error) {
+        console.error("Daily reminder email failed:", error);
+        return false;
+    }
+};
+
+const sendMasterclassTodayReminder = async (userEmail, userName, masterclassTitle, startDateTime, meetingLink) => {
+    try {
+        await admissionsTransporter.sendMail({
+            from: `"Krutanic Masterclasses" <${admissionsSender}>`,
+            to: userEmail,
+            subject: `🚨 TODAY is the day: ${masterclassTitle}`,
+            html: `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Masterclass is Today</title>
+                    <style>
+                        body { margin: 0; padding: 0; background-color: #f4f7fa; font-family: 'Inter', sans-serif; }
+                        .wrapper { width: 100%; table-layout: fixed; background-color: #f4f7fa; padding-bottom: 40px; }
+                        .main { background-color: #ffffff; margin: 0 auto; width: 100%; max-width: 600px; border-radius: 12px; margin-top: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); }
+                        .header { background-color: #0f172a; padding: 35px 0; text-align: center; border-top-left-radius: 12px; border-top-right-radius: 12px; }
+                        .content { padding: 0 50px 40px 50px; }
+                        .steps-container { background-color: #fef2f2; border-radius: 16px; padding: 32px; margin-bottom: 32px; border: 1px solid #fee2e2; }
+                        .button { background-color: #ef4444; color: #ffffff !important; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px; display: inline-block; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2); }
+                    </style>
+                </head>
+                <body>
+                    <div class="wrapper">
+                        <table class="main" width="100%">
+                            <tr>
+                                <td class="header">
+                                    <div style="font-size: 32px; font-weight: 800; letter-spacing: 1px; color: #ffffff; margin: 0;">Krutanic</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="content">
+                                    <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 16px; color: #0f172a; margin-top: 40px;">Hi ${userName},</h1>
+                                    <p style="font-size: 16px; line-height: 1.6; color: #475569; margin-bottom: 24px;">
+                                        The wait is over! Your highly anticipated masterclass on <strong>${masterclassTitle}</strong> is happening <strong>TODAY</strong>.
+                                    </p>
+                                    
+                                    <div class="steps-container">
+                                        <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: #ef4444; margin-bottom: 24px;">Live Session Details</div>
+                                        <div style="font-size: 15px; color: #0f172a; font-weight: 600;">Time</div>
+                                        <div style="font-size: 14px; color: #475569; margin-bottom: 20px;">
+                                            ${new Date(startDateTime).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'full', timeStyle: 'short' })} (IST)
+                                        </div>
+                                    </div>
+
+                                    <div style="text-align: center; margin-top: 40px;">
+                                        <p style="font-size: 14px; color: #475569; margin-bottom: 20px;">Click the button below to join the live session at the scheduled time.</p>
+                                        <a href="${meetingLink}" class="button">Click Here to Join Live Session</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <div style="text-align: center; padding: 40px 20px; font-size: 12px; color: #94a3b8;">
+                            &copy; 2024 Krutanic. Professional Excellence.
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `,
+        });
+        return true;
+    } catch (error) {
+        console.error("Today reminder email failed:", error);
+        return false;
+    }
+};
+
 module.exports = { 
     sendWelcomeEmail, 
     sendCredentialsEmail, 
     sendCollegeCredentialsEmail,
-    sendEnrollmentFormWelcomeEmail 
+    sendEnrollmentFormWelcomeEmail,
+    sendMasterclassWelcomeEmail,
+    sendMasterclassDailyReminder,
+    sendMasterclassTodayReminder
 };

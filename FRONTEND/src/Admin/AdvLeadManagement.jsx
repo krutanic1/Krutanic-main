@@ -238,7 +238,8 @@ const AdvLeadManagement = () => {
                 assigneeId: selectedAssignee._id,
                 assigneeName: selectedAssignee.fullname,
                 assigneeRole: selectedAssignee.designation,
-                count: num
+                count: num,
+                assignerName: senderName
             });
             toast.success(res.data.message);
             setShowAssignPanel(false);
@@ -269,7 +270,8 @@ const AdvLeadManagement = () => {
                 leadIds: selectedLeadIds,
                 assigneeId: selectedAssignee._id,
                 assigneeName: selectedAssignee.fullname,
-                assigneeRole: selectedAssignee.designation
+                assigneeRole: selectedAssignee.designation,
+                assignerName: senderName
             });
             toast.success(res.data.message);
             setIsManualAssignMode(false);

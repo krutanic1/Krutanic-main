@@ -182,7 +182,8 @@ const AdvLeadsBook = () => {
                 leadIds: [selectedLeadForReassign._id],
                 assigneeId: member._id,
                 assigneeName: member.fullname,
-                assigneeRole: member.designation
+                assigneeRole: member.designation,
+                assignerName: userName
             });
             toast.success("Lead reassigned successfully");
             setShowReassignModal(false);

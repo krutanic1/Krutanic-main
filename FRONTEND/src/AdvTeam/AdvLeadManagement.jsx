@@ -284,7 +284,8 @@ const AdvLeadManagement = () => {
                 leaderId: advTeamId,
                 specialistId: selectedAssignee._id,
                 specialistName: selectedAssignee.fullname,
-                count: num
+                count: num,
+                assignerName: userName
             });
             toast.success(res.data.message);
             setShowAssignPanel(false);

@@ -1,5 +1,6 @@
 const express = require("express");
 const MasterClass = require("../models/MasterClass");
+const { sendMasterclassWelcomeEmail } = require("../utils/emailService");
 const router = express.Router();
 
 // Create a MasterClass
@@ -136,6 +137,9 @@ router.post("/masterclassapply/:id", async (req, res) => {
     // Add the new application
     masterClass.applications.unshift({ name, email, experience, field, phone, appliedAt: new Date() });
     await masterClass.save();
+
+    // Send the welcome email
+    sendMasterclassWelcomeEmail(email, name, masterClass.title, masterClass.start, masterClass.link).catch(console.error);
 
     res.status(201).json({ message: "Applied successfully!" });
   } catch (error) {

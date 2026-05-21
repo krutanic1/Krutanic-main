@@ -20,7 +20,8 @@ const AdvFormLead = require("../models/AdvFormLead");
 const RemoteDialQueue = require("../models/RemoteDialQueue");
 const cloudinary = require("../middleware/cloudinary");
 const axios = require("axios");
-const { sendEnrollmentFormWelcomeEmail, sendEmail } = require("../utils/emailService");
+const { sendEnrollmentFormWelcomeEmail } = require("../utils/emailService");
+const { sendEmail } = require("../controllers/emailController");
 
 const STAGES_AND_DISPOSITIONS = {
     "Fresh Lead": ["New Lead", "Invalid Lead"],
@@ -63,7 +64,7 @@ async function resolveAssigneeContact(assigneeId) {
     };
 }
 
-async function sendLeadAssignmentEmail({ assigneeId, assigneeName, count, assignmentSource }) {
+async function sendLeadAssignmentEmail({ assigneeId, assigneeName, count, assignmentSource, assignerName }) {
     const contact = await resolveAssigneeContact(assigneeId);
     if (!contact) {
         console.log(`No email found for assignee ${assigneeId}; skipping assignment email.`);
@@ -73,6 +74,11 @@ async function sendLeadAssignmentEmail({ assigneeId, assigneeName, count, assign
     const leadLabel = count === 1 ? "lead" : "leads";
     const subject = `${count} ${leadLabel} assigned to you`;
     const displayName = assigneeName || contact.name || "there";
+    
+    // Format the current time in IST
+    const timeOptions = { timeZone: 'Asia/Kolkata', hour12: true, year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+    const assignmentTime = new Date().toLocaleString('en-IN', timeOptions);
+    const assignedBy = assignerName || "Admin/System";
 
     const message = `
         <div style="font-family: Arial, sans-serif; background: #f7f9fc; padding: 24px; color: #1f2937;">
@@ -80,6 +86,8 @@ async function sendLeadAssignmentEmail({ assigneeId, assigneeName, count, assign
                 <h2 style="margin: 0 0 16px; font-size: 22px; color: #111827;">Lead Assignment Update</h2>
                 <p style="font-size: 16px; line-height: 1.6; margin: 0 0 16px;">Hello ${displayName},</p>
                 <p style="font-size: 16px; line-height: 1.6; margin: 0 0 16px;">${count} ${leadLabel} have been assigned to you${assignmentSource ? ` through ${assignmentSource}` : ""}.</p>
+                <p style="font-size: 15px; line-height: 1.6; margin: 0 0 8px;"><strong>Assigned By:</strong> ${assignedBy}</p>
+                <p style="font-size: 15px; line-height: 1.6; margin: 0 0 16px;"><strong>Time:</strong> ${assignmentTime}</p>
                 <p style="font-size: 14px; line-height: 1.6; color: #6b7280; margin: 0;">Please login to review and start working on them.</p>
             </div>
         </div>
@@ -702,7 +710,7 @@ router.get("/owned-leads-count", async (req, res) => {
 
 // POST: Bulk assign fresh leads to a manager
 router.post("/bulk-assign-to-manager", async (req, res) => {
-    const { managerId, managerName, count } = req.body;
+    const { managerId, managerName, count, assignerName } = req.body;
     if (!managerId || !count || count < 1) {
         return res.status(400).json({ message: "managerId and count are required" });
     }
@@ -730,6 +738,18 @@ router.post("/bulk-assign-to-manager", async (req, res) => {
             type: "lead_assigned"
         }).save();
 
+        try {
+            await sendLeadAssignmentEmail({
+                assigneeId: managerId,
+                assigneeName: managerName,
+                count: freshLeads.length,
+                assignmentSource: "bulk assignment",
+                assignerName: assignerName || "Admin"
+            });
+        } catch (emailError) {
+            console.error("Failed to send bulk assignment email:", emailError.message);
+        }
+
         res.status(200).json({ success: true, assigned: freshLeads.length, message: `${freshLeads.length} lead(s) assigned to ${managerName}` });
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -738,7 +758,7 @@ router.post("/bulk-assign-to-manager", async (req, res) => {
 router
 // POST: Admin bulk-assigns fresh leads to anyone (Manager or Leader)
 router.post("/admin-bulk-assign", async (req, res) => {
-    const { assigneeId, assigneeName, assigneeRole, count } = req.body;
+    const { assigneeId, assigneeName, assigneeRole, count, assignerName } = req.body;
     if (!assigneeId || !assigneeRole || !count || count < 1) {
         return res.status(400).json({ message: "assigneeId, assigneeRole and count are required" });
     }
@@ -795,7 +815,8 @@ router.post("/admin-bulk-assign", async (req, res) => {
                 assigneeId,
                 assigneeName,
                 count: freshLeads.length,
-                assignmentSource: "admin assignment"
+                assignmentSource: "admin assignment",
+                assignerName: assignerName || "Admin"
             });
         } catch (emailError) {
             console.error("Failed to send admin assignment email:", emailError.message);
@@ -813,7 +834,7 @@ router.post("/admin-bulk-assign", async (req, res) => {
 
 // POST: Manager bulk-assigns N of their leads to a leader
 router.post("/bulk-assign-to-leader", async (req, res) => {
-    const { managerId, leaderId, leaderName, count } = req.body;
+    const { managerId, leaderId, leaderName, count, assignerName } = req.body;
     if (!managerId || !leaderId || !count || count < 1) {
         return res.status(400).json({ message: "managerId, leaderId and count are required" });
     }
@@ -841,6 +862,18 @@ router.post("/bulk-assign-to-leader", async (req, res) => {
             type: "lead_assigned"
         }).save();
 
+        try {
+            await sendLeadAssignmentEmail({
+                assigneeId: leaderId,
+                assigneeName: leaderName,
+                count: myLeads.length,
+                assignmentSource: "manager assignment",
+                assignerName: assignerName || "Manager"
+            });
+        } catch (emailError) {
+            console.error("Failed to send leader assignment email:", emailError.message);
+        }
+
         res.status(200).json({ success: true, assigned: myLeads.length, message: `${myLeads.length} lead(s) assigned to ${leaderName}` });
    
     } catch (error) {
@@ -850,7 +883,7 @@ router.post("/bulk-assign-to-leader", async (req, res) => {
 
 // POST: Leader bulk-assigns N of their leads to a specialist
 router.post("/bulk-assign-to-specialist", async (req, res) => {
-    const { leaderId, specialistId, specialistName, count } = req.body;
+    const { leaderId, specialistId, specialistName, count, assignerName } = req.body;
     if (!leaderId || !specialistId || !count || count < 1) {
         return res.status(400).json({ message: "leaderId, specialistId and count are required" });
     }
@@ -878,6 +911,18 @@ router.post("/bulk-assign-to-specialist", async (req, res) => {
             type: "lead_assigned"
         }).save();
 
+        try {
+            await sendLeadAssignmentEmail({
+                assigneeId: specialistId,
+                assigneeName: specialistName,
+                count: myLeads.length,
+                assignmentSource: "leader assignment",
+                assignerName: assignerName || "Leader"
+            });
+        } catch (emailError) {
+            console.error("Failed to send specialist assignment email:", emailError.message);
+        }
+
         res.status(200).json({ success: true, assigned: myLeads.length, message: `${myLeads.length} lead(s) assigned to ${specialistName}` });
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -886,7 +931,7 @@ router.post("/bulk-assign-to-specialist", async (req, res) => {
 
 // POST: Manual bulk assign specific leads to someone (Checkbox selected)
 router.post("/manual-bulk-assign", async (req, res) => {
-    const { leadIds, assigneeId, assigneeName, assigneeRole } = req.body;
+    const { leadIds, assigneeId, assigneeName, assigneeRole, assignerName } = req.body;
     if (!leadIds || !Array.isArray(leadIds) || leadIds.length === 0 || !assigneeId || !assigneeRole) {
         return res.status(400).json({ message: "leadIds, assigneeId, and assigneeRole are required" });
     }
@@ -940,7 +985,8 @@ router.post("/manual-bulk-assign", async (req, res) => {
                 assigneeId,
                 assigneeName,
                 count: leadIds.length,
-                assignmentSource: "manual assignment"
+                assignmentSource: "manual assignment",
+                assignerName: assignerName || "Team Member"
             });
         } catch (emailError) {
             console.error("Failed to send manual assignment email:", emailError.message);
@@ -2049,6 +2095,18 @@ router.post("/leader-bulk-assign-specialist", async (req, res) => {
             message: `${myLeads.length} leads assigned to you by ${leader?.fullname || "Leader"}.`,
             type: "lead_assigned"
         }).save();
+
+        try {
+            await sendLeadAssignmentEmail({
+                assigneeId: specialistId,
+                assigneeName: specialistName || specialist?.fullname,
+                count: myLeads.length,
+                assignmentSource: "team lead assignment",
+                assignerName: req.body.assignerName || leader?.fullname || "Leader"
+            });
+        } catch (emailError) {
+            console.error("Failed to send team lead assignment email:", emailError.message);
+        }
 
         res.status(200).json({
             success: true,
