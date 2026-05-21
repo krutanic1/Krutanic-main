@@ -6,7 +6,7 @@ import API from "../API";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 // import { FaEye, FaEyeSlash } from "react-icons/fa";
-import img from "../assets/masterclasscertificate.jpg";
+import img from "../assets/krutanic_certificate.png";
 import imghero from "../assets/masterclass.jpeg";
 import imgalt from "../assets/defaultmasterclass.jpg";
 import Popularcourse from "../Components/popularcourse";
@@ -511,10 +511,7 @@ const MasterClass = () => {
                     }`}>
                       {masterclass.status}
                     </span>
-                    {/* Krutanic branding badge */}
-                    <span className="absolute top-3 right-3 text-[9px] font-extrabold tracking-widest text-[#ff6b2d] uppercase bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-sm">
-                      KRUTANIC
-                    </span>
+
 
 
                   </div>
@@ -547,7 +544,7 @@ const MasterClass = () => {
                               : navigate(`/MasterClass/${slugify(masterclass.title)}`)
                           }
                         >
-                          {masterclass.status === "completed" ? "Get Certificate" : "Register Now"}
+                          {masterclass.status === "completed" ? "Get Certificate" : "View More"}
                         </button>
                         <button
                           className="p-3 border border-slate-200 hover:border-slate-350 hover:bg-slate-50 text-slate-500 rounded-lg transition-all"
@@ -565,29 +562,97 @@ const MasterClass = () => {
           </div>
         </section>
 
-        <div className="mc-web-media">
-          <section className="mc-industrial">
-            <h2>Industrial Talks EP. 12</h2>
-            <div className="mc-industrial-card">
-              <div className="mc-play-button">
-                <i className="fa fa-play"></i>
+        <div className="mc-web-media flex flex-col lg:flex-row gap-8 w-full max-w-6xl mx-auto px-4 md:px-0 mt-16 mb-16">
+          <section className="mc-why-join flex-1 p-8 bg-white rounded-3xl shadow-md border border-slate-200/80 mb-6 lg:mb-0">
+            <h2 className="text-3xl font-extrabold text-slate-800 mb-1" style={{ color: "#1e293b" }}>Why Join</h2>
+            <p className="text-xl text-slate-500 mb-8 font-medium">Krutanic Masterclasses</p>
+            
+            <div className="grid grid-cols-2 gap-y-6 gap-x-4">
+              <div className="flex items-center gap-4">
+                <div className="bg-[#fff4f0] flex items-center justify-center text-[#ff6b2d] text-xl w-14 h-14 rounded-xl border border-[#ffe4d6]">
+                  <i className="fa fa-globe"></i>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-bold text-slate-800 text-[15px] leading-tight">Designed</span>
+                  <span className="text-slate-500 text-[15px] leading-tight">For AI Era</span>
+                </div>
               </div>
-              <h3>#Precision in Engineering</h3>
-              <p>
-                Join Karam Dharmanandra Singh from BOSCH and discover modern
-                product practices.
-              </p>
+
+              <div className="flex items-center gap-4">
+                <div className="bg-[#fff4f0] flex items-center justify-center text-[#ff6b2d] text-xl w-14 h-14 rounded-xl border border-[#ffe4d6]">
+                  <i className="fa fa-certificate"></i>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-bold text-slate-800 text-[15px] leading-tight">Krutanic</span>
+                  <span className="text-slate-500 text-[15px] leading-tight">Certificate</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="bg-[#fff4f0] flex items-center justify-center text-[#ff6b2d] text-xl w-14 h-14 rounded-xl border border-[#ffe4d6]">
+                  <i className="fa fa-video-camera"></i>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-bold text-slate-800 text-[15px] leading-tight">Live</span>
+                  <span className="text-slate-500 text-[15px] leading-tight">Learning</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="bg-[#fff4f0] flex items-center justify-center text-[#ff6b2d] text-xl w-14 h-14 rounded-xl border border-[#ffe4d6]">
+                  <i className="fa fa-magic"></i>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-bold text-slate-800 text-[15px] leading-tight">Top</span>
+                  <span className="text-slate-500 text-[15px] leading-tight">Instructors</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="bg-[#fff4f0] flex items-center justify-center text-[#ff6b2d] text-xl w-14 h-14 rounded-xl border border-[#ffe4d6]">
+                  <i className="fa fa-book"></i>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-bold text-slate-800 text-[15px] leading-tight">Bonus</span>
+                  <span className="text-slate-500 text-[15px] leading-tight">Resources</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="bg-[#fff4f0] flex items-center justify-center text-[#ff6b2d] text-xl w-14 h-14 rounded-xl border border-[#ffe4d6]">
+                  <i className="fa fa-question-circle-o"></i>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-bold text-slate-800 text-[15px] leading-tight">Live</span>
+                  <span className="text-slate-500 text-[15px] leading-tight">Quizzes</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 border border-slate-200 bg-slate-50 rounded-xl flex justify-between items-center px-5 py-3">
+              <span className="text-slate-600 font-medium text-[15px]">Average User Rating</span>
+              <div className="flex items-center gap-3">
+                <div className="text-amber-400 text-sm flex gap-1">
+                  <i className="fa fa-star"></i>
+                  <i className="fa fa-star"></i>
+                  <i className="fa fa-star"></i>
+                  <i className="fa fa-star"></i>
+                  <i className="fa fa-star"></i>
+                </div>
+                <span className="font-bold text-slate-800 text-[15px]">4.8/5</span>
+              </div>
             </div>
           </section>
 
-          <section className="mc-certificate">
-            <div className="mc-section-head">
-              <h2>Certified Excellence</h2>
-            </div>
-            <p>
+
+          <section className="mc-certificate flex-1 p-8 bg-white rounded-3xl shadow-md border border-slate-200/80 flex flex-col">
+            <h2 className="text-3xl font-extrabold text-slate-800 mb-2" style={{ color: "#1e293b" }}>Certified Excellence</h2>
+            <p className="text-lg text-slate-500 font-medium mb-6">
               Validate your expertise with industry-recognized certifications.
             </p>
-            <img src={img} alt="Certificate preview" />
+            <div className="w-full flex-1 rounded-2xl overflow-hidden border border-slate-200/60 bg-slate-50 p-2 shadow-inner group flex items-center justify-center">
+              <img src={img} alt="Certificate preview" className="w-full h-auto max-h-[300px] object-contain rounded-xl transform group-hover:scale-[1.02] transition-transform duration-500 drop-shadow-md" />
+            </div>
           </section>
         </div>
 

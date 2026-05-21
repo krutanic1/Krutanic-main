@@ -28,6 +28,7 @@ const MasterClasses = () => {
     language: "",
     certificateAvailable: "",
     instructorName: "",
+    instructorLinkedIn: "",
     instructorDesignation: "",
     instructorExpertise: "",
     instructorCredibility: "",
@@ -65,6 +66,7 @@ const MasterClasses = () => {
       language: "",
       certificateAvailable: "",
       instructorName: "",
+      instructorLinkedIn: "",
       instructorDesignation: "",
       instructorExpertise: "",
       instructorCredibility: "",
@@ -220,6 +222,7 @@ const MasterClasses = () => {
         language: masterclass.language || "",
         certificateAvailable: masterclass.certificateAvailable || "",
         instructorName: masterclass.instructorName || "",
+        instructorLinkedIn: masterclass.instructorLinkedIn || "",
         instructorDesignation: masterclass.instructorDesignation || "",
         instructorExpertise: masterclass.instructorExpertise || "",
         instructorCredibility: masterclass.instructorCredibility || "",
@@ -542,15 +545,27 @@ const MasterClasses = () => {
             {/* Tab 2: Instructor Info */}
             {activeTab === "instructor" && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', overflowY: 'auto', flex: 1, paddingRight: '5px' }}>
-                <div>
-                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Instructor Name</label>
-                  <input
-                    type="text"
-                    name="instructorName"
-                    value={formData.instructorName}
-                    onChange={handleChange}
-                    placeholder="e.g. Abhijeet Gupta"
-                  />
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Instructor Name</label>
+                    <input
+                      type="text"
+                      name="instructorName"
+                      value={formData.instructorName}
+                      onChange={handleChange}
+                      placeholder="e.g. Abhijeet Gupta"
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>LinkedIn Profile (Optional)</label>
+                    <input
+                      type="url"
+                      name="instructorLinkedIn"
+                      value={formData.instructorLinkedIn}
+                      onChange={handleChange}
+                      placeholder="e.g. https://linkedin.com/in/..."
+                    />
+                  </div>
                 </div>
                 <div>
                   <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>Instructor Designation</label>

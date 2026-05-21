@@ -227,6 +227,7 @@ const MasterClassDetails = () => {
       certificateAvailable: masterclass.certificateAvailable || "Yes, Industry Recognized",
       
       instructorName: masterclass.instructorName || "Industry Lead Mentor",
+      instructorLinkedIn: masterclass.instructorLinkedIn || "",
       instructorDesignation: masterclass.instructorDesignation || "Senior Technical Advisor",
       instructorExpertise: masterclass.instructorExpertise || "Technology Expert",
       instructorCredibility: masterclass.instructorCredibility || "Successfully trained and mentored professionals globally.",
@@ -820,6 +821,14 @@ const MasterClassDetails = () => {
               <div>
                 <h3 className="text-xl font-bold text-white">{info.instructorName}</h3>
                 <p className="text-[#ff6b2d] text-xs font-semibold mt-1 uppercase tracking-widest">{info.instructorDesignation}</p>
+                
+                {info.instructorLinkedIn && (
+                  <div className="mt-4 flex justify-center w-full">
+                    <a href={info.instructorLinkedIn} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 px-5 py-2 bg-transparent hover:bg-[#0077b5]/10 border border-[#0077b5] rounded-full text-xs font-bold text-[#0077b5] transition-all">
+                      <i className="fa fa-linkedin-square text-[16px]"></i> Connect on LinkedIn
+                    </a>
+                  </div>
+                )}
                 
                 {/* Company Badges */}
                 <div className="flex flex-wrap justify-center gap-2 mt-3.5">

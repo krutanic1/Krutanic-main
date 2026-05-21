@@ -40,6 +40,7 @@ const MasterClassSchema = new mongoose.Schema({
   certificateAvailable: { type: String, default: "" },
   
   instructorName: { type: String, default: "" },
+  instructorLinkedIn: { type: String, default: "" },
   instructorDesignation: { type: String, default: "" },
   instructorExpertise: { type: String, default: "" },
   instructorCredibility: { type: String, default: "" },
