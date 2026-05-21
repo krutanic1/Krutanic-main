@@ -219,7 +219,7 @@ const MasterClassDetails = () => {
       subheading: masterclass.subheading || defaultSubheading,
       duration: masterclass.duration || "90 Minutes",
       venue: masterclass.venue || "Online Live Session",
-      registeredCount: masterclass.registeredCount || "1000+",
+      registeredCount: masterclass.registeredCount || ( (95 + (masterclass._id ? [...masterclass._id.toString()].reduce((a, c) => a + c.charCodeAt(0), 0) % 60 : 0)) + (masterclass.applications ? masterclass.applications.length : 0) ),
       rating: masterclass.rating || "4.8",
       level: masterclass.level || "Intermediate to Advanced Level",
       price: masterclass.price ,

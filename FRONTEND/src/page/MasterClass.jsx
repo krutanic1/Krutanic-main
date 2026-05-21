@@ -519,6 +519,17 @@ const MasterClass = () => {
                   {/* Body (Bottom Half) */}
                   <div className="p-5 flex flex-col gap-4 bg-white flex-grow justify-between">
                     <div className="flex flex-col gap-3">
+                      {/* Registered Badge */}
+                      <div className="flex items-center gap-1.5 w-max px-2 py-1 bg-slate-100/80 rounded-md text-slate-700 text-[10px] font-bold tracking-wider uppercase">
+                        <i className="fa fa-fire text-[#ff6b2d] text-xs"></i>
+                        <span>
+                          {masterclass.registeredCount 
+                            ? masterclass.registeredCount 
+                            : ( (95 + (masterclass._id ? [...masterclass._id.toString()].reduce((a, c) => a + c.charCodeAt(0), 0) % 60 : 0)) + (masterclass.applications || 0) )
+                          } REGISTERED
+                        </span>
+                      </div>
+                      
                       {/* Title */}
                       <h3 className="text-base font-extrabold text-slate-900 leading-snug hover:text-[#ff6b2d] transition-colors line-clamp-2 min-h-[44px]">
                         {masterclass.title}
