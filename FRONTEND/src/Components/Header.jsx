@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import logo3 from "../assets/LOGO3.png";
 import AdvancedApplyPopup from "./AdvancedApplyPopup";
+import { Rocket } from "lucide-react";
 
 const topNav = [
   { label: "Mentorship Program", to: "/Mentorship" },
@@ -40,15 +41,29 @@ const Header = () => {
           </Link>
 
           <nav className="hidden items-center gap-0.5 xl:gap-1 lg:flex">
-            {topNav.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={`rounded-lg px-2 xl:px-3 py-2 text-xs xl:text-sm font-semibold uppercase tracking-[0.02em] transition-colors hover:bg-[#f2f4ff] ${location.pathname.toLowerCase() === item.to.toLowerCase() ? "text-[#f15b29]" : "text-[#1f2937]"}`}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {topNav.map((item) => {
+              if (item.label === "Masterclass") {
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    className="btn-shimmer-wrap ml-1 xl:ml-2 rounded-xl bg-gradient-to-r from-[#ff8a00] to-[#ff3d00] px-3 xl:px-4 py-1.5 xl:py-2 text-xs xl:text-sm font-bold uppercase text-white shadow-[0_4px_15px_rgba(255,107,45,0.4)] whitespace-nowrap flex items-center gap-1.5 transition-transform hover:scale-105"
+                  >
+                    <Rocket size={16} className="text-white" />
+                    {item.label}
+                  </Link>
+                );
+              }
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className={`rounded-lg px-2 xl:px-3 py-2 text-xs xl:text-sm font-semibold uppercase tracking-[0.02em] transition-colors hover:bg-[#f2f4ff] ${location.pathname.toLowerCase() === item.to.toLowerCase() ? "text-[#f15b29] text-shine" : "text-[#1f2937]"}`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
             <Link to="/login" className="ml-1 xl:ml-2 rounded-2xl bg-[#ff6b2d] px-3 xl:px-5 py-1.5 xl:py-2 text-xs xl:text-sm font-semibold uppercase text-white shadow-[0_8px_20px_rgba(255,107,45,0.28)] whitespace-nowrap">
               Login
             </Link>
@@ -73,15 +88,29 @@ const Header = () => {
         {isMobileOpen && (
           <div className="border-t border-[#ececf5] bg-white lg:hidden">
             <div className="mx-auto grid w-[94%] max-w-7xl gap-2 py-3">
-              {topNav.map((item) => (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  className={`rounded-lg px-3 py-2 text-sm font-medium uppercase ${location.pathname.toLowerCase() === item.to.toLowerCase() ? "text-[#f15b29]" : "text-[#1f2937]"} hover:bg-[#f5f7ff]`}
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {topNav.map((item) => {
+                if (item.label === "Masterclass") {
+                  return (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      className="btn-shimmer-wrap rounded-xl bg-gradient-to-r from-[#ff8a00] to-[#ff3d00] px-3 py-2 text-sm font-bold uppercase text-white shadow-md flex items-center justify-center gap-2"
+                    >
+                      <Rocket size={18} className="text-white" />
+                      {item.label}
+                    </Link>
+                  );
+                }
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    className={`rounded-lg px-3 py-2 text-sm font-medium uppercase ${location.pathname.toLowerCase() === item.to.toLowerCase() ? "text-[#f15b29] text-shine" : "text-[#1f2937]"} hover:bg-[#f5f7ff]`}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
               <div className="flex flex-col gap-2 p-2">
                 <Link to="/login" className="rounded-xl bg-[#ff6b2d] px-3 py-2 text-center text-sm font-semibold uppercase text-white">
                   Login

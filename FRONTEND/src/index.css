@@ -426,6 +426,52 @@ h1 {
   box-shadow: 0 4px 15px rgba(255, 61, 0, 0.4);
 }
 
+.text-shine {
+  background: linear-gradient(120deg, #f15b29 0%, #ff9d70 40%, #f15b29 80%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shine-text 2s linear infinite;
+}
+
+@keyframes shine-text {
+  to {
+    background-position: 200% center;
+  }
+}
+
+.btn-shimmer-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shimmer-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-25deg);
+  animation: btn-shimmer-anim 3s infinite;
+}
+
+@keyframes btn-shimmer-anim {
+  0% {
+    left: -150%;
+  }
+  100% {
+    left: 250%;
+  }
+}
+
 /* Public landing refresh: preserve original content, modernize visual style */
 #landingpage {
   background: linear-gradient(180deg, #f8f9fc 0%, #f7f8ff 38%, #ffffff 100%);

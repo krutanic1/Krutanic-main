@@ -367,28 +367,19 @@ const MasterClass = () => {
       </Helmet>
 
       <Toaster position="top-center" reverseOrder={false} />
+      
+      {/* Full-width Hero Banner */}
+      <div className="-mx-[12px] -mt-[10px] mb-8 cursor-pointer transition-opacity hover:opacity-95" onClick={() => {
+        navigate("/MasterClass/transition-from-non-tech-to-data-science-roles");
+      }}>
+        <img 
+          src="/posters/poster-new.jpeg" 
+          alt="Masterclass Data Science Roles" 
+          className="w-full h-auto md:h-[400px] lg:h-[450px] object-cover object-top block" 
+        />
+      </div>
+
       <div className="mc-shell">
-        <section
-          className="mc-hero"
-          style={{ backgroundImage: `url(${imghero})` }}
-        >
-          <span className="mc-eyebrow">Elevate your career</span>
-          <h1>
-            Masterclasses <span>to Boost</span> Your Skills
-          </h1>
-          <p>
-            Gain exclusive access to industry giants and transformative
-            learning experiences.
-          </p>
-          <button
-            onClick={() => {
-              const target = document.getElementById("active-classes");
-              if (target) target.scrollIntoView({ behavior: "smooth" });
-            }}
-          >
-            Explore Now
-          </button>
-        </section>
 
         <section className="mc-status-strip">
           <div className="mc-status-card">
