@@ -521,10 +521,10 @@ const AdvanceDashboardAccess = () => {
                 required
               >
                 <option value="" disabled>Select Number of Installments</option>
+                <option value="3">3 Installments</option>
                 <option value="4">4 Installments</option>
                 <option value="5">5 Installments</option>
                 <option value="6">6 Installments</option>
-                <option value="8">8 Installments</option>
               </select>
             )}
 
@@ -544,7 +544,6 @@ const AdvanceDashboardAccess = () => {
                 value={yearOfPassingOut}
                 onChange={(e) => setYearOfPassingOut(e.target.value)}
                 type="text"
-                placeholder=""
                 required
               />
               <label htmlFor="Year of Passing Out">Year of Passing Out</label>
@@ -588,21 +587,7 @@ const AdvanceDashboardAccess = () => {
               <label htmlFor="Transaction ID">Transaction ID</label>
             </div>
 
-            {paymentPlan !== "Installments" && (
-              <div className="input-field">
-                <input
-                  value={clearPaymentMonth}
-                  onChange={(e) => setClearPaymentMonth(e.target.value)}
-                  type="date"
-                  name=""
-                  id="clearPaymentMonth"
-                  required
-                  min={minDate}
-                  max={maxDate}
-                />
-                <label htmlFor="clearPaymentMonth">Next instalment to clear the payment</label>
-              </div>
-            )}
+
 
               <div className="input-field">
                 <div
