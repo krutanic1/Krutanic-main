@@ -89,6 +89,10 @@ const AdvLeadManagement = () => {
                 setTotalPages(res.data.totalPages);
                 setTotalCount(res.data.totalCount);
                 setCurrentPage(res.data.currentPage);
+                // freshCount is now bundled in the same response — no extra API call needed
+                if (res.data.freshCount !== undefined) {
+                    setFreshCount(res.data.freshCount);
+                }
             } else {
                 setLeads([]);
             }
@@ -141,7 +145,7 @@ const AdvLeadManagement = () => {
         };
         fetchLeads(currentPage);
         fetchManagers();
-        fetchFreshCount();
+        // freshCount is now returned inside fetchLeads — removed separate fetchFreshCount() call
         fetchTemplates();
         fetchSMTPConfig();
         fetchDomains();
