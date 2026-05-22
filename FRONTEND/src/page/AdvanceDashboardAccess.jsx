@@ -95,6 +95,7 @@ const AdvanceDashboardAccess = () => {
   const [remainingAmount, setRemainingAmount] = useState("");
   const [experience, setExperience] = useState("");
   const [paymentPlan, setPaymentPlan] = useState("");
+  const [numberOfInstallments, setNumberOfInstallments] = useState("");
   const [referFriend, setReferFriend] = useState("");
   const [yearOfPassingOut, setYearOfPassingOut] = useState("");
   const [course, setCourse] = useState([]);
@@ -102,8 +103,6 @@ const AdvanceDashboardAccess = () => {
   const [languages, setLanguages] = useState(["English"]);
   const [companyName, setCompanyName] = useState("");
   const [role, setRole] = useState("");
-  const [internshipstartsmonth, setInternshipStartsMonth] = useState("");
-  const [internshipendsmonth, setInternshipEndsMonth] = useState("");
   const [batchTiming, setBatchTiming] = useState("");
 
   const LANGUAGE_OPTIONS = ["English", "Hindi", "Kannada", "Telugu", "Tamil", "Malayalam", "Bengali"];
@@ -134,30 +133,12 @@ const AdvanceDashboardAccess = () => {
     let months = [];
     let startMonthIndex;
 
-    // Agar date 1 se 7 ke beech hai, toh current month se list shuru hogi
-    if (currentDay >= 1 && currentDay <= 7) {
-      startMonthIndex = currentMonthIndex;
-    } else {
-      // Warna agle month se shuru hoga
-      startMonthIndex = currentMonthIndex + 1;
-    }
-
-    // Handle December case (Agar December hai toh agla saal start ho jayega)
-    const nextYear = startMonthIndex > 11 ? currentYear + 1 : currentYear;
-    startMonthIndex = startMonthIndex % 12;
+    const nextMonthIndex = (currentMonthIndex + 1) % 12;
+    const nextMonthYear = currentMonthIndex + 1 > 11 ? currentYear + 1 : currentYear;
 
     months = [
-      `${monthNames[startMonthIndex]} ${nextYear}`,
-      `${monthNames[(startMonthIndex + 1) % 12]} ${startMonthIndex + 1 > 11 ? nextYear + 1 : nextYear
-      }`,
-      `${monthNames[(startMonthIndex + 2) % 12]} ${startMonthIndex + 2 > 11 ? nextYear + 1 : nextYear
-      }`,
-      `${monthNames[(startMonthIndex + 3) % 12]} ${startMonthIndex + 3 > 11 ? nextYear + 1 : nextYear
-      }`,
-      `${monthNames[(startMonthIndex + 4) % 12]} ${startMonthIndex + 4 > 11 ? nextYear + 1 : nextYear
-      }`,
-      `${monthNames[(startMonthIndex + 5) % 12]} ${startMonthIndex + 5 > 11 ? nextYear + 1 : nextYear
-      }`,
+      `${monthNames[currentMonthIndex]} ${currentYear}`,
+      `${monthNames[nextMonthIndex]} ${nextMonthYear}`,
     ];
 
     setMonthsToShow(months);
@@ -191,6 +172,7 @@ const AdvanceDashboardAccess = () => {
     setTransactionId("");
     setExperience("");
     setPaymentPlan("");
+    setNumberOfInstallments("");
     setClearPaymentMonth("");
     setModeOfPayment("");
     setReferFriend("");
@@ -198,8 +180,6 @@ const AdvanceDashboardAccess = () => {
     setLanguages(["English"]);
     setCompanyName("");
     setRole("");
-    setInternshipStartsMonth("");
-    setInternshipEndsMonth("");
     setBatchTiming("");
     navigate("/advancedashboardaccess");
   };
@@ -208,9 +188,34 @@ const AdvanceDashboardAccess = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [isEmailVerified, setIsEmailVerified] = useState(false);
 
+  const getInstallmentDates = () => {
+    if (paymentPlan !== "Installments" || !numberOfInstallments) {
+      return [];
+    }
+    const count = parseInt(numberOfInstallments, 10);
+    const dates = [];
+    let current = new Date();
+    
+    for (let i = 0; i < count; i++) {
+      current.setDate(current.getDate() + 20);
+      dates.push(current.toISOString().split("T")[0]);
+    }
+    return dates;
+  };
+
   const handleSubmit = async (event) => {
     setIsSubmitting(true);
     event.preventDefault();
+
+    const calculatedDates = getInstallmentDates();
+    let finalClearPaymentMonth = clearPaymentMonth;
+    if (paymentPlan === "Installments" && calculatedDates.length > 0) {
+      finalClearPaymentMonth = calculatedDates.join(", ");
+    }
+    
+    const finalPaymentPlan = paymentPlan === "Installments" 
+      ? `Pay in ${numberOfInstallments} Installments` 
+      : paymentPlan;
 
     const formData = {
       fullname: fullname,
@@ -222,20 +227,18 @@ const AdvanceDashboardAccess = () => {
       paidAmount: paidAmount,
       monthOpted: monthOpted,
       transactionId: transactionId,
-      clearPaymentMonth: clearPaymentMonth,
+      clearPaymentMonth: finalClearPaymentMonth,
       modeofpayment: modeofpayment,
       whatsAppNumber: whatsAppNumber,
       remainingAmount: remainingAmount,
       experience: experience,
-      paymentPlan: paymentPlan,
+      paymentPlan: finalPaymentPlan,
       referFriend: referFriend,
       yearOfPassingOut: yearOfPassingOut,
       lead: lead.trim(),
       languages: languages,
       companyName: companyName,
       role: role,
-      internshipstartsmonth: internshipstartsmonth,
-      internshipendsmonth: internshipendsmonth,
       program: domain.trim(),
       batchTiming: batchTiming
     };
@@ -425,10 +428,9 @@ const AdvanceDashboardAccess = () => {
               value={modeofpayment}
               onChange={(e) => setModeOfPayment(e.target.value)}
               required
+              className="w-full"
             >
-              <option value="" disabled>
-                Mode of Payment
-              </option>
+              <option value="" disabled>Mode of Payment</option>
               <option value="RazorPay">RazorPay</option>
               <option value="QR Code">QR Code</option>
               <option value="EaseBuZZ">EaseBuZZ</option>
@@ -508,9 +510,34 @@ const AdvanceDashboardAccess = () => {
                 Choose a payment plan that works best for you:
               </option>
               <option value="Pay in Full (One-time payment)">Pay in Full (One-time payment)</option>
-              <option value="Pay in 4 Easy Installments">Pay in 4 Easy Installments</option>
-              <option value="No Cost EMI (0% Interest) Upto 9 Months">No Cost EMI (0% Interest) Upto 9 Months</option>
+              <option value="Installments">Installments</option>
+              <option value="No Cost EMI">No Cost EMI</option>
             </select> 
+
+            {paymentPlan === "Installments" && (
+              <select
+                value={numberOfInstallments}
+                onChange={(e) => setNumberOfInstallments(e.target.value)}
+                required
+              >
+                <option value="" disabled>Select Number of Installments</option>
+                <option value="4">4 Installments</option>
+                <option value="5">5 Installments</option>
+                <option value="6">6 Installments</option>
+                <option value="8">8 Installments</option>
+              </select>
+            )}
+
+            {paymentPlan === "Installments" && numberOfInstallments && (
+              <div className="text-sm mt-2 p-2 bg-gray-50 border border-gray-200 rounded-lg max-h-24 overflow-y-auto">
+                <p className="font-semibold text-gray-700 mb-2">Installment Dates:</p>
+                <ul className="list-disc pl-5 space-y-1 text-gray-600">
+                  {getInstallmentDates().map((date, index) => (
+                    <li key={index}>Installment {index + 1}: {date}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <div className="input-field">
               <input
@@ -561,7 +588,23 @@ const AdvanceDashboardAccess = () => {
               <label htmlFor="Transaction ID">Transaction ID</label>
             </div>
 
-              <div className="input-field col-span-1 md:col-span-2 lg:col-span-3">
+            {paymentPlan !== "Installments" && (
+              <div className="input-field">
+                <input
+                  value={clearPaymentMonth}
+                  onChange={(e) => setClearPaymentMonth(e.target.value)}
+                  type="date"
+                  name=""
+                  id="clearPaymentMonth"
+                  required
+                  min={minDate}
+                  max={maxDate}
+                />
+                <label htmlFor="clearPaymentMonth">Next instalment to clear the payment</label>
+              </div>
+            )}
+
+              <div className="input-field">
                 <div
                   onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
                   className="w-full p-[10px] border border-[#CCCCCC] rounded-[10px] bg-white cursor-pointer flex justify-between items-center transition-all duration-200"
@@ -631,51 +674,11 @@ const AdvanceDashboardAccess = () => {
                 )}
               </div>
 
-            <div className="input-field">
-              <input
-                value={clearPaymentMonth}
-                onChange={(e) => setClearPaymentMonth(e.target.value)}
-                type="date"
-                name=""
-                id="clearPaymentMonth"
-                required
-                min={minDate}
-                max={maxDate}
-              />
-              <label htmlFor="clearPaymentMonth">Next instalment to clear the payment</label>
-            </div>
 
-            <select
-              value={internshipstartsmonth}
-              onChange={(e) => setInternshipStartsMonth(e.target.value)}
-              required
-            >
-              <option value="" disabled>
-                Internship Start Month
-              </option>
-              {monthsToShow.map((month, index) => (
-                <option key={index} value={month}>
-                  {month}
-                </option>
-              ))}
-            </select>
 
-            <select
-              value={internshipendsmonth}
-              onChange={(e) => setInternshipEndsMonth(e.target.value)}
-              required
-            >
-              <option value="" disabled>
-                Internship End Month
-              </option>
-              {monthsToShow.map((month, index) => (
-                <option key={index} value={month}>
-                  {month}
-                </option>
-              ))}
-            </select>
 
-            <select
+
+            {/* <select
               value={batchTiming}
               onChange={(e) => setBatchTiming(e.target.value)}
               required
@@ -689,7 +692,7 @@ const AdvanceDashboardAccess = () => {
               <option value="Saturday-Sunday (1 to 2 hours per day)">
                 Saturday-Sunday (1 to 2 hours per day)
               </option>
-            </select>
+            </select> */}
 
           </div>
 
