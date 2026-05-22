@@ -1194,58 +1194,14 @@ router.get("/get-adv-leads", async (req, res) => {
 
         const totalCount = await AdvLead.countDocuments(query);
         
-        let leads;
-        if (roleNorm === "admin") {
-            // Use aggregation for Admin to prioritize "fresh" leads at the top
-            leads = await AdvLead.aggregate([
-                { $match: query },
-                {
-                    $addFields: {
-                        // Priority 0 for fresh, 1 for dialed, 2 for others
-                        statusPriority: {
-                            $switch: {
-                                branches: [
-                                    { case: { $eq: ["$status", "fresh"] }, then: 0 },
-                                    { case: { $eq: ["$status", "dialed"] }, then: 1 }
-                                ],
-                                default: 2
-                            }
-                        }
-                    }
-                },
-                { $sort: { statusPriority: 1, created_at: -1 } },
-                { $skip: skip },
-                { $limit: parseInt(limit) },
-                {
-                    $lookup: {
-                        from: "advteamstructures",
-                        localField: "team_id",
-                        foreignField: "_id",
-                        as: "team_id"
-                    }
-                },
-                { $unwind: { path: "$team_id", preserveNullAndEmptyArrays: true } },
-                {
-                    $lookup: {
-                        from: "advusers",
-                        localField: "current_owner_id",
-                        foreignField: "_id",
-                        as: "current_owner_id"
-                    }
-                },
-                { $unwind: { path: "$current_owner_id", preserveNullAndEmptyArrays: true } },
-                { $unset: META_BLACKLIST.concat(["extra_fields.id", "extra_fields.ad_id", "extra_fields.adset_id", "extra_fields.campaign_id", "extra_fields.form_id"]) }
-            ]);
-        } else {
-            // Standard chronological sort for other roles
-            leads = await AdvLead.find(query)
-                .select(BLACKLIST_PROJECTION)
-                .populate("team_id", "team_name")
-                .populate("current_owner_id", "name")
-                .sort({ created_at: -1 })
-                .skip(skip)
-                .limit(parseInt(limit));
-        }
+        // Standard chronological sort for all roles to optimize database query performance
+        const leads = await AdvLead.find(query)
+            .select(BLACKLIST_PROJECTION)
+            .populate("team_id", "team_name")
+            .populate("current_owner_id", "name")
+            .sort({ created_at: -1 })
+            .skip(skip)
+            .limit(parseInt(limit));
 
         res.status(200).json({
             leads,
