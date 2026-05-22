@@ -4,6 +4,7 @@ import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
 import "./MentorshipForm.css";
 import { FaEnvelope, FaUser, FaPhoneAlt, FaGraduationCap, FaBriefcase, FaArrowRight, FaCheckCircle, FaTimes, FaClock } from "react-icons/fa";
+import girlImg from "../assets/girl.png";
 
 const MentorshipForm = ({ isPopup, onClose }) => {
   const [showForm, setShowForm] = useState(false);
@@ -174,7 +175,7 @@ const MentorshipForm = ({ isPopup, onClose }) => {
                 </div>
 
                 <div className="visual-image-container">
-                  <img src="/src/assets/girl.png" alt="Student" className="visual-person-img" />
+                  <img src={girlImg} alt="Student" className="visual-person-img" />
                   <div className="visual-floating-card">
                     <div className="card-avatars">
                       <div className="avatar">JS</div>
