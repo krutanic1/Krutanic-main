@@ -1192,16 +1192,17 @@ router.get("/get-adv-leads", async (req, res) => {
         const query = andConditions.length > 0 ? { $and: andConditions } : {};
 
 
-        const totalCount = await AdvLead.countDocuments(query);
-        
-        // Standard chronological sort for all roles to optimize database query performance
-        const leads = await AdvLead.find(query)
-            .select(BLACKLIST_PROJECTION)
-            .populate("team_id", "team_name")
-            .populate("current_owner_id", "name")
-            .sort({ created_at: -1 })
-            .skip(skip)
-            .limit(parseInt(limit));
+        // Run both count and fetch queries concurrently to cut database waiting time in half
+        const [totalCount, leads] = await Promise.all([
+            AdvLead.countDocuments(query),
+            AdvLead.find(query)
+                .select(BLACKLIST_PROJECTION)
+                .populate("team_id", "team_name")
+                .populate("current_owner_id", "name")
+                .sort({ created_at: -1 })
+                .skip(skip)
+                .limit(parseInt(limit))
+        ]);
 
         res.status(200).json({
             leads,
