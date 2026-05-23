@@ -206,10 +206,6 @@ const LayoutInner = () => {
 
                         {/* Each page renders inside Outlet */}
                         <Outlet />
-
-                        <footer className="nd-footer">
-                            © 2026 All Rights Reserved. Powered by <strong>Krutanic</strong>.
-                        </footer>
                     </div>
                 </main>
             </div>

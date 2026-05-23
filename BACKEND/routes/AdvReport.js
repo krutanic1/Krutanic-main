@@ -143,6 +143,97 @@ router.get("/daily-targets/:id", async (req, res) => {
     }
 });
 
+// ADV Team Leaderboard
+router.get("/adv-leaderboard", async (req, res) => {
+    try {
+        const { date, month, year } = req.query;
+        let startDate, endDate;
+
+        if (month && year) {
+            startDate = new Date(year, parseInt(month) - 1, 1);
+            endDate = new Date(year, parseInt(month), 1);
+        } else {
+            startDate = date ? new Date(date) : new Date();
+            startDate.setHours(0, 0, 0, 0);
+            endDate = new Date(startDate);
+            endDate.setDate(endDate.getDate() + 1);
+        }
+
+        const teamStats = await AdvCallActivity.aggregate([
+            {
+                $match: {
+                    actionType: "call",
+                    createdAt: { $gte: startDate, $lt: endDate }
+                }
+            },
+            {
+                $group: {
+                    _id: "$specialistName",
+                    callCount: { $sum: 1 },
+                    talkTime: {
+                        $sum: {
+                            $cond: [{ $gte: ["$duration", 300] }, "$duration", 0]
+                        }
+                    }
+                }
+            },
+            {
+                $project: {
+                    name: "$_id",
+                    callCount: 1,
+                    talkTime: 1,
+                    _id: 0
+                }
+            }
+        ]);
+
+        const revenueStats = await AdvEnroll.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: startDate, $lt: endDate }
+                }
+            },
+            {
+                $group: {
+                    _id: "$counselor",
+                    revenue: { $sum: "$programPrice" }
+                }
+            }
+        ]);
+
+        const mergedStats = {};
+        
+        teamStats.forEach(stat => {
+            if (stat.name) {
+                mergedStats[stat.name] = {
+                    name: stat.name,
+                    callCount: stat.callCount,
+                    talkTime: stat.talkTime,
+                    revenue: 0
+                };
+            }
+        });
+
+        revenueStats.forEach(stat => {
+            if (stat._id) {
+                if (!mergedStats[stat._id]) {
+                    mergedStats[stat._id] = {
+                        name: stat._id,
+                        callCount: 0,
+                        talkTime: 0,
+                        revenue: 0
+                    };
+                }
+                mergedStats[stat._id].revenue = stat.revenue;
+            }
+        });
+
+        res.status(200).json(Object.values(mergedStats));
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
 // Leader Dashboard (Specialist Productivity in Team)
 router.get("/leader-productivity/:teamId", async (req, res) => {
     try {

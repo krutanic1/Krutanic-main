@@ -1066,7 +1066,8 @@ const AdvLeadsBook = () => {
                                                                 >
                                                                     <i className="fa fa-whatsapp"></i>
                                                                 </a>
-                                                                <button
+                                                                <a
+                                                                    href={`tel:${lead.phone_number.replace(/\D/g, '')}`}
                                                                     title="Dial"
                                                                     onClick={(e) => { e.stopPropagation(); handleRemoteDial(lead.phone_number, lead._id); }}
                                                                     style={{
@@ -1078,7 +1079,7 @@ const AdvLeadsBook = () => {
                                                                     onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 8px 16px rgba(255, 94, 98, 0.25)'; }}
                                                                 >
                                                                     <i className="fa fa-phone"></i>
-                                                                </button>
+                                                                </a>
                                                                 <a
                                                                     href="https://meet.google.com/new"
                                                                     target="_blank"

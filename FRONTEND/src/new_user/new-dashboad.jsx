@@ -177,43 +177,7 @@ export const TopNav = ({ userData, enrollData, onLogout, onHamburger, mobileSide
             {/* ── RIGHT: Actions ── */}
             <div className="nd-header-right">
 
-                {/* Notification Bell */}
-                <div className="nd-icon-btn-wrap" ref={notifRef}>
-                    <button
-                        className="nd-icon-btn"
-                        onClick={() => { setNotifOpen((p) => !p); setProfileOpen(false); }}
-                        title="Notifications"
-                    >
-                        <span className="material-symbols-outlined">notifications</span>
-                        {unreadCount > 0 && <span className="nd-badge">{unreadCount}</span>}
-                    </button>
 
-                    {notifOpen && (
-                        <div className="nd-dropdown nd-notif-dropdown">
-                            <div className="nd-dropdown-header">
-                                <span>Notifications</span>
-                                <span className="nd-badge-inline">{unreadCount} new</span>
-                            </div>
-                            <div className="nd-notif-list">
-                                {notifications.map((n) => (
-                                    <div key={n.id} className={`nd-notif-item ${n.unread ? "nd-notif-unread" : ""}`}>
-                                        <div className="nd-notif-icon-wrap">
-                                            <span className="material-symbols-outlined nd-notif-icon">{n.icon}</span>
-                                        </div>
-                                        <div className="nd-notif-body">
-                                            <p className="nd-notif-text">{n.text}</p>
-                                            <p className="nd-notif-time">{n.time}</p>
-                                        </div>
-                                        {n.unread && <div className="nd-notif-dot" />}
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="nd-dropdown-footer">
-                                <button className="nd-dropdown-footer-btn">Mark all as read</button>
-                            </div>
-                        </div>
-                    )}
-                </div>
 
                 {/* Mentor Contact */}
                 <button className="nd-mentor-btn" onClick={handleMentorContact} title="Contact Mentor">
@@ -248,7 +212,7 @@ export const TopNav = ({ userData, enrollData, onLogout, onHamburger, mobileSide
                                 </div>
                             </div>
                             <div className="nd-dropdown-divider" />
-                            <Link to="/Setting" className="nd-dropdown-item" onClick={() => setProfileOpen(false)}>
+                            <Link to="/advancedashboard/setting" className="nd-dropdown-item" onClick={() => setProfileOpen(false)}>
                                 <span className="material-symbols-outlined nd-dropdown-item-icon">settings</span>
                                 Settings
                             </Link>
@@ -699,7 +663,7 @@ const PaymentsSection = ({ enrollment, userData }) => {
     const programPrice = enrollment?.programPrice ?? 0;
     const paidAmount = enrollment?.paidAmount ?? 0;
     const remaining = Math.max(0, programPrice - paidAmount);
-    const isFullyPaid = enrollment?.status === "fullPaid";
+    const isFullyPaid = enrollment?.status === "fullPaid" || (programPrice > 0 && paidAmount >= programPrice);
     const payPct = programPrice > 0 ? Math.round((paidAmount / programPrice) * 100) : 0;
 
     const handlePaySupport = () => {
@@ -1176,11 +1140,6 @@ const NewDashboard = () => {
                         ) : (
                             renderSection()
                         )}
-
-                        {/* Footer */}
-                        <footer className="nd-footer">
-                            © 2026 All Rights Reserved. Powered by <strong>Krutanic</strong>.
-                        </footer>
                     </div>
                 </main>
             </div>
