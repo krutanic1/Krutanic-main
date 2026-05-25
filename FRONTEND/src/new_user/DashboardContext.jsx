@@ -133,7 +133,9 @@ export const DashboardProvider = ({ children }) => {
     const watchedSessions = enrollment?.progressStats?.watchedSessionsCount || 0;
     const progressPct = enrollment?.progressStats?.progressPct || 0;
     const programName = enrollment?.domain?.title || enrollment?.program || "—";
-    const isFullyPaid = (enrollment?.status || "") === "fullPaid";
+    const programPrice = enrollment?.programPrice || 0;
+    const paidAmount = enrollment?.paidAmount || 0;
+    const isFullyPaid = (enrollment?.status || "") === "fullPaid" || (programPrice > 0 && paidAmount >= programPrice);
 
     return (
         <DashboardContext.Provider

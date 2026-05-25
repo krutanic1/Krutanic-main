@@ -1,5 +1,6 @@
 const express = require("express");
 const MasterClass = require("../models/MasterClass");
+const { sendMasterclassWelcomeEmail } = require("../utils/emailService");
 const router = express.Router();
 
 // Create a MasterClass
@@ -22,6 +23,50 @@ router.get("/allmasterclass", async (req, res) => {
       res.status(500).json({ error: error.message });
     }
   });
+
+// Get a single MasterClass by ID (for the detailed page)
+router.get("/masterclass/:id", async (req, res) => {
+    try {
+      const masterClass = await MasterClass.findById(req.params.id, { applications: 0 });
+      if (!masterClass) return res.status(404).json({ error: "MasterClass not found" });
+      res.status(200).json(masterClass);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+// Get a single MasterClass by slug or ID with related classes included (for high performance details page)
+router.get("/masterclass/by-slug-or-id/:identifier", async (req, res) => {
+    try {
+        const { identifier } = req.params;
+        const isObjectId = /^[0-9a-fA-F]{24}$/.test(identifier);
+
+        // Run main + related queries in parallel for maximum speed
+        const masterClassQuery = isObjectId
+            ? MasterClass.findById(identifier, { applications: 0 }).lean()
+            : MasterClass.findOne({ slug: identifier }, { applications: 0 }).lean();
+
+        const [masterClass, related] = await Promise.all([
+            masterClassQuery,
+            // We don't know the masterClass _id yet for $ne, so fetch related after
+        ]);
+
+        if (!masterClass) {
+            return res.status(404).json({ error: "MasterClass not found" });
+        }
+
+        // Fetch related classes (upcoming or ongoing, excluding the current one)
+        const related2 = await MasterClass.find(
+            { _id: { $ne: masterClass._id }, status: { $in: ["upcoming", "ongoing"] } },
+            { title: 1, start: 1, end: 1, link: 1, image: 1, status: 1, duration: 1,
+              registeredCount: 1, instructorName: 1, instructorDesignation: 1, instructorPhoto: 1, slug: 1 }
+        ).limit(3).lean();
+
+        res.status(200).json({ masterclass: masterClass, related: related2 });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
 // Update a MasterClass
 router.put("/masterclass/:id", async (req, res) => {
@@ -57,6 +102,11 @@ router.get("/allmasterclasswithsapplicant", async (req, res) => {
       image: 1,
       status: 1,
       pdfstatus: 1,
+      duration: 1,
+      registeredCount: 1,
+      instructorName: 1,
+      instructorDesignation: 1,
+      instructorPhoto: 1,
       applications: { $size: "$applications" } // Get only the count of applications
     }).sort({ start: 1 }).lean();
 
@@ -71,7 +121,7 @@ router.get("/allmasterclasswithsapplicant", async (req, res) => {
 router.post("/masterclassapply/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, clgemail, collegename, phone } = req.body;
+    const { name, email, experience, field, phone } = req.body;
 
     // Find the masterclass
     const masterClass = await MasterClass.findById(id);
@@ -85,8 +135,11 @@ router.post("/masterclassapply/:id", async (req, res) => {
     }
 
     // Add the new application
-    masterClass.applications.unshift({ name, email, clgemail, collegename, phone, appliedAt: new Date() });
+    masterClass.applications.unshift({ name, email, experience, field, phone, appliedAt: new Date() });
     await masterClass.save();
+
+    // Send the welcome email
+    sendMasterclassWelcomeEmail(email, name, masterClass.title, masterClass.start, masterClass.link).catch(console.error);
 
     res.status(201).json({ message: "Applied successfully!" });
   } catch (error) {

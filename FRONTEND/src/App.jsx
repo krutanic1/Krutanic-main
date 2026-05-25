@@ -33,6 +33,7 @@ import MentorshipCourseDetails from "./page/Mentorship/CourseDetails/MentorshipC
 import ProductManagement from "./page/AdvanceCourse/ProductManagement";
 import SmoothScroll from "./SmoothScroll";
 import MasterClass from "./page/MasterClass";
+import MasterClassDetails from "./page/MasterClassDetails";
 import AutomationTesting from "./page/AdvanceCourse/AutomationTesting";
 import PromptEngineering from "./page/AdvanceCourse/PromptEngineering";
 import GenerativeAI from "./page/AdvanceCourse/GenerativeAI";
@@ -189,7 +190,7 @@ import AdvLeadsBook from "./AdvTeam/AdvLeadsBook";
 import AdvTeamLeadManagement from "./AdvTeam/AdvLeadManagement";
 import AdvTeamRecord from "./AdvTeam/AdvTeamRecord";
 import AdvTeamTeamLogin from "./AdvTeam/AdvTeamTeamLogin";
-
+import AdvLeaderBoard from "./AdvTeam/AdvLeaderBoard";
 // MarketingLogind
 
 import MarketingHeader from "./Marketing/MarketingHeader";
@@ -447,10 +448,10 @@ const AppContent = () => {
   const advoperationheaderPaths = ["/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet"];
   const marketingheaderPaths = ["/marketing/home", "/marketing/previous", "/marketing/addexecutive"];
   const bdaheaderPaths = ["/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/leaderboard"];
-  const advteamheaderPaths = ["/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book"];
+  const advteamheaderPaths = ["/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/advteam/leaderboard"];
   const hrheaderPaths = ["/hrdashboard"];
   const lmsFooterPaths = ["/jobboard"];
-  const noFooterPaths = ["/operationdashboard", "/bookedpayment", "/fullpayment", "/defaultpayment", "/operationrevenuesheet", "/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/leaderboard"];
+  const noFooterPaths = ["/operationdashboard", "/bookedpayment", "/fullpayment", "/defaultpayment", "/operationrevenuesheet", "/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet", "/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/advteam/leaderboard", "/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/leaderboard"];
   const placementcoodinatorHeaderPaths = ["/pcdashboard", "/jobpost"];
   const userheaderPaths = ["/profile", "/resume-builder"];
   const headerPaths = ["/", "/login", "/loginwithotp", "/forgotpassword", "/contactus", "/aboutus", "/career", "/collabration", "/advancecourses", "/terms", "/privacy", "/refundpolicy", "/feestructure", "/advance", "/advance-apply", "/mentorship", "/datascience", "/dataanalytics", "/digitalmarket", "/mernstack", "/investmentbanking", "/productmanagement", "/automationtesting", "/promptengineering", "/generativeai", "/operationlogin", "/advoperationlogin", "/teamlogin", "/adminlogin", "/managerlogin", "/loginadmin", "/pclogin", "/advteamlogin", "/dashboardaccessform", "/advancedashboardaccess", "/masterclass", "/alumni", "/verify", "/referandearn", "/marketing/login", "/interviewer-login", "/interviewerlogin", "/hrlogin", "/advanceform"];
@@ -477,7 +478,7 @@ const AppContent = () => {
         <HRHeader />
       ) : userheaderPaths.includes(location.pathname.toLowerCase()) ? (
         <UserHeader />
-      ) : (headerPaths.includes(location.pathname.toLowerCase()) || location.pathname.toLowerCase().startsWith('/mentorship/')) ? (
+      ) : (headerPaths.includes(location.pathname.toLowerCase()) || location.pathname.toLowerCase().startsWith('/mentorship/') || location.pathname.toLowerCase().startsWith('/masterclass/')) ? (
         <Header />
       ) : null}
 
@@ -518,6 +519,7 @@ const AppContent = () => {
         <Route path="/DashboardAccessForm" element={<DashboardAccessForm />} />
         <Route path="/AdvanceDashboardAccess" element={<AdvanceDashboardAccess />} />
         <Route path="/MasterClass" element={<MasterClass />} />
+        <Route path="/MasterClass/:id" element={<MasterClassDetails />} />
         <Route path="/Alumni" element={<Alumni />} />
         <Route path="/Verify" element={<Verified />} />
         <Route path="/ReferAndEarn" element={<ReferAndEarn />} />
@@ -663,6 +665,7 @@ const AppContent = () => {
         <Route path="/advteam/leads-book" element={isAuthenticatedAdvTeam() ? <AdvLeadsBook /> : <Navigate to="/AdvTeamLogin" />} />
         <Route path="/advteam/record" element={isAuthenticatedAdvTeam() ? <AdvTeamRecord /> : <Navigate to="/AdvTeamLogin" />} />
         <Route path="/advteam/team-login" element={isAuthenticatedAdvTeam() ? <AdvTeamTeamLogin /> : <Navigate to="/AdvTeamLogin" />} />
+        <Route path="/advteam/leaderboard" element={isAuthenticatedAdvTeam() ? <AdvLeaderBoard /> : <Navigate to="/AdvTeamLogin" />} />
         {/* Advance Team Panel End */}
 
         {/* User Panel */}
@@ -722,6 +725,7 @@ const AppContent = () => {
        location.pathname.toLowerCase() !== "/hrlogin" &&
        location.pathname.toLowerCase() !== "/eventdashboard" &&
        location.pathname.toLowerCase() !== "/dashboard" &&
+       !location.pathname.toLowerCase().startsWith("/advancedashboard") &&
         !noFooterPaths.includes(location.pathname.toLowerCase()) &&
        !adminheaderPaths.includes(location.pathname.toLowerCase()) && 
        !advteamheaderPaths.includes(location.pathname.toLowerCase()) && 

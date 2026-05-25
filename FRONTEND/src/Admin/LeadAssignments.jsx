@@ -49,7 +49,8 @@ const LeadAssignments = () => {
                 assigneeId: manager._id,
                 assigneeName: manager.name,
                 assigneeRole: manager.role === 'manager' ? 'ADV Manager' : 'ADV Leader',
-                count: parseInt(count)
+                count: parseInt(count),
+                assignerName: localStorage.getItem("adminName") || 'Admin'
             });
 
             toast.success(`Successfully assigned ${count} leads to ${manager.name}`);

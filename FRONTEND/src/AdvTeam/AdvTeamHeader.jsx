@@ -430,9 +430,9 @@ const AdvTeamHeader = () => {
           <Link to="/advteam/home">
             <i className="fa fa-dashboard"></i> Home
           </Link>
-          {/* <Link to="/advteam/leaderboard">
+          <Link to="/advteam/leaderboard">
             <i className="fa fa-trophy"></i> LeaderBoard
-          </Link> */}
+          </Link>
           {["LEADER", "MANAGER"].includes(advTeamData?.designation) && (
             <>
               <Link to="/advteam/assigntarget">

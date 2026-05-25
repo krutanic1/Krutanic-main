@@ -64,6 +64,10 @@ const Dialog = ({ isOpen, onClose, fullname, errorMessage, email, counselor, dom
 const DashboardAccessForm = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Track if the entered email belongs to an already-enrolled student
+  const [existingEnrollment, setExistingEnrollment] = useState(null); // null = not checked yet, false = new, object = returning
+  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+
   // Helper function to format name to Title Case
   const toTitleCase = (value) => {
     if (!value) return "";
@@ -299,18 +303,19 @@ const DashboardAccessForm = () => {
     const enteredEmail = e.target.value.trim();
     setEmail(enteredEmail);
     setIsEmailVerified(false); // Reset verification on change
+    setExistingEnrollment(null); // Reset existing enrollment check
 
     // Valid email check before calling backend
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (emailRegex.test(enteredEmail)) {
+      setIsCheckingEmail(true);
       try {
+        // 1. Verify transaction email (existing flow)
         const response = await axios.post(`${API}/verify-transaction-email`, { email: enteredEmail });
-        
         if (response.data.success) {
           setCounselor(response.data.counselor || "");
           setLead(response.data.lead || "");
           setIsEmailVerified(true);
-          console.log("Email verified successfully");
         }
       } catch (error) {
         console.error("Verification failed:", error.response?.data?.message || error.message);
@@ -318,9 +323,36 @@ const DashboardAccessForm = () => {
         setLead("");
         setIsEmailVerified(false);
       }
+
+      try {
+        // 2. Check if student already submitted the dashboard access form
+        const enrollCheck = await axios.get(`${API}/check-existing-enrollment`, {
+          params: { email: enteredEmail }
+        });
+        if (enrollCheck.data.exists) {
+          // Student already enrolled – lock due date fields with their saved values
+          setExistingEnrollment(enrollCheck.data);
+          setClearPaymentMonth(enrollCheck.data.clearPaymentMonth || "");
+          setInternshipStartsMonth(enrollCheck.data.internshipstartsmonth || "");
+          setInternshipEndsMonth(enrollCheck.data.internshipendsmonth || "");
+        } else {
+          setExistingEnrollment(false); // new student
+          // Reset due date fields so new student can choose fresh
+          setClearPaymentMonth("");
+          setInternshipStartsMonth("");
+          setInternshipEndsMonth("");
+        }
+      } catch (enrollErr) {
+        console.error("Enrollment check error:", enrollErr.message);
+        setExistingEnrollment(false);
+      } finally {
+        setIsCheckingEmail(false);
+      }
     } else {
       setCounselor("");
       setLead("");
+      setExistingEnrollment(null);
+      setIsCheckingEmail(false);
     }
   };
 
@@ -396,7 +428,7 @@ const DashboardAccessForm = () => {
               <label htmlFor="fullname">Full Name</label>
             </div>
 
-            <div className="input-field">
+            <div className="input-field" style={{ position: "relative" }}>
               <input
                 value={email}
                 onChange={handleEmailChange}
@@ -405,6 +437,18 @@ const DashboardAccessForm = () => {
                 required
               />
               <label htmlFor="email">Email</label>
+              {/* Status indicators below email field */}
+              {isCheckingEmail && (
+                <p style={{ fontSize: "0.75rem", color: "#F15B29", marginTop: "4px", fontStyle: "italic" }}>
+                  🔍 Checking your enrollment status...
+                </p>
+              )}
+              {!isCheckingEmail && existingEnrollment && (
+                <p style={{ fontSize: "0.75rem", color: "#e67e22", marginTop: "4px", fontWeight: 600 }}>
+                  ⚠️ You have already filled this form.
+                </p>
+              )}
+
             </div>
 
             <div className="input-field">
@@ -626,50 +670,119 @@ const DashboardAccessForm = () => {
               </div>
             </div>
 
-            <div className="input-field">
-              <input
-                value={clearPaymentMonth}
-                onChange={(e) => setClearPaymentMonth(e.target.value)}
-                type="date"
-                name=""
-                id="clearPaymentMonth"
-                required
-                min={minDate}
-                max={maxDate}
-              />
-              <label htmlFor="clearPaymentMonth">Due date for clear payment ?</label>
-            </div>
+            {/* ── DUE DATE SECTION ── */}
+            {/* Shows read-only for returning students; editable for new students */}
+            {existingEnrollment ? (
+              /* RETURNING STUDENT: show locked due date info */
+              <div className="col-span-1 md:col-span-2 lg:col-span-3" style={{
+                background: "#fff8f0",
+                border: "2px solid #F15B29",
+                borderRadius: "10px",
+                padding: "16px",
+                marginTop: "8px"
+              }}>
+                <p style={{ color: "#F15B29", fontWeight: 700, fontSize: "0.85rem", marginBottom: "10px", letterSpacing: "0.5px" }}>
+                  ℹ️ YOUR SELECTED DUE DATE
+                </p>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px" }}>
+                  {/* Due date card */}
+                  <div style={{
+                    background: "#f9f9f9",
+                    border: "1px solid #e0e0e0",
+                    borderRadius: "8px",
+                    padding: "10px 14px"
+                  }}>
+                    <p style={{ fontSize: "0.7rem", color: "#999", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                      Due date for clear payment
+                    </p>
+                    <p style={{ fontSize: "0.95rem", fontWeight: 600, color: "#555", margin: 0 }}>
+                      {existingEnrollment.clearPaymentMonth || "Not set"}
+                    </p>
+                  </div>
+                  {/* Internship starts card */}
+                  <div style={{
+                    background: "#f9f9f9",
+                    border: "1px solid #e0e0e0",
+                    borderRadius: "8px",
+                    padding: "10px 14px"
+                  }}>
+                    <p style={{ fontSize: "0.7rem", color: "#999", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                      Internship starts month
+                    </p>
+                    <p style={{ fontSize: "0.95rem", fontWeight: 600, color: "#555", margin: 0 }}>
+                      {existingEnrollment.internshipstartsmonth || "Not set"}
+                    </p>
+                  </div>
+                  {/* Internship ends card */}
+                  <div style={{
+                    background: "#f9f9f9",
+                    border: "1px solid #e0e0e0",
+                    borderRadius: "8px",
+                    padding: "10px 14px"
+                  }}>
+                    <p style={{ fontSize: "0.7rem", color: "#999", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                      Internship ends month
+                    </p>
+                    <p style={{ fontSize: "0.95rem", fontWeight: 600, color: "#555", margin: 0 }}>
+                      {existingEnrollment.internshipendsmonth || "Not set"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* NEW STUDENT or email not yet checked: show editable fields */
+              <>
+                <div className="input-field">
+                  <input
+                    value={clearPaymentMonth}
+                    onChange={(e) => setClearPaymentMonth(e.target.value)}
+                    type="date"
+                    name=""
+                    id="clearPaymentMonth"
+                    required
+                    min={minDate}
+                    max={maxDate}
+                    disabled={existingEnrollment === null}
+                    style={existingEnrollment === null ? { background: "#f0f0f0", cursor: "not-allowed", opacity: 0.5 } : {}}
+                  />
+                  <label htmlFor="clearPaymentMonth">Due date for clear payment ?</label>
+                </div>
 
-            <select
-              value={internshipstartsmonth}
-              onChange={(e) => setInternshipStartsMonth(e.target.value)}
-              required
-            >
-              <option value="" selected disabled>
-                Internship starts month
-              </option>
-              {internshipStartsMonthsToShow.map((month, index) => (
-                <option key={index} value={month}>
-                  {month}
-                </option>
-              ))}
-            </select>
+                <select
+                  value={internshipstartsmonth}
+                  onChange={(e) => setInternshipStartsMonth(e.target.value)}
+                  required
+                  disabled={existingEnrollment === null}
+                  style={existingEnrollment === null ? { background: "#f0f0f0", cursor: "not-allowed", opacity: 0.5 } : {}}
+                >
+                  <option value="" selected disabled>
+                    Internship starts month
+                  </option>
+                  {internshipStartsMonthsToShow.map((month, index) => (
+                    <option key={index} value={month}>
+                      {month}
+                    </option>
+                  ))}
+                </select>
 
-            <select
-              value={internshipendsmonth}
-              onChange={(e) => setInternshipEndsMonth(e.target.value)}
-              required
-              disabled={!internshipstartsmonth}
-            >
-              <option value="" disabled>
-                Internship ends month
-              </option>
-              {endsMonthsToShow.map((month, index) => (
-                <option key={index} value={month}>
-                  {month}
-                </option>
-              ))}
-            </select>
+                <select
+                  value={internshipendsmonth}
+                  onChange={(e) => setInternshipEndsMonth(e.target.value)}
+                  required
+                  disabled={existingEnrollment === null || !internshipstartsmonth}
+                  style={existingEnrollment === null ? { background: "#f0f0f0", cursor: "not-allowed", opacity: 0.5 } : {}}
+                >
+                  <option value="" disabled>
+                    Internship ends month
+                  </option>
+                  {endsMonthsToShow.map((month, index) => (
+                    <option key={index} value={month}>
+                      {month}
+                    </option>
+                  ))}
+                </select>
+              </>
+            )}
 
 
 

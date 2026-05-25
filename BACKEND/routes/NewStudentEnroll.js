@@ -196,6 +196,36 @@ router.post("/newstudentenroll", async (req, res) => {
   }
 });
 
+// GET: Check if a student already enrolled (for dashboard access form email lookup)
+// Returns clearPaymentMonth + internship months if found (read-only display on form)
+router.get("/check-existing-enrollment", async (req, res) => {
+  const { email } = req.query;
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
+  try {
+    const student = await NewEnrollStudent.findOne(
+      { email: email.trim().toLowerCase() },
+      { clearPaymentMonth: 1, internshipstartsmonth: 1, internshipendsmonth: 1, fullname: 1 }
+    ).lean();
+
+    if (!student) {
+      return res.status(200).json({ exists: false });
+    }
+
+    return res.status(200).json({
+      exists: true,
+      clearPaymentMonth: student.clearPaymentMonth || "",
+      internshipstartsmonth: student.internshipstartsmonth || "",
+      internshipendsmonth: student.internshipendsmonth || "",
+    });
+  } catch (error) {
+    console.error("Error checking existing enrollment:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 /**
  * Submits student enrollment data to Google Sheets via Google Apps Script
  * Features:

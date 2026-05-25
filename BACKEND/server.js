@@ -289,9 +289,11 @@ if (process.env.NODE_ENV !== "production") {
     // Note: Production uses Vercel Cron (see vercel.json and CronRoutes.js)
     const { initializePaymentReminderScheduler } = require("./services/paymentReminderService");
     const { initializeAttendanceReportScheduler } = require("./services/attendanceReportService");
+    const { initializeMasterclassReminderScheduler } = require("./services/masterclassReminderService");
     
     initializePaymentReminderScheduler();
     initializeAttendanceReportScheduler();
+    initializeMasterclassReminderScheduler();
 
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);

@@ -220,6 +220,12 @@
   color: white;
 }
 
+.adv-avatar-photo {
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
 .adv-avatar:first-child { margin-left: 0; }
 
 .adv-avatar-more {

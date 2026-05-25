@@ -119,7 +119,7 @@ const alumniOutcomes = [
 const faqCategories = {
   "Program Details": [
     { q: "Is this program for beginners?", a: "Yes. Our curriculum is designed to take you from fundamentals to advanced execution, ensuring a smooth learning curve for all skill levels." },
-    { q: "What is the duration and format?", a: "The program spans 3 Months with live interactive sessions on weekends and weekday evenings to accommodate working professionals." },
+    { q: "What is the duration and format?", a: "The program spans 6 Months with live interactive sessions on weekends and weekday evenings to accommodate working professionals." },
     { q: "Do I need any prior knowledge?", a: "No prior experience is required. We teach you everything from scratch, focusing on logic, psychology, and technical execution." },
     { q: "What are the timings?", a: "Live sessions happen on weekends and weekday evenings to accommodate work schedules." }
   ],

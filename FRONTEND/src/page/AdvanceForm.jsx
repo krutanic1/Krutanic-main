@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import './AdvanceForm.css';
+import SubhraImg from '../assets/mentors/Subhra.jpg';
+import RudraImg from '../assets/mentors/rudra.jpg';
+import RohanImg from '../assets/alumini/rohan.jpg';
+import RajaImg from '../assets/alumini/raja.jpg';
+import PrabhleenImg from '../assets/alumini/prabhleen.jpg';
 
 /* --- Data --- */
 const PARTNERS = ['Google', 'Microsoft', 'Amazon', 'Meta', 'Netflix', 'Uber', 'Airbnb'];
@@ -87,9 +92,11 @@ const HeroSection = ({ onShowModal }) => {
               </button>
               <div className="adv-hero-trust">
                 <div className="adv-avatars">
-                  <div className="adv-avatar adv-avatar-text" style={{background: 'linear-gradient(135deg, #f59e0b, #d97706)'}}>RS</div>
-                  <div className="adv-avatar adv-avatar-text" style={{background: 'linear-gradient(135deg, #10b981, #059669)'}}>AK</div>
-                  <div className="adv-avatar adv-avatar-text" style={{background: 'linear-gradient(135deg, #3b82f6, #2563eb)'}}>MP</div>
+                  <img className="adv-avatar adv-avatar-photo" src={SubhraImg} alt="Subhra" />
+                  <img className="adv-avatar adv-avatar-photo" src={RudraImg} alt="Rudra" />
+                  <img className="adv-avatar adv-avatar-photo" src={RohanImg} alt="Rohan" />
+                  <img className="adv-avatar adv-avatar-photo" src={RajaImg} alt="Raja" />
+                  <img className="adv-avatar adv-avatar-photo" src={PrabhleenImg} alt="Prabhleen" />
                   <div className="adv-avatar adv-avatar-more">+4k</div>
                 </div>
                 <div className="adv-trust-text">

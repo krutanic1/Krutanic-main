@@ -21,6 +21,18 @@ const AdvTeamHome = () => {
 
   const today = new Date();
   const currentMonth = today.toISOString().slice(0, 7);
+  const [leaderboardData, setLeaderboardData] = useState([]);
+
+  const fetchDailyLeaderboard = async () => {
+    try {
+      const response = await axios.get(`${API}/api/adv-reports/adv-leaderboard`, {
+        params: { date: today.toISOString().split('T')[0] }
+      });
+      setLeaderboardData(response.data);
+    } catch (error) {
+      console.error("Error fetching daily leaderboard:", error);
+    }
+  };
 
   const fetchOutcomeCounts = async () => {
     try {
@@ -63,6 +75,7 @@ const AdvTeamHome = () => {
     fetchAdvTeamMember();
     fetchAdvEnrollments();
     fetchOutcomeCounts();
+    fetchDailyLeaderboard();
   }, []);
 
   const totalRevenue = advEnrollments.reduce((acc, student) => acc + (student.programPrice || 0), 0);
@@ -91,6 +104,16 @@ const AdvTeamHome = () => {
       return () => clearTimeout(timer);
     }
   }, [outcomeCounts.converted]);
+
+  const topCallers = [...leaderboardData].sort((a, b) => b.callCount - a.callCount).slice(0, 5);
+  const topSpeakers = [...leaderboardData].sort((a, b) => b.talkTime - a.talkTime).slice(0, 5);
+  const topRevenue = [...leaderboardData].sort((a, b) => b.revenue - a.revenue).slice(0, 5);
+
+  const formatTalkTime = (seconds) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    return `${hrs}h ${mins}m`;
+  };
 
   const LeadStatCard = ({ label, count, icon, color, bgColor, borderColor, isHuge = false }) => (
     <div style={{ 
@@ -238,6 +261,81 @@ const AdvTeamHome = () => {
           </div>
         ))}
       </div>
+
+      {/* Mini Leaderboard Widget */}
+      <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#1E293B', marginTop: '40px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <span style={{ width: '12px', height: '12px', background: '#F59E0B', borderRadius: '4px' }}></span>
+        Today's Top Performers
+      </h3>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+        {/* Top Revenue */}
+        <div style={{ background: '#fff', padding: '20px', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
+          <h4 style={{ color: '#3B82F6', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <i className="fa fa-money"></i> Top Revenue
+          </h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {topRevenue.length > 0 && topRevenue[0].revenue > 0 ? (
+              topRevenue.filter(u => u.revenue > 0).map((user, idx) => (
+                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px', background: idx === 0 ? '#EFF6FF' : '#F8FAFC', borderRadius: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontWeight: 'bold', color: '#64748B' }}>#{idx + 1}</span>
+                    <span style={{ fontWeight: '600', color: '#1E293B' }}>{user.name.split(' ')[0]}</span>
+                  </div>
+                  <span style={{ fontWeight: 'bold', color: '#3B82F6' }}>₹{user.revenue.toLocaleString()}</span>
+                </div>
+              ))
+            ) : (
+              <div style={{ color: '#94A3B8', textAlign: 'center', padding: '10px' }}>No revenue yet today</div>
+            )}
+          </div>
+        </div>
+
+        {/* Top Callers */}
+        <div style={{ background: '#fff', padding: '20px', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
+          <h4 style={{ color: '#F15B29', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <i className="fa fa-phone"></i> Top Callers
+          </h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {topCallers.length > 0 && topCallers[0].callCount > 0 ? (
+              topCallers.filter(u => u.callCount > 0).map((user, idx) => (
+                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px', background: idx === 0 ? '#FFF7ED' : '#F8FAFC', borderRadius: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontWeight: 'bold', color: '#64748B' }}>#{idx + 1}</span>
+                    <span style={{ fontWeight: '600', color: '#1E293B' }}>{user.name.split(' ')[0]}</span>
+                  </div>
+                  <span style={{ fontWeight: 'bold', color: '#F15B29' }}>{user.callCount} calls</span>
+                </div>
+              ))
+            ) : (
+              <div style={{ color: '#94A3B8', textAlign: 'center', padding: '10px' }}>No calls yet today</div>
+            )}
+          </div>
+        </div>
+
+        {/* Top Talk Time */}
+        <div style={{ background: '#fff', padding: '20px', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
+          <h4 style={{ color: '#10B981', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <i className="fa fa-microphone"></i> Top Talk Time
+          </h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {topSpeakers.length > 0 && topSpeakers[0].talkTime > 0 ? (
+              topSpeakers.filter(u => u.talkTime > 0).map((user, idx) => (
+                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px', background: idx === 0 ? '#ECFDF5' : '#F8FAFC', borderRadius: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontWeight: 'bold', color: '#64748B' }}>#{idx + 1}</span>
+                    <span style={{ fontWeight: '600', color: '#1E293B' }}>{user.name.split(' ')[0]}</span>
+                  </div>
+                  <span style={{ fontWeight: 'bold', color: '#10B981' }}>{formatTalkTime(user.talkTime)}</span>
+                </div>
+              ))
+            ) : (
+              <div style={{ color: '#94A3B8', textAlign: 'center', padding: '10px' }}>No talk time yet today</div>
+            )}
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 };

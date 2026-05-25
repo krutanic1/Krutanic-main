@@ -198,14 +198,16 @@ const AdvTeamMyLeads = () => {
                     managerId: userId,
                     leaderId: selectedMember._id,
                     leaderName: selectedMember.fullname,
-                    count: num
+                    count: num,
+                    assignerName: userName
                 });
             } else {
                 res = await axios.post(`${API}/api/adv-leads/bulk-assign-to-specialist`, {
                     leaderId: userId,
                     specialistId: selectedMember._id,
                     specialistName: selectedMember.fullname,
-                    count: num
+                    count: num,
+                    assignerName: userName
                 });
             }
             toast.success(res.data.message);
@@ -236,7 +238,8 @@ const AdvTeamMyLeads = () => {
                 leadIds: selectedLeadIds,
                 assigneeId: selectedMember._id,
                 assigneeName: selectedMember.fullname,
-                assigneeRole: selectedMember.designation
+                assigneeRole: selectedMember.designation,
+                assignerName: userName
             });
             toast.success(res.data.message);
             setIsManualAssignMode(false);

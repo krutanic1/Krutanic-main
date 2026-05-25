@@ -89,6 +89,10 @@ const AdvLeadManagement = () => {
                 setTotalPages(res.data.totalPages);
                 setTotalCount(res.data.totalCount);
                 setCurrentPage(res.data.currentPage);
+                // freshCount is now bundled in the same response — no extra API call needed
+                if (res.data.freshCount !== undefined) {
+                    setFreshCount(res.data.freshCount);
+                }
             } else {
                 setLeads([]);
             }
@@ -141,7 +145,7 @@ const AdvLeadManagement = () => {
         };
         fetchLeads(currentPage);
         fetchManagers();
-        fetchFreshCount();
+        // freshCount is now returned inside fetchLeads — removed separate fetchFreshCount() call
         fetchTemplates();
         fetchSMTPConfig();
         fetchDomains();
@@ -238,7 +242,8 @@ const AdvLeadManagement = () => {
                 assigneeId: selectedAssignee._id,
                 assigneeName: selectedAssignee.fullname,
                 assigneeRole: selectedAssignee.designation,
-                count: num
+                count: num,
+                assignerName: senderName
             });
             toast.success(res.data.message);
             setShowAssignPanel(false);
@@ -269,7 +274,8 @@ const AdvLeadManagement = () => {
                 leadIds: selectedLeadIds,
                 assigneeId: selectedAssignee._id,
                 assigneeName: selectedAssignee.fullname,
-                assigneeRole: selectedAssignee.designation
+                assigneeRole: selectedAssignee.designation,
+                assignerName: senderName
             });
             toast.success(res.data.message);
             setIsManualAssignMode(false);
