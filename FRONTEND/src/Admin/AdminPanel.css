@@ -80,6 +80,8 @@
 
 #AdminAddCourse {
   margin-left: 270px;
+  width: calc(100vw - 270px);
+  overflow-x: auto;
   
   h2 {
     text-align: center;
@@ -155,6 +157,7 @@
 
   .coursetable {
     padding: 5px;
+    overflow-x: auto;
 
     h1 {
       text-align: center;
@@ -194,7 +197,8 @@
     }
 
     table {
-      width: 100%;
+      width: max-content;
+      min-width: 100%;
       text-align: center;
       border-collapse: collapse;
       font-size: 14px;
@@ -219,11 +223,22 @@
     th {
       border: 1px solid rgb(0, 0, 0, 0.3);
       padding: 3px;
+      white-space: nowrap;
 
     }
     th {
       background-color: grey;
       color: white;
+    }
+    .due-date-col {
+      width: 90px;
+      max-width: 90px;
+      min-width: 90px;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      line-height: 1.2;
+      vertical-align: middle;
     }
     .applicationclick {
       color: red;
@@ -598,4 +613,4 @@ table tbody{
     margin-left: 0; /* Assuming sidebar is hidden or toggled on smaller screens */
     padding: 15px;
   }
-}
+}

@@ -202,7 +202,7 @@ const AdvOnBoardingDetails = () => {
                 <th>BDA</th>
                 <th>Executive</th>
                 <th>Operation</th>
-                <th>Due Date</th>
+                <th className="due-date-col">Due Date</th>
                 <th>Status</th>
                 <th>More Details</th>
                 <th>Assign ADV Operation</th>
@@ -235,7 +235,7 @@ const AdvOnBoardingDetails = () => {
                         <td>{item.counselor || "N/A"}</td>
                         <td>{item.executive || item.lead || "N/A"}</td>
                         <td>{item.operationName || "N/A"}</td>
-                        <td className="whitespace-nowrap">{item.clearPaymentMonth || "N/A"}</td>
+                        <td className="due-date-col">{item.clearPaymentMonth || "N/A"}</td>
                         <td>
                           <button
                             className="button"
