@@ -373,7 +373,7 @@ const MasterClass = () => {
         navigate("/MasterClass/transition-from-non-tech-to-data-science-roles");
       }}>
         <img 
-          src="/posters/poster-new.jpeg" 
+          src="/posters/posterr.jpeg" 
           alt="Masterclass Data Science Roles" 
           className="w-full h-auto md:h-[400px] lg:h-[450px] object-cover object-top block" 
         />
