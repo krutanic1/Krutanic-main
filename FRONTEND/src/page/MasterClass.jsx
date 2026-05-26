@@ -370,10 +370,10 @@ const MasterClass = () => {
       
       {/* Full-width Hero Banner */}
       <div className="-mx-[12px] -mt-[10px] mb-8 cursor-pointer transition-opacity hover:opacity-95" onClick={() => {
-        navigate("/MasterClass/transition-from-non-tech-to-data-science-roles");
+        navigate("/MasterClass/the-fastest-roadmap-to-become-a-data-scientist-in-2026-even-without-a-coding-background");
       }}>
         <img 
-          src="/posters/poster-new.jpeg" 
+          src="/posters/posterr.jpeg" 
           alt="Masterclass Data Science Roles" 
           className="w-full h-auto md:h-[400px] lg:h-[450px] object-cover object-top block" 
         />
