@@ -205,8 +205,9 @@ const RevenueSheet = () => {
                 <th className="border p-3 text-left">Total Revenue</th>
                 <th className="border p-3 text-left">Credited Revenue</th>
                 <th className="border p-3 text-left">Pending Revenue</th>
-                <th className="border p-3 text-left center">No. of Payments</th>
-
+                <th className="border p-3 text-center">No. of Payments</th>
+                <th className="border p-3 text-center">SGFL</th>
+                <th className="border p-3 text-center">CGFL</th>
               </tr>
             </thead>
             <tbody>
@@ -218,12 +219,13 @@ const RevenueSheet = () => {
                     <td className="border p-3">₹{data.credited.toFixed(2)}</td>
                     <td className="border p-3">₹{data.pending.toFixed(2)}</td>
                     <td className="border p-3 text-center">{data.payments}</td>
-
+                    <td className="border p-3 text-center">{data.sgfl || 0}</td>
+                    <td className="border p-3 text-center">{data.cgfl || 0}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="p-4 text-center text-gray-500">
+                  <td colSpan="7" className="p-4 text-center text-gray-500">
                     {loadingDaily ? "Fetching data..." : "No records found for this period."}
                   </td>
                 </tr>
