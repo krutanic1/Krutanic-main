@@ -10,7 +10,6 @@ const BookedList = () => {
   const [loading, setLoading] = useState(true);
   const [iscourseFormVisible, setiscourseFormVisible] = useState(false);
   const [editingStudentId, setEditingStudentId] = useState(null);
-  const [selectedMonth, setSelectedMonth] = useState(""); // Store selected month (format: "Month-Year")
   // Generate months dynamically from current month going back 24 months
   const generateMonths = () => {
     const monthNames = [
@@ -29,6 +28,7 @@ const BookedList = () => {
   };
 
   const [months] = useState(generateMonths());
+  const [selectedMonth, setSelectedMonth] = useState(months[0] || ""); // Store selected month (format: "Month-Year")
   const [executives, setExecutives] = useState([]); // Store list of executives
 
   // Pagination state
