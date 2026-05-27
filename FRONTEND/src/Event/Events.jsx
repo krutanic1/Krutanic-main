@@ -2,10 +2,12 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 // Contribution note: minor non-functional update for repository activity.
 
 const Events = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [event, setEvent] = useState([]);
   const [ongoing, setOngoing] = useState([]);
@@ -88,6 +90,11 @@ const Events = () => {
 
   const handleApply = async (event) => {
     try {
+      if (event?.registrationLink && event.registrationLink.toLowerCase().includes("masterclass")) {
+        navigate("/MasterClass");
+        return;
+      }
+
       if (!userId || !event) {
         toast.error("User ID or Event is missing.");
         return;

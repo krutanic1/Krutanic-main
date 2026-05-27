@@ -57,6 +57,10 @@ const MasterClassDetails = () => {
         setLoading(true);
         const response = await axios.get(`${API}/masterclass/by-slug-or-id/${id}`);
         if (response.data) {
+          if (response.data.masterclass?.status === "completed") {
+            navigate("/MasterClass");
+            return;
+          }
           setMasterclass(response.data.masterclass);
           setRelatedClasses(response.data.related || []);
         } else {
