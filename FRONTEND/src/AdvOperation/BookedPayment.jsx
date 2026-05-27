@@ -1205,8 +1205,9 @@ const BookedAmount = () => {
           ))}
         </select>
 
-        <table>
-          <thead>
+        <div className="overflow-x-auto w-full">
+          <table>
+            <thead>
             <tr>
               <th>Sl No</th>
               <th>Name</th>
@@ -1258,8 +1259,14 @@ const BookedAmount = () => {
                         <td>{item.paidAmount}</td>
                         <td>{item.programPrice - item.paidAmount}</td>
                         <td className="capitalize">{item.monthOpted}</td>
-                        <td className="whitespace-nowrap">
-                          {item.clearPaymentMonth}
+                        <td>
+                          <div className="max-h-[60px] overflow-y-auto whitespace-nowrap pr-2 custom-scrollbar">
+                            {item.clearPaymentMonth && typeof item.clearPaymentMonth === 'string'
+                              ? item.clearPaymentMonth.split(',').map((dateStr, idx) => (
+                                  <div key={idx}>{dateStr.trim()}</div>
+                                ))
+                              : item.clearPaymentMonth}
+                          </div>
                         </td>
                         <td>
                           <div className="flex flex-col text-sm text-left px-2">
@@ -1448,7 +1455,8 @@ Team Krutanic`
               </tr>
             )}
           </tbody>
-        </table>
+          </table>
+        </div>
 
         {filteredStudents.length > itemsPerPage && (
           <div className="flex justify-center items-center gap-4 mt-4 mb-4">

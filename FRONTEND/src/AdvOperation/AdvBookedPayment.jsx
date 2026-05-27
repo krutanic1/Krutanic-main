@@ -891,8 +891,9 @@ const AdvBookedPayment = () => {
           ))}
         </select>
 
-        <table>
-          <thead>
+        <div className="overflow-x-auto w-full">
+          <table>
+            <thead>
             <tr>
               <th>Sl No</th>
               <th>Name</th>
@@ -1092,7 +1093,8 @@ const AdvBookedPayment = () => {
               </tr>
             )}
           </tbody>
-        </table>
+          </table>
+        </div>
 
         {filteredStudents.length > itemsPerPage && (
           <div className="flex justify-center items-center gap-4 mt-4 mb-4">
