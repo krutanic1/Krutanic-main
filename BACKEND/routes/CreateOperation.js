@@ -332,42 +332,258 @@ router.post("/checkoperation", async (req, res) => {
 
 // ----------------------------------------------------
 router.post("/sendedOnboardingMail", async (req, res) => {
-  const {
-    fullname,
-    email,
-    domain,
-    monthOpted,
-    programPrice,
-    paidAmount
-  } = req.body;
-  const price = Number(programPrice);
-  const paid = Number(paidAmount);
-  const pendingAmount = price - paid;
-  // console.log("pending", pendingAmount);
+  const { email } = req.body;
 
-  const emailMessage = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
-      <div style="background-color: #F15B29; color: #fff; text-align: center; padding: 20px;">
-        <h1>Welcome to Krutanic</h1>
+  if (!email) {
+    return res.status(400).json({ message: "Email is required." });
+  }
+
+  let student;
+  let isAdvanceProgram = false;
+
+  try {
+    student = await NewEnrollStudent.findOne({ email: email.trim() });
+    if (!student) {
+      student = await AdvEnroll.findOne({ email: email.trim() });
+      if (student) {
+        isAdvanceProgram = true;
+      }
+    }
+  } catch (err) {
+    console.error("Error fetching student details:", err);
+  }
+
+  if (!student) {
+    return res.status(404).json({ message: "Student record not found." });
+  }
+
+  // Retrieve all details directly from the verified database record
+  const fullname = student.fullname;
+  const domain = student.domain;
+  const monthOpted = student.monthOpted;
+  const programPrice = student.programPrice;
+  const paidAmount = student.paidAmount;
+
+  const price = Number(programPrice) || 0;
+  const paid = Number(paidAmount) || 0;
+  const pendingAmount = price - paid;
+  const formattedPendingAmount = pendingAmount.toLocaleString('en-IN');
+
+  let emailMessage;
+
+  if (!isAdvanceProgram) {
+    emailMessage = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <div style="background-color: #F15B29; color: #fff; text-align: center; padding: 20px;">
+          <h1 style="color: #ffffff; margin: 0; font-family: Arial, sans-serif;">Welcome to Krutanic</h1>
+        </div>
+        <div style="padding: 20px; line-height: 1.6;">
+          <p style="font-size: 16px; color: #333; margin-bottom: 15px;">Dear ${fullname},</p>
+          <p style="font-size: 14px; color: #555; margin-bottom: 15px;">Warm greetings from Krutanic! We're excited to have you on board for our ${domain}, commencing on the 5th of ${monthOpted}. Your journey with us promises to be an enriching experience.</p>
+          <p style="font-size: 14px; color: #555; margin-bottom: 15px;">To ensure a seamless start, we kindly request you to login an LMS (Learning Management System) account by visiting <a href="https://www.krutanic.com" style="color: #F15B29; text-decoration: none; font-weight: bold;">krutanic.com</a> and selecting the "Login" option. Doing this promptly will help prevent any delays when the program begins. Training sessions will be available on the start date.</p>
+          <p style="font-size: 14px; color: #555; margin-bottom: 15px;">Should you have any questions or need assistance, please don't hesitate to contact us via email at <a href="mailto:support@krutanic.com" style="color: #0066cc; text-decoration: none;">support@krutanic.com</a>. We're here to support you every step of the way.</p>
+          <p style="font-size: 14px; color: #555; margin-bottom: 15px;">If you wish to clear your pending amount of <strong>₹${formattedPendingAmount}</strong> in advance to expedite your participation in projects, please use the link below:</p>
+          <p style="text-align: center; margin: 20px 0;">
+            <a href="https://smartpay.easebuzz.in/219610/Krutanic" target="_blank" style="background-color: #F15B29; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Pay Now</a>
+          </p>
+          <p style="font-size: 14px; color: #555; margin-bottom: 15px;">Once again, welcome to Krutanic's ${domain}. We look forward to embarking on this learning journey with you!</p>
+          <p style="font-size: 14px; color: #333; margin: 15px 0 0 0;">Warm regards,</p>
+          <p style="font-size: 14px; color: #333; font-weight: bold; margin: 4px 0 0 0;">Team Krutanic</p>
+        </div>
+        <div style="text-align: center; font-size: 12px; color: #888; padding: 10px 0; border-top: 1px solid #ddd; background-color: #f9f9f9;">
+          <p style="margin: 0;">&copy; 2024 Krutanic. All Rights Reserved.</p>
+        </div>
       </div>
-      <div style="padding: 20px;">
-        <p style="font-size: 16px; color: #333;">Dear ${fullname},</p>
-        <p style="font-size: 14px; color: #555;">Warm greetings from Krutanic! We're excited to have you on board for our ${domain}, commencing on the 5th of ${monthOpted}. Your journey with us promises to be an enriching experience.</p>
-        <p style="font-size: 14px; color: #555;">To ensure a seamless start, we kindly request you to login an LMS (Learning Management System) account by visiting <a href="https://www.krutanic.com" style="color: #F15B29;">krutanic.com</a> and selecting the "Login" option. Doing this promptly will help prevent any delays when the program begins. Training sessions will be available on the start date.</p>
-        <p style="font-size: 14px; color: #555;">Should you have any questions or need assistance, please don't hesitate to contact us via email at <a href="mailto:support@krutanic.com" style="color: #0066cc;">support@krutanic.com</a>. We're here to support you every step of the way.</p>
-        <p style="font-size: 14px; color: #555;">If you wish to clear your pending amount of <strong>${pendingAmount} INR</strong> in advance to expedite your participation in projects, please use the link below:</p>
-        <p style="text-align: center;">
-          <a href="https://smartpay.easebuzz.in/219610/Krutanic" target="_blank" style="background-color: #F15B29; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Pay Now</a>
-        </p>
-        <p style="font-size: 14px; color: #555;">Once again, welcome to Krutanic's ${domain}. We look forward to embarking on this learning journey with you!</p>
-        <p style="font-size: 14px; color: #333;">Warm regards,</p>
-        <p style="font-size: 14px; color: #333;">Team Krutanic</p>
+    `;
+  } else {
+    emailMessage = `
+      <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 650px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);">
+        <!-- Brand Header -->
+        <div style="background: linear-gradient(135deg, #F15B29 0%, #ff7a45 100%); color: #ffffff; text-align: center; padding: 35px 20px;">
+          <img src="https://lh3.googleusercontent.com/d/1rmHu8ecr-JC3kzrM3Q5QALubDAXwVmx6" alt="Krutanic Logo" style="max-height: 55px; margin-bottom: 15px; display: inline-block; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));">
+          <h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #ffffff;">Welcome to Krutanic</h1>
+          <p style="margin: 10px 0 0 0; font-size: 15px; opacity: 0.9; color: #ffffff;">Empowering Professionals with Industry-Relevant Skills</p>
+        </div>
+
+        <!-- Main Body Content -->
+        <div style="padding: 40px 30px; color: #333333;">
+          <p style="font-size: 18px; line-height: 1.6; margin-bottom: 25px;">
+            Dear <strong>${fullname}</strong>,
+          </p>
+          
+          <p style="font-size: 16px; line-height: 1.6; color: #4f4f4f; margin-bottom: 20px;">
+            <strong>Congratulations and welcome to Krutanic.</strong>
+          </p>
+
+          <p style="font-size: 16px; line-height: 1.6; color: #4f4f4f; margin-bottom: 25px;">
+            We are delighted to have you join our <strong>${domain}</strong>, commencing on <strong>5th of ${monthOpted}</strong>. As a professional committed to continuous growth, you have taken an important step toward building future-ready skills and accelerating your career.
+          </p>
+
+          <p style="font-size: 15px; line-height: 1.6; color: #666666; font-style: italic; background-color: #fafafa; border-left: 4px solid #F15B29; padding: 15px; border-radius: 4px; margin-bottom: 35px;">
+            "At Krutanic, we go beyond training. Our mission is to help learners gain practical expertise, build industry-ready portfolios, and create meaningful career opportunities through mentorship, projects, and dedicated career support."
+          </p>
+
+          <!-- Learning Journey Includes -->
+          <div style="margin-bottom: 35px;">
+            <h2 style="font-size: 18px; color: #F15B29; border-bottom: 2px solid #F15B29; padding-bottom: 8px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 0;">Your Learning Journey Includes</h2>
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="font-size: 15px; color: #4f4f4f; line-height: 1.8;">
+              <tr>
+                <td style="padding: 6px 0; vertical-align: top; width: 30px; font-size: 18px; color: #F15B29;">✓</td>
+                <td style="padding: 6px 0; vertical-align: top;"><strong>Live Instructor-Led Training</strong> - Immersive interactive classroom sessions.</td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 0; vertical-align: top; width: 30px; font-size: 18px; color: #F15B29;">✓</td>
+                <td style="padding: 6px 0; vertical-align: top;"><strong>Industry Projects & Case Studies</strong> - Real-world practical problems to solve.</td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 0; vertical-align: top; width: 30px; font-size: 18px; color: #F15B29;">✓</td>
+                <td style="padding: 6px 0; vertical-align: top;"><strong>Capstone Implementation Experience</strong> - A master portfolio project to showcase.</td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 0; vertical-align: top; width: 30px; font-size: 18px; color: #F15B29;">✓</td>
+                <td style="padding: 6px 0; vertical-align: top;"><strong>1:1 Career Guidance & Mentorship</strong> - Direct guidance from experienced industry leaders.</td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 0; vertical-align: top; width: 30px; font-size: 18px; color: #F15B29;">✓</td>
+                <td style="padding: 6px 0; vertical-align: top;"><strong>Resume & LinkedIn Profile Optimization</strong> - Tailored professional branding.</td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 0; vertical-align: top; width: 30px; font-size: 18px; color: #F15B29;">✓</td>
+                <td style="padding: 6px 0; vertical-align: top;"><strong>Mock Interviews & Interview Preparation</strong> - Build confidence with simulating exercises.</td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 0; vertical-align: top; width: 30px; font-size: 18px; color: #F15B29;">✓</td>
+                <td style="padding: 6px 0; vertical-align: top;"><strong>Placement Assistance & Partner Support</strong> - Connecting you to high-growth opportunities.</td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 0; vertical-align: top; width: 30px; font-size: 18px; color: #F15B29;">✓</td>
+                <td style="padding: 6px 0; vertical-align: top;"><strong>Multiple Interview Opportunities*</strong> - Guaranteed access to hiring drives.</td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 0; vertical-align: top; width: 30px; font-size: 18px; color: #F15B29;">✓</td>
+                <td style="padding: 6px 0; vertical-align: top;"><strong>Industry-Recognized Certification</strong> - Authenticate your newly acquired expertise.</td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- Career Support Includes -->
+          <div style="margin-bottom: 35px;">
+            <h2 style="font-size: 18px; color: #F15B29; border-bottom: 2px solid #F15B29; padding-bottom: 8px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 0;">Career Support Includes</h2>
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="font-size: 14px; color: #4f4f4f; line-height: 1.8;">
+              <!-- Item 1 -->
+              <tr>
+                <td style="padding: 6px 0; vertical-align: top; width: 28px; font-size: 16px; line-height: 1;">🚀</td>
+                <td style="padding: 6px 0; vertical-align: top; padding-left: 6px;"><strong>Dedicated Placement Assistance</strong></td>
+              </tr>
+              <!-- Item 2 -->
+              <tr>
+                <td style="padding: 6px 0; vertical-align: top; width: 28px; font-size: 16px; line-height: 1;">🤝</td>
+                <td style="padding: 6px 0; vertical-align: top; padding-left: 6px;"><strong>Hiring Partner Network Access</strong></td>
+              </tr>
+              <!-- Item 3 -->
+              <tr>
+                <td style="padding: 6px 0; vertical-align: top; width: 28px; font-size: 16px; line-height: 1;">📝</td>
+                <td style="padding: 6px 0; vertical-align: top; padding-left: 6px;"><strong>Resume & LinkedIn Optimization</strong></td>
+              </tr>
+              <!-- Item 4 -->
+              <tr>
+                <td style="padding: 6px 0; vertical-align: top; width: 28px; font-size: 16px; line-height: 1;">🗣️</td>
+                <td style="padding: 6px 0; vertical-align: top; padding-left: 6px;"><strong>Mock Interviews & Preparation</strong></td>
+              </tr>
+              <!-- Item 5 -->
+              <tr>
+                <td style="padding: 6px 0; vertical-align: top; width: 28px; font-size: 16px; line-height: 1;">👤</td>
+                <td style="padding: 6px 0; vertical-align: top; padding-left: 6px;"><strong>Personalized Career Coaching</strong></td>
+              </tr>
+              <!-- Item 6 -->
+              <tr>
+                <td style="padding: 6px 0; vertical-align: top; width: 28px; font-size: 16px; line-height: 1;">🎯</td>
+                <td style="padding: 6px 0; vertical-align: top; padding-left: 6px;"><strong>Multiple Interview Opportunities</strong></td>
+              </tr>
+              <!-- Item 7 -->
+              <tr>
+                <td style="padding: 6px 0; vertical-align: top; width: 28px; font-size: 16px; line-height: 1;">👥</td>
+                <td style="padding: 6px 0; vertical-align: top; padding-left: 6px;"><strong>Industry Mentorship</strong></td>
+              </tr>
+              <!-- Item 8 -->
+              <tr>
+                <td style="padding: 6px 0; vertical-align: top; width: 28px; font-size: 16px; line-height: 1;">📅</td>
+                <td style="padding: 6px 0; vertical-align: top; padding-left: 6px;"><strong>Exclusive Hiring Drives & Events</strong></td>
+              </tr>
+              <!-- Item 9 -->
+              <tr>
+                <td style="padding: 6px 0; vertical-align: top; width: 28px; font-size: 16px; line-height: 1;">💼</td>
+                <td style="padding: 6px 0; vertical-align: top; padding-left: 6px;"><strong>End-to-End Job Search Support</strong></td>
+              </tr>
+              <!-- Item 10 -->
+              <tr>
+                <td style="padding: 6px 0; vertical-align: top; width: 28px; font-size: 16px; line-height: 1;">✨</td>
+                <td style="padding: 6px 0; vertical-align: top; padding-left: 6px;"><strong>Professional Branding Guidance</strong></td>
+              </tr>
+            </table>
+            <p style="font-size: 13px; color: #666666; margin-top: 15px; margin-bottom: 0; line-height: 1.5; font-style: italic;">
+              Our goal is to help every eligible learner secure multiple interview opportunities through our structured career support framework and hiring network.
+            </p>
+          </div>
+
+          <!-- Activation Section -->
+          <div style="margin-bottom: 35px; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+            <div style="background-color: #f7f7f7; padding: 15px 20px; border-bottom: 1px solid #e0e0e0;">
+              <h3 style="margin: 0; font-size: 16px; color: #333333; text-transform: uppercase;">🔐 Activate Your Learning Portal</h3>
+            </div>
+            <div style="padding: 20px; font-size: 15px; line-height: 1.6; color: #4f4f4f; background-color: #ffffff;">
+              <p style="margin-top: 0; margin-bottom: 15px;">To ensure a seamless onboarding experience, please activate your LMS account at the earliest.</p>
+              <div style="background-color: #f5f5f5; border-radius: 6px; padding: 15px; font-family: Courier, monospace; font-size: 14px; border: 1px dashed #cccccc; margin-bottom: 15px;">
+                <strong style="color: #F15B29;">Login Process:</strong><br>
+                • Visit <a href="https://www.krutanic.com" target="_blank" style="color: #F15B29; text-decoration: none; font-weight: bold;">www.krutanic.com</a><br>
+                • Click on <strong>Login</strong><br>
+                • Access your LMS using your registered credentials
+              </div>
+              <p style="margin: 0; font-size: 14px; color: #666666;">Your learning dashboard will provide access to all training sessions, recordings, projects, assignments, assessments, and career resources.</p>
+            </div>
+          </div>
+
+          <!-- Payment Section -->
+          <div style="margin-bottom: 35px; border: 1px dashed #d32f2f; background-color: #fff9f9; padding: 25px; border-radius: 8px; text-align: center;">
+            <h3 style="margin-top: 0; font-size: 18px; color: #d32f2f; text-transform: uppercase; letter-spacing: 0.5px;">💰 Pending Fee Payment (If Applicable)</h3>
+            <p style="font-size: 15px; color: #333333; line-height: 1.6; margin-bottom: 15px;">
+              Our records indicate an outstanding balance of <strong style="font-size: 18px; color: #d32f2f;">₹${formattedPendingAmount}</strong>.
+            </p>
+            <p style="font-size: 14px; color: #555555; line-height: 1.6; margin-bottom: 20px;">
+              To ensure uninterrupted access to all program benefits, including projects, mentorship, certifications, and career services, we request you to complete the pending payment before the program commencement date.
+            </p>
+            <a href="https://smartpay.easebuzz.in/219610/Krutanic" target="_blank" style="background-color: #d32f2f; color: #ffffff; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px; display: inline-block; box-shadow: 0 4px 10px rgba(211, 47, 47, 0.25);">Pay Outstanding Fee</a>
+          </div>
+
+          <!-- Support Section -->
+          <div style="text-align: center; border-top: 1px solid #eeeeee; padding-top: 30px;">
+            <h3 style="font-size: 16px; color: #333333; margin-top: 0; margin-bottom: 10px;">Dedicated Learner Success Support</h3>
+            <p style="font-size: 15px; color: #555555; margin: 0 0 25px 0;">
+              Should you require any assistance, our team is always available to support you.<br>
+              📧 <a href="mailto:support@krutanic.com" style="color: #F15B29; text-decoration: none; font-weight: bold;">support@krutanic.com</a>
+            </p>
+          </div>
+
+          <!-- Closing -->
+          <div style="font-size: 15px; line-height: 1.6; color: #4f4f4f; border-top: 1px solid #eeeeee; padding-top: 25px;">
+            <p style="margin-bottom: 20px;">Thank you for choosing Krutanic as your learning partner.</p>
+            <p style="margin-bottom: 20px;">We look forward to helping you build in-demand skills, gain real-world experience, and unlock exciting career opportunities.</p>
+            <p style="margin-bottom: 25px;">Welcome to a community of ambitious professionals committed to continuous learning, career advancement, and long-term success.</p>
+            
+            <p style="margin: 0; font-size: 14px; color: #333333;">Warm Regards,</p>
+            <p style="margin: 4px 0 0 0; font-size: 15px; font-weight: bold; color: #F15B29;">Team Krutanic</p>
+            <p style="margin: 4px 0 0 0; font-size: 13px; color: #777777; font-style: italic;">Empowering Professionals with Industry-Relevant Skills and Career Opportunities.</p>
+          </div>
+        </div>
+
+        <!-- Disclaimer Footer -->
+        <div style="background-color: #f7f7f7; border-top: 1px solid #e0e0e0; padding: 25px 30px; font-size: 12px; color: #777777; line-height: 1.6; text-align: justify;">
+          <p style="margin: 0 0 10px 0;"><strong>*Disclaimer:</strong> Interview opportunities are subject to successful completion of program requirements, learner participation, eligibility criteria, profile quality, market conditions, and hiring partner requirements.</p>
+          <p style="margin: 0; text-align: center;">&copy; 2026 Krutanic. All Rights Reserved.</p>
+        </div>
       </div>
-      <div style="text-align: center; font-size: 12px; color: #888; padding: 10px 0; border-top: 1px solid #ddd;">
-        <p>&copy; 2024 Krutanic. All Rights Reserved.</p>
-      </div>
-    </div>
-  `;
+    `;
+  }
   try {
     await sendEmail({
       email,

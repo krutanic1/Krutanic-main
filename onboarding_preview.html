@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Krutanic - Onboarding Email Preview</title>
+  <!-- Google Fonts: Lexend & Montserrat -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #F15B29;
+      --primary-light: #FFF6F3;
+      --primary-border: #FFD3C4;
+      --dark: #2D3748;
+      --light-bg: #F7FAFC;
+      --border-color: #E2E8F0;
+      --danger: #E53E3E;
+      --danger-light: #FFF5F5;
+      --danger-border: #FED7D7;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #F3F4F6;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    /* Interactive Desktop / Mobile responsive toggle */
+    .preview-mode-bar {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .toggle-btn {
+      background-color: #ffffff;
+      color: #4A5568;
+      border: 1px solid var(--border-color);
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13.5px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      transition: all 0.2s;
+    }
+
+    .toggle-btn.active {
+      background-color: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(241, 91, 41, 0.25);
+    }
+
+    /* Transition layout width seamlessly */
+    .preview-frame {
+      transition: max-width 0.4s ease-in-out;
+      width: 100%;
+      max-width: 650px;
+    }
+
+    .preview-frame.mobile {
+      max-width: 420px;
+    }
+
+    /* ACTUAL EMAIL STYLES */
+    .email-body {
+      background-color: #ffffff;
+      border: 1px solid #E5E7EB;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+      width: 100%;
+    }
+
+    .brand-header {
+      background: linear-gradient(135deg, #F15B29 0%, #ff7a45 100%);
+      color: #ffffff;
+      text-align: center;
+      padding: 35px 20px;
+    }
+
+    .brand-header img {
+      max-height: 55px;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    }
+
+    .brand-header h1 {
+      margin: 0;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      font-family: 'Montserrat', sans-serif;
+      color: #ffffff;
+    }
+
+    .brand-header p {
+      margin: 8px 0 0 0;
+      font-size: 14px;
+      opacity: 0.9;
+      font-weight: 300;
+      color: #ffffff;
+    }
+
+    .main-content {
+      padding: 40px 30px;
+      color: #2D3748;
+    }
+
+    .greeting {
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 25px;
+      color: #1A202C;
+    }
+
+    .welcome-text {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #4A5568;
+      margin-bottom: 25px;
+    }
+
+    .quote-box {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #4A5568;
+      font-style: italic;
+      background-color: var(--light-bg);
+      border-left: 4px solid var(--primary);
+      padding: 16px 20px;
+      border-radius: 6px;
+      margin-bottom: 35px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 8px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 0;
+    }
+
+    .journey-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      color: #4A5568;
+      line-height: 1.8;
+      margin-bottom: 35px;
+    }
+
+    .journey-table td {
+      padding: 8px 0;
+      vertical-align: top;
+    }
+
+    .journey-check {
+      width: 30px;
+      font-size: 16px;
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    .card-career {
+      margin-bottom: 35px;
+      width: 100%;
+    }
+
+    .career-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 8px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 0;
+    }
+
+    .career-grid {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      color: #4A5568;
+      line-height: 1.8;
+    }
+
+    .career-grid td {
+      width: 50%;
+      vertical-align: top;
+      padding-bottom: 10px;
+    }
+
+    .career-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .career-footer {
+      font-size: 12.5px;
+      color: #718096;
+      margin-top: 15px;
+      margin-bottom: 0;
+      line-height: 1.5;
+      font-style: italic;
+    }
+
+    .activation-card {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 35px;
+    }
+
+    .activation-header {
+      background-color: #F8FAFC;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .activation-header h3 {
+      margin: 0;
+      font-size: 14px;
+      color: #2D3748;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .activation-body {
+      padding: 20px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #4A5568;
+    }
+
+    .activation-code {
+      background-color: #F1F5F9;
+      border-radius: 6px;
+      padding: 15px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 13px;
+      border: 1px dashed #CBD5E1;
+      margin: 15px 0;
+    }
+
+    .activation-code a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .payment-card {
+      border: 1px dashed var(--danger);
+      background-color: var(--danger-light);
+      padding: 25px;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .payment-title {
+      margin-top: 0;
+      font-size: 16px;
+      color: var(--danger);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .payment-amount {
+      font-size: 14.5px;
+      color: #2D3748;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .payment-amount strong {
+      font-size: 19px;
+      color: var(--danger);
+    }
+
+    .payment-desc {
+      font-size: 13px;
+      color: #718096;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .payment-btn {
+      background-color: var(--danger);
+      color: #ffffff !important;
+      padding: 12px 30px;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 15px;
+      display: inline-block;
+      box-shadow: 0 4px 12px rgba(229, 62, 98, 0.2);
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .payment-btn:hover {
+      background-color: #C53030;
+      transform: translateY(-1px);
+    }
+
+    .support-section {
+      text-align: center;
+      border-top: 1px solid var(--border-color);
+      padding-top: 30px;
+    }
+
+    .support-title {
+      font-size: 15px;
+      color: #2D3748;
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .support-desc {
+      font-size: 14px;
+      color: #718096;
+      margin: 0 0 25px 0;
+    }
+
+    .support-desc a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .closing-section {
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: #4A5568;
+      border-top: 1px solid var(--border-color);
+      padding-top: 25px;
+    }
+
+    .closing-text {
+      margin-bottom: 20px;
+    }
+
+    .signature-title {
+      margin: 0;
+      font-size: 13.5px;
+      color: #718096;
+    }
+
+    .signature-name {
+      margin: 4px 0 0 0;
+      font-size: 15px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .signature-tagline {
+      margin: 4px 0 0 0;
+      font-size: 12px;
+      color: #A0AEC0;
+      font-style: italic;
+    }
+
+    .disclaimer-footer {
+      background-color: #F8FAFC;
+      border-top: 1px solid var(--border-color);
+      padding: 25px 30px;
+      font-size: 11.5px;
+      color: #718096;
+      line-height: 1.6;
+      text-align: justify;
+    }
+
+    .disclaimer-footer p {
+      margin-bottom: 10px;
+    }
+    .disclaimer-footer p:last-child {
+      margin-bottom: 0;
+      text-align: center;
+    }
+
+    /* Mobile styles overrides */
+    .preview-frame.mobile .main-content {
+      padding: 25px 15px;
+    }
+    .preview-frame.mobile .career-grid td {
+      width: 100%;
+      display: block;
+    }
+    .preview-frame.mobile .brand-header h1 {
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toggle Modes -->
+  <div class="preview-mode-bar">
+    <button class="toggle-btn active" id="btn-desktop" onclick="setMode('desktop')">
+      🖥️ Desktop View
+    </button>
+    <button class="toggle-btn" id="btn-mobile" onclick="setMode('mobile')">
+      📱 Mobile View
+    </button>
+  </div>
+
+  <!-- Real Email View Container -->
+  <div class="preview-frame" id="preview-wrapper">
+    <div class="email-body">
+      
+      <!-- Brand Header with Official Logo -->
+      <div class="brand-header">
+        <img src="https://lh3.googleusercontent.com/d/1rmHu8ecr-JC3kzrM3Q5QALubDAXwVmx6" alt="Krutanic Logo">
+        <h1>Welcome to Krutanic</h1>
+        <p>Empowering Professionals with Industry-Relevant Skills</p>
+      </div>
+
+      <!-- Main Body Content -->
+      <div class="main-content">
+        <p class="greeting">
+          Dear <strong>John Doe</strong>,
+        </p>
+        
+        <p class="welcome-text">
+          <strong>Congratulations and welcome to Krutanic.</strong>
+        </p>
+
+        <p class="welcome-text">
+          We are delighted to have you join our <strong>Full-Stack MERN Developer Program</strong>, commencing on <strong>5th of June</strong>. As a professional committed to continuous growth, you have taken an important step toward building future-ready skills and accelerating your career.
+        </p>
+
+        <div class="quote-box">
+          "At Krutanic, we go beyond training. Our mission is to help learners gain practical expertise, build industry-ready portfolios, and create meaningful career opportunities through mentorship, projects, and dedicated career support."
+        </div>
+
+        <!-- Learning Journey Includes -->
+        <div>
+          <h2 class="section-title">Your Learning Journey Includes</h2>
+          <table class="journey-table" role="presentation">
+            <tr>
+              <td class="journey-check">✓</td>
+              <td><strong>Live Instructor-Led Training</strong> - Immersive interactive classroom sessions.</td>
+            </tr>
+            <tr>
+              <td class="journey-check">✓</td>
+              <td><strong>Industry Projects & Case Studies</strong> - Real-world practical problems to solve.</td>
+            </tr>
+            <tr>
+              <td class="journey-check">✓</td>
+              <td><strong>Capstone Implementation Experience</strong> - A master portfolio project to showcase.</td>
+            </tr>
+            <tr>
+              <td class="journey-check">✓</td>
+              <td><strong>1:1 Career Guidance & Mentorship</strong> - Direct guidance from experienced industry leaders.</td>
+            </tr>
+            <tr>
+              <td class="journey-check">✓</td>
+              <td><strong>Resume & LinkedIn Profile Optimization</strong> - Tailored professional branding.</td>
+            </tr>
+            <tr>
+              <td class="journey-check">✓</td>
+              <td><strong>Mock Interviews & Interview Preparation</strong> - Build confidence with simulating exercises.</td>
+            </tr>
+            <tr>
+              <td class="journey-check">✓</td>
+              <td><strong>Placement Assistance & Partner Support</strong> - Connecting you to high-growth opportunities.</td>
+            </tr>
+            <tr>
+              <td class="journey-check">✓</td>
+              <td><strong>Multiple Interview Opportunities*</strong> - Guaranteed access to hiring drives.</td>
+            </tr>
+            <tr>
+              <td class="journey-check">✓</td>
+              <td><strong>Industry-Recognized Certification</strong> - Authenticate your newly acquired expertise.</td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Career Support Includes -->
+        <div class="card-career">
+          <h2 class="career-title">Career Support Includes</h2>
+          <table class="career-grid" role="presentation" style="width: 100%; border-collapse: collapse; font-size: 13.5px; color: #4A5568; line-height: 1.8;">
+            <!-- Item 1 -->
+            <tr>
+              <td style="padding: 6px 0; vertical-align: top; width: 28px; font-size: 16px; line-height: 1;">🚀</td>
+              <td style="padding: 6px 0; vertical-align: top; padding-left: 6px;"><strong>Dedicated Placement Assistance</strong></td>
+            </tr>
+            <!-- Item 2 -->
+            <tr>
+              <td style="padding: 6px 0; vertical-align: top; width: 28px; font-size: 16px; line-height: 1;">🤝</td>
+              <td style="padding: 6px 0; vertical-align: top; padding-left: 6px;"><strong>Hiring Partner Network Access</strong></td>
+            </tr>
+            <!-- Item 3 -->
+            <tr>
+              <td style="padding: 6px 0; vertical-align: top; width: 28px; font-size: 16px; line-height: 1;">📝</td>
+              <td style="padding: 6px 0; vertical-align: top; padding-left: 6px;"><strong>Resume & LinkedIn Optimization</strong></td>
+            </tr>
+            <!-- Item 4 -->
+            <tr>
+              <td style="padding: 6px 0; vertical-align: top; width: 28px; font-size: 16px; line-height: 1;">🗣️</td>
+              <td style="padding: 6px 0; vertical-align: top; padding-left: 6px;"><strong>Mock Interviews & Preparation</strong></td>
+            </tr>
+            <!-- Item 5 -->
+            <tr>
+              <td style="padding: 6px 0; vertical-align: top; width: 28px; font-size: 16px; line-height: 1;">👤</td>
+              <td style="padding: 6px 0; vertical-align: top; padding-left: 6px;"><strong>Personalized Career Coaching</strong></td>
+            </tr>
+            <!-- Item 6 -->
+            <tr>
+              <td style="padding: 6px 0; vertical-align: top; width: 28px; font-size: 16px; line-height: 1;">🎯</td>
+              <td style="padding: 6px 0; vertical-align: top; padding-left: 6px;"><strong>Multiple Interview Opportunities</strong></td>
+            </tr>
+            <!-- Item 7 -->
+            <tr>
+              <td style="padding: 6px 0; vertical-align: top; width: 28px; font-size: 16px; line-height: 1;">👥</td>
+              <td style="padding: 6px 0; vertical-align: top; padding-left: 6px;"><strong>Industry Mentorship</strong></td>
+            </tr>
+            <!-- Item 8 -->
+            <tr>
+              <td style="padding: 6px 0; vertical-align: top; width: 28px; font-size: 16px; line-height: 1;">📅</td>
+              <td style="padding: 6px 0; vertical-align: top; padding-left: 6px;"><strong>Exclusive Hiring Drives & Events</strong></td>
+            </tr>
+            <!-- Item 9 -->
+            <tr>
+              <td style="padding: 6px 0; vertical-align: top; width: 28px; font-size: 16px; line-height: 1;">💼</td>
+              <td style="padding: 6px 0; vertical-align: top; padding-left: 6px;"><strong>End-to-End Job Search Support</strong></td>
+            </tr>
+            <!-- Item 10 -->
+            <tr>
+              <td style="padding: 6px 0; vertical-align: top; width: 28px; font-size: 16px; line-height: 1;">✨</td>
+              <td style="padding: 6px 0; vertical-align: top; padding-left: 6px;"><strong>Professional Branding Guidance</strong></td>
+            </tr>
+          </table>
+          <p class="career-footer" style="font-size: 12.5px; color: #718096; margin-top: 15px; font-style: italic;">
+            Our goal is to help every eligible learner secure multiple interview opportunities through our structured career support framework and hiring network.
+          </p>
+        </div>
+
+        <!-- Activation Section -->
+        <div class="activation-card">
+          <div class="activation-header">
+            <h3>🔐 Activate Your Learning Portal</h3>
+          </div>
+          <div class="activation-body">
+            <p>To ensure a seamless onboarding experience, please activate your LMS account at the earliest.</p>
+            <div class="activation-code">
+              <strong>Login Process:</strong><br>
+              • Visit <a href="https://www.krutanic.com" target="_blank">www.krutanic.com</a><br>
+              • Click on <strong>Login</strong><br>
+              • Access your LMS using your registered credentials
+            </div>
+            <p style="font-size: 13px; color: #718096;">Your learning dashboard will provide access to all training sessions, recordings, projects, assignments, assessments, and career resources.</p>
+          </div>
+        </div>
+
+        <!-- Payment Section -->
+        <div class="payment-card">
+          <h3 class="payment-title">💰 Pending Fee Payment (If Applicable)</h3>
+          <p class="payment-amount">
+            Our records indicate an outstanding balance of <strong>₹15,000</strong>.
+          </p>
+          <p class="payment-desc">
+            To ensure uninterrupted access to all program benefits, including projects, mentorship, certifications, and career services, we request you to complete the pending payment before the program commencement date.
+          </p>
+          <a href="https://smartpay.easebuzz.in/219610/Krutanic" target="_blank" class="payment-btn">Pay Outstanding Fee</a>
+        </div>
+
+        <!-- Support Section -->
+        <div class="support-section">
+          <h3 class="support-title">Dedicated Learner Success Support</h3>
+          <p class="support-desc">
+            Should you require any assistance, our team is always available to support you.<br>
+            📧 <a href="mailto:support@krutanic.com">support@krutanic.com</a>
+          </p>
+        </div>
+
+        <!-- Closing -->
+        <div class="closing-section">
+          <p class="closing-text">Thank you for choosing Krutanic as your learning partner.</p>
+          <p class="closing-text">We look forward to helping you build in-demand skills, gain real-world experience, and unlock exciting career opportunities.</p>
+          <p class="closing-text" style="margin-bottom: 25px;">Welcome to a community of ambitious professionals committed to continuous learning, career advancement, and long-term success.</p>
+          
+          <p class="signature-title">Warm Regards,</p>
+          <p class="signature-name">Team Krutanic</p>
+          <p class="signature-tagline">Empowering Professionals with Industry-Relevant Skills and Career Opportunities.</p>
+        </div>
+      </div>
+
+      <!-- Disclaimer Footer -->
+      <div class="disclaimer-footer">
+        <p><strong>*Disclaimer:</strong> Interview opportunities are subject to successful completion of program requirements, learner participation, eligibility criteria, profile quality, market conditions, and hiring partner requirements.</p>
+        <p>&copy; 2026 Krutanic. All Rights Reserved.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function setMode(mode) {
+      const wrapper = document.getElementById('preview-wrapper');
+      const btnDesktop = document.getElementById('btn-desktop');
+      const btnMobile = document.getElementById('btn-mobile');
+      
+      if (mode === 'desktop') {
+        wrapper.classList.remove('mobile');
+        btnDesktop.classList.add('active');
+        btnMobile.classList.remove('active');
+      } else {
+        wrapper.classList.add('mobile');
+        btnDesktop.classList.remove('active');
+        btnMobile.classList.add('active');
+      }
+    }
+  </script>
+</body>
+</html>
