@@ -1037,7 +1037,8 @@ router.get("/getdailyrevenue", async (req, res) => {
           programPrice: { $ifNull: ["$programPrice", 0] },
           paidAmount: { $ifNull: ["$paidAmount", 0] },
           status: 1,
-          remark: 1
+          remark: 1,
+          lead: 1
         }
       },
       {
@@ -1077,7 +1078,17 @@ router.get("/getdailyrevenue", async (req, res) => {
           bookedRevenue: { $sum: "$paidAmount" },
           creditedRevenue: { $sum: "$creditedAmount" },
           pendingRevenue: { $sum: "$pendingAmount" },
-          payments: { $sum: 1 }
+          payments: { $sum: 1 },
+          sgflCount: {
+            $sum: {
+              $cond: { if: { $eq: ["$lead", "SGFL"] }, then: 1, else: 0 }
+            }
+          },
+          cgflCount: {
+            $sum: {
+              $cond: { if: { $eq: ["$lead", "CGFL"] }, then: 1, else: 0 }
+            }
+          }
         }
       },
       { $sort: { _id: -1 } }, // Sort by YYYY-MM-DD descending
@@ -1089,7 +1100,9 @@ router.get("/getdailyrevenue", async (req, res) => {
           booked: "$bookedRevenue",
           credited: "$creditedRevenue",
           pending: "$pendingRevenue",
-          payments: "$payments"
+          payments: "$payments",
+          sgfl: { $ifNull: ["$sgflCount", 0] },
+          cgfl: { $ifNull: ["$cgflCount", 0] }
         }
       }
     ];
