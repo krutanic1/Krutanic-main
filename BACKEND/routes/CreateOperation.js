@@ -208,6 +208,7 @@ router.get("/OperationDashboard", authMiddleware, (req, res) => {
 });
 
 //send course details and login details to user
+//send course details and login details to user
 router.post("/send-email", async (req, res) => {
   const {
     fullname,
@@ -218,44 +219,80 @@ router.post("/send-email", async (req, res) => {
     domain,
     clearPaymentMonth,
     monthOpted,
+    isAdvBookedPayment,
   } = req.body;
   const defaultPassword = "Krutanic@123";
-  const emailMessage = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
-      <div style="background-color: #F15B29; color: #fff; text-align: center; padding: 20px;">
-        <h1>Welcome to Krutanic</h1>
+
+  let emailMessage;
+  let subject;
+
+  if (isAdvBookedPayment) {
+    subject = "Access Credentials – Krutanic";
+    emailMessage = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <div style="background-color: #F15B29; text-align: center; padding: 20px;">
+          <img src="https://lh3.googleusercontent.com/d/1rmHu8ecr-JC3kzrM3Q5QALubDAXwVmx6" alt="Krutanic Logo" style="max-height: 50px; display: inline-block;">
+        </div>
+        <div style="padding: 20px; color: #333333; font-size: 14px;">
+          <p style="margin-top: 0; margin-bottom: 20px; text-transform: capitalize;">Dear ${fullname},</p>
+          <p style="margin-bottom: 20px;">I hope you are doing well.</p>
+          <p style="margin-bottom: 20px;">Please find below the login credentials for accessing the platform:</p>
+          <p style="margin-bottom: 20px; line-height: 1.8;">
+            Platform: Krutanic<br/>
+            Login URL: <a href="https://www.krutanic.com/login" target="_blank" style="color: #F15B29; text-decoration: none; font-weight: bold;">https://www.krutanic.com/login</a><br/>
+            Username: ${email}<br/>
+            Temporary Password: ${defaultPassword}
+          </p>
+          <p style="margin-bottom: 20px;">Please ensure the password is changed upon first login for security purposes.</p>
+          <p style="margin-bottom: 20px;">Kindly let me know once access has been verified successfully.</p>
+          <p style="margin-bottom: 5px;">Regards,</p>
+          <p style="margin-bottom: 0; font-weight: bold; color: #F15B29;">Team Krutanic</p>
+        </div>
+        <div style="text-align: center; font-size: 12px; color: #888; padding: 10px 0; border-top: 1px solid #ddd; background-color: #f9f9f9;">
+          <p style="margin: 0;">&copy; 2026 Krutanic. All Rights Reserved.</p>
+        </div>
       </div>
-      <div style="padding: 20px;">
-        <p style="font-size: 16px; text-transform: capitalize; color: #333;">Dear ${fullname},</p>
-        <p style="font-size: 14px; color: #555;">Thank you for joining us! Here are your details:</p>
-        <ul style="font-size: 14px; color: #555; line-height: 1.5;">
-          <li style="text-transform: capitalize;"><strong>Mode of Program:</strong> ${program}</li>
-          <li style="text-transform: capitalize;"><strong>You have opted a:</strong> ${monthOpted} month</li>
-          <li style="text-transform: capitalize;"><strong>You Have Opted for a Domain: </strong> ${domain}</li>
-          <li style="text-transform: capitalize;"><strong>Clear Due Payment Date:</strong> ${clearPaymentMonth}</ </li>
-          <li style="text-transform: capitalize;"><strong>Any Doubts? Talk to Your Counselor:</strong> ${counselor}</li>
-        </ul>
-        <p style="font-size: 14px; color: #555;">Here are your login details:</p>
-        <p style="font-size: 14px; color: #333;">Use your email (<strong>${email}</strong>) and the default password provided below to log in:</p>
-        <p style="text-align: center; font-size: 18px; font-weight: bold; color: #4a90e2;">${defaultPassword}</p>
-        <p style="font-size: 14px; color: #555;">
-          <a href="https://www.krutanic.com/login" target="_blank" style="color: #F15B29; text-decoration: none;">Click here to log in</a>. 
-          After logging in, please set a new password according to your preferences or official requirements.
-        </p>
-        <p>Note: Once you clear due amount then you'll get the access to your enrolled course.</p>
-        <p style="font-size: 14px; color: #555;">If you need any further assistance, feel free to reach out at <a href="mailto:support@krutanic.com" style="color: #0066cc; text-decoration: none;">support@krutanic.com</a>.</p>
-        <p style="font-size: 14px; color: #333;">Best regards</p>
-        <p style="font-size: 14px; color: #333;">Team Krutanic</p>
+    `;
+  } else {
+    subject = `Welcome to Our ${program} Program`;
+    emailMessage = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+        <div style="background-color: #F15B29; color: #fff; text-align: center; padding: 20px;">
+          <h1>Welcome to Krutanic</h1>
+        </div>
+        <div style="padding: 20px;">
+          <p style="font-size: 16px; text-transform: capitalize; color: #333;">Dear ${fullname},</p>
+          <p style="font-size: 14px; color: #555;">Thank you for joining us! Here are your details:</p>
+          <ul style="font-size: 14px; color: #555; line-height: 1.5;">
+            <li style="text-transform: capitalize;"><strong>Mode of Program:</strong> ${program}</li>
+            <li style="text-transform: capitalize;"><strong>You have opted a:</strong> ${monthOpted} month</li>
+            <li style="text-transform: capitalize;"><strong>You Have Opted for a Domain: </strong> ${domain}</li>
+            <li style="text-transform: capitalize;"><strong>Clear Due Payment Date:</strong> ${clearPaymentMonth}</ </li>
+            <li style="text-transform: capitalize;"><strong>Any Doubts? Talk to Your Counselor:</strong> ${counselor}</li>
+          </ul>
+          <p style="font-size: 14px; color: #555;">Here are your login details:</p>
+          <p style="font-size: 14px; color: #333;">Use your email (<strong>${email}</strong>) and the default password provided below to log in:</p>
+          <p style="text-align: center; font-size: 18px; font-weight: bold; color: #4a90e2;">${defaultPassword}</p>
+          <p style="font-size: 14px; color: #555;">
+            <a href="https://www.krutanic.com/login" target="_blank" style="color: #F15B29; text-decoration: none;">Click here to log in</a>. 
+            After logging in, please set a new password according to your preferences or official requirements.
+          </p>
+          <p>Note: Once you clear due amount then you'll get the access to your enrolled course.</p>
+          <p style="font-size: 14px; color: #555;">If you need any further assistance, feel free to reach out at <a href="mailto:support@krutanic.com" style="color: #0066cc; text-decoration: none;">support@krutanic.com</a>.</p>
+          <p style="font-size: 14px; color: #333;">Best regards</p>
+          <p style="font-size: 14px; color: #333;">Team Krutanic</p>
+        </div>
+        <div style="text-align: center; font-size: 12px; color: #888; padding: 10px 0; border-top: 1px solid #ddd;">
+          <p>&copy; 2026 Krutanic. All Rights Reserved.</p>
+        </div>
       </div>
-      <div style="text-align: center; font-size: 12px; color: #888; padding: 10px 0; border-top: 1px solid #ddd;">
-        <p>&copy; 2026 Krutanic. All Rights Reserved.</p>
-      </div>
-    </div>
-  `;
+    `;
+  }
+
   try {
     await sendEmail({
       email,
-      subject: `Welcome to Our ${program} Program`,
+      subject: subject,
       message: emailMessage,
     });
     res.status(200).json({ message: "Email sent successfully!" });

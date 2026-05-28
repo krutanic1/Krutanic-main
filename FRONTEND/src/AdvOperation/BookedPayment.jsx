@@ -361,6 +361,7 @@ const BookedAmount = () => {
       domain: value.domain,
       clearPaymentMonth: value.clearPaymentMonth,
       monthOpted: value.monthOpted,
+      isAdvBookedPayment: true,
     };
     try {
       const response = await axios.post(`${API}/send-email`, emailData);
