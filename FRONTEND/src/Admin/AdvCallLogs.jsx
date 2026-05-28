@@ -135,7 +135,11 @@ const AdvCallLogs = () => {
                                     </td>
                                     <td className="px-6 py-5">
                                         <div className="text-sm font-bold text-gray-900">
-                                            {Math.floor((log.duration || 0) / 60)}m {(log.duration || 0) % 60}s
+                                            {log.recordingUrl ? (
+                                                <>{Math.floor((log.duration || 0) / 60)}m {(log.duration || 0) % 60}s</>
+                                            ) : (
+                                                '0m 0s'
+                                            )}
                                         </div>
                                         <div className="text-[10px] text-gray-400 font-medium uppercase mt-1">Talk Time</div>
                                     </td>

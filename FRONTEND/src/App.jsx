@@ -125,7 +125,6 @@ import AddTeam from "./BDA/AddTeam";
 import AssignTarget from "./BDA/AssignTarget";
 
 // User Student
-import UserHeader from "./User/UserHeader";
 import Dashboard from "./User/NewDashboard";
 import EnrolledCourses from "./User/NewEnrolledCourses";
 import Learning from "./User/NewLearning";
@@ -451,9 +450,8 @@ const AppContent = () => {
   const advteamheaderPaths = ["/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/advteam/leaderboard"];
   const hrheaderPaths = ["/hrdashboard"];
   const lmsFooterPaths = ["/jobboard"];
-  const noFooterPaths = ["/operationdashboard", "/bookedpayment", "/fullpayment", "/defaultpayment", "/operationrevenuesheet", "/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet", "/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/advteam/leaderboard", "/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/leaderboard"];
+  const noFooterPaths = ["/operationdashboard", "/bookedpayment", "/fullpayment", "/defaultpayment", "/operationrevenuesheet", "/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet", "/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/advteam/leaderboard", "/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/leaderboard", "/setting"];
   const placementcoodinatorHeaderPaths = ["/pcdashboard", "/jobpost"];
-  const userheaderPaths = ["/profile", "/resume-builder"];
   const headerPaths = ["/", "/login", "/loginwithotp", "/forgotpassword", "/contactus", "/aboutus", "/career", "/collabration", "/advancecourses", "/terms", "/privacy", "/refundpolicy", "/feestructure", "/advance", "/advance-apply", "/mentorship", "/datascience", "/dataanalytics", "/digitalmarket", "/mernstack", "/investmentbanking", "/productmanagement", "/automationtesting", "/promptengineering", "/generativeai", "/operationlogin", "/advoperationlogin", "/teamlogin", "/adminlogin", "/managerlogin", "/loginadmin", "/pclogin", "/advteamlogin", "/dashboardaccessform", "/advancedashboardaccess", "/masterclass", "/alumni", "/verify", "/referandearn", "/marketing/login", "/interviewer-login", "/interviewerlogin", "/hrlogin", "/advanceform"];
 
   return (
@@ -476,8 +474,6 @@ const AppContent = () => {
         <PCHeader />
       ) : hrheaderPaths.includes(location.pathname.toLowerCase()) && isAuthenticatedHR() ? (
         <HRHeader />
-      ) : userheaderPaths.includes(location.pathname.toLowerCase()) ? (
-        <UserHeader />
       ) : (headerPaths.includes(location.pathname.toLowerCase()) || location.pathname.toLowerCase().startsWith('/mentorship/') || location.pathname.toLowerCase().startsWith('/masterclass/')) ? (
         <Header />
       ) : null}
@@ -720,20 +716,33 @@ const AppContent = () => {
 
       </Routes>
 
-      {/* Global Footers - Exclude attendance and clean dashboards */}
-      {location.pathname.toLowerCase() !== "/attendance" && 
-       location.pathname.toLowerCase() !== "/hrlogin" &&
-       location.pathname.toLowerCase() !== "/eventdashboard" &&
-       location.pathname.toLowerCase() !== "/dashboard" &&
-       !location.pathname.toLowerCase().startsWith("/advancedashboard") &&
-        !noFooterPaths.includes(location.pathname.toLowerCase()) &&
-       !adminheaderPaths.includes(location.pathname.toLowerCase()) && 
-       !advteamheaderPaths.includes(location.pathname.toLowerCase()) && 
-       !hrheaderPaths.includes(location.pathname.toLowerCase()) && (
-        <>
-          {lmsFooterPaths.includes(location.pathname.toLowerCase()) ? <LmsFooter /> : <Footer />}
-        </>
-      )}
+      {/* Global Footers - Exclude authenticated dashboards and login pages; only show on public paths */}
+      {(() => {
+        const path = location.pathname.toLowerCase();
+        
+        // Exclude all login pages from having a footer
+        if (path.includes('login')) return null;
+
+        // Custom LMS footer
+        if (lmsFooterPaths.includes(path)) return <LmsFooter />;
+
+        // Explicit exclusions
+        if (path === "/attendance") return null;
+
+        // Determine if it is a public marketing/informational page
+        const isPublicPath = headerPaths.includes(path) || 
+                             path.startsWith('/mentorship/') || 
+                             path.startsWith('/masterclass/') ||
+                             path.startsWith('/register/') ||
+                             path === '/events' || 
+                             path === '/eventregister' || 
+                             path === '/uiux' || 
+                             path === '/uiuxdesign';
+                             
+        if (isPublicPath) return <Footer />;
+
+        return null;
+      })()}
 
       {showAutoPopup && <AdvancedApplyPopup onClose={() => setShowAutoPopup(false)} />}
     </div>

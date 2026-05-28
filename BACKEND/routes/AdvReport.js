@@ -99,10 +99,10 @@ router.get("/daily-targets/:id", async (req, res) => {
         });
 
         const todayCallCount = activities.length;
-        // Only count talk time for calls >= 5 minutes (300 seconds)
         const todayTalkTime = activities.reduce((acc, curr) => {
+            if (!curr.recordingUrl || curr.recordingUrl.trim() === "") return acc;
             const duration = curr.duration || 0;
-            return duration >= 300 ? acc + duration : acc;
+            return acc + (duration > 1500 ? 1500 : duration);
         }, 0);
 
         // Global Leaderboard for the day (across all specialists)
@@ -117,11 +117,7 @@ router.get("/daily-targets/:id", async (req, res) => {
                 $group: {
                     _id: "$specialistName",
                     callCount: { $sum: 1 },
-                    talkTime: {
-                        $sum: {
-                            $cond: [{ $gte: ["$duration", 300] }, "$duration", 0]
-                        }
-                    }
+                    talkTime: { $sum: { $cond: [{ $and: [{ $ne: ["$recordingUrl", null] }, { $ne: ["$recordingUrl", ""] }] }, { $cond: [{ $gt: ["$duration", 1500] }, 1500, "$duration"] }, 0] } }
                 }
             }
         ]);
@@ -170,11 +166,7 @@ router.get("/adv-leaderboard", async (req, res) => {
                 $group: {
                     _id: "$specialistName",
                     callCount: { $sum: 1 },
-                    talkTime: {
-                        $sum: {
-                            $cond: [{ $gte: ["$duration", 300] }, "$duration", 0]
-                        }
-                    }
+                    talkTime: { $sum: { $cond: [{ $and: [{ $ne: ["$recordingUrl", null] }, { $ne: ["$recordingUrl", ""] }] }, { $cond: [{ $gt: ["$duration", 1500] }, 1500, "$duration"] }, 0] } }
                 }
             },
             {
@@ -965,7 +957,7 @@ router.get("/dashboard-analytics", async (req, res) => {
                         year: { $year: "$createdAt" },
                         month: { $month: "$createdAt" }
                     },
-                    totalDuration: { $sum: "$duration" },
+                    totalDuration: { $sum: { $cond: [{ $and: [{ $ne: ["$recordingUrl", null] }, { $ne: ["$recordingUrl", ""] }] }, { $cond: [{ $gt: ["$duration", 1500] }, 1500, "$duration"] }, 0] } },
                     callCount: { $sum: 1 }
                 }
             },
@@ -987,8 +979,8 @@ router.get("/dashboard-analytics", async (req, res) => {
                 $group: {
                     _id: "$specialistId",
                     totalCalls: { $sum: 1 },
-                    totalDuration: { $sum: "$duration" },
-                    avgDuration: { $avg: "$duration" },
+                    totalDuration: { $sum: { $cond: [{ $and: [{ $ne: ["$recordingUrl", null] }, { $ne: ["$recordingUrl", ""] }] }, { $cond: [{ $gt: ["$duration", 1500] }, 1500, "$duration"] }, 0] } },
+                    avgDuration: { $avg: { $cond: [{ $and: [{ $ne: ["$recordingUrl", null] }, { $ne: ["$recordingUrl", ""] }] }, { $cond: [{ $gt: ["$duration", 1500] }, 1500, "$duration"] }, null] } },
                     // Capture the recorded specialistName from the documents as a fallback
                     recordedName: { $first: "$specialistName" }
                 }
