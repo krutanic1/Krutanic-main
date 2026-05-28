@@ -489,13 +489,15 @@ const NewDashboard = () => {
                               </div>
                             </div>
                             <div className="mt-8 flex flex-wrap gap-3">
-                              <button
-                                onClick={() => handleStartLearningClick(item)}
-                                className="flex-1 min-w-[140px] bg-primary hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
-                              >
-                                <span className="material-symbols-outlined text-[20px]">play_circle</span>
-                                {isFullyPaid ? "Start Learning" : "Watch Demo"}
-                              </button>
+                              {isFullyPaid && (
+                                <button
+                                  onClick={() => handleStartLearningClick(item)}
+                                  className="flex-1 min-w-[140px] bg-primary hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                                >
+                                  <span className="material-symbols-outlined text-[20px]">play_circle</span>
+                                  Start Learning
+                                </button>
+                              )}
                               {isFullyPaid && (
                                 <button
                                   onClick={() => handleSubmit(item)}
