@@ -226,7 +226,11 @@ router.post("/send-email", async (req, res) => {
   let emailMessage;
   let subject;
 
-  if (isAdvBookedPayment) {
+  const isMentorship = 
+    (program && typeof program === "string" && /mentorship|mentor/i.test(program)) || 
+    (domain && typeof domain === "string" && /mentorship|mentor/i.test(domain));
+
+  if (isAdvBookedPayment && !isMentorship) {
     subject = "Access Credentials – Krutanic";
     emailMessage = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">

@@ -264,6 +264,9 @@ const AdvBookedPayment = () => {
   const handleSendEmail = async (value) => {
     if (value.isSending) return;
     value.isSending = true;
+    const isMentorship = 
+      (value.program && /mentorship|mentor/i.test(value.program)) || 
+      (value.domain && /mentorship|mentor/i.test(value.domain));
     const emailData = {
       fullname: value.fullname,
       email: value.email,
@@ -273,7 +276,7 @@ const AdvBookedPayment = () => {
       domain: value.domain,
       clearPaymentMonth: value.clearPaymentMonth,
       monthOpted: value.monthOpted,
-      isAdvBookedPayment: true,
+      isAdvBookedPayment: !isMentorship,
     };
     try {
       const response = await axios.post(`${API}/send-email`, emailData);

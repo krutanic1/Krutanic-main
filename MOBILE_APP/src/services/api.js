@@ -3,7 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 
 // Production Backend URL
 //const BASE_URL = 'https://krutanic-main.vercel.app';
-const BASE_URL = 'http://192.168.0.20:5000'; // Development IP
+const BASE_URL = 'http://192.168.0.76:5000'; // Development IP (Metro IP is 192.168.0.76)
 
 const api = axios.create({
     baseURL: BASE_URL,
