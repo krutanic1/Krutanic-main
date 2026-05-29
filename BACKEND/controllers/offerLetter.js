@@ -421,12 +421,13 @@ const sendOfferLetter = async ({ email, fullname, date, start, end, domain, dura
     // --- MENTORSHIP: Keep original offer letter ---
     subject = `Offer Letter - ${domain} Intern`;
     body = `
-        <p> <strong>Dear</strong> ${salutationName},</p>
-        <p>We at <strong>Krutanic</strong> are happy to inform you that based on your application and subsequent interview, you have secured the role of <strong> ${domain} Intern </strong>with us.<strong> This email is to be considered as a formal offer for the mentioned role.</strong></p>
-        <p>Kindly find attached an offer letter with the particulars of your employment. We are extremely happy to offer you this role and look forward to having you on board with us.<strong> The date of commencement of your employment is ${start}.</strong></p>
+        <p>Dear ${salutationName},</p>
+        <p>We at Krutanic are happy to inform you that based on your application and subsequent interview, you have secured the role of <strong>${domain} Intern</strong> with us. This email is to be considered as a formal offer for the mentioned role.</p>
+        <p>Kindly find attached an offer letter with the particulars of your employment. We are extremely happy to offer you this role and look forward to having you on board with us. The date of commencement of your employment is <strong>${start}</strong>.</p>
         <p>For any further information please do not hesitate to contact us via mail to this mail ID.</p>
         <p>Wishing you all the best on your new journey.</p>
         <p>Best Regards,</p>
+        <p><strong>Team Krutanic</strong></p>
         `;
 
     const pdfword1 = `
@@ -694,4 +695,4 @@ DATE:
   });
 };
 
-module.exports = { sendOfferLetter, createAdvanceOfferLetterPDF };
+module.exports = { sendOfferLetter, createAdvanceOfferLetterPDF, createOfferLetterPDF };
