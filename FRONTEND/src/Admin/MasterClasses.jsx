@@ -864,7 +864,8 @@ const MasterClasses = () => {
                   <th>Email</th>
                   <th>Experience (Years)</th>
                   <th>Working Field</th>
-                  <th >Number</th>
+                  <th>Number</th>
+                  <th>Registered At</th>
                 </tr>
               </thead>
               <tbody>
@@ -876,6 +877,7 @@ const MasterClasses = () => {
                     <td>{application.experience}</td>
                     <td>{application.field}</td>
                     <td>{application.phone}</td>
+                    <td>{application.appliedAt ? new Date(application.appliedAt).toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) : "N/A"}</td>
                   </tr>
                 ))}
               </tbody>
