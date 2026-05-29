@@ -411,8 +411,8 @@ Our commitment is to provide you with industry-relevant learning, practical impl
   return pdfBytes;
 };
 
-const sendOfferLetter = async ({ email, fullname, date, start, end, domain, duration, location }) => {
-  const isMentorship = domain && typeof domain === "string" && /mentorship|mentor/i.test(domain);
+const sendOfferLetter = async ({ email, fullname, date, start, end, domain, duration, location, isMentorship: passedIsMentorship }) => {
+  const isMentorship = passedIsMentorship !== undefined ? passedIsMentorship : (domain && typeof domain === "string" && /mentorship|mentor/i.test(domain));
   const salutationName = fullname.replace(/\s*candidate\b/gi, "").trim();
 
   let subject, body, pdfBuffer;

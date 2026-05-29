@@ -221,77 +221,53 @@ router.post("/send-email", async (req, res) => {
     monthOpted,
     isAdvBookedPayment,
   } = req.body;
-  const defaultPassword = "Krutanic@123";
-
-  let emailMessage;
-  let subject;
-
-  const isMentorship = 
-    (program && typeof program === "string" && /mentorship|mentor/i.test(program)) || 
-    (domain && typeof domain === "string" && /mentorship|mentor/i.test(domain));
-
-  if (isAdvBookedPayment && !isMentorship) {
-    subject = "Access Credentials – Krutanic";
-    emailMessage = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-        <div style="background-color: #F15B29; text-align: center; padding: 20px;">
-          <img src="https://lh3.googleusercontent.com/d/1rmHu8ecr-JC3kzrM3Q5QALubDAXwVmx6" alt="Krutanic Logo" style="max-height: 50px; display: inline-block;">
-        </div>
-        <div style="padding: 20px; color: #333333; font-size: 14px;">
-          <p style="margin-top: 0; margin-bottom: 20px; text-transform: capitalize;">Dear ${fullname},</p>
-          <p style="margin-bottom: 20px;">I hope you are doing well.</p>
-          <p style="margin-bottom: 20px;">Please find below the login credentials for accessing the platform:</p>
-          <p style="margin-bottom: 20px; line-height: 1.8;">
-            Platform: Krutanic<br/>
-            Login URL: <a href="https://www.krutanic.com/login" target="_blank" style="color: #F15B29; text-decoration: none; font-weight: bold;">https://www.krutanic.com/login</a><br/>
-            Username: ${email}<br/>
-            Temporary Password: ${defaultPassword}
-          </p>
-          <p style="margin-bottom: 20px;">Please ensure the password is changed upon first login for security purposes.</p>
-          <p style="margin-bottom: 20px;">Kindly let me know once access has been verified successfully.</p>
-          <p style="margin-bottom: 5px;">Regards,</p>
-          <p style="margin-bottom: 0; font-weight: bold; color: #F15B29;">Team Krutanic</p>
-        </div>
-        <div style="text-align: center; font-size: 12px; color: #888; padding: 10px 0; border-top: 1px solid #ddd; background-color: #f9f9f9;">
-          <p style="margin: 0;">&copy; 2026 Krutanic. All Rights Reserved.</p>
-        </div>
-      </div>
-    `;
-  } else {
-    subject = `Welcome to Our ${program} Program`;
-    emailMessage = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
-        <div style="background-color: #F15B29; color: #fff; text-align: center; padding: 20px;">
-          <h1>Welcome to Krutanic</h1>
-        </div>
-        <div style="padding: 20px;">
-          <p style="font-size: 16px; text-transform: capitalize; color: #333;">Dear ${fullname},</p>
-          <p style="font-size: 14px; color: #555;">Thank you for joining us! Here are your details:</p>
-          <ul style="font-size: 14px; color: #555; line-height: 1.5;">
-            <li style="text-transform: capitalize;"><strong>Mode of Program:</strong> ${program}</li>
-            <li style="text-transform: capitalize;"><strong>You have opted a:</strong> ${monthOpted} month</li>
-            <li style="text-transform: capitalize;"><strong>You Have Opted for a Domain: </strong> ${domain}</li>
-            <li style="text-transform: capitalize;"><strong>Clear Due Payment Date:</strong> ${clearPaymentMonth}</ </li>
-            <li style="text-transform: capitalize;"><strong>Any Doubts? Talk to Your Counselor:</strong> ${counselor}</li>
-          </ul>
-          <p style="font-size: 14px; color: #555;">Here are your login details:</p>
-          <p style="font-size: 14px; color: #333;">Use your email (<strong>${email}</strong>) and the default password provided below to log in:</p>
-          <p style="text-align: center; font-size: 18px; font-weight: bold; color: #4a90e2;">${defaultPassword}</p>
-          <p style="font-size: 14px; color: #555;">
-            <a href="https://www.krutanic.com/login" target="_blank" style="color: #F15B29; text-decoration: none;">Click here to log in</a>. 
-            After logging in, please set a new password according to your preferences or official requirements.
-          </p>
-          <p>Note: Once you clear due amount then you'll get the access to your enrolled course.</p>
-          <p style="font-size: 14px; color: #555;">If you need any further assistance, feel free to reach out at <a href="mailto:support@krutanic.com" style="color: #0066cc; text-decoration: none;">support@krutanic.com</a>.</p>
-          <p style="font-size: 14px; color: #333;">Best regards</p>
-          <p style="font-size: 14px; color: #333;">Team Krutanic</p>
-        </div>
-        <div style="text-align: center; font-size: 12px; color: #888; padding: 10px 0; border-top: 1px solid #ddd;">
-          <p>&copy; 2026 Krutanic. All Rights Reserved.</p>
-        </div>
-      </div>
-    `;
+  const defaultPassword = "Krutanic@123";  let counselorEmail = "";
+  if (counselor) {
+    try {
+      const counselorUser = await CreateOperation.findOne({ 
+        fullname: { $regex: new RegExp("^" + counselor.trim() + "$", "i") } 
+      });
+      if (counselorUser) {
+        counselorEmail = counselorUser.email;
+      }
+    } catch (err) {
+      console.error("Error fetching counselor email:", err);
+    }
   }
+
+  const subject = `Welcome to Our ${program} Program`;
+  const emailMessage = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+      <div style="background-color: #F15B29; color: #fff; text-align: center; padding: 20px;">
+        <h1 style="color: #ffffff; margin: 0;">Welcome to Krutanic</h1>
+      </div>
+      <div style="padding: 20px;">
+        <p style="font-size: 16px; text-transform: capitalize; color: #333;">Dear ${fullname},</p>
+        <p style="font-size: 14px; color: #555;">Thank you for joining us! Here are your details:</p>
+        <ul style="font-size: 14px; color: #555; line-height: 1.5;">
+          <li style="text-transform: capitalize;"><strong>Mode of Program:</strong> ${program}</li>
+          <li style="text-transform: capitalize;"><strong>You have opted a:</strong> ${monthOpted} month</li>
+          <li style="text-transform: capitalize;"><strong>You Have Opted for a Domain: </strong> ${domain}</li>
+          <li style="text-transform: capitalize;"><strong>Clear Due Payment Date:</strong> ${clearPaymentMonth}</li>
+          <li style="text-transform: capitalize;"><strong>Any Doubts? Talk to Your Counselor:</strong> <span style="text-transform: capitalize;">${counselor}</span>${counselorEmail ? ` (<a href="mailto:${counselorEmail}" style="color: #F15B29; text-decoration: none; text-transform: none;">${counselorEmail}</a>)` : ""}</li>
+        </ul>
+        <p style="font-size: 14px; color: #555;">Here are your login details:</p>
+        <p style="font-size: 14px; color: #333;">Use your email (<strong>${email}</strong>) and the default password provided below to log in:</p>
+        <p style="text-align: center; font-size: 18px; font-weight: bold; color: #4a90e2;">${defaultPassword}</p>
+        <p style="font-size: 14px; color: #555;">
+          <a href="https://www.krutanic.com/login" target="_blank" style="color: #F15B29; text-decoration: none; font-weight: bold;">Click here to log in</a>. 
+          After logging in, please set a new password according to your preferences or official requirements.
+        </p>
+        <p>Note: Once you clear due amount then you'll get the access to your enrolled course.</p>
+        <p style="font-size: 14px; color: #555;">If you need any further assistance, feel free to reach out at <a href="mailto:support@krutanic.com" style="color: #F15B29; text-decoration: none;">support@krutanic.com</a>.</p>
+        <p style="font-size: 14px; color: #333;">Best regards,</p>
+        <p style="font-size: 14px; color: #333; font-weight: bold;">Team Krutanic</p>
+      </div>
+      <div style="text-align: center; font-size: 12px; color: #888; padding: 10px 0; border-top: 1px solid #ddd; background-color: #f9f9f9;">
+        <p>&copy; 2026 Krutanic. All Rights Reserved.</p>
+      </div>
+    </div>
+  `;
 
   try {
     await sendEmail({
@@ -373,7 +349,7 @@ router.post("/checkoperation", async (req, res) => {
 
 // ----------------------------------------------------
 router.post("/sendedOnboardingMail", async (req, res) => {
-  const { email } = req.body;
+  const { email, domain: reqDomain, program: reqProgram } = req.body;
 
   if (!email) {
     return res.status(400).json({ message: "Email is required." });
@@ -382,16 +358,32 @@ router.post("/sendedOnboardingMail", async (req, res) => {
   let student;
   let isAdvanceProgram = false;
 
+  const isMentorshipReq = 
+    (reqProgram && typeof reqProgram === "string" && /mentorship|mentor|internship|intern|register/i.test(reqProgram)) || 
+    (reqDomain && typeof reqDomain === "string" && /mentorship|mentor|internship|intern/i.test(reqDomain));
+
   try {
-    student = await NewEnrollStudent.findOne({ email: email.trim() });
-    if (!student) {
-      student = await AdvEnroll.findOne({ email: email.trim() });
-      if (student) {
-        isAdvanceProgram = true;
+    if (isMentorshipReq) {
+      student = await NewEnrollStudent.findOne({ email: { $regex: new RegExp("^" + email.trim() + "$", "i") } });
+      isAdvanceProgram = false;
+      if (!student) {
+        student = await AdvEnroll.findOne({ email: { $regex: new RegExp("^" + email.trim() + "$", "i") } });
+        if (student) {
+          isAdvanceProgram = true;
+        }
+      }
+    } else {
+      student = await AdvEnroll.findOne({ email: { $regex: new RegExp("^" + email.trim() + "$", "i") } });
+      isAdvanceProgram = true;
+      if (!student) {
+        student = await NewEnrollStudent.findOne({ email: { $regex: new RegExp("^" + email.trim() + "$", "i") } });
+        if (student) {
+          isAdvanceProgram = false;
+        }
       }
     }
   } catch (err) {
-    console.error("Error fetching student details:", err);
+    console.error("Error fetching student details for onboarding:", err);
   }
 
   if (!student) {
@@ -649,7 +641,13 @@ router.post("/sendofferletter", async (req, res) => {
       .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ');
 
-    await sendOfferLetter({ email, fullname: formattedName, date, start, end, domain, duration, location });
+    let isMentorship = false;
+    const isMentorshipStudent = await NewEnrollStudent.findById(id);
+    if (isMentorshipStudent) {
+      isMentorship = true;
+    }
+
+    await sendOfferLetter({ email, fullname: formattedName, date, start, end, domain, duration, location, isMentorship });
 
     let updatedStudent = await NewEnrollStudent.findByIdAndUpdate(id, { offerlettersended: true }, { new: true });
 
