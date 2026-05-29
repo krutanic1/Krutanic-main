@@ -870,7 +870,7 @@ const MasterClasses = () => {
               <tbody>
                 {selectedMC.applications?.map((application, index) => (
                   <tr key={index}>
-                    <td>{index + 1}</td>
+                    <td>{selectedMC.applications.length - index}</td>
                     <td>{application.name}</td>
                     <td>{application.email}</td>
                     <td>{application.experience}</td>
