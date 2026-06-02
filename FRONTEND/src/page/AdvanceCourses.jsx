@@ -77,7 +77,7 @@ const columnsData = [
         title: "Data Science Advanced Program",
         desc: "Master Machine Learning, AI ethics, and large-scale neural architectures.",
         link: "/DataScience",
-        batch: "31st May"
+        batch: "6th July"
       },
       {
         type: "icon",
@@ -85,7 +85,7 @@ const columnsData = [
         title: "Data Analytics Advanced Program",
         desc: "Master Excel, SQL, Python, and Power BI to drive business decisions with data.",
         link: "/DataAnalytics",
-        batch: "31st May"
+        batch: "6th July"
       }
     ]
   },
