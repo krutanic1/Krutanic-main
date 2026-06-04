@@ -57,7 +57,7 @@ const heroStats = [
   { label: "Duration", value: "24 Weeks" },
   { label: "Program Rating", value: "4.9/5" },
   { label: "Avg. Salary Hike", value: "55%" },
-  { label: "Batch Starting", value: "31st May" },
+  { label: "Batch Starting", value: "6th July" },
 ];
 
 const audience = [
@@ -351,7 +351,7 @@ const DataAnalytics = () => {
       <section className="da-section">
         <div className="shell">
            <Certification isDark={false} />
-           <ProgramCohorts courseValue="Data Analytics" date="31st May" />
+           <ProgramCohorts courseValue="Data Analytics" date="6th July" />
         </div>
       </section>
 

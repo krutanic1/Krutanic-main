@@ -28,7 +28,7 @@ const AdvanceCounses = () => {
       support: "Live Project Mentoring",
       credential: "Certification",
       duration: "6 Months",
-      batch: "31st May",
+      batch: "6th July",
       brochure: dataScienceBrochure,
     },
     {
@@ -41,7 +41,7 @@ const AdvanceCounses = () => {
       support: "Industrial Project Case Studies",
       credential: "Professional Certificate",
       duration: "6 Months",
-      batch: "31st May",
+      batch: "6th July",
       brochure: dataAnalyticsBrochure,
     },
     {

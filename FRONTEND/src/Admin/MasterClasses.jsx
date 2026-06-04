@@ -12,6 +12,7 @@ const MasterClasses = () => {
   const [allMasterClass, setAllMasterClass] = useState([]);
   const [selectedMC, setSelectedMC] = useState(null);
   const [activeTab, setActiveTab] = useState("basic");
+  const [certSummary, setCertSummary] = useState(null);
   const [formData, setFormData] = useState({
     title: "",
     start: "",
@@ -271,6 +272,53 @@ const MasterClasses = () => {
       fetchMasterclass();
     } catch (error) {
       console.error("Error updating status:", error.response?.data?.message || error.message);
+    }
+  };
+
+  const handleGenerateCertificates = async (masterclass) => {
+    const isConfirmed = window.confirm(
+      `Generate and email certificates for all applicants in "${masterclass.title}"?`
+    );
+    if (!isConfirmed) return;
+
+    const loadingToast = toast.loading("Generating and emailing certificates... Please wait.");
+
+    try {
+      const response = await axios.post(`${API}/masterclass/${masterclass._id}/generate-certificates`);
+      toast.dismiss(loadingToast);
+
+      const results = response.data?.results || [];
+      const total = response.data?.totalApplications || 0;
+
+      let sentCount = 0;
+      let existCount = 0;
+      let failedCount = 0;
+
+      results.forEach(r => {
+        if (r.status === "fulfilled") {
+          const val = r.value || {};
+          if (val.status === "issued") sentCount++;
+          else if (val.status === "resent") existCount++;
+          else if (val.status === "email_failed" || val.status === "error") failedCount++;
+        } else {
+          failedCount++;
+        }
+      });
+
+      setCertSummary({
+        title: masterclass.title,
+        total,
+        sent: sentCount,
+        exists: existCount,
+        failed: failedCount,
+        results
+      });
+
+      toast.success(response.data?.message || "Certificate generation finished");
+    } catch (error) {
+      toast.dismiss(loadingToast);
+      toast.error(error.response?.data?.error || "Error generating certificates");
+      console.error("Certificate generation error:", error.response?.data || error.message);
     }
   };
 
@@ -864,22 +912,103 @@ const MasterClasses = () => {
                   <th>Email</th>
                   <th>Experience (Years)</th>
                   <th>Working Field</th>
-                  <th >Number</th>
+                  <th>Number</th>
+                  <th>Registered At</th>
                 </tr>
               </thead>
               <tbody>
                 {selectedMC.applications?.map((application, index) => (
                   <tr key={index}>
-                    <td>{index + 1}</td>
+                    <td>{selectedMC.applications.length - index}</td>
                     <td>{application.name}</td>
                     <td>{application.email}</td>
                     <td>{application.experience}</td>
                     <td>{application.field}</td>
                     <td>{application.phone}</td>
+                    <td>{application.appliedAt ? new Date(application.appliedAt).toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) : "N/A"}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {certSummary && (
+        <div className="jobdetails" style={{ zIndex: 10000 }}>
+          <div className="jobdetailsdiv" style={{ maxWidth: '500px', height: 'auto', borderRadius: '15px', padding: '25px', boxShadow: '0 10px 30px rgba(0,0,0,0.3)', border: 'none' }}>
+            <div className="title" style={{ borderBottom: '1px solid #eee', paddingBottom: '10px', marginBottom: '20px' }}>
+              <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#f15b29', margin: 0 }}>📧 Certificate Delivery Report</h2>
+              <span onClick={() => setCertSummary(null)} style={{ fontSize: '20px', cursor: 'pointer', fontWeight: 'bold' }}>✖</span>
+            </div>
+            
+            <p style={{ fontSize: '14px', color: '#555', marginBottom: '15px' }}>
+              Summary for masterclass: <strong>{certSummary.title}</strong>
+            </p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
+              <div style={{ backgroundColor: '#f3f4f6', padding: '12px', borderRadius: '10px', textAlign: 'center' }}>
+                <div style={{ fontSize: '11px', color: '#666', fontWeight: '600' }}>TOTAL APPLICANTS</div>
+                <div style={{ fontSize: '22px', fontWeight: 'bold', color: '#111' }}>{certSummary.total}</div>
+              </div>
+              <div style={{ backgroundColor: '#ecfdf5', padding: '12px', borderRadius: '10px', textAlign: 'center' }}>
+                <div style={{ fontSize: '11px', color: '#047857', fontWeight: '600' }}>MAILS SENT (NEW)</div>
+                <div style={{ fontSize: '22px', fontWeight: 'bold', color: '#059669' }}>{certSummary.sent}</div>
+              </div>
+              <div style={{ backgroundColor: '#eff6ff', padding: '12px', borderRadius: '10px', textAlign: 'center' }}>
+                <div style={{ fontSize: '11px', color: '#1d4ed8', fontWeight: '600' }}>MAILS SENT (RESENT)</div>
+                <div style={{ fontSize: '22px', fontWeight: 'bold', color: '#2563eb' }}>{certSummary.exists}</div>
+              </div>
+              <div style={{ backgroundColor: '#fef2f2', padding: '12px', borderRadius: '10px', textAlign: 'center' }}>
+                <div style={{ fontSize: '11px', color: '#b91c1c', fontWeight: '600' }}>FAILED EMAILS</div>
+                <div style={{ fontSize: '22px', fontWeight: 'bold', color: '#dc2626' }}>{certSummary.failed}</div>
+              </div>
+            </div>
+
+            {certSummary.results && certSummary.results.length > 0 && (
+              <div style={{ marginTop: '15px', marginBottom: '20px' }}>
+                <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#666', marginBottom: '6px', textAlign: 'left' }}>Detailed Status List:</div>
+                <div style={{ maxHeight: '150px', overflowY: 'auto', border: '1px solid #eee', borderRadius: '8px', padding: '8px', fontSize: '12px' }}>
+                  {certSummary.results.map((r, idx) => {
+                    const val = r.value || {};
+                    const email = val.email || "Unknown applicant";
+                    const status = val.status || "failed";
+                    let badgeColor = "#9ca3af";
+                    let badgeText = "Error";
+                    if (status === "issued") { badgeColor = "#10b981"; badgeText = "Sent (New)"; }
+                    else if (status === "resent") { badgeColor = "#06b6d4"; badgeText = "Resent (Exist)"; }
+                    else if (status === "email_failed") { badgeColor = "#ef4444"; badgeText = "Email Failed"; }
+                    
+                    return (
+                      <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: idx < certSummary.results.length - 1 ? '1px solid #f9f9f9' : 'none' }}>
+                        <span style={{ color: '#333', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '200px', textAlign: 'left' }}>{email}</span>
+                        <span style={{ backgroundColor: badgeColor, color: 'white', padding: '2px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold' }}>{badgeText}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            <button 
+              onClick={() => setCertSummary(null)} 
+              style={{
+                width: '100%',
+                backgroundColor: 'black',
+                color: 'white',
+                padding: '12px',
+                borderRadius: '8px',
+                border: 'none',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                fontSize: '14px',
+                transition: 'background-color 0.2s'
+              }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#f15b29'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = 'black'}
+            >
+              Okay, Close
+            </button>
           </div>
         </div>
       )}
@@ -900,6 +1029,7 @@ const MasterClasses = () => {
               <th>Pdf Downlowd</th>
               <th>Change PdfDownload</th>
               <th>Action</th>
+              <th>Certificate</th>
               <th>Status</th>
               <th>Change Status</th>
             </tr>
@@ -928,6 +1058,17 @@ const MasterClasses = () => {
                   <button ><i className="fa fa-edit" onClick={() => handleEdit(masterclass)}></i></button>
                   <button onClick={() => handleDelete(masterclass._id)}><i className="fa fa-trash-o text-red-600"></i></button>
                 </td>
+                <td>
+                  <button
+                    type="button"
+                    onClick={() => handleGenerateCertificates(masterclass)}
+                    className="border border-black rounded-full px-3 py-1 text-sm font-semibold hover:bg-black hover:text-white transition"
+                    disabled={!masterclass.applications?.length}
+                    title={!masterclass.applications?.length ? "No applicants yet" : "Generate and email certificates"}
+                  >
+                    Generate Certificate
+                  </button>
+                </td>
                 <td>{masterclass.status}</td>
                 <td>
                   <select
@@ -938,7 +1079,6 @@ const MasterClasses = () => {
                     <option disabled value="Select Remark"> Select Remark</option>
                     <option value="upcoming"> UPCOMING</option>
                     <option value="ongoing">ONGOING</option>
-                    <option value="completed">COMPLETED</option>
                   </select>
                 </td>
               </tr>

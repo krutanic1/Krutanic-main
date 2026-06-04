@@ -32,7 +32,7 @@ const BookedList = () => {
   const [executives, setExecutives] = useState([]); // Store list of executives
 
   // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1); 
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 30;
 

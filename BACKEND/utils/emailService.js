@@ -14,21 +14,21 @@ const transporter = nodemailer.createTransport({
     pool: true,
 });
 
+const admissionsSender = process.env.ADMISSIONS_MAIL || process.env.SMTP_MAIL || process.env.DIKSHANNT_SMTP;
+
 const admissionsTransporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: Number(process.env.SMTP_PORT) || 587,
     secure: false,
     auth: {
-        user: process.env.ADMISSIONS_MAIL,
-        pass: process.env.ADMISSIONS_PASSWORD,
+        user: admissionsSender,
+        pass: process.env.ADMISSIONS_PASSWORD || process.env.SMTP_PASSWORD || process.env.DIKSHANNT_PASSWORD,
     },
     tls: {
         rejectUnauthorized: false,
     },
     pool: true,
 });
-
-const admissionsSender = process.env.ADMISSIONS_MAIL;
 
 const senderEmail = process.env.DIKSHANNT_SMTP || process.env.SMTP_MAIL || process.env.EMAIL_USER;
 const adminBcc = process.env.DIKSHANNT_ADMIN_MAIL;
@@ -77,6 +77,37 @@ const sendWelcomeEmail = async (userEmail, userName, courseName) => {
         return true;
     } catch (error) {
         console.error("Error sending welcome email:", error);
+        return false;
+    }
+};
+
+const sendMasterclassCertificateEmail = async (userEmail, userName, masterclassTitle, certificateUrl) => {
+    try {
+        const noreplyAddress = process.env.NOREPLY_MAIL || admissionsSender;
+        await admissionsTransporter.sendMail({
+            from: `"Krutanic Masterclasses" <${noreplyAddress}>`,
+            replyTo: admissionsSender,
+            to: userEmail,
+            subject: `Your Certificate: ${masterclassTitle}`,
+            html: `
+                <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+                    <h2 style="color: #FE4323;">Congratulations, ${userName}!</h2>
+                    <p>Your certificate for <strong>${masterclassTitle}</strong> is ready. Click the button below to download it.</p>
+                    <div style="margin: 30px 0;">
+                        <a href="${certificateUrl}" style="background-color: #FE4323; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">Download Certificate</a>
+                    </div>
+                    <p>If the button doesn't work, copy-paste this link into your browser:</p>
+                    <p style="word-break:break-all;color:#555">${certificateUrl}</p>
+                    <br/>
+                    <p>Best regards,</p>
+                    <p><strong>Krutanic Team</strong></p>
+                </div>
+            `,
+        });
+        console.log(`Certificate email sent to ${userEmail}`);
+        return true;
+    } catch (error) {
+        console.error("Certificate email failed:", error);
         return false;
     }
 };
@@ -694,6 +725,7 @@ const sendMasterclassTodayReminder = async (userEmail, userName, masterclassTitl
 
 module.exports = { 
     sendWelcomeEmail, 
+    sendMasterclassCertificateEmail,
     sendCredentialsEmail, 
     sendCollegeCredentialsEmail,
     sendEnrollmentFormWelcomeEmail,

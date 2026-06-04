@@ -208,6 +208,7 @@ router.get("/OperationDashboard", authMiddleware, (req, res) => {
 });
 
 //send course details and login details to user
+//send course details and login details to user
 router.post("/send-email", async (req, res) => {
   const {
     fullname,
@@ -218,12 +219,27 @@ router.post("/send-email", async (req, res) => {
     domain,
     clearPaymentMonth,
     monthOpted,
+    isAdvBookedPayment,
   } = req.body;
-  const defaultPassword = "Krutanic@123";
+  const defaultPassword = "Krutanic@123";  let counselorEmail = "";
+  if (counselor) {
+    try {
+      const counselorUser = await CreateOperation.findOne({ 
+        fullname: { $regex: new RegExp("^" + counselor.trim() + "$", "i") } 
+      });
+      if (counselorUser) {
+        counselorEmail = counselorUser.email;
+      }
+    } catch (err) {
+      console.error("Error fetching counselor email:", err);
+    }
+  }
+
+  const subject = `Welcome to Our ${program} Program`;
   const emailMessage = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
       <div style="background-color: #F15B29; color: #fff; text-align: center; padding: 20px;">
-        <h1>Welcome to Krutanic</h1>
+        <h1 style="color: #ffffff; margin: 0;">Welcome to Krutanic</h1>
       </div>
       <div style="padding: 20px;">
         <p style="font-size: 16px; text-transform: capitalize; color: #333;">Dear ${fullname},</p>
@@ -232,30 +248,31 @@ router.post("/send-email", async (req, res) => {
           <li style="text-transform: capitalize;"><strong>Mode of Program:</strong> ${program}</li>
           <li style="text-transform: capitalize;"><strong>You have opted a:</strong> ${monthOpted} month</li>
           <li style="text-transform: capitalize;"><strong>You Have Opted for a Domain: </strong> ${domain}</li>
-          <li style="text-transform: capitalize;"><strong>Clear Due Payment Date:</strong> ${clearPaymentMonth}</ </li>
-          <li style="text-transform: capitalize;"><strong>Any Doubts? Talk to Your Counselor:</strong> ${counselor}</li>
+          <li style="text-transform: capitalize;"><strong>Clear Due Payment Date:</strong> ${clearPaymentMonth}</li>
+          <li style="text-transform: capitalize;"><strong>Any Doubts? Talk to Your Counselor:</strong> <span style="text-transform: capitalize;">${counselor}</span>${counselorEmail ? ` (<a href="mailto:${counselorEmail}" style="color: #F15B29; text-decoration: none; text-transform: none;">${counselorEmail}</a>)` : ""}</li>
         </ul>
         <p style="font-size: 14px; color: #555;">Here are your login details:</p>
         <p style="font-size: 14px; color: #333;">Use your email (<strong>${email}</strong>) and the default password provided below to log in:</p>
         <p style="text-align: center; font-size: 18px; font-weight: bold; color: #4a90e2;">${defaultPassword}</p>
         <p style="font-size: 14px; color: #555;">
-          <a href="https://www.krutanic.com/login" target="_blank" style="color: #F15B29; text-decoration: none;">Click here to log in</a>. 
+          <a href="https://www.krutanic.com/login" target="_blank" style="color: #F15B29; text-decoration: none; font-weight: bold;">Click here to log in</a>. 
           After logging in, please set a new password according to your preferences or official requirements.
         </p>
         <p>Note: Once you clear due amount then you'll get the access to your enrolled course.</p>
-        <p style="font-size: 14px; color: #555;">If you need any further assistance, feel free to reach out at <a href="mailto:support@krutanic.com" style="color: #0066cc; text-decoration: none;">support@krutanic.com</a>.</p>
-        <p style="font-size: 14px; color: #333;">Best regards</p>
-        <p style="font-size: 14px; color: #333;">Team Krutanic</p>
+        <p style="font-size: 14px; color: #555;">If you need any further assistance, feel free to reach out at <a href="mailto:support@krutanic.com" style="color: #F15B29; text-decoration: none;">support@krutanic.com</a>.</p>
+        <p style="font-size: 14px; color: #333;">Best regards,</p>
+        <p style="font-size: 14px; color: #333; font-weight: bold;">Team Krutanic</p>
       </div>
-      <div style="text-align: center; font-size: 12px; color: #888; padding: 10px 0; border-top: 1px solid #ddd;">
+      <div style="text-align: center; font-size: 12px; color: #888; padding: 10px 0; border-top: 1px solid #ddd; background-color: #f9f9f9;">
         <p>&copy; 2026 Krutanic. All Rights Reserved.</p>
       </div>
     </div>
   `;
+
   try {
     await sendEmail({
       email,
-      subject: `Welcome to Our ${program} Program`,
+      subject: subject,
       message: emailMessage,
     });
     res.status(200).json({ message: "Email sent successfully!" });
@@ -332,7 +349,7 @@ router.post("/checkoperation", async (req, res) => {
 
 // ----------------------------------------------------
 router.post("/sendedOnboardingMail", async (req, res) => {
-  const { email } = req.body;
+  const { email, domain: reqDomain, program: reqProgram } = req.body;
 
   if (!email) {
     return res.status(400).json({ message: "Email is required." });
@@ -341,16 +358,32 @@ router.post("/sendedOnboardingMail", async (req, res) => {
   let student;
   let isAdvanceProgram = false;
 
+  const isMentorshipReq = 
+    (reqProgram && typeof reqProgram === "string" && /mentorship|mentor|internship|intern|register/i.test(reqProgram)) || 
+    (reqDomain && typeof reqDomain === "string" && /mentorship|mentor|internship|intern/i.test(reqDomain));
+
   try {
-    student = await NewEnrollStudent.findOne({ email: email.trim() });
-    if (!student) {
-      student = await AdvEnroll.findOne({ email: email.trim() });
-      if (student) {
-        isAdvanceProgram = true;
+    if (isMentorshipReq) {
+      student = await NewEnrollStudent.findOne({ email: { $regex: new RegExp("^" + email.trim() + "$", "i") } });
+      isAdvanceProgram = false;
+      if (!student) {
+        student = await AdvEnroll.findOne({ email: { $regex: new RegExp("^" + email.trim() + "$", "i") } });
+        if (student) {
+          isAdvanceProgram = true;
+        }
+      }
+    } else {
+      student = await AdvEnroll.findOne({ email: { $regex: new RegExp("^" + email.trim() + "$", "i") } });
+      isAdvanceProgram = true;
+      if (!student) {
+        student = await NewEnrollStudent.findOne({ email: { $regex: new RegExp("^" + email.trim() + "$", "i") } });
+        if (student) {
+          isAdvanceProgram = false;
+        }
       }
     }
   } catch (err) {
-    console.error("Error fetching student details:", err);
+    console.error("Error fetching student details for onboarding:", err);
   }
 
   if (!student) {
@@ -608,7 +641,13 @@ router.post("/sendofferletter", async (req, res) => {
       .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ');
 
-    await sendOfferLetter({ email, fullname: formattedName, date, start, end, domain, duration, location });
+    let isMentorship = false;
+    const isMentorshipStudent = await NewEnrollStudent.findById(id);
+    if (isMentorshipStudent) {
+      isMentorship = true;
+    }
+
+    await sendOfferLetter({ email, fullname: formattedName, date, start, end, domain, duration, location, isMentorship });
 
     let updatedStudent = await NewEnrollStudent.findByIdAndUpdate(id, { offerlettersended: true }, { new: true });
 
