@@ -6,7 +6,7 @@ const SpecializationsSection = () => {
   const [activeTab, setActiveTab] = useState('Computer Science');
   const navigate = useNavigate();
 
-  const tabs = ['Computer Science', 'Management', 'Electronics/Electrical', 'Mechanical'];
+  const tabs = ['Computer Science', 'Management', 'Electronics/Electrical', 'Mechanical', 'Medical'];
 
   const courses = [
     // Computer Science
@@ -35,6 +35,9 @@ const SpecializationsSection = () => {
     // Mechanical
     { title: "Auto CAD", domain: "Mechanical", rating: 4.8, students: "1,340+", duration: "2/3 Months", link: "/mentorship/auto-cad", desc: "Master precision engineering design and manufacturing tools." },
     { title: "Graphics Design", domain: "Mechanical", rating: 4.7, students: "2,100+", duration: "2/3 Months", link: "/mentorship/graphics-design", desc: "Learn visual storytelling and digital art creation." },
+
+    // Medical
+    { title: "Psychology", domain: "Medical", rating: 4.8, students: "709+", duration: "2/3 Months", link: "/mentorship/psychology", desc: "Studying mental processes and behavior to understand and address human conditions." },
   ];
 
   const filteredCourses = courses.filter(c => c.domain === activeTab);

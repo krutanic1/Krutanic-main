@@ -25,7 +25,7 @@ import pdf16 from "../../../krutanic/Human Resource.pdf";
 import pdf17 from "../../../krutanic/IOT and Robotics.pdf";
 import pdf18 from "../../../krutanic/Machine Learning.pdf";
 // import pdf19 from "../../../krutanic/Automation Testing.pdf";
-// import pdf20 from "../../../krutanic/Psychology.pdf";
+import pdf20 from "../../../krutanic/Psychology.pdf";
 import pdf21 from "../../../krutanic/Stock Market.pdf";
 // import pdf22 from "../../../krutanic/Supply Chain Management.pdf";
 import pdf23 from "../../../krutanic/UI  UX-min.pdf";
@@ -57,6 +57,7 @@ const CourseMentor = ({ hideHeading = false }) => {
     "Computer science",
     "Management",
     "Electronics/Electrical",
+    "Medical",
     "Mechanical",
   ];
   const coursesData = {
@@ -283,26 +284,16 @@ const CourseMentor = ({ hideHeading = false }) => {
       },
     ],
     Medical: [
-      // {
-      //   id: 21,
-      //   title: "Nano Technology & Genetic Engineering",
-      //   image: `${nano}`,
-      //   pdf: `${pdf19}`,
-      //   description:
-      //     " Modifying organisms’ genes or manipulating matter at a microscopic level for innovation.",
-      //   rating: 4.9,
-      //   studentsTaken: 890,
-      // },
-      // {
-      //   id: 22,
-      //   title: "Psychology",
-      //   image: `${psycho}`,
-      //   pdf: `${pdf20}`,
-      //   description:
-      //     "Studying mental processes and behavior to understand and address human conditions.",
-      //   rating: 4.8,
-      //   studentsTaken: 709,
-      // },
+      {
+        id: 22,
+        title: "Psychology",
+        image: thumbnail("Psychology.jpg"),
+        pdf: `${pdf20}`,
+        description:
+          "Studying mental processes and behavior to understand and address human conditions.",
+        rating: 4.8,
+        studentsTaken: 709,
+      },
     ],
     Mechanical: [
       {
@@ -656,7 +647,7 @@ const CourseMentor = ({ hideHeading = false }) => {
                   "IOT & Robotics",
                   "VLSI Design",
                   // "Nano Technology & Genetic Engineering",
-                  // "Psychology",
+                  "Psychology",
                   "Auto Cad",
                 ].map((domain, index) => (
                   <option key={index} value={domain}>

@@ -26,7 +26,7 @@ const courses = [
   { name: "Embedded System" },
   { name: "Cloud Computing" },
   { name: "IOT & Robotics" },
-  // { name: "Psychology" },
+  { name: "Psychology" },
   { name: "Auto Cad" },
   // { name: "Automation Testing (Career Advancement)" },
 ];

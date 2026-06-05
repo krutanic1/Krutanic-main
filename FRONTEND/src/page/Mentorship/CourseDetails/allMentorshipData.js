@@ -12,6 +12,7 @@ import sachinImg from '../../../assets/mentors/sachin.jpg';
 import rahulImg from '../../../assets/mentors/rahul.jpg';
 import rudraImg from '../../../assets/mentors/rudra.jpg';
 import subhraImg from '../../../assets/mentors/Subhra.jpg';
+import nishithaImg from '../../../assets/mentors/nishitha.jpg';
 
 export const allMentorshipData = {
   'full-stack-web-development': { ...fullStackData, thumbnail: '/course_thumbnails/Full Stack Web.jpg', mentorImage: sachinImg },
@@ -1807,6 +1808,120 @@ export const allMentorshipData = {
         { title: 'Lead Design Expert', desc: 'Lead teams and architect complex solutions for enterprise clients.', tools: ['Strategy', 'Architecture', 'Leadership'], level: 'Senior' }
       ],
       progression: ['Junior Executive', 'Specialist', 'Senior Professional', 'Team Lead', 'Architect/Manager']
+    }
+  },
+
+  'psychology': {
+    id: 'psychology',
+    title: 'Psychology',
+    thumbnail: '/course_thumbnails/Psychology.jpg',
+    duration: '2/3 Months',
+    format: 'Live Mentor-led',
+    level: 'Beginner to Pro',
+    enrolled: '12,000+ Mentees',
+    rating: 4.8,
+    pitch: 'Understand Mind, Behavior and Human Relations to Excel in Counseling and Care',
+    providerNote: 'We are now an accredited partner under Krutanic.',
+    contactInfo: ['www.krutanic.com', 'support@krutanic.com'],
+    aboutTitle: 'About Us',
+    aboutDescription: 'Krutanic is at the forefront of transforming education through cutting-edge technology. Our comprehensive platform empowers learners with personalized learning experiences, collaborative tools, and real-time analytics. With adaptive assessments and interactive content creation, we enhance student engagement and achievement. Join us in revolutionizing education for the digital age, driving positive outcomes and preparing learners for success in tomorrow\'s world.',
+    whyTitle: 'Why Psychology?',
+    whyPoints: [
+      'Dives deep into understanding human behavior, thoughts, and emotions',
+      'Essential for careers in counseling, clinical therapy, human resources, and marketing',
+      'Helps in personal growth, self-awareness, and building healthier relationships',
+      'High demand in corporate mental wellness, educational institutes, and community development',
+      'Enables professionals to address mental health challenges and drive social impact',
+      'Provides a foundation for research, coaching, user psychology (UX), and organizational development'
+    ],
+    trainingProgram: [
+      {
+        phase: 'Month 1',
+        title: 'Training and Internship Program',
+        items: [
+          'Live sessions with industrial experts having experience above 10 years in the industry.',
+          'Recordings of all live sessions available with 1 year access in our LMS portal.',
+          'Industry-related curriculum designed by working professionals in top hierarchy.'
+        ]
+      },
+      {
+        phase: 'Month 2',
+        title: 'Training and Internship Program',
+        items: [
+          'Two real-time industrial projects: one minor project and one major project.',
+          'All mentors are assigned as project leads and guide interns until project completion.',
+          'Additional projects for personal development when required.'
+        ]
+      }
+    ],
+    moduleOverview: [
+      'Introduction to Psychology',
+      'Cognitive & Behavioral Processes',
+      'Developmental Psychology',
+      'Social & Cultural Psychology',
+      'Personality Theories & Assessment',
+      'Abnormal Psychology & Mental Health',
+      'Research Methodology & Ethics',
+      'Therapeutic Approaches & Counseling',
+      'Organizational & Industrial Psychology',
+      'UX Psychology & Behavioral Design',
+      'Mental Health in the Modern Workplace',
+      'Capstone Project & Case Study Analysis'
+    ],
+    mentor: {
+      name: 'Nishitha Jha',
+      role: 'Lead Psychology Mentor & Consultant',
+      experience: '7+ Years',
+      bio: 'Professional counseling consultant with over 7 years of experience helping individuals navigate behavioral changes and mental wellness.'
+    },
+    mentorImage: nishithaImg,
+    outcomes: [
+      { title: 'Core Fundamentals', desc: 'Master foundational psychological concepts, behavioral patterns, and cognitive models.', icon: FaCheckCircle },
+      { title: 'Counseling Skills', desc: 'Learn standard therapeutic communication and counseling protocols.', icon: FaRocket },
+      { title: 'Real-world Application', desc: 'Analyze real-life case studies and design interventions for human wellness.', icon: FaBriefcase },
+      { title: 'UX & Organizational Insights', desc: 'Apply psychological principles to user research, product design, and workplace wellness.', icon: FaUserGraduate }
+    ],
+    tools: [
+      { name: 'Therapeutic Communication' }, { name: 'Cognitive Assessments' }, { name: 'Case Studies' }, 
+      { name: 'UX Psychology (Gestalt Laws)' }, { name: 'Workplace Wellness Playbooks' }, { name: 'Research Methodologies' }
+    ],
+    curriculum: [
+      { module: 'Module 1', title: 'Introduction to Psychology', topics: ['History and foundations of psychology', 'Key subfields and career prospects', 'Scientific methods in behavior study'] },
+      { module: 'Module 2', title: 'Cognitive & Behavioral Processes', topics: ['Perception, learning, and memory systems', 'Behavioral psychology and environmental triggers', 'Cognitive load and processing information'] },
+      { module: 'Module 3', title: 'Abnormal Psychology & Mental Health', topics: ['Overview of mental disorders (DSM-5 basics)', 'Signs, symptoms, and coping strategies', 'De-stigmatization and awareness campaigns'] },
+      { module: 'Module 4', title: 'Therapeutic Approaches & Counseling', topics: ['Introduction to CBT, humanistic therapy, and psychotherapy', 'Ethics in counseling and client boundaries', 'Active listening and empathetic response building'] },
+      { module: 'Module 5', title: 'UX & Workplace Psychology', topics: ['Applying psychology to UI/UX design (Gestalt principles)', 'Stress management and employee motivation', 'Conflict resolution and emotional intelligence'] }
+    ],
+    projects: [
+      {
+        title: 'Clinical Case Study Analysis',
+        desc: 'Conduct a thorough assessment of a simulated psychological case study, drafting counseling recommendation sheets.',
+        tech: ['CBT Frameworks', 'Clinical Guidelines', 'Case Analysis'],
+        impact: 'Demonstrated proficiency in interpreting behavioral symptoms and structuring counseling strategies.'
+      },
+      {
+        title: 'Workplace Wellness Initiative Design',
+        desc: 'Create an end-to-end mental health and wellness program for a corporate client, including metrics for success.',
+        tech: ['Industrial Psychology', 'Program Development', 'Conflict Resolution'],
+        impact: 'Portfolio-ready workplace strategy addressing employee burnout and team dynamics.'
+      }
+    ],
+    faqs: [
+      { q: 'Do I need a science background to join this program?', a: 'No, this program starts from the foundational basics of human psychology and behavior, making it accessible to learners from all streams.' },
+      { q: 'Will I get practical exposure?', a: 'Yes, you will analyze real-world case studies and build a practical workplace wellness initiative as part of your projects.' },
+      { q: 'What careers can I pursue after this?', a: 'Careers include counseling assistant, HR specialist, mental wellness consultant, user experience (UX) researcher, and life coach.' },
+      { q: 'What kind of support will I receive?', a: 'You will receive live mentor sessions led by Nishitha Jha, project reviews, and placement assistance through our network.' }
+    ],
+    careerPaths: {
+      title: 'Career Paths in Psychology',
+      subtitle: 'Build critical analytical and behavioral skills that map to wellness, HR, research, and corporate strategy roles.',
+      roles: [
+        { title: 'Mental Wellness Counselor', desc: 'Provide guidance and mental health support within institutional frameworks.', tools: ['Active Listening', 'CBT'], level: 'Professional' },
+        { title: 'UX Researcher / UX Psychologist', desc: 'Study user behavior and design interface journeys based on cognitive habits.', tools: ['User Testing', 'Cognitive Science'], level: 'Specialist' },
+        { title: 'HR & Talent Manager', desc: 'Resolve workplace conflicts and design employee engagement programs.', tools: ['Conflict Resolution', 'EQ'], level: 'Professional' },
+        { title: 'Behavioral Consultant / Coach', desc: 'Assist clients with personal goal-setting, habit building, and productivity.', tools: ['Goal Setting', 'Motivation Science'], level: 'Specialist' }
+      ],
+      progression: ['Junior Consultant', 'Psychology Specialist', 'Lead Counselor', 'Director of Wellness', 'HR/UX Architect']
     }
   },
 };
