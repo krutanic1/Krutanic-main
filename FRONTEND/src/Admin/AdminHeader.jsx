@@ -204,6 +204,9 @@ const AdminHeader = () => {
             <Link to="/AdvLeadManagement">
               <i className="fa fa-users mr-2"></i>ADV Lead Management
             </Link>
+            <Link to="/admin/leads-count">
+              <i className="fa fa-bar-chart mr-2"></i>ADV Leads Count
+            </Link>
             <Link to="/AdvFormLeads">
               <i className="fa fa-wpforms mr-2"></i>Adv Form Leads
             </Link>

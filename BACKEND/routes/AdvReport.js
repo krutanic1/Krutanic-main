@@ -1023,4 +1023,114 @@ router.get("/dashboard-analytics", async (req, res) => {
     }
 });
 
+// ─────────────────────────────────────────────────────────────────
+// NEW: ASSIGNED LEADS COUNT API
+// ─────────────────────────────────────────────────────────────────
+
+// GET: Executive's Assignment Counts
+router.get("/assigned-leads/executive/:userId", async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { page = 1, limit = 10, days = '10' } = req.query;
+
+        const pageNum = parseInt(page);
+        const limitNum = parseInt(limit);
+        const skip = (pageNum - 1) * limitNum;
+
+        const matchStage = { owner_id: userId, assigned_at: { $exists: true } };
+
+        if (days !== 'all') {
+            const daysAgo = new Date();
+            daysAgo.setDate(daysAgo.getDate() - parseInt(days));
+            daysAgo.setHours(0, 0, 0, 0);
+            matchStage.assigned_at = { $gte: daysAgo };
+        }
+
+        const stats = await AdvLead.aggregate([
+            { $match: matchStage },
+            {
+                $group: {
+                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$assigned_at" } },
+                    count: { $sum: 1 }
+                }
+            },
+            { $sort: { _id: -1 } },
+            {
+                $facet: {
+                    metadata: [{ $count: "total" }],
+                    data: [{ $skip: skip }, { $limit: limitNum }]
+                }
+            }
+        ]);
+
+        const totalItems = stats[0].metadata[0]?.total || 0;
+        const totalPages = Math.ceil(totalItems / limitNum);
+        const data = stats[0].data.map(s => ({ date: s._id, count: s.count }));
+
+        res.status(200).json({ data, totalPages, currentPage: pageNum });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// GET: Team Assignments (Manager/Leader/Admin)
+router.get("/assigned-leads/team/:userId", async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { page = 1, limit = 10, days = '10', date, role } = req.query;
+        
+        const pageNum = parseInt(page);
+        const limitNum = parseInt(limit);
+        const skip = (pageNum - 1) * limitNum;
+
+        const matchStage = { assigned_at: { $exists: true } };
+
+        if (date) {
+            const filterDate = new Date(date);
+            filterDate.setHours(0, 0, 0, 0);
+            const nextDate = new Date(filterDate);
+            nextDate.setDate(nextDate.getDate() + 1);
+            matchStage.assigned_at = { $gte: filterDate, $lt: nextDate };
+        } else if (days !== 'all') {
+            const daysAgo = new Date();
+            daysAgo.setDate(daysAgo.getDate() - parseInt(days));
+            daysAgo.setHours(0, 0, 0, 0);
+            matchStage.assigned_at = { $gte: daysAgo };
+        }
+
+        if (role && (role.toUpperCase().includes("MANAGER"))) {
+            matchStage.manager_id = userId;
+        } else if (role && (role.toUpperCase().includes("LEADER"))) {
+            matchStage.leader_id = userId;
+        }
+
+        const stats = await AdvLead.aggregate([
+            { $match: matchStage },
+            {
+                $group: {
+                    _id: "$owner_name",
+                    count: { $sum: 1 }
+                }
+            },
+            { $sort: { count: -1, _id: 1 } },
+            {
+                $facet: {
+                    metadata: [
+                        { $group: { _id: null, totalMembers: { $sum: 1 }, totalAssigned: { $sum: "$count" } } }
+                    ],
+                    data: [{ $skip: skip }, { $limit: limitNum }]
+                }
+            }
+        ]);
+
+        const meta = stats[0].metadata[0] || { totalMembers: 0, totalAssigned: 0 };
+        const totalPages = Math.ceil(meta.totalMembers / limitNum);
+        const data = stats[0].data.map(s => ({ name: s._id || "Unassigned/Unknown", count: s.count }));
+
+        res.status(200).json({ data, totalPages, currentPage: pageNum, totalAssigned: meta.totalAssigned });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;

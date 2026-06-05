@@ -141,6 +141,7 @@ import AdvanceQueries from "./Admin/AdvanceQueries";
 import MentorQueries from "./Admin/MentorQueries";
 import AdvLeadManagement from "./Admin/AdvLeadManagement";
 import AdminAnalytics from "./Admin/AdminAnalytics";
+import AdvLeadsCount from "./AdvTeam/AdvLeadsCount";
 
 import AdvAdminDashboard from "./Admin/AdvAdminDashboard";
 import AgentsManagement from "./Admin/AgentsManagement";
@@ -465,12 +466,12 @@ const AppContent = () => {
     ReactPixel.pageView();
   }, [location]);
 
-  const adminheaderPaths = ["/admindashboard", "/addcourse", "/addadvcourse", "/addmodule", "/addadvmodule", "/pendingapplication", "/acceptedapplication", "/bookedlist", "/halfpayment", "/defaultlist", "/fullpaidlist", "/createoperation", "/createadvoperation", "/createbda", "/createadvteam", "/createmanager", "/mentorqueries", "/advancequeries", "/revenuesheet", "/advrevenuesheet", "/createplacementcoordinator", "/onboardingdetails", "/advonboardingdetails", "/advbooked", "/advfullpaid", "/advdefault", "/allteamdetail", "/advteamdetail", "/masterclasses", "/addevent", "/eventregistration", "/target", "/alumnidata", "/inactivebda", "/referandearnresponse", "/createmarketingteam", "/createinterviewer", "/createhr", "/createinterview", "/adminprojectpage", "/advprojectpage", "/advexercisepage", "/advleadmanagement", "/adminanalytics", "/advadmindashboard", "/admin/agents", "/admin/teams", "/admin/leadassignments", "/admin/agentactivity", "/admin/reports", "/bulkimport", "/admin/attendance", "/advusermanagement", "/admin/livemonitor", "/admin/calllogs", "/advformleads"];
+  const adminheaderPaths = ["/admindashboard", "/addcourse", "/addadvcourse", "/addmodule", "/addadvmodule", "/pendingapplication", "/acceptedapplication", "/bookedlist", "/halfpayment", "/defaultlist", "/fullpaidlist", "/createoperation", "/createadvoperation", "/createbda", "/createadvteam", "/createmanager", "/mentorqueries", "/advancequeries", "/revenuesheet", "/advrevenuesheet", "/createplacementcoordinator", "/onboardingdetails", "/advonboardingdetails", "/advbooked", "/advfullpaid", "/advdefault", "/allteamdetail", "/advteamdetail", "/masterclasses", "/addevent", "/eventregistration", "/target", "/alumnidata", "/inactivebda", "/referandearnresponse", "/createmarketingteam", "/createinterviewer", "/createhr", "/createinterview", "/adminprojectpage", "/advprojectpage", "/advexercisepage", "/advleadmanagement", "/adminanalytics", "/advadmindashboard", "/admin/agents", "/admin/teams", "/admin/leadassignments", "/admin/agentactivity", "/admin/reports", "/bulkimport", "/admin/attendance", "/advusermanagement", "/admin/livemonitor", "/admin/calllogs", "/advformleads", "/admin/leads-count"];
   const operationheaderPaths = ["/operationdashboard", "/fullpayment", "/bookedpayment", "/defaultpayment", "/operationrevenuesheet"];
   const advoperationheaderPaths = ["/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet"];
   const marketingheaderPaths = ["/marketing/home", "/marketing/previous", "/marketing/addexecutive"];
   const bdaheaderPaths = ["/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/leaderboard"];
-  const advteamheaderPaths = ["/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/advteam/leaderboard"];
+  const advteamheaderPaths = ["/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/advteam/leaderboard", "/advteam/leads-count"];
   const hrheaderPaths = ["/hrdashboard"];
   const lmsFooterPaths = ["/jobboard"];
   const noFooterPaths = ["/operationdashboard", "/bookedpayment", "/fullpayment", "/defaultpayment", "/operationrevenuesheet", "/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet", "/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/advteam/leaderboard", "/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/leaderboard", "/setting"];
@@ -597,6 +598,12 @@ const AppContent = () => {
         } />
         <Route path="/advteam/lead-management" element={
           isAuthenticatedAdvTeam() ? <AdvTeamLeadManagement /> : <Navigate to="/AdvTeamLogin" />
+        } />
+        <Route path="/advteam/leads-count" element={
+          isAuthenticatedAdvTeam() ? <AdvLeadsCount isAdmin={false} /> : <Navigate to="/AdvTeamLogin" />
+        } />
+        <Route path="/admin/leads-count" element={
+          isAuthenticatedAdmin() ? <AdvLeadsCount isAdmin={true} /> : <Navigate to="/AdminLogin" />
         } />
         <Route path="/AdminAnalytics" element={isAuthenticatedAdmin() ? (<AdminAnalytics />) : (<Navigate to="/AdminLogin" />)} />
 
