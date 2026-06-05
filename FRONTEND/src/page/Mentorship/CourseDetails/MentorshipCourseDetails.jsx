@@ -461,9 +461,11 @@ const MentorshipCourseDetails = () => {
           
           <div className="cd-mentor">
              <div className="cd-mentor-card">
-                 <div className="cd-mentor-card__img">
-                   <img src={data.mentorImage || sachinImg} alt={data.mentor.name} />
-                 </div>
+                 {data.mentorImage !== null && (
+                   <div className="cd-mentor-card__img">
+                     <img src={data.mentorImage || sachinImg} alt={data.mentor.name} />
+                   </div>
+                 )}
                 <div className="cd-mentor-card__info">
                    <span className="domain">Lead Mentor</span>
                    <h3>{data.mentor.name}</h3>

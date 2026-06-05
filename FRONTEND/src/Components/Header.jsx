@@ -9,14 +9,14 @@ const programsCategories = [
     name: "Computer Science",
     icon: <MonitorPlay size={16} className="text-slate-500" />,
     courses: [
-      { label: "Full Stack Web Development", to: "/MernStack" },
+      { label: "Full Stack Web Development", to: "/mentorship/full-stack-web-development" },
       { label: "Artificial Intelligence", to: "/mentorship/artificial-intelligence" },
-      { label: "Data Science", to: "/DataScience" },
+      { label: "Data Science", to: "/mentorship/data-science" },
       { label: "Data Analytics", to: "/mentorship/data-analytics" },
       { label: "Cyber Security", to: "/mentorship/cyber-security" },
       { label: "Cloud Computing", to: "/mentorship/cloud-computing" },
       { label: "Android App Development", to: "/mentorship/android-app-development" },
-      { label: "UI/UX Design", to: "/UIUXDesign" },
+      { label: "UI/UX Design", to: "/mentorship/ui-ux-design" },
       { label: "DevOps", to: "/mentorship/devops" },
       { label: "Machine Learning", to: "/mentorship/machine-learning" }
     ]
@@ -25,12 +25,11 @@ const programsCategories = [
     name: "Management",
     icon: <Briefcase size={16} className="text-slate-500" />,
     courses: [
-      { label: "Digital Marketing", to: "/DigitalMarket" },
+      { label: "Digital Marketing", to: "/mentorship/digital-marketing" },
       { label: "Business Analytics", to: "/mentorship/business-analytics" },
       { label: "Finance", to: "/mentorship/finance" },
       { label: "Human Resource", to: "/mentorship/human-resource" },
-      { label: "Stock Marketing", to: "/mentorship/stock-marketing" },
-      { label: "Product Management", to: "/ProductManagement" }
+      { label: "Stock Marketing", to: "/mentorship/stock-marketing" }
     ]
   },
   {

@@ -1088,72 +1088,67 @@ export const allMentorshipData = {
     enrolled: '12,500+ Mentees',
     rating: 4.8,
     mentor: {
-      name: 'Lead Data Mentor',
-      role: 'Senior Industry Expert',
+      name: 'Lead Business Analytics Mentor',
+      role: 'Senior Data Strategist',
       experience: '10+ Years',
-      bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
+      bio: 'Learn from elite data professionals who have transformed complex datasets into actionable business strategies for Fortune 500 companies.',
     },
+    mentorImage: null,
     outcomes: [
-      { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of Business Analytics.', icon: FaCheckCircle },
-      { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
-      { title: 'Real-world Application', desc: 'Apply your skills to solve complex problems and build scalable solutions.', icon: FaBriefcase },
-      { title: 'Job Readiness', desc: 'Prepare for top roles with interview prep and portfolio building.', icon: FaUserGraduate },
+      { title: 'Core Fundamentals', desc: 'Master statistical analysis, data modeling, and business problem-solving frameworks.', icon: FaCheckCircle },
+      { title: 'Advanced Techniques', desc: 'Learn predictive analytics, A/B testing, and advanced SQL data extraction methodologies.', icon: FaRocket },
+      { title: 'Real-world Application', desc: 'Build interactive dashboards and solve actual industry data problems.', icon: FaBriefcase },
+      { title: 'Job Readiness', desc: 'Build a compelling data portfolio and prepare for top Business Intelligence roles.', icon: FaUserGraduate },
     ],
     tools: [
-      { name: 'Industry Standard Tools' }, { name: 'Modern Frameworks' }, { name: 'Analytics' }, 
-      { name: 'Cloud Platforms' }, { name: 'Version Control' }, { name: 'Agile/Scrum' }
+      { name: 'Excel (Advanced)' }, { name: 'SQL' }, { name: 'Tableau' }, 
+      { name: 'Power BI' }, { name: 'Python' }, { name: 'Google Analytics' }
     ],
     curriculum: [
-      { module: 'Module 1', title: 'Introduction to Business Analytics', topics: ['Overview of concepts', 'Setting up the environment', 'Basic principles', 'Industry use cases'] },
-      { module: 'Module 2', title: 'Core Methodologies', topics: ['In-depth exploration', 'Tools and frameworks', 'Best practices', 'Hands-on exercises'] },
-      { module: 'Module 3', title: 'Advanced Concepts', topics: ['Complex scenarios', 'Optimization techniques', 'Security and performance', 'Integration'] },
-      { module: 'Module 4', title: 'Industry Projects', topics: ['Real-world problem solving', 'Project planning', 'Execution', 'Testing and validation'] },
-      { module: 'Module 5', title: 'Capstone & Portfolio', topics: ['Building a complete project from scratch', 'Documentation', 'Portfolio enhancement', 'Interview preparation'] }
+      { module: 'Module 1', title: 'Introduction to Business Analytics & Advanced Excel', topics: ['Pivot Tables', 'VLOOKUP/XLOOKUP', 'Macros', 'Data Cleaning'] },
+      { module: 'Module 2', title: 'Data Extraction & Analysis with SQL', topics: ['Relational Databases', 'Joins & Subqueries', 'Window Functions', 'Query Optimization'] },
+      { module: 'Module 3', title: 'Data Visualization & Storytelling', topics: ['Tableau Fundamentals', 'Power BI Dashboards', 'Visual Best Practices', 'Executive Reporting'] },
+      { module: 'Module 4', title: 'Statistical Analysis & Predictive Modeling', topics: ['Hypothesis Testing', 'A/B Testing', 'Linear Regression', 'Trend Analysis'] },
+      { module: 'Module 5', title: 'Business Strategy & Capstone Project', topics: ['Translating Data into Decisions', 'KPI Tracking', 'Product Analytics', 'Final Presentation'] }
     ],
     projects: [
       {
-        title: 'Industrial Capstone Project',
-        desc: 'A comprehensive project integrating all learned skills to solve a real business problem.',
-        tech: ['Modern Stack', 'Cloud Integration', 'Analytics'],
-        impact: 'Demonstrated ability to execute end-to-end solutions independently.'
+        title: 'Retail Sales & Operations Dashboard',
+        desc: 'Extract data using SQL and build a comprehensive Power BI dashboard to track regional sales performance.',
+        tech: ['Power BI', 'SQL', 'Excel'],
+        impact: 'Demonstrated ability to clean raw data and deliver actionable business insights.'
       },
       {
-        title: 'Live Case Study Application',
-        desc: 'Hands-on implementation of a live industry case study with measurable outcomes.',
-        tech: ['Best Practices', 'Agile', 'Optimization'],
-        impact: 'Mastered practical application of theoretical concepts.'
-      },
-      {
-        title: 'Capstone Project',
-        desc: 'A comprehensive project that integrates all technical and business skills, demonstrating production-ready implementation with real-world impact and scalability.',
-        tech: ['Full Stack Technologies', 'Cloud Deployment', 'Best Practices'],
-        impact: 'Showcases complete mastery of the domain with enterprise-grade execution and ability to lead complex projects.'
+        title: 'Customer Churn Analysis',
+        desc: 'Use statistical modeling to identify key factors leading to customer drop-off in a SaaS product.',
+        tech: ['Python', 'Tableau', 'Predictive Analytics'],
+        impact: 'Mastered practical application of data-driven retention strategies.'
       }
     ],
     faqs: [
-      { q: 'Do I need prior experience?', a: 'No, this program starts from the basics and gradually builds up to advanced concepts.' },
-      { q: 'Will I build real-world projects?', a: 'Yes, you will build 2 real-time industrial projects (one minor, one major) to solidify your learning and build your portfolio.' },
-      { q: 'What kind of mentor support is included?', a: 'Mentors act as project leads, guiding you through live sessions and assisting you until the completion of your projects.' },
-      { q: 'Is internship support included?', a: 'Yes, you gain access to an internship program with opportunities across 200+ hiring partners.' },
+      { q: 'Do I need prior coding experience?', a: 'No, we start from basic Excel and SQL, building up your technical skills step by step.' },
+      { q: 'Will I work on real datasets?', a: 'Yes, you will clean, analyze, and visualize messy, real-world industry datasets.' },
+      { q: 'What tools will I learn?', a: 'You will gain hands-on proficiency in Advanced Excel, SQL, Tableau, Power BI, and introductory Python.' },
+      { q: 'Will this program help me get a job?', a: 'Absolutely. A strong portfolio of interactive dashboards and SQL analysis projects will make you highly competitive for analyst roles.' },
       { q: 'What happens if I miss a live session?', a: 'Recordings of all live sessions are available with 1-year access in our LMS portal.' }
     ],
     careerPaths: {
       title: 'Career Paths After the Program',
-      subtitle: 'Build skills that map to high-demand roles across startups and enterprises globally.',
+      subtitle: 'Build skills that map to high-demand roles across startups and global enterprises.',
       roles: [
-        { title: 'Junior Data Specialist', desc: 'Execute foundational tasks and support senior team members.', tools: ['Basic Tools', 'Reporting'], level: 'Entry-level' },
-        { title: 'Business Analytics Engineer/Analyst', desc: 'Design, build, and maintain core solutions and systems.', tools: ['Advanced Frameworks', 'Cloud'], level: 'Professional' },
-        { title: 'Freelance Consultant', desc: 'Work independently on custom projects for various clients.', tools: ['Client Management', 'End-to-end execution'], level: 'Independent' },
-        { title: 'Lead Data Expert', desc: 'Lead teams and architect complex solutions for enterprise clients.', tools: ['Strategy', 'Architecture', 'Leadership'], level: 'Senior' }
+        { title: 'Junior Data Analyst', desc: 'Clean datasets, generate weekly reports, and assist in foundational data tracking.', tools: ['Excel', 'SQL'], level: 'Entry-level' },
+        { title: 'Business Intelligence (BI) Analyst', desc: 'Design, build, and maintain interactive dashboards and core reporting systems.', tools: ['Tableau', 'Power BI'], level: 'Professional' },
+        { title: 'Operations / Product Analyst', desc: 'Analyze product usage and operations metrics to recommend strategy pivots.', tools: ['Python', 'SQL'], level: 'Independent' },
+        { title: 'Lead Business Analyst / Data Strategy Manager', desc: 'Lead data teams, architect BI solutions, and guide C-level decision making.', tools: ['Strategy', 'Leadership', 'Advanced Analytics'], level: 'Senior' }
       ],
-      progression: ['Junior Executive', 'Specialist', 'Senior Professional', 'Team Lead', 'Architect/Manager']
+      progression: ['Data Analyst', 'BI Analyst', 'Senior Business Analyst', 'Lead Analyst', 'Head of Data/BI']
     }
   },
 
   'finance': {
     id: 'finance',
     title: 'Finance',
-    thumbnail: '/course_thumbnails/FinTech.jpg',
+    thumbnail: '/course_thumbnails/Finance.png',
     duration: '2/3 Months',
     format: 'Live Mentor-led',
     level: 'Beginner to Pro',
@@ -1161,58 +1156,59 @@ export const allMentorshipData = {
     rating: 4.8,
     mentor: {
       name: 'Lead Finance Mentor',
-      role: 'Senior Industry Expert',
+      role: 'Senior Financial Analyst',
       experience: '10+ Years',
-      bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
+      bio: 'Learn from industry veterans with extensive backgrounds in investment banking, corporate finance, and portfolio management at top global firms.',
     },
+    mentorImage: null,
     outcomes: [
-      { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of Finance.', icon: FaCheckCircle },
-      { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
-      { title: 'Real-world Application', desc: 'Apply your skills to solve complex problems and build scalable solutions.', icon: FaBriefcase },
-      { title: 'Job Readiness', desc: 'Prepare for top roles with interview prep and portfolio building.', icon: FaUserGraduate },
+      { title: 'Core Fundamentals', desc: 'Master corporate finance, financial modeling, and investment valuation frameworks.', icon: FaCheckCircle },
+      { title: 'Advanced Techniques', desc: 'Learn advanced M&A analysis, risk assessment, and quantitative finance methods.', icon: FaRocket },
+      { title: 'Real-world Application', desc: 'Build comprehensive valuation models and analyze real company financial statements.', icon: FaBriefcase },
+      { title: 'Job Readiness', desc: 'Build a compelling financial portfolio and prepare for top tier banking and analyst roles.', icon: FaUserGraduate },
     ],
     tools: [
-      { name: 'Industry Standard Tools' }, { name: 'Modern Frameworks' }, { name: 'Analytics' }, 
-      { name: 'Cloud Platforms' }, { name: 'Version Control' }, { name: 'Agile/Scrum' }
+      { name: 'Advanced Excel' }, { name: 'Financial Modeling' }, { name: 'Python for Finance' }, 
+      { name: 'Bloomberg Terminal' }, { name: 'DCF Valuation' }, { name: 'ERP Systems' }
     ],
     curriculum: [
-      { module: 'Module 1', title: 'Introduction to Finance', topics: ['Overview of concepts', 'Setting up the environment', 'Basic principles', 'Industry use cases'] },
-      { module: 'Module 2', title: 'Core Methodologies', topics: ['In-depth exploration', 'Tools and frameworks', 'Best practices', 'Hands-on exercises'] },
-      { module: 'Module 3', title: 'Advanced Concepts', topics: ['Complex scenarios', 'Optimization techniques', 'Security and performance', 'Integration'] },
-      { module: 'Module 4', title: 'Industry Projects', topics: ['Real-world problem solving', 'Project planning', 'Execution', 'Testing and validation'] },
-      { module: 'Module 5', title: 'Capstone & Portfolio', topics: ['Building a complete project from scratch', 'Documentation', 'Portfolio enhancement', 'Interview preparation'] }
+      { module: 'Module 1', title: 'Introduction to Corporate Finance', topics: ['Financial Statements', 'Time Value of Money', 'Cost of Capital', 'Capital Budgeting'] },
+      { module: 'Module 2', title: 'Financial Modeling & Valuation', topics: ['Building 3-Statement Models', 'DCF Valuation', 'Comparable Company Analysis', 'Precedent Transactions'] },
+      { module: 'Module 3', title: 'Investment Banking & M&A', topics: ['M&A Process', 'LBO Models', 'Synergies', 'Deal Structuring'] },
+      { module: 'Module 4', title: 'Portfolio Management & Risk', topics: ['Asset Allocation', 'Modern Portfolio Theory', 'Risk Assessment', 'Derivatives Basics'] },
+      { module: 'Module 5', title: 'Financial Analytics & Capstone', topics: ['Python for Data Analysis', 'Forecasting', 'Presenting Findings', 'Final Capstone Project'] }
     ],
     projects: [
       {
-        title: 'Industrial Capstone Project',
-        desc: 'A comprehensive project integrating all learned skills to solve a real business problem.',
-        tech: ['Modern Stack', 'Cloud Integration', 'Analytics'],
-        impact: 'Demonstrated ability to execute end-to-end solutions independently.'
+        title: 'Comprehensive Company Valuation',
+        desc: 'Build a full 3-statement financial model and perform a DCF valuation for a publicly traded company.',
+        tech: ['Advanced Excel', 'DCF Model', 'Financial Analysis'],
+        impact: 'Demonstrated ability to perform institutional-grade company valuations and analysis.'
       },
       {
-        title: 'Live Case Study Application',
-        desc: 'Hands-on implementation of a live industry case study with measurable outcomes.',
-        tech: ['Best Practices', 'Agile', 'Optimization'],
-        impact: 'Mastered practical application of theoretical concepts.'
+        title: 'Investment Portfolio Optimization',
+        desc: 'Analyze historical data and construct an optimized investment portfolio balancing risk and return.',
+        tech: ['Python', 'Quantitative Analysis', 'Risk Management'],
+        impact: 'Mastered practical application of modern portfolio theory.'
       }
     ],
     faqs: [
-      { q: 'Do I need prior experience?', a: 'No, this program starts from the basics and gradually builds up to advanced concepts.' },
-      { q: 'Will I build real-world projects?', a: 'Yes, you will build 2 real-time industrial projects (one minor, one major) to solidify your learning and build your portfolio.' },
-      { q: 'What kind of mentor support is included?', a: 'Mentors act as project leads, guiding you through live sessions and assisting you until the completion of your projects.' },
-      { q: 'Is internship support included?', a: 'Yes, you gain access to an internship program with opportunities across 200+ hiring partners.' },
+      { q: 'Do I need a prior finance degree?', a: 'No, we start from the fundamental principles and build up to advanced modeling and valuation.' },
+      { q: 'Will I build financial models from scratch?', a: 'Yes, you will build complex 3-statement and DCF models from blank Excel spreadsheets.' },
+      { q: 'What tools will I learn?', a: 'You will gain heavy proficiency in Advanced Excel for financial modeling, along with exposure to Python and industry standard platforms.' },
+      { q: 'Will this program help me get a job in Investment Banking or Corporate Finance?', a: 'Yes, the curriculum is heavily aligned with the technical skills required for IB, PE, and Corporate Finance analyst roles.' },
       { q: 'What happens if I miss a live session?', a: 'Recordings of all live sessions are available with 1-year access in our LMS portal.' }
     ],
     careerPaths: {
       title: 'Career Paths After the Program',
-      subtitle: 'Build skills that map to high-demand roles across startups and enterprises globally.',
+      subtitle: 'Build skills that map to high-demand roles across banks, funds, and corporate enterprises.',
       roles: [
-        { title: 'Junior Finance Specialist', desc: 'Execute foundational tasks and support senior team members.', tools: ['Basic Tools', 'Reporting'], level: 'Entry-level' },
-        { title: 'Finance Engineer/Analyst', desc: 'Design, build, and maintain core solutions and systems.', tools: ['Advanced Frameworks', 'Cloud'], level: 'Professional' },
-        { title: 'Freelance Consultant', desc: 'Work independently on custom projects for various clients.', tools: ['Client Management', 'End-to-end execution'], level: 'Independent' },
-        { title: 'Lead Finance Expert', desc: 'Lead teams and architect complex solutions for enterprise clients.', tools: ['Strategy', 'Architecture', 'Leadership'], level: 'Senior' }
+        { title: 'Junior Financial Analyst', desc: 'Assist with financial forecasting, variance analysis, and operational reporting.', tools: ['Excel', 'ERP Systems'], level: 'Entry-level' },
+        { title: 'Investment Banking Analyst', desc: 'Perform deep company valuations, build LBO models, and assist in M&A transactions.', tools: ['DCF', 'Financial Modeling'], level: 'Professional' },
+        { title: 'Private Equity / VC Associate', desc: 'Evaluate startup pitches, conduct due diligence, and model investment returns.', tools: ['Valuation', 'Due Diligence'], level: 'Independent' },
+        { title: 'Portfolio Manager / CFO', desc: 'Oversee corporate financial health, manage massive portfolios, and dictate capital strategy.', tools: ['Strategy', 'Leadership', 'Risk Management'], level: 'Senior' }
       ],
-      progression: ['Junior Executive', 'Specialist', 'Senior Professional', 'Team Lead', 'Architect/Manager']
+      progression: ['Financial Analyst', 'IB Analyst / Associate', 'Senior Financial Analyst', 'VP of Finance', 'CFO / Portfolio Manager']
     }
   },
 
@@ -1227,58 +1223,59 @@ export const allMentorshipData = {
     rating: 4.8,
     mentor: {
       name: 'Lead HR Mentor',
-      role: 'Senior Industry Expert',
-      experience: '10+ Years',
-      bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
+      role: 'Senior HR Director',
+      experience: '12+ Years',
+      bio: 'Learn from seasoned HR Directors and Talent Acquisition specialists with decades of experience managing global workforces and fostering company culture.',
     },
+    mentorImage: null,
     outcomes: [
-      { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of Human Resource.', icon: FaCheckCircle },
-      { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
-      { title: 'Real-world Application', desc: 'Apply your skills to solve complex problems and build scalable solutions.', icon: FaBriefcase },
-      { title: 'Job Readiness', desc: 'Prepare for top roles with interview prep and portfolio building.', icon: FaUserGraduate },
+      { title: 'Core Fundamentals', desc: 'Master recruitment, employee relations, and talent management frameworks.', icon: FaCheckCircle },
+      { title: 'Advanced Techniques', desc: 'Learn HR analytics, compensation structuring, and labor compliance laws.', icon: FaRocket },
+      { title: 'Real-world Application', desc: 'Design onboarding programs and handle complex employee conflict scenarios.', icon: FaBriefcase },
+      { title: 'Job Readiness', desc: 'Prepare for top HR Generalist and Talent Acquisition roles.', icon: FaUserGraduate },
     ],
     tools: [
-      { name: 'Industry Standard Tools' }, { name: 'Modern Frameworks' }, { name: 'Analytics' }, 
-      { name: 'Cloud Platforms' }, { name: 'Version Control' }, { name: 'Agile/Scrum' }
+      { name: 'LinkedIn Recruiter' }, { name: 'Workday' }, { name: 'BambooHR' }, 
+      { name: 'ATS Software' }, { name: 'ADP' }, { name: 'HR Analytics' }
     ],
     curriculum: [
-      { module: 'Module 1', title: 'Introduction to Human Resource', topics: ['Overview of concepts', 'Setting up the environment', 'Basic principles', 'Industry use cases'] },
-      { module: 'Module 2', title: 'Core Methodologies', topics: ['In-depth exploration', 'Tools and frameworks', 'Best practices', 'Hands-on exercises'] },
-      { module: 'Module 3', title: 'Advanced Concepts', topics: ['Complex scenarios', 'Optimization techniques', 'Security and performance', 'Integration'] },
-      { module: 'Module 4', title: 'Industry Projects', topics: ['Real-world problem solving', 'Project planning', 'Execution', 'Testing and validation'] },
-      { module: 'Module 5', title: 'Capstone & Portfolio', topics: ['Building a complete project from scratch', 'Documentation', 'Portfolio enhancement', 'Interview preparation'] }
+      { module: 'Module 1', title: 'Talent Acquisition & Sourcing', topics: ['Job Profiling', 'Sourcing Strategies', 'Interviewing Techniques', 'Employer Branding'] },
+      { module: 'Module 2', title: 'Onboarding & Employee Engagement', topics: ['Orientation Programs', 'Culture Building', 'Retention Strategies', 'Employee Surveys'] },
+      { module: 'Module 3', title: 'Performance & Compensation', topics: ['KPIs & Appraisals', 'Feedback Loops', 'Payroll Basics', 'Benefits Structuring'] },
+      { module: 'Module 4', title: 'Labor Laws & Compliance', topics: ['Workplace Safety', 'Diversity & Inclusion', 'Conflict Resolution', 'Legal Terminations'] },
+      { module: 'Module 5', title: 'HR Analytics & Capstone', topics: ['Tracking HR Metrics', 'Turnover Prediction', 'Data-driven HR', 'Final Presentation'] }
     ],
     projects: [
       {
-        title: 'Industrial Capstone Project',
-        desc: 'A comprehensive project integrating all learned skills to solve a real business problem.',
-        tech: ['Modern Stack', 'Cloud Integration', 'Analytics'],
-        impact: 'Demonstrated ability to execute end-to-end solutions independently.'
+        title: 'Complete Talent Acquisition Strategy',
+        desc: 'Design an end-to-end recruitment and employer branding strategy for a rapidly scaling startup.',
+        tech: ['ATS Software', 'LinkedIn Recruiter', 'Sourcing'],
+        impact: 'Demonstrated ability to source and attract top tier talent efficiently.'
       },
       {
-        title: 'Live Case Study Application',
-        desc: 'Hands-on implementation of a live industry case study with measurable outcomes.',
-        tech: ['Best Practices', 'Agile', 'Optimization'],
-        impact: 'Mastered practical application of theoretical concepts.'
+        title: 'Employee Retention & Engagement Dashboard',
+        desc: 'Analyze exit interview data and employee surveys to present an actionable retention plan.',
+        tech: ['HR Analytics', 'Excel', 'Strategic Planning'],
+        impact: 'Mastered practical application of data-driven human resource management.'
       }
     ],
     faqs: [
-      { q: 'Do I need prior experience?', a: 'No, this program starts from the basics and gradually builds up to advanced concepts.' },
-      { q: 'Will I build real-world projects?', a: 'Yes, you will build 2 real-time industrial projects (one minor, one major) to solidify your learning and build your portfolio.' },
-      { q: 'What kind of mentor support is included?', a: 'Mentors act as project leads, guiding you through live sessions and assisting you until the completion of your projects.' },
-      { q: 'Is internship support included?', a: 'Yes, you gain access to an internship program with opportunities across 200+ hiring partners.' },
+      { q: 'Do I need a background in HR?', a: 'No, this program covers everything from foundational HR principles to advanced analytics and strategy.' },
+      { q: 'Will I learn about payroll systems?', a: 'Yes, we cover the fundamentals of compensation, benefits, and how modern payroll systems (like ADP) integrate with HR.' },
+      { q: 'What tools will I learn?', a: 'You will gain exposure to industry-standard ATS platforms, LinkedIn Recruiter, Workday, and data tools for HR Analytics.' },
+      { q: 'Will this program help me get a job in HR?', a: 'Yes, the curriculum is heavily aligned with the practical skills required for Recruiter and HR Generalist roles.' },
       { q: 'What happens if I miss a live session?', a: 'Recordings of all live sessions are available with 1-year access in our LMS portal.' }
     ],
     careerPaths: {
       title: 'Career Paths After the Program',
-      subtitle: 'Build skills that map to high-demand roles across startups and enterprises globally.',
+      subtitle: 'Build skills that map to high-demand roles across startups and corporate enterprises.',
       roles: [
-        { title: 'Junior HR Specialist', desc: 'Execute foundational tasks and support senior team members.', tools: ['Basic Tools', 'Reporting'], level: 'Entry-level' },
-        { title: 'Human Resource Engineer/Analyst', desc: 'Design, build, and maintain core solutions and systems.', tools: ['Advanced Frameworks', 'Cloud'], level: 'Professional' },
-        { title: 'Freelance Consultant', desc: 'Work independently on custom projects for various clients.', tools: ['Client Management', 'End-to-end execution'], level: 'Independent' },
-        { title: 'Lead HR Expert', desc: 'Lead teams and architect complex solutions for enterprise clients.', tools: ['Strategy', 'Architecture', 'Leadership'], level: 'Senior' }
+        { title: 'Talent Acquisition Specialist', desc: 'Source, screen, and interview candidates to build strong company teams.', tools: ['LinkedIn Recruiter', 'ATS'], level: 'Entry-level' },
+        { title: 'HR Generalist', desc: 'Manage daily HR operations, employee relations, and benefits administration.', tools: ['Workday', 'BambooHR'], level: 'Professional' },
+        { title: 'HR Business Partner (HRBP)', desc: 'Align HR strategies with business objectives and advise executive leadership.', tools: ['Strategy', 'Analytics'], level: 'Independent' },
+        { title: 'HR Director / Head of People', desc: 'Oversee the entire HR department, dictate company culture, and manage global workforce strategies.', tools: ['Leadership', 'Compliance', 'Budgeting'], level: 'Senior' }
       ],
-      progression: ['Junior Executive', 'Specialist', 'Senior Professional', 'Team Lead', 'Architect/Manager']
+      progression: ['HR Assistant / Recruiter', 'HR Generalist', 'HR Manager', 'HR Business Partner', 'Head of People']
     }
   },
 
@@ -1293,58 +1290,59 @@ export const allMentorshipData = {
     rating: 4.8,
     mentor: {
       name: 'Lead Marketing Mentor',
-      role: 'Senior Industry Expert',
+      role: 'Senior Digital Marketing Expert',
       experience: '10+ Years',
-      bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
+      bio: 'Learn from top-tier marketing professionals who have scaled multi-million dollar campaigns and driven massive brand growth globally.',
     },
+    mentorImage: null,
     outcomes: [
-      { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of Digital Marketing.', icon: FaCheckCircle },
-      { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
-      { title: 'Real-world Application', desc: 'Apply your skills to solve complex problems and build scalable solutions.', icon: FaBriefcase },
-      { title: 'Job Readiness', desc: 'Prepare for top roles with interview prep and portfolio building.', icon: FaUserGraduate },
+      { title: 'Core Fundamentals', desc: 'Master SEO, SEM, and the foundation of social media marketing strategies.', icon: FaCheckCircle },
+      { title: 'Performance Marketing', desc: 'Learn to run profitable campaigns across Google Ads, Meta Ads, and LinkedIn.', icon: FaRocket },
+      { title: 'Real-world Application', desc: 'Run and manage live ad budgets to drive traffic, leads, and sales.', icon: FaBriefcase },
+      { title: 'Job Readiness', desc: 'Build a complete marketing portfolio and prepare for top agency or in-house roles.', icon: FaUserGraduate },
     ],
     tools: [
-      { name: 'Industry Standard Tools' }, { name: 'Modern Frameworks' }, { name: 'Analytics' }, 
-      { name: 'Cloud Platforms' }, { name: 'Version Control' }, { name: 'Agile/Scrum' }
+      { name: 'Google Analytics' }, { name: 'Meta Ads Manager' }, { name: 'Google Ads' }, 
+      { name: 'SEO Tools (Ahrefs/SEMrush)' }, { name: 'Mailchimp' }, { name: 'WordPress' }
     ],
     curriculum: [
-      { module: 'Module 1', title: 'Introduction to Digital Marketing', topics: ['Overview of concepts', 'Setting up the environment', 'Basic principles', 'Industry use cases'] },
-      { module: 'Module 2', title: 'Core Methodologies', topics: ['In-depth exploration', 'Tools and frameworks', 'Best practices', 'Hands-on exercises'] },
-      { module: 'Module 3', title: 'Advanced Concepts', topics: ['Complex scenarios', 'Optimization techniques', 'Security and performance', 'Integration'] },
-      { module: 'Module 4', title: 'Industry Projects', topics: ['Real-world problem solving', 'Project planning', 'Execution', 'Testing and validation'] },
-      { module: 'Module 5', title: 'Capstone & Portfolio', topics: ['Building a complete project from scratch', 'Documentation', 'Portfolio enhancement', 'Interview preparation'] }
+      { module: 'Module 1', title: 'Introduction to Digital Marketing & SEO', topics: ['Marketing Funnels', 'Keyword Research', 'On-Page & Off-Page SEO', 'Technical SEO'] },
+      { module: 'Module 2', title: 'Social Media Marketing (Organic & Paid)', topics: ['Content Strategy', 'Community Management', 'Meta Ads Basics', 'Influencer Marketing'] },
+      { module: 'Module 3', title: 'Performance Marketing & Search Ads', topics: ['Google Ads setup', 'Bidding Strategies', 'Retargeting', 'Display & Video Ads'] },
+      { module: 'Module 4', title: 'Email Marketing & Automation', topics: ['Building Email Lists', 'Drip Campaigns', 'Copywriting', 'Marketing Automation Workflows'] },
+      { module: 'Module 5', title: 'Web Analytics & CRO', topics: ['Google Analytics 4 (GA4)', 'Conversion Rate Optimization', 'A/B Testing', 'Reporting & Dashboards'] }
     ],
     projects: [
       {
-        title: 'Industrial Capstone Project',
-        desc: 'A comprehensive project integrating all learned skills to solve a real business problem.',
-        tech: ['Modern Stack', 'Cloud Integration', 'Analytics'],
-        impact: 'Demonstrated ability to execute end-to-end solutions independently.'
+        title: 'Complete Brand Launch Campaign',
+        desc: 'Plan, execute, and analyze a full-funnel marketing campaign for a new brand.',
+        tech: ['Meta Ads', 'Google Analytics', 'SEO Content'],
+        impact: 'Demonstrated ability to drive awareness and conversions from scratch.'
       },
       {
-        title: 'Live Case Study Application',
-        desc: 'Hands-on implementation of a live industry case study with measurable outcomes.',
-        tech: ['Best Practices', 'Agile', 'Optimization'],
-        impact: 'Mastered practical application of theoretical concepts.'
+        title: 'E-Commerce Growth Strategy',
+        desc: 'Audit an existing e-commerce store and run optimized Google Ads to scale revenue.',
+        tech: ['Google Ads', 'CRO', 'Email Automation'],
+        impact: 'Mastered practical application of performance marketing and ROI tracking.'
       }
     ],
     faqs: [
-      { q: 'Do I need prior experience?', a: 'No, this program starts from the basics and gradually builds up to advanced concepts.' },
-      { q: 'Will I build real-world projects?', a: 'Yes, you will build 2 real-time industrial projects (one minor, one major) to solidify your learning and build your portfolio.' },
-      { q: 'What kind of mentor support is included?', a: 'Mentors act as project leads, guiding you through live sessions and assisting you until the completion of your projects.' },
-      { q: 'Is internship support included?', a: 'Yes, you gain access to an internship program with opportunities across 200+ hiring partners.' },
+      { q: 'Do I need prior marketing experience?', a: 'No, this program starts from the very basics and takes you to advanced performance marketing strategies.' },
+      { q: 'Will I run campaigns with real money?', a: 'You will practice on live accounts, and mentors will guide you on allocating initial small budgets for real-world campaign experience.' },
+      { q: 'What tools will I learn?', a: 'You will get hands-on experience with industry-standard tools like Google Ads, Meta Ads Manager, GA4, Ahrefs/SEMrush, and more.' },
+      { q: 'Will this program help me get a job?', a: 'Yes, the curriculum is designed to help you build a concrete portfolio of live campaigns, making you job-ready for top agencies and brands.' },
       { q: 'What happens if I miss a live session?', a: 'Recordings of all live sessions are available with 1-year access in our LMS portal.' }
     ],
     careerPaths: {
-      title: 'Career Paths After the Program',
-      subtitle: 'Build skills that map to high-demand roles across startups and enterprises globally.',
-      roles: [
-        { title: 'Junior Marketing Specialist', desc: 'Execute foundational tasks and support senior team members.', tools: ['Basic Tools', 'Reporting'], level: 'Entry-level' },
-        { title: 'Digital Marketing Engineer/Analyst', desc: 'Design, build, and maintain core solutions and systems.', tools: ['Advanced Frameworks', 'Cloud'], level: 'Professional' },
-        { title: 'Freelance Consultant', desc: 'Work independently on custom projects for various clients.', tools: ['Client Management', 'End-to-end execution'], level: 'Independent' },
-        { title: 'Lead Marketing Expert', desc: 'Lead teams and architect complex solutions for enterprise clients.', tools: ['Strategy', 'Architecture', 'Leadership'], level: 'Senior' }
-      ],
-      progression: ['Junior Executive', 'Specialist', 'Senior Professional', 'Team Lead', 'Architect/Manager']
+       title: 'Career Paths After the Program',
+       subtitle: 'Build skills that map to high-demand roles across startups and global agencies.',
+       roles: [
+         { title: 'Junior Performance Marketer', desc: 'Assist in campaign setup, ad copywriting, and daily budget monitoring.', tools: ['Meta Ads', 'Google Ads'], level: 'Entry-level' },
+         { title: 'SEO / SEM Analyst', desc: 'Optimize website rankings, conduct keyword research, and manage search engine marketing.', tools: ['SEMrush', 'GA4'], level: 'Professional' },
+         { title: 'Freelance Digital Marketer', desc: 'Manage digital presence and ad campaigns independently for various clients.', tools: ['Client Management', 'Full-stack Marketing'], level: 'Independent' },
+         { title: 'Marketing Director / Head of Growth', desc: 'Lead marketing teams, manage massive budgets, and define the entire brand strategy.', tools: ['Strategy', 'Leadership', 'Analytics'], level: 'Senior' }
+       ],
+       progression: ['Marketing Executive', 'Performance Marketer', 'SEO/SEM Manager', 'Head of Growth', 'CMO']
     }
   },
 
@@ -1361,8 +1359,9 @@ export const allMentorshipData = {
       name: 'Lead Finance Mentor',
       role: 'Senior Industry Expert',
       experience: '10+ Years',
-      bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
+      bio: 'Learn from seasoned finance professionals who provide deep insights into trading strategies, risk management, and market analysis to help you achieve your financial goals.',
     },
+    mentorImage: null,
     outcomes: [
       { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of Stock Marketing.', icon: FaCheckCircle },
       { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
@@ -1370,47 +1369,47 @@ export const allMentorshipData = {
       { title: 'Job Readiness', desc: 'Prepare for top roles with interview prep and portfolio building.', icon: FaUserGraduate },
     ],
     tools: [
-      { name: 'Industry Standard Tools' }, { name: 'Modern Frameworks' }, { name: 'Analytics' }, 
-      { name: 'Cloud Platforms' }, { name: 'Version Control' }, { name: 'Agile/Scrum' }
+      { name: 'TradingView' }, { name: 'Broker Terminals' }, { name: 'Stock Screeners' }, 
+      { name: 'Sensibull' }, { name: 'Excel Data Analysis' }, { name: 'Financial APIs' }
     ],
     curriculum: [
-      { module: 'Module 1', title: 'Introduction to Stock Marketing', topics: ['Overview of concepts', 'Setting up the environment', 'Basic principles', 'Industry use cases'] },
-      { module: 'Module 2', title: 'Core Methodologies', topics: ['In-depth exploration', 'Tools and frameworks', 'Best practices', 'Hands-on exercises'] },
-      { module: 'Module 3', title: 'Advanced Concepts', topics: ['Complex scenarios', 'Optimization techniques', 'Security and performance', 'Integration'] },
-      { module: 'Module 4', title: 'Industry Projects', topics: ['Real-world problem solving', 'Project planning', 'Execution', 'Testing and validation'] },
-      { module: 'Module 5', title: 'Capstone & Portfolio', topics: ['Building a complete project from scratch', 'Documentation', 'Portfolio enhancement', 'Interview preparation'] }
+      { module: 'Module 1', title: 'Introduction to Financial Markets', topics: ['Basics of the Stock Market', 'Types of Financial Instruments', 'Market Participants and Regulators', 'Understanding Stock Indices'] },
+      { module: 'Module 2', title: 'Fundamental Analysis', topics: ['Reading Financial Statements', 'Evaluating Company Health', 'Economic Indicators', 'Valuation Ratios and Metrics'] },
+      { module: 'Module 3', title: 'Technical Analysis', topics: ['Candlestick Patterns and Chart Types', 'Trend Lines and Support/Resistance', 'Technical Indicators (RSI, MACD, MAs)', 'Volume Analysis'] },
+      { module: 'Module 4', title: 'Trading Strategies & Risk', topics: ['Day Trading vs Swing Trading', 'Options and Derivatives Basics', 'Position Sizing and Stop Losses', 'Trading Psychology'] },
+      { module: 'Module 5', title: 'Live Market & Portfolio', topics: ['Executing Trades on Live Platforms', 'Building a Diversified Portfolio', 'Backtesting Strategies', 'Post-Trade Analysis'] }
     ],
     projects: [
       {
-        title: 'Industrial Capstone Project',
-        desc: 'A comprehensive project integrating all learned skills to solve a real business problem.',
-        tech: ['Modern Stack', 'Cloud Integration', 'Analytics'],
-        impact: 'Demonstrated ability to execute end-to-end solutions independently.'
+        title: 'Algorithmic Trading Strategy Simulation',
+        desc: 'Develop and backtest a trading strategy using historical data to identify profitable setups.',
+        tech: ['TradingView', 'Technical Indicators', 'Backtesting'],
+        impact: 'Demonstrated ability to build, analyze, and optimize trading strategies.'
       },
       {
-        title: 'Live Case Study Application',
-        desc: 'Hands-on implementation of a live industry case study with measurable outcomes.',
-        tech: ['Best Practices', 'Agile', 'Optimization'],
-        impact: 'Mastered practical application of theoretical concepts.'
+        title: 'Comprehensive Portfolio Management',
+        desc: 'Analyze a sector and build a diversified investment portfolio with risk management rules applied.',
+        tech: ['Fundamental Analysis', 'Screener', 'Risk Assessment'],
+        impact: 'Mastered practical application of capital allocation and portfolio balancing.'
       }
     ],
     faqs: [
-      { q: 'Do I need prior experience?', a: 'No, this program starts from the basics and gradually builds up to advanced concepts.' },
-      { q: 'Will I build real-world projects?', a: 'Yes, you will build 2 real-time industrial projects (one minor, one major) to solidify your learning and build your portfolio.' },
-      { q: 'What kind of mentor support is included?', a: 'Mentors act as project leads, guiding you through live sessions and assisting you until the completion of your projects.' },
-      { q: 'Is internship support included?', a: 'Yes, you gain access to an internship program with opportunities across 200+ hiring partners.' },
-      { q: 'What happens if I miss a live session?', a: 'Recordings of all live sessions are available with 1-year access in our LMS portal.' }
+      { q: 'Do I need prior experience in finance or trading?', a: 'No, this program starts with the absolute basics of the stock market and gradually advances to complex trading strategies.' },
+      { q: 'Will I be trading with real money?', a: 'Initially, you will practice using paper trading and simulators. As you gain confidence, mentors will guide you on how to start trading with real capital responsibly.' },
+      { q: 'What kind of mentor support is included?', a: 'Our mentors are active traders and financial analysts. They will guide you through live market hours, review your trades, and help you refine your strategies.' },
+      { q: 'Will this program help me get a job in finance?', a: 'Yes, you will build a solid portfolio of trading strategies and analysis reports, giving you a competitive edge for roles in equity research and trading.' },
+      { q: 'What happens if I miss a live market session?', a: 'All live market analysis sessions are recorded and made available in the LMS portal for 1-year access, so you can review the setups at your convenience.' }
     ],
     careerPaths: {
       title: 'Career Paths After the Program',
       subtitle: 'Build skills that map to high-demand roles across startups and enterprises globally.',
       roles: [
-        { title: 'Junior Finance Specialist', desc: 'Execute foundational tasks and support senior team members.', tools: ['Basic Tools', 'Reporting'], level: 'Entry-level' },
-        { title: 'Stock Marketing Engineer/Analyst', desc: 'Design, build, and maintain core solutions and systems.', tools: ['Advanced Frameworks', 'Cloud'], level: 'Professional' },
-        { title: 'Freelance Consultant', desc: 'Work independently on custom projects for various clients.', tools: ['Client Management', 'End-to-end execution'], level: 'Independent' },
-        { title: 'Lead Finance Expert', desc: 'Lead teams and architect complex solutions for enterprise clients.', tools: ['Strategy', 'Architecture', 'Leadership'], level: 'Senior' }
+        { title: 'Junior Equity Analyst', desc: 'Conduct basic market research, assist in analyzing financial statements, and track stock movements.', tools: ['Excel', 'Financial Modeling'], level: 'Entry-level' },
+        { title: 'Quantitative Trader/Analyst', desc: 'Develop, test, and execute algorithmic trading strategies based on quantitative models.', tools: ['Trading APIs', 'Backtesting'], level: 'Professional' },
+        { title: 'Independent Day/Swing Trader', desc: 'Trade your own capital independently using technical and fundamental analysis strategies.', tools: ['TradingView', 'Brokerage Accounts'], level: 'Independent' },
+        { title: 'Portfolio Manager', desc: 'Manage large investment portfolios, mitigate risk, and lead teams of financial analysts.', tools: ['Risk Assessment', 'Asset Allocation'], level: 'Senior' }
       ],
-      progression: ['Junior Executive', 'Specialist', 'Senior Professional', 'Team Lead', 'Architect/Manager']
+      progression: ['Equity Analyst', 'Senior Trader', 'Risk Manager', 'Portfolio Manager', 'Fund Director']
     }
   },
 
