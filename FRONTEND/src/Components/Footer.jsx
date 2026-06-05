@@ -18,6 +18,7 @@ const Footer = () => {
     { label: "Alumni Outcomes", to: "/Alumni" },
     { label: "About Us", to: "/AboutUs" },
     { label: "Career", to: "/Career" },
+    { label: "Refer and Earn", to: "/ReferAndEarn" },
   ];
 
   return (

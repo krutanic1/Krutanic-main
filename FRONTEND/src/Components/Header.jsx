@@ -61,8 +61,7 @@ const programsCategories = [
 const topNav = [
   { label: "Our Courses", to: "/Mentorship", categories: programsCategories },
   { label: "Advanced Program", to: "/Advance" },
-  { label: "Alumni", to: "/Alumni" },
-  { label: "Refer and Earn", to: "/ReferAndEarn" }
+  { label: "Alumni", to: "/Alumni" }
 ];
 
 const Header = () => {
