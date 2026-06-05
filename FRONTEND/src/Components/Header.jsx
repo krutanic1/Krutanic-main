@@ -12,6 +12,7 @@ const programsCategories = [
       { label: "Full Stack Web Development", to: "/MernStack" },
       { label: "Artificial Intelligence", to: "/mentorship/artificial-intelligence" },
       { label: "Data Science", to: "/DataScience" },
+      { label: "Data Analytics", to: "/mentorship/data-analytics" },
       { label: "Cyber Security", to: "/mentorship/cyber-security" },
       { label: "Cloud Computing", to: "/mentorship/cloud-computing" },
       { label: "Android App Development", to: "/mentorship/android-app-development" },
