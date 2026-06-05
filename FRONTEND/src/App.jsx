@@ -291,6 +291,17 @@ if (typeof window !== "undefined") {
     }
   };
 
+  const originalRemoveItem = localStorage.removeItem;
+  localStorage.removeItem = function(key) {
+    const isIsolated = !!(sessionStorage.getItem("bdaToken") || sessionStorage.getItem("advTeamToken") || sessionStorage.getItem("operationToken"));
+    if (isIsolated) {
+      sessionStorage.removeItem(key);
+      if (window.KrutanicAuth) delete window.KrutanicAuth[key];
+    } else {
+      originalRemoveItem.call(localStorage, key);
+    }
+  };
+
   // C. Clean URL (After a tiny delay to let components read it if needed)
   if (impToken) {
     setTimeout(() => {
@@ -368,7 +379,7 @@ const AppContent = () => {
       if (window.location.search.includes("impToken")) return;
 
       const tokenKeys = ["adminToken", "bdaToken", "advTeamToken", "operationToken", "advOperationToken", "marketingToken", "studentToken"];
-      let expiredTokenKey = null;
+      const expiredTokens = [];
 
       tokenKeys.forEach(key => {
         const token = getAuthToken(key);
@@ -378,7 +389,7 @@ const AppContent = () => {
             if (parts.length === 3) {
               const decoded = JSON.parse(atob(parts[1]));
               if (decoded.exp * 1000 < Date.now()) {
-                expiredTokenKey = key;
+                expiredTokens.push(key);
               }
             }
           } catch (e) {
@@ -387,7 +398,7 @@ const AppContent = () => {
         }
       });
 
-      if (expiredTokenKey) {
+      if (expiredTokens.length > 0) {
         // Path checks
         const isAdminSection = currentPath.includes("admin") || currentPath.includes("create");
         const isBdaSection = currentPath === "/home" || currentPath === "/booked" || currentPath.includes("bda");
@@ -397,24 +408,36 @@ const AppContent = () => {
         const isMarketingSection = currentPath.startsWith("/marketing/");
 
         let shouldRedirect = false;
-        if (expiredTokenKey === "adminToken" && isAdminSection) shouldRedirect = true;
-        if (expiredTokenKey === "bdaToken" && isBdaSection) shouldRedirect = true;
-        if (expiredTokenKey === "advTeamToken" && isAdvTeamSection) shouldRedirect = true;
-        if (expiredTokenKey === "operationToken" && isOpSection) shouldRedirect = true;
-        if (expiredTokenKey === "advOperationToken" && isAdvOpSection) shouldRedirect = true;
-        if (expiredTokenKey === "marketingToken" && isMarketingSection) shouldRedirect = true;
+        let redirectPath = "/";
+
+        if (expiredTokens.includes("adminToken") && isAdminSection) {
+          shouldRedirect = true;
+          redirectPath = "/AdminLogin";
+        } else if (expiredTokens.includes("bdaToken") && isBdaSection) {
+          shouldRedirect = true;
+          redirectPath = "/TeamLogin";
+        } else if (expiredTokens.includes("advTeamToken") && isAdvTeamSection) {
+          shouldRedirect = true;
+          redirectPath = "/AdvTeamLogin";
+        } else if (expiredTokens.includes("operationToken") && isOpSection) {
+          shouldRedirect = true;
+          redirectPath = "/OperationLogin";
+        } else if (expiredTokens.includes("advOperationToken") && isAdvOpSection) {
+          shouldRedirect = true;
+          redirectPath = "/AdvOperationLogin";
+        } else if (expiredTokens.includes("marketingToken") && isMarketingSection) {
+          shouldRedirect = true;
+          redirectPath = "/marketing/login";
+        }
 
         if (shouldRedirect) {
-          console.warn("Security: Session expired for", expiredTokenKey);
-          localStorage.removeItem(expiredTokenKey);
-          sessionStorage.removeItem(expiredTokenKey);
+          console.warn("Security: Session expired for matching tokens in current section", expiredTokens);
+          expiredTokens.forEach(key => {
+            localStorage.removeItem(key);
+            sessionStorage.removeItem(key);
+          });
           
-          if (isAdminSection) navigate("/AdminLogin");
-          else if (isBdaSection) navigate("/TeamLogin");
-          else if (isAdvTeamSection) navigate("/AdvTeamLogin");
-          else if (isOpSection) navigate("/OperationLogin");
-          else if (isAdvOpSection) navigate("/AdvOperationLogin");
-          else if (isMarketingSection) navigate("/marketing/login");
+          navigate(redirectPath);
         }
       }
     };
