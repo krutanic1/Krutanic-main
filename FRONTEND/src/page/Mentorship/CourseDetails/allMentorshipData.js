@@ -1088,7 +1088,7 @@ export const allMentorshipData = {
     enrolled: '12,500+ Mentees',
     rating: 4.8,
     mentor: {
-      name: 'Lead Business Analytics Mentor',
+      name: 'Naveen Kumar',
       role: 'Senior Data Strategist',
       experience: '10+ Years',
       bio: 'Learn from elite data professionals who have transformed complex datasets into actionable business strategies for Fortune 500 companies.',
@@ -1155,7 +1155,7 @@ export const allMentorshipData = {
     enrolled: '12,500+ Mentees',
     rating: 4.8,
     mentor: {
-      name: 'Lead Finance Mentor',
+      name: 'Krishna Vamshi',
       role: 'Senior Financial Analyst',
       experience: '10+ Years',
       bio: 'Learn from industry veterans with extensive backgrounds in investment banking, corporate finance, and portfolio management at top global firms.',
@@ -1222,7 +1222,7 @@ export const allMentorshipData = {
     enrolled: '12,500+ Mentees',
     rating: 4.8,
     mentor: {
-      name: 'Lead HR Mentor',
+      name: 'Nandini',
       role: 'Senior HR Director',
       experience: '12+ Years',
       bio: 'Learn from seasoned HR Directors and Talent Acquisition specialists with decades of experience managing global workforces and fostering company culture.',
@@ -1289,7 +1289,7 @@ export const allMentorshipData = {
     enrolled: '12,500+ Mentees',
     rating: 4.8,
     mentor: {
-      name: 'Lead Marketing Mentor',
+      name: 'Ram Charan',
       role: 'Senior Digital Marketing Expert',
       experience: '10+ Years',
       bio: 'Learn from top-tier marketing professionals who have scaled multi-million dollar campaigns and driven massive brand growth globally.',
@@ -1356,7 +1356,7 @@ export const allMentorshipData = {
     enrolled: '12,500+ Mentees',
     rating: 4.8,
     mentor: {
-      name: 'Lead Finance Mentor',
+      name: 'Varun Gupta',
       role: 'Senior Industry Expert',
       experience: '10+ Years',
       bio: 'Learn from seasoned finance professionals who provide deep insights into trading strategies, risk management, and market analysis to help you achieve your financial goals.',
@@ -1423,11 +1423,12 @@ export const allMentorshipData = {
     enrolled: '12,500+ Mentees',
     rating: 4.8,
     mentor: {
-      name: 'Lead Design Mentor',
+      name: 'Prasana Varma',
       role: 'Senior Industry Expert',
       experience: '10+ Years',
       bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
     },
+    mentorImage: null,
     outcomes: [
       { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of Graphics Design.', icon: FaCheckCircle },
       { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
@@ -1556,11 +1557,12 @@ export const allMentorshipData = {
     enrolled: '12,500+ Mentees',
     rating: 4.8,
     mentor: {
-      name: 'Lead Cloud Mentor',
+      name: 'Deepak',
       role: 'Senior Industry Expert',
       experience: '10+ Years',
       bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
     },
+    mentorImage: null,
     outcomes: [
       { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of Cloud Computing.', icon: FaCheckCircle },
       { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
@@ -1622,11 +1624,12 @@ export const allMentorshipData = {
     enrolled: '12,500+ Mentees',
     rating: 4.8,
     mentor: {
-      name: 'Lead Hardware Mentor',
+      name: 'Rahul Srivastava',
       role: 'Senior Industry Expert',
       experience: '10+ Years',
       bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
     },
+    mentorImage: null,
     outcomes: [
       { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of IOT & Robotics.', icon: FaCheckCircle },
       { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
@@ -1688,11 +1691,12 @@ export const allMentorshipData = {
     enrolled: '12,500+ Mentees',
     rating: 4.8,
     mentor: {
-      name: 'Lead Hardware Mentor',
+      name: 'Rahul Srivastava',
       role: 'Senior Industry Expert',
       experience: '10+ Years',
       bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
     },
+    mentorImage: null,
     outcomes: [
       { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of VLSI Design.', icon: FaCheckCircle },
       { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
@@ -1754,11 +1758,12 @@ export const allMentorshipData = {
     enrolled: '12,500+ Mentees',
     rating: 4.8,
     mentor: {
-      name: 'Lead Design Mentor',
+      name: 'Varun Sai',
       role: 'Senior Industry Expert',
       experience: '10+ Years',
       bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
     },
+    mentorImage: null,
     outcomes: [
       { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of Auto Cad.', icon: FaCheckCircle },
       { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },

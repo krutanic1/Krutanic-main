@@ -39,6 +39,7 @@ const SpecializationsSection = () => {
 
     // Medical
     { title: "Psychology", domain: "Medical", rating: 4.8, students: "709+", duration: "2/3 Months", link: "/mentorship/psychology", desc: "Studying mental processes and behavior to understand and address human conditions." },
+    { title: "Forensic Psychology", domain: "Medical", rating: 4.8, students: "530+", duration: "9/12 Months", link: "/forensic-psychology", desc: "Applying psychological knowledge to legal and criminal justice settings." },
   ];
 
   const filteredCourses = courses.filter(c => c.domain === activeTab);

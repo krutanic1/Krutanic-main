@@ -710,7 +710,7 @@ const AdvLeadManagement = () => {
                                                         <td>{lead.phone_number}</td>
                                                         <td style={{ fontSize: '12px', color: '#666' }}>{lead.source || '—'}</td>
                                                         <td style={{ fontSize: '13px' }}>{lead.opted_domain || '—'}</td>
-                                                        <td style={{ fontSize: '12px', color: '#555' }} title={getLeadField(lead, ['preferredLanguage', 'preferred_language', 'language', 'preferred_language?'])}>{getLeadField(lead, ['preferredLanguage', 'preferred_language', 'language', 'preferred_language?']) || '—'}</td>
+                                                        <td style={{ fontSize: '12px', color: '#555' }} title={getLeadField(lead, ['preferredLanguages', 'preferredLanguage', 'preferred_language', 'language', 'preferred_language?'])}>{getLeadField(lead, ['preferredLanguages', 'preferredLanguage', 'preferred_language', 'language', 'preferred_language?','what_is_your_preferred_language_?',]) || '—'}</td>
                                                         <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={getLeadField(lead, ['currentSituation', 'what_best_describes_your_current_situation?', 'what_best_describes_your_current_situation'])}>
                                                             {getLeadField(lead, ['currentSituation', 'what_best_describes_your_current_situation?', 'what_best_describes_your_current_situation']) || '—'}
                                                         </td>

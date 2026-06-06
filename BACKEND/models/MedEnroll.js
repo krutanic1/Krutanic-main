@@ -1,0 +1,108 @@
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+
+const medEnrollSchema = new Schema(
+  {
+    operationName: {
+      type: String,
+      default: null
+    },
+    operationId: {
+      type: String,
+      default: null
+    },
+    fullname: {
+      type: String,
+    },
+    email: {
+      type: String,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    alternativeEmail: {
+      type: String,
+    },
+    phone: {
+      type: String,
+    },
+    transactionId: {
+      type: String,
+      unique: true,
+    },
+    program: {
+      type: String,
+    },
+    modeofpayment: {
+      type: String,
+    },
+    counselor: {
+      type: String,
+    },
+    lead: {
+      type: String,
+    },
+    domain: {
+      type: String,
+    },
+    domainId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "CreateCourse",
+    },
+    programPrice: {
+      type: Number,
+    },
+    paidAmount: {
+      type: Number,
+    },
+    monthOpted: {
+      type: String,
+    },
+    clearPaymentMonth: {
+      type: String,
+    },
+    remark: [{ type: String }],
+    status: { type: String, default: "booked" },
+    mailSended: { type: Boolean, default: false },
+    onboardingSended: { type: Boolean, default: false },
+    userCreated: { type: Boolean, default: false },
+    offerlettersended: { type: Boolean, default: false },
+
+    whatsAppNumber: { type: String },
+    remainingAmount: { type: Number },
+    collegeName: { type: String },
+    branch: { type: String },
+    aadharNumber: { type: String },
+    referFriend: { type: String },
+    referRemark: [{ type: String }],
+    internshipstartsmonth: { type: String },
+    internshipendsmonth: { type: String },
+    yearOfStudy: { type: String },
+    executiveId: { type: String },
+    executive: { type: String },
+    languages: [{ type: String }],
+    watchedSessions: [{ type: String }],
+    selectedProject: { type: String, default: null },
+    projectProgress: { type: Map, of: Object, default: {} },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+// ✅ FIX #2: Add Database Indexes for faster queries
+// Note: email index already created by unique: true in schema
+medEnrollSchema.index({ status: 1 });
+medEnrollSchema.index({ createdAt: -1 });  // Revenue page date filtering
+medEnrollSchema.index({ operationId: 1 });
+medEnrollSchema.index({ executiveId: 1 });
+medEnrollSchema.index({ domain: 1 });
+medEnrollSchema.index({ counselor: 1 });  // ✅ NEW: For BDA queries (/databybdaname)
+medEnrollSchema.index({ domainId: 1 });   // ✅ NEW: For course lookups/aggregations
+medEnrollSchema.index({ status: 1, createdAt: -1 }); // Composite index for filtered queries
+
+// ✅ NEW: Compound index for revenue aggregation queries (improves /getmonthlyrevenue performance)
+medEnrollSchema.index({ createdAt: -1, lead: 1, status: 1 });
+
+const MedEnroll = mongoose.model("MedEnroll", medEnrollSchema);
+module.exports = MedEnroll;

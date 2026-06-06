@@ -61,7 +61,8 @@ const programsCategories = [
 const topNav = [
   { label: "Our Courses", to: "/Mentorship", categories: programsCategories },
   { label: "Advanced Program", to: "/Advance" },
-  { label: "Alumni", to: "/Alumni" }
+  { label: "Alumni", to: "/Alumni" },
+  { label: "MedPro Packs", to: "/medpro-packs" }
 ];
 
 const Header = () => {
@@ -79,6 +80,7 @@ const Header = () => {
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
+  
 
   useEffect(() => {
     setIsMobileOpen(false);

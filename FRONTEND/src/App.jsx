@@ -37,7 +37,12 @@ import MasterClassDetails from "./page/MasterClassDetails";
 import AutomationTesting from "./page/AdvanceCourse/AutomationTesting";
 import PromptEngineering from "./page/AdvanceCourse/PromptEngineering";
 import GenerativeAI from "./page/AdvanceCourse/GenerativeAI";
+import ForensicPsychology from "./page/AdvanceCourse/ForensicPsychology";
+import ClinicalPsychology from "./page/AdvanceCourse/ClinicalPsychology";
+import CorporateLaw from "./page/AdvanceCourse/CorporateLaw";
+import MedProPacks from "./page/MedProPacks";
 import DashboardAccessForm from "./page/DashboardAccessForm";
+import MedDashboardAccessForm from "./page/MedDashboardAccessForm";
 import AdvanceDashboardAccess from "./page/AdvanceDashboardAccess";
 import Alumni from "./page/Alumni";
 import Attendance from "./page/Attendance";
@@ -46,8 +51,10 @@ import AdvanceForm from "./page/AdvanceForm";
 // Admin
 import AdminHeader from "./Admin/AdminHeader";
 import AddCourse from "./Admin/AddCourse";
+import AddMedCourse from "./Admin/AddMedCourse";
 import AddAdvCourse from "./Admin/AddAdvCourse";
 import AddModule from "./Admin/AddModule";
+import AddMedModule from "./Admin/AddMedModule";
 import AddAdvModule from "./Admin/AddAdvModule";
 import AdminProjectPage from "./Admin/AdminProjectPage";
 import AdvProjectPage from "./Admin/AdvProjectPage";
@@ -73,6 +80,7 @@ import AddEvent from "./Admin/AddEvent";
 import EventRegistration from "./Admin/EventRegistration";
 import OnBoardingDetails from "./Admin/OnBoardingDetails";
 import AdvOnBoardingDetails from "./Admin/AdvOnBoardingDetails";
+import MedOnboardingDetails from "./Admin/MedOnboardingDetails";
 import AdvBooked from "./Admin/AdvBooked";
 import AdvFullPaid from "./Admin/AdvFullPaid";
 import AdvDefault from "./Admin/AdvDefault";
@@ -86,6 +94,7 @@ import AdminAttendance from "./Admin/AdminAttendance";
 import AdvUserManagement from "./Admin/AdvUserManagement";
 import LiveSalesMonitor from "./Admin/LiveSalesMonitor";
 import AdvFormLeads from "./Admin/AdvFormLeads";
+import AdminMedProLeads from "./Admin/AdminMedProLeads";
 
 
 
@@ -466,7 +475,8 @@ const AppContent = () => {
     ReactPixel.pageView();
   }, [location]);
 
-  const adminheaderPaths = ["/admindashboard", "/addcourse", "/addadvcourse", "/addmodule", "/addadvmodule", "/pendingapplication", "/acceptedapplication", "/bookedlist", "/halfpayment", "/defaultlist", "/fullpaidlist", "/createoperation", "/createadvoperation", "/createbda", "/createadvteam", "/createmanager", "/mentorqueries", "/advancequeries", "/revenuesheet", "/advrevenuesheet", "/createplacementcoordinator", "/onboardingdetails", "/advonboardingdetails", "/advbooked", "/advfullpaid", "/advdefault", "/allteamdetail", "/advteamdetail", "/masterclasses", "/addevent", "/eventregistration", "/target", "/alumnidata", "/inactivebda", "/referandearnresponse", "/createmarketingteam", "/createinterviewer", "/createhr", "/createinterview", "/adminprojectpage", "/advprojectpage", "/advexercisepage", "/advleadmanagement", "/adminanalytics", "/advadmindashboard", "/admin/agents", "/admin/teams", "/admin/leadassignments", "/admin/agentactivity", "/admin/reports", "/bulkimport", "/admin/attendance", "/advusermanagement", "/admin/livemonitor", "/admin/calllogs", "/advformleads", "/admin/leads-count"];
+  const adminheaderPaths = ["/admindashboard", "/addcourse", "/addmedcourse", "/addadvcourse", "/addmodule", "/addmedmodule", "/addadvmodule", "/pendingapplication", "/acceptedapplication", "/bookedlist", "/halfpayment", "/defaultlist", "/fullpaidlist", "/createoperation", "/createadvoperation", "/createbda", "/createadvteam", "/createmanager", "/mentorqueries", "/advancequeries", "/revenuesheet", "/advrevenuesheet", "/createplacementcoordinator", "/onboardingdetails", "/advonboardingdetails", "/medonboardingdetails", "/advbooked", "/advfullpaid", "/advdefault", "/allteamdetail", "/advteamdetail", "/masterclasses", "/addevent", "/eventregistration", "/target", "/alumnidata", "/inactivebda", "/referandearnresponse", "/createmarketingteam", "/createinterviewer", "/createhr", "/createinterview", "/adminprojectpage", "/advprojectpage", "/advexercisepage", "/advleadmanagement", "/adminanalytics", "/advadmindashboard", "/admin/agents", "/admin/teams", "/admin/leadassignments", "/admin/agentactivity", "/admin/reports", "/bulkimport", "/admin/attendance", "/advusermanagement", "/admin/livemonitor", "/admin/calllogs", "/advformleads", "/admin/leads-count", "/admin/medpro-leads"];
+
   const operationheaderPaths = ["/operationdashboard", "/fullpayment", "/bookedpayment", "/defaultpayment", "/operationrevenuesheet"];
   const advoperationheaderPaths = ["/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet"];
   const marketingheaderPaths = ["/marketing/home", "/marketing/previous", "/marketing/addexecutive"];
@@ -476,7 +486,7 @@ const AppContent = () => {
   const lmsFooterPaths = ["/jobboard"];
   const noFooterPaths = ["/operationdashboard", "/bookedpayment", "/fullpayment", "/defaultpayment", "/operationrevenuesheet", "/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet", "/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/advteam/leaderboard", "/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/leaderboard", "/setting"];
   const placementcoodinatorHeaderPaths = ["/pcdashboard", "/jobpost"];
-  const headerPaths = ["/", "/login", "/loginwithotp", "/forgotpassword", "/contactus", "/aboutus", "/career", "/collabration", "/advancecourses", "/terms", "/privacy", "/refundpolicy", "/feestructure", "/advance", "/advance-apply", "/mentorship", "/datascience", "/dataanalytics", "/digitalmarket", "/mernstack", "/investmentbanking", "/productmanagement", "/automationtesting", "/promptengineering", "/generativeai", "/operationlogin", "/advoperationlogin", "/teamlogin", "/adminlogin", "/managerlogin", "/loginadmin", "/pclogin", "/advteamlogin", "/dashboardaccessform", "/advancedashboardaccess", "/masterclass", "/alumni", "/verify", "/referandearn", "/marketing/login", "/interviewer-login", "/interviewerlogin", "/hrlogin", "/advanceform"];
+  const headerPaths = ["/", "/login", "/loginwithotp", "/forgotpassword", "/contactus", "/aboutus", "/career", "/collabration", "/advancecourses", "/terms", "/privacy", "/refundpolicy", "/feestructure", "/advance", "/advance-apply", "/mentorship", "/datascience", "/dataanalytics", "/digitalmarket", "/mernstack", "/investmentbanking", "/productmanagement", "/automationtesting", "/promptengineering", "/generativeai", "/forensic-psychology", "/clinical-psychology", "/corporate-law", "/medpro-packs", "/operationlogin", "/advoperationlogin", "/teamlogin", "/adminlogin", "/managerlogin", "/loginadmin", "/pclogin", "/advteamlogin", "/dashboardaccessform", "/meddashboardaccessform", "/advancedashboardaccess", "/masterclass", "/alumni", "/verify", "/referandearn", "/marketing/login", "/interviewer-login", "/interviewerlogin", "/hrlogin", "/advanceform"];
 
   return (
     <div>
@@ -536,7 +546,12 @@ const AppContent = () => {
         <Route path="/AutomationTesting" element={<AutomationTesting />} />
         <Route path="/PromptEngineering" element={<PromptEngineering />} />
         <Route path="/GenerativeAI" element={<GenerativeAI />} />
+        <Route path="/forensic-psychology" element={<ForensicPsychology />} />
+        <Route path="/clinical-psychology" element={<ClinicalPsychology />} />
+        <Route path="/corporate-law" element={<CorporateLaw />} />
+        <Route path="/medpro-packs" element={<MedProPacks />} />
         <Route path="/DashboardAccessForm" element={<DashboardAccessForm />} />
+        <Route path="/MedDashboardAccessForm" element={<MedDashboardAccessForm />} />
         <Route path="/AdvanceDashboardAccess" element={<AdvanceDashboardAccess />} />
         <Route path="/MasterClass" element={<MasterClass />} />
         <Route path="/MasterClass/:id" element={<MasterClassDetails />} />
@@ -550,8 +565,10 @@ const AppContent = () => {
         <Route path="/LoginAdmin" element={<LoginAdmin />} />
         <Route path="/AdminDashboard" element={isAuthenticatedAdmin() ? <AdminDashboard /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AddCourse" element={isAuthenticatedAdmin() ? <AddCourse /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/AddMedCourse" element={isAuthenticatedAdmin() ? <AddMedCourse /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AddAdvCourse" element={isAuthenticatedAdmin() ? <AddAdvCourse /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AddModule" element={isAuthenticatedAdmin() ? <AddModule /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/AddMedModule" element={isAuthenticatedAdmin() ? <AddMedModule /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AddAdvModule" element={isAuthenticatedAdmin() ? <AddAdvModule /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AdminProjectPage" element={isAuthenticatedAdmin() ? <AdminProjectPage /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AdvProjectPage" element={isAuthenticatedAdmin() ? <AdvProjectPage /> : <Navigate to="/AdminLogin" />} />
@@ -572,6 +589,8 @@ const AppContent = () => {
         <Route path="/AdvRevenueSheet" element={isAuthenticatedAdmin() ? <AdvRevenueSheet /> : <Navigate to="/AdminLogin" />} />
         <Route path="/OnBoardingDetails" element={isAuthenticatedAdmin() ? <OnBoardingDetails /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AdvOnBoardingDetails" element={isAuthenticatedAdmin() ? <AdvOnBoardingDetails /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/MedOnboardingDetails" element={isAuthenticatedAdmin() ? <MedOnboardingDetails /> : <Navigate to="/AdminLogin" />} />
+
         <Route path="/AdvBooked" element={isAuthenticatedAdmin() ? <AdvBooked /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AdvFullPaid" element={isAuthenticatedAdmin() ? <AdvFullPaid /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AdvDefault" element={isAuthenticatedAdmin() ? <AdvDefault /> : <Navigate to="/AdminLogin" />} />
@@ -621,6 +640,7 @@ const AppContent = () => {
         <Route path="/Admin/Reports" element={isAuthenticatedAdmin() ? <AdminReports /> : <Navigate to="/AdminLogin" />} />
         <Route path="/Admin/CallLogs" element={isAuthenticatedAdmin() ? <AdvCallLogs /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AdvFormLeads" element={isAuthenticatedAdmin() ? <AdvFormLeads /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/admin/medpro-leads" element={isAuthenticatedAdmin() ? <AdminMedProLeads /> : <Navigate to="/AdminLogin" />} />
 
         <Route path="/BulkImport" element={isAuthenticatedAdmin() ? (<BulkImport />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/Admin/Attendance" element={isAuthenticatedAdmin() ? <AdminAttendance /> : <Navigate to="/AdminLogin" />} />

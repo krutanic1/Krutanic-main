@@ -61,7 +61,7 @@ const Dialog = ({ isOpen, onClose, fullname, errorMessage, email, counselor, dom
   );
 }
 
-const DashboardAccessForm = () => {
+const MedDashboardAccessForm = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Track if the entered email belongs to an already-enrolled student
@@ -187,7 +187,7 @@ const DashboardAccessForm = () => {
 
   const fetchCourses = async () => {
     try {
-      const response = await axios.get(`${API}/getcourses`);
+      const response = await axios.get(`${API}/getmedcourses`);
       setCourse(response.data);
     } catch (error) {
       console.error("There was an error fetching courses:", error);
@@ -223,7 +223,7 @@ const DashboardAccessForm = () => {
     setInternshipEndsMonth("");
     setYearOfStudy("");
     setLanguages(["English"]);
-    navigate("/dashboardaccessform");
+    navigate("/meddashboardaccessform");
   };
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -263,7 +263,7 @@ const DashboardAccessForm = () => {
 
     if (isEmailVerified) {
       try {
-        let response = await axios.post(`${API}/newstudentenroll`, formData);
+        let response = await axios.post(`${API}/med-new-enroll`, formData);
 
         if (response.status === 200 || response.status === 201) {
           setIsModalOpen(true);
@@ -326,7 +326,7 @@ const DashboardAccessForm = () => {
 
       try {
         // 2. Check if student already submitted the dashboard access form
-        const enrollCheck = await axios.get(`${API}/check-existing-enrollment`, {
+        const enrollCheck = await axios.get(`${API}/check-existing-med-enrollment`, {
           params: { email: enteredEmail }
         });
         if (enrollCheck.data.exists) {
@@ -433,7 +433,7 @@ const DashboardAccessForm = () => {
           </div>
         </div>
 
-        <h2 className="mt-2">DashBoard Access Form</h2>
+        <h2 className="mt-2">Med Dashboard Access Form</h2>
         <form onSubmit={handleSubmit}>
           <div className=" grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-[10px]">
             <div className="input-field">
@@ -856,4 +856,4 @@ const styles = {
   },
 };
 
-export default DashboardAccessForm;
+export default MedDashboardAccessForm;

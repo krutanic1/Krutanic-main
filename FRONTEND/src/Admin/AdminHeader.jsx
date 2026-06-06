@@ -66,6 +66,12 @@ const AdminHeader = () => {
             <Link to="/AddCourse">
               <i className="fa fa-plus-circle mr-2"></i>Create Course
             </Link>
+            <Link to="/AddMedCourse">
+              <i className="fa fa-plus-circle mr-2" style={{color: '#818cf8'}}></i>Create Med Course
+            </Link>
+            <Link to="/AddMedModule">
+              <i className="fa fa-list mr-2" style={{color: '#818cf8'}}></i>Med Course List
+            </Link>
             <Link to="/AddModule">
               <i className="fa fa-list mr-2"></i>Course List
             </Link>
@@ -110,6 +116,9 @@ const AdminHeader = () => {
             </Link>
             <Link to="/OnBoardingDetails">
               <i className="fa fa-info-circle mr-2"></i>OnBoarding Details
+            </Link>
+            <Link to="/MedOnboardingDetails">
+              <i className="fa fa-info-circle mr-2" style={{ color: "#2196f3" }}></i>Med OnBoarding Details
             </Link>
             <Link to="/BookedList">
               <i className="fa fa-book mr-2"></i>Booked Amount
@@ -209,6 +218,9 @@ const AdminHeader = () => {
             </Link>
             <Link to="/AdvFormLeads">
               <i className="fa fa-wpforms mr-2"></i>Adv Form Leads
+            </Link>
+            <Link to="/admin/medpro-leads">
+              <i className="fa fa-medkit mr-2" style={{color: '#818cf8'}}></i>MedPro Leads
             </Link>
             <Link to="/AdvTeamDetail">
               <i className="fa fa-users mr-2"></i>ADV Team Details

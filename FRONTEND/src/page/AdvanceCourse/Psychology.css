@@ -1,0 +1,384 @@
+/* Psychology.css - Gen Z Modern / Glassmorphism Style */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --genz-bg: #030014;
+  --genz-card: rgba(255, 255, 255, 0.03);
+  --genz-card-hover: rgba(255, 255, 255, 0.08);
+  --genz-border: rgba(255, 255, 255, 0.1);
+  --genz-text-main: #ffffff;
+  --genz-text-muted: #9ca3af;
+  --genz-primary: #8b5cf6;
+  --genz-secondary: #06b6d4;
+  --genz-glow: 0 0 40px rgba(139, 92, 246, 0.3);
+}
+
+.psy-page {
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--genz-bg);
+  color: var(--genz-text-main);
+  line-height: 1.6;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Ambient Background Orbs */
+.psy-ambient-orb-1 {
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(3, 0, 20, 0) 70%);
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: 0;
+  pointer-events: none;
+}
+.psy-ambient-orb-2 {
+  position: absolute;
+  top: 40%;
+  right: -20%;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, rgba(3, 0, 20, 0) 70%);
+  border-radius: 50%;
+  filter: blur(100px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Typography */
+h1, h2, h3, h4 {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+.psy-hero {
+  padding: 10rem 2rem 8rem;
+  position: relative;
+  z-index: 1;
+}
+
+.psy-hero-content {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 4rem;
+  max-width: 1300px;
+  margin: 0 auto;
+  align-items: center;
+}
+
+.psy-hero-title {
+  font-size: 4.5rem;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+.psy-hero-subtitle {
+  font-size: 1.2rem;
+  color: var(--genz-text-muted);
+  margin-bottom: 2.5rem;
+  font-weight: 300;
+  max-width: 90%;
+  line-height: 1.8;
+}
+
+.psy-hero-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.psy-pill {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.5rem 1.25rem;
+  border-radius: 100px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #e2e8f0;
+}
+
+.psy-hero-ctas {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.psy-btn-primary {
+  background: linear-gradient(135deg, var(--genz-primary) 0%, #c084fc 100%);
+  color: #ffffff;
+  padding: 1.1rem 2.5rem;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  text-decoration: none;
+  box-shadow: var(--genz-glow);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  cursor: pointer;
+  position: relative;
+  z-index: 10;
+}
+
+.psy-btn-primary:hover {
+  box-shadow: 0 0 60px rgba(192, 132, 252, 0.5);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.psy-btn-secondary {
+  background: rgba(255, 255, 255, 0.03);
+  color: #ffffff;
+  padding: 1.1rem 2.5rem;
+  border-radius: 100px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  z-index: 10;
+}
+
+.psy-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Glass Trust Box */
+.psy-hero-trust {
+  background: rgba(20, 20, 30, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 3rem;
+  border-radius: 32px;
+  border: 1px solid var(--genz-border);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.psy-hero-trust::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.8), transparent);
+}
+
+/* Sections */
+.psy-section {
+  padding: 8rem 2rem;
+  max-width: 1300px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.psy-section-title {
+  font-size: 3.5rem;
+  margin-bottom: 4rem;
+  text-align: center;
+  background: linear-gradient(to bottom right, #ffffff, #9ca3af);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Grids */
+.psy-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.psy-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+
+/* Glass Cards */
+.psy-card {
+  background: var(--genz-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 24px;
+  padding: 3rem 2.5rem;
+  border: 1px solid var(--genz-border);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+
+.psy-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 24px;
+  padding: 2px;
+  background: linear-gradient(135deg, rgba(139,92,246,0.5), rgba(6,182,212,0.1));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.psy-card:hover {
+  transform: translateY(-8px);
+  background: var(--genz-card-hover);
+}
+
+.psy-card:hover::before {
+  opacity: 1;
+}
+
+.psy-card-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(6, 182, 212, 0.1) 100%);
+  color: #c084fc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.psy-card h4 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.psy-card p {
+  color: var(--genz-text-muted);
+  font-size: 1.05rem;
+  font-weight: 300;
+}
+
+/* Timeline */
+.psy-timeline {
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+  padding: 2rem 0;
+}
+
+.psy-timeline::before {
+  content: '';
+  position: absolute;
+  left: 28px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--genz-primary), var(--genz-secondary), transparent);
+}
+
+.psy-module {
+  position: relative;
+  padding-left: 6rem;
+  margin-bottom: 5rem;
+}
+
+.psy-module-num {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 60px;
+  height: 60px;
+  background: var(--genz-bg);
+  border: 2px solid var(--genz-primary);
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.5rem;
+  z-index: 1;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+}
+
+.psy-module-title { font-size: 1.8rem; margin-bottom: 0.75rem; }
+.psy-module-desc { color: var(--genz-text-muted); font-size: 1.15rem; font-weight: 300; }
+
+/* Pricing Cards */
+.psy-pricing-card {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.psy-pricing-highlight {
+  background: rgba(139, 92, 246, 0.05);
+  border-color: rgba(139, 92, 246, 0.4);
+  transform: scale(1.05);
+  box-shadow: 0 20px 50px rgba(139, 92, 246, 0.1);
+}
+
+.psy-pricing-badge {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, var(--genz-primary), #c084fc);
+  color: #ffffff;
+  padding: 6px 20px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+}
+
+/* FAQ */
+.psy-faq-item {
+  background: var(--genz-card);
+  border: 1px solid var(--genz-border);
+  border-radius: 16px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.psy-faq-question {
+  padding: 1.5rem 2rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.3s ease;
+}
+
+.psy-faq-question:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.psy-faq-answer {
+  padding: 0 2rem 1.5rem;
+  color: var(--genz-text-muted);
+  font-weight: 300;
+  font-size: 1.1rem;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .psy-hero-content { grid-template-columns: 1fr; gap: 4rem; }
+  .psy-grid-2, .psy-grid-3 { grid-template-columns: 1fr; }
+  .psy-hero-title { font-size: 3.2rem; }
+  .psy-hero { padding: 8rem 1rem 4rem; }
+  .psy-section { padding: 5rem 1.5rem; }
+  .psy-pricing-highlight { transform: scale(1); }
+  .psy-ambient-orb-1, .psy-ambient-orb-2 { width: 400px; height: 400px; }
+}

@@ -53,7 +53,10 @@ const microadmin = require("./routes/microadmin");
 const cookieParser = require("cookie-parser");
 const activityRoutes = require("./routes/activityRoutes");
 const partnerRoutes = require("./routes/partnerRoutes");
+const medproRoutes = require("./routes/medproRoutes");
 const studentRequestRoutes = require("./routes/studentRequestRoutes");
+const medCourseRoutes = require("./routes/medCourseRoutes");
+const medStudentEnrollRoutes = require("./routes/MedStudentEnroll");
 
 const app = express();
 
@@ -153,6 +156,11 @@ app.use("/api/admin", adminImpersonation);
 const atdRoutes = require("./routes/atdRoutes");
 app.use("/api/atd", atdRoutes);
 app.use("/api/activity", activityRoutes);
+
+app.use("/api/medpro", medproRoutes);
+
+app.use("/", medCourseRoutes);
+app.use("/", medStudentEnrollRoutes);
 
 // CREATEJOBS
 app.use("/", CreateJob);

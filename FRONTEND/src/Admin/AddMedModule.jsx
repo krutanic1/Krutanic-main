@@ -4,7 +4,7 @@ import API from "../API";
 import logo from "../assets/logo.jpg";
 // import DOMPurify from "dompurify";
 
-const AddModule = () => {
+const AddMedModule = () => {
   const [isLeftSidebar, setisLeftSidebar] = useState(true);
   const [isModuleFormVisible, setisModuleFormVisible] = useState(false);
   const [courses, setCourses] = useState([]);
@@ -19,7 +19,7 @@ const AddModule = () => {
 
   const fetchCourses = async () => {
     try {
-      const response = await axios.get(`${API}/getcourses`);
+      const response = await axios.get(`${API}/getmedcourses`);
       setCourses(response.data);
       if (response.data.length > 0) {
         await fetchCourseDetails(response.data[0]._id);
@@ -31,7 +31,7 @@ const AddModule = () => {
 
   const fetchCourseDetails = async (courseId) => {
     try {
-      const response = await axios.get(`${API}/getcourses`, {
+      const response = await axios.get(`${API}/getmedcourses`, {
         params: { courseId },
       });
       setSelectedCourse(response.data || null);
@@ -67,7 +67,7 @@ const AddModule = () => {
       }
       try {
         await axios.put(
-          `${API}/updatecourse/${selectedCourse._id}`,
+          `${API}/updatemedcourse/${selectedCourse._id}`,
           updatedCourse
         );
         alert(editingModule ? "Session Updated" : "Session Added");
@@ -104,7 +104,7 @@ const AddModule = () => {
 
         try {
           await axios.put(
-            `${API}/updatecourse/${selectedCourse._id}`,
+            `${API}/updatemedcourse/${selectedCourse._id}`,
             updatedCourse
           );
           setSelectedCourse(updatedCourse);
@@ -254,4 +254,4 @@ const AddModule = () => {
     </div>
   );
 };
-export default AddModule;
+export default AddMedModule;
