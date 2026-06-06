@@ -3,10 +3,13 @@ import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaGraduationCap, FaRegClock, FaBriefcase, FaUserCheck, FaChevronDown, FaCheckCircle, FaStar, FaBrain, FaGavel, FaHandHoldingHeart, FaSearch, FaClipboardList, FaFileAlt, FaProjectDiagram, FaCertificate, FaUserTie, FaQuoteLeft, FaBookOpen } from "react-icons/fa";
+import MedProFormModal from "../MedProFormModal";
 import "./ForensicPsychology.css";
 
 const ForensicPsychology = () => {
   const [activeFaq, setActiveFaq] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState('Forensic Psychology');
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -91,7 +94,7 @@ const ForensicPsychology = () => {
               Step into the fascinating world where psychology meets law and criminal investigation. This immersive learning experience helps learners understand criminal behavior, victim psychology, forensic assessment, courtroom psychology, and ethical decision-making while building practical skills through real-world case studies and projects.
             </motion.p>
             <motion.div className="fp-hero-ctas" variants={fadeUp}>
-              <Link to="/DashboardAccessForm" className="fp-btn-primary">Apply Now</Link>
+              <button onClick={() => setIsModalOpen(true)} className="fp-btn-primary">Apply Now</button>
               <a href="#curriculum" className="fp-btn-secondary">Explore Curriculum</a>
             </motion.div>
           </motion.div>
@@ -417,9 +420,9 @@ const ForensicPsychology = () => {
             Take the next step toward mastering forensic psychology and developing practical skills that bridge psychology, law, and human behavior.
           </p>
           <div className="fp-hero-ctas" style={{ justifyContent: "center" }}>
-            <Link to="/DashboardAccessForm" className="fp-btn-primary" style={{ fontSize: "1.15rem", padding: "1.25rem 3.5rem" }}>
+            <button onClick={() => setIsModalOpen(true)} className="fp-btn-primary" style={{ fontSize: "1.15rem", padding: "1.25rem 3.5rem" }}>
               Apply Now
-            </Link>
+            </button>
             <button className="fp-btn-secondary" style={{ fontSize: "1.15rem", padding: "1.25rem 3.5rem" }}>
               Download Brochure
             </button>
@@ -427,6 +430,7 @@ const ForensicPsychology = () => {
         </motion.div>
       </section>
 
+      <MedProFormModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} selectedCourse={selectedCourse} />
     </div>
   );
 };

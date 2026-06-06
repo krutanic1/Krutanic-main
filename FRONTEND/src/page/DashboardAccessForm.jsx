@@ -776,41 +776,20 @@ const DashboardAccessForm = () => {
             ></textarea>
           </div>
 
-          <div className="border border-[#CCCCCC] rounded-[10px] p-4 relative mt-5 mb-5">
-            <label style={{
-              position: 'absolute',
-              top: 0,
-              left: '10px',
-              transform: 'translateY(-50%)',
-              backgroundColor: 'white',
-              padding: '0 5px',
-              color: '#8d8d8d',
-              fontSize: '0.8rem',
-              letterSpacing: '1px'
-            }}>Languages Known</label>
-            <div className="flex flex-wrap gap-4 mt-2">
-              {LANGUAGE_OPTIONS.map((lang) => (
-                <label key={lang} className="flex items-center space-x-2" style={{ cursor: 'pointer' }}>
-                  <input
-                    type="checkbox"
-                    value={lang}
-                    checked={languages.includes(lang)}
-                    onChange={(e) => {
-                      const { value, checked } = e.target;
-                      setLanguages((prev) => {
-                        const newLanguages = checked
-                          ? [...prev, value]
-                          : prev.filter((l) => l !== value);
-                        return newLanguages;
-                      });
-                    }}
-                    className="form-checkbox h-4 w-4 text-[#F15B29]"
-                  />
-                  <span className="text-gray-700">{lang}</span>
-                </label>
-              ))}
-            </div>
-          </div>
+          <select
+            value={languages.length > 0 ? languages[0] : ""}
+            onChange={(e) => setLanguages([e.target.value])}
+            required
+          >
+            <option value="" disabled>
+              Select Language Known
+            </option>
+            {LANGUAGE_OPTIONS.map((lang) => (
+              <option key={lang} value={lang}>
+                {lang}
+              </option>
+            ))}
+          </select>
 
           <input
             className="cursor-pointer"

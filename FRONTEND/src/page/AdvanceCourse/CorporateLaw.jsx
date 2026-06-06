@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaBalanceScale, FaHandshake, FaBriefcase, FaChevronDown, FaCheckCircle, FaStar, FaBuilding } from "react-icons/fa";
+import MedProFormModal from "../MedProFormModal";
 import "./CorporateLaw.css";
 
 const CorporateLaw = () => {
@@ -11,6 +12,8 @@ const CorporateLaw = () => {
   }, []);
 
   const [activeFaq, setActiveFaq] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState('Corporate Law');
 
   const fadeUp = {
     hidden: { opacity: 0, y: 30 },
@@ -71,7 +74,7 @@ const CorporateLaw = () => {
             </motion.p>
             
             <motion.div className="law-hero-ctas" variants={fadeUp}>
-              <Link to="/DashboardAccessForm" className="law-btn-primary">Apply Now</Link>
+              <button onClick={() => setIsModalOpen(true)} className="law-btn-primary">Apply Now</button>
               <a href="#curriculum" className="law-btn-secondary">View Curriculum</a>
             </motion.div>
           </motion.div>
@@ -162,7 +165,7 @@ const CorporateLaw = () => {
                 <li style={{ color: "var(--law-text-muted)" }}>✕ No Placement Guarantee</li>
               </ul>
             </div>
-            <Link to="/DashboardAccessForm" className="law-btn-secondary" style={{ width: "100%", boxSizing: "border-box" }}>Select Plan</Link>
+            <button onClick={() => setIsModalOpen(true)} className="law-btn-secondary" style={{ width: "100%", boxSizing: "border-box" }}>Select Plan</button>
           </motion.div>
 
           <motion.div className="law-card law-pricing-card law-pricing-highlight" variants={fadeUp}>
@@ -179,7 +182,7 @@ const CorporateLaw = () => {
                 <li style={{ color: "#fcd34d", fontWeight: "600" }}>✓ Real Drafting Exercises</li>
               </ul>
             </div>
-            <Link to="/DashboardAccessForm" className="law-btn-primary" style={{ width: "100%", boxSizing: "border-box" }}>Apply for Pro</Link>
+            <button onClick={() => setIsModalOpen(true)} className="law-btn-primary" style={{ width: "100%", boxSizing: "border-box" }}>Apply for Pro</button>
           </motion.div>
         </motion.div>
       </section>
@@ -219,6 +222,7 @@ const CorporateLaw = () => {
         </div>
       </section>
 
+      <MedProFormModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} selectedCourse={selectedCourse} />
     </div>
   );
 };

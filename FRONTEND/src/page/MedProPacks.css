@@ -15,7 +15,7 @@
   background-color: var(--mp-bg);
   color: var(--mp-text);
   line-height: 1.6;
-  overflow-x: hidden;
+  overflow: hidden;
   position: relative;
   min-height: 100vh;
 }
@@ -123,6 +123,7 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid rgba(255,255,255,0.1);
   cursor: pointer;
+  white-space: nowrap;
 }
 .mp2-btn-primary:hover {
   transform: translateY(-2px) scale(1.02);
@@ -139,6 +140,7 @@
   border: 1px solid rgba(255,255,255,0.1);
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
+  white-space: nowrap;
 }
 .mp2-btn-secondary:hover {
   background: rgba(255,255,255,0.1);
@@ -500,14 +502,26 @@
   .mp2-stats-inner { grid-template-columns: repeat(2, 1fr); gap: 3rem; }
 }
 @media (max-width: 768px) {
-  .mp2-hero-title { font-size: 3rem; }
-  .mp2-h2 { font-size: 2.5rem; }
-  .mp2-section, .mp2-section-full { padding: 4rem 1rem; }
+  .mp2-hero-title { font-size: 2.8rem; }
+  .mp2-h2 { font-size: 2.2rem; }
+  .mp2-section, .mp2-section-full, .mp2-final-cta { padding: 3rem 1rem; }
+  .mp2-hero-ctas { flex-direction: column; width: 100%; align-items: stretch; gap: 1rem; }
+  .mp2-hero-ctas > * { width: 100%; }
   .mp2-prog-header { flex-direction: column; gap: 1rem; text-align: center; align-items: center; }
   .mp2-prog-badge { margin: 0; }
   .mp2-prog-outcomes ul { grid-template-columns: 1fr; }
-  .mp2-stats-inner { grid-template-columns: 1fr; }
-  .mp2-cert-row { grid-template-columns: 1fr; }
-  .mp2-final-title { font-size: 2.5rem; }
-  .mp2-final-btns { flex-direction: column; }
+  .mp2-stats-inner { grid-template-columns: 1fr; gap: 2rem; }
+  .mp2-cert-row { grid-template-columns: 1fr; gap: 1.5rem; }
+  .mp2-final-title { font-size: 2.2rem; }
+  .mp2-final-btns { flex-direction: column; align-items: stretch; gap: 1rem; }
+  .mp2-final-btns > * { width: 100%; }
+  .mp2-prog-actions { grid-template-columns: 1fr; }
+  .mp2-why-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+  .mp2-testi-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+  .mp2-why-card, .mp2-testi-card, .mp2-hero-preview { padding: 1.5rem; }
+  .mp2-cert-card { padding: 1.5rem; }
+  .mp2-prog-body { padding: 1.5rem; gap: 2rem; }
+  .mp2-prog-ribbon { padding: 1.5rem; }
+  .mp2-sticky-cta { bottom: 1rem; right: 1rem; }
+  .mp2-hero-mini-card { padding: 1rem; gap: 1rem; }
 }

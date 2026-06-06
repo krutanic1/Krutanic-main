@@ -59,10 +59,10 @@ const programsCategories = [
 ];
 
 const topNav = [
-  { label: "Our Courses", to: "/Mentorship", categories: programsCategories },
+  { label: "All Programs", to: "/Mentorship", categories: programsCategories },
   { label: "Advanced Program", to: "/Advance" },
-  { label: "Alumni", to: "/Alumni" },
-  { label: "MedPro Packs", to: "/medpro-packs" }
+  { label: "MedPro Packs", to: "/medpro-packs" },
+  { label: "Alumni", to: "/Alumni" }
 ];
 
 const Header = () => {

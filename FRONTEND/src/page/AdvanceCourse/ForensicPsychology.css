@@ -138,6 +138,7 @@ h1, h2, h3, h4 {
   cursor: pointer;
   position: relative;
   z-index: 10;
+  white-space: nowrap;
 }
 
 .fp-btn-primary:hover {
@@ -159,6 +160,7 @@ h1, h2, h3, h4 {
   cursor: pointer;
   position: relative;
   z-index: 10;
+  white-space: nowrap;
 }
 
 .fp-btn-secondary:hover {
@@ -411,9 +413,14 @@ h1, h2, h3, h4 {
 
 /* Responsive */
 @media (max-width: 992px) {
-  .fp-hero-content { grid-template-columns: 1fr; gap: 4rem; }
+  .fp-hero-content { grid-template-columns: 1fr; gap: 4rem; text-align: center; }
+  .fp-hero-ctas { flex-direction: column; align-items: stretch; gap: 1rem; }
+  .fp-hero-ctas > * { width: 100%; justify-content: center; }
+  .fp-hero-pills { justify-content: center; }
   .fp-grid-2, .fp-grid-3 { grid-template-columns: 1fr; }
-  .fp-hero-title { font-size: 3.2rem; }
+  .fp-hero-title { font-size: 2.5rem; word-wrap: break-word; }
+  .fp-section-title { font-size: 2.2rem; margin-bottom: 2.5rem; word-wrap: break-word; }
+  .fp-module-title { font-size: 1.5rem; word-wrap: break-word; }
   .fp-hero { padding: 8rem 1rem 4rem; }
   .fp-section { padding: 5rem 1.5rem; }
   .fp-pricing-highlight { transform: scale(1); }

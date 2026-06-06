@@ -62,7 +62,7 @@ const MedProFormModal = ({ isOpen, onClose, selectedCourse }) => {
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            style={{ backgroundColor: "#0f0f1b", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "16px", padding: "2rem", width: "100%", maxWidth: "500px", position: "relative", color: "#fff", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)", textAlign: isSuccess ? "center" : "left" }}
+            style={{ backgroundColor: "#0f0f1b", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "16px", padding: "1.5rem", width: "90%", maxWidth: "500px", maxHeight: "90vh", overflowY: "auto", position: "relative", color: "#fff", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)", textAlign: isSuccess ? "center" : "left" }}
           >
             <button onClick={onClose} style={{ position: "absolute", top: "15px", right: "15px", background: "none", border: "none", color: "#9ca3af", cursor: "pointer", fontSize: "1.2rem" }}>
               <FaTimes />

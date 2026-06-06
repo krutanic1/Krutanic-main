@@ -14,6 +14,7 @@ import {
   FaLightbulb, FaChalkboardTeacher, FaNetworkWired
 } from "react-icons/fa";
 import { MdPsychology, MdOutlineHealthAndSafety, MdWorkOutline, MdOutlineScience } from "react-icons/md";
+import MedProFormModal from "../MedProFormModal";
 import "./ClinicalPsychology.css";
 
 // ── MOTION VARIANTS ────────────────────────────────────────────
@@ -50,22 +51,7 @@ const ScrollProgress = () => {
 
 // ── ANIMATED COUNTER ───────────────────────────────────────────
 const AnimatedCounter = ({ end, suffix = "", duration = 2200 }) => {
-  const [count, setCount] = useState(0);
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-50px" });
-  useEffect(() => {
-    if (!inView) return;
-    const startTime = performance.now();
-    const tick = (now) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.round(eased * end));
-      if (progress < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  }, [inView, end, duration]);
-  return <span ref={ref}>{count.toLocaleString()}{suffix}</span>;
+  return <span>{end.toLocaleString()}{suffix}</span>;
 };
 
 // ── NEURAL PARTICLE CANVAS ──────────────────────────────────────
@@ -340,6 +326,8 @@ const floatCards = [
 // ══════════════════════════════════════════════════════════════
 const ClinicalPsychology = () => {
   const [activeFaq, setActiveFaq] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState('Clinical Psychology');
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
   return (
@@ -361,9 +349,9 @@ const ClinicalPsychology = () => {
 
       {/* Sticky CTA */}
       <motion.div className="cp-sticky-cta" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.5, duration: 0.5 }}>
-        <Link to="/DashboardAccessForm" id="sticky-cta">
+        <button onClick={() => setIsModalOpen(true)} id="sticky-cta">
           Start Learning <FaArrowRight />
-        </Link>
+        </button>
       </motion.div>
 
       {/* ═══ HERO ═══════════════════════════════════════════════ */}
@@ -390,9 +378,9 @@ const ClinicalPsychology = () => {
             </motion.p>
 
             <motion.div className="cp-hero-ctas" variants={fadeUp}>
-              <Link to="/DashboardAccessForm" className="cp-btn-primary" id="hero-start">
+              <button onClick={() => setIsModalOpen(true)} className="cp-btn-primary" id="hero-start">
                 Start Learning <FaArrowRight />
-              </Link>
+              </button>
               <a href="#curriculum" className="cp-btn-secondary" id="hero-curriculum">
                 View Curriculum
               </a>
@@ -749,9 +737,9 @@ const ClinicalPsychology = () => {
             <strong>Build a portfolio that proves your skills to employers</strong>
             <span>Real projects. Real outcomes. Real career impact.</span>
           </div>
-          <Link to="/DashboardAccessForm" className="cp-btn-primary" id="projects-cta">
+          <button onClick={() => setIsModalOpen(true)} className="cp-btn-primary" id="projects-cta">
             Apply Now <FaArrowRight />
-          </Link>
+          </button>
         </motion.div>
       </section>
 
@@ -929,9 +917,9 @@ const ClinicalPsychology = () => {
             deeper insight into human behavior, mental well-being, and your own potential.
           </motion.p>
           <motion.div className="cp-final-btns" variants={fadeUp}>
-            <Link to="/DashboardAccessForm" className="cp-btn-primary" id="final-apply">
+            <button onClick={() => setIsModalOpen(true)} className="cp-btn-primary" id="final-apply">
               Apply Now <FaArrowRight />
-            </Link>
+            </button>
             <button className="cp-btn-secondary" id="final-brochure">
               Download Curriculum
             </button>
@@ -975,7 +963,7 @@ const ClinicalPsychology = () => {
               <li><a href="/ContactUs">Contact Us</a></li>
               <li><a href="/AboutUs">About Us</a></li>
               <li><a href="#faq-0">FAQ</a></li>
-              <li><a href="/DashboardAccessForm">Apply Now</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>Apply Now</a></li>
             </ul>
           </div>
         </div>
@@ -983,6 +971,7 @@ const ClinicalPsychology = () => {
           <span className="cp-footer-copy">© 2025 Krutanic. All rights reserved.</span>
         </div>
       </footer>
+      <MedProFormModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} selectedCourse={selectedCourse} />
     </div>
   );
 };
