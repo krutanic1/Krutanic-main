@@ -927,50 +927,6 @@ const ClinicalPsychology = () => {
         </motion.div>
       </section>
 
-      {/* ═══ FOOTER ══════════════════════════════════════════════ */}
-      <footer className="cp-footer">
-        <div className="cp-footer-inner">
-          <div className="cp-footer-brand">
-            <h3>Krutanic</h3>
-            <p>Premium edtech platform building the next generation of psychology professionals through practical, mentored, career-focused learning.</p>
-            <div className="cp-social-row">
-              <a href="#" className="cp-social-btn" aria-label="LinkedIn"><FaLinkedinIn /></a>
-              <a href="#" className="cp-social-btn" aria-label="Twitter"><FaTwitter /></a>
-              <a href="#" className="cp-social-btn" aria-label="Instagram"><FaInstagram /></a>
-            </div>
-          </div>
-          <div className="cp-footer-col">
-            <h5>Navigation</h5>
-            <ul className="cp-footer-links">
-              <li><a href="/">Home</a></li>
-              <li><a href="/AdvanceCourses">All Courses</a></li>
-              <li><a href="/Mentorship">Mentorship</a></li>
-              <li><a href="/Alumni">Alumni</a></li>
-              <li><a href="/MasterClass">MasterClass</a></li>
-            </ul>
-          </div>
-          <div className="cp-footer-col">
-            <h5>Legal</h5>
-            <ul className="cp-footer-links">
-              <li><a href="/Privacy">Privacy Policy</a></li>
-              <li><a href="/Terms">Terms of Service</a></li>
-              <li><a href="/RefundPolicy">Refund Policy</a></li>
-            </ul>
-          </div>
-          <div className="cp-footer-col">
-            <h5>Support</h5>
-            <ul className="cp-footer-links">
-              <li><a href="/ContactUs">Contact Us</a></li>
-              <li><a href="/AboutUs">About Us</a></li>
-              <li><a href="#faq-0">FAQ</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>Apply Now</a></li>
-            </ul>
-          </div>
-        </div>
-        <div className="cp-footer-bottom">
-          <span className="cp-footer-copy">© 2025 Krutanic. All rights reserved.</span>
-        </div>
-      </footer>
       <MedProFormModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} selectedCourse={selectedCourse} />
     </div>
   );

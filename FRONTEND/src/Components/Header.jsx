@@ -48,13 +48,6 @@ const programsCategories = [
       { label: "Auto CAD", to: "/mentorship/auto-cad" },
       { label: "Graphics Design", to: "/mentorship/graphics-design" }
     ]
-  },
-  {
-    name: "Medical",
-    icon: <HeartPulse size={16} className="text-slate-500" />,
-    courses: [
-      { label: "Psychology", to: "/mentorship/psychology" }
-    ]
   }
 ];
 
