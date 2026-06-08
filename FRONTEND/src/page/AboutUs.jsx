@@ -1,312 +1,289 @@
-import { useEffect, useState } from "react";
-import Slider from "react-slick"; // Import the Slider component from react-slick
-import "slick-carousel/slick/slick.css"; // Slick Carousel CSS
-import "slick-carousel/slick/slick-theme.css"; // Slick Carousel Theme CSS
-
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
-
-
-import danish from '../assets/developers/danish.jpg'
-import suryansh from '../assets/developers/suryanshsaxena.jpg'
-import affan from '../assets/developers/affan.jpg'
-
-import gallery1 from '../assets/gallery/1.jpg'
-import gallery2 from '../assets/gallery/2.jpg'
-import gallery3 from '../assets/gallery/3.jpg'
-import gallery4 from '../assets/gallery/4.jpg'
-import gallery5 from '../assets/gallery/5.jpg'
-import gallery6 from '../assets/gallery/6.jpg'
-import gallery7 from '../assets/gallery/7.jpg'
-import gallery8 from '../assets/gallery/8.jpg'
-import gallery9 from '../assets/gallery/9.jpg'
-import gallery10 from '../assets/gallery/10.jpg'
-import gallery11 from '../assets/gallery/11.jpg'
-import gallery12 from '../assets/gallery/12.jpg'
-import gallery13 from '../assets/gallery/13.jpg'
-import gallery14 from '../assets/gallery/14.jpg'
-import gallery15 from '../assets/gallery/15.jpg'
-import gallery16 from '../assets/gallery/16.jpg'
-
-
-
-
-import { FaBookOpen } from "react-icons/fa";
-import { BsBriefcaseFill } from "react-icons/bs";
-import { BsFillLaptopFill } from "react-icons/bs";
-import { GiOnTarget } from "react-icons/gi";
+import logo from "../assets/LOGO3.png";
 import Getintouch from "../Components/Getintouch";
+import ClientsCarousel from "../Components/our_alumni2";
+import "../style/AboutUs.css";
+
+const stats = [
+  { value: "10,000+", label: "Students Trained" },
+  { value: "170+",    label: "Global Mentors" },
+  { value: "500+",    label: "Hiring Partners" },
+  { value: "95%",     label: "Placement Rate" },
+];
+
+const pillars = [
+  { icon: "fa fa-graduation-cap", num: "01", title: "Expert Mentorship",    desc: "Learn directly from industry professionals with 10+ years of hands-on experience at top companies." },
+  { icon: "fa fa-laptop",         num: "02", title: "Hands-on Projects",    desc: "Build real-world projects that go straight into your portfolio and impress hiring managers." },
+  { icon: "fa fa-briefcase",      num: "03", title: "Placement Support",    desc: "Dedicated career assistance — from resume building to mock interviews and job referrals." },
+  { icon: "fa fa-map",            num: "04", title: "Flexible Learning",    desc: "Study at your own pace with live classes, recorded sessions, and round-the-clock mentor access." },
+];
+
+const values = [
+  { icon: "fa fa-lightbulb-o", title: "Outcome-Driven", desc: "We don't just teach theory. Every module is designed with one goal: making you highly employable." },
+  { icon: "fa fa-users", title: "Community First", desc: "Learning is better together. We foster a vibrant community of peers, alumni, and industry leaders." },
+  { icon: "fa fa-rocket", title: "Relentless Innovation", desc: "Tech moves fast, and so do we. Our curriculum is constantly updated to match current industry demands." },
+];
+
+const timeline = [
+  { year: "2024", title: "The Foundation", desc: "Krutanic was born with a mission to bridge the gap between academic education and industry expectations." },
+  { year: "1000+ Learners", title: "Early Adoption", desc: "Within months, we reached our first major milestone, placing students in top-tier product and service companies." },
+  { year: "500+ Partners", title: "Corporate Trust", desc: "We established strong hiring partnerships, ensuring our graduates get priority access to premier job roles." },
+  { year: "The Future", title: "Global Expansion", desc: "Scaling our tech ecosystem to empower the next million learners across borders with cutting-edge AI integration." },
+];
 
 const AboutUs = () => {
   useEffect(() => {
-    AOS.init({ duration: 1000, once: false });
+    AOS.init({ duration: 700, once: true, offset: 40, easing: "ease-out-cubic" });
   }, []);
-
-  const settings = {
-    infinite: true,
-    speed: 500, 
-    slidesToShow: 4,
-    slidesToScroll: 1, 
-    autoplay: true, 
-    autoplaySpeed: 2000, 
-    pauseOnHover: true,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 4, 
-          slidesToScroll: 1,
-        },
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 4, 
-          slidesToScroll: 1,
-        },
-      },
-    ],
-  };
-  const [cards, setCards] = useState([
-    `${danish}`,
-    `${suryansh}`,
-    `${affan}`,
-  ]);
-
-
-  const moveCard = () => {
-    setCards((prevCards) => {
-      const newCards = [...prevCards];
-      const lastCard = newCards.pop();
-      newCards.unshift(lastCard);
-      return newCards;
-    });
-  };
-
-  useEffect(() => {
-    const autoplayInterval = setInterval(moveCard, 4000);
-    return () => clearInterval(autoplayInterval);
-  }, []);
-
-
-  const handleCardClick = (index) => {
-    setCards((prevCards) => {
-      const newCards = [...prevCards];
-      const card = newCards.splice(index, 1)[0];
-      newCards.unshift(card);
-      return newCards;
-    });
-  };
-
 
   return (
-      <div className="main_container" id="aboutus">
-        <div id="abouttopcontent" className="px-[10px] py-[60px]">
-          <main data-aos="fade-up">
-            <div  className="content">
-              <h2 className="title">About Us</h2>
-              <p className="font-semibold">
-              Krutanic is your trusted partner for career growth, offering advanced tech courses designed to prepare you for the fast-paced job market. We focus on delivering industry-relevant skills through expert guidance, ensuring that you gain both theoretical knowledge and practical experience. Each course is backed by hands-on projects, allowing you to work on real-world challenges that employers value. Whether you're starting your career or looking to upskill, our programs in Web Development, Data Science, and Digital Marketing are tailored to help you succeed. Join Krutanic today and take the next step toward achieving your career goals.
-              </p>
+    <div id="au-page">
+
+      {/* ─── HERO ─── */}
+      <section className="au-hero">
+        <div className="au-hero-orb" />
+
+        <div className="au-hero-inner">
+          <div data-aos="fade-right">
+            <div className="au-hero-badge">
+              <span className="au-hero-badge-dot" />
+              <span className="au-hero-badge-text">Est. 2024 · About Krutanic</span>
             </div>
 
-            <div className="stack">
-              {cards.map((cardId, index) => (
-                <div
-                  key={cardId}
-                  className={`card`}
-                  onClick={() => handleCardClick(index)}
-                >
-                  <img src={cardId} alt="" />
+            <h1 className="au-hero-h1">
+              The Algorithmic Path<br />
+              to a <span className="au-gradient-text">Brighter Future</span>
+            </h1>
+
+            <p className="au-hero-desc">
+              Krutanic is dedicated to empowering your career with industry-leading tech courses,
+              expert mentors, and hands-on real-world training — so you're ready for the job market
+              from day one.
+            </p>
+
+            <div className="au-hero-actions">
+              <Link to="/mentorship" className="au-cta-primary">
+                Explore Programs <i className="fa fa-arrow-right" />
+              </Link>
+              <Link to="/contactus" className="au-cta-ghost">Contact Us</Link>
+            </div>
+
+            <div className="au-hero-trust">
+              <span className="au-trust-pill"><i className="fa fa-star" /> 4.9 Rated</span>
+              <span className="au-trust-pill"><i className="fa fa-shield" /> Certified Programs</span>
+              <span className="au-trust-pill"><i className="fa fa-users" /> 10K+ Alumni</span>
+            </div>
+          </div>
+
+          <div className="au-hero-visual" data-aos="fade-left" data-aos-delay="120">
+            <div className="au-logo-card">
+              <div className="au-logo-card-main">
+                <div className="au-logo-card-img-wrap">
+                  <img src={logo} alt="Krutanic" className="au-logo-card-img" />
                 </div>
-              ))}
-            </div>
-          </main>
-        </div>
-        <hr className=" opacity-10"/>
-
-   
-        <section className="px-[10px] py-[60px]">
-          <div className=" mx-auto">
-            <h2
-              data-aos="fade-up"
-              className="text-3xl font-bold text-center title mb-8"
-            >
-              Our Mission
-            </h2>
-            <div className="max-w-3xl mx-auto text-lg text-center flex flex-col gap-5 tracking-tighter">
-              <p data-aos="fade-up" className="">
-                we strive to redefine upskilling through transformative, By
-                merging academic rigor with practical learning with expert
-                mentorship, hands-on experiences, and an enhanced curriculum, we
-                equip individuals with the tools to solve complex challenges,
-                innovate, and lead confidently in their careers.
-              </p>
-              <p data-aos="fade-up" className="">
-                Our commitment extends beyond traditional learning, critical
-                thinking and real-world problem-solving in a supportive
-                environment that inspires growth and success.
-              </p>
-            </div>
-          </div>
-        </section>
-        
-
-  
-        <section className="px-[10px] py-[60px]">
-          <div className=" mx-auto">
-            <h2 data-aos="fade-up" className="text-3xl font-bold text-center mb-8 title">
-              Our Story
-            </h2>
-            <div className="mx-auto max-w-3xl text-lg text-center flex flex-col gap-10 tracking-tighter">
-              <p data-aos="fade-up">
-                Founded in 2024, Krutanic emerged with a vision to
-                make quality education accessible to all. What started as a
-                small initiative has grown into a leading corporate company
-                trusted by thousands of learners globally.
-              </p>
-              <p data-aos="fade-up">
-                From full-stack web development to AI, data analytics, and cyber
-                security, our programs are carefully curated to align with
-                industry demands. With a focus on practical learning and career
-                readiness, we have successfully guided countless students toward
-                achieving their professional dreams.
-              </p>
-              <p data-aos="fade-up">
-                Today, Krutanic continues to innovate, expanding our
-                course offerings and strengthening partnerships with industry
-                leaders to ensure our learners are future-ready.
-              </p>
-            </div>
-          </div>
-        </section>
-        <hr className=" opacity-10"/>
-
-        <section className="px-[10px] py-[60px] z-10 ourteam relative">
-        <h2 data-aos="fade-up"   className="text-4xl font-bold text-center mb-12 text-orange-700">
-          | Life at Krutanic
-        </h2>
-        <div data-aos="fade-up"  className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-3 gap-4 ">
-        <div className="relative overflow-hidden rounded-lg flex items-center justify-center col-span-2">
-            <img src={gallery4} alt="" className="object-cover w-full h-full" />
-          </div>
-          <div className="relative overflow-hidden rounded-lg flex items-center justify-center">
-            <img src={gallery1} alt="" className="object-cover w-full h-full" />
-          </div>
-          <div className="relative overflow-hidden rounded-lg flex items-center justify-center">
-            <img src={gallery2} alt="" className="object-cover w-full h-full" />
-          </div>
-         
-          {/* <div className="relative overflow-hidden rounded-lg flex items-center justify-center col-span-2">
-            <img src={gallery3} alt="" className="object-cover w-full h-full" />
-          </div> */}
-<div className="relative overflow-hidden rounded-lg flex items-center justify-center col-span-2">
-            <img src={gallery5} alt="" className="object-cover w-full h-full" />
-          </div>
-          <div className="relative overflow-hidden rounded-lg flex items-center justify-center col-span-2">
-            <img src={gallery6} alt="" className="object-cover w-full h-full" />
-          </div>
-          <div className="relative overflow-hidden rounded-lg flex items-center justify-center">
-            <img src={gallery8} alt="" className="object-cover w-full h-full" />
-          </div>
-          
-
-         
-          {/* <div className="relative overflow-hidden rounded-lg flex items-center justify-center">
-            <img src={gallery9} alt="" className="object-cover w-full h-full" />
-          </div> */}
-          
-        
-          {/* <div className="relative overflow-hidden rounded-lg flex items-center justify-center">
-            <img src={gallery12} alt="" className="object-fill w-full h-full" />
-          </div> */}
-          {/* <div className="relative overflow-hidden rounded-lg flex items-center justify-center">
-            <img src={gallery15} alt="" className="object-cover w-full h-full" />
-          </div> */}
-          
-          <div className="relative overflow-hidden rounded-lg flex items-center justify-center">
-            <img src={gallery16} alt="" className="object-cover w-full h-full " />
-          </div>
-          <div className="relative overflow-hidden rounded-lg flex items-center justify-center col-span-2">
-            <img src={gallery7} alt="" className="object-cover w-full h-full" />
-          </div>
-         
-         
-          <div className="relative overflow-hidden rounded-lg flex items-center justify-center col-span-2">
-            <img src={gallery10} alt="" className="object-cover w-full h-full" />
-          </div>
-          <div className="relative overflow-hidden rounded-lg flex items-center justify-center">
-            <img src={gallery14} alt="" className="object-cover w-full h-full" />
-          </div>
-
-         
-
-         
-         
-         
-          <div className="relative overflow-hidden rounded-lg flex items-center justify-center lg:col-span-3">
-            <img src={gallery11} alt="" className="object-cover w-full h-full " />
-          </div>
-        
-          <div className="relative overflow-hidden rounded-lg flex items-center justify-center lg:col-span-3">
-            <img src={gallery13} alt="" className="object-center w-full h-full  " />
-          </div>
-          
-         
-        </div>
-        </section>
-        <hr className=" opacity-10"/>
-
- 
-        <section className="px-[10px] py-[60px]">
-          <div className="aboutus" >
-            <h2 data-aos="fade-up" className="text-3xl font-bold text-center title mb-8">
-              Our Approach
-            </h2>
-            <div data-aos="fade-up" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3">
-              {[
-                {
-                  title: "Wide Range of Courses",
-                  description:
-                    "Explore diverse, industry-focused courses to boost your skills.",
-                    icon:<FaBookOpen />
-                },
-                {
-                  title: "Industry Expertst",
-                  description:
-                    "Learn from experienced professionals with real-world insights.",
-                    icon:<BsBriefcaseFill />
-                },
-                {
-                  title: "Hands-on Learning",
-                  description:
-                    "Work on real-world projects to build practical experience.",
-                    icon:<BsFillLaptopFill />
-                },
-                {
-                  title: "Career Support",
-                  description:
-                    "Get personalized placement assistance to land your ideal job.",
-                    icon:<GiOnTarget />
-                },
-              ].map((item, index) => (
-                <div key={index}>
-                  <div className="py-6 text-center bg-[#080808] rounded-md">
-                    <span className="text-4xl mb-2 font-bold flex items-center justify-center text-orange-800">{item.icon}</span>
-                    <h3 className="font-semibold text-lg mb-2"> {item.title}</h3>
-                    <p className="">{item.description}</p>
-                  </div>
+                <div className="au-logo-card-tagline">A Ladder for a Brighter Future</div>
+              </div>
+              <div className="au-chip au-chip--top-right">
+                <div className="au-chip-icon"><i className="fa fa-star" /></div>
+                <div>
+                  <span className="au-chip-val">95%</span>
+                  <span className="au-chip-lbl">Placement Rate</span>
                 </div>
-              ))}
+              </div>
+              <div className="au-chip au-chip--bottom-left">
+                <div className="au-chip-icon"><i className="fa fa-users" /></div>
+                <div>
+                  <span className="au-chip-val">10,000+</span>
+                  <span className="au-chip-lbl">Students Trained</span>
+                </div>
+              </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section>
-          <Getintouch/>
-        </section>
-
+      {/* ─── STATS ─── */}
+      <div className="au-stats-row">
+        {stats.map((s, i) => (
+          <div className="au-stat-item" key={i} data-aos="fade-up" data-aos-delay={i * 70}>
+            <span className="au-stat-val">{s.value}</span>
+            <span className="au-stat-label">{s.label}</span>
+          </div>
+        ))}
       </div>
+
+      {/* ─── LOGO WALL (ALUMNI COMPANIES) ─── */}
+      <section className="au-logowall">
+        <div className="au-wrap">
+          <div data-aos="fade-up">
+            <h2 className="au-section-h2">Where Our Alumni Work</h2>
+            <p className="text-center">Join 10,000+ professionals placed at top global companies.</p>
+          </div>
+          <div data-aos="fade-up" data-aos-delay="100">
+            <ClientsCarousel />
+          </div>
+        </div>
+      </section>
+
+      {/* ─── CORE VALUES ─── */}
+      <section className="au-section au-values">
+        <div className="au-wrap">
+          <div className="au-section-head" data-aos="fade-up">
+            <p className="au-kicker"><i className="fa fa-heart" /> Our DNA</p>
+            <h2 className="au-section-h2">The Values That Drive Us</h2>
+            <p>Everything we do is built on a foundation of quality, integrity, and a relentless focus on student outcomes.</p>
+          </div>
+          <div className="au-values-grid">
+            {values.map((v, i) => (
+              <div className="au-value-card" key={i} data-aos="fade-up" data-aos-delay={i * 100}>
+                <div className="au-value-icon"><i className={v.icon} /></div>
+                <h3 className="au-value-title">{v.title}</h3>
+                <p className="au-value-desc">{v.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── MISSION ─── */}
+      <section className="au-section au-mission">
+        <div className="au-wrap">
+          <div className="au-mission-grid">
+            <div data-aos="fade-right" style={{ position: 'relative' }}>
+              <div className="au-mission-left-label">THE MISSION</div>
+              <p className="au-kicker"><i className="fa fa-flag" /> Our Mission</p>
+              <h2 className="au-section-h2">
+                Redefining How<br />
+                India <span className="au-highlight-orange">Upskills</span>
+              </h2>
+              <div className="au-rule-orange" />
+            </div>
+            <div data-aos="fade-left">
+              <div className="au-mission-text">
+                <p>
+                  We believe quality education should never be a barrier to opportunity.
+                  Krutanic bridges the gap by merging academic rigour with practical training,
+                  expert mentorship, and a curriculum that delivers real results.
+                </p>
+                <p>
+                  Our commitment goes beyond teaching skills — we foster critical thinking,
+                  problem-solving ability, and professional confidence to help every learner
+                  thrive in today's fast-moving digital economy.
+                </p>
+              </div>
+              <div className="au-mission-highlight-box">
+                <p>
+                  "From our first cohort to 10,000+ alumni placed across 500+ companies
+                  — every step has been driven by one belief: education changes lives."
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── TIMELINE ─── */}
+      <section className="au-timeline-section">
+        <div className="au-wrap">
+          <div className="au-section-head au-section-head-dark" data-aos="fade-up">
+            <p className="au-kicker"><i className="fa fa-history" /> Our Journey</p>
+            <h2 className="au-section-h2">Milestones of Impact</h2>
+            <p>A look back at how we've grown from an idea to a leading EdTech platform.</p>
+          </div>
+          <div className="au-timeline-container">
+            {timeline.map((item, i) => (
+              <div className="au-timeline-item" key={i} data-aos="fade-up" data-aos-delay={i * 100}>
+                <div className="au-timeline-dot" />
+                <div className="au-timeline-year">{item.year}</div>
+                <div className="au-timeline-title">{item.title}</div>
+                <div className="au-timeline-desc">{item.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── APPROACH ─── */}
+      <section className="au-section au-pillars-section" style={{ background: '#0a1628' }}>
+        <div className="au-wrap">
+          <div className="au-section-head au-section-head-dark" data-aos="fade-up">
+            <p className="au-kicker"><i className="fa fa-check-square-o" /> The Ecosystem</p>
+            <h2 className="au-section-h2">
+              What Makes Us <span className="au-highlight-orange">Different</span>
+            </h2>
+            <p>Our proprietary learning methodology combines human mentorship with project-based learning.</p>
+          </div>
+          <div className="au-pillars-grid">
+            {pillars.map((p, i) => (
+              <div className="au-pillar-card" key={i} data-aos="fade-up" data-aos-delay={i * 80}>
+                <div className="au-pillar-icon-wrap"><i className={p.icon} /></div>
+                <span className="au-pillar-num">{p.num}</span>
+                <h3 className="au-pillar-title">{p.title}</h3>
+                <p className="au-pillar-desc">{p.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── STORY / TESTIMONIAL ─── */}
+      <section className="au-section au-story-section">
+        <div className="au-wrap">
+          <div className="au-story-grid">
+            <div data-aos="fade-right">
+              <p className="au-kicker"><i className="fa fa-quote-left" /> The Impact</p>
+              <h2 className="au-section-h2">
+                Real Outcomes for <br /><span className="au-highlight-orange">Real People</span>
+              </h2>
+              <div className="au-rule-orange" />
+              <div className="au-story-body">
+                <p>
+                  The true measure of our success isn't in the number of courses we offer,
+                  but in the lives we help transform. From career switchers to recent graduates,
+                  Krutanic provides the launchpad for tech careers.
+                </p>
+                <p>
+                  With a <strong>95% placement rate</strong> and <strong>average salary hikes of 65%</strong>,
+                  our alumni are now leading teams, shipping global products, and shaping the future of technology.
+                </p>
+              </div>
+            </div>
+
+            <div className="au-story-right" data-aos="fade-left" data-aos-delay="100">
+              <div className="au-quote-card">
+                <div className="au-quote-mark">"</div>
+                <p className="au-quote-text">
+                  "Krutanic didn't just teach me coding; they taught me how to think like an engineer. 
+                  The mentorship and real-world projects were the exact bridge I needed to land my dream role."
+                </p>
+                <span className="au-quote-attr">— Rahul M., Placed at Amazon</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── FINAL CTA ─── */}
+      <section className="au-cta-section" data-aos="fade-up">
+        <div className="au-wrap">
+          <h2 className="au-cta-h2">Ready to Accelerate Your Career?</h2>
+          <p className="au-cta-desc">
+            Join the elite network of tech professionals. Limited spots available in our upcoming cohort.
+          </p>
+          <Link to="/mentorship" className="au-cta-button-light">
+            Apply Now <i className="fa fa-arrow-right" />
+          </Link>
+        </div>
+      </section>
+
+      {/* ─── GET IN TOUCH ─── */}
+      <div className="au-getintouch">
+        <Getintouch />
+      </div>
+    </div>
   );
 };
 
