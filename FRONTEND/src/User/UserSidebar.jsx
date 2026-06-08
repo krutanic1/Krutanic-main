@@ -89,7 +89,7 @@ const UserSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   };
 
   const handleUpgradeClick = () => {
-    const phoneNumber = "7829102936";
+    const phoneNumber = "8317410068";
     const name = userData?.fullname || "Student";
     const email = userData?.email || "No Email";
     const course = courseName || "Course";

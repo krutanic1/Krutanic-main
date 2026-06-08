@@ -34,7 +34,7 @@ const UserLayout = () => {
   }, [userId]);
 
   const handleWhatsAppSupport = () => {
-    const phoneNumber = "7829102936";
+    const phoneNumber = "8317410068";
     const name = userData?.fullname || "Student";
     const email = userData?.email || "No Email";
     const message = `Hello, I need support.\nName: ${name}\nEmail: ${email}`;

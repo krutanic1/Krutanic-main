@@ -80,7 +80,7 @@ const EventDashBoard = () => {
             <div className="flex items-center space-x-3">
               {/* WhatsApp Support Button */}
               <a
-                href="https://wa.me/7829102936?text=I%20am%20here%20from%20events%20dashboard"
+                href="https://wa.me/8317410068?text=I%20am%20here%20from%20events%20dashboard"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center space-x-2 px-4 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-all font-medium"
