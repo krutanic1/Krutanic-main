@@ -309,10 +309,29 @@ const Attendance = () => {
   const processAttendance = async () => {
     setMarking(true);
     try {
-      // Detect live face
-      const liveDetection = await faceapi.detectSingleFace(videoRef.current).withFaceLandmarks().withFaceDescriptor();
+      // Wait for video to be fully ready
+      const video = videoRef.current;
+      if (!video || video.readyState < 2) {
+        await new Promise(resolve => {
+          const check = setInterval(() => {
+            if (video && video.readyState >= 2) {
+              clearInterval(check);
+              resolve();
+            }
+          }, 200);
+        });
+      }
+
+      // Retry face detection up to 5 times with delay
+      let liveDetection = null;
+      for (let attempt = 0; attempt < 5; attempt++) {
+        liveDetection = await faceapi.detectSingleFace(videoRef.current).withFaceLandmarks().withFaceDescriptor();
+        if (liveDetection) break;
+        await new Promise(r => setTimeout(r, 400));
+      }
+
       if (!liveDetection) {
-        toast.error("No face detected! Please look clearly at the camera.");
+        toast.error("No face detected! Please ensure your face is visible and well-lit.");
         setMarking(false);
         return;
       }
