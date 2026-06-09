@@ -265,4 +265,76 @@ router.get('/api/cron/check-demos', async (req, res) => {
     }
 });
 
+// Daily Absent Emails Cron Endpoint (Triggered by Vercel Cron)
+router.all('/api/cron/daily-absent', async (req, res) => {
+    const timestamp = new Date().toISOString();
+    const istTime = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+    console.log(`⏰ [${istTime} IST] Running Vercel Cron: Daily Absent Emails`);
+
+    try {
+        const authHeader = req.headers.authorization;
+        const vercelCronHeader = req.headers['x-vercel-cron'];
+        const expectedAuth = `Bearer ${process.env.CRON_SECRET}`;
+
+        const isVercelCron = vercelCronHeader === '1';
+        const hasValidSecret = process.env.CRON_SECRET && authHeader === expectedAuth;
+
+        if (!isVercelCron && !hasValidSecret) {
+            console.error('❌ Unauthorized cron request - Daily Absent');
+            return res.status(401).json({ error: 'Unauthorized', timestamp, istTime });
+        }
+
+        const { checkDailyAbsentMails } = require('../services/attendanceReportService');
+        await checkDailyAbsentMails();
+
+        res.status(200).json({
+            success: true,
+            message: `Daily absent emails check triggered successfully`,
+            timestamp,
+            istTime
+        });
+
+    } catch (error) {
+        console.error('❌ Error in Daily Absent Cron Route:', error);
+        res.status(500).json({ error: 'Internal Server Error', details: error.message, timestamp, istTime });
+    }
+});
+
+// Daily Late Logins Alert Cron Endpoint (Triggered by Vercel Cron)
+router.all('/api/cron/daily-late-logins', async (req, res) => {
+    const timestamp = new Date().toISOString();
+    const istTime = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+    console.log(`⏰ [${istTime} IST] Running Vercel Cron: Daily Late Logins`);
+
+    try {
+        const authHeader = req.headers.authorization;
+        const vercelCronHeader = req.headers['x-vercel-cron'];
+        const expectedAuth = `Bearer ${process.env.CRON_SECRET}`;
+
+        const isVercelCron = vercelCronHeader === '1';
+        const hasValidSecret = process.env.CRON_SECRET && authHeader === expectedAuth;
+
+        if (!isVercelCron && !hasValidSecret) {
+            console.error('❌ Unauthorized cron request - Daily Late Logins');
+            return res.status(401).json({ error: 'Unauthorized', timestamp, istTime });
+        }
+
+        const { checkDailyLateLogins } = require('../services/attendanceReportService');
+        await checkDailyLateLogins();
+
+        res.status(200).json({
+            success: true,
+            message: `Daily late logins check triggered successfully`,
+            timestamp,
+            istTime
+        });
+
+    } catch (error) {
+        console.error('❌ Error in Daily Late Logins Cron Route:', error);
+        res.status(500).json({ error: 'Internal Server Error', details: error.message, timestamp, istTime });
+    }
+});
+
 module.exports = router;

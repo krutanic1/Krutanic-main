@@ -52,6 +52,14 @@
     {
       "path": "/api/cron/monthly-attendance",
       "schedule": "30 15 1 * *"
+    },
+    {
+      "path": "/api/cron/daily-absent",
+      "schedule": "30 6 * * *"
+    },
+    {
+      "path": "/api/cron/daily-late-logins",
+      "schedule": "30 18 * * *"
     }
   ]
 }

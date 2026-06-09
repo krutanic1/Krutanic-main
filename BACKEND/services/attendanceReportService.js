@@ -352,6 +352,82 @@ const checkDailyLateLogins = async () => {
 };
 
 /**
+ * Automated check for daily absent emails (Run at 12:00 PM IST)
+ * Skips Sundays and days with fewer than 5 attendees (assumes holiday)
+ */
+const checkDailyAbsentMails = async () => {
+  try {
+    const istNow = getISTDate();
+    const today = istNow.toISOString().split("T")[0]; // YYYY-MM-DD
+    
+    // Check if it's Sunday (0)
+    if (istNow.getDay() === 0) {
+       console.log(`[Daily Absent] Today is Sunday. Skipping absent emails.`);
+       return;
+    }
+
+    // Check how many people are present today
+    const presentCount = await Attendance.countDocuments({ date: today });
+    
+    // Heuristic: If fewer than 5 people marked attendance, assume it's a holiday
+    if (presentCount < 5) {
+       console.log(`[Daily Absent] Only ${presentCount} present today. Assuming holiday. Skipping absent emails.`);
+       return;
+    }
+
+    console.log(`[Daily Absent] ${presentCount} present today. Proceeding with absent emails...`);
+
+    // Fetch active users only
+    const allUsers = await AtdUser.find({ status: { $ne: 'inactive' } }).select("email name");
+    const attendanceToday = await Attendance.find({ date: today }).select("userId");
+    const usersWithAttendance = new Set(attendanceToday.map(a => a.userId.toString()));
+
+    const absentUsers = allUsers.filter(u => !usersWithAttendance.has(u._id.toString()));
+
+    if (absentUsers.length === 0) {
+      console.log(`[Daily Absent] No one is absent today!`);
+      return;
+    }
+
+    console.log(`[Daily Absent] Sending absent emails to ${absentUsers.length} active employees...`);
+
+    for (const user of absentUsers) {
+      if (!user.email) continue;
+      const emailData = {
+        email: user.email.toLowerCase(),
+        subject: "Official Notice: Absent Today",
+        message: `
+          <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #fee2e2; border-radius: 12px; background-color: #fef2f2;">
+            <h2 style="color: #991b1b; text-align: center;">Absence Notification</h2>
+            <p style="color: #450a0a; text-align: center; font-weight: bold;">Hello ${user.name},</p>
+            <p style="color: #7f1d1d; text-align: center;">Our records indicate that you have <strong>not marked your attendance</strong> for today (${today}).</p>
+            <p style="color: #7f1d1d; text-align: center;">As a result, your status for today has been noted as <strong>Absent</strong> in the attendance system.</p>
+            <div style="text-align: center; margin: 25px 0;">
+              <p style="font-size: 14px; color: #991b1b;">If this is an error, please contact HR or mark your attendance immediately if the window is still open.</p>
+              <a href="https://www.krutanic.com/attendance" style="background: #ef4444; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; margin-top: 10px;">View Attendance Portal</a>
+            </div>
+            <p style="font-size: 11px; color: #991b1b; text-align: center; opacity: 0.8;">Note: This is an automated notification. If you are on an approved leave, please ignore this.</p>
+          </div>
+        `
+      };
+      
+      try {
+        await sendEmail(emailData);
+        // Delay between emails to avoid rate limits
+        await new Promise(r => setTimeout(r, 500)); 
+      } catch (err) {
+        console.error(`❌ Failed to send absent email to ${user.email}:`, err.message);
+      }
+    }
+    
+    console.log(`[Daily Absent] Completed sending absent emails.`);
+
+  } catch (error) {
+    console.error("Error in checkDailyAbsentMails:", error);
+  }
+};
+
+/**
  * Initialize the monthly scheduler
  */
 const initializeAttendanceReportScheduler = () => {
@@ -373,10 +449,21 @@ const initializeAttendanceReportScheduler = () => {
         timezone: "Asia/Kolkata"
     });
 
-    console.log("✅ Attendance Schedulers initialized: Monthly (1st, 9PM) & Daily Late Login Alert (Daily, 12AM)");
+    // Schedule daily absent check at 12:00 PM IST
+    // Cron: 0 12 * * *
+    cron.schedule("0 12 * * *", async () => {
+        console.log(`📧 Checking for daily absent emails...`);
+        await checkDailyAbsentMails();
+    }, {
+        timezone: "Asia/Kolkata"
+    });
+
+    console.log("✅ Attendance Schedulers initialized: Monthly (1st, 9PM), Daily Late Alert (12AM), Daily Absent Alert (12PM)");
 };
 
 module.exports = {
   sendMonthlyAttendanceReports,
-  initializeAttendanceReportScheduler
+  initializeAttendanceReportScheduler,
+  checkDailyAbsentMails,
+  checkDailyLateLogins
 };

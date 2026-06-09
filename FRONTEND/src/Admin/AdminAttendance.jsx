@@ -23,7 +23,9 @@ import {
   Trash2,
   Edit3,
   Check,
-  AlertCircle
+  AlertCircle,
+  EyeOff,
+  Eye
 } from "lucide-react";
 
 /**
@@ -76,6 +78,12 @@ const AdminAttendance = () => {
   const [isOverrideActive, setIsOverrideActive] = useState(false);
   const [loadingOverride, setLoadingOverride] = useState(false);
 
+  // Show Inactive toggle
+  const [showInactive, setShowInactive] = useState(false);
+
+  // Department card popup
+  const [selectedCard, setSelectedCard] = useState(null);
+
   const fetchMembers = useCallback(async () => {
     setLoading(true);
     try {
@@ -87,7 +95,8 @@ const AdminAttendance = () => {
           limit: 50, 
           search, 
           month: filterMonth, 
-          year: filterYear 
+          year: filterYear,
+          showInactive: showInactive ? "true" : "false"
         }
       });
       setMembers(res.data.data);
@@ -98,7 +107,7 @@ const AdminAttendance = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, search, filterMonth, filterYear]);
+  }, [currentPage, search, filterMonth, filterYear, showInactive]);
 
   const fetchDailySummary = useCallback(async () => {
     setLoadingSummary(true);
@@ -679,15 +688,80 @@ const AdminAttendance = () => {
       {/* Daily Department Summary */}
       <div style={styles.summaryGrid}>
         {loadingSummary ? <div className="p-4 text-gray-400">Loading summary...</div> : (dailySummary && dailySummary.length > 0) ? dailySummary.map((s, i) => (
-          <div key={i} style={styles.summaryCard}>
+          <div 
+            key={i} 
+            style={{ ...styles.summaryCard, cursor: 'pointer', transition: 'all 0.2s ease' }}
+            onClick={() => setSelectedCard(s)}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.10)'; e.currentTarget.style.borderColor = '#FF6B00'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
+          >
             <div style={{ ...styles.avatar, width: '32px', height: '32px', fontSize: '12px', background: '#f1f5f9', color: '#64748b' }}><UserCheck size={16} /></div>
             <div style={{ flex: 1 }}>
                <div style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: '#94a3b8', letterSpacing: '0.5px' }}>{s.department || "Other"}</div>
                <div style={{ fontSize: '20px', fontWeight: '900', color: '#1e293b' }}>{s.count} <span style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8' }}>Present</span></div>
             </div>
+            <div style={{ fontSize: '10px', color: '#cbd5e1', fontWeight: '600' }}>Click to view ›</div>
           </div>
         )) : <div style={{ padding: '20px', color: '#94a3b8', fontStyle: 'italic', fontSize: '13px' }}>No records found for today</div>}
       </div>
+
+      {/* Department Names Popup */}
+      {selectedCard && (
+        <div 
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(5px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000, animation: 'fadeIn 0.2s ease' }}
+          onClick={() => setSelectedCard(null)}
+        >
+          <div 
+            style={{ background: '#fff', borderRadius: '24px', padding: '0', width: '360px', maxWidth: '90vw', boxShadow: '0 30px 60px rgba(0,0,0,0.2)', animation: 'slideIn 0.25s cubic-bezier(0.16,1,0.3,1)', overflow: 'hidden' }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div style={{ background: 'linear-gradient(135deg, #FF6B00 0%, #ff8c42 100%)', padding: '24px 28px 20px', position: 'relative' }}>
+              <button 
+                onClick={() => setSelectedCard(null)}
+                style={{ position: 'absolute', top: '16px', right: '16px', background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '8px', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff' }}
+              >
+                <X size={16} />
+              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ background: 'rgba(255,255,255,0.25)', borderRadius: '12px', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <UserCheck size={22} color="#fff" />
+                </div>
+                <div>
+                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px' }}>Department</div>
+                  <div style={{ fontSize: '20px', fontWeight: '900', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{selectedCard.department || 'Other'}</div>
+                </div>
+              </div>
+              <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ background: 'rgba(255,255,255,0.2)', borderRadius: '20px', padding: '4px 14px', fontSize: '13px', fontWeight: '800', color: '#fff' }}>
+                  {selectedCard.count} Present Today
+                </div>
+              </div>
+            </div>
+
+            {/* Names List */}
+            <div style={{ padding: '20px 28px 24px', maxHeight: '340px', overflowY: 'auto' }}>
+              <div style={{ fontSize: '11px', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '14px' }}>Employees Present</div>
+              {selectedCard.names && selectedCard.names.length > 0 ? (
+                selectedCard.names.map((name, idx) => (
+                  <div 
+                    key={idx} 
+                    style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: idx < selectedCard.names.length - 1 ? '1px solid #f1f5f9' : 'none' }}
+                  >
+                    <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'linear-gradient(135deg, #FF6B00, #ff8c42)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '14px', flexShrink: 0 }}>
+                      {name.charAt(0).toUpperCase()}
+                    </div>
+                    <div style={{ fontWeight: '600', fontSize: '14px', color: '#1e293b' }}>{name}</div>
+                    <div style={{ marginLeft: 'auto', background: '#dcfce7', color: '#16a34a', fontSize: '10px', fontWeight: '800', padding: '3px 8px', borderRadius: '6px' }}>✓ Present</div>
+                  </div>
+                ))
+              ) : (
+                <div style={{ color: '#94a3b8', fontSize: '13px', textAlign: 'center', padding: '20px 0' }}>No names available</div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Controls Area */}
       <div className="admin-controls" style={styles.controls}>
@@ -724,6 +798,31 @@ const AdminAttendance = () => {
               {[2024, 2025, 2026].map(y => <option key={y} value={y}>{y}</option>)}
             </select>
           </div>
+
+          {/* Show Inactive Toggle Button */}
+          <button
+            onClick={() => { setShowInactive(prev => !prev); setCurrentPage(1); }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '7px',
+              padding: '12px 18px',
+              borderRadius: '12px',
+              border: showInactive ? '1px solid #a855f7' : '1px solid #e2e8f0',
+              background: showInactive ? 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)' : '#fff',
+              color: showInactive ? '#fff' : '#64748b',
+              fontWeight: '700',
+              fontSize: '13px',
+              cursor: 'pointer',
+              boxShadow: showInactive ? '0 4px 14px rgba(168, 85, 247, 0.35)' : '0 1px 2px rgba(0,0,0,0.05)',
+              transition: 'all 0.2s ease',
+              whiteSpace: 'nowrap'
+            }}
+            title={showInactive ? 'Click to hide inactive users' : 'Click to show inactive users'}
+          >
+            {showInactive ? <Eye size={15} /> : <EyeOff size={15} />}
+            {showInactive ? 'Hide Inactive' : 'Show Inactive'}
+          </button>
         </div>
       </div>
 

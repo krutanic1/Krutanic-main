@@ -188,8 +188,9 @@ exports.setPin = async (req, res) => {
  */
 exports.getAdminUsers = async (req, res) => {
   try {
-    const { month, year, page = 1, limit = 50, search = "", all = false } = req.query;
+    const { month, year, page = 1, limit = 50, search = "", all = false, showInactive = "false" } = req.query;
     const isAll = all === "true" || all === true;
+    const includeInactive = showInactive === "true" || showInactive === true;
     const skip = isAll ? 0 : (parseInt(page) - 1) * parseInt(limit);
     const fetchLimit = isAll ? 0 : parseInt(limit);
     
@@ -200,6 +201,11 @@ exports.getAdminUsers = async (req, res) => {
         { name: { $regex: search, $options: "i" } },
         { email: { $regex: search, $options: "i" } }
       ];
+    }
+
+    // By default, only show active users; when showInactive=true, show ALL users
+    if (!includeInactive) {
+      userFilter.status = { $ne: "inactive" };
     }
 
     // Month filtering string (YYYY-MM-)
@@ -528,7 +534,7 @@ exports.getAttendanceSummary = async (req, res) => {
     const { date } = req.query; // Expecting YYYY-MM-DD
     if (!date) return res.status(400).json({ error: "Date is required" });
 
-    // Join Attendance with AtdUser to get roles
+    // Join Attendance with AtdUser to get roles and names
     const summary = await Attendance.aggregate([
       { $match: { date } },
       {
@@ -543,13 +549,15 @@ exports.getAttendanceSummary = async (req, res) => {
       {
         $group: {
           _id: "$user.role",
-          count: { $sum: 1 }
+          count: { $sum: 1 },
+          names: { $push: "$user.name" }
         }
       },
       {
         $project: {
           department: { $ifNull: ["$_id", "Other"] },
           count: 1,
+          names: 1,
           _id: 0
         }
       },
