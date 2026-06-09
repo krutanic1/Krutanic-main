@@ -102,8 +102,9 @@ const captureRawBody = (req, res, buf) => {
   }
 };
 
-app.use(bodyParser.json({ verify: captureRawBody }));
-app.use(express.json({ verify: captureRawBody }));
+app.use(bodyParser.json({ verify: captureRawBody, limit: '10mb' }));
+app.use(express.json({ verify: captureRawBody, limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
 // ✅ Attendance (Cumulative Timer) - Priority Registration
