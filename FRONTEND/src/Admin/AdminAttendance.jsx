@@ -59,6 +59,7 @@ const AdminAttendance = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [newMember, setNewMember] = useState({ email: "", name: "", role: "Employee", pin: "" });
   const [addingMember, setAddingMember] = useState(false);
+  const [generatingCode, setGeneratingCode] = useState(false);
   
   // Summary State
   const [dailySummary, setDailySummary] = useState([]);
@@ -451,6 +452,21 @@ const AdminAttendance = () => {
     }
   };
 
+  const handleGenerateResetCode = async (userId) => {
+    setGeneratingCode(true);
+    try {
+      const token = localStorage.getItem("adminToken");
+      const res = await axios.post(`${API}/api/atd/admin/generate-reset-code`, { userId }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      window.alert(`NEW DEVICE RESET CODE:\n\n${res.data.resetCode}\n\nThis code expires in 10 minutes. Please share this securely with the employee.`);
+    } catch (err) {
+      toast.error("Failed to generate reset code");
+    } finally {
+      setGeneratingCode(false);
+    }
+  };
+
   const monthNames = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
@@ -840,6 +856,16 @@ const AdminAttendance = () => {
                 <div>
                    <h2 style={{ margin: 0, fontSize: '22px', fontWeight: '800' }}>{selectedUser.name}</h2>
                    <div style={{ color: '#64748b', fontSize: '14px' }}>{selectedUser.email}</div>
+                </div>
+                <div style={{ marginLeft: 'auto' }}>
+                  <button 
+                    style={{ ...styles.actionBtn, width: 'auto', padding: '0 12px', gap: '5px', background: '#fff7ed', color: '#FF6B00', borderColor: '#ffedd5', fontWeight: '700' }}
+                    onClick={() => handleGenerateResetCode(selectedUser._id)}
+                    disabled={generatingCode}
+                  >
+                    <Shield size={14} />
+                    {generatingCode ? "Generating..." : "Generate Reset Code"}
+                  </button>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '15px', marginTop: '10px' }}>

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
+import * as faceapi from "face-api.js";
 import { 
   MapPin, 
   History, 
@@ -82,10 +83,37 @@ const Attendance = () => {
   const [filterMonth, setFilterMonth] = useState(new Date().getMonth());
   const [filterYear, setFilterYear] = useState(new Date().getFullYear());
 
+  // Face Recognition & Webcam State
+  const videoRef = useRef(null);
+  const [modelsLoaded, setModelsLoaded] = useState(false);
+  const [showWebcam, setShowWebcam] = useState(false);
+  const [stream, setStream] = useState(null);
+
+  // Device Binding State
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [resetCode, setResetCode] = useState("");
+
   // Update clock every second
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
+  }, []);
+
+  // Load face-api models
+  useEffect(() => {
+    const loadModels = async () => {
+      try {
+        await Promise.all([
+          faceapi.nets.ssdMobilenetv1.loadFromUri('/models'),
+          faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
+          faceapi.nets.faceLandmark68Net.loadFromUri('/models')
+        ]);
+        setModelsLoaded(true);
+      } catch (err) {
+        console.error("Failed to load face-api models", err);
+      }
+    };
+    loadModels();
   }, []);
 
   // Load token and initial data (Auto-login)
@@ -244,30 +272,161 @@ const Attendance = () => {
     }
   };
 
-  const handleMarkAttendance = async () => {
+  const handleMarkAttendanceClick = async () => {
     if (!navigator.geolocation) {
       toast.error("Geolocation is not supported");
       return;
     }
-    setMarking(true);
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      const { latitude, longitude } = pos.coords;
-      try {
-        const token = localStorage.getItem("atdToken");
-        await axios.post(`${API}/api/atd/mark`, { lat: latitude, lng: longitude }, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        toast.success("Checked in successfully!");
-        fetchHistory(token, currentPage, filterMonth, filterYear);
-      } catch (err) {
-        toast.error(err.response?.data?.error || "Failed to mark attendance");
-      } finally {
-        setMarking(false);
+    if (!modelsLoaded) {
+      toast.error("Facial recognition models are still loading. Please wait.");
+      return;
+    }
+    setShowWebcam(true);
+    startWebcam();
+  };
+
+  const startWebcam = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
       }
-    }, () => {
-      toast.error("Enable location to check in.");
+      setStream(mediaStream);
+    } catch (err) {
+      toast.error("Please enable camera access to mark attendance.");
+      setShowWebcam(false);
+    }
+  };
+
+  const stopWebcam = () => {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      setStream(null);
+    }
+    setShowWebcam(false);
+  };
+
+  const processAttendance = async () => {
+    setMarking(true);
+    try {
+      // Detect live face
+      const liveDetection = await faceapi.detectSingleFace(videoRef.current).withFaceLandmarks().withFaceDescriptor();
+      if (!liveDetection) {
+        toast.error("No face detected! Please look clearly at the camera.");
+        setMarking(false);
+        return;
+      }
+
+      // If we have a reference face URL, compare it locally
+      if (userData?.referenceFaceUrl) {
+         toast.loading("Verifying identity...", { id: "face-verify" });
+         
+         // Use a cross-origin image to fetch from cloudinary
+         const refImg = new Image();
+         refImg.crossOrigin = "anonymous";
+         refImg.src = userData.referenceFaceUrl;
+         await new Promise((resolve, reject) => {
+           refImg.onload = resolve;
+           refImg.onerror = reject;
+         });
+
+         const refDetection = await faceapi.detectSingleFace(refImg).withFaceLandmarks().withFaceDescriptor();
+         if (!refDetection) {
+           toast.error("Could not process your reference profile picture.", { id: "face-verify" });
+           setMarking(false);
+           return;
+         }
+
+         const distance = faceapi.euclideanDistance(liveDetection.descriptor, refDetection.descriptor);
+         if (distance > 0.55) { // Tolerance threshold
+           toast.error("Face verification failed. You do not match the profile picture.", { id: "face-verify" });
+           setMarking(false);
+           return;
+         }
+         toast.success("Identity verified!", { id: "face-verify" });
+      }
+
+      // Capture frame as base64 for initial setup if needed
+      const canvas = document.createElement("canvas");
+      canvas.width = videoRef.current.videoWidth;
+      canvas.height = videoRef.current.videoHeight;
+      canvas.getContext("2d").drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+      // compress to ~100kb
+      const base64Image = canvas.toDataURL("image/jpeg", 0.6);
+
+      // Get location
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        try {
+          const token = localStorage.getItem("atdToken");
+          const deviceToken = localStorage.getItem("atdDeviceToken") || "";
+          
+          const res = await axios.post(`${API}/api/atd/mark`, { 
+            lat: latitude, 
+            lng: longitude,
+            deviceToken,
+            initialImage: !userData?.referenceFaceUrl ? base64Image : undefined
+          }, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+
+          if (res.data.deviceToken) {
+            localStorage.setItem("atdDeviceToken", res.data.deviceToken);
+          }
+          if (res.data.referenceFaceUrl) {
+            const updatedUser = { ...userData, referenceFaceUrl: res.data.referenceFaceUrl };
+            setUserData(updatedUser);
+            localStorage.setItem("atdUser", JSON.stringify(updatedUser));
+          }
+
+          toast.success("Checked in successfully!");
+          fetchHistory(token, currentPage, filterMonth, filterYear);
+          stopWebcam();
+        } catch (err) {
+          if (err.response?.data?.unrecognizedDevice) {
+            setShowResetModal(true);
+            stopWebcam();
+          } else {
+            toast.error(err.response?.data?.error || "Failed to mark attendance");
+          }
+        } finally {
+          setMarking(false);
+        }
+      }, (err) => {
+        console.error("Geolocation error:", err);
+        if (err.code === 1) {
+          toast.error("Location permission denied by browser. Please allow location access in your browser settings (click the lock icon next to the URL).", { duration: 6000 });
+        } else if (err.code === 2) {
+          toast.error("Location unavailable. Are you on a VPN or inside a building with no signal?", { duration: 5000 });
+        } else if (err.code === 3) {
+          toast.error("Location request timed out. Please try again.", { duration: 5000 });
+        } else {
+          toast.error("Enable location to check in: " + err.message);
+        }
+        setMarking(false);
+      }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+
+    } catch (err) {
+      console.error(err);
+      toast.error("Facial recognition error.");
       setMarking(false);
-    });
+    }
+  };
+
+  const handleDeviceReset = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await axios.post(`${API}/api/atd/bind-device`, { email: userData.email, resetCode });
+      localStorage.setItem("atdDeviceToken", res.data.deviceToken);
+      toast.success("Device bound successfully! You can now mark attendance.");
+      setShowResetModal(false);
+      setResetCode("");
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Invalid reset code");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = () => {
@@ -458,17 +617,16 @@ const Attendance = () => {
                       <p style={styles.actionPrompt}>Our system uses high-precision geolocation. Please ensure you are within the designated office boundary to complete verification.</p>
 
                       <button 
-                        onClick={handleMarkAttendance} 
-                        disabled={marking || history.some(h => h.date === new Date().toISOString().split("T")[0])} 
+                        onClick={handleMarkAttendanceClick} 
+                        disabled={history.some(h => h.date === new Date().toISOString().split("T")[0])} 
                         className={!history.some(h => h.date === new Date().toISOString().split("T")[0]) ? "pulse-btn" : ""}
                         style={{ 
                           ...styles.checkBtn,
-                          opacity: (marking || history.some(h => h.date === new Date().toISOString().split("T")[0])) ? 0.6 : 1,
-                          cursor: (marking || history.some(h => h.date === new Date().toISOString().split("T")[0])) ? "not-allowed" : "pointer"
+                          opacity: history.some(h => h.date === new Date().toISOString().split("T")[0]) ? 0.6 : 1,
+                          cursor: history.some(h => h.date === new Date().toISOString().split("T")[0]) ? "not-allowed" : "pointer"
                         }}
                       >
-                         {marking ? <><Activity className="spin" size={24} /> Processing...</> : 
-                          history.some(h => h.date === new Date().toISOString().split("T")[0]) ? <><CheckCircle2 size={24} /> Checked-in Today</> : 
+                          {history.some(h => h.date === new Date().toISOString().split("T")[0]) ? <><CheckCircle2 size={24} /> Checked-in Today</> : 
                           <><Navigation size={22} /> Confirm Attendance</>}
                       </button>
 
@@ -574,6 +732,70 @@ const Attendance = () => {
                 </div>
              </div>
           </main>
+        </div>
+      )}
+
+      {/* Webcam Modal */}
+      {showWebcam && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.webcamModal}>
+             <h3 style={styles.authTitle}>
+               {!userData?.referenceFaceUrl ? "First-Time Face Setup" : "Face Recognition"}
+             </h3>
+             <p style={styles.authSub}>
+               {!userData?.referenceFaceUrl 
+                 ? "This is your first check-in! Please look directly at the camera. This photo will be securely saved as your permanent reference for future attendance verification."
+                 : "Please look directly at the camera to verify your identity."}
+             </p>
+             <div style={{ ...styles.videoContainer, position: 'relative' }}>
+               <video ref={videoRef} autoPlay muted playsInline style={{ ...styles.videoStream, opacity: marking ? 0 : 1 }} />
+               {marking && (
+                 <div style={{
+                   position: 'absolute',
+                   top: 0, left: 0, width: '100%', height: '100%',
+                   display: 'flex',
+                   flexDirection: 'column',
+                   alignItems: 'center',
+                   justifyContent: 'center',
+                   zIndex: 10,
+                   backgroundColor: '#f8fafc',
+                   borderRadius: '16px'
+                 }}>
+                   <Clock size={40} color="#FF6B00" style={{ animation: 'spin 2s linear infinite' }} />
+                   <p style={{ marginTop: '15px', fontWeight: '800', color: '#0f172a', fontSize: '18px' }}>Processing...</p>
+                   <p style={{ color: '#64748b', fontSize: '13px', marginTop: '5px' }}>Verifying face and location</p>
+                 </div>
+               )}
+             </div>
+             <div style={{ display: 'flex', gap: '15px', marginTop: '20px' }}>
+               <button onClick={stopWebcam} style={styles.secondaryBtn}>Cancel</button>
+               <button onClick={processAttendance} disabled={marking} style={{ ...styles.primaryBtn, flex: 1 }}>
+                 {marking ? "Processing..." : "Capture & Check-in"}
+               </button>
+             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Device Reset Modal */}
+      {showResetModal && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.authCard}>
+            <div style={{ textAlign: "center", marginBottom: "20px" }}>
+              <div style={styles.iconCircle}><ShieldCheck size={28} color="#FF6B00" /></div>
+              <h2 style={styles.authTitle}>Unrecognized Device</h2>
+              <p style={styles.authSub}>You are trying to log in from a new browser or computer. Please contact HR to get a 6-digit Device Reset Code.</p>
+            </div>
+            <form onSubmit={handleDeviceReset}>
+              <div style={styles.inputGroup} className="input-group">
+                 <input type="text" placeholder="• • • • • •" maxLength="6" style={{ ...styles.formInput, textAlign: "center", fontSize: "28px", letterSpacing: "8px", fontWeight: "800" }} value={resetCode} onChange={e => setResetCode(e.target.value)} required />
+              </div>
+              <button type="submit" disabled={loading} style={styles.primaryBtn}>
+                {loading ? "Binding..." : "Bind New Device"}
+              </button>
+              <button type="button" onClick={() => setShowResetModal(false)} style={{ ...styles.textBtn, width: '100%', marginTop: '15px' }}>Cancel</button>
+            </form>
+          </div>
         </div>
       )}
     </div>
@@ -973,6 +1195,53 @@ const styles = {
      fontSize: "14px",
      fontWeight: "700",
      color: "#64748b"
+  },
+  modalOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(15, 23, 42, 0.3)',
+    zIndex: 9999,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '20px'
+  },
+  webcamModal: {
+    width: '100%',
+    maxWidth: '500px',
+    backgroundColor: '#ffffff',
+    borderRadius: '24px',
+    padding: '30px',
+    textAlign: 'center',
+    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+  },
+  videoContainer: {
+    width: '100%',
+    height: '300px',
+    backgroundColor: '#0f172a',
+    borderRadius: '16px',
+    overflow: 'hidden',
+    marginTop: '20px',
+    position: 'relative'
+  },
+  videoStream: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover'
+  },
+  secondaryBtn: {
+    backgroundColor: '#f1f5f9',
+    color: '#475569',
+    border: 'none',
+    borderRadius: '16px',
+    padding: '16px 24px',
+    fontSize: '15px',
+    fontWeight: '700',
+    cursor: 'pointer',
+    transition: 'all 0.2s'
   }
 };
 

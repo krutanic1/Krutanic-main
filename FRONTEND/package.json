@@ -30,6 +30,7 @@
     "dom": "^0.0.3",
     "dompurify": "^3.2.3",
     "dotenv": "^16.4.7",
+    "face-api.js": "^0.22.2",
     "file-saver": "^2.0.5",
     "font-awesome": "^4.7.0",
     "framer-motion": "^11.16.0",

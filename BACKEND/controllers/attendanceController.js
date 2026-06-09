@@ -1,6 +1,9 @@
 const Attendance = require("../models/Attendance");
+const AtdUser = require("../models/AtdUser");
 const redis = require("../config/redis");
 const GlobalConfig = require("../models/GlobalConfig");
+const cloudinary = require("../middleware/cloudinary");
+const { v4: uuidv4 } = require("uuid");
 
 // Contribution note: non-functional comment added for repository activity.
 
@@ -29,7 +32,7 @@ function getDistance(lat1, lon1, lat2, lon2) {
  */
 exports.markAttendance = async (req, res) => {
   try {
-    const { lat, lng } = req.body;
+    const { lat, lng, deviceToken, initialImage } = req.body;
     const userId = req.user._id;
     const today = new Date().toISOString().split("T")[0];
 
@@ -37,11 +40,56 @@ exports.markAttendance = async (req, res) => {
       return res.status(400).json({ error: "Location is required" });
     }
 
+    const user = await AtdUser.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
     const key = `attendance:${userId}:${today}`;
 
     // Check if already marked today in Redis
     const exists = await redis.get(key);
     if (exists) return res.status(400).json({ error: "Already marked today" });
+
+    // --- Device Binding & Reference Image Logic ---
+    let finalDeviceToken = user.deviceToken;
+    let newReferenceFaceUrl = user.referenceFaceUrl;
+
+    if (!user.deviceToken) {
+      // First time marking attendance -> Auto-bind
+      if (!initialImage) {
+        return res.status(400).json({ error: "First-time attendance requires a reference photo (initialImage)" });
+      }
+      
+      // Upload image to Cloudinary
+      try {
+        const uploadResult = await cloudinary.uploader.upload(initialImage, {
+          folder: "attendance_faces"
+        });
+        newReferenceFaceUrl = uploadResult.secure_url;
+      } catch (err) {
+        console.error("Cloudinary upload error:", err);
+        return res.status(500).json({ error: "Failed to upload reference photo" });
+      }
+
+      // Generate a new device token
+      finalDeviceToken = uuidv4();
+
+      // Save to user
+      user.deviceToken = finalDeviceToken;
+      user.referenceFaceUrl = newReferenceFaceUrl;
+      await user.save();
+
+    } else {
+      // Not the first time, check device token
+      if (deviceToken !== user.deviceToken) {
+         return res.status(403).json({ 
+           error: "Unrecognized Device", 
+           message: "You are trying to mark attendance from an unrecognized device. Please contact HR for a Device Reset Code.",
+           unrecognizedDevice: true
+         });
+      }
+    }
 
     // Office location (configurable in .env)
     const officeLat = parseFloat(process.env.OFFICE_LAT) || 12.9716;
@@ -82,7 +130,12 @@ exports.markAttendance = async (req, res) => {
     // Cache in Redis for 24 hours
     await redis.set(key, "1", { ex: 86400 });
 
-    res.json({ success: true, message: "Attendance marked successfully" });
+    res.json({ 
+      success: true, 
+      message: "Attendance marked successfully",
+      deviceToken: finalDeviceToken, // Return the token so client can store it if it's new
+      referenceFaceUrl: newReferenceFaceUrl
+    });
   } catch (error) {
     console.error("MarkAttendance Error:", error);
     res.status(500).json({ error: "Failed to mark attendance" });

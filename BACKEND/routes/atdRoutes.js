@@ -11,6 +11,7 @@ router.post("/send-otp", authController.sendOtp);
 router.post("/verify-otp", authController.verifyOtp);
 router.post("/login-pin", authController.loginPin);
 router.post("/set-pin", atdAuth, authController.setPin);
+router.post("/bind-device", authController.bindNewDevice);
 
 // Attendance routes
 router.post("/mark", atdAuth, attendanceController.markAttendance);
@@ -19,6 +20,7 @@ router.get("/history", atdAuth, attendanceController.getHistory);
 // Admin Attendance routes
 router.get("/admin/users", atdAuth, authController.getAdminUsers);
 router.post("/admin/add-user", atdAuth, authController.addAdminUser);
+router.post("/admin/generate-reset-code", atdAuth, authController.generateDeviceResetCode);
 router.get("/admin/user/:userId/history", atdAuth, authController.getAdminUserHistory);
 router.post("/admin/send-reminders", atdAuth, authController.sendAttendanceReminders);
 router.post("/admin/send-absent-mails", atdAuth, authController.sendAbsentMails);

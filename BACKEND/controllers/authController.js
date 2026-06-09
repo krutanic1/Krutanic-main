@@ -640,6 +640,13 @@ exports.deleteAttendance = async (req, res) => {
     const { recordId } = req.params;
     const result = await Attendance.findByIdAndDelete(recordId);
     if (!result) return res.status(404).json({ error: "Record not found" });
+
+    // Delete from Redis so the user can check-in again today
+    const redis = require("../config/redis");
+    const today = new Date(result.date).toISOString().split("T")[0]; // ensure correct format
+    const key = `attendance:${result.userId}:${today}`;
+    await redis.del(key);
+
     res.json({ success: true, message: "Attendance record deleted" });
   } catch (error) {
     console.error("DeleteAttendance Error:", error);
@@ -698,5 +705,68 @@ exports.deleteAdminUser = async (req, res) => {
   } catch (error) {
     console.error("DeleteAdminUser Error:", error);
     res.status(500).json({ error: "Failed to delete user" });
+  }
+};
+
+/**
+ * @desc Generate HR 6-digit Device Reset Code
+ * @route POST /api/atd/admin/generate-reset-code
+ */
+exports.generateDeviceResetCode = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    if (!userId) return res.status(400).json({ error: "User ID is required" });
+
+    const user = await AtdUser.findById(userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    // Generate 6-digit random code
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    user.deviceResetCode = resetCode;
+    user.codeExpiresAt = expiresAt;
+    await user.save();
+
+    res.json({ success: true, resetCode, expiresAt, message: "Reset code generated successfully" });
+  } catch (error) {
+    console.error("GenerateDeviceResetCode Error:", error);
+    res.status(500).json({ error: "Failed to generate code" });
+  }
+};
+
+/**
+ * @desc Bind a new device using HR 6-digit code
+ * @route POST /api/atd/bind-device
+ */
+exports.bindNewDevice = async (req, res) => {
+  try {
+    const { email, resetCode } = req.body;
+    if (!email || !resetCode) return res.status(400).json({ error: "Email and reset code are required" });
+
+    const user = await AtdUser.findOne({ email: email.toLowerCase() });
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    if (!user.deviceResetCode || user.deviceResetCode !== resetCode.toString()) {
+      return res.status(400).json({ error: "Invalid reset code" });
+    }
+
+    if (new Date() > new Date(user.codeExpiresAt)) {
+      return res.status(400).json({ error: "Reset code has expired" });
+    }
+
+    const { v4: uuidv4 } = require("uuid");
+    const newDeviceToken = uuidv4();
+
+    // Reset code so it can't be reused, and set new token
+    user.deviceResetCode = null;
+    user.codeExpiresAt = null;
+    user.deviceToken = newDeviceToken;
+    await user.save();
+
+    res.json({ success: true, deviceToken: newDeviceToken, message: "Device bound successfully" });
+  } catch (error) {
+    console.error("BindNewDevice Error:", error);
+    res.status(500).json({ error: "Failed to bind new device" });
   }
 };

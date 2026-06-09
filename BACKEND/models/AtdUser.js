@@ -15,7 +15,13 @@ const schema = new mongoose.Schema({
     enum: ["active", "inactive"],
     default: "active"
   },
-  lastOtpLogin: Date
+  lastOtpLogin: Date,
+  
+  // Security & Authentication fields
+  deviceToken: String,
+  deviceResetCode: String,
+  codeExpiresAt: Date,
+  referenceFaceUrl: String
 }, { timestamps: true });
 
 module.exports = mongoose.model("AtdUser", schema);
