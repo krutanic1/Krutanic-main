@@ -748,7 +748,7 @@ const Attendance = () => {
                  : "Please look directly at the camera to verify your identity."}
              </p>
              <div style={{ ...styles.videoContainer, position: 'relative' }}>
-               <video ref={videoRef} autoPlay muted playsInline style={{ ...styles.videoStream, opacity: marking ? 0 : 1 }} />
+               <video ref={videoRef} autoPlay muted playsInline style={styles.videoStream} />
                {marking && (
                  <div style={{
                    position: 'absolute',
