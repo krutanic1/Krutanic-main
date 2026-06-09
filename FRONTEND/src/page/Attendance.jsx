@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
-import * as faceapi from "face-api.js";
 import { 
   MapPin, 
   History, 
@@ -83,9 +82,8 @@ const Attendance = () => {
   const [filterMonth, setFilterMonth] = useState(new Date().getMonth());
   const [filterYear, setFilterYear] = useState(new Date().getFullYear());
 
-  // Face Recognition & Webcam State
+  // Webcam State
   const videoRef = useRef(null);
-  const [modelsLoaded, setModelsLoaded] = useState(false);
   const [showWebcam, setShowWebcam] = useState(false);
   const [stream, setStream] = useState(null);
 
@@ -97,23 +95,6 @@ const Attendance = () => {
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
-  }, []);
-
-  // Load face-api models
-  useEffect(() => {
-    const loadModels = async () => {
-      try {
-        await Promise.all([
-          faceapi.nets.ssdMobilenetv1.loadFromUri('/models'),
-          faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
-          faceapi.nets.faceLandmark68Net.loadFromUri('/models')
-        ]);
-        setModelsLoaded(true);
-      } catch (err) {
-        console.error("Failed to load face-api models", err);
-      }
-    };
-    loadModels();
   }, []);
 
   // Load token and initial data (Auto-login)
@@ -277,19 +258,19 @@ const Attendance = () => {
       toast.error("Geolocation is not supported");
       return;
     }
-    if (!modelsLoaded) {
-      toast.error("Facial recognition models are still loading. Please wait.");
-      return;
-    }
     setShowWebcam(true);
     startWebcam();
   };
 
   const startWebcam = async () => {
     try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      // Force front-facing (selfie) camera on mobile devices
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }
+      });
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
+        videoRef.current.play().catch(() => {});
       }
       setStream(mediaStream);
     } catch (err) {
@@ -309,82 +290,26 @@ const Attendance = () => {
   const processAttendance = async () => {
     setMarking(true);
     try {
-      // Wait for video to be fully ready
+      // Capture photo from webcam
       const video = videoRef.current;
-      if (!video || video.readyState < 2) {
-        await new Promise(resolve => {
-          const check = setInterval(() => {
-            if (video && video.readyState >= 2) {
-              clearInterval(check);
-              resolve();
-            }
-          }, 200);
-        });
-      }
-
-      // Retry face detection up to 5 times with delay
-      let liveDetection = null;
-      for (let attempt = 0; attempt < 5; attempt++) {
-        liveDetection = await faceapi.detectSingleFace(videoRef.current).withFaceLandmarks().withFaceDescriptor();
-        if (liveDetection) break;
-        await new Promise(r => setTimeout(r, 400));
-      }
-
-      if (!liveDetection) {
-        toast.error("No face detected! Please ensure your face is visible and well-lit.");
-        setMarking(false);
-        return;
-      }
-
-      // If we have a reference face URL, compare it locally
-      if (userData?.referenceFaceUrl) {
-         toast.loading("Verifying identity...", { id: "face-verify" });
-         
-         // Use a cross-origin image to fetch from cloudinary
-         const refImg = new Image();
-         refImg.crossOrigin = "anonymous";
-         refImg.src = userData.referenceFaceUrl;
-         await new Promise((resolve, reject) => {
-           refImg.onload = resolve;
-           refImg.onerror = reject;
-         });
-
-         const refDetection = await faceapi.detectSingleFace(refImg).withFaceLandmarks().withFaceDescriptor();
-         if (!refDetection) {
-           toast.error("Could not process your reference profile picture.", { id: "face-verify" });
-           setMarking(false);
-           return;
-         }
-
-         const distance = faceapi.euclideanDistance(liveDetection.descriptor, refDetection.descriptor);
-         if (distance > 0.55) { // Tolerance threshold
-           toast.error("Face verification failed. You do not match the profile picture.", { id: "face-verify" });
-           setMarking(false);
-           return;
-         }
-         toast.success("Identity verified!", { id: "face-verify" });
-      }
-
-      // Capture frame as base64 for initial setup if needed
       const canvas = document.createElement("canvas");
-      canvas.width = videoRef.current.videoWidth;
-      canvas.height = videoRef.current.videoHeight;
-      canvas.getContext("2d").drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-      // compress to ~100kb
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
       const base64Image = canvas.toDataURL("image/jpeg", 0.6);
 
-      // Get location
+      // Get location then submit
       navigator.geolocation.getCurrentPosition(async (pos) => {
         const { latitude, longitude } = pos.coords;
         try {
           const token = localStorage.getItem("atdToken");
           const deviceToken = localStorage.getItem("atdDeviceToken") || "";
-          
-          const res = await axios.post(`${API}/api/atd/mark`, { 
-            lat: latitude, 
+
+          const res = await axios.post(`${API}/api/atd/mark`, {
+            lat: latitude,
             lng: longitude,
             deviceToken,
-            initialImage: !userData?.referenceFaceUrl ? base64Image : undefined
+            initialImage: base64Image
           }, {
             headers: { Authorization: `Bearer ${token}` }
           });
@@ -758,14 +683,8 @@ const Attendance = () => {
       {showWebcam && (
         <div style={styles.modalOverlay}>
           <div style={styles.webcamModal}>
-             <h3 style={styles.authTitle}>
-               {!userData?.referenceFaceUrl ? "First-Time Face Setup" : "Face Recognition"}
-             </h3>
-             <p style={styles.authSub}>
-               {!userData?.referenceFaceUrl 
-                 ? "This is your first check-in! Please look directly at the camera. This photo will be securely saved as your permanent reference for future attendance verification."
-                 : "Please look directly at the camera to verify your identity."}
-             </p>
+             <h3 style={styles.authTitle}>Selfie Check-in</h3>
+             <p style={styles.authSub}>Look at the camera and click Capture. Your photo will be saved as an attendance audit record.</p>
              <div style={{ ...styles.videoContainer, position: 'relative' }}>
                <video ref={videoRef} autoPlay muted playsInline style={styles.videoStream} />
                {marking && (
@@ -781,8 +700,8 @@ const Attendance = () => {
                    borderRadius: '16px'
                  }}>
                    <Clock size={40} color="#FF6B00" style={{ animation: 'spin 2s linear infinite' }} />
-                   <p style={{ marginTop: '15px', fontWeight: '800', color: '#0f172a', fontSize: '18px' }}>Processing...</p>
-                   <p style={{ color: '#64748b', fontSize: '13px', marginTop: '5px' }}>Verifying face and location</p>
+                   <p style={{ marginTop: '15px', fontWeight: '800', color: '#0f172a', fontSize: '18px' }}>Checking in...</p>
+                   <p style={{ color: '#64748b', fontSize: '13px', marginTop: '5px' }}>Verifying location, please wait</p>
                  </div>
                )}
              </div>
