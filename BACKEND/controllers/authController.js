@@ -755,8 +755,8 @@ exports.bindNewDevice = async (req, res) => {
       return res.status(400).json({ error: "Reset code has expired" });
     }
 
-    const { v4: uuidv4 } = require("uuid");
-    const newDeviceToken = uuidv4();
+    const crypto = require("crypto");
+    const newDeviceToken = crypto.randomUUID();
 
     // Reset code so it can't be reused, and set new token
     user.deviceResetCode = null;

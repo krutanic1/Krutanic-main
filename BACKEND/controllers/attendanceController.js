@@ -3,7 +3,7 @@ const AtdUser = require("../models/AtdUser");
 const redis = require("../config/redis");
 const GlobalConfig = require("../models/GlobalConfig");
 const cloudinary = require("../middleware/cloudinary");
-const { v4: uuidv4 } = require("uuid");
+const crypto = require("crypto");
 
 // Contribution note: non-functional comment added for repository activity.
 
@@ -72,8 +72,7 @@ exports.markAttendance = async (req, res) => {
         return res.status(500).json({ error: "Failed to upload reference photo" });
       }
 
-      // Generate a new device token
-      finalDeviceToken = uuidv4();
+      finalDeviceToken = crypto.randomUUID();
 
       // Save to user
       user.deviceToken = finalDeviceToken;
