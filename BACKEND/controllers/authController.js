@@ -534,7 +534,7 @@ exports.getAttendanceSummary = async (req, res) => {
     const { date } = req.query; // Expecting YYYY-MM-DD
     if (!date) return res.status(400).json({ error: "Date is required" });
 
-    // Join Attendance with AtdUser to get roles and names
+    // Join Attendance with AtdUser to get roles, names, and timestamps
     const summary = await Attendance.aggregate([
       { $match: { date } },
       {
@@ -550,14 +550,20 @@ exports.getAttendanceSummary = async (req, res) => {
         $group: {
           _id: "$user.role",
           count: { $sum: 1 },
-          names: { $push: "$user.name" }
+          employees: { 
+            $push: { 
+              name: "$user.name", 
+              timestamp: "$timestamp",
+              role: "$user.role"
+            } 
+          }
         }
       },
       {
         $project: {
           department: { $ifNull: ["$_id", "Other"] },
           count: 1,
-          names: 1,
+          employees: 1,
           _id: 0
         }
       },

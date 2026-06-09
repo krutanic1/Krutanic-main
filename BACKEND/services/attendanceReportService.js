@@ -369,8 +369,8 @@ const checkDailyAbsentMails = async () => {
     // Check how many people are present today
     const presentCount = await Attendance.countDocuments({ date: today });
     
-    // Heuristic: If fewer than 5 people marked attendance, assume it's a holiday
-    if (presentCount < 5) {
+    // Heuristic: If fewer than 10 people marked attendance, assume it's a holiday
+    if (presentCount < 10) {
        console.log(`[Daily Absent] Only ${presentCount} present today. Assuming holiday. Skipping absent emails.`);
        return;
     }

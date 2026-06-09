@@ -687,7 +687,33 @@ const AdminAttendance = () => {
 
       {/* Daily Department Summary */}
       <div style={styles.summaryGrid}>
-        {loadingSummary ? <div className="p-4 text-gray-400">Loading summary...</div> : (dailySummary && dailySummary.length > 0) ? dailySummary.map((s, i) => (
+        {loadingSummary ? (
+          <div className="p-4 text-gray-400">Loading summary...</div>
+        ) : (
+          <>
+            {/* ALL PRESENT CARD */}
+            {dailySummary && dailySummary.length > 0 && (
+              <div 
+                style={{ ...styles.summaryCard, cursor: 'pointer', transition: 'all 0.2s ease', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', borderColor: '#059669', color: '#fff' }}
+                onClick={() => {
+                   const allPresentCount = dailySummary.reduce((acc, curr) => acc + curr.count, 0);
+                   const allPresentEmployees = dailySummary.flatMap(s => s.employees || []);
+                   setSelectedCard({ department: "ALL PRESENT", count: allPresentCount, employees: allPresentEmployees });
+                }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(16, 185, 129, 0.25)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)'; }}
+              >
+                <div style={{ ...styles.avatar, width: '32px', height: '32px', fontSize: '12px', background: 'rgba(255,255,255,0.2)', color: '#fff' }}><Users size={16} /></div>
+                <div style={{ flex: 1 }}>
+                   <div style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: 'rgba(255,255,255,0.8)', letterSpacing: '0.5px' }}>ALL PRESENT</div>
+                   <div style={{ fontSize: '20px', fontWeight: '900', color: '#fff' }}>{dailySummary.reduce((acc, curr) => acc + curr.count, 0)} <span style={{ fontSize: '12px', fontWeight: '600', color: 'rgba(255,255,255,0.8)' }}>Present</span></div>
+                </div>
+                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)', fontWeight: '600' }}>Click to view ›</div>
+              </div>
+            )}
+            
+            {/* DEPARTMENT CARDS */}
+            {(dailySummary && dailySummary.length > 0) ? dailySummary.map((s, i) => (
           <div 
             key={i} 
             style={{ ...styles.summaryCard, cursor: 'pointer', transition: 'all 0.2s ease' }}
@@ -703,6 +729,8 @@ const AdminAttendance = () => {
             <div style={{ fontSize: '10px', color: '#cbd5e1', fontWeight: '600' }}>Click to view ›</div>
           </div>
         )) : <div style={{ padding: '20px', color: '#94a3b8', fontStyle: 'italic', fontSize: '13px' }}>No records found for today</div>}
+        </>
+        )}
       </div>
 
       {/* Department Names Popup */}
@@ -742,21 +770,38 @@ const AdminAttendance = () => {
             {/* Names List */}
             <div style={{ padding: '20px 28px 24px', maxHeight: '340px', overflowY: 'auto' }}>
               <div style={{ fontSize: '11px', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '14px' }}>Employees Present</div>
-              {selectedCard.names && selectedCard.names.length > 0 ? (
-                selectedCard.names.map((name, idx) => (
-                  <div 
-                    key={idx} 
-                    style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: idx < selectedCard.names.length - 1 ? '1px solid #f1f5f9' : 'none' }}
-                  >
-                    <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'linear-gradient(135deg, #FF6B00, #ff8c42)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '14px', flexShrink: 0 }}>
-                      {name.charAt(0).toUpperCase()}
+              {selectedCard.employees && selectedCard.employees.length > 0 ? (
+                selectedCard.employees.map((emp, idx) => {
+                  const name = emp.name || "Unknown";
+                  const role = emp.role || "Employee";
+                  let timeStr = "--:--";
+                  if (emp.timestamp) {
+                    const d = new Date(emp.timestamp);
+                    const istTime = new Date(d.getTime() + (5.5 * 60 * 60 * 1000));
+                    timeStr = istTime.getUTCHours().toString().padStart(2, '0') + ':' + istTime.getUTCMinutes().toString().padStart(2, '0');
+                  }
+                  
+                  return (
+                    <div 
+                      key={idx} 
+                      style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: idx < selectedCard.employees.length - 1 ? '1px solid #f1f5f9' : 'none' }}
+                    >
+                      <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'linear-gradient(135deg, #FF6B00, #ff8c42)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '14px', flexShrink: 0 }}>
+                        {name.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                         <div style={{ fontWeight: '600', fontSize: '14px', color: '#1e293b' }}>{name}</div>
+                         <div style={{ fontSize: '11px', color: '#64748b', fontWeight: '500' }}>{role}</div>
+                      </div>
+                      <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                         <div style={{ background: '#dcfce7', color: '#16a34a', fontSize: '10px', fontWeight: '800', padding: '3px 8px', borderRadius: '6px' }}>✓ Present</div>
+                         <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '3px' }}><Clock size={10} /> {timeStr}</div>
+                      </div>
                     </div>
-                    <div style={{ fontWeight: '600', fontSize: '14px', color: '#1e293b' }}>{name}</div>
-                    <div style={{ marginLeft: 'auto', background: '#dcfce7', color: '#16a34a', fontSize: '10px', fontWeight: '800', padding: '3px 8px', borderRadius: '6px' }}>✓ Present</div>
-                  </div>
-                ))
+                  );
+                })
               ) : (
-                <div style={{ color: '#94a3b8', fontSize: '13px', textAlign: 'center', padding: '20px 0' }}>No names available</div>
+                <div style={{ color: '#94a3b8', fontSize: '13px', textAlign: 'center', padding: '20px 0' }}>No employees available</div>
               )}
             </div>
           </div>
