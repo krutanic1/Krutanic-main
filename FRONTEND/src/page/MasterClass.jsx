@@ -319,7 +319,7 @@ const MasterClass = () => {
   };
 
   return (
-    <div id="MasterClass">
+    <div id="MasterClass" className="max-w-[100vw] overflow-x-hidden">
       <Helmet>
         <title>Krutanic MasterClass | Upskill in Tech, Coding & AI</title>
         <meta
@@ -379,7 +379,7 @@ const MasterClass = () => {
         />
       </div>
 
-      <div className="mc-shell">
+      <div className="mc-shell px-4 md:px-0">
 
         <section className="mc-status-strip">
           <div className="mc-status-card">
