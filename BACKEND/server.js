@@ -216,6 +216,12 @@ app.use("/api/assignments", AssignmentsRoute);
 app.use("/api/practicals", PracticalsRoute);
 app.use("/", ProjectRoutes);
 
+const InterviewQuestionRoutes = require("./routes/InterviewQuestionRoutes");
+app.use("/api", InterviewQuestionRoutes);
+
+const AptitudeQuestionRoutes = require("./routes/AptitudeQuestionRoutes");
+app.use("/api", AptitudeQuestionRoutes);
+
 // Vercel Cron Route
 app.use("/", CronRoutes);
 

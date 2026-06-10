@@ -373,9 +373,9 @@ const MasterClass = () => {
         navigate("/MasterClass/the-fastest-roadmap-to-become-a-data-scientist-in-2026-even-without-a-coding-background");
       }}>
         <img 
-          src="/posters/posterr.jpeg" 
+          src="/posters/new_poster.jpeg" 
           alt="Masterclass Data Science Roles" 
-          className="w-full h-auto md:h-[400px] lg:h-[450px] object-cover object-top block" 
+          className="w-full h-[240px] sm:h-[280px] md:h-[350px] lg:h-[420px] object-cover object-top block rounded-b-xl" 
         />
       </div>
 

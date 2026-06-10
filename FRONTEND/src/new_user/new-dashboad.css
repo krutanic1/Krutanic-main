@@ -7,7 +7,8 @@
 .nd-root {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   background: #f5f6fa;
   font-family: 'Lexend', 'Inter', sans-serif;
 }
@@ -545,7 +546,6 @@
   display: flex;
   flex: 1;
   height: calc(100vh - 64px);
-  min-height: calc(100vh - 64px);
   overflow: hidden;
 }
 
@@ -560,7 +560,7 @@
   border-right: 1px solid rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
   transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
@@ -716,6 +716,7 @@
 ══════════════════════════════════════════ */
 .nd-main {
   flex: 1;
+  height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -1330,13 +1331,7 @@
     min-width: 64px;
   }
 
-  .nd-sidebar-item-label {
-    display: none;
-  }
 
-  .nd-sidebar-footer {
-    display: none;
-  }
 
   .nd-sidebar-toggle {
     justify-content: center;
@@ -1356,10 +1351,7 @@
     display: none;
   }
 
-  /* Sidebar: hide completely on mobile, overlay on demand */
-  .nd-sidebar {
-    display: none;
-  }
+
 }
 
 /* ══════════════════════════════════════════

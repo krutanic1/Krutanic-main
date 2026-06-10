@@ -916,10 +916,14 @@ router.get("/all-activities", async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 30;
+        const { leadId } = req.query;
         const skip = (page - 1) * limit;
 
-        const total = await AdvCallActivity.countDocuments();
-        const logs = await AdvCallActivity.find()
+        let query = {};
+        if (leadId) query.leadId = leadId;
+
+        const total = await AdvCallActivity.countDocuments(query);
+        const logs = await AdvCallActivity.find(query)
             .populate("leadId", "full_name phone_number opted_domain")
             .populate({
                 path: "specialistId",

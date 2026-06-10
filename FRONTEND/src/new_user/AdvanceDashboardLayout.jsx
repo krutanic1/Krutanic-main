@@ -18,6 +18,8 @@ const sidebarItems = [
     { id: "resume-builder", path: "/advancedashboard/resume-builder", emoji: "📄", icon: "edit_document", label: "Resume Builder" },
     { id: "profile", path: "/advancedashboard/profile", emoji: "🧑", icon: "account_circle", label: "Profile" },
     { id: "payments", path: "/advancedashboard/payments", emoji: "💳", icon: "payments", label: "Payments" },
+    { id: "interview-questions", path: "/advancedashboard/interview-questions", emoji: "💬", icon: "forum", label: "Interview Questions" },
+    { id: "aptitude-test", path: "/advancedashboard/aptitude-test", emoji: "🧠", icon: "quiz", label: "Aptitude Test" },
 ];
 
 const Sidebar = ({ collapsed, setCollapsed, onLogout, mobileOpen, setMobileOpen }) => {
@@ -38,20 +40,8 @@ const Sidebar = ({ collapsed, setCollapsed, onLogout, mobileOpen, setMobileOpen 
     };
 
     return (
-        <aside className={`nd-sidebar hidden md:block ${collapsed ? "nd-sidebar-collapsed" : ""} ${mobileOpen ? "nd-sidebar-open" : ""}`}>
-            {/* Mobile Close Button - visible only on mobile when sidebar is open */}
-            {mobileOpen && (
-                <div className="md:hidden flex justify-between items-center p-4 border-b border-gray-100">
-                    <span className="text-sm font-bold text-gray-700">Menu</span>
-                    <button
-                        onClick={() => setMobileOpen(false)}
-                        className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-                        aria-label="Close menu"
-                    >
-                        <span className="material-symbols-outlined text-gray-600">close</span>
-                    </button>
-                </div>
-            )}
+        <aside className={`nd-sidebar ${collapsed ? "nd-sidebar-collapsed" : ""} ${mobileOpen ? "nd-sidebar-open" : ""}`}>
+
 
             {/* Collapse Toggle (desktop only) */}
             <button
@@ -140,6 +130,7 @@ const sectionTitles = {
     "mock-interview": "Mock Interview",
     "resume-ats": "Resume ATS",
     "resume-builder": "Resume Builder",
+    "interview-questions": "Interview Questions",
 };
 
 const Breadcrumb = () => {

@@ -10,6 +10,9 @@ const AdvCallLogs = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [totalLogs, setTotalLogs] = useState(0);
     const [playingUrl, setPlayingUrl] = useState(null);
+    const [selectedLeadModal, setSelectedLeadModal] = useState(null);
+    const [leadLogs, setLeadLogs] = useState([]);
+    const [loadingLeadLogs, setLoadingLeadLogs] = useState(false);
 
     useEffect(() => {
         fetchLogs();
@@ -27,6 +30,19 @@ const AdvCallLogs = () => {
             console.error(error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchLeadLogs = async (leadId) => {
+        setLoadingLeadLogs(true);
+        try {
+            const res = await axios.get(`${API}/api/adv-reports/all-activities?leadId=${leadId}&limit=100`);
+            setLeadLogs(res.data.logs);
+        } catch (error) {
+            toast.error("Failed to fetch lead's call logs");
+            console.error(error);
+        } finally {
+            setLoadingLeadLogs(false);
         }
     };
 
@@ -107,7 +123,17 @@ const AdvCallLogs = () => {
                                         <div className="text-[10px] text-gray-400 font-medium uppercase mt-1">{formatDate(log.createdAt).split(',')[1]}</div>
                                     </td>
                                     <td className="px-6 py-5">
-                                        <div className="text-sm font-black text-gray-900">{log.leadId?.full_name || 'Deleted Lead'}</div>
+                                        <div 
+                                            className="text-sm font-black text-blue-600 hover:text-blue-800 cursor-pointer underline decoration-blue-200 underline-offset-4"
+                                            onClick={() => {
+                                                if(log.leadId?._id) {
+                                                    setSelectedLeadModal(log.leadId);
+                                                    fetchLeadLogs(log.leadId._id);
+                                                }
+                                            }}
+                                        >
+                                            {log.leadId?.full_name || 'Deleted Lead'}
+                                        </div>
                                         <div className="text-xs text-blue-600 font-bold mt-1 tracking-tighter">
                                             <i className="fa fa-phone mr-1"></i> {log.leadId?.phone_number || 'N/A'}
                                         </div>
@@ -228,6 +254,70 @@ const AdvCallLogs = () => {
                             autoPlay 
                             className="w-full h-10 invert brightness-200 opacity-90"
                         />
+                    </div>
+                </div>
+            )}
+
+            {/* Modal for Lead Specific Logs */}
+            {selectedLeadModal && (
+                <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                        <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                            <div>
+                                <h2 className="text-xl font-extrabold text-gray-900">{selectedLeadModal.full_name}'s Call Logs</h2>
+                                <p className="text-sm font-bold text-gray-500 mt-1"><i className="fa fa-phone mr-1"></i> {selectedLeadModal.phone_number}</p>
+                            </div>
+                            <button 
+                                onClick={() => setSelectedLeadModal(null)}
+                                className="w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-gray-600 transition-colors"
+                            >
+                                <i className="fa fa-times"></i>
+                            </button>
+                        </div>
+                        <div className="p-6 overflow-y-auto bg-white flex-1">
+                            {loadingLeadLogs ? (
+                                <div className="flex justify-center items-center h-32">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                                </div>
+                            ) : leadLogs.length > 0 ? (
+                                <div className="space-y-4">
+                                    {leadLogs.map(llog => (
+                                        <div key={llog._id} className="p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-blue-50/50 transition-colors flex flex-wrap gap-4 items-start justify-between">
+                                            <div className="flex flex-col gap-2 min-w-[200px]">
+                                                <div className="text-sm font-bold text-gray-900">{formatDate(llog.createdAt)}</div>
+                                                <div className="text-xs font-bold text-gray-600">
+                                                    Agent: {llog.specialistName || llog.specialistId?.name || 'Unknown'}
+                                                </div>
+                                            </div>
+                                            <div className="flex flex-col gap-2 min-w-[150px]">
+                                                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tight w-fit ${getOutcomeColor(llog.callOutcome || llog.disposition)}`}>
+                                                    {(llog.callOutcome || llog.disposition || 'N/A').replace('_', ' ')}
+                                                </span>
+                                                <div className="text-xs font-bold text-gray-500">Duration: {llog.duration ? `${Math.floor(llog.duration/60)}m ${llog.duration%60}s` : '0s'}</div>
+                                            </div>
+                                            <div className="flex-1 min-w-[200px]">
+                                                <div className="text-xs font-bold text-gray-800 line-clamp-2">{llog.summary || 'No summary'}</div>
+                                                {llog.remark && <div className="text-[10px] text-gray-500 mt-1 italic">"{llog.remark}"</div>}
+                                            </div>
+                                            {llog.recordingUrl && (
+                                                <button 
+                                                    onClick={() => setPlayingUrl(llog.recordingUrl)}
+                                                    className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-200 transition-colors"
+                                                    title="Play Recording"
+                                                >
+                                                    <i className="fa fa-play text-xs"></i>
+                                                </button>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-center py-10 text-gray-400 font-medium">
+                                    <i className="fa fa-info-circle text-3xl mb-3 block opacity-20"></i>
+                                    No logs found for this lead.
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}

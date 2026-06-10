@@ -210,6 +210,12 @@ const AdminHeader = () => {
             <Link to="/AdvanceQueries">
               <i className="fa fa-question-circle mr-2"></i>Adv Course Queries
             </Link>
+            <Link to="/AdminInterviewQuestions">
+              <i className="fa fa-comments mr-2"></i>Interview Questions
+            </Link>
+            <Link to="/AdminAptitudeQuestions">
+              <i className="fa fa-question-circle mr-2"></i>Aptitude Questions
+            </Link>
             <Link to="/AdvLeadManagement">
               <i className="fa fa-users mr-2"></i>ADV Lead Management
             </Link>

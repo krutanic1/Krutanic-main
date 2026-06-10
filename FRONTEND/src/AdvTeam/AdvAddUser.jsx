@@ -118,18 +118,10 @@ const AdvAddUser = () => {
               onChange={(e) => setOption(e.target.value)}
               required
             >
-              <option value="" disabled>Select Lead Source or Executive</option>
-              <option value="SGFL">SGFL (Self Generated)</option>
-              <option value="CGFL">CGFL (Company Generated)</option>
+              <option value="" disabled>Select Lead Source</option>
               <option value="Meta Ads">Meta Ads</option>
               <option value="LinkedIn Campaign">LinkedIn Campaign</option>
               <option value="Email Campaign">Email Campaign</option>
-              <option disabled>──────────</option>
-              {executives.map((executive) => (
-                <option key={executive._id} value={executive.fullname}>
-                  {executive.fullname}
-                </option>
-              ))}
             </select>
           </div>
           <div>
