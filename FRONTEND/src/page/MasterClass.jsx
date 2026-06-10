@@ -375,7 +375,7 @@ const MasterClass = () => {
         <img 
           src="/posters/new_poster.jpeg" 
           alt="Masterclass Data Science Roles" 
-          className="w-full h-[240px] sm:h-[280px] md:h-[350px] lg:h-[420px] object-cover object-top block rounded-b-xl" 
+          className="w-full h-auto block rounded-b-xl" 
         />
       </div>
 
@@ -522,7 +522,7 @@ const MasterClass = () => {
                       </div>
                       
                       {/* Title */}
-                      <h3 className="text-base font-extrabold text-slate-900 leading-snug hover:text-[#ff6b2d] transition-colors line-clamp-2 min-h-[44px]">
+                      <h3 className="text-base font-extrabold text-slate-900 leading-snug hover:text-[#ff6b2d] transition-colors">
                         {masterclass.title}
                       </h3>
                     </div>
@@ -565,11 +565,11 @@ const MasterClass = () => {
         </section>
 
         <div className="mc-web-media flex flex-col lg:flex-row gap-8 w-full max-w-6xl mx-auto px-4 md:px-0 mt-16 mb-16">
-          <section className="mc-why-join flex-1 p-8 bg-white rounded-3xl shadow-md border border-slate-200/80 mb-6 lg:mb-0">
+          <section className="mc-why-join flex-1 p-5 sm:p-8 bg-white rounded-3xl shadow-md border border-slate-200/80 mb-6 lg:mb-0">
             <h2 className="text-3xl font-extrabold text-slate-800 mb-1" style={{ color: "#1e293b" }}>Why Join</h2>
             <p className="text-xl text-slate-500 mb-8 font-medium">Krutanic Masterclasses</p>
             
-            <div className="grid grid-cols-2 gap-y-6 gap-x-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-4">
               <div className="flex items-center gap-4">
                 <div className="bg-[#fff4f0] flex items-center justify-center text-[#ff6b2d] text-xl w-14 h-14 rounded-xl border border-[#ffe4d6]">
                   <i className="fa fa-globe"></i>
@@ -631,7 +631,7 @@ const MasterClass = () => {
               </div>
             </div>
 
-            <div className="mt-8 border border-slate-200 bg-slate-50 rounded-xl flex justify-between items-center px-5 py-3">
+            <div className="mt-8 border border-slate-200 bg-slate-50 rounded-xl flex flex-col sm:flex-row gap-2 sm:gap-0 justify-between items-center px-5 py-3">
               <span className="text-slate-600 font-medium text-[15px]">Average User Rating</span>
               <div className="flex items-center gap-3">
                 <div className="text-amber-400 text-sm flex gap-1">
