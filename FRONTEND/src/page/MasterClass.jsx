@@ -375,7 +375,7 @@ const MasterClass = () => {
         <img 
           src="/posters/new_poster.jpeg" 
           alt="Masterclass Data Science Roles" 
-          className="w-full h-auto block rounded-b-xl" 
+          className="w-full h-auto md:h-[350px] lg:h-[420px] md:object-cover md:object-top block rounded-b-xl" 
         />
       </div>
 
@@ -522,7 +522,7 @@ const MasterClass = () => {
                       </div>
                       
                       {/* Title */}
-                      <h3 className="text-base font-extrabold text-slate-900 leading-snug hover:text-[#ff6b2d] transition-colors">
+                      <h3 className="text-base font-extrabold text-slate-900 leading-snug hover:text-[#ff6b2d] transition-colors line-clamp-none md:line-clamp-2 md:min-h-[44px]">
                         {masterclass.title}
                       </h3>
                     </div>
