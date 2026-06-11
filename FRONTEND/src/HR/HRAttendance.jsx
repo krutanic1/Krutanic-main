@@ -21,7 +21,8 @@ import {
   Trash2,
   Edit3,
   Check,
-  AlertCircle
+  AlertCircle,
+  Shield
 } from "lucide-react";
 
 /**
@@ -54,6 +55,7 @@ const HRAttendance = () => {
   const [updatingRecord, setUpdatingRecord] = useState(null);
   
   const [addingMember, setAddingMember] = useState(false);
+  const [generatingCode, setGeneratingCode] = useState(false);
   
   // Summary State
   const [dailySummary, setDailySummary] = useState([]);
@@ -392,6 +394,21 @@ const HRAttendance = () => {
     }
   };
 
+  const handleGenerateResetCode = async (userId) => {
+    setGeneratingCode(true);
+    try {
+      const token = localStorage.getItem("hrToken");
+      const res = await axios.post(`${API}/api/atd/admin/generate-reset-code`, { userId }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      window.alert(`NEW DEVICE RESET CODE:\n\n${res.data.resetCode}\n\nThis code expires in 10 minutes. Please share this securely with the employee.`);
+    } catch (err) {
+      toast.error("Failed to generate reset code");
+    } finally {
+      setGeneratingCode(false);
+    }
+  };
+
   const monthNames = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
@@ -564,6 +581,16 @@ const HRAttendance = () => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
                 <div style={{ ...styles.avatar, width: '48px', height: '48px' }}>{selectedUser.name.charAt(0)}</div>
                 <div><h2 style={{ margin: 0 }}>{selectedUser.name}</h2><div style={{ color: '#64748b' }}>{selectedUser.email}</div></div>
+                <div style={{ marginLeft: 'auto' }}>
+                  <button 
+                    style={{ ...styles.actionBtn, width: 'auto', padding: '0 12px', gap: '5px', background: '#fff7ed', color: '#FF6B00', borderColor: '#ffedd5', fontWeight: '700' }}
+                    onClick={() => handleGenerateResetCode(selectedUser._id)}
+                    disabled={generatingCode}
+                  >
+                    <Shield size={14} />
+                    {generatingCode ? "Generating..." : "Generate Reset Code"}
+                  </button>
+                </div>
               </div>
               <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
                 {loadingHistory ? (
