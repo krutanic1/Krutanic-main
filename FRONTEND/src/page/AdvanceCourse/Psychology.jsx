@@ -106,7 +106,7 @@ const Psychology = () => {
   const faqs = [
     { q: "Do I need a background in psychology or law?", a: "While an interest in human behavior or criminal justice helps, this program is structured to guide learners from foundational concepts to advanced applications. It is open to dedicated beginners and professionals alike." },
     { q: "Is this program heavily theoretical?", a: "No. While theory is covered, Krutanic emphasizes a practical, case-based learning approach. You will analyze real-world case studies and engage in behavioral analysis exercises." },
-    { q: "Who will be mentoring me?", a: "You will be mentored by Deepak V , an experienced professional with a background as a Senior Forensic Assistant with Delhi Police, research at IISc, and academic teaching at RV University." },
+    { q: "Who will be mentoring me?", a: "You will be mentored by Deepak V, an experienced professional with a background as a Behavioral Analyst for State CID, Senior Consultant Psychologist, and Visiting Faculty at leading legal institutions." },
     { q: "Will this guarantee me a job as a Forensic Psychologist?", a: "Becoming a licensed clinical forensic psychologist requires advanced postgraduate degrees. However, this program provides a powerful portfolio and practical knowledge base to accelerate your academic journey, research career, or related roles in criminal justice and HR." },
     { q: "Are the case studies relevant to India?", a: "Yes, the curriculum blends global forensic principles with India-relevant case studies and socially grounded examples to ensure you understand the local context." },
     { q: "Is the program fully online?", a: "Yes, the entire program is delivered 100% online, allowing you to learn from top experts regardless of your location." }
@@ -204,21 +204,21 @@ const Psychology = () => {
               <h3 style={{ fontSize: "2.2rem", color: "#ffffff", marginBottom: "0.5rem" }}>Deepak V</h3>
               <p style={{ color: "#a5b4fc", fontSize: "1.2rem", fontWeight: "500", marginBottom: "1.5rem" }}>Forensic Psychology Mentor</p>
               <p style={{ color: "var(--genz-text-muted)", fontSize: "1.1rem", marginBottom: "2rem", lineHeight: "1.6" }}>
-                A highly accomplished forensic psychology expert bringing a powerful blend of academic rigor, advanced research, and frontline field experience to the Krutanic classroom.
+                A distinguished forensic psychologist specializing in criminal behavior analysis, victimology, and courtroom psychological evaluations with extensive experience working alongside law enforcement agencies.
               </p>
               
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1.5rem" }}>
-                <div style={{ borderLeft: "3px solid var(--genz-primary)", paddingLeft: "1rem" }}>
-                  <h4 style={{ fontSize: "1.1rem", marginBottom: "0.25rem", color: "#fff" }}>3.7+ Years Field Exp.</h4>
-                  <p style={{ fontSize: "0.9rem", color: "var(--genz-text-muted)" }}>Senior Forensic Assistant at Delhi Police</p>
-                </div>
+                {/* <div style={{ borderLeft: "3px solid var(--genz-primary)", paddingLeft: "1rem" }}>
+                  <h4 style={{ fontSize: "1.1rem", marginBottom: "0.25rem", color: "#fff" }}>5+ Years Investigative Exp.</h4>
+                  <p style={{ fontSize: "0.9rem", color: "var(--genz-text-muted)" }}>Behavioral Analyst at State CID</p>
+                </div> */}
                 <div style={{ borderLeft: "3px solid #06b6d4", paddingLeft: "1rem" }}>
-                  <h4 style={{ fontSize: "1.1rem", marginBottom: "0.25rem", color: "#fff" }}>1.8+ Years Research</h4>
-                  <p style={{ fontSize: "0.9rem", color: "var(--genz-text-muted)" }}>Research Assistant at Indian Institute of Science</p>
+                  <h4 style={{ fontSize: "1.1rem", marginBottom: "0.25rem", color: "#fff" }}>4+ Years Clinical Practice</h4>
+                  <p style={{ fontSize: "0.9rem", color: "var(--genz-text-muted)" }}>Senior Consultant Psychologist</p>
                 </div>
                 <div style={{ borderLeft: "3px solid #f59e0b", paddingLeft: "1rem" }}>
-                  <h4 style={{ fontSize: "1.1rem", marginBottom: "0.25rem", color: "#fff" }}>1.6+ Years Academia</h4>
-                  <p style={{ fontSize: "0.9rem", color: "var(--genz-text-muted)" }}>Assistant Professor at RV University</p>
+                  <h4 style={{ fontSize: "1.1rem", marginBottom: "0.25rem", color: "#fff" }}>2+ Years Academic Training</h4>
+                  <p style={{ fontSize: "0.9rem", color: "var(--genz-text-muted)" }}>Visiting Faculty at National Legal Institutions</p>
                 </div>
               </div>
             </div>
