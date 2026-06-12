@@ -444,9 +444,13 @@ const AdvLeadsBook = () => {
     };
 
     const StatusBadge = ({ lead }) => {
+        const isManagerOrLeader = (userDesignation || "").toLowerCase().includes("manager") || (userDesignation || "").toLowerCase().includes("leader") || (userName || "").toLowerCase().includes("sumeetha");
+        const displayStage = (lead.is_reactive && isManagerOrLeader) ? "Reactive Lead" : (lead.stage || "Fresh Lead");
+
         const getStyles = (s) => {
             const map = {
                 "Fresh Lead": { color: "#64748B" },
+                "Reactive Lead": { color: "#c41d7f" },
                 "Attempting Contact": { color: designTokens.colors.warning },
                 "First Call Connected": { color: designTokens.colors.info },
                 "Demo Conducted": { color: designTokens.colors.secondary },
@@ -455,10 +459,10 @@ const AdvLeadsBook = () => {
             };
             return map[s] || { color: designTokens.colors.textSecondary };
         };
-        const styles_badge = getStyles(lead.stage || "Fresh Lead");
+        const styles_badge = getStyles(displayStage);
         return (
             <span style={styles.badge(styles_badge.color)}>
-                {lead.stage || "Fresh Lead"}
+                {displayStage}
             </span>
         );
     };
@@ -852,7 +856,7 @@ const AdvLeadsBook = () => {
                             <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>list_alt</span>
                             <span>All Records ({outcomeCounts.total || 0})</span>
                         </button>
-                        {Object.keys(STAGES_AND_DISPOSITIONS).map(stage => (
+                        {[...Object.keys(STAGES_AND_DISPOSITIONS), ...((userDesignation || "").toLowerCase().includes("manager") || (userDesignation || "").toLowerCase().includes("leader") || (userName || "").toLowerCase().includes("sumeetha") ? ["Reactive Lead"] : [])].map(stage => (
                             <button
                                 key={stage}
                                 onMouseEnter={() => setHoveredStage(stage)}

@@ -23,6 +23,45 @@ const RevenueSheet = () => {
   const [loadingDaily, setLoadingDaily] = useState(false);
   const [loadingMonthly, setLoadingMonthly] = useState(true);
 
+  // New states for the Lead Modal
+  const [showLeadModal, setShowLeadModal] = useState(false);
+  const [leadModalData, setLeadModalData] = useState([]);
+  const [leadModalTitle, setLeadModalTitle] = useState("");
+  const [loadingModal, setLoadingModal] = useState(false);
+  const [modalPage, setModalPage] = useState(1);
+  const [modalTotalPages, setModalTotalPages] = useState(1);
+  const [currentLeadMonth, setCurrentLeadMonth] = useState("");
+  const [currentLeadType, setCurrentLeadType] = useState("");
+
+  const handleLeadClick = async (monthStr, type, page = 1) => {
+    setLeadModalTitle(`${monthStr} - ${type} Leads Details`);
+    setShowLeadModal(true);
+    setLoadingModal(true);
+    if (page === 1) setLeadModalData([]);
+    setCurrentLeadMonth(monthStr);
+    setCurrentLeadType(type);
+    
+    try {
+      const response = await axios.get(`${API}/getmonthlyleads`, {
+        params: { monthStr, leadType: type, page, limit: 30 },
+        withCredentials: true
+      });
+      setLeadModalData(response.data.leads || []);
+      setModalPage(response.data.currentPage || 1);
+      setModalTotalPages(response.data.totalPages || 1);
+    } catch (error) {
+      console.error("Error fetching leads:", error);
+    } finally {
+      setLoadingModal(false);
+    }
+  };
+
+  const handleModalPageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= modalTotalPages) {
+      handleLeadClick(currentLeadMonth, currentLeadType, newPage);
+    }
+  };
+
   const [selectedLead, setSelectedLead] = useState("All");
 
   // Fetch Aggregated Monthly Stats (Bottom Table)
@@ -247,12 +286,13 @@ const RevenueSheet = () => {
                 <th className="border p-3 text-left">Credited Revenue</th>
                 <th className="border p-3 text-left">Pending Revenue</th>
                 <th className="border p-3 text-center">Total Payments</th>
-
+                <th className="border p-3 text-center">SGFL</th>
+                <th className="border p-3 text-center">CGFL</th>
               </tr>
             </thead>
             <tbody>
               {loadingMonthly ? (
-                <tr><td colSpan="5" className="p-4 text-center">Loading Summary...</td></tr>
+                <tr><td colSpan="7" className="p-4 text-center">Loading Summary...</td></tr>
               ) : (
                 monthlyStats.map((stat, index) => (
                   <tr key={stat.month} className={`text-sm ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}>
@@ -261,13 +301,81 @@ const RevenueSheet = () => {
                     <td className="border p-3">₹{stat.credited.toFixed(2)}</td>
                     <td className="border p-3">₹{stat.pending.toFixed(2)}</td>
                     <td className="border p-3 text-center">{stat.payments}</td>
-
+                    <td className="border p-3 text-center">
+                      <span className="text-blue-600 cursor-pointer underline" onClick={() => handleLeadClick(stat.month, "SGFL")}>
+                        {stat.sgfl || 0}
+                      </span>
+                    </td>
+                    <td className="border p-3 text-center">
+                      <span className="text-blue-600 cursor-pointer underline" onClick={() => handleLeadClick(stat.month, "CGFL")}>
+                        {stat.cgfl || 0}
+                      </span>
+                    </td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
         </div>
+
+        {/* Modal for displaying Leads */}
+        {showLeadModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col relative">
+              <button className="absolute top-4 right-4 text-gray-500 hover:text-black" onClick={() => setShowLeadModal(false)}>✕</button>
+              <h3 className="text-xl font-semibold mb-4">{leadModalTitle}</h3>
+              <div className="overflow-y-auto">
+                {loadingModal ? (
+                  <p className="text-gray-500 text-center py-4">Loading leads...</p>
+                ) : leadModalData.length > 0 ? (
+                  <table className="w-full text-left border-collapse">
+                    <thead className="sticky top-0 bg-gray-100">
+                      <tr className="text-sm">
+                        <th className="border p-2">Lead Name</th>
+                        <th className="border p-2">Lead Email</th>
+                        <th className="border p-2">Counselor Name</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {leadModalData.map((lead, idx) => (
+                        <tr key={idx} className="text-sm hover:bg-gray-50 border-b">
+                          <td className="p-2 border">{lead.fullname || 'N/A'}</td>
+                          <td className="p-2 border">{lead.email || 'N/A'}</td>
+                          <td className="p-2 border">{lead.counselor || 'N/A'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p className="text-gray-500 text-center py-4">No leads found.</p>
+                )}
+              </div>
+              
+              {/* Modal Pagination Controls */}
+              {modalTotalPages > 1 && (
+                <div className="flex justify-between items-center mt-4 pt-4 border-t">
+                  <button
+                    className={`px-3 py-1 border rounded text-sm ${modalPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'}`}
+                    onClick={() => handleModalPageChange(modalPage - 1)}
+                    disabled={modalPage === 1}
+                  >
+                    Previous
+                  </button>
+                  <span className="text-sm text-gray-600">
+                    Page {modalPage} of {modalTotalPages}
+                  </span>
+                  <button
+                    className={`px-3 py-1 border rounded text-sm ${modalPage === modalTotalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'}`}
+                    onClick={() => handleModalPageChange(modalPage + 1)}
+                    disabled={modalPage === modalTotalPages}
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Pagination Controls */}
         <div className="flex justify-between items-center mt-4">

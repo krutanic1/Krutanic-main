@@ -389,3 +389,41 @@
   .law-pricing-highlight { transform: scale(1); }
   .law-ambient-orb-1, .law-ambient-orb-2 { width: 400px; height: 400px; }
 }
+
+/* Pricing Layout Responsive Fixes */
+.law-pricing-left {
+  padding: 4rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.law-pricing-right {
+  background: rgba(20, 20, 30, 0.5);
+  padding: 4rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-left: 1px solid rgba(255,255,255,0.05);
+}
+.law-pricing-title {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #ffffff 0%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .law-pricing-left { padding: 2.5rem 1.5rem; }
+  .law-pricing-right { 
+    padding: 2.5rem 1.5rem; 
+    border-left: none; 
+    border-top: 1px solid rgba(255,255,255,0.05); 
+  }
+  .law-pricing-title { font-size: 2rem; margin-top: 2.5rem; }
+}
+@media (max-width: 600px) {
+  .law-pricing-title { font-size: 1.8rem; }
+}

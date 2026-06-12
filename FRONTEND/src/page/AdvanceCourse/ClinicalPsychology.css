@@ -1678,3 +1678,58 @@
   .cp-compare-table th,
   .cp-compare-table td { padding: 0.9rem 0.75rem; font-size: 0.82rem; }
 }
+
+/* Pricing Layout Responsive Fixes */
+.cp-pricing-badge {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--cp-grad-btn);
+  color: #fff;
+  padding: 6px 20px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 15px rgba(192, 132, 252, 0.4);
+  z-index: 2;
+}
+
+.cp-pricing-left {
+  padding: 4rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.cp-pricing-right {
+  background: rgba(20, 20, 30, 0.5);
+  padding: 4rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-left: 1px solid rgba(255,255,255,0.05);
+}
+.cp-pricing-title {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  background: var(--cp-grad-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .cp-pricing-left { padding: 2.5rem 1.5rem; }
+  .cp-pricing-right { 
+    padding: 2.5rem 1.5rem; 
+    border-left: none; 
+    border-top: 1px solid rgba(255,255,255,0.05); 
+  }
+  .cp-pricing-title { font-size: 2rem; margin-top: 2.5rem; }
+}
+@media (max-width: 600px) {
+  .cp-pricing-title { font-size: 1.8rem; }
+}

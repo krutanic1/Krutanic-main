@@ -354,7 +354,11 @@ router.get("/getmonthlyrevenue", verifyAnyAuth, async (req, res) => {
           programPrice: { $ifNull: ["$programPrice", 0] },
           paidAmount: { $ifNull: ["$paidAmount", 0] },
           status: 1,
-          remark: 1
+          remark: 1,
+          lead: 1,
+          fullname: 1,
+          email: 1,
+          counselor: 1
         }
       },
       {
@@ -397,7 +401,17 @@ router.get("/getmonthlyrevenue", verifyAnyAuth, async (req, res) => {
           creditedRevenue: { $sum: "$creditedAmount" },
           pendingRevenue: { $sum: "$pendingAmount" },
           totalPayments: { $sum: 1 },
-          firstDate: { $min: "$createdAt" } // Used for sorting
+          firstDate: { $min: "$createdAt" }, // Used for sorting
+          sgflCount: {
+            $sum: {
+              $cond: { if: { $eq: ["$lead", "SGFL"] }, then: 1, else: 0 }
+            }
+          },
+          cgflCount: {
+            $sum: {
+              $cond: { if: { $eq: ["$lead", "CGFL"] }, then: 1, else: 0 }
+            }
+          }
         }
       },
       {
@@ -435,7 +449,9 @@ router.get("/getmonthlyrevenue", verifyAnyAuth, async (req, res) => {
           booked: "$bookedRevenue",
           credited: "$creditedRevenue",
           pending: "$pendingRevenue",
-          payments: "$totalPayments"
+          payments: "$totalPayments",
+          sgfl: { $ifNull: ["$sgflCount", 0] },
+          cgfl: { $ifNull: ["$cgflCount", 0] }
         }
       }
     ];
@@ -467,6 +483,61 @@ router.get("/getmonthlyrevenue", verifyAnyAuth, async (req, res) => {
   } catch (error) {
     console.error("Error in /getmonthlyrevenue:", error);
     res.status(500).json({ message: "Server error fetching monthly revenue", error: error.message });
+  }
+});
+
+// GET /getmonthlyleads
+router.get("/getmonthlyleads", verifyAnyAuth, async (req, res) => {
+  try {
+    const { monthStr, leadType, page = 1, limit = 30 } = req.query; // monthStr like "June 2026", leadType like "SGFL"
+    
+    if (!monthStr || !leadType) {
+      return res.status(400).json({ error: "monthStr and leadType are required" });
+    }
+
+    const [monthName, yearStr] = monthStr.split(" ");
+    const year = parseInt(yearStr);
+    
+    const monthMap = {
+      "January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6,
+      "July": 7, "August": 8, "September": 9, "October": 10, "November": 11, "December": 12
+    };
+    
+    const month = monthMap[monthName];
+    if (!month || !year) {
+      return res.status(400).json({ error: "Invalid month format" });
+    }
+
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 1);
+
+    const query = {
+      createdAt: { $gte: startDate, $lt: endDate },
+      lead: leadType
+    };
+
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+
+    const totalLeads = await NewEnrollStudent.countDocuments(query);
+    const totalPages = Math.ceil(totalLeads / limitNum);
+
+    const leads = await NewEnrollStudent.find(query)
+      .select("fullname email counselor createdAt")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum);
+
+    res.json({
+      leads,
+      currentPage: pageNum,
+      totalPages,
+      totalLeads
+    });
+  } catch (error) {
+    console.error("Error in /getmonthlyleads:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 

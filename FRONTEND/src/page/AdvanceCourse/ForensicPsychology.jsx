@@ -376,6 +376,43 @@ const ForensicPsychology = () => {
         </div>
       </section>
 
+      {/* 12. PRICING */}
+      <section className="fp-section">
+        <motion.h2 className="fp-section-title" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}>
+          Program Investment
+        </motion.h2>
+        
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}>
+          <motion.div className="fp-card fp-pricing-highlight" variants={fadeUp} style={{ textAlign: "left", padding: "0", overflow: "hidden", maxWidth: "950px", margin: "0 auto" }}>
+            <div className="fp-grid-2" style={{ gap: "0" }}>
+              <div className="fp-pricing-left">
+                <div className="fp-pricing-badge" style={{ position: "relative", top: "0", left: "0", transform: "none", alignSelf: "flex-start", marginBottom: "1rem" }}>Recommended</div>
+                <h3 className="fp-pricing-title" style={{ marginTop: "0" }}>Comprehensive Program</h3>
+                <p style={{ fontSize: "1.1rem", marginBottom: "2.5rem", color: "var(--genz-text-muted)", lineHeight: "1.6" }}>Everything you need to master forensic psychology, build your portfolio, and accelerate your career in one complete package.</p>
+                
+                <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                  <li style={{ marginBottom: "1.2rem", display: "flex", gap: "12px", alignItems: "center", fontSize: "1.1rem" }}><FaCheckCircle color="#c084fc" size={20} style={{ flexShrink: 0 }}/> <span><strong>4-Phase</strong> Curriculum Access</span></li>
+                  <li style={{ marginBottom: "1.2rem", display: "flex", gap: "12px", alignItems: "center", fontSize: "1.1rem" }}><FaCheckCircle color="#c084fc" size={20} style={{ flexShrink: 0 }}/> <span>Practical <strong>Case Studies</strong></span></li>
+                  <li style={{ marginBottom: "1.2rem", display: "flex", gap: "12px", alignItems: "center", fontSize: "1.1rem" }}><FaCheckCircle color="#c084fc" size={20} style={{ flexShrink: 0 }}/> <span><strong>Portfolio</strong> Development</span></li>
+                  <li style={{ marginBottom: "1.2rem", display: "flex", gap: "12px", alignItems: "center", fontSize: "1.1rem" }}><FaCheckCircle color="#c084fc" size={20} style={{ flexShrink: 0 }}/> <span>Professional <strong>Certification</strong></span></li>
+                  <li style={{ marginBottom: "0", display: "flex", gap: "12px", alignItems: "center", fontSize: "1.1rem" }}><FaCheckCircle color="#c084fc" size={20} style={{ flexShrink: 0 }}/> <span><strong>Career Development</strong> Resources</span></li>
+                </ul>
+              </div>
+              
+              <div className="fp-pricing-right">
+                <p style={{ color: "var(--genz-primary)", fontSize: "1.1rem", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "2px", fontWeight: "700" }}>Program Fee</p>
+                <h4 style={{ fontSize: "4.5rem", color: "#ffffff", margin: "0 0 0.5rem 0", lineHeight: "1" }}>₹11,999</h4>
+                <p style={{ color: "var(--genz-text-muted)", fontSize: "1rem", marginBottom: "2.5rem" }}>One-time payment. Full access.</p>
+                <button onClick={() => setIsModalOpen(true)} className="fp-btn-primary" style={{ width: "100%", padding: "1.2rem", fontSize: "1.2rem", display: "flex", justifyContent: "center", alignItems: "center", gap: "10px" }}>Enroll Now</button>
+                <p style={{ color: "var(--genz-text-muted)", fontSize: "0.9rem", marginTop: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+                  <FaCheckCircle color="#22c55e" /> Secure Enrollment
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      </section>
+
       {/* FAQ */}
       <section className="fp-section">
         <motion.h2 className="fp-section-title" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}>

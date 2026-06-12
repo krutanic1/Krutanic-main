@@ -7,7 +7,14 @@ import toast, { Toaster } from "react-hot-toast";
 
 const AdminHeader = () => {
   const navigate = useNavigate();
-  const [isAdvToggleOn, setIsAdvToggleOn] = useState(false);
+  const [isAdvToggleOn, setIsAdvToggleOn] = useState(
+    localStorage.getItem("adminAdvToggle") === "true"
+  );
+
+  // Update localStorage whenever the toggle changes
+  React.useEffect(() => {
+    localStorage.setItem("adminAdvToggle", isAdvToggleOn);
+  }, [isAdvToggleOn]);
 
   const handleLogout = async () => {
     try {

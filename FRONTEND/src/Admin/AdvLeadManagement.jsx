@@ -40,6 +40,14 @@ const AdvLeadManagement = () => {
     const [assignCount, setAssignCount] = useState("");
     const [assigning, setAssigning] = useState(false);
 
+    // Make Reactive panel state
+    const [showReactivePanel, setShowReactivePanel] = useState(false);
+    const [reactiveMonth, setReactiveMonth] = useState(new Date().getMonth() + 1);
+    const [reactiveYear, setReactiveYear] = useState(new Date().getFullYear());
+    const [selectedReactiveOutcomes, setSelectedReactiveOutcomes] = useState([]);
+    const [isMakingReactive, setIsMakingReactive] = useState(false);
+
+
     // Email Modal state
     const [showEmailModal, setShowEmailModal] = useState(false);
     const [selectedLeadForEmail, setSelectedLeadForEmail] = useState(null);
@@ -290,6 +298,31 @@ const AdvLeadManagement = () => {
         }
     };
 
+    const handleMakeReactive = async () => {
+        if (selectedReactiveOutcomes.length === 0) {
+            toast.error("Please select at least one outcome");
+            return;
+        }
+
+        setIsMakingReactive(true);
+        try {
+            const res = await axios.post(`${API}/api/adv-leads/admin-make-reactive`, {
+                month: reactiveMonth,
+                year: reactiveYear,
+                outcomes: selectedReactiveOutcomes
+            });
+            toast.success(res.data.message);
+            setShowReactivePanel(false);
+            setSelectedReactiveOutcomes([]);
+            fetchLeads(currentPage);
+            fetchFreshCount();
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Failed to make leads reactive");
+        } finally {
+            setIsMakingReactive(false);
+        }
+    };
+
     const toggleLeadSelection = (leadId) => {
         setSelectedLeadIds(prev =>
             prev.includes(leadId) ? prev.filter(id => id !== leadId) : [...prev, leadId]
@@ -313,6 +346,8 @@ const AdvLeadManagement = () => {
             in_followup: { bg: '#fffbe6', border: '#ffe58f', color: '#ad8b00' },
             converted: { bg: '#f6ffed', border: '#b7eb8f', color: '#389e0d' },
             dialed: { bg: '#f9f0ff', border: '#d3adf7', color: '#722ed1' }, // Added dialed status color
+            reactive: { bg: '#fff0f6', border: '#ffadd2', color: '#c41d7f' }, // Reactive status color
+
         };
         return map[status] || { bg: '#f5f5f5', border: '#d9d9d9', color: '#595959' };
     };
@@ -352,9 +387,97 @@ const AdvLeadManagement = () => {
         }
     }
 
+    const reactiveOutcomeOptions = [
+        "All", 
+        "RNR", "Callback Requested", "Not Reachable", "Not Interested", "Junk", "Switched Off",
+        "Attempting Contact", "First Call Connected", "Demo Conducted", "Closed Lost",
+        "Invalid Lead", "No Response (Multi-touch)", "In Conversation", "Demo Booked", 
+        "Decision Pending", "Negotiation Review", "Expected Payment Date", 
+        "Irrelevant Lead", "Pricing Does Not Match", "No Response"
+    ];
+
     return (
         <div id="create-marketing-team">
             <Toaster position="top-center" />
+
+            {/* ── Make Reactive Panel Overlay ─────────────────────── */}
+            {showReactivePanel && (
+                <div style={{
+                    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)',
+                    zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}>
+                    <div style={{
+                        background: '#fff', borderRadius: '12px', padding: '30px',
+                        width: '100%', maxWidth: '500px', boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                            <h2 style={{ margin: 0, color: '#c41d7f' }}>♻️ Recycle as Reactive Leads</h2>
+                            <button onClick={() => { setShowReactivePanel(false); setSelectedReactiveOutcomes([]); }}
+                                style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#999' }}>✕</button>
+                        </div>
+                        
+                        <p style={{ fontSize: '13px', color: '#666', marginBottom: '20px' }}>
+                            Select the month and the last call outcomes to recycle. These leads will be returned to the unassigned pool as "Reactive" and their previous call logs will be deleted.
+                        </p>
+
+                        <div style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
+                            <div style={{ flex: 1 }}>
+                                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '6px', color: '#333' }}>Month</label>
+                                <select value={reactiveMonth} onChange={e => setReactiveMonth(e.target.value)} style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '6px' }}>
+                                    {months.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
+                                </select>
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '6px', color: '#333' }}>Year</label>
+                                <select value={reactiveYear} onChange={e => setReactiveYear(e.target.value)} style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '6px' }}>
+                                    {years.map(y => <option key={y} value={y}>{y}</option>)}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style={{ marginBottom: '20px' }}>
+                            <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>Last Call Outcomes</label>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                                {reactiveOutcomeOptions.map(outcome => (
+                                    <label key={outcome} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '14px', cursor: 'pointer', background: '#f5f5f5', padding: '6px 12px', borderRadius: '20px', border: selectedReactiveOutcomes.includes(outcome) ? '1px solid #c41d7f' : '1px solid #ddd', color: selectedReactiveOutcomes.includes(outcome) ? '#c41d7f' : '#333' }}>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedReactiveOutcomes.includes(outcome)}
+                                            onChange={(e) => {
+                                                if (outcome === "All") {
+                                                    if (e.target.checked) setSelectedReactiveOutcomes(["All"]);
+                                                    else setSelectedReactiveOutcomes([]);
+                                                } else {
+                                                    let newArr = [...selectedReactiveOutcomes].filter(o => o !== "All");
+                                                    if (e.target.checked) newArr.push(outcome);
+                                                    else newArr = newArr.filter(o => o !== outcome);
+                                                    setSelectedReactiveOutcomes(newArr);
+                                                }
+                                            }}
+                                            style={{ display: 'none' }}
+                                        />
+                                        {outcome}
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={handleMakeReactive}
+                            disabled={isMakingReactive || selectedReactiveOutcomes.length === 0}
+                            style={{
+                                width: '100%', padding: '12px',
+                                background: (isMakingReactive || selectedReactiveOutcomes.length === 0) ? '#f0f0f0' : '#c41d7f',
+                                color: (isMakingReactive || selectedReactiveOutcomes.length === 0) ? '#aaa' : '#fff',
+                                border: 'none', borderRadius: '8px', fontSize: '15px',
+                                fontWeight: 'bold', cursor: (isMakingReactive || selectedReactiveOutcomes.length === 0) ? 'not-allowed' : 'pointer'
+                            }}
+                        >
+                            {isMakingReactive ? "Processing..." : "Convert to Reactive Leads"}
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* ── Assign Panel Overlay ─────────────────────── */}
             {showAssignPanel && (
@@ -483,6 +606,16 @@ const AdvLeadManagement = () => {
                                             {freshCount} fresh
                                         </span>
                                     )}
+                                </button>
+                                <button
+                                    onClick={() => setShowReactivePanel(true)}
+                                    style={{
+                                        padding: '10px 22px', background: '#fff0f6', color: '#c41d7f',
+                                        border: '1px solid #ffadd2', borderRadius: '8px', fontSize: '15px',
+                                        fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'
+                                    }}
+                                >
+                                    ♻️ Make Reactive
                                 </button>
 
                             </>
@@ -616,6 +749,7 @@ const AdvLeadManagement = () => {
                         <option value="assigned_to_specialist">Assigned to Specialist</option>
                         <option value="in_followup">In Follow-up</option>
                         <option value="converted">Converted</option>
+                        <option value="reactive">Reactive</option>
                     </select>
                     <button onClick={() => { fetchLeads(1); fetchFreshCount(); }}
                         style={{ padding: '8px 14px', background: '#f0f0f0', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer' }}>
@@ -725,8 +859,8 @@ const AdvLeadManagement = () => {
                                                         </td>
                                                         <td style={{ fontSize: '12px', color: '#555' }}>{lead.current_status || '—'}</td>
                                                         <td>
-                                                            <span style={{ padding: '3px 10px', borderRadius: '12px', fontSize: '11px', background: sc.bg, border: `1px solid ${sc.border}`, color: sc.color, whiteSpace: 'nowrap' }}>
-                                                                {lead.status?.replace(/_/g, ' ')}
+                                                            <span style={{ padding: '3px 10px', borderRadius: '12px', fontSize: '11px', background: (lead.is_reactive && lead.status === 'fresh') ? '#fff0f6' : sc.bg, border: `1px solid ${(lead.is_reactive && lead.status === 'fresh') ? '#ffadd2' : sc.border}`, color: (lead.is_reactive && lead.status === 'fresh') ? '#c41d7f' : sc.color, whiteSpace: 'nowrap', fontWeight: 'bold' }}>
+                                                                {lead.is_reactive && lead.status === 'fresh' ? 'REACTIVE LEAD' : lead.status?.replace(/_/g, ' ')}
                                                             </span>
                                                         </td>
                                                         <td style={{ fontSize: '13px', color: '#555' }}>

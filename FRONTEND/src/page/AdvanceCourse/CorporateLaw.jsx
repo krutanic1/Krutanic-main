@@ -147,42 +147,37 @@ const CorporateLaw = () => {
 
       {/* PRICING */}
       <section className="law-section">
-        <motion.h2 className="law-section-title" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}>
-          Enrollment Options
+        <motion.h2 className="law-section-title" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp} style={{ marginBottom: "4rem" }}>
+          Program Investment
         </motion.h2>
         
-        <motion.div className="law-grid-2" style={{ maxWidth: "900px", margin: "0 auto" }} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}>
-          <motion.div className="law-card law-pricing-card" variants={fadeUp}>
-            <div>
-              <h3 style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>Self-Paced</h3>
-              <p style={{ fontSize: "1.2rem", marginBottom: "2rem" }}>For independent learners</p>
-              <h4 style={{ fontSize: "3.5rem", color: "#ffffff", marginBottom: "2rem" }}>₹28,000</h4>
-              <ul style={{ listStyle: "none", padding: 0, textAlign: "left", marginBottom: "3rem" }}>
-                <li style={{ marginBottom: "1rem" }}>✓ Full access to curriculum</li>
-                <li style={{ marginBottom: "1rem" }}>✓ Pre-recorded lectures</li>
-                <li style={{ marginBottom: "1rem" }}>✓ Community support</li>
-                <li style={{ marginBottom: "1rem", color: "var(--law-text-muted)" }}>✕ No 1-on-1 Mentorship</li>
-                <li style={{ color: "var(--law-text-muted)" }}>✕ No Placement Guarantee</li>
-              </ul>
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}>
+          <motion.div className="law-card law-pricing-highlight" variants={fadeUp} style={{ textAlign: "left", padding: "0", overflow: "hidden", maxWidth: "950px", margin: "0 auto", position: "relative" }}>
+            <div className="law-grid-2" style={{ gap: "0" }}>
+              <div className="law-pricing-left">
+                <div className="law-pricing-badge" style={{ position: "relative", top: "0", left: "0", transform: "none", alignSelf: "flex-start", marginBottom: "1rem" }}>Recommended</div>
+                <h3 className="law-pricing-title" style={{ marginTop: "0" }}>Comprehensive Program</h3>
+                <p style={{ fontSize: "1.1rem", marginBottom: "2.5rem", color: "var(--law-text-muted, #9ca3af)", lineHeight: "1.6" }}>Everything you need to master corporate law, build your portfolio, and accelerate your legal career in one complete package.</p>
+                
+                <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                  <li style={{ marginBottom: "1.2rem", display: "flex", gap: "12px", alignItems: "center", fontSize: "1.1rem" }}><FaCheckCircle color="#f59e0b" size={20} style={{ flexShrink: 0 }}/> <span><strong>Complete</strong> Curriculum Access</span></li>
+                  <li style={{ marginBottom: "1.2rem", display: "flex", gap: "12px", alignItems: "center", fontSize: "1.1rem" }}><FaCheckCircle color="#f59e0b" size={20} style={{ flexShrink: 0 }}/> <span>Practical <strong>Drafting Exercises</strong></span></li>
+                  <li style={{ marginBottom: "1.2rem", display: "flex", gap: "12px", alignItems: "center", fontSize: "1.1rem" }}><FaCheckCircle color="#f59e0b" size={20} style={{ flexShrink: 0 }}/> <span><strong>M&A</strong> Case Studies</span></li>
+                  <li style={{ marginBottom: "1.2rem", display: "flex", gap: "12px", alignItems: "center", fontSize: "1.1rem" }}><FaCheckCircle color="#f59e0b" size={20} style={{ flexShrink: 0 }}/> <span>Professional <strong>Mentorship</strong></span></li>
+                  <li style={{ marginBottom: "0", display: "flex", gap: "12px", alignItems: "center", fontSize: "1.1rem" }}><FaCheckCircle color="#f59e0b" size={20} style={{ flexShrink: 0 }}/> <span><strong>Career Placement</strong> Support</span></li>
+                </ul>
+              </div>
+              
+              <div className="law-pricing-right">
+                <p style={{ color: "#f59e0b", fontSize: "1.1rem", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "2px", fontWeight: "700" }}>Program Fee</p>
+                <h4 style={{ fontSize: "4.5rem", color: "#ffffff", margin: "0 0 0.5rem 0", lineHeight: "1" }}>₹11,999</h4>
+                <p style={{ color: "var(--law-text-muted, #9ca3af)", fontSize: "1rem", marginBottom: "2.5rem" }}>One-time payment. Full access.</p>
+                <button onClick={() => setIsModalOpen(true)} className="law-btn-primary" style={{ width: "100%", padding: "1.2rem", fontSize: "1.2rem", display: "flex", justifyContent: "center", alignItems: "center", gap: "10px" }}>Enroll Now</button>
+                <p style={{ color: "var(--law-text-muted, #9ca3af)", fontSize: "0.9rem", marginTop: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+                  <FaCheckCircle color="#22c55e" /> Secure Enrollment
+                </p>
+              </div>
             </div>
-            <button onClick={() => setIsModalOpen(true)} className="law-btn-secondary" style={{ width: "100%", boxSizing: "border-box" }}>Select Plan</button>
-          </motion.div>
-
-          <motion.div className="law-card law-pricing-card law-pricing-highlight" variants={fadeUp}>
-            <div className="law-pricing-badge">Recommended</div>
-            <div>
-              <h3 style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>Mentorship Pro</h3>
-              <p style={{ fontSize: "1.2rem", marginBottom: "2rem" }}>Complete career transformation</p>
-              <h4 style={{ fontSize: "3.5rem", color: "#ffffff", marginBottom: "2rem" }}>₹49,000</h4>
-              <ul style={{ listStyle: "none", padding: 0, textAlign: "left", marginBottom: "3rem" }}>
-                <li style={{ marginBottom: "1rem" }}>✓ Full access to curriculum</li>
-                <li style={{ marginBottom: "1rem" }}>✓ Pre-recorded + Live Q&A</li>
-                <li style={{ marginBottom: "1rem" }}>✓ Weekly 1-on-1 Mentorship</li>
-                <li style={{ marginBottom: "1rem", color: "#fcd34d", fontWeight: "600" }}>✓ 100% Placement Guarantee</li>
-                <li style={{ color: "#fcd34d", fontWeight: "600" }}>✓ Real Drafting Exercises</li>
-              </ul>
-            </div>
-            <button onClick={() => setIsModalOpen(true)} className="law-btn-primary" style={{ width: "100%", boxSizing: "border-box" }}>Apply for Pro</button>
           </motion.div>
         </motion.div>
       </section>

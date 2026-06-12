@@ -399,7 +399,7 @@ router.get("/get-outcome-counts", async (req, res) => {
                     $or: [
                         { owner_id: userId },
                         { current_owner_id: userId },
-                        { status: "fresh" }
+                        { status: "fresh", is_reactive: { $ne: true } }
                     ]
                 };
             } else {
@@ -411,7 +411,7 @@ router.get("/get-outcome-counts", async (req, res) => {
             const teamNames = teams.map(t => t.team_name);
             baseQuery = {
                 $or: [
-                    { status: "fresh" },
+                    { status: "fresh", is_reactive: { $ne: true } },
                     { manager_id: userId },
                     { team_id: { $in: teamIds } },
                     { team_name: { $in: teamNames } },
@@ -425,7 +425,7 @@ router.get("/get-outcome-counts", async (req, res) => {
             const teamNames = teams.map(t => t.team_name);
             baseQuery = {
                 $or: [
-                    { status: "fresh" },
+                    { status: "fresh", is_reactive: { $ne: true } },
                     { leader_id: userId },
                     { team_id: { $in: teamIds } },
                     { team_name: { $in: teamNames } },
@@ -500,8 +500,20 @@ router.get("/get-outcome-counts", async (req, res) => {
 
         // 1. Get counts for main stages
         await Promise.all(stages.map(async (stage) => {
-            counts[stage] = await AdvLead.countDocuments({ ...baseQuery, stage });
+            if (stage === "Fresh Lead") {
+                if (roleNorm === "admin" || roleNorm.includes("manager") || roleNorm.includes("leader")) {
+                    counts[stage] = await AdvLead.countDocuments({ ...baseQuery, stage, is_reactive: { $ne: true } });
+                } else {
+                    counts[stage] = await AdvLead.countDocuments({ ...baseQuery, stage });
+                }
+            } else {
+                counts[stage] = await AdvLead.countDocuments({ ...baseQuery, stage });
+            }
         }));
+
+        if (roleNorm === "admin" || roleNorm.includes("manager") || roleNorm.includes("leader")) {
+            counts["Reactive Lead"] = await AdvLead.countDocuments({ ...baseQuery, is_reactive: true });
+        }
 
         // 2. Get counts for nested dispositions per stage (uses the 'disposition' schema field)
         const nestedAggregation = await AdvLead.aggregate([
@@ -929,6 +941,82 @@ router.post("/bulk-assign-to-specialist", async (req, res) => {
     }
 });
 
+// POST: Admin Make Leads Reactive
+router.post("/admin-make-reactive", async (req, res) => {
+    const { month, year, outcomes } = req.body;
+    if (!month || !year) return res.status(400).json({ message: "Month and year are required" });
+    try {
+        const m = parseInt(month) - 1;
+        const y = parseInt(year);
+        const startDate = new Date(y, m, 1);
+        const endDate = new Date(y, m + 1, 0, 23, 59, 59, 999);
+
+        let query = { created_at: { $gte: startDate, $lte: endDate } };
+        
+        if (outcomes && outcomes.length > 0 && !outcomes.includes("All")) {
+            query.$or = outcomes.map(out => {
+                const outcomeLower = out.toLowerCase();
+                const outcomeWithUnderscore = outcomeLower.replace(/\s+/g, '_');
+                return {
+                    $or: [
+                        { last_outcome: new RegExp(`^(${outcomeLower}|${outcomeWithUnderscore})$`, "i") },
+                        { status: new RegExp(`^(${outcomeLower}|${outcomeWithUnderscore})$`, "i") },
+                        { stage: new RegExp(`^(${outcomeLower}|${outcomeWithUnderscore})$`, "i") },
+                        { disposition: new RegExp(`^(${outcomeLower}|${outcomeWithUnderscore})$`, "i") }
+                    ]
+                };
+            }).flatMap(q => q.$or);
+        }
+
+        const leads = await AdvLead.find(query);
+        if (leads.length === 0) return res.status(404).json({ message: "No leads found matching the criteria" });
+
+        let updatedCount = 0;
+        const leadIds = leads.map(l => l._id);
+
+        for (const lead of leads) {
+            const currentOwner = lead.owner_id || lead.current_owner_id;
+            let oldOwners = lead.old_owners || [];
+            
+            if (currentOwner && !oldOwners.includes(currentOwner.toString())) {
+                oldOwners.push(currentOwner.toString());
+            }
+            if (oldOwners.length > 10) {
+                oldOwners = oldOwners.slice(oldOwners.length - 10);
+            }
+
+            lead.old_owners = oldOwners;
+            lead.is_reactive = true;
+            lead.status = "fresh";
+            lead.stage = "Fresh Lead";
+            lead.disposition = "New Lead";
+            lead.owner_id = null;
+            lead.current_owner_id = null;
+            lead.owner_name = "";
+            lead.team_id = null;
+            lead.team_name = "";
+            lead.manager_id = null;
+            lead.leader_id = null;
+            lead.specialist_id = null;
+            lead.last_outcome = "";
+            lead.attempt_count = 0;
+            lead.last_contacted_at = null;
+            
+            await lead.save();
+            updatedCount++;
+        }
+
+        const AdvCallActivity = require("../models/AdvCallActivity");
+        if(AdvCallActivity) {
+           await AdvCallActivity.deleteMany({ leadId: { $in: leadIds } });
+        }
+
+        res.status(200).json({ success: true, updated: updatedCount, message: `${updatedCount} leads marked as reactive and recycled.` });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
 // POST: Manual bulk assign specific leads to someone (Checkbox selected)
 router.post("/manual-bulk-assign", async (req, res) => {
     const { leadIds, assigneeId, assigneeName, assigneeRole, assignerName } = req.body;
@@ -936,6 +1024,13 @@ router.post("/manual-bulk-assign", async (req, res) => {
         return res.status(400).json({ message: "leadIds, assigneeId, and assigneeRole are required" });
     }
     try {
+        // Validate old_owners to prevent assigning to previous owners
+        const leadsToAssign = await AdvLead.find({ _id: { $in: leadIds } });
+        const invalidLeads = leadsToAssign.filter(l => l.old_owners && l.old_owners.includes(assigneeId));
+        if (invalidLeads.length > 0) {
+            return res.status(400).json({ message: `Cannot assign ${invalidLeads.length} lead(s) to ${assigneeName} because they previously owned them. Please deselect them or choose another assignee.` });
+        }
+
         // Find if this person belongs to a team to set team_id
         const team = await AdvTeamStructure.findOne({
             $or: [{ manager_id: assigneeId }, { leaders: assigneeId }, { "members.userId": assigneeId }]
@@ -1026,7 +1121,7 @@ router.get("/get-adv-leads", async (req, res) => {
                     $or: [
                         { owner_id: userId },
                         { current_owner_id: userId },
-                        { status: "fresh" }
+                        { status: "fresh", is_reactive: { $ne: true } }
                     ]
                 };
             } else {
@@ -1043,7 +1138,7 @@ router.get("/get-adv-leads", async (req, res) => {
             const teamNames = teams.map(t => t.team_name);
             baseQuery = {
                 $or: [
-                    { status: "fresh" },
+                    { status: "fresh", is_reactive: { $ne: true } },
                     { manager_id: userId },
                     { team_id: { $in: teamIds } },
                     { team_name: { $in: teamNames } },
@@ -1057,7 +1152,7 @@ router.get("/get-adv-leads", async (req, res) => {
             const teamNames = teams.map(t => t.team_name);
             baseQuery = {
                 $or: [
-                    { status: "fresh" },
+                    { status: "fresh", is_reactive: { $ne: true } },
                     { leader_id: userId },
                     { team_id: { $in: teamIds } },
                     { team_name: { $in: teamNames } },
@@ -1130,8 +1225,17 @@ router.get("/get-adv-leads", async (req, res) => {
         }
         
         if (stage) {
-            // Case-insensitive regex match for stage
-            andConditions.push({ stage: new RegExp(`^${stage}$`, "i") });
+            if (stage === "Reactive Lead") {
+                andConditions.push({ is_reactive: true });
+            } else if (stage === "Fresh Lead") {
+                if (roleNorm === "admin" || roleNorm.includes("manager") || roleNorm.includes("leader")) {
+                    andConditions.push({ stage: new RegExp(`^${stage}$`, "i"), is_reactive: { $ne: true } });
+                } else {
+                    andConditions.push({ stage: new RegExp(`^${stage}$`, "i") });
+                }
+            } else {
+                andConditions.push({ stage: new RegExp(`^${stage}$`, "i") });
+            }
         }
 
         if (disposition) {

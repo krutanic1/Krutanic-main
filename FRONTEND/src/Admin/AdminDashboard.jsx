@@ -269,7 +269,9 @@ const AdminDashboard = () => {
                 <th>Course</th>
                 <th>Session</th>
                 <th>For {currentMonth} </th>
+                <th>Full Paid ({currentMonth})</th>
                 <th>For {nextMonth}</th>
+                <th>Full Paid ({nextMonth})</th>
               </tr>
             </thead>
             <tbody>
@@ -279,7 +281,9 @@ const AdminDashboard = () => {
                   <td>{course.title}</td>
                   <td>{course.session ? Object.keys(course.session).length : 0}</td>
                   <td>{payment?.filter((item) => item.domainId === course._id && item.monthOpted === currentMonth).length || 0}</td>
+                  <td className="text-green-600 font-bold">{payment?.filter((item) => item.domainId === course._id && item.monthOpted === currentMonth && item.status === "fullPaid").length || 0}</td>
                   <td>{payment?.filter((item) => item.domainId === course._id && item.monthOpted === nextMonth).length || 0}</td>
+                  <td className="text-green-600 font-bold">{payment?.filter((item) => item.domainId === course._id && item.monthOpted === nextMonth && item.status === "fullPaid").length || 0}</td>
                 </tr>
               ))}
             </tbody>
@@ -305,7 +309,9 @@ const AdminDashboard = () => {
                 <th>Course</th>
                 <th>Session</th>
                 <th>For {currentMonth} </th>
+                <th>Full Paid ({currentMonth})</th>
                 <th>For {nextMonth}</th>
+                <th>Full Paid ({nextMonth})</th>
               </tr>
             </thead>
             <tbody>
@@ -315,7 +321,9 @@ const AdminDashboard = () => {
                   <td>{course.title}</td>
                   <td>{course.sessions?.length || 0}</td>
                   <td>{advPayment?.filter((item) => item.domainId === course._id && item.monthOpted === currentMonth).length || 0}</td>
+                  <td className="text-green-600 font-bold">{advPayment?.filter((item) => item.domainId === course._id && item.monthOpted === currentMonth && item.status === "fullPaid").length || 0}</td>
                   <td>{advPayment?.filter((item) => item.domainId === course._id && item.monthOpted === nextMonth).length || 0}</td>
+                  <td className="text-green-600 font-bold">{advPayment?.filter((item) => item.domainId === course._id && item.monthOpted === nextMonth && item.status === "fullPaid").length || 0}</td>
                 </tr>
               ))}
             </tbody>

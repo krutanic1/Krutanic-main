@@ -493,6 +493,9 @@ const AdvTeamMyLeads = () => {
                     >
                         <option value="">📊 All Stages</option>
                         <option value="Fresh Lead">🆕 Fresh Lead (Not Called)</option>
+                        {(isManager || isLeader || (userName && userName.toLowerCase().includes("sumeetha"))) && (
+                            <option value="Reactive Lead">♻️ Reactive Lead ({outcomeCounts["Reactive Lead"] || 0})</option>
+                        )}
                         <option value="Attempting Contact">📞 Attempting Contact ({outcomeCounts["Attempting Contact"] || 0})</option>
                         <option value="First Call Connected">✅ First Call Connected ({outcomeCounts["First Call Connected"] || 0})</option>
                         <option value="Demo Conducted">🎯 Demo Conducted ({outcomeCounts["Demo Conducted"] || 0})</option>
@@ -530,6 +533,7 @@ const AdvTeamMyLeads = () => {
                         <option value="assigned_to_specialist">Sent to Specialist</option>
                         <option value="in_followup">In Follow-up</option>
                         <option value="converted">Converted</option>
+                        <option value="reactive">Reactive</option>
                     </select>
 
                     <button onClick={() => fetchMyLeads(1, stageFilter, statusFilter)} style={{ padding: '8px 14px', background: '#f0f0f0', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer' }}>🔄 Refresh</button>

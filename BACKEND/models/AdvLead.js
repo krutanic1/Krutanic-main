@@ -23,6 +23,9 @@ const AdvLeadSchema = new mongoose.Schema({
     team_id: { type: mongoose.Schema.Types.ObjectId, ref: "AdvTeamStructure" },
     current_owner_id: { type: mongoose.Schema.Types.ObjectId, ref: "AdvUser" },
     current_owner_role: { type: String },
+    old_owners: [{ type: String }], // Array to store up to 10 past owner IDs
+    is_reactive: { type: Boolean, default: false }, // Permanent flag for recycled leads
+
     // For existing ADV team system (string-based assignment)
     team_name: { type: String },      // team name from existing getadvteamname
     owner_id: { type: String },       // member _id from existing getadvteam (string)
