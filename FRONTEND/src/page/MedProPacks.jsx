@@ -93,6 +93,24 @@ const programs = [
     outcomes: ["Mergers & Acquisitions Deep Dive", "Legal Due Diligence & Documentation", "Corporate Governance Frameworks", "IP & Securities Law Fundamentals", "Negotiation & Deal Structuring"],
     roles: ["Corporate Lawyer", "Legal Analyst", "Compliance Officer", "In-House Counsel"],
     link: "/corporate-law"
+  },
+  {
+    id: "psychology",
+    badge: "Trending",
+    badgeColor: "#3b82f6",
+    Icon: MdOutlineScience,
+    accentColor: "#3b82f6",
+    gradient: "linear-gradient(90deg, rgba(10,10,20,0.95) 20%, rgba(59,130,246,0.5) 100%)",
+    image: "/medpro/psychology.png",
+    title: "Psychology",
+    subtitle: "Explore the Human Mind & Behavior",
+    duration: "2-3 Months",
+    level: "Beginner–Intermediate",
+    domain: "Psychology · Science",
+    description: "A foundational to advanced journey into general psychology. Understand cognitive processes, human development, social interactions, and behavioral theories. Perfect for beginners or those seeking to apply psychological principles in HR, marketing, or general management.",
+    outcomes: ["Cognitive & Behavioral Analysis", "Social Psychology & Group Dynamics", "Developmental Stages & Learning Theories", "Personality Psychology", "Research Methods & Ethics"],
+    roles: ["Behavioral Analyst", "HR Specialist", "Market Researcher", "Educational Consultant"],
+    link: "/psychology"
   }
 ];
 
@@ -418,13 +436,13 @@ const MedProPacks = () => {
             </thead>
             <tbody>
               {[
-                { label: "Duration",       vals: ["2-3 Months", "2-3 Months", "2-3 Months"] },
-                { label: "Level",          vals: ["Advanced", "Professional", "Intermediate–Advanced"] },
-                { label: "Live Mentorship",vals: ["✓", "✓", "✓"] },
-                { label: "Portfolio Projects", vals: ["✓", "✓", "✓"] },
-                { label: "Certificate",    vals: ["✓", "✓", "✓"] },
-                { label: "Rec. Letter",    vals: ["✓", "✓", "✓"] },
-                { label: "Case Studies",   vals: ["Forensic / Legal", "Clinical / Indian Context", "Corporate / M&A"] },
+                { label: "Duration",       vals: ["2-3 Months", "2-3 Months", "2-3 Months", "2-3 Months"] },
+                { label: "Level",          vals: ["Advanced", "Professional", "Intermediate–Advanced", "Beginner–Intermediate"] },
+                { label: "Live Mentorship",vals: ["✓", "✓", "✓", "✓"] },
+                { label: "Portfolio Projects", vals: ["✓", "✓", "✓", "✓"] },
+                { label: "Certificate",    vals: ["✓", "✓", "✓", "✓"] },
+                { label: "Rec. Letter",    vals: ["✓", "✓", "✓", "✓"] },
+                { label: "Case Studies",   vals: ["Forensic / Legal", "Clinical / Indian Context", "Corporate / M&A", "Behavioral / Social"] },
               ].map((row, i) => (
                 <tr key={i}>
                   <td className="mp2-compare-feature">{row.label}</td>

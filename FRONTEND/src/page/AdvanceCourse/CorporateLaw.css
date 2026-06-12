@@ -427,3 +427,107 @@
 @media (max-width: 600px) {
   .law-pricing-title { font-size: 1.8rem; }
 }
+
+/* Additional Styles for Expanded Corporate Law Page */
+
+.law-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; }
+
+.law-banner {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(3, 0, 20, 0.8) 100%);
+  border: 1px solid var(--law-primary);
+  border-radius: 24px;
+  padding: 4rem 3rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  margin: 4rem auto;
+  max-width: 1000px;
+}
+
+.law-banner::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at center, rgba(245, 158, 11, 0.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.law-banner h3 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.law-banner p {
+  font-size: 1.1rem;
+  color: var(--law-text-muted);
+  margin-bottom: 2rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.law-accordion-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1rem;
+}
+
+.law-accordion-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 0.5rem;
+  color: #e2e8f0;
+  font-size: 1rem;
+}
+
+.law-accordion-list li::before {
+  content: "?";
+  color: var(--law-primary);
+}
+
+.law-card-small {
+  background: var(--law-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 2rem;
+  border: 1px solid var(--law-border);
+  transition: all 0.3s ease;
+}
+
+.law-card-small:hover {
+  transform: translateY(-5px);
+  background: var(--law-card-hover);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.law-card-small h4 {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+  color: #fbbf24;
+}
+
+.law-overview-content {
+  font-size: 1.1rem;
+  color: var(--law-text-muted);
+  line-height: 1.8;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.law-overview-content p {
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 992px) {
+  .law-grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .law-grid-4 { grid-template-columns: 1fr; }
+  .law-banner { padding: 3rem 1.5rem; }
+  .law-banner h3 { font-size: 1.8rem; }
+}

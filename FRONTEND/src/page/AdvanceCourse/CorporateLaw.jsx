@@ -2,7 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaBalanceScale, FaHandshake, FaBriefcase, FaChevronDown, FaCheckCircle, FaStar, FaBuilding } from "react-icons/fa";
+import { 
+  FaBalanceScale, FaHandshake, FaBriefcase, FaChevronDown, 
+  FaCheckCircle, FaStar, FaBuilding, FaUserGraduate, 
+  FaChartLine, FaGavel, FaShieldAlt, FaFileContract, 
+  FaDownload, FaComments
+} from "react-icons/fa";
 import MedProFormModal from "../MedProFormModal";
 import "./CorporateLaw.css";
 
@@ -12,6 +17,7 @@ const CorporateLaw = () => {
   }, []);
 
   const [activeFaq, setActiveFaq] = useState(null);
+  const [activeModule, setActiveModule] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState('Corporate Law');
 
@@ -28,20 +34,115 @@ const CorporateLaw = () => {
     }
   };
 
+  const whoShouldEnroll = [
+    { title: "Law Students", desc: "Build a strong foundation in corporate transactions, making you highly competitive for top law firm placements." },
+    { title: "Fresh Graduates", desc: "Bridge the gap between academic theory and practical corporate law, making you ready for day-one responsibilities." },
+    { title: "Junior Associates", desc: "Accelerate your career trajectory by mastering complex drafting, M&A structures, and compliance frameworks." },
+    { title: "In-House Legal Aspirants", desc: "Learn to handle contracts, governance, and risk management from the inside of a corporation." },
+    { title: "Compliance Professionals", desc: "Deepen your understanding of statutory regulations and corporate governance to lead compliance functions effectively." },
+    { title: "Founders & Entrepreneurs", desc: "Gain critical legal understanding to structure your company, negotiate term sheets, and protect intellectual property." }
+  ];
+
+  const outcomes = [
+    { icon: <FaBuilding />, title: "Company Formation", desc: "Master the legal structure of modern business entities." },
+    { icon: <FaBalanceScale />, title: "Corporate Governance", desc: "Advising boards and navigating corporate governance processes." },
+    { icon: <FaShieldAlt />, title: "Regulatory Compliance", desc: "Managing statutory and regulatory compliance risks." },
+    { icon: <FaFileContract />, title: "Contract Drafting", desc: "Drafting and negotiating iron-clad corporate agreements." },
+    { icon: <FaHandshake />, title: "Mergers & Acquisitions", desc: "Structuring M&A deals and conducting legal due diligence." },
+    { icon: <FaChartLine />, title: "Securities & Markets", desc: "Understanding capital markets and securities regulations." },
+    { icon: <FaGavel />, title: "Dispute Resolution", desc: "Handling arbitration, litigation strategy, and dispute basics." }
+  ];
+
   const curriculum = [
-    { title: "Corporate Governance & Compliance", desc: "Understand the regulatory frameworks, fiduciary duties, and board structures that govern modern corporations." },
-    { title: "Mergers & Acquisitions (M&A)", desc: "Master the legal intricacies of structuring deals, due diligence, anti-trust laws, and hostile takeovers." },
-    { title: "Contract Drafting & Negotiation", desc: "Learn to draft iron-clad corporate contracts, term sheets, and NDAs. Practice high-stakes negotiation tactics." },
-    { title: "Intellectual Property & Tech Law", desc: "Protect corporate assets by understanding patents, trademarks, software licensing, and data privacy regulations." },
-    { title: "Securities & Capital Markets", desc: "Navigate IPOs, venture capital funding, SEC compliance, and insider trading laws." },
-    { title: "Dispute Resolution & Arbitration", desc: "Explore alternative dispute resolution (ADR), commercial litigation, and international arbitration procedures." }
+    { 
+      title: "Corporate Governance & Compliance", 
+      desc: "Understand the regulatory frameworks, fiduciary duties, and board structures that govern modern corporations.",
+      subtopics: [
+        "Nature and scope of corporate law",
+        "Types of companies and business entities",
+        "Incorporation and corporate personality",
+        "Memorandum and articles",
+        "Directors, KMPs, and board powers",
+        "Meetings, resolutions, disclosures, reporting",
+        "Corporate governance frameworks",
+        "Statutory registers, filings, and compliance management"
+      ]
+    },
+    { 
+      title: "Mergers & Acquisitions (M&A)", 
+      desc: "Master the legal intricacies of structuring deals, due diligence, anti-trust laws, and hostile takeovers.",
+      subtopics: [
+        "Business transfers and restructuring",
+        "Deal structures",
+        "Legal due diligence",
+        "Transaction documentation",
+        "Share purchase and asset purchase concepts",
+        "Takeovers and regulatory approvals",
+        "Competition and anti-trust basics",
+        "Post-merger integration risk areas"
+      ]
+    },
+    { 
+      title: "Contract Drafting & Negotiation", 
+      desc: "Learn to draft iron-clad corporate contracts, term sheets, and NDAs. Practice high-stakes negotiation tactics.",
+      subtopics: [
+        "Contract law fundamentals in corporate practice",
+        "Drafting clauses with commercial intent",
+        "NDAs, employment agreements, vendor agreements, shareholder agreements",
+        "Boilerplate clauses",
+        "Risk allocation",
+        "Negotiation strategy",
+        "Reviewing, redlining, and closing legal comments"
+      ]
+    },
+    { 
+      title: "Intellectual Property & Tech Law", 
+      desc: "Protect corporate assets by understanding patents, trademarks, software licensing, and data privacy regulations.",
+      subtopics: [
+        "IP ownership in companies",
+        "Trademarks, copyright, patents, trade secrets",
+        "Software licensing",
+        "Technology contracts",
+        "Confidential information",
+        "Data protection and privacy considerations",
+        "Corporate handling of digital assets"
+      ]
+    },
+    { 
+      title: "Securities & Capital Markets", 
+      desc: "Navigate IPOs, venture capital funding, SEC compliance, and insider trading laws.",
+      subtopics: [
+        "Share capital and securities",
+        "Private placements and fundraising",
+        "Venture capital and investment rounds",
+        "Public offerings overview",
+        "Disclosure and compliance concepts",
+        "Investor rights",
+        "Insider trading and market conduct basics"
+      ]
+    },
+    { 
+      title: "Dispute Resolution & Arbitration", 
+      desc: "Explore alternative dispute resolution (ADR), commercial litigation, and international arbitration procedures.",
+      subtopics: [
+        "Corporate disputes and risk scenarios",
+        "Arbitration process",
+        "Commercial litigation overview",
+        "Breach and enforcement remedies",
+        "Shareholder and contractual disputes",
+        "Strategy, evidence, and settlement considerations"
+      ]
+    }
   ];
 
   const faqs = [
-    { q: "Do I need a law degree to enroll?", a: "While beneficial, it is not strictly required. This course is ideal for law students, paralegals, and business executives looking to master corporate legal strategy." },
-    { q: "Who are the instructors?", a: "You will be mentored by senior partners from top-tier corporate law firms and in-house legal counsel from Fortune 500 companies." },
-    { q: "Is there practical drafting experience?", a: "Yes. A core component of the course involves drafting actual contracts, term sheets, and compliance reports which are reviewed by mentors." },
-    { q: "What are the career prospects?", a: "Graduates are highly sought after for roles as Corporate Counsel, Legal Analysts, M&A Consultants, and Compliance Officers." }
+    { q: "Do I need a law degree to enroll?", a: "While a law degree is highly beneficial, it is not strictly required. This course is designed to be highly accessible for law students, fresh graduates, and business professionals alike who want to build a deep understanding of corporate law." },
+    { q: "Who are the instructors?", a: "You will be guided by experienced legal professionals, practicing corporate lawyers, and industry experts who bring real-world transaction and litigation experience directly into the classroom." },
+    { q: "Is there practical drafting experience?", a: "Absolutely. We go beyond theory. You will be engaging in hands-on drafting exercises, including NDAs, shareholder agreements, and term sheets, preparing you for real corporate legal workflows." },
+    { q: "What are the career prospects?", a: "Completing this advanced program prepares you for highly sought-after roles within corporate legal teams, top-tier law firms, compliance departments, and transaction advisory services." },
+    { q: "Is the program suitable for students and working professionals?", a: "Yes, the program is structured flexibly to accommodate the schedules of both ambitious law students and busy working professionals looking to upskill." },
+    { q: "Will I learn real corporate documents and transaction workflows?", a: "Yes. The curriculum includes practical exposure through case studies, transaction document review, and due diligence simulations to mirror exact real-world tasks." },
+    { q: "Is the program fully online?", a: "Yes, the entire program is delivered 100% online, offering you the convenience of learning from anywhere while maintaining high-touch mentorship." }
   ];
 
   return (
@@ -70,7 +171,7 @@ const CorporateLaw = () => {
             </motion.h1>
             
             <motion.p className="law-hero-subtitle" variants={fadeUp}>
-              An elite program designed to equip you with the legal acumen to navigate M&A, corporate governance, and complex contract negotiations in the corporate world.
+              An elite, practice-oriented program designed to help you master company law, corporate governance, compliance, mergers and acquisitions, securities regulation, contract drafting, and dispute resolution for the modern legal and business landscape.
             </motion.p>
             
             <motion.div className="law-hero-ctas" variants={fadeUp}>
@@ -88,43 +189,74 @@ const CorporateLaw = () => {
           >
             <h3 style={{ marginBottom: "1.5rem", fontSize: "1.8rem" }}>Why Corporate Law?</h3>
             <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "1.2rem", fontSize: "1.1rem", color: "#e2e8f0" }}>
-              <li style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}><FaBalanceScale color="#f59e0b" size={24} style={{flexShrink:0, marginTop:"4px"}}/> <span><strong>Mentorship from Top Partners</strong> <br/> Learn directly from leading corporate lawyers.</span></li>
-              <li style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}><FaBriefcase color="#f59e0b" size={24} style={{flexShrink:0, marginTop:"4px"}}/> <span><strong>Premium Placements</strong> <br/> Dedicated support to land roles in top law firms & MNCs.</span></li>
-              <li style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}><FaCheckCircle color="#f59e0b" size={24} style={{flexShrink:0, marginTop:"4px"}}/> <span><strong>Practical Drafting & M&A</strong> <br/> Hands-on experience drafting real-world corporate documents.</span></li>
+              <li style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}><FaBalanceScale color="#f59e0b" size={24} style={{flexShrink:0, marginTop:"4px"}}/> <span><strong>Central Role in Business</strong> <br/> Become indispensable in core business decision-making.</span></li>
+              <li style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}><FaBriefcase color="#f59e0b" size={24} style={{flexShrink:0, marginTop:"4px"}}/> <span><strong>Universal Relevance</strong> <br/> High demand across startups, MNCs, law firms, and consulting.</span></li>
+              <li style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}><FaCheckCircle color="#f59e0b" size={24} style={{flexShrink:0, marginTop:"4px"}}/> <span><strong>High-Value Practical Work</strong> <br/> Specialize in contract drafting, M&A, due diligence, and advisory.</span></li>
             </ul>
           </motion.div>
         </div>
       </section>
 
-      {/* CORE COMPETENCIES */}
+      {/* OVERVIEW SECTION */}
+      <section className="law-section">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer} className="law-overview-content" style={{textAlign: "center"}}>
+          <motion.h2 className="law-section-title" variants={fadeUp} style={{marginBottom: "2rem"}}>Program Overview</motion.h2>
+          <motion.p variants={fadeUp}>
+            Corporate law is the complex legal framework that governs the formation, functioning, financing, restructuring, compliance, and winding up of companies. In today's dynamic global economy, it intersects seamlessly with governance, contracts, taxation, employment, securities, insolvency, intellectual property, and dispute management.
+          </motion.p>
+          <motion.p variants={fadeUp}>
+            Why does it matter? Modern businesses operate in highly regulated environments. The demand for legal professionals who can confidently navigate transactions, enforce governance, manage regulatory risk, and drive growth is higher than ever.
+          </motion.p>
+          <motion.p variants={fadeUp}>
+            This program helps learners build immense practical capability. It is not merely theoretical; it is designed to immerse you in real-world legal workflows, empowering you to draft authentic documents and advise on actual corporate scenarios. Krutanic provides the premier platform for this learning journey, offering expert mentorship, career-oriented support, and a comprehensive curriculum tailored for tomorrow's leading corporate advisors.
+          </motion.p>
+        </motion.div>
+      </section>
+
+      {/* WHO SHOULD ENROLL */}
+      <section className="law-section" style={{ background: "rgba(255,255,255,0.01)" }}>
+        <motion.h2 className="law-section-title" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}>
+          Who Should Enroll
+        </motion.h2>
+        
+        <motion.div className="law-grid-3" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}>
+          {whoShouldEnroll.map((item, index) => (
+            <motion.div className="law-card-small" key={index} variants={fadeUp}>
+              <h4>{item.title}</h4>
+              <p style={{ color: "var(--law-text-muted)", fontSize: "0.95rem" }}>{item.desc}</p>
+            </motion.div>
+          ))}
+        </motion.div>
+      </section>
+
+      {/* CORE COMPETENCIES / OUTCOMES */}
       <section className="law-section">
         <motion.h2 className="law-section-title" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}>
           What You Will Master
         </motion.h2>
         
-        <motion.div className="law-grid-3" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}>
-          <motion.div className="law-card" variants={fadeUp}>
-            <div className="law-card-icon"><FaBuilding /></div>
-            <h4>Mergers & Acquisitions</h4>
-            <p>Navigate complex M&A deals, conduct thorough legal due diligence, and structure successful corporate takeovers.</p>
-          </motion.div>
-          <motion.div className="law-card" variants={fadeUp}>
-            <div className="law-card-icon"><FaHandshake /></div>
-            <h4>Contract Negotiation</h4>
-            <p>Master the art of drafting and negotiating iron-clad corporate agreements, from employment contracts to complex vendor SLAs.</p>
-          </motion.div>
-          <motion.div className="law-card" variants={fadeUp}>
-            <div className="law-card-icon"><FaBalanceScale /></div>
-            <h4>Corporate Governance</h4>
-            <p>Ensure legal compliance, advise boards of directors, and manage risk in highly regulated corporate environments.</p>
-          </motion.div>
+        <motion.div className="law-grid-4" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}>
+          {outcomes.map((item, index) => (
+            <motion.div className="law-card" key={index} variants={fadeUp} style={{ padding: "2rem" }}>
+              <div className="law-card-icon" style={{ width: "45px", height: "45px", fontSize: "1.3rem", marginBottom: "1rem" }}>{item.icon}</div>
+              <h4 style={{ fontSize: "1.2rem" }}>{item.title}</h4>
+              <p style={{ fontSize: "0.95rem" }}>{item.desc}</p>
+            </motion.div>
+          ))}
         </motion.div>
       </section>
+
+      {/* CTA BANNER 1 */}
+      <motion.div className="law-banner" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+        <h3>Ready to Build Practical Expertise?</h3>
+        <p>Join the advanced program and elevate your legal career with hands-on drafting, real case studies, and expert mentorship.</p>
+        <button onClick={() => setIsModalOpen(true)} className="law-btn-primary">Apply Now</button>
+      </motion.div>
 
       {/* CURRICULUM */}
       <section className="law-section" id="curriculum">
         <motion.h2 className="law-section-title" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}>
-          Program Curriculum
+          Detailed Curriculum
         </motion.h2>
         
         <div className="law-timeline">
@@ -138,12 +270,94 @@ const CorporateLaw = () => {
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
               <div className="law-module-num">{index + 1}</div>
-              <h3 className="law-module-title">{item.title}</h3>
+              <h3 className="law-module-title" style={{ cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between" }} onClick={() => setActiveModule(activeModule === index ? null : index)}>
+                {item.title}
+                <FaChevronDown style={{ fontSize: "1rem", color: "var(--law-primary)", transform: activeModule === index ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.3s" }} />
+              </h3>
               <p className="law-module-desc">{item.desc}</p>
+              
+              <AnimatePresence>
+                {activeModule === index && (
+                  <motion.div 
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    style={{ overflow: "hidden" }}
+                  >
+                    <ul className="law-accordion-list">
+                      {item.subtopics.map((sub, i) => (
+                        <li key={i}>{sub}</li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           ))}
         </div>
+        
+        <div style={{ textAlign: "center", marginTop: "3rem" }}>
+          <button onClick={() => setIsModalOpen(true)} className="law-btn-secondary"><FaDownload style={{ marginRight: "8px" }} /> Download Syllabus</button>
+        </div>
       </section>
+
+      {/* TRAINING APPROACH & MENTORSHIP */}
+      <section className="law-section" style={{ background: "rgba(255,255,255,0.01)" }}>
+        <motion.div className="law-grid-2" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}>
+          <motion.div className="law-card" variants={fadeUp}>
+            <div className="law-card-icon"><FaGavel /></div>
+            <h3>Practical Training Approach</h3>
+            <p style={{ marginTop: "1rem" }}>We focus on experiential learning. You won't just read laws; you will apply them. Our approach includes:</p>
+            <ul className="law-accordion-list">
+              <li>Drafting exercises and contract review</li>
+              <li>Real-world corporate case studies</li>
+              <li>Legal due diligence simulations</li>
+              <li>Transaction document review and redlining</li>
+              <li>Compliance-based assignments</li>
+              <li>Live negotiation practice scenarios</li>
+            </ul>
+          </motion.div>
+          <motion.div className="law-card" variants={fadeUp}>
+            <div className="law-card-icon"><FaUserGraduate /></div>
+            <h3>Mentorship & Support</h3>
+            <p style={{ marginTop: "1rem" }}>Learn from those who have been there. Our mentor-led approach ensures you are guided every step of the way:</p>
+            <ul className="law-accordion-list">
+              <li>Expert guidance from experienced legal professionals</li>
+              <li>Structured progression through complex topics</li>
+              <li>Personalized feedback on your drafting assignments</li>
+              <li>Career-oriented support for interview readiness</li>
+              <li>Profile-building advice for securing top placements</li>
+            </ul>
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* CAREER PATHWAYS */}
+      <section className="law-section">
+        <motion.h2 className="law-section-title" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}>
+          Certification & Career Pathways
+        </motion.h2>
+        <motion.div style={{ maxWidth: "800px", margin: "0 auto", textAlign: "center" }} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+          <p style={{ fontSize: "1.1rem", color: "var(--law-text-muted)", marginBottom: "3rem" }}>
+            Graduating from the Krutanic Corporate Law program prepares you for a multitude of prestigious roles. We focus on role readiness and portfolio-building to help you secure positions in:
+          </p>
+          <div className="law-grid-3">
+            <div className="law-card-small" style={{ padding: "1.5rem" }}><h4>Corporate Legal Teams</h4></div>
+            <div className="law-card-small" style={{ padding: "1.5rem" }}><h4>Top Law Firms</h4></div>
+            <div className="law-card-small" style={{ padding: "1.5rem" }}><h4>Compliance & Governance</h4></div>
+            <div className="law-card-small" style={{ padding: "1.5rem" }}><h4>Contract Management</h4></div>
+            <div className="law-card-small" style={{ padding: "1.5rem" }}><h4>Transaction Advisory</h4></div>
+            <div className="law-card-small" style={{ padding: "1.5rem" }}><h4>Startup Legal Ops</h4></div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* CTA BANNER 2 */}
+      <motion.div className="law-banner" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} style={{ background: "linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(3, 0, 20, 0.8) 100%)", borderColor: "#22c55e" }}>
+        <h3 style={{ color: "#4ade80" }}>Talk to an Advisor</h3>
+        <p>Unsure if this program is the right fit for your career goals? Our academic advisors are here to help.</p>
+        <button onClick={() => setIsModalOpen(true)} className="law-btn-secondary" style={{ borderColor: "#22c55e", color: "#4ade80" }}><FaComments style={{ marginRight: "8px" }} /> Request a Callback</button>
+      </motion.div>
 
       {/* PRICING */}
       <section className="law-section">
@@ -160,11 +374,12 @@ const CorporateLaw = () => {
                 <p style={{ fontSize: "1.1rem", marginBottom: "2.5rem", color: "var(--law-text-muted, #9ca3af)", lineHeight: "1.6" }}>Everything you need to master corporate law, build your portfolio, and accelerate your legal career in one complete package.</p>
                 
                 <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                  <li style={{ marginBottom: "1.2rem", display: "flex", gap: "12px", alignItems: "center", fontSize: "1.1rem" }}><FaCheckCircle color="#f59e0b" size={20} style={{ flexShrink: 0 }}/> <span><strong>Complete</strong> Curriculum Access</span></li>
-                  <li style={{ marginBottom: "1.2rem", display: "flex", gap: "12px", alignItems: "center", fontSize: "1.1rem" }}><FaCheckCircle color="#f59e0b" size={20} style={{ flexShrink: 0 }}/> <span>Practical <strong>Drafting Exercises</strong></span></li>
-                  <li style={{ marginBottom: "1.2rem", display: "flex", gap: "12px", alignItems: "center", fontSize: "1.1rem" }}><FaCheckCircle color="#f59e0b" size={20} style={{ flexShrink: 0 }}/> <span><strong>M&A</strong> Case Studies</span></li>
-                  <li style={{ marginBottom: "1.2rem", display: "flex", gap: "12px", alignItems: "center", fontSize: "1.1rem" }}><FaCheckCircle color="#f59e0b" size={20} style={{ flexShrink: 0 }}/> <span>Professional <strong>Mentorship</strong></span></li>
-                  <li style={{ marginBottom: "0", display: "flex", gap: "12px", alignItems: "center", fontSize: "1.1rem" }}><FaCheckCircle color="#f59e0b" size={20} style={{ flexShrink: 0 }}/> <span><strong>Career Placement</strong> Support</span></li>
+                  <li style={{ marginBottom: "1.2rem", display: "flex", gap: "12px", alignItems: "center", fontSize: "1.1rem" }}><FaCheckCircle color="#f59e0b" size={20} style={{ flexShrink: 0 }}/> <span><strong>Full curriculum access</strong></span></li>
+                  <li style={{ marginBottom: "1.2rem", display: "flex", gap: "12px", alignItems: "center", fontSize: "1.1rem" }}><FaCheckCircle color="#f59e0b" size={20} style={{ flexShrink: 0 }}/> <span>Practical <strong>drafting exercises</strong></span></li>
+                  <li style={{ marginBottom: "1.2rem", display: "flex", gap: "12px", alignItems: "center", fontSize: "1.1rem" }}><FaCheckCircle color="#f59e0b" size={20} style={{ flexShrink: 0 }}/> <span>Real-world <strong>case studies</strong></span></li>
+                  <li style={{ marginBottom: "1.2rem", display: "flex", gap: "12px", alignItems: "center", fontSize: "1.1rem" }}><FaCheckCircle color="#f59e0b" size={20} style={{ flexShrink: 0 }}/> <span>Professional <strong>mentorship</strong></span></li>
+                  <li style={{ marginBottom: "1.2rem", display: "flex", gap: "12px", alignItems: "center", fontSize: "1.1rem" }}><FaCheckCircle color="#f59e0b" size={20} style={{ flexShrink: 0 }}/> <span><strong>Career support</strong> and placement readiness</span></li>
+                  <li style={{ marginBottom: "0", display: "flex", gap: "12px", alignItems: "center", fontSize: "1.1rem" }}><FaCheckCircle color="#f59e0b" size={20} style={{ flexShrink: 0 }}/> <span>Downloadable <strong>practice materials</strong></span></li>
                 </ul>
               </div>
               
@@ -197,7 +412,7 @@ const CorporateLaw = () => {
               >
                 {faq.q}
                 <motion.div animate={{ rotate: activeFaq === index ? 180 : 0 }}>
-                  <FaChevronDown />
+                  <FaChevronDown color="#f59e0b" />
                 </motion.div>
               </div>
               <AnimatePresence>
