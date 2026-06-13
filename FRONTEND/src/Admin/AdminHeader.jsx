@@ -233,7 +233,7 @@ const AdminHeader = () => {
               <i className="fa fa-bar-chart mr-2"></i>ADV Leads Count
             </Link>
             <Link to="/advteam/career-assessments">
-              <i className="fa fa-file-text-o mr-2"></i>Career Assessments
+              <i className="fa fa-file-text-o mr-2"></i>Skill Evaluation Tests
             </Link>
             <Link to="/AdvFormLeads">
               <i className="fa fa-wpforms mr-2"></i>Adv Form Leads

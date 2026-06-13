@@ -148,6 +148,12 @@ const Header = () => {
               );
             })}
             <Link
+              to="/career-assessment"
+              className="ml-1 xl:ml-2 rounded-2xl border-2 border-[#ff6b2d] text-[#ff6b2d] hover:bg-[#ff6b2d] hover:text-white px-3 xl:px-5 py-1.5 xl:py-2 text-xs xl:text-sm font-semibold uppercase transition-all whitespace-nowrap"
+            >
+              Skill Evaluation Test
+            </Link>
+            <Link
               to="/MasterClass"
               className="ml-1 xl:ml-2 rounded-2xl bg-gradient-to-r from-[#ff8a00] to-[#ff3d00] px-3 xl:px-5 py-1.5 xl:py-2 text-xs xl:text-sm font-semibold uppercase text-white shadow-[0_8px_20px_rgba(255,107,45,0.28)] whitespace-nowrap flex items-center gap-1.5 transition-transform hover:scale-105"
             >
@@ -156,12 +162,6 @@ const Header = () => {
             </Link>
             <Link to="/login" className="ml-1 xl:ml-2 rounded-2xl bg-[#ff6b2d] px-3 xl:px-5 py-1.5 xl:py-2 text-xs xl:text-sm font-semibold uppercase text-white shadow-[0_8px_20px_rgba(255,107,45,0.28)] whitespace-nowrap">
               Login
-            </Link>
-            <Link
-              to="/career-assessment"
-              className="ml-1 xl:ml-2 rounded-2xl border-2 border-[#ff6b2d] text-[#ff6b2d] hover:bg-[#ff6b2d] hover:text-white px-3 xl:px-5 py-1.5 xl:py-2 text-xs xl:text-sm font-semibold uppercase transition-all whitespace-nowrap"
-            >
-              Career Assessment
             </Link>
           </nav>
 
@@ -190,18 +190,18 @@ const Header = () => {
                 );
               })}
               <div className="flex flex-col gap-2 p-2 mt-2 border-t border-slate-100">
+                <Link
+                  to="/career-assessment"
+                  className="rounded-xl border-2 border-[#ff6b2d] text-[#ff6b2d] px-3 py-2 text-center text-sm font-semibold uppercase hover:bg-[#ff6b2d] hover:text-white transition-all"
+                >
+                  Skill Evaluation Test
+                </Link>
                 <Link to="/MasterClass" className="rounded-xl bg-gradient-to-r from-[#ff8a00] to-[#ff3d00] px-3 py-2 text-center text-sm font-semibold uppercase text-white flex items-center justify-center gap-2 shadow-md">
                   <Rocket size={16} className="text-white" />
                   Masterclass
                 </Link>
                 <Link to="/login" className="rounded-xl bg-[#ff6b2d] px-3 py-2 text-center text-sm font-semibold uppercase text-white">
                   Login
-                </Link>
-                <Link
-                  to="/career-assessment"
-                  className="rounded-xl border-2 border-[#ff6b2d] text-[#ff6b2d] px-3 py-2 text-center text-sm font-semibold uppercase hover:bg-[#ff6b2d] hover:text-white transition-all"
-                >
-                  Career Assessment
                 </Link>
               </div>
             </div>

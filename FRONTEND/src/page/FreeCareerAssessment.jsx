@@ -195,7 +195,7 @@ const FreeCareerAssessment = () => {
       }}
     >
       <Helmet>
-        <title>Live Career Growth Assessment | Krutanic</title>
+        <title>Skill Evaluation Test | Krutanic</title>
         <meta name="description" content="Discover Your Career Potential, Strengths, Skill Gaps & Personalized Growth Roadmap." />
       </Helmet>
 
@@ -282,7 +282,7 @@ const FreeCareerAssessment = () => {
               </div>
               
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight tracking-tight mb-6">
-                Live Career Growth <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-emerald-400">Assessment</span>
+                Skill Evaluation <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-emerald-400">Test</span>
               </h1>
               
               <p className="text-lg text-zinc-400 leading-relaxed mb-8 max-w-xl font-light">
@@ -313,7 +313,7 @@ const FreeCareerAssessment = () => {
                   </div>
                   <h3 className="text-2xl font-bold text-white mb-4">Book Your Slot Today</h3>
                   <p className="text-zinc-400 leading-relaxed mb-6 font-light">
-                    Take the live mentor assessment. Pay the nominal fee to secure your 30-minute 1-on-1 career consultation slot.
+                    Take the skill evaluation test. Pay the nominal fee to secure your 30-minute 1-on-1 career consultation slot.
                   </p>
                   
                   {currentStep === 0 && (

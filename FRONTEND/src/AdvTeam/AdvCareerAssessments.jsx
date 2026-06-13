@@ -30,7 +30,7 @@ const AdvCareerAssessments = () => {
             <div className="coursetable" style={{ fontFamily: 'Inter, sans-serif' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
                 <h1 style={{ margin: 0, color: '#333' }}>
-                    Career Assessments ({userDesignation})
+                    Skill Evaluation Tests ({userDesignation})
                 </h1>
             </div>
 
@@ -100,7 +100,7 @@ const AdvCareerAssessments = () => {
                             ))}
                             {assessments.length === 0 && (
                                 <tr>
-                                    <td colSpan="10" style={{ textAlign: 'center', padding: '40px', color: '#999' }}>No career assessments found.</td>
+                                    <td colSpan="10" style={{ textAlign: 'center', padding: '40px', color: '#999' }}>No skill evaluation tests found.</td>
                                 </tr>
                             )}
                         </tbody>
