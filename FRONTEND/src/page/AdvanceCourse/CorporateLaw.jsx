@@ -163,7 +163,7 @@ const CorporateLaw = () => {
           <motion.div initial="hidden" animate="visible" variants={staggerContainer}>
             <motion.div className="law-hero-pills" variants={fadeUp}>
               <span className="law-pill"><FaStar color="#f59e0b" /> 4.9/5 Top Rated</span>
-              <span className="law-pill">6-9 Months</span>
+              <span className="law-pill">2-3 Months</span>
               <span className="law-pill">100% Online</span>
             </motion.div>
             

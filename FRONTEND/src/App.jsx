@@ -651,10 +651,10 @@ const AppContent = () => {
           isAuthenticatedAdvTeam() ? <AdvLeadsCount isAdmin={false} /> : <Navigate to="/AdvTeamLogin" />
         } />
         <Route path="/advteam/career-assessments" element={
-          isAuthenticatedAdvTeam() ? <AdvCareerAssessments /> : <Navigate to="/AdvTeamLogin" />
+          isAuthenticatedAdvTeam() ? <AdvCareerAssessments isAdmin={false} /> : <Navigate to="/AdvTeamLogin" />
         } />
         <Route path="/admin/career-assessments" element={
-          isAuthenticatedAdmin() ? <AdvCareerAssessments /> : <Navigate to="/AdminLogin" />
+          isAuthenticatedAdmin() ? <AdvCareerAssessments isAdmin={true} /> : <Navigate to="/AdminLogin" />
         } />
         <Route path="/admin/leads-count" element={
           isAuthenticatedAdmin() ? <AdvLeadsCount isAdmin={true} /> : <Navigate to="/AdminLogin" />

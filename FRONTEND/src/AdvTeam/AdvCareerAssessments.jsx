@@ -3,13 +3,13 @@ import axios from "axios";
 import API from "../API";
 import toast from "react-hot-toast";
 
-const AdvCareerAssessments = () => {
+const AdvCareerAssessments = ({ isAdmin }) => {
     const [assessments, setAssessments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedAssessment, setSelectedAssessment] = useState(null);
 
-    const userDesignation = localStorage.getItem("designation") || "ADV Leader";
-    const advUserId = localStorage.getItem("advTeamId") || localStorage.getItem("id");
+    const userDesignation = isAdmin ? "admin" : (localStorage.getItem("designation") || "ADV Leader");
+    const advUserId = isAdmin ? localStorage.getItem("adminToken") : (localStorage.getItem("advTeamId") || localStorage.getItem("id"));
 
     useEffect(() => {
         const fetchAssessments = async () => {
