@@ -1675,7 +1675,20 @@ const AdvLeadsBook = () => {
                                 <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#666', marginBottom: '5px', display: 'block' }}>Subject</label>
                                 <button
                                     onClick={() => {
-                                        const prompt = encodeURIComponent(`Write a professional and catchy email for a ${emailDomain} student. The email should be about: ${emailSubject || 'the Advanced Program'}. Mention Krutanic and include a strong call to action.`);
+                                        const leadName = selectedLeadForEmail?.full_name || 'the student';
+                                        const leadEmail = selectedLeadForEmail?.email || 'N/A';
+                                        const leadPhone = selectedLeadForEmail?.phone_number || 'N/A';
+                                        
+                                        const situation = selectedLeadForEmail?.currentSituation || selectedLeadForEmail?.extra_fields?.['what_best_describes_your_current_situation?'] || selectedLeadForEmail?.extra_fields?.['what_best_describes_your_current_situation'];
+                                        const goal = selectedLeadForEmail?.primaryGoal || selectedLeadForEmail?.extra_fields?.['what_is_your_primary_goal_right_now?'] || selectedLeadForEmail?.extra_fields?.['what_is_your_primary_goal_right_now'];
+                                        const challenge = selectedLeadForEmail?.currentChallenge || selectedLeadForEmail?.extra_fields?.['what_is_your_biggest_career_challenge?'] || selectedLeadForEmail?.extra_fields?.['what_is_your_biggest_career_challenge'];
+                                        
+                                        let extraInfoStr = '';
+                                        if (situation) extraInfoStr += ` Current Situation: ${situation}.`;
+                                        if (goal) extraInfoStr += ` Primary Goal: ${goal}.`;
+                                        if (challenge) extraInfoStr += ` Biggest Challenge: ${challenge}.`;
+                                        
+                                        const prompt = encodeURIComponent(`Write a professional and catchy email for a ${emailDomain} student named ${leadName}. Their contact details are: Email: ${leadEmail}, Phone: ${leadPhone}.${extraInfoStr} The email should be about: ${emailSubject || 'the Advanced Program'}. Mention Krutanic and include a strong call to action.`);
                                         window.open(`https://chatgpt.com/?q=${prompt}`, '_blank');
                                     }}
                                     style={{ border: 'none', background: 'linear-gradient(135deg, #722ed1 0%, #1890ff 100%)', color: '#fff', borderRadius: '20px', padding: '4px 12px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '5px' }}
