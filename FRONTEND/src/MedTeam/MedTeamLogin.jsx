@@ -41,7 +41,7 @@ const MedTeamLogin = () => {
       localStorage.setItem("medTeamName", response.data.medTeamName);
       localStorage.setItem("medTeamToken", response.data.token);
        localStorage.setItem("sessionStartTime", loginTime);
-      navigate("/medteam/medteam/home");
+      navigate("/medteam/home");
     }, 2000);
     }
     } catch (error) {

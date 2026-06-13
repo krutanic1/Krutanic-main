@@ -4,6 +4,7 @@ const { sendEmail } = require("../controllers/emailController");
 const jwt = require("jsonwebtoken");
 const CreateMedTeam = require("../models/CreateMedTeam");
 const MedTeamName = require("../models/MedTeamName");
+const MedEnroll = require("../models/MedEnroll");
 const TransactionId = require("../models/AddTransactionId");
 const verifyAnyAuth = require("../middleware/verifyAnyAuth");
 const crypto = require('crypto');
@@ -61,6 +62,38 @@ router.get("/getmedteam", verifyAnyAuth, async (req, res) => {
     res.status(200).json(medteam);
   } catch (error) {
     res.status(400).json({ message: error.message });
+  }
+});
+
+// GET request to retrieve medteam accounts with their enrollments
+router.get("/medteam-with-enrolls", verifyAnyAuth, async (req, res) => {
+  try {
+    const medteams = await CreateMedTeam.find({}).lean();
+    const allEnrolls = await MedEnroll.find({}).lean();
+    
+    // Group enrollments by counselor
+    const enrollsByCounselor = {};
+    for (const enroll of allEnrolls) {
+      const counselor = enroll.counselor ? enroll.counselor.toLowerCase() : '';
+      if (!enrollsByCounselor[counselor]) {
+        enrollsByCounselor[counselor] = [];
+      }
+      enrollsByCounselor[counselor].push(enroll);
+    }
+    
+    // Map enrollments to each MedTeam member
+    const result = medteams.map(medteam => {
+      const counselorKey = medteam.fullname ? medteam.fullname.toLowerCase() : '';
+      return {
+        ...medteam,
+        enrollments: enrollsByCounselor[counselorKey] || []
+      };
+    });
+    
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Error fetching medteam with enrolls:", error);
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
 

@@ -133,6 +133,13 @@ const MedTeamHeader = () => {
           <Link to="/medteam/revenue">
             <i className="fa fa-line-chart"></i> Revenue
           </Link>
+          {medTeamData && (medTeamData.designation?.toUpperCase().includes("LEADER") || medTeamData.designation?.toUpperCase().includes("MANAGER")) && (
+            <>
+              <Link to="/medteam/teamdetail">
+                <i className="fa fa-users"></i> Team
+              </Link>
+            </>
+          )}
           <button onClick={() => {
             navigator.clipboard.writeText(`${window.location.origin}/MedDashboardAccessForm`);
             toast.success("Link Copied!", {
