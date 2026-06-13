@@ -30,6 +30,11 @@ const careerAssessmentSchema = new mongoose.Schema({
   paymentStatus: { type: String, default: 'Pending' },
   bookedDate: { type: String },
   bookedTimeSlot: { type: String },
+  assignedExecutiveId: { type: String },
+  assignedExecutiveEmail: { type: String },
+  assignedExecutiveName: { type: String },
+  managerId: { type: String },
+  managerEmail: { type: String },
   createdAt: { type: Date, default: Date.now }
 });
 

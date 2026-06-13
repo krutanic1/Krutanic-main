@@ -9,11 +9,12 @@ const AdvCareerAssessments = () => {
     const [selectedAssessment, setSelectedAssessment] = useState(null);
 
     const userDesignation = localStorage.getItem("designation") || "ADV Leader";
+    const advUserId = localStorage.getItem("advTeamId") || localStorage.getItem("id");
 
     useEffect(() => {
         const fetchAssessments = async () => {
             try {
-                const res = await axios.get(`${API}/careerassessment`);
+                const res = await axios.get(`${API}/careerassessment?userId=${advUserId}&role=${userDesignation}`);
                 setAssessments(res.data);
             } catch (err) {
                 console.error("Failed to fetch assessments");

@@ -63,6 +63,18 @@ const FreeCareerAssessment = () => {
   };
 
   const handlePayment = async () => {
+    // Bypass payment in development mode for easier testing
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      setPaymentDetails({
+        id: 'dev_bypass_payment_' + Date.now(),
+        orderId: 'dev_order_' + Date.now(),
+        signature: 'dev_signature'
+      });
+      toast.success('Development Mode: Payment bypassed!');
+      setCurrentStep(1);
+      return;
+    }
+
     try {
       setIsProcessingPayment(true);
       const res = await axios.post(`${API}/api/assessment-payment/create-order`);

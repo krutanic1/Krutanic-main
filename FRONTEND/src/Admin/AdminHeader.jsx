@@ -232,7 +232,7 @@ const AdminHeader = () => {
             <Link to="/admin/leads-count">
               <i className="fa fa-bar-chart mr-2"></i>ADV Leads Count
             </Link>
-            <Link to="/advteam/career-assessments">
+            <Link to="/admin/career-assessments">
               <i className="fa fa-file-text-o mr-2"></i>Skill Evaluation Tests
             </Link>
             <Link to="/AdvFormLeads">
