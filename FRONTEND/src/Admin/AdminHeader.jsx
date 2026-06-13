@@ -97,6 +97,9 @@ const AdminHeader = () => {
             <Link to="/CreateBDA">
               <i className="fa fa-users mr-2"></i>Create Team A/c
             </Link>
+            <Link to="/CreateMedTeam">
+              <i className="fa fa-users mr-2" style={{color: '#818cf8'}}></i>Create Med Team
+            </Link>
             <Link to="/CreateMarketingTeam">
               <i className="fa fa-users mr-2"></i>Create Marketing
             </Link>
@@ -228,6 +231,9 @@ const AdminHeader = () => {
             </Link>
             <Link to="/admin/leads-count">
               <i className="fa fa-bar-chart mr-2"></i>ADV Leads Count
+            </Link>
+            <Link to="/advteam/career-assessments">
+              <i className="fa fa-file-text-o mr-2"></i>Career Assessments
             </Link>
             <Link to="/AdvFormLeads">
               <i className="fa fa-wpforms mr-2"></i>Adv Form Leads

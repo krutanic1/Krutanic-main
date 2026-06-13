@@ -16,6 +16,7 @@ const createoperation = require("./routes/CreateOperation");
 const createadvoperation = require("./routes/CreateAdvOperation");
 const createbda = require("./routes/CreateBDA");
 const createadvteam = require("./routes/CreateAdvTeam");
+const createmedteam = require("./routes/CreateMedTeam");
 const createhr = require("./routes/CreateHR");
 const Mentorship = require("./routes/Mentorship");
 const Advance = require("./routes/Advance");
@@ -57,6 +58,7 @@ const medproRoutes = require("./routes/medproRoutes");
 const studentRequestRoutes = require("./routes/studentRequestRoutes");
 const medCourseRoutes = require("./routes/medCourseRoutes");
 const medStudentEnrollRoutes = require("./routes/MedStudentEnroll");
+const companyDirectoryRoutes = require("./routes/companyDirectory");
 
 const app = express();
 
@@ -124,6 +126,8 @@ app.use("/", CreateMarketing);
 app.use("/", createbda);
 //create adv team
 app.use("/", createadvteam);
+//create med team
+app.use("/", createmedteam);
 //create hr
 app.use("/", createhr);
 // mentorship
@@ -162,6 +166,7 @@ app.use("/api/medpro", medproRoutes);
 
 app.use("/", medCourseRoutes);
 app.use("/", medStudentEnrollRoutes);
+app.use("/api/company-directory", companyDirectoryRoutes);
 
 // CREATEJOBS
 app.use("/", CreateJob);
@@ -194,6 +199,11 @@ app.use("/api", microCertRoutes);
 
 app.use("/api/partner", partnerRoutes);
 app.use("/api/student-requests", studentRequestRoutes);
+
+// Career Assessment
+app.use("/", require("./routes/CareerAssessment"));
+app.use("/api/assessment-payment", require("./routes/AssessmentPayment"));
+app.use("/api/assessment-slots", require("./routes/AssessmentSlot"));
 
 //send mail with attchement
 app.use("/", sendMailWithAttchement);

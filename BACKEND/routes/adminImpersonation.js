@@ -8,6 +8,7 @@ const BDA = require("../models/CreateBDA");
 const Operation = require("../models/CreateOperation");
 const AdvOperation = require("../models/CreateAdvOperation");
 const AdvTeam = require("../models/CreateAdvTeam");
+const MedTeam = require("../models/CreateMedTeam");
 const MarketingTeam = require("../models/CreateMarketing");
 
 /**
@@ -60,6 +61,16 @@ router.post("/impersonate", verifyAdminCookie, async (req, res) => {
           tokenPayload = { id: user._id, email: user.email };
         }
         break;
+      case "MED_TEAM":
+      case "BOE":
+      case "MED MANAGER":
+      case "MED LEADER":
+      case "MED SPECIALIST":
+        user = await MedTeam.findById(userId);
+        if (user) {
+          tokenPayload = { id: user._id, email: user.email };
+        }
+        break;
       case "MARKETING":
         user = await MarketingTeam.findById(userId);
         if (user) {
@@ -107,6 +118,10 @@ router.post("/impersonate", verifyAdminCookie, async (req, res) => {
     } else if (normalizedRole.includes("ADV_TEAM") || normalizedRole.startsWith("ADV") || normalizedRole.includes("INSIDE SALES") || normalizedRole.includes("INSIDE_SALES")) {
       responseData.bdaId = user._id;
       responseData.bdaName = user.fullname;
+      responseData.designation = user.designation;
+    } else if (normalizedRole.includes("MED_TEAM") || normalizedRole.startsWith("MED")) {
+      responseData.medTeamId = user._id;
+      responseData.medTeamName = user.fullname;
       responseData.designation = user.designation;
     }
 

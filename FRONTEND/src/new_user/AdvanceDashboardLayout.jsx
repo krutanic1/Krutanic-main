@@ -20,6 +20,7 @@ const sidebarItems = [
     { id: "payments", path: "/advancedashboard/payments", emoji: "💳", icon: "payments", label: "Payments" },
     { id: "interview-questions", path: "/advancedashboard/interview-questions", emoji: "💬", icon: "forum", label: "Interview Questions" },
     { id: "aptitude-test", path: "/advancedashboard/aptitude-test", emoji: "🧠", icon: "quiz", label: "Aptitude Test" },
+    { id: "companies-referrals", path: "/advancedashboard/companies-referrals", emoji: "🏢", icon: "business", label: "Companies & Referrals" },
 ];
 
 const Sidebar = ({ collapsed, setCollapsed, onLogout, mobileOpen, setMobileOpen }) => {
@@ -131,6 +132,7 @@ const sectionTitles = {
     "resume-ats": "Resume ATS",
     "resume-builder": "Resume Builder",
     "interview-questions": "Interview Questions",
+    "companies-referrals": "Companies & Referrals",
 };
 
 const Breadcrumb = () => {

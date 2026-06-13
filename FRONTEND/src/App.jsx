@@ -49,6 +49,7 @@ import Alumni from "./page/Alumni";
 import Attendance from "./page/Attendance";
 import AdvanceApplyPage from "./page/AdvanceApplyPage";
 import AdvanceForm from "./page/AdvanceForm";
+import FreeCareerAssessment from "./page/FreeCareerAssessment";
 // Admin
 import AdminHeader from "./Admin/AdminHeader";
 import AddCourse from "./Admin/AddCourse";
@@ -65,6 +66,7 @@ import AcceptedApplication from "./Admin/AcceptedApplication";
 import CreateOperation from "./Admin/CreateOperation";
 import CreateAdvOperation from "./Admin/CreateAdvOperation";
 import CreateBDA from "./Admin/CreateBDA";
+import CreateMedTeam from "./Admin/CreateMedTeam";
 import CreateAdvTeam from "./Admin/CreateAdvTeam";
 import BookedList from "./Admin/BookedList";
 import DefaultList from "./Admin/DefaultList";
@@ -204,6 +206,16 @@ import AdvTeamLeadManagement from "./AdvTeam/AdvLeadManagement";
 import AdvTeamRecord from "./AdvTeam/AdvTeamRecord";
 import AdvTeamTeamLogin from "./AdvTeam/AdvTeamTeamLogin";
 import AdvLeaderBoard from "./AdvTeam/AdvLeaderBoard";
+import AdvCareerAssessments from "./AdvTeam/AdvCareerAssessments";
+
+// Med Team
+import MedTeamLogin from "./MedTeam/MedTeamLogin";
+import MedTeamHeader from "./MedTeam/MedTeamHeader";
+import MedTeamHome from "./MedTeam/MedTeamHome";
+import MedAddUser from "./MedTeam/MedAddUser";
+import MedTeamOnBoarding from "./MedTeam/MedTeamOnBoarding";
+import MedTeamRevenueSheet from "./MedTeam/MedTeamRevenueSheet";
+
 // MarketingLogind
 
 import MarketingHeader from "./Marketing/MarketingHeader";
@@ -233,6 +245,7 @@ const PaymentsPage = lazy(() => import("./new_user/pages/PaymentsPage"));
 const CalendarPage = lazy(() => import("./new_user/pages/CalendarPage"));
 const AdvanceLearningPage = lazy(() => import("./new_user/AdvanceLearningPage"));
 const InterviewQuestionsPage = lazy(() => import("./new_user/pages/InterviewQuestionsPage"));
+const CompaniesReferralsPage = lazy(() => import("./new_user/pages/CompaniesReferralsPage"));
 import ResumeBuilderPage from "./new_user/pages/ResumeBuilderPage";
 import ProfilePage from "./new_user/pages/ProfilePage";
 
@@ -297,7 +310,7 @@ if (typeof window !== "undefined") {
   const originalSetItem = localStorage.setItem;
   localStorage.setItem = function(key, value) {
     // If we are in an impersonated tab (any token in session), save everything to session instead
-    const isIsolated = !!(sessionStorage.getItem("bdaToken") || sessionStorage.getItem("advTeamToken") || sessionStorage.getItem("operationToken"));
+    const isIsolated = !!(sessionStorage.getItem("bdaToken") || sessionStorage.getItem("advTeamToken") || sessionStorage.getItem("operationToken") || sessionStorage.getItem("medTeamToken"));
     if (isIsolated) {
       sessionStorage.setItem(key, value);
       window.KrutanicAuth[key] = value;
@@ -308,7 +321,7 @@ if (typeof window !== "undefined") {
 
   const originalRemoveItem = localStorage.removeItem;
   localStorage.removeItem = function(key) {
-    const isIsolated = !!(sessionStorage.getItem("bdaToken") || sessionStorage.getItem("advTeamToken") || sessionStorage.getItem("operationToken"));
+    const isIsolated = !!(sessionStorage.getItem("bdaToken") || sessionStorage.getItem("advTeamToken") || sessionStorage.getItem("operationToken") || sessionStorage.getItem("medTeamToken"));
     if (isIsolated) {
       sessionStorage.removeItem(key);
       if (window.KrutanicAuth) delete window.KrutanicAuth[key];
@@ -380,6 +393,7 @@ const AppContent = () => {
   const isAuthenticatedAdvOperation = () => !!getAuthToken("advOperationToken");
   const isAuthenticatedAdmin = () => !!getAuthToken("adminToken");
   const isAuthenticatedAdvTeam = () => !!getAuthToken("advTeamToken");
+  const isAuthenticatedMedTeam = () => !!getAuthToken("medTeamToken");
   const isAuthenticatedPC = () => !!getAuthToken("pctoken");
   const isAuthenticatedEventUser = () => !!getAuthToken("eventToken");
   const isAuthenticatedMarketing = () => !!getAuthToken("marketingToken");
@@ -393,7 +407,7 @@ const AppContent = () => {
       // to allow the handover to stabilize.
       if (window.location.search.includes("impToken")) return;
 
-      const tokenKeys = ["adminToken", "bdaToken", "advTeamToken", "operationToken", "advOperationToken", "marketingToken", "studentToken"];
+      const tokenKeys = ["adminToken", "bdaToken", "advTeamToken", "medTeamToken", "operationToken", "advOperationToken", "marketingToken", "studentToken"];
       const expiredTokens = [];
 
       tokenKeys.forEach(key => {
@@ -418,6 +432,7 @@ const AppContent = () => {
         const isAdminSection = currentPath.includes("admin") || currentPath.includes("create");
         const isBdaSection = currentPath === "/home" || currentPath === "/booked" || currentPath.includes("bda");
         const isAdvTeamSection = currentPath.includes("advteam");
+        const isMedTeamSection = currentPath.includes("medteam") || currentPath === "/medloginteam";
         const isOpSection = currentPath.includes("operation") && !currentPath.includes("adv");
         const isAdvOpSection = currentPath.includes("advoperation");
         const isMarketingSection = currentPath.startsWith("/marketing/");
@@ -434,6 +449,9 @@ const AppContent = () => {
         } else if (expiredTokens.includes("advTeamToken") && isAdvTeamSection) {
           shouldRedirect = true;
           redirectPath = "/AdvTeamLogin";
+        } else if (expiredTokens.includes("medTeamToken") && isMedTeamSection) {
+          shouldRedirect = true;
+          redirectPath = "/medloginteam";
         } else if (expiredTokens.includes("operationToken") && isOpSection) {
           shouldRedirect = true;
           redirectPath = "/OperationLogin";
@@ -464,7 +482,7 @@ const AppContent = () => {
 
   useEffect(() => {
     // Auto-popup logic
-    const allowedPaths = ["/", "/advance", "/advancecourses", "/referandearn", "/events", "/masterclass", "/alumni"];
+    const allowedPaths = ["/", "/advance", "/advancecourses", "/referandearn", "/events", "/masterclass", "/alumni", "/career-assessment"];
     const currentPath = location.pathname.toLowerCase().replace(/\/$/, "");
     const isAllowed = allowedPaths.includes(currentPath || "/");
 
@@ -480,18 +498,19 @@ const AppContent = () => {
     ReactPixel.pageView();
   }, [location]);
 
-  const adminheaderPaths = ["/admindashboard", "/admininterviewquestions", "/adminaptitudequestions", "/addcourse", "/addmedcourse", "/addadvcourse", "/addmodule", "/addmedmodule", "/addadvmodule", "/pendingapplication", "/acceptedapplication", "/bookedlist", "/halfpayment", "/defaultlist", "/fullpaidlist", "/createoperation", "/createadvoperation", "/createbda", "/createadvteam", "/createmanager", "/mentorqueries", "/advancequeries", "/revenuesheet", "/advrevenuesheet", "/createplacementcoordinator", "/onboardingdetails", "/advonboardingdetails", "/medonboardingdetails", "/advbooked", "/advfullpaid", "/advdefault", "/allteamdetail", "/advteamdetail", "/masterclasses", "/addevent", "/eventregistration", "/target", "/alumnidata", "/inactivebda", "/referandearnresponse", "/createmarketingteam", "/createinterviewer", "/createhr", "/createinterview", "/adminprojectpage", "/advprojectpage", "/advexercisepage", "/advleadmanagement", "/adminanalytics", "/advadmindashboard", "/admin/agents", "/admin/teams", "/admin/leadassignments", "/admin/agentactivity", "/admin/reports", "/bulkimport", "/admin/attendance", "/advusermanagement", "/admin/livemonitor", "/admin/calllogs", "/advformleads", "/admin/leads-count", "/admin/medpro-leads"];
+  const adminheaderPaths = ["/admindashboard", "/admininterviewquestions", "/adminaptitudequestions", "/addcourse", "/addmedcourse", "/addadvcourse", "/addmodule", "/addmedmodule", "/addadvmodule", "/pendingapplication", "/acceptedapplication", "/bookedlist", "/halfpayment", "/defaultlist", "/fullpaidlist", "/createoperation", "/createadvoperation", "/createbda", "/createmedteam", "/createadvteam", "/createmanager", "/mentorqueries", "/advancequeries", "/revenuesheet", "/advrevenuesheet", "/createplacementcoordinator", "/onboardingdetails", "/advonboardingdetails", "/medonboardingdetails", "/advbooked", "/advfullpaid", "/advdefault", "/allteamdetail", "/advteamdetail", "/masterclasses", "/addevent", "/eventregistration", "/target", "/alumnidata", "/inactivebda", "/referandearnresponse", "/createmarketingteam", "/createinterviewer", "/createhr", "/createinterview", "/adminprojectpage", "/advprojectpage", "/advexercisepage", "/advleadmanagement", "/adminanalytics", "/advadmindashboard", "/admin/agents", "/admin/teams", "/admin/leadassignments", "/admin/agentactivity", "/admin/reports", "/bulkimport", "/admin/attendance", "/advusermanagement", "/admin/livemonitor", "/admin/calllogs", "/advformleads", "/admin/leads-count", "/admin/medpro-leads", "/advteam/career-assessments"];
 
   const operationheaderPaths = ["/operationdashboard", "/fullpayment", "/bookedpayment", "/defaultpayment", "/operationrevenuesheet"];
   const advoperationheaderPaths = ["/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet"];
   const marketingheaderPaths = ["/marketing/home", "/marketing/previous", "/marketing/addexecutive"];
   const bdaheaderPaths = ["/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/leaderboard"];
-  const advteamheaderPaths = ["/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/advteam/leaderboard", "/advteam/leads-count"];
+  const advteamheaderPaths = ["/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/advteam/leaderboard", "/advteam/leads-count", "/advteam/career-assessments"];
+  const medteamheaderPaths = ["/medteam/home", "/medteam/onboarding", "/medteam/adduser", "/medteam/revenue"];
   const hrheaderPaths = ["/hrdashboard"];
   const lmsFooterPaths = ["/jobboard"];
-  const noFooterPaths = ["/operationdashboard", "/bookedpayment", "/fullpayment", "/defaultpayment", "/operationrevenuesheet", "/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet", "/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/advteam/leaderboard", "/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/leaderboard", "/setting"];
+  const noFooterPaths = ["/operationdashboard", "/bookedpayment", "/fullpayment", "/defaultpayment", "/operationrevenuesheet", "/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet", "/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/advteam/leaderboard", "/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/leaderboard", "/setting", "/medteam/home", "/medteam/onboarding", "/medteam/adduser", "/medteam/revenue"];
   const placementcoodinatorHeaderPaths = ["/pcdashboard", "/jobpost"];
-  const headerPaths = ["/", "/login", "/loginwithotp", "/forgotpassword", "/contactus", "/aboutus", "/career", "/collabration", "/advancecourses", "/terms", "/privacy", "/refundpolicy", "/feestructure", "/advance", "/advance-apply", "/mentorship", "/datascience", "/dataanalytics", "/digitalmarket", "/mernstack", "/investmentbanking", "/productmanagement", "/automationtesting", "/promptengineering", "/generativeai", "/forensic-psychology", "/clinical-psychology", "/corporate-law", "/medpro-packs", "/psychology", "/operationlogin", "/advoperationlogin", "/teamlogin", "/adminlogin", "/managerlogin", "/loginadmin", "/pclogin", "/advteamlogin", "/dashboardaccessform", "/meddashboardaccessform", "/advancedashboardaccess", "/masterclass", "/alumni", "/verify", "/referandearn", "/marketing/login", "/interviewer-login", "/interviewerlogin", "/hrlogin", "/advanceform"];
+  const headerPaths = ["/", "/login", "/loginwithotp", "/forgotpassword", "/contactus", "/aboutus", "/career", "/collabration", "/advancecourses", "/terms", "/privacy", "/refundpolicy", "/feestructure", "/advance", "/advance-apply", "/mentorship", "/datascience", "/dataanalytics", "/digitalmarket", "/mernstack", "/investmentbanking", "/productmanagement", "/automationtesting", "/promptengineering", "/generativeai", "/forensic-psychology", "/clinical-psychology", "/corporate-law", "/medpro-packs", "/psychology", "/operationlogin", "/advoperationlogin", "/teamlogin", "/adminlogin", "/managerlogin", "/loginadmin", "/pclogin", "/advteamlogin", "/medloginteam", "/dashboardaccessform", "/meddashboardaccessform", "/advancedashboardaccess", "/masterclass", "/alumni", "/verify", "/referandearn", "/marketing/login", "/interviewer-login", "/interviewerlogin", "/hrlogin", "/advanceform", "/career-assessment"];
 
   return (
     <div>
@@ -509,6 +528,8 @@ const AppContent = () => {
         <BDAHeader />
       ) : advteamheaderPaths.includes(location.pathname.toLowerCase()) && isAuthenticatedAdvTeam() ? (
         <AdvTeamHeader />
+      ) : medteamheaderPaths.includes(location.pathname.toLowerCase()) && isAuthenticatedMedTeam() ? (
+        <MedTeamHeader />
       ) : placementcoodinatorHeaderPaths.includes(location.pathname.toLowerCase()) && isAuthenticatedPC() ? (
         <PCHeader />
       ) : hrheaderPaths.includes(location.pathname.toLowerCase()) && isAuthenticatedHR() ? (
@@ -537,6 +558,7 @@ const AppContent = () => {
         <Route path="/Advance" element={<Advance />} />
         <Route path="/advance-apply" element={<AdvanceApplyPage />} />
         <Route path="/advanceform" element={<AdvanceForm />} />
+        <Route path="/career-assessment" element={<FreeCareerAssessment />} />
         <Route path="/Mentorship" element={<Mentorship />} />
         <Route path="/mentorship/:courseSlug" element={<MentorshipCourseDetails />} />
         <Route path="/DataScience" element={<DataScience />} />
@@ -581,6 +603,7 @@ const AppContent = () => {
         <Route path="/CreateOperation" element={isAuthenticatedAdmin() ? <CreateOperation /> : <Navigate to="/AdminLogin" />} />
         <Route path="/CreateAdvOperation" element={isAuthenticatedAdmin() ? <CreateAdvOperation /> : <Navigate to="/AdminLogin" />} />
         <Route path="/CreateBDA" element={isAuthenticatedAdmin() ? <CreateBDA /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/CreateMedTeam" element={isAuthenticatedAdmin() ? <CreateMedTeam /> : <Navigate to="/AdminLogin" />} />
         <Route path="/CreateAdvTeam" element={isAuthenticatedAdmin() ? <CreateAdvTeam /> : <Navigate to="/AdminLogin" />} />
         <Route path="/PendingApplication" element={isAuthenticatedAdmin() ? <PendingApplication /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AcceptedApplication" element={isAuthenticatedAdmin() ? <AcceptedApplication /> : <Navigate to="/AdminLogin" />} />
@@ -626,6 +649,9 @@ const AppContent = () => {
         } />
         <Route path="/advteam/leads-count" element={
           isAuthenticatedAdvTeam() ? <AdvLeadsCount isAdmin={false} /> : <Navigate to="/AdvTeamLogin" />
+        } />
+        <Route path="/advteam/career-assessments" element={
+          isAuthenticatedAdvTeam() || isAuthenticatedAdmin() ? <AdvCareerAssessments /> : <Navigate to="/AdvTeamLogin" />
         } />
         <Route path="/admin/leads-count" element={
           isAuthenticatedAdmin() ? <AdvLeadsCount isAdmin={true} /> : <Navigate to="/AdminLogin" />
@@ -722,6 +748,14 @@ const AppContent = () => {
         <Route path="/advteam/leaderboard" element={isAuthenticatedAdvTeam() ? <AdvLeaderBoard /> : <Navigate to="/AdvTeamLogin" />} />
         {/* Advance Team Panel End */}
 
+        {/* Med Team Panel Start */}
+        <Route path="/medloginteam" element={<MedTeamLogin />} />
+        <Route path="/medteam/home" element={isAuthenticatedMedTeam() ? <MedTeamHome /> : <Navigate to="/medloginteam" />} />
+        <Route path="/medteam/adduser" element={isAuthenticatedMedTeam() ? <MedAddUser /> : <Navigate to="/medloginteam" />} />
+        <Route path="/medteam/onboarding" element={isAuthenticatedMedTeam() ? <MedTeamOnBoarding /> : <Navigate to="/medloginteam" />} />
+        <Route path="/medteam/revenue" element={isAuthenticatedMedTeam() ? <MedTeamRevenueSheet /> : <Navigate to="/medloginteam" />} />
+        {/* Med Team Panel End */}
+
         {/* User Panel */}
         <Route element={<UserLayout />}>
           <Route path="/Dashboard" element={isAuthenticated() ? <Dashboard /> : <Navigate to="/login" />} />
@@ -771,6 +805,7 @@ const AppContent = () => {
           <Route path="resume-builder" element={<ResumeBuilderPage />} />
           <Route path="interview-questions" element={<InterviewQuestionsPage />} />
           <Route path="aptitude-test" element={<AptitudeTest />} />
+          <Route path="companies-referrals" element={<CompaniesReferralsPage />} />
         </Route>
         {/* Advanced dashboard video player — standalone, no old sidebar */}
         <Route path="/advancedashboard/learning" element={<AdvanceLearningPage />} />

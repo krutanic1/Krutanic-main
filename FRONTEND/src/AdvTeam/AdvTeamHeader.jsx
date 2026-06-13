@@ -473,6 +473,9 @@ const AdvTeamHeader = () => {
           <Link to="/advteam/leads-count">
             <i className="fa fa-bar-chart"></i> Leads Count
           </Link>
+          <Link to="/advteam/career-assessments">
+            <i className="fa fa-file-text-o"></i> Career Assessments
+          </Link>
           {(advTeamData?.designation === "ADV Manager" ||
             advTeamData?.designation === "MANAGER" ||
             advTeamData?.designation === "ADV Leader" ||

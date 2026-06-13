@@ -157,12 +157,12 @@ const Header = () => {
             <Link to="/login" className="ml-1 xl:ml-2 rounded-2xl bg-[#ff6b2d] px-3 xl:px-5 py-1.5 xl:py-2 text-xs xl:text-sm font-semibold uppercase text-white shadow-[0_8px_20px_rgba(255,107,45,0.28)] whitespace-nowrap">
               Login
             </Link>
-            <button
-              onClick={() => setShowPopup(true)}
+            <Link
+              to="/career-assessment"
               className="ml-1 xl:ml-2 rounded-2xl border-2 border-[#ff6b2d] text-[#ff6b2d] hover:bg-[#ff6b2d] hover:text-white px-3 xl:px-5 py-1.5 xl:py-2 text-xs xl:text-sm font-semibold uppercase transition-all whitespace-nowrap"
             >
-              Request a Callback
-            </button>
+              Career Assessment
+            </Link>
           </nav>
 
           <button
@@ -197,12 +197,12 @@ const Header = () => {
                 <Link to="/login" className="rounded-xl bg-[#ff6b2d] px-3 py-2 text-center text-sm font-semibold uppercase text-white">
                   Login
                 </Link>
-                <button
-                  onClick={() => setShowPopup(true)}
+                <Link
+                  to="/career-assessment"
                   className="rounded-xl border-2 border-[#ff6b2d] text-[#ff6b2d] px-3 py-2 text-center text-sm font-semibold uppercase hover:bg-[#ff6b2d] hover:text-white transition-all"
                 >
-                  Request a Callback
-                </button>
+                  Career Assessment
+                </Link>
               </div>
             </div>
           </div>
