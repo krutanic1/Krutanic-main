@@ -12,11 +12,8 @@ const runMedEnrollAutomation = async (studentId = null) => {
       if (studentId) {
         query = { _id: studentId };
       } else {
-        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000); // safety bound
         query = {
           status: "booked",
-          createdAt: { $lte: fiveMinutesAgo, $gte: twentyFourHoursAgo },
           $or: [
             { offerlettersended: { $ne: true } },
             { userCreated: { $ne: true } },
@@ -191,12 +188,10 @@ const runMedEnrollAutomation = async (studentId = null) => {
     }
 };
 
-const initializeMedEnrollAutomation = () => {
-  console.log("✅ Initializing MedEnroll Automation Service (Runs every 30 mins)");
-  cron.schedule('*/30 * * * *', async () => {
-    console.log("🔄 Running MedEnroll Automation Job...");
-    await runMedEnrollAutomation();
-  });
+const initializeMedEnrollAutomation = async () => {
+  console.log("✅ Running MedEnroll Automation Service (Once on startup)");
+  console.log("🔄 Running MedEnroll Automation Job...");
+  await runMedEnrollAutomation();
 };
 
 module.exports = { initializeMedEnrollAutomation, runMedEnrollAutomation };
