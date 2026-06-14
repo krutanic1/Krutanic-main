@@ -12,11 +12,11 @@ const runMedEnrollAutomation = async (studentId = null) => {
       if (studentId) {
         query = { _id: studentId };
       } else {
-        const fiveHoursAgo = new Date(Date.now() - 5 * 60 * 60 * 1000);
+        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
         const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000); // safety bound
         query = {
           status: "booked",
-          createdAt: { $lte: fiveHoursAgo, $gte: twentyFourHoursAgo },
+          createdAt: { $lte: fiveMinutesAgo, $gte: twentyFourHoursAgo },
           $or: [
             { offerlettersended: { $ne: true } },
             { userCreated: { $ne: true } },

@@ -2372,7 +2372,9 @@ router.post("/send-lead-mail", async (req, res) => {
                 "Product Management Advance": "Product management Advanced program.pdf",
                 "Automation Testing Advance": "Automation testing Advanced Program.pdf",
                 "Cyber Security Advance": "Cyber Security Advanced Program.pdf",
-                "Prompt Engineering for Generative AI Advance": "Prompt engineering for generative AI Advanced Program.pdf"
+                "Prompt Engineering for Generative AI Advance": "Prompt engineering for generative AI Advanced Program.pdf",
+                "UIUX Design Advance": "UI  UX-min.pdf",
+                "Psychology Advance": "Psychology.pdf"
             };
 
             const fileName = brochureMap[domain];
