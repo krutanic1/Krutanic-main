@@ -6,7 +6,8 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { 
   CheckCircle2, ArrowRight, User, Phone, Mail, MapPin, Briefcase, Target, 
-  BrainCircuit, TrendingUp, Sparkles, Send, ShieldCheck, Calendar, Clock
+  BrainCircuit, TrendingUp, Sparkles, Send, ShieldCheck, Calendar, Clock,
+  BarChart3, Rocket, Award, Search, Gift
 } from 'lucide-react';
 import API from '../API';
 
@@ -349,6 +350,150 @@ const FreeCareerAssessment = () => {
           </div>
         </div>
       </section>
+      )}
+
+      {/* WHY IS THIS MANDATORY SECTION - Visible on Landing */}
+      {currentStep === 0 && (
+        <section className="relative py-20 bg-zinc-900/50 border-y border-white/5">
+          <div className="max-w-[1200px] mx-auto px-6 relative z-10">
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }} 
+              whileInView={{ opacity: 1, y: 0 }} 
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                Why is the Skill Evaluation Test <span className="text-indigo-400">Mandatory</span> for This Program?
+              </h2>
+              <p className="text-zinc-400 max-w-3xl mx-auto text-lg leading-relaxed">
+                In today's competitive job market, companies no longer hire candidates based solely on degrees or certifications. Employers hire professionals who can demonstrate the right skills, problem-solving abilities, and job readiness.
+              </p>
+              <p className="text-zinc-400 max-w-3xl mx-auto text-lg leading-relaxed mt-4">
+                The Skill Evaluation Test is designed to measure your current standing against industry expectations and identify what is required to make you job-ready.
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+              {[
+                {
+                  icon: <Target className="text-indigo-400" size={32} />,
+                  title: "Benchmark Yourself Against Industry Standards",
+                  desc: "The assessment evaluates your current skills and compares them with the competencies expected by leading companies and hiring managers."
+                },
+                {
+                  icon: <BarChart3 className="text-indigo-400" size={32} />,
+                  title: "Identify Critical Skill Gaps",
+                  desc: "Most professionals and graduates are unaware of the specific skills preventing them from securing better opportunities. The assessment identifies these gaps and highlights the areas that require immediate improvement."
+                },
+                {
+                  icon: <Rocket className="text-indigo-400" size={32} />,
+                  title: "Build a Personalized Career Growth Plan",
+                  desc: "Every learner has different strengths, weaknesses, and career goals. Based on your assessment results, we create a personalized roadmap aligned with your target role and industry requirements."
+                },
+                {
+                  icon: <Briefcase className="text-indigo-400" size={32} />,
+                  title: "Understand Your Employability Score",
+                  desc: "The test helps determine your current level of job readiness and provides insights into how competitive your profile is in today's market."
+                },
+                {
+                  icon: <TrendingUp className="text-indigo-400" size={32} />,
+                  title: "Increase Your Chances of Career Growth",
+                  desc: "Professionals who understand their strengths and weaknesses can focus on the right skills, improve faster, and achieve better career outcomes."
+                },
+                {
+                  icon: <Award className="text-indigo-400" size={32} />,
+                  title: "Maximize Program Outcomes",
+                  desc: "The purpose of this program is not just learning—it's achieving measurable career growth. The Skill Evaluation Test ensures that your learning journey is focused on the areas that will have the greatest impact on your career progression."
+                }
+              ].map((card, idx) => (
+                <motion.div 
+                  key={idx}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: idx * 0.1 }}
+                  whileHover={{ y: -5 }}
+                  className="glass-panel p-8 rounded-2xl hover:bg-white/5 transition-all group"
+                >
+                  <div className="mb-6 group-hover:scale-110 transition-transform origin-left">{card.icon}</div>
+                  <h3 className="text-xl font-bold text-white mb-3">{card.title}</h3>
+                  <p className="text-zinc-400 text-sm leading-relaxed">{card.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Evaluate Section */}
+              <motion.div 
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="glass-panel p-8 rounded-2xl border-l-4 border-l-emerald-500 relative overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent"></div>
+                <div className="relative z-10">
+                  <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]"><Search size={24} /></div>
+                    Evaluate Technical and Professional Competencies
+                  </h3>
+                  <p className="text-zinc-400 mb-6">The assessment measures:</p>
+                  <ul className="space-y-3">
+                    {["Technical Skills", "Problem-Solving Ability", "Analytical Thinking", "Industry Knowledge", "Learning Agility", "Career Readiness"].map((item, i) => (
+                      <li key={i} className="flex items-center gap-3 text-zinc-300">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500"></div> {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </motion.div>
+
+              {/* What You Will Receive */}
+              <motion.div 
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="glass-panel p-8 rounded-2xl border-l-4 border-l-indigo-500 relative overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent"></div>
+                <div className="relative z-10">
+                  <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 border border-indigo-500/20 shadow-[0_0_15px_rgba(99,102,241,0.1)]"><Gift size={24} /></div>
+                    What You Will Receive
+                  </h3>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {["Industry Readiness Score", "Professional Skill Assessment Report", "Skill Gap Analysis", "Personalized Career Roadmap", "Growth Recommendations from Experts", "Action Plan for Career Advancement"].map((item, i) => (
+                      <li key={i} className="flex items-start gap-3 text-zinc-300">
+                        <CheckCircle2 size={20} className="text-emerald-400 shrink-0 mt-0.5" /> <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Important Note */}
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mt-12 p-8 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-center relative overflow-hidden"
+            >
+              <h3 className="text-sm font-bold text-amber-400 mb-4 uppercase tracking-wider flex items-center justify-center gap-2">
+                <ShieldCheck size={18} /> Important Note
+              </h3>
+              <p className="text-zinc-300 max-w-4xl mx-auto mb-4">
+                This is <strong>not a pass-or-fail examination.</strong>
+              </p>
+              <p className="text-zinc-400 max-w-4xl mx-auto leading-relaxed mb-4">
+                It is a professional assessment designed to identify your current skill level, benchmark you against industry expectations, and create a clear path toward achieving your career goals faster.
+              </p>
+              <p className="text-white font-medium max-w-4xl mx-auto italic text-lg">
+                "The better you understand your starting point, the faster you can reach your destination."
+              </p>
+            </motion.div>
+          </div>
+        </section>
       )}
 
       {/* STEP 1: SLOT BOOKING SECTION */}
