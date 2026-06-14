@@ -13,7 +13,7 @@ const runMedEnrollAutomation = async (studentId = null) => {
         query = { _id: studentId };
       } else {
         query = {
-          status: "booked",
+          status: { $in: ["booked", "fullPaid"] },
           $or: [
             { offerlettersended: { $ne: true } },
             { userCreated: { $ne: true } },
@@ -78,7 +78,7 @@ const runMedEnrollAutomation = async (studentId = null) => {
               const newUser = new User({
                 fullname: record.fullname,
                 email: record.email,
-                phone: record.phone,
+                phone: record.phone || record.whatsAppNumber || "0000000000",
                 password: "krutanic@123",
                 advance: false
               });

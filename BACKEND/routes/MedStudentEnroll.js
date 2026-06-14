@@ -199,6 +199,14 @@ router.post("/med-new-enroll", async (req, res) => {
 
     await newStudent.save();
     console.log('Student saved successfully');
+
+    // Automatically trigger enrollment automation so user doesn't wait for cron
+    try {
+      await runMedEnrollAutomation(newStudent._id);
+    } catch (autoErr) {
+      console.error("Error running auto-enrollment:", autoErr);
+    }
+
     res.status(201).json({ message: "Registration successful!" });
 
   } catch (error) {
