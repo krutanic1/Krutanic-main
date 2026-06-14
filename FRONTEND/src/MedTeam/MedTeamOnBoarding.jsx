@@ -51,13 +51,36 @@ const OnBoarding = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
+  const handleStatusChange = async (studentId, action) => {
+    try {
+      let updatedData = {};
+      const isConfirmedFullPaid = window.confirm(
+        "Are you sure you want to change?"
+      );
+      if (isConfirmedFullPaid) {
+        if (action === "fullPaid") {
+          updatedData = { status: "fullPaid" };
+        } else if (action === "default") {
+          updatedData = { status: "default" };
+        }
+      }
+      await axios.post(`${API}/updateMedStudentStatus`, {
+        studentId,
+        ...updatedData,
+      });
+      fetchNewStudent();
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
+  };
+
   const fetchNewStudent = async () => {
     setLoading(true);
     const medTeamName = localStorage.getItem("medTeamName");
     try {
       const response = await axios.get(`${API}/get-med-enroll?all=true`);
       const studentsData = response.data.filter(
-        (item) => item.status === "booked" && item.counselor?.toLowerCase() === medTeamName?.toLowerCase()
+        (item) => item.counselor?.toLowerCase() === medTeamName?.toLowerCase()
       );
       setNewStudent(studentsData);
       setFilteredStudents(studentsData);
@@ -323,6 +346,8 @@ const OnBoarding = () => {
                   <th>Paid Amount </th>
                   <th>Pending </th>
                   <th>Transaction Id</th>
+                  <th>Status</th>
+                  <th>Automation Tracking</th>
                   <th>More Details</th>
                 </tr>
               </thead>
@@ -331,7 +356,7 @@ const OnBoarding = () => {
                   Object.keys(groupedData).map((date) => (
                     <React.Fragment key={date}>
                       <tr>
-                        <td colSpan="16" style={{ fontWeight: "bold" }}>
+                        <td colSpan="12" style={{ fontWeight: "bold" }}>
                           {date}
                         </td>
                       </tr>
@@ -345,6 +370,46 @@ const OnBoarding = () => {
                           <td>{item.programPrice - item.paidAmount}</td>
                           <td className="capitalize">{item.transactionId}</td>
                           <td>
+                            <button
+                              className="button"
+                              onClick={() =>
+                                handleStatusChange(item._id, "fullPaid")
+                              }
+                            >
+
+                              <div className="relative group inline-block">
+                                <i className="fa fa-money" aria-hidden="true"></i>
+                                <div className="absolute left-1/2 -translate-x-1/2 bottom-full z-[9999] mb-2 hidden w-max bg-gray-800 text-white text-sm rounded-md py-2 px-3 group-hover:block">
+                                  FullPaid
+                                  <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-t-8 border-gray-800 border-x-8 border-x-transparent"></div>
+                                </div>
+                              </div>
+                            </button>
+                            <button
+                              className="button"
+                              onClick={() =>
+                                handleStatusChange(item._id, "default")
+                              }
+                            >
+
+                              <div className="relative group inline-block">
+                                <i className="fa fa-ban"></i>
+                                <div className="absolute left-1/2 -translate-x-1/2 bottom-full z-[9999] mb-2 hidden w-max bg-gray-800 text-white text-sm rounded-md py-2 px-3 group-hover:block">
+                                  Default
+                                  <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-t-8 border-gray-800 border-x-8 border-x-transparent"></div>
+                                </div>
+                              </div>
+                            </button>
+                          </td>
+                          <td>
+                            <div className="flex flex-col text-xs text-left w-max">
+                              <span>Offer: {item.offerlettersended ? "✅" : "❌"}</span>
+                              <span>User: {item.userCreated ? "✅" : "❌"}</span>
+                              <span>Login: {item.mailSended ? "✅" : "❌"}</span>
+                              <span>Onboarding: {item.onboardingSended ? "✅" : "❌"}</span>
+                            </div>
+                          </td>
+                          <td>
                             <i
                               className="fa fa-info-circle text-2xl cursor-pointer"
                               onClick={() => handleDialogOpen(item)}
@@ -356,7 +421,7 @@ const OnBoarding = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="14">No data found</td>
+                    <td colSpan="12">No data found</td>
                   </tr>
                 )}
               </tbody>

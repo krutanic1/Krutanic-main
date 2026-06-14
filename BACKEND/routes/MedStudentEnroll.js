@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const CreateBDA = require("../models/CreateBDA");
 const MedEnroll = require("../models/MedEnroll");
+const NewEnroll = require("../models/NewStudentEnroll");
+const CreateMedTeam = require("../models/CreateMedTeam");
 const MedCourse = require("../models/MedCourse");
 const AdvEnroll = require("../models/AdvEnroll");
 const TransactionId = require("../models/AddTransactionId");
@@ -9,6 +11,7 @@ const CreateOperation = require("../models/CreateOperation");
 const mongoose = require("mongoose");
 const authMiddleware = require("../middleware/UserAuth");
 const verifyAnyAuth = require("../middleware/verifyAnyAuth");
+const { runMedEnrollAutomation } = require("../services/medEnrollAutomationService");
 
 router.post("/med-new-enroll", async (req, res) => {
   try {
@@ -42,10 +45,20 @@ router.post("/med-new-enroll", async (req, res) => {
     } = req.body;
     const course = await MedCourse.findOne({ title: domain });
 
-    const existingUser = await MedEnroll.findOne({
-      email: req.body.email,
-    });
-    if (existingUser) {
+    const bdaUser = await CreateBDA.findOne({ fullname: counselor });
+    const medTeamUser = await CreateMedTeam.findOne({ fullname: counselor });
+
+    let TargetModel = MedEnroll;
+    if (bdaUser) {
+      TargetModel = NewEnroll;
+    } else if (medTeamUser) {
+      TargetModel = MedEnroll;
+    }
+
+    const existingMed = await MedEnroll.findOne({ email: req.body.email });
+    const existingNew = await NewEnroll.findOne({ email: req.body.email });
+    
+    if (existingMed || existingNew) {
       return res
         .status(400)
         .json({ message: "You have already submitted your details." });
@@ -85,7 +98,7 @@ router.post("/med-new-enroll", async (req, res) => {
           const startOfDay = new Date();
           startOfDay.setHours(0, 0, 0, 0);
 
-          const counts = await MedEnroll.aggregate([
+          const counts = await TargetModel.aggregate([
             { $match: { createdAt: { $gte: startOfDay } } },
             { $group: { _id: "$operationId", count: { $sum: 1 } } }
           ]);
@@ -146,7 +159,9 @@ router.post("/med-new-enroll", async (req, res) => {
     }
     // -----------------------------------------------------
 
-    const newStudent = new MedEnroll({
+    const calculatedStatus = (Number(programPrice) - Number(paidAmount) === 0) ? "fullPaid" : "booked";
+
+    const newStudent = new TargetModel({
       fullname,
       email,
       alternativeEmail,
@@ -163,7 +178,7 @@ router.post("/med-new-enroll", async (req, res) => {
       modeofpayment,
       transactionId,
       operationId: assignedOperationId,
-      status: "booked",
+      status: calculatedStatus,
       domainId: course ? course._id : null,
       whatsAppNumber,
       remainingAmount,
@@ -186,13 +201,21 @@ router.post("/med-new-enroll", async (req, res) => {
     console.log('Student saved successfully');
     res.status(201).json({ message: "Registration successful!" });
 
-    // Submit to Google Sheets in background (non-blocking)
-    convertExcel(newStudent).catch(err => {
-      console.error('Background Google Sheets submission error:', err);
-    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error. Please try again later." });
+  }
+});
+
+// Manual trigger for MedEnroll automation
+router.post("/manual-medenroll-automation/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    await runMedEnrollAutomation(id);
+    res.status(200).json({ success: true, message: "Automation processed for student." });
+  } catch (error) {
+    console.error("Error running manual automation:", error);
+    res.status(500).json({ success: false, error: "Failed to run manual automation" });
   }
 });
 
@@ -205,10 +228,17 @@ router.get("/check-existing-med-enrollment", async (req, res) => {
   }
 
   try {
-    const student = await MedEnroll.findOne(
+    let student = await MedEnroll.findOne(
       { email: email.trim().toLowerCase() },
       { clearPaymentMonth: 1, internshipstartsmonth: 1, internshipendsmonth: 1, fullname: 1 }
     ).lean();
+
+    if (!student) {
+      student = await NewEnroll.findOne(
+        { email: email.trim().toLowerCase() },
+        { clearPaymentMonth: 1, internshipstartsmonth: 1, internshipendsmonth: 1, fullname: 1 }
+      ).lean();
+    }
 
     if (!student) {
       return res.status(200).json({ exists: false });

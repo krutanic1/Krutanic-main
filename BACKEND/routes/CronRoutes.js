@@ -337,4 +337,40 @@ router.all('/api/cron/daily-late-logins', async (req, res) => {
     }
 });
 
+// MedEnroll Automation Cron Endpoint (Triggered by Vercel Cron)
+router.all('/api/cron/medenroll-automation', async (req, res) => {
+    const timestamp = new Date().toISOString();
+    const istTime = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+    console.log(`⏰ [${istTime} IST] Running Vercel Cron: MedEnroll Automation`);
+
+    try {
+        const authHeader = req.headers.authorization;
+        const vercelCronHeader = req.headers['x-vercel-cron'];
+        const expectedAuth = `Bearer ${process.env.CRON_SECRET}`;
+
+        const isVercelCron = vercelCronHeader === '1';
+        const hasValidSecret = process.env.CRON_SECRET && authHeader === expectedAuth;
+
+        if (!isVercelCron && !hasValidSecret) {
+            console.error('❌ Unauthorized cron request - MedEnroll Automation');
+            return res.status(401).json({ error: 'Unauthorized', timestamp, istTime });
+        }
+
+        const { runMedEnrollAutomation } = require('../services/medEnrollAutomationService');
+        await runMedEnrollAutomation();
+
+        res.status(200).json({
+            success: true,
+            message: `MedEnroll automation triggered successfully`,
+            timestamp,
+            istTime
+        });
+
+    } catch (error) {
+        console.error('❌ Error in MedEnroll Automation Cron Route:', error);
+        res.status(500).json({ error: 'Internal Server Error', details: error.message, timestamp, istTime });
+    }
+});
+
 module.exports = router;

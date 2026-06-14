@@ -587,9 +587,9 @@ const MedDashboardAccessForm = () => {
               {Number(programPrice) > 5999 && (
                 <option value="Instructor-Led [2 Months – Training & Internship]">Instructor-Led [2 Months – Training & Internship]</option>
               )}
-              {Number(programPrice) > 8499 && (
+              {/* {Number(programPrice) > 8499 && (
                 <option value="Career Advancement [3 Months – Training, Internship & Placement Assistance]">Career Advancement [3 Months – Training, Internship & Placement Assistance]</option>
-              )}
+              )} */}
             </select>
 
             <select

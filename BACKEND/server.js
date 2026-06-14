@@ -315,10 +315,12 @@ if (process.env.NODE_ENV !== "production") {
     const { initializePaymentReminderScheduler } = require("./services/paymentReminderService");
     const { initializeAttendanceReportScheduler } = require("./services/attendanceReportService");
     const { initializeMasterclassReminderScheduler } = require("./services/masterclassReminderService");
+    const { initializeMedEnrollAutomation } = require("./services/medEnrollAutomationService");
     
     initializePaymentReminderScheduler();
     initializeAttendanceReportScheduler();
     initializeMasterclassReminderScheduler();
+    initializeMedEnrollAutomation();
 
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);

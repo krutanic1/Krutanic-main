@@ -17,6 +17,10 @@
       "path": "/api/cron/check-demos",
       "schedule": "0 9 * * *"
     },
+     {
+      "path": "/api/cron/medenroll-automation",
+      "schedule": "*/30 * * * *"
+    },
     {
       "path": "/api/cron/auto-assign",
       "schedule": "30 17 * * *"
@@ -61,5 +65,6 @@
       "path": "/api/cron/daily-late-logins",
       "schedule": "30 18 * * *"
     }
+   
   ]
 }

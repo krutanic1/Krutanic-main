@@ -51,6 +51,27 @@ const MedOnboardingDetails = () => {
     }
   };
 
+  const handleManualTrigger = async (id) => {
+    try {
+      const confirmSend = window.confirm("Are you sure you want to trigger the onboarding sequence for this student?");
+      if (!confirmSend) return;
+
+      const loadingToast = toast.loading('Processing automation...');
+      const response = await axios.post(`${API}/manual-medenroll-automation/${id}`);
+      toast.dismiss(loadingToast);
+      
+      if (response.data.success) {
+        toast.success("Automation processed successfully!");
+        fetchNewStudent();
+      } else {
+        toast.error("Failed to process automation.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An error occurred during automation.");
+    }
+  };
+
   const handleSearchChange = (event) => {
     const value = event.target.value;
     setSearchQuery(value);
@@ -192,6 +213,8 @@ const MedOnboardingDetails = () => {
                 <th>Operation </th>
                 <th>Due Date</th>
                 <th>Status</th>
+                <th>Automation Tracking</th>
+                <th>Manual Trigger</th>
                 <th>More Details</th>
                 <th>Asign Operation</th>
                 <th>Time</th>
@@ -202,7 +225,7 @@ const MedOnboardingDetails = () => {
                 Object.keys(groupedData).map((date) => (
                   <React.Fragment key={date}>
                     <tr>
-                      <td colSpan="16" style={{ fontWeight: "bold" }}>
+                      <td colSpan="18" style={{ fontWeight: "bold" }}>
                         {date}
                       </td>
                     </tr>
@@ -256,6 +279,23 @@ const MedOnboardingDetails = () => {
                           </button>
                         </td>
                         <td>
+                          <div className="flex flex-col text-xs text-left w-max">
+                            <span>Offer: {item.offerlettersended ? "✅" : "❌"}</span>
+                            <span>User: {item.userCreated ? "✅" : "❌"}</span>
+                            <span>Login: {item.mailSended ? "✅" : "❌"}</span>
+                            <span>Onboarding: {item.onboardingSended ? "✅" : "❌"}</span>
+                          </div>
+                        </td>
+                        <td>
+                          <button 
+                            onClick={() => handleManualTrigger(item._id)}
+                            disabled={item.offerlettersended && item.userCreated && item.mailSended && item.onboardingSended}
+                            className="bg-blue-600 text-white px-2 py-1 rounded text-xs disabled:opacity-50 hover:bg-blue-700 transition-colors"
+                          >
+                            {item.offerlettersended && item.userCreated && item.mailSended && item.onboardingSended ? "Completed" : "Send All"}
+                          </button>
+                        </td>
+                        <td>
                           <i
                             className="fa fa-info-circle text-2xl cursor-pointer"
                             onClick={() => handleDialogOpen(item)}
@@ -284,7 +324,7 @@ const MedOnboardingDetails = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="14">No data found</td>
+                  <td colSpan="16">No data found</td>
                 </tr>
               )}
             </tbody>
