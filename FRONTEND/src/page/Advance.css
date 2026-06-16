@@ -209,8 +209,12 @@
 }
 .adv-hero-proof { display: flex; flex-direction: column; gap: 0.72rem; margin-bottom: 2.5rem; }
 .adv-hero-proof-item {
-  display: flex; align-items: center; gap: 0.7rem;
+  display: flex; align-items: flex-start; gap: 0.7rem;
   font-size: 0.93rem; color: #d1d5db; font-weight: 500;
+  text-align: left;
+}
+.adv-hero-proof-item > span:first-child {
+  margin-top: 2px;
 }
 .adv-hero-ctas { display: flex; gap: 1rem; margin-bottom: 1.85rem; flex-wrap: wrap; }
 .adv-trust-pills { display: flex; flex-wrap: wrap; gap: 0.6rem; }
@@ -728,13 +732,14 @@
   .adv-hero-body { margin-left: auto; margin-right: auto; }
   .adv-hero-ctas { justify-content: center; }
   .adv-trust-pills { justify-content: center; }
-  .adv-hero-proof { align-items: center; }
+  .adv-hero-proof { display: inline-flex; align-items: flex-start; margin: 0 auto; text-align: left; }
   .adv-hero-sub { margin-left: auto; margin-right: auto; }
   .adv-hero-strip { justify-content: center; }
   .adv-outcomes-grid { grid-template-columns: repeat(2,1fr); }
   .adv-stats-inner { grid-template-columns: repeat(2,1fr); gap: 3rem; }
   .adv-proof-grid { grid-template-columns: 1fr; }
   .adv-label { justify-content: center; }
+  .adv-label::after { content: ''; width: 28px; height: 2px; background: var(--adv-green); flex-shrink: 0; }
   .adv-transform-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 900px) {
@@ -754,14 +759,16 @@
   .adv-stats-inner { grid-template-columns: 1fr; gap: 2.5rem; }
   .adv-proof-side { flex-direction: column; }
   .adv-sticky-cta { bottom: 1rem; right: 1rem; }
-  .adv-hero-ctas { flex-direction: column; align-items: stretch; }
-  .adv-hero-ctas > * { width: 100%; text-align: center; }
+  .adv-hero-ctas { flex-direction: column; align-items: center; justify-content: center; gap: 1rem; }
+  .adv-hero-ctas > * { width: 100%; max-width: 300px; text-align: center; }
   .adv-hero-stat-bar { gap: 0.75rem; padding: 1rem; }
   .adv-hero-stat-num { font-size: 1.35rem; }
   .adv-hero-preview { height: 220px; }
   .adv-hero-notif { bottom: 12rem; left: 1.25rem; right: 1.25rem; max-width: none; }
-  .adv-final-btns { flex-direction: column; align-items: stretch; }
-  .adv-final-btns > * { width: 100%; }
+  .adv-hero-strip-wrap { padding: 0 1.25rem; }
+  .adv-strip-label { width: 100%; text-align: center; margin-right: 0; margin-bottom: 0.5rem; display: block; }
+  .adv-final-btns { flex-direction: column; align-items: center; justify-content: center; gap: 1rem; }
+  .adv-final-btns > * { width: 100%; max-width: 300px; text-align: center; }
   .adv-stats-band { padding: 3.5rem 1.25rem; }
   .adv-stat-val { font-size: 2.8rem; }
   

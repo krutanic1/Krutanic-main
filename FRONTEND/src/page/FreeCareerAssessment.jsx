@@ -141,7 +141,22 @@ const FreeCareerAssessment = () => {
     }
   };
 
-  const standardSlots = ['16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'];
+  const getSlotsForDate = (dateStr) => {
+    if (!dateStr) return [];
+    const date = new Date(dateStr);
+    const day = date.getDay();
+    
+    // If it's Monday (1), slots from 12:00 PM to 6:00 PM (12:00 to 18:00)
+    if (day === 1) {
+      return [
+        '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', 
+        '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00'
+      ];
+    }
+    
+    // Default slots for other days
+    return ['16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'];
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -509,13 +524,32 @@ const FreeCareerAssessment = () => {
               <div className="space-y-6">
                 <div>
                   <label className="form-label flex items-center gap-2"><Calendar size={16}/> Select Date *</label>
-                  <input 
-                    type="date" 
-                    min={new Date().toISOString().split('T')[0]} 
-                    value={selectedDate} 
-                    onChange={(e) => fetchSlots(e.target.value)} 
-                    className="form-input" 
-                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    {(() => {
+                      const dates = [];
+                      let d = new Date();
+                      while (dates.length < 2) {
+                        if (d.getDay() !== 2) { // 2 = Tuesday
+                          const localDate = new Date(d.getTime() - (d.getTimezoneOffset() * 60000));
+                          const dateStr = localDate.toISOString().split('T')[0];
+                          const displayStr = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                          dates.push({ dateStr, displayStr });
+                        }
+                        d.setDate(d.getDate() + 1);
+                      }
+                      return dates.map((item, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => fetchSlots(item.dateStr)}
+                          className={`slot-btn py-3 ${selectedDate === item.dateStr ? 'selected' : ''}`}
+                        >
+                          {item.displayStr}
+                          {item.dateStr === new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] && ' (Today)'}
+                        </button>
+                      ));
+                    })()}
+                  </div>
                 </div>
                 
                 {selectedDate && (
@@ -525,7 +559,7 @@ const FreeCareerAssessment = () => {
                       <p className="text-indigo-400">Loading slots...</p>
                     ) : (
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                        {standardSlots.map(time => {
+                        {getSlotsForDate(selectedDate).map(time => {
                           const isBooked = availableSlots.some(s => s.timeSlot === time && s.isBooked);
                           return (
                             <button

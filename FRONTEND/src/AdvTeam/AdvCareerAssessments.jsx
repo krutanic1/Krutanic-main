@@ -26,6 +26,17 @@ const AdvCareerAssessments = ({ isAdmin }) => {
         fetchAssessments();
     }, []);
 
+    const formatTime12Hour = (timeStr) => {
+        if (!timeStr || typeof timeStr !== 'string' || !timeStr.includes(':')) return timeStr;
+        const [h, m] = timeStr.split(':');
+        const hNum = parseInt(h, 10);
+        if (isNaN(hNum)) return timeStr;
+        const ampm = hNum >= 12 ? 'PM' : 'AM';
+        let hour12 = hNum % 12;
+        if (hour12 === 0) hour12 = 12;
+        return `${hour12}:${m || '00'} ${ampm} IST`;
+    };
+
     return (
         <div id="create-marketing-team">
             <div className="coursetable" style={{ fontFamily: 'Inter, sans-serif' }}>
@@ -84,7 +95,7 @@ const AdvCareerAssessments = ({ isAdmin }) => {
                                         </span>
                                     </td>
                                     <td style={{ padding: '12px', whiteSpace: 'nowrap' }}>
-                                        {a.bookedDate ? `${new Date(a.bookedDate).toLocaleDateString()} ${a.bookedTimeSlot}` : 'Not Booked'}
+                                        {a.bookedDate ? `${new Date(a.bookedDate).toLocaleDateString()} ${formatTime12Hour(a.bookedTimeSlot)}` : 'Not Booked'}
                                     </td>
                                     <td style={{ padding: '12px' }}>{new Date(a.createdAt).toLocaleDateString()}</td>
                                     <td style={{ padding: '12px' }}>
@@ -131,7 +142,9 @@ const AdvCareerAssessments = ({ isAdmin }) => {
                                 .map(([key, val]) => (
                                 <div key={key} style={{ background: '#f9fafb', padding: '12px', borderRadius: '8px', border: '1px solid #f3f4f6' }}>
                                     <div style={{ fontSize: '11px', fontWeight: '700', color: '#6b7280', textTransform: 'uppercase', marginBottom: '4px', letterSpacing: '0.5px' }}>{key.replace(/([A-Z])/g, ' $1').trim()}</div>
-                                    <div style={{ fontSize: '14px', color: '#111827', fontWeight: '500' }}>{val || '—'}</div>
+                                    <div style={{ fontSize: '14px', color: '#111827', fontWeight: '500' }}>
+                                        {key === 'bookedTimeSlot' ? formatTime12Hour(val) : (val || '—')}
+                                    </div>
                                 </div>
                             ))}
                         </div>
