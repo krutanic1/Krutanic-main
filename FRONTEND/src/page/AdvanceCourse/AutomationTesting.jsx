@@ -179,7 +179,7 @@ const AutomationTesting = () => {
         .faq-item { border: 1px solid var(--at-border); border-radius: 12px; margin-bottom: 12px; overflow: hidden; background: #fff; }
         .faq-quest { width:100%; text-align:left; padding: 22px 24px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .faq-ans { padding: 0 24px 24px; font-size: 14px; color: var(--at-text-dim); line-height: 1.6; }
-
+                                                                                                                                                                                 
         .sticky-bar { 
           position: fixed; 
           bottom: 0; 
@@ -255,7 +255,7 @@ const AutomationTesting = () => {
              ))}
           </div>
         </div>
-      </section>
+      </section>   
 
       {/* 4. ROADMAP */}
       <section className="at-section">

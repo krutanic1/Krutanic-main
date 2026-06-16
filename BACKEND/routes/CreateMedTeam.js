@@ -178,18 +178,26 @@ router.post("/sendmailtomedteam", async (req, res) => {
     }
 
     const emailMessage = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
         <div style="background-color: #F15B29; color: #fff; text-align: center; padding: 20px;">
-            <h1>Krutanic</h1>
+          <h1>Welcome to Krutanic!</h1>
         </div>
-        <div style="padding: 20px; text-align: center;">
-            <p style="font-size: 16px; color: #333;">Welcome to Krutanic! ${fullname},</p>
-            <p style="font-size: 14px; color: #555;">Your Login Credentials are:</p>
-            <p style="font-size: 16px; color: #333;"><strong>Email:</strong> ${medteam.email}</p>
-            <p style="font-size: 16px; color: #333;"><strong>Password:</strong> ${medteam.password}</p>
-            <a href="${process.env.FRONTEND_URL}/medloginteam" style="display: inline-block; padding: 10px 20px; margin: 20px 0; font-size: 16px; color: #fff; background-color: #F15B29; text-decoration: none; border-radius: 5px;">Login Here</a>
+        <div style="padding: 20px;">
+          <p style="font-size: 16px; text-transform: capitalize; color: #333;">Dear ${fullname},</p>
+          <p style="font-size: 14px; color: #555;">Welcome to the Med Team at Krutanic!</p>
+          <p style="font-size: 14px; color: #555;">Here are your login details:</p>
+          <p style="font-size: 14px; color: #333;">Use your official company email (<strong>${email}</strong>) along with the OTP provided to log in.</p>
+          <p style="font-size: 14px; color: #555;">
+            <a href="https://www.krutanic.com/medloginteam" target="_blank" style="color: #F15B29; text-decoration: none;">Click here to log in</a>. 
+          </p>
+          <p style="font-size: 14px; color: #555;">If you need further assistance, feel free to reach out to the IT team.</p>
+          <p style="font-size: 14px; color: #333;">Best regards,</p>
+          <p style="font-size: 14px; color: #333;">Team Krutanic</p>
         </div>
+        <div style="text-align: center; font-size: 12px; color: #888; padding: 10px 0; border-top: 1px solid #ddd;">
+          <p>&copy; 2024 Krutanic. All Rights Reserved.</p>
         </div>
+      </div>
     `;
 
     await sendEmail({ email, subject: "MedTeam Login Credentials", message: emailMessage });
