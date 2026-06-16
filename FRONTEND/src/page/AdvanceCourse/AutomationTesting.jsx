@@ -438,7 +438,7 @@ const AutomationTesting = () => {
            <div className="flex items-center gap-2 md:gap-6">
               <div className="flex items-center gap-2 text-sm md:text-lg font-bold">
                  <span className="animate-pulse">🚨</span>
-                 <span>30% Scholarship closing in just 2 days.</span>
+                 <span>50% Scholarship closing in just 2 days.</span>
               </div>
               <div className="hidden lg:flex items-center gap-3 text-sm font-bold opacity-90">
                  <span>Batch closing in</span>

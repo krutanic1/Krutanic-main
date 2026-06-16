@@ -447,7 +447,7 @@ const FullStackDetails = () => {
       <div className="ai-sticky-bar" role="dialog" aria-label="Promo">
         <div className="ai-left">
           <span className="ai-emoji">🎓</span>
-          <div className="ai-text">30% Scholarship closing in just 2 days.</div>
+          <div className="ai-text">50% Scholarship closing in just 2 days.</div>
           <br />
           <div className="ai-countdown">Batch closing in &nbsp;<Countdown targetOffsetHours={48} /></div>
         </div>
