@@ -385,13 +385,21 @@ async function fetchLeadFromMeta(leadId) {
 
 // GET: Fetch counts for all lead outcomes with team-based isolation
 router.get("/get-outcome-counts", async (req, res) => {
-    const { role, userId, strictlyOwned, source, date, month, year } = req.query;
+    const { role, userId, strictlyOwned, source, date, month, year, fromDate, toDate } = req.query;
 
     try {
         let baseQuery = {};
         const roleNorm = (role || "").toLowerCase();
 
-        if (roleNorm === "admin") {
+        if (req.query.memberIds) {
+            const mIds = req.query.memberIds.split(',');
+            baseQuery = {
+                $or: [
+                    { owner_id: { $in: mIds } },
+                    { current_owner_id: { $in: mIds } }
+                ]
+            };
+        } else if (roleNorm === "admin") {
             // Admin sees all
         } else if (strictlyOwned === "true") {
             if (roleNorm === "admin" || roleNorm.includes("manager") || roleNorm.includes("leader")) {
@@ -445,11 +453,26 @@ router.get("/get-outcome-counts", async (req, res) => {
         }
 
         // Apply same filters as get-adv-leads to keep counts in sync
+
         if (source) {
-            if (source === "Old CRM") {
-                baseQuery.source = { $in: ["csv_import", "Bulk CSV Import", "meta_ads_manual", "Old CRM", "csv-import"] };
+            const sources = source.split(',');
+            let sourceOrs = [];
+            sources.forEach(s => {
+                if (s === "Old CRM") {
+                    sourceOrs.push({ source: { $in: ["csv_import", "Bulk CSV Import", "meta_ads_manual", "Old CRM", "csv-import"] } });
+                } else {
+                    sourceOrs.push({ source: s });
+                }
+            });
+            if (baseQuery.$or && baseQuery.$or.length > 0) {
+                const existingOr = baseQuery.$or;
+                delete baseQuery.$or;
+                baseQuery.$and = [
+                    { $or: existingOr },
+                    { $or: sourceOrs }
+                ];
             } else {
-                baseQuery.source = source;
+                baseQuery.$or = sourceOrs;
             }
         }
 
@@ -461,7 +484,28 @@ router.get("/get-outcome-counts", async (req, res) => {
             baseQuery.created_at = { $gte: startDate, $lte: endDate };
         }
 
-        if (date) {
+        if (fromDate && toDate) {
+            const startOfDay = new Date(fromDate);
+            startOfDay.setHours(0, 0, 0, 0);
+            const endOfDay = new Date(toDate);
+            endOfDay.setHours(23, 59, 59, 999);
+            const dateQuery = {
+                $or: [
+                    { assigned_at: { $gte: startOfDay, $lte: endOfDay } },
+                    { assigned_at: { $exists: false }, created_at: { $gte: startOfDay, $lte: endOfDay } }
+                ]
+            };
+            if (baseQuery.$or && baseQuery.$or.length > 0) {
+                const existingOr = baseQuery.$or;
+                delete baseQuery.$or;
+                baseQuery.$and = [
+                    { $or: existingOr },
+                    dateQuery
+                ];
+            } else {
+                baseQuery.$or = dateQuery.$or;
+            }
+        } else if (date) {
             const startOfDay = new Date(date);
             startOfDay.setHours(0, 0, 0, 0);
             const endOfDay = new Date(date);
@@ -1103,7 +1147,7 @@ router.get("/get-adv-leads", async (req, res) => {
     const { 
         role, userId, page = 1, limit = 25, 
         outcome, strictlyOwned, date, status, stage, disposition,
-        search, source, month, year
+        search, source, month, year, fromDate, toDate
     } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
@@ -1111,7 +1155,15 @@ router.get("/get-adv-leads", async (req, res) => {
         let baseQuery = {};
         const roleNorm = (role || "").toLowerCase();
 
-        if (roleNorm === "admin") {
+        if (req.query.memberIds) {
+            const mIds = req.query.memberIds.split(',');
+            baseQuery = {
+                $or: [
+                    { owner_id: { $in: mIds } },
+                    { current_owner_id: { $in: mIds } }
+                ]
+            };
+        } else if (roleNorm === "admin") {
             // Admin sees all
         } else if (strictlyOwned === "true") {
             // Strictly owned + Unassigned (for fresh pool access)
@@ -1208,12 +1260,16 @@ router.get("/get-adv-leads", async (req, res) => {
         }
 
         if (source) {
-            if (source === "Old CRM") {
-                // Map 'Old CRM' to all potential legacy source labels
-                andConditions.push({ source: { $in: ["csv_import", "Bulk CSV Import", "meta_ads_manual", "Old CRM", "csv-import"] } });
-            } else {
-                andConditions.push({ source });
-            }
+            const sources = source.split(',');
+            let sourceOrs = [];
+            sources.forEach(s => {
+                if (s === "Old CRM") {
+                    sourceOrs.push({ source: { $in: ["csv_import", "Bulk CSV Import", "meta_ads_manual", "Old CRM", "csv-import"] } });
+                } else {
+                    sourceOrs.push({ source: s });
+                }
+            });
+            andConditions.push({ $or: sourceOrs });
         }
 
         if (month && year) {
@@ -1225,22 +1281,28 @@ router.get("/get-adv-leads", async (req, res) => {
         }
         
         if (stage) {
-            if (stage === "Reactive Lead") {
-                andConditions.push({ is_reactive: true });
-            } else if (stage === "Fresh Lead") {
-                if (roleNorm === "admin" || roleNorm.includes("manager") || roleNorm.includes("leader")) {
-                    andConditions.push({ stage: new RegExp(`^${stage}$`, "i"), is_reactive: { $ne: true } });
+            const stages = stage.split(',');
+            let stageOrs = [];
+            stages.forEach(st => {
+                if (st === "Reactive Lead") {
+                    stageOrs.push({ is_reactive: true });
+                } else if (st === "Fresh Lead") {
+                    if (roleNorm === "admin" || roleNorm.includes("manager") || roleNorm.includes("leader")) {
+                        stageOrs.push({ stage: new RegExp(`^${st}$`, "i"), is_reactive: { $ne: true } });
+                    } else {
+                        stageOrs.push({ stage: new RegExp(`^${st}$`, "i") });
+                    }
                 } else {
-                    andConditions.push({ stage: new RegExp(`^${stage}$`, "i") });
+                    stageOrs.push({ stage: new RegExp(`^${st}$`, "i") });
                 }
-            } else {
-                andConditions.push({ stage: new RegExp(`^${stage}$`, "i") });
-            }
+            });
+            andConditions.push({ $or: stageOrs });
         }
 
         if (disposition) {
-            // Exact match for disposition
-            andConditions.push({ disposition: new RegExp(`^${disposition}$`, "i") });
+            const dispositions = disposition.split(',');
+            let dispOrs = dispositions.map(d => ({ disposition: new RegExp(`^${d}$`, "i") }));
+            andConditions.push({ $or: dispOrs });
         }
 
         if (outcome && !stage && !disposition) {
@@ -1279,7 +1341,18 @@ router.get("/get-adv-leads", async (req, res) => {
             }
         }
 
-        if (date) {
+        if (fromDate && toDate) {
+            const startOfDay = new Date(fromDate);
+            startOfDay.setHours(0, 0, 0, 0);
+            const endOfDay = new Date(toDate);
+            endOfDay.setHours(23, 59, 59, 999);
+            andConditions.push({
+                $or: [
+                    { assigned_at: { $gte: startOfDay, $lte: endOfDay } },
+                    { assigned_at: { $exists: false }, created_at: { $gte: startOfDay, $lte: endOfDay } }
+                ]
+            });
+        } else if (date) {
             const startOfDay = new Date(date);
             startOfDay.setHours(0, 0, 0, 0);
             const endOfDay = new Date(date);

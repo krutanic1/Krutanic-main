@@ -785,9 +785,9 @@ const EnrollmentForm = () => {
                       style={{ marginTop: '4px', width: 'auto', cursor: 'pointer' }}
                     />
                     <label htmlFor="isConfirmed" style={{ fontSize: '0.9rem', color: '#cbd5e1', lineHeight: '1.5', cursor: 'pointer', margin: 0, padding: 0 }}>
-                      <b>
-                      I confirm that all details provided are accurate and acknowledge that a nominal fee applies for the Adobe Certified Program 2026.
-                    </b>
+                      <strong>
+                        I confirm that all details provided are accurate and acknowledge that a nominal fee applies for the Adobe Certified Program 2026.
+                      </strong>
                     </label>
                   </div>
 
