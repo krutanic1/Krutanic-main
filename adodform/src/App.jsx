@@ -591,6 +591,7 @@ const EnrollmentForm = () => {
               <div className="adv-perk">✓ 100% Placement Assistance</div>
               <div className="adv-perk">✓ 1:1 Industry Mentorship</div>
               <div className="adv-perk">✓ Corporate Internship</div>
+              <div className="adv-perk">✓ Unlimited AI Mock Interviews</div>
             </div>
           </div>
           
