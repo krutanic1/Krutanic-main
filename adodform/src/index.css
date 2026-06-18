@@ -2146,3 +2146,49 @@ html, body {
     box-sizing: border-box !important;
   }
 }
+
+
+/* ====================================
+   DROPDOWN OVERFLOW FIX - CRITICAL
+   ==================================== */
+
+/* Remove overflow:hidden from containers that clip the dropdown */
+.adv-form-step,
+.adv-form-content,
+.adv-input-group {
+  overflow: visible !important;
+}
+
+/* The custom select container must be relative and visible */
+.adv-custom-select {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+/* The options dropdown must float above everything */
+.adv-select-options {
+  position: absolute !important;
+  top: calc(100% + 6px) !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 99999 !important;
+  overflow-y: auto !important;
+  max-height: 220px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 900px) {
+  .adv-form-step,
+  .adv-form-content,
+  .adv-input-group,
+  .adv-custom-select {
+    overflow: visible !important;
+  }
+
+  .adv-select-options {
+    z-index: 99999 !important;
+    max-height: 200px !important;
+    overflow-y: auto !important;
+  }
+}

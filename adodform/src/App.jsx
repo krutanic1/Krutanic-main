@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import toast, { Toaster } from 'react-hot-toast';
 
 import SubhraImg from './assets/mentors/Subhra.jpg';
@@ -323,44 +324,129 @@ const FAQSection = () => {
 
 const CustomSelect = ({ label, name, value, options, onChange, placeholder }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef(null);
+  const [dropdownStyle, setDropdownStyle] = useState({});
+  const triggerRef = useRef(null);
+  const dropdownRef = useRef(null);
 
+  // Calculate position of dropdown based on trigger element's position in viewport
+  const openDropdown = () => {
+    if (triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const dropdownHeight = Math.min(options.length * 50, 250);
+      const openUpward = spaceBelow < dropdownHeight && rect.top > dropdownHeight;
+
+      setDropdownStyle({
+        position: 'fixed',
+        top: openUpward ? rect.top - dropdownHeight - 6 : rect.bottom + 6,
+        left: rect.left,
+        width: rect.width,
+        zIndex: 999999,
+      });
+    }
+    setIsOpen(true);
+  };
+
+  // Reposition on scroll/resize
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
+    if (!isOpen) return;
+    const update = () => {
+      if (triggerRef.current) {
+        const rect = triggerRef.current.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const dropdownHeight = Math.min(options.length * 50, 250);
+        const openUpward = spaceBelow < dropdownHeight && rect.top > dropdownHeight;
+        setDropdownStyle(prev => ({
+          ...prev,
+          top: openUpward ? rect.top - dropdownHeight - 6 : rect.bottom + 6,
+          left: rect.left,
+          width: rect.width,
+        }));
+      }
+    };
+    window.addEventListener('scroll', update, true);
+    window.addEventListener('resize', update);
+    return () => {
+      window.removeEventListener('scroll', update, true);
+      window.removeEventListener('resize', update);
+    };
+  }, [isOpen, options.length]);
+
+  // Close on outside click
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleClickOutside = (e) => {
+      if (
+        triggerRef.current && !triggerRef.current.contains(e.target) &&
+        dropdownRef.current && !dropdownRef.current.contains(e.target)
+      ) {
         setIsOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
+
+  const dropdown = isOpen ? ReactDOM.createPortal(
+    <div
+      ref={dropdownRef}
+      style={{
+        ...dropdownStyle,
+        background: 'rgba(15, 23, 42, 0.98)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        border: '1px solid rgba(139, 92, 246, 0.3)',
+        borderRadius: '12px',
+        boxShadow: '0 20px 60px rgba(0,0,0,0.8)',
+        overflow: 'hidden',
+        overflowY: 'auto',
+        maxHeight: '250px',
+      }}
+    >
+      {options.map((opt) => (
+        <div
+          key={opt}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onChange({ target: { name, value: opt } });
+            setIsOpen(false);
+          }}
+          style={{
+            padding: '14px 20px',
+            cursor: 'pointer',
+            fontSize: '0.95rem',
+            color: value === opt ? '#ffffff' : '#cbd5e1',
+            background: value === opt ? 'rgba(139, 92, 246, 0.2)' : 'transparent',
+            borderLeft: value === opt ? '4px solid #8b5cf6' : '4px solid transparent',
+            borderBottom: '1px solid rgba(255,255,255,0.05)',
+            transition: 'all 0.15s ease',
+            fontFamily: 'inherit',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(139, 92, 246, 0.12)'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.paddingLeft = '24px'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = value === opt ? 'rgba(139, 92, 246, 0.2)' : 'transparent'; e.currentTarget.style.color = value === opt ? '#fff' : '#cbd5e1'; e.currentTarget.style.paddingLeft = '20px'; }}
+        >
+          {opt}
+        </div>
+      ))}
+    </div>,
+    document.body
+  ) : null;
 
   return (
-    <div className="adv-input-group" ref={containerRef}>
+    <div className="adv-input-group">
       <label>{label}</label>
-      <div className={`adv-custom-select ${isOpen ? 'open' : ''}`} onClick={() => setIsOpen(!isOpen)}>
+      <div
+        className={`adv-custom-select ${isOpen ? 'open' : ''}`}
+        ref={triggerRef}
+        onClick={() => isOpen ? setIsOpen(false) : openDropdown()}
+      >
         <div className="adv-select-trigger">
-          <span>{value || placeholder}</span>
+          <span style={{ color: value ? '#fff' : '#64748b' }}>{value || placeholder}</span>
           <span className={`adv-select-arrow ${isOpen ? 'up' : ''}`}></span>
         </div>
-        {isOpen && (
-          <div className="adv-select-options">
-            {options.map((opt) => (
-              <div 
-                key={opt} 
-                className={`adv-select-option ${value === opt ? 'selected' : ''}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onChange({ target: { name, value: opt } });
-                  setIsOpen(false);
-                }}
-              >
-                {opt}
-              </div>
-            ))}
-          </div>
-        )}
       </div>
+      {dropdown}
     </div>
   );
 };
