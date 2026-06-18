@@ -1,4 +1,6 @@
-import { Helmet } from 'react-helmet-async';
+
+filepath = r"c:\Users\tarun\OneDrive\Desktop\Krutanic-main-1\FRONTEND\src\page\MasterClass.jsx"
+top_half = """import { Helmet } from 'react-helmet-async';
 import React, { useEffect, useState } from "react";
 import HomePopup from "../Components/HomePopup";
 import { Link, useNavigate } from "react-router-dom";
@@ -10,8 +12,6 @@ import img from "../assets/krutanic_certificate.png";
 import imghero from "../assets/masterclass.jpeg";
 import imgalt from "../assets/defaultmasterclass.jpg";
 import Popularcourse from "../Components/popularcourse";
-import Footer from "../Components/Footer";
-import MasterClassPopup from "../Components/MasterClassPopup";
 
 import dsPoster from "../../krutanic/images/poster/datascience.png";
 import mernPoster from "../../krutanic/images/poster/mern.png";
@@ -29,8 +29,6 @@ const MasterClass = () => {
   const [ongoingMasterClass, setOngoingMasterClass] = useState([]);
   const [completedMasterClass, setCompletedMasterClass] = useState([]);
   const [selectedMasterClass, setSelectedMasterClass] = useState(null);
-  const [showExitPopup, setShowExitPopup] = useState(false);
-  const [hasPopupShown, setHasPopupShown] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -77,7 +75,6 @@ const MasterClass = () => {
   const closeForm = () => {
     setisRegisterForm(false);
     setisDownloadForm(false);
-    setShowExitPopup(false);
     setSelectedMasterClass(null);
     setFormData({
       name: "",
@@ -122,32 +119,6 @@ const MasterClass = () => {
   useEffect(() => {
     fetchMasterclass();
   }, []);
-
-  // Popup logic: Show on exit intent and after 6 seconds
-  useEffect(() => {
-    // Show popup after 6 seconds automatically if not already shown
-    const timer = setTimeout(() => {
-      if (!hasPopupShown) {
-        setShowExitPopup(true);
-        setHasPopupShown(true);
-      }
-    }, 6000);
-
-    // Show popup on exit intent (mouse leaving top of window)
-    const handleMouseLeave = (e) => {
-      if (e.clientY <= 0 && !hasPopupShown) {
-        setShowExitPopup(true);
-        setHasPopupShown(true);
-      }
-    };
-
-    document.addEventListener("mouseleave", handleMouseLeave);
-
-    return () => {
-      clearTimeout(timer);
-      document.removeEventListener("mouseleave", handleMouseLeave);
-    };
-  }, [hasPopupShown]);
 
   const handleApply = async (masterClass) => {
     setSelectedMasterClass(masterClass);
@@ -351,8 +322,9 @@ const MasterClass = () => {
     return trimmed;
   };
 
-  return (
-    <div id="MasterClassPage" className="max-w-[100vw] overflow-x-hidden bg-black font-sans text-gray-200">
+"""
+new_jsx = """  return (
+    <div id="MasterClass" className="max-w-[100vw] overflow-x-hidden bg-black font-sans text-gray-200">
       <Helmet>
         <title>Krutanic MasterClass | Upskill in Tech, Coding & AI</title>
         <meta
@@ -379,25 +351,12 @@ const MasterClass = () => {
       </Helmet>
 
       <Toaster position="top-center" reverseOrder={false} />
-      
-      {/* High-Converting Popup */}
-      <MasterClassPopup 
-        isOpen={showExitPopup} 
-        onClose={() => setShowExitPopup(false)} 
-      />
 
       {/* Hero Section */}
-      <section className="relative w-full pt-32 pb-28 px-4 md:px-8 lg:px-16 flex flex-col items-center text-center overflow-hidden border-b border-white/10">
-        {/* Background Image & Overlays */}
-        <div className="absolute inset-0 z-0">
-          <img src={imghero} alt="MasterClass Hero" className="w-full h-full object-cover opacity-50" />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/80 to-black"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/20 to-black/90"></div>
-        </div>
-        
+      <section className="relative w-full pt-28 pb-20 px-4 md:px-8 lg:px-16 flex flex-col items-center text-center overflow-hidden">
         {/* Glow Effects */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[1000px] h-[500px] bg-[#00ffcc]/20 blur-[150px] rounded-full pointer-events-none z-0"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/20 blur-[150px] rounded-full pointer-events-none z-0"></div>
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[1000px] h-[500px] bg-[#00ffcc]/10 blur-[120px] rounded-full pointer-events-none"></div>
+        <div className="absolute -top-32 -left-32 w-[400px] h-[400px] bg-purple-600/20 blur-[120px] rounded-full pointer-events-none"></div>
         
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
@@ -417,36 +376,21 @@ const MasterClass = () => {
             Don&apos;t Miss Out on Your Chance to Thrive in the <span className="text-[#00ffcc]">AI Revolution</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-gray-300 mb-10 max-w-3xl mx-auto font-medium leading-relaxed">
-            Only the <strong className="text-white font-extrabold">top 1% of India</strong> earns above ₹1 Lakh/month. Don't settle for average and get left behind with the 99%. Master the most in-demand skills in Tech, AI, and Data Science, and <strong className="text-[#00ffcc] font-extrabold drop-shadow-[0_0_8px_rgba(0,255,204,0.4)]">join the elite.</strong>
+          <p className="text-xl md:text-2xl text-gray-300 mb-10 max-w-3xl leading-relaxed font-medium">
+            Master the most in-demand skills in Tech, AI, and Data Science. Secure your future before the industry leaves you behind. 
           </p>
 
-          <motion.button 
+          <button 
             onClick={() => {
               const el = document.getElementById("active-classes");
               if(el) el.scrollIntoView({ behavior: 'smooth' });
             }}
-            animate={{ 
-              scale: [1, 1.08, 1], 
-              boxShadow: [
-                "0 0 15px rgba(0,255,204,0.4)", 
-                "0 0 50px rgba(0,255,204,1)", 
-                "0 0 15px rgba(0,255,204,0.4)"
-              ]
-            }}
-            transition={{ 
-              duration: 1.2, 
-              repeat: Infinity, 
-              ease: "easeInOut" 
-            }}
-            whileHover={{ scale: 1.12, boxShadow: "0 0 60px rgba(0,255,204,1)" }}
-            whileTap={{ scale: 0.95 }}
-            className="group relative inline-flex items-center justify-center px-10 py-5 font-extrabold text-black bg-[#00ffcc] rounded-full"
+            className="group relative inline-flex items-center justify-center px-10 py-5 font-extrabold text-black transition-all duration-300 bg-[#00ffcc] rounded-full hover:scale-105 hover:shadow-[0_0_40px_rgba(0,255,204,0.6)]"
           >
             <span className="relative text-lg flex items-center gap-2">
               Browse Active Masterclasses <FaRocket className="group-hover:translate-x-1 transition-transform" />
             </span>
-          </motion.button>
+          </button>
           
           <div className="mt-8 flex items-center gap-4 text-sm text-gray-400 font-bold tracking-wide">
             <div className="flex -space-x-3">
@@ -508,9 +452,9 @@ const MasterClass = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              { title: "Tech Enthusiasts & Students", img: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=600&q=80", color: "from-[#00ffcc]/80" },
-              { title: "Software Engineers", img: "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=600&q=80", color: "from-[#00ffcc]/80" },
-              { title: "Founders & Marketers", img: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=600&q=80", color: "from-[#00ffcc]/80" }
+              { title: "Tech Enthusiasts & Students", img: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=500&q=80", color: "from-[#00ffcc]/80" },
+              { title: "Software Engineers", img: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=500&q=80", color: "from-[#00ffcc]/80" },
+              { title: "Founders & Marketers", img: "https://images.unsplash.com/photo-1556761175-5973dc0f32d7?auto=format&fit=crop&w=500&q=80", color: "from-[#00ffcc]/80" }
             ].map((role, i) => (
               <motion.div 
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -613,7 +557,7 @@ const MasterClass = () => {
               Rock your brand new certificate on LinkedIn!
             </h2>
             <p className="text-xl text-gray-300 mb-8 leading-relaxed font-medium">
-              We provide a prestigious, internationally recognized certificate to <strong className="text-white font-extrabold">everyone who attends</strong> the masterclass—absolutely <strong className="text-[#00ffcc] font-extrabold">free of cost</strong>! Solidify your professional credibility and showcase your achievement on your resume and LinkedIn profile.
+              Earn a prestigious internationally recognized certificate upon successfully completing the masterclass, solidifying your professional credibility. Showcase your achievement on your resume and LinkedIn profile.
             </p>
             <ul className="space-y-5 mb-10">
               {['Verifiable Credentials', 'Shareable on LinkedIn', 'Lifetime Validity'].map((item, i) => (
@@ -812,30 +756,15 @@ const MasterClass = () => {
         <div className="relative z-10 max-w-4xl mx-auto">
           <h2 className="text-4xl md:text-6xl font-extrabold text-white mb-6 leading-tight">Are You Ready to Step Up?</h2>
           <p className="text-xl md:text-2xl text-gray-300 mb-12 font-medium max-w-3xl mx-auto">Stop watching others succeed. Start building your own tech legacy today. The next Masterclass is starting soon.</p>
-          <motion.button 
+          <button 
             onClick={() => {
-              setShowExitPopup(true);
-              setHasPopupShown(true);
+              const el = document.getElementById("active-classes");
+              if(el) el.scrollIntoView({ behavior: 'smooth' });
             }}
-            animate={{ 
-              scale: [1, 1.08, 1], 
-              boxShadow: [
-                "0 0 15px rgba(0,255,204,0.4)", 
-                "0 0 50px rgba(0,255,204,1)", 
-                "0 0 15px rgba(0,255,204,0.4)"
-              ]
-            }}
-            transition={{ 
-              duration: 1.2, 
-              repeat: Infinity, 
-              ease: "easeInOut" 
-            }}
-            whileHover={{ scale: 1.12, boxShadow: "0 0 60px rgba(0,255,204,1)" }}
-            whileTap={{ scale: 0.95 }}
-            className="group relative inline-flex items-center justify-center px-12 py-6 font-extrabold text-black bg-[#00ffcc] rounded-full text-xl tracking-wide"
+            className="group relative inline-flex items-center justify-center px-12 py-6 font-extrabold text-black transition-all duration-300 bg-[#00ffcc] rounded-full hover:scale-105 hover:shadow-[0_0_50px_rgba(0,255,204,0.6)] text-xl tracking-wide"
           >
             Claim Your Spot Now <FaRocket className="ml-3 group-hover:translate-x-2 transition-transform text-2xl" />
-          </motion.button>
+          </button>
         </div>
       </section>
 
@@ -957,3 +886,7 @@ const MasterClass = () => {
 };
 
 export default MasterClass;
+"""
+
+with open(filepath, 'w', encoding='utf-8') as f:
+    f.write(top_half + new_jsx)

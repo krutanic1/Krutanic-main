@@ -312,10 +312,102 @@ router.post("/addmedteamname", verifyAnyAuth, async (req, res) => {
 // GET request to retrieve all team names
 router.get("/getmedteamname", verifyAnyAuth, async (req, res) => {
   try {
-    const teamname = await MedTeamName.find();
+    const teamname = await MedTeamName.find(); 
     res.status(200).json(teamname);
   } catch (error) {
     res.status(400).json({ message: error.message });
+  }
+});
+
+//put request to asign a target to all medteam accounts
+router.post("/assignmedteamtarget/:id", verifyAnyAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { target } = req.body;
+    const updatedMedTeam = await CreateMedTeam.findByIdAndUpdate(
+      id,
+      { $push: { target } },
+      { new: true }
+    );
+    if (!updatedMedTeam) {
+      return res.status(404).json({ error: "MedTeam not found" });
+    }
+    res.status(200).json(updatedMedTeam);
+  } catch (error) {
+    res.status(400).json({ error: "Error updating medteam" });
+  }
+});
+
+//delete request to delete the target 
+router.put("/deletemedteamtarget/:id", verifyAnyAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { target } = req.body;
+    const updatedMedTeam = await CreateMedTeam.findByIdAndUpdate(
+      id,
+      { $pull: { target: target } },
+      { new: true }
+    );
+    if (!updatedMedTeam) {
+      return res.status(404).json({ error: "MedTeam not found" });
+    }
+    res.status(200).json(updatedMedTeam);
+  } catch (error) {
+    res.status(400).json({ error: "Error deleting target" });
+  }
+});
+
+// post request to assign target to team
+router.post("/medteamtargetassigntoteam", verifyAnyAuth, async (req, res) => {
+  try {
+    const { teamId, targetValue, payments, currentMonth } = req.body;
+
+    const newTarget = {
+      currentMonth,
+      targetValue,
+      payments,
+    };
+
+    const updatedTeam = await MedTeamName.findByIdAndUpdate(
+      teamId,
+      { $push: { target: newTarget } },
+      { new: true }
+    );
+
+    if (!updatedTeam) {
+      return res.status(404).json({ error: "Team not found" });
+    }
+
+    res.status(200).json(updatedTeam);
+  } catch (error) {
+    console.error("Error updating team target:", error);
+    res.status(500).json({ error: "Server error while assigning target" });
+  }
+});
+
+//delete team last index target 
+router.delete("/delete-medteam-target", verifyAnyAuth, async (req, res) => {
+  try {
+    const { teamId, targetId } = req.body;
+
+    if (!teamId || !targetId) {
+      return res.status(400).json({ error: "Missing teamId or targetId" });
+    }
+
+    const updatedTeam = await MedTeamName.findByIdAndUpdate(
+      teamId,
+      { $pull: { target: { _id: targetId } } }, // precise pull
+      { new: true }
+    );
+
+    if (!updatedTeam) {
+      return res.status(404).json({ error: "Team not found" });
+    }
+
+    res.status(200).json(updatedTeam);
+  } catch (error) {
+    console.error("Error deleting target:", error);
+    res.status(500).json({ error: "Internal server error while deleting target" });
   }
 });
 

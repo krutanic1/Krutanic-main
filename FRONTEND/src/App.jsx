@@ -216,6 +216,7 @@ import MedAddUser from "./MedTeam/MedAddUser";
 import MedTeamOnBoarding from "./MedTeam/MedTeamOnBoarding";
 import MedTeamRevenueSheet from "./MedTeam/MedTeamRevenueSheet";
 import MedTeamDetail from "./MedTeam/MedTeamDetail";
+import MedTeamAssignTarget from "./MedTeam/AssignTarget";
 
 // MarketingLogind
 
@@ -483,7 +484,7 @@ const AppContent = () => {
 
   useEffect(() => {
     // Auto-popup logic
-    const allowedPaths = ["/", "/advance", "/advancecourses", "/referandearn", "/events", "/masterclass", "/alumni", "/career-assessment"];
+    const allowedPaths = ["/", "/advance", "/advancecourses", "/referandearn", "/events", "/alumni", "/career-assessment"];
     const currentPath = location.pathname.toLowerCase().replace(/\/$/, "");
     const isAllowed = allowedPaths.includes(currentPath || "/");
 
@@ -506,10 +507,10 @@ const AppContent = () => {
   const marketingheaderPaths = ["/marketing/home", "/marketing/previous", "/marketing/addexecutive"];
   const bdaheaderPaths = ["/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/leaderboard"];
   const advteamheaderPaths = ["/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/advteam/leaderboard", "/advteam/leads-count", "/advteam/career-assessments"];
-  const medteamheaderPaths = ["/medteam/home", "/medteam/onboarding", "/medteam/adduser", "/medteam/revenue", "/medteam/teamdetail"];
+  const medteamheaderPaths = ["/medteam/home", "/medteam/onboarding", "/medteam/adduser", "/medteam/revenue", "/medteam/teamdetail", "/medteam/assigntarget"];
   const hrheaderPaths = ["/hrdashboard"];
   const lmsFooterPaths = ["/jobboard"];
-  const noFooterPaths = ["/operationdashboard", "/bookedpayment", "/fullpayment", "/defaultpayment", "/operationrevenuesheet", "/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet", "/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/advteam/leaderboard", "/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/leaderboard", "/setting", "/medteam/home", "/medteam/onboarding", "/medteam/adduser", "/medteam/revenue", "/medteam/teamdetail"];
+  const noFooterPaths = ["/operationdashboard", "/bookedpayment", "/fullpayment", "/defaultpayment", "/operationrevenuesheet", "/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet", "/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/advteam/leaderboard", "/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/leaderboard", "/setting", "/medteam/home", "/medteam/onboarding", "/medteam/adduser", "/medteam/revenue", "/medteam/teamdetail", "/medteam/assigntarget"];
   const placementcoodinatorHeaderPaths = ["/pcdashboard", "/jobpost"];
   const headerPaths = ["/", "/login", "/loginwithotp", "/forgotpassword", "/contactus", "/aboutus", "/career", "/collabration", "/advancecourses", "/terms", "/privacy", "/refundpolicy", "/feestructure", "/advance", "/advance-apply", "/mentorship", "/datascience", "/dataanalytics", "/digitalmarket", "/mernstack", "/investmentbanking", "/productmanagement", "/automationtesting", "/promptengineering", "/generativeai", "/forensic-psychology", "/clinical-psychology", "/corporate-law", "/medpro-packs", "/psychology", "/operationlogin", "/advoperationlogin", "/teamlogin", "/adminlogin", "/managerlogin", "/loginadmin", "/pclogin", "/advteamlogin", "/medloginteam", "/dashboardaccessform", "/meddashboardaccessform", "/advancedashboardaccess", "/masterclass", "/alumni", "/verify", "/referandearn", "/marketing/login", "/interviewer-login", "/interviewerlogin", "/hrlogin", "/advanceform", "/career-assessment"];
 
@@ -762,6 +763,7 @@ const AppContent = () => {
         <Route path="/medteam/adduser" element={isAuthenticatedMedTeam() ? <MedAddUser /> : <Navigate to="/medloginteam" />} />
         <Route path="/medteam/onboarding" element={isAuthenticatedMedTeam() ? <MedTeamOnBoarding /> : <Navigate to="/medloginteam" />} />
         <Route path="/medteam/revenue" element={isAuthenticatedMedTeam() ? <MedTeamRevenueSheet /> : <Navigate to="/medloginteam" />} />
+        <Route path="/medteam/assigntarget" element={isAuthenticatedMedTeam() ? <MedTeamAssignTarget /> : <Navigate to="/medloginteam" />} />
         {/* Med Team Panel End */}
 
         {/* User Panel */}

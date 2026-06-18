@@ -138,6 +138,9 @@ const MedTeamHeader = () => {
               <Link to="/medteam/teamdetail">
                 <i className="fa fa-users"></i> Team
               </Link>
+              <Link to="/medteam/assigntarget">
+                <i className="fa fa-bullseye"></i> Assign Target
+              </Link>
             </>
           )}
           <button onClick={() => {
