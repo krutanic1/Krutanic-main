@@ -504,7 +504,6 @@ const CustomSelect = ({ label, name, value, options, onChange, placeholder }) =>
 };
 
 const EnrollmentForm = () => {
-  const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -523,17 +522,15 @@ const EnrollmentForm = () => {
     crNameNumber: '',
     whyLooking: '',
     preferredLanguage: '',
+    isConfirmed: false,
     website: '', // Honeypot 1
     middleName: '' // Honeypot 2
   });
 
-  const handleInputChange = (e) => setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-
-  const nextStep = (e) => {
-    e.preventDefault();
-    setStep(2);
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
-  const prevStep = () => setStep(1);
 
   // Security: Check Rate Limit (Max 5 submissions per 1 hour)
   const checkRateLimit = () => {
@@ -648,26 +645,19 @@ const EnrollmentForm = () => {
           </div>
           
           <div className="adv-form-content">
-            <div className="adv-stepper">
-              <div className={`adv-step ${step >= 1 ? 'active' : ''}`}>1. Personal Details</div>
-              <div className="adv-step-line"></div>
-              <div className={`adv-step ${step >= 2 ? 'active' : ''}`}>2. Program Goals</div>
-            </div>
-
             {errorMsg && (
               <div style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#f87171', padding: '16px', borderRadius: '12px', border: '1px solid rgba(239, 68, 68, 0.3)', marginBottom: '24px', fontSize: '0.9rem', fontWeight: '500' }}>
                 {errorMsg}
               </div>
             )}
 
-            <form onSubmit={step === 1 ? nextStep : handleSubmit}>
+            <form onSubmit={handleSubmit}>
               {/* Security Honeypots: Hidden from humans via opacity & position, tempting for bots */}
               <div style={{ opacity: 0, position: 'absolute', top: '-9999px', left: '-9999px' }} aria-hidden="true">
                 <input type="text" name="website" tabIndex="-1" autoComplete="off" value={formData.website} onChange={handleInputChange} />
                 <input type="text" name="middleName" tabIndex="-1" autoComplete="off" value={formData.middleName} onChange={handleInputChange} />
               </div>
 
-              {step === 1 && (
                 <div className="adv-form-step">
                   <h4 className="adv-step-title">PERSONAL & ACADEMIC DETAILS</h4>
                   
@@ -720,13 +710,7 @@ const EnrollmentForm = () => {
                     ]}
                   />
 
-                  <button type="submit" className="adv-btn-primary adv-btn-full" style={{ marginTop: '20px' }}>Proceed to Program Goals</button>
-                </div>
-              )}
-
-              {step === 2 && (
-                <div className="adv-form-step">
-                  <h4 className="adv-step-title">PROGRAM GOALS & PREFERENCES</h4>
+                  <h4 className="adv-step-title" style={{ marginTop: '32px' }}>PROGRAM GOALS & PREFERENCES</h4>
                   
                   <CustomSelect 
                     label="Interested Domain *" 
@@ -790,16 +774,27 @@ const EnrollmentForm = () => {
                     <input type="text" name="preferredLanguage" value={formData.preferredLanguage} onChange={handleInputChange} required />
                   </div>
 
+                  <div className="adv-checkbox-group" style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginTop: '20px', marginBottom: '20px' }}>
+                    <input 
+                      type="checkbox" 
+                      name="isConfirmed" 
+                      id="isConfirmed"
+                      checked={formData.isConfirmed} 
+                      onChange={handleInputChange} 
+                      required 
+                      style={{ marginTop: '4px', width: 'auto', cursor: 'pointer' }}
+                    />
+                    <label htmlFor="isConfirmed" style={{ fontSize: '0.9rem', color: '#cbd5e1', lineHeight: '1.5', cursor: 'pointer', margin: 0, padding: 0 }}>
+                      I confirm that all details provided are accurate and acknowledge that a nominal fee applies for the Adobe Certified Program 2026.
+                    </label>
+                  </div>
+
                   <div className="adv-form-actions-v2">
-                    <button type="submit" className="adv-btn-submit" disabled={isSubmitting}>
+                    <button type="submit" className="adv-btn-submit" disabled={isSubmitting || !formData.isConfirmed}>
                       {isSubmitting ? 'SUBMITTING APPLICATION...' : 'SUBMIT MY APPLICATION'}
-                    </button>
-                    <button type="button" className="adv-btn-back" onClick={prevStep}>
-                      ← BACK TO STEP 1
                     </button>
                   </div>
                 </div>
-              )}
             </form>
           </div>
         </div>
