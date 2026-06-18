@@ -19,10 +19,21 @@ const COMPARISON = [
 ];
 
 const PHASES = [
-  { month: 'Months 1-3', title: 'Immersive Core Competency', desc: 'Master advanced frameworks through rigorous, mentor-led live sessions.' },
-  { month: 'Month 4', title: 'Industry Simulation', desc: 'Execute complex, real-world assignments under strict corporate deadlines.' },
-  { month: 'Month 5', title: 'Corporate Internship', desc: 'Integrate with a partner firm. Contribute to live production environments.' },
-  { month: 'Month 6', title: 'Placement & Negotiation', desc: 'Mock interviews, profile hyper-optimization, and offer negotiation strategy.' }
+  { 
+    month: 'Month 1', 
+    title: 'Practical Learning & Industry Training', 
+    desc: 'Participate in interactive live sessions covering both fundamental and advanced industry topics led by professionals. Engage in live discussions, hands-on exercises, and personalized doubt-clearing sessions to strengthen conceptual understanding. Classes conducted Monday to Friday via Zoom or Google Meet.'
+  },
+  { 
+    month: 'Month 2', 
+    title: 'Internship & Project-Based Learning', 
+    desc: 'Gain practical exposure by working on real-world projects under the mentorship of industry experts. Complete a minor individual project (1 week) followed by a major group project (3 weeks), allowing for skill application in a collaborative environment.'
+  },
+  { 
+    month: 'Month 3', 
+    title: '100% Placement Assistance & Job Readiness Upto 11 LPA', 
+    desc: 'Receive comprehensive placement support, including mock interviews, group discussions, resume-building workshops, and communication skill enhancement sessions. Benefit from personalized career guidance to improve your job search strategy and increase your chances of securing a placement.'
+  }
 ];
 
 const FAQS = [
@@ -84,7 +95,7 @@ const HeroSection = ({ onShowModal }) => {
               <span className="adv-h1-accent">Command Your Worth.</span>
             </h1>
             <p className="adv-hero-p">
-              The elite 6-Month Placement Acceleration Program. We bridge the gap between your current stagnation and high-paying tech roles through 1:1 mentorship, corporate internships, and an uncompromising placement guarantee.
+              The elite 3-Month Placement Acceleration Program. We bridge the gap between your current stagnation and high-paying tech roles through 1:1 mentorship, real-world internships, and an uncompromising 100% placement guarantee upto 11 LPA.
             </p>
             
             <div className="adv-hero-cta-group">
@@ -179,12 +190,16 @@ const PartnersSection = () => (
   </section>
 );
 
-const ComparisonSection = () => (
+const ComparisonSection = () => {
+  const scrollToForm = () => document.getElementById('enrollment-form')?.scrollIntoView({ behavior: 'smooth' });
+  return (
   <section className="adv-comparison">
     <div className="adv-container">
       <h2 className="adv-h2">The Truth About Upskilling</h2>
       <p className="adv-p-lead">Why 90% of online courses fail professionals, and why our architecture works.</p>
-      <div className="adv-comp-table-wrapper">
+
+      {/* Desktop: Table view */}
+      <div className="adv-comp-table-wrapper adv-comp-desktop">
         <table className="adv-comp-table">
           <thead>
             <tr>
@@ -206,14 +221,45 @@ const ComparisonSection = () => (
           </tbody>
         </table>
       </div>
+
+      {/* Mobile: Stacked card view */}
+      <div className="adv-comp-mobile">
+        {COMPARISON.map((row, i) => (
+          <div key={i} className="adv-comp-card">
+            <div className="adv-comp-card-bad">
+              <span className="adv-comp-card-label adv-comp-card-label-bad">Standard Model</span>
+              <div className="adv-comp-card-content">
+                <span className="adv-cross">×</span>
+                <span>{row.traditional}</span>
+              </div>
+            </div>
+            <div className="adv-comp-card-divider">vs</div>
+            <div className="adv-comp-card-good">
+              <span className="adv-comp-card-label adv-comp-card-label-good">Krutanic Architecture</span>
+              <div className="adv-comp-card-content">
+                <span className="adv-check">✓</span>
+                <span>{row.krutanic}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ textAlign: 'center', marginTop: '48px' }}>
+        <button className="adv-btn-primary adv-btn-animated" onClick={scrollToForm}>
+          Apply for the 2026 Cohort <span className="adv-arrow">→</span>
+        </button>
+      </div>
     </div>
   </section>
-);
+  );
+};
 
-const RoadmapSection = () => (
+const RoadmapSection = () => {
+  const scrollToForm = () => document.getElementById('enrollment-form')?.scrollIntoView({ behavior: 'smooth' });
+  return (
   <section className="adv-roadmap">
     <div className="adv-container">
-      <h2 className="adv-h2">A System Engineered for Outcomes</h2>
+      <h2 className="adv-h2">A 3-Month System Engineered for Outcomes</h2>
       <div className="adv-roadmap-grid">
         {PHASES.map((phase, i) => (
           <div key={i} className="adv-phase-card">
@@ -224,9 +270,15 @@ const RoadmapSection = () => (
           </div>
         ))}
       </div>
+      <div style={{ textAlign: 'center', marginTop: '48px' }}>
+        <button className="adv-btn-primary adv-btn-animated" onClick={scrollToForm}>
+          Apply for the 2026 Cohort <span className="adv-arrow">→</span>
+        </button>
+      </div>
     </div>
   </section>
-);
+  );
+};
 
 const GuaranteeSection = ({ onShowModal }) => {
   return (
@@ -235,7 +287,7 @@ const GuaranteeSection = ({ onShowModal }) => {
         <div className="adv-shield-icon">🛡️</div>
         <h2 className="adv-h2">The Uncompromising Placement Guarantee</h2>
         <p className="adv-guarantee-p">
-          We are fundamentally invested in your success. Our commitment is written into the program: we will provide aggressive referral mapping, unlimited mock interviews, and dedicated career advocacy until you secure the role you deserve. Period.
+          We are fundamentally invested in your success. Our commitment is written into the program: we will provide mock interviews, group discussions, resume-building support, and dedicated career guidance until you secure the role you deserve — upto 11 LPA. Period.
         </p>
         <button className="adv-btn-how" onClick={onShowModal}>
           How exactly do we do it? <span className="adv-btn-how-icon">?</span>
