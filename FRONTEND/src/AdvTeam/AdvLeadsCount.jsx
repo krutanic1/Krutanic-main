@@ -18,7 +18,8 @@ const AdvLeadsCount = ({ isAdmin }) => {
   
   // Filter & Pagination states
   const [filterType, setFilterType] = useState("10"); // "10", "20", "30", "all", "custom"
-  const [customDate, setCustomDate] = useState(new Date().toISOString().split("T")[0]);
+  const [fromDate, setFromDate] = useState(new Date().toISOString().split("T")[0]);
+  const [toDate, setToDate] = useState(new Date().toISOString().split("T")[0]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalAssigned, setTotalAssigned] = useState(0);
@@ -50,9 +51,14 @@ const AdvLeadsCount = ({ isAdmin }) => {
   const fetchExecutiveData = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${API}/api/adv-reports/assigned-leads/executive/${userId}`, {
-        params: { page, limit: 10, days: filterType }
-      });
+      const params = { page, limit: 10 };
+      if (filterType === "custom") {
+        params.fromDate = fromDate;
+        params.toDate = toDate;
+      } else {
+        params.days = filterType;
+      }
+      const res = await axios.get(`${API}/api/adv-reports/assigned-leads/executive/${userId}`, { params });
       setExecutiveData(res.data?.data || []);
       setTotalPages(res.data?.totalPages || 1);
     } catch (err) {
@@ -68,7 +74,8 @@ const AdvLeadsCount = ({ isAdmin }) => {
       const params = { page, limit: 10, role: role };
       
       if (filterType === "custom") {
-        params.date = customDate;
+        params.fromDate = fromDate;
+        params.toDate = toDate;
       } else {
         params.days = filterType;
       }
@@ -87,7 +94,7 @@ const AdvLeadsCount = ({ isAdmin }) => {
   // Reset to page 1 whenever filters change
   useEffect(() => {
     setPage(1);
-  }, [filterType, customDate]);
+  }, [filterType, fromDate, toDate]);
 
   useEffect(() => {
     if (!userId || !role) return;
@@ -97,7 +104,7 @@ const AdvLeadsCount = ({ isAdmin }) => {
     } else {
       fetchTeamData();
     }
-  }, [userId, role, filterType, customDate, page]);
+  }, [userId, role, filterType, fromDate, toDate, page]);
 
   const handleNextPage = () => {
     if (page < totalPages) setPage(page + 1);
@@ -147,7 +154,7 @@ const AdvLeadsCount = ({ isAdmin }) => {
       case "20": return "(Last 20 Days)";
       case "30": return "(Last 30 Days)";
       case "all": return "(All Time)";
-      case "custom": return `(${new Date(customDate).toLocaleDateString("en-GB")})`;
+      case "custom": return `(${new Date(fromDate).toLocaleDateString("en-GB")} - ${new Date(toDate).toLocaleDateString("en-GB")})`;
       default: return "";
     }
   };
@@ -184,20 +191,33 @@ const AdvLeadsCount = ({ isAdmin }) => {
                 <option value="20">Last 20 Days</option>
                 <option value="30">Last 30 Days</option>
                 <option value="all">All Time</option>
-                {!isExecutive && <option value="custom">Specific Date</option>}
+                <option value="custom">Custom Date Range</option>
               </select>
 
-              {filterType === "custom" && !isExecutive && (
-                <input 
-                  type="date" 
-                  value={customDate} 
-                  onChange={(e) => setCustomDate(e.target.value)}
-                  max={new Date().toISOString().split("T")[0]}
-                  style={{
-                    padding: "8px 12px", border: "1px solid #d1d5db", borderRadius: "6px",
-                    outline: "none", fontFamily: "inherit"
-                  }}
-                />
+              {filterType === "custom" && (
+                <>
+                  <input 
+                    type="date" 
+                    value={fromDate} 
+                    onChange={(e) => setFromDate(e.target.value)}
+                    max={new Date().toISOString().split("T")[0]}
+                    style={{
+                      padding: "8px 12px", border: "1px solid #d1d5db", borderRadius: "6px",
+                      outline: "none", fontFamily: "inherit"
+                    }}
+                  />
+                  <span style={{ fontSize: "14px", fontWeight: "500", color: "#4b5563" }}>To</span>
+                  <input 
+                    type="date" 
+                    value={toDate} 
+                    onChange={(e) => setToDate(e.target.value)}
+                    max={new Date().toISOString().split("T")[0]}
+                    style={{
+                      padding: "8px 12px", border: "1px solid #d1d5db", borderRadius: "6px",
+                      outline: "none", fontFamily: "inherit"
+                    }}
+                  />
+                </>
               )}
             </div>
           </div>

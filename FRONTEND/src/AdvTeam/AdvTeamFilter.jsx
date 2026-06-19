@@ -85,6 +85,25 @@ const AdvTeamFilter = () => {
     // Confetti
     const [showConfetti, setShowConfetti] = useState(false);
 
+    // Call Logs Modal States
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedLeadCallLogs, setSelectedLeadCallLogs] = useState([]);
+    const [loadingLogs, setLoadingLogs] = useState(false);
+
+    const fetchCallLogs = async (lead) => {
+        setIsModalOpen(true);
+        setLoadingLogs(true);
+        try {
+            const res = await axios.get(`${API}/api/adv-leads/lead-call-history/${lead._id}`);
+            setSelectedLeadCallLogs(res.data || []);
+        } catch (err) {
+            toast.error("Failed to fetch call logs");
+            setSelectedLeadCallLogs([]);
+        } finally {
+            setLoadingLogs(false);
+        }
+    };
+
     useEffect(() => {
         if (outcomeCounts.converted > 0) {
             setShowConfetti(true);
@@ -444,7 +463,9 @@ const AdvTeamFilter = () => {
                                     <th style={styles.th}>Name / Contact</th>
                                     <th style={styles.th}>Domain</th>
                                     <th style={styles.th}>Stage & Disposition</th>
-                                    <th style={styles.th}>Date</th>
+                                    <th style={styles.th}>Log Created At</th>
+                                    <th style={styles.th}>Created On</th>
+                                    <th style={styles.th}>Call Count</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -465,7 +486,21 @@ const AdvTeamFilter = () => {
                                         </td>
                                         <td style={styles.td}>
                                             <div style={{ fontSize: '13px', fontWeight: '600', color: designTokens.colors.textSecondary }}>
-                                                {new Date(lead.assigned_at || lead.created_at).toLocaleDateString("en-GB")}
+                                                {lead.last_interaction_at ? new Date(lead.last_interaction_at).toLocaleDateString("en-GB") : "N/A"}
+                                            </div>
+                                        </td>
+                                        <td style={styles.td}>
+                                            <div style={{ fontSize: '13px', fontWeight: '600', color: designTokens.colors.textSecondary }}>
+                                                {new Date(lead.created_at).toLocaleDateString("en-GB")}
+                                            </div>
+                                        </td>
+                                        <td style={styles.td}>
+                                            <div 
+                                                onClick={() => fetchCallLogs(lead)} 
+                                                style={{ fontSize: '14px', fontWeight: 'bold', color: designTokens.colors.primary, cursor: 'pointer', textDecoration: 'underline' }}
+                                                title="Click to view call logs"
+                                            >
+                                                {lead.attempt_count || 0}
                                             </div>
                                         </td>
                                     </tr>
@@ -496,6 +531,52 @@ const AdvTeamFilter = () => {
                 )}
             </div>
             </div>
+            {isModalOpen && (
+                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+                    <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '90%', maxWidth: '600px', maxHeight: '80vh', overflowY: 'auto', position: 'relative' }}>
+                        <button onClick={() => setIsModalOpen(false)} style={{ position: 'absolute', top: '16px', right: '16px', background: 'transparent', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748B' }}>&times;</button>
+                        <h2 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '16px', color: '#0F172A' }}>Call Logs</h2>
+                        {loadingLogs ? (
+                            <div style={{ padding: '20px', textAlign: 'center', color: '#64748B' }}>Loading logs...</div>
+                        ) : selectedLeadCallLogs.length > 0 ? (
+                            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                                {selectedLeadCallLogs.map((log, index) => (
+                                    <li key={index} style={{ padding: '16px', borderBottom: '1px solid #E2E8F0', background: '#F8FAFC', marginBottom: '12px', borderRadius: '8px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <div style={{ fontWeight: '800', fontSize: '16px', color: designTokens.colors.primary, textTransform: 'capitalize' }}>
+                                                    {log.disposition || (log.callOutcome ? log.callOutcome.replace(/_/g, ' ') : 'Call Attempted')}
+                                                </div>
+                                                {log.actionType && (
+                                                    <span style={{ fontSize: '11px', background: '#E2E8F0', padding: '2px 8px', borderRadius: '12px', textTransform: 'uppercase', fontWeight: 'bold', color: '#475569' }}>
+                                                        {log.actionType}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div style={{ fontSize: '12px', color: '#64748B', fontWeight: '600' }}>
+                                                {new Date(log.createdAt).toLocaleString("en-GB")}
+                                            </div>
+                                        </div>
+
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px', fontSize: '13px', color: '#475569' }}>
+                                            {log.specialistName && <div><strong>By:</strong> {log.specialistName}</div>}
+                                            {log.stage && <div><strong>Stage:</strong> {log.stage}</div>}
+                                            {log.duration && <div><strong>Duration:</strong> {log.duration} sec</div>}
+                                            {log.followUpDate && <div><strong>Follow-up:</strong> {new Date(log.followUpDate).toLocaleString("en-GB", { dateStyle: 'short', timeStyle: 'short' })}</div>}
+                                            {log.demoScheduleDate && <div><strong>Demo:</strong> {new Date(log.demoScheduleDate).toLocaleString("en-GB", { dateStyle: 'short', timeStyle: 'short' })}</div>}
+                                        </div>
+
+                                        {log.remark && <div style={{ marginTop: '8px', fontSize: '13px', color: '#334155', background: '#fff', padding: '8px', borderRadius: '6px', border: '1px solid #E2E8F0' }}><strong>Remark:</strong> {log.remark}</div>}
+                                        {log.summary && <div style={{ marginTop: '8px', fontSize: '13px', color: '#334155', background: '#fff', padding: '8px', borderRadius: '6px', border: '1px solid #E2E8F0' }}><strong>Summary:</strong> {log.summary}</div>}
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <div style={{ padding: '20px', textAlign: 'center', color: '#64748B' }}>No call logs found for this lead.</div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
         </div>
     );

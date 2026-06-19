@@ -1035,7 +1035,7 @@ router.get("/dashboard-analytics", async (req, res) => {
 router.get("/assigned-leads/executive/:userId", async (req, res) => {
     try {
         const { userId } = req.params;
-        const { page = 1, limit = 10, days = '10' } = req.query;
+        const { page = 1, limit = 10, days = '10', date, fromDate, toDate } = req.query;
 
         const pageNum = parseInt(page);
         const limitNum = parseInt(limit);
@@ -1043,8 +1043,20 @@ router.get("/assigned-leads/executive/:userId", async (req, res) => {
 
         const matchStage = { owner_id: userId, assigned_at: { $exists: true } };
 
-        if (days !== 'all') {
-            const daysAgo = new Date();
+        if (fromDate && toDate) {
+            const startOfDay = new Date(fromDate);
+            startOfDay.setHours(0, 0, 0, 0);
+            const endOfDay = new Date(toDate);
+            endOfDay.setHours(23, 59, 59, 999);
+            matchStage.assigned_at = { $gte: startOfDay, $lte: endOfDay };
+        } else if (date) {
+            const filterDate = new Date(date);
+            filterDate.setHours(0, 0, 0, 0);
+            const nextDate = new Date(filterDate);
+            nextDate.setDate(nextDate.getDate() + 1);
+            matchStage.assigned_at = { $gte: filterDate, $lt: nextDate };
+        } else if (days !== 'all') {
+            const daysAgo = new Date();//fjjj j utgng t n
             daysAgo.setDate(daysAgo.getDate() - parseInt(days));
             daysAgo.setHours(0, 0, 0, 0);
             matchStage.assigned_at = { $gte: daysAgo };
@@ -1081,7 +1093,7 @@ router.get("/assigned-leads/executive/:userId", async (req, res) => {
 router.get("/assigned-leads/team/:userId", async (req, res) => {
     try {
         const { userId } = req.params;
-        const { page = 1, limit = 10, days = '10', date, role } = req.query;
+        const { page = 1, limit = 10, days = '10', date, fromDate, toDate, role } = req.query;
         
         const pageNum = parseInt(page);
         const limitNum = parseInt(limit);
@@ -1089,14 +1101,20 @@ router.get("/assigned-leads/team/:userId", async (req, res) => {
 
         const matchStage = { assigned_at: { $exists: true } };
 
-        if (date) {
+        if (fromDate && toDate) {
+            const startOfDay = new Date(fromDate);
+            startOfDay.setHours(0, 0, 0, 0);
+            const endOfDay = new Date(toDate);
+            endOfDay.setHours(23, 59, 59, 999);
+            matchStage.assigned_at = { $gte: startOfDay, $lte: endOfDay };
+        } else if (date) {
             const filterDate = new Date(date);
             filterDate.setHours(0, 0, 0, 0);
             const nextDate = new Date(filterDate);
             nextDate.setDate(nextDate.getDate() + 1);
             matchStage.assigned_at = { $gte: filterDate, $lt: nextDate };
         } else if (days !== 'all') {
-            const daysAgo = new Date();
+             const daysAgo = new Date();
             daysAgo.setDate(daysAgo.getDate() - parseInt(days));
             daysAgo.setHours(0, 0, 0, 0);
             matchStage.assigned_at = { $gte: daysAgo };
