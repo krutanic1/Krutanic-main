@@ -522,9 +522,7 @@ const EnrollmentForm = () => {
     crNameNumber: '',
     whyLooking: '',
     preferredLanguage: '',
-    isConfirmed: false,
-    website: '', // Honeypot 1
-    middleName: '' // Honeypot 2
+    isConfirmed: false
   });
 
   const handleInputChange = (e) => {
@@ -532,51 +530,49 @@ const EnrollmentForm = () => {
     setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
-  // Security: Check Rate Limit (Max 5 submissions per 1 hour)
-  const checkRateLimit = () => {
-    const limit = 5;
-    const timeframe = 60 * 60 * 1000; // 1 hour
-    
-    let history = [];
-    try {
-      history = JSON.parse(localStorage.getItem('_adv_sub_hist')) || [];
-    } catch(e) {}
-    
-    const now = Date.now();
-    // Filter to only submissions within the last 1 hour
-    history = history.filter(time => now - time < timeframe);
-    
-    if (history.length >= limit) {
-      return false; // Rate limit exceeded
-    }
-    
-    // Add current submission and save
-    history.push(now);
-    localStorage.setItem('_adv_sub_hist', JSON.stringify(history));
-    return true;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return; // Prevent double-clicks
     setErrorMsg('');
 
-    // Security: Honeypot Check (If a bot fills these hidden fields, block them silently)
-    if (formData.website || formData.middleName) {
-      // Fake success to fool bots
-      setSubmitted(true);
+    // Form action URL
+    const googleFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSf11jhp9nRLudRnUSMPTqugUGM-SjAgu6MhGq-zr7I6KiuWwg/formResponse";
+
+    // 1. Validate Text Fields are not just spaces
+    const requiredTextProps = [
+      'name', 'studentsCollegeEmailId', 'personalEmailId', 'contactNumber', 
+      'whatsappNumber', 'collegeName', 'branchName', 'preferredLanguage'
+    ];
+    for (const prop of requiredTextProps) {
+      if (!formData[prop] || formData[prop].trim() === '') {
+        setErrorMsg('Please fill out all required fields with valid information (not just spaces).');
+        return;
+      }
+    }
+
+    // 2. Validate Dropdowns
+    if (!formData.yearOfStudying || !formData.interestedDomain || !formData.whyLooking) {
+      setErrorMsg('Please select an option for all dropdown fields.');
       return;
     }
 
-    // Security: Rate Limit Check
-    if (!checkRateLimit()) {
-      setErrorMsg('Security Block: You have reached the maximum limit of 5 submissions. Please wait 1 hour before trying again.');
+    // 3. Validate Emails strictly
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.studentsCollegeEmailId) || 
+        !emailRegex.test(formData.personalEmailId) || 
+        (formData.placementCellEmailId && !emailRegex.test(formData.placementCellEmailId))) {
+      setErrorMsg('Please enter valid email addresses.');
+      return;
+    }
+
+    // 4. Validate Phone Numbers (at least 7 digits)
+    if (formData.contactNumber.replace(/\D/g, '').length < 7 || 
+        formData.whatsappNumber.replace(/\D/g, '').length < 7) {
+      setErrorMsg('Please enter valid phone numbers.');
       return;
     }
 
     setIsSubmitting(true);
-    
-    // Form action URL (reads from .env file)
-    const googleFormUrl = import.meta.env.VITE_GOOGLE_FORM_URL;
 
     try {
       const params = new URLSearchParams();
@@ -609,11 +605,6 @@ const EnrollmentForm = () => {
       console.error("Form submission error:", err);
       setIsSubmitting(false); 
       toast.error("Something went wrong, please try again.");
-      
-      // Revert rate limit usage on failure
-      let history = JSON.parse(localStorage.getItem('_adv_sub_hist')) || [];
-      history.pop();
-      localStorage.setItem('_adv_sub_hist', JSON.stringify(history));
     }
   };
 
@@ -652,11 +643,7 @@ const EnrollmentForm = () => {
             )}
 
             <form onSubmit={handleSubmit}>
-              {/* Security Honeypots: Hidden from humans via opacity & position, tempting for bots */}
-              <div style={{ opacity: 0, position: 'absolute', top: '-9999px', left: '-9999px' }} aria-hidden="true">
-                <input type="text" name="website" tabIndex="-1" autoComplete="off" value={formData.website} onChange={handleInputChange} />
-                <input type="text" name="middleName" tabIndex="-1" autoComplete="off" value={formData.middleName} onChange={handleInputChange} />
-              </div>
+
 
                 <div className="adv-form-step">
                   <h4 className="adv-step-title">PERSONAL & ACADEMIC DETAILS</h4>
@@ -746,13 +733,13 @@ const EnrollmentForm = () => {
                   />
 
                   <div className="adv-input-group">
-                    <label>Placement Cell Email Id [ TPO Mail Id] *</label>
-                    <input type="email" name="placementCellEmailId" value={formData.placementCellEmailId} onChange={handleInputChange} required />
+                    <label>Placement Cell Email Id [ TPO Mail Id] (Optional)</label>
+                    <input type="email" name="placementCellEmailId" value={formData.placementCellEmailId} onChange={handleInputChange} />
                   </div>
 
                   <div className="adv-input-group">
-                    <label>CR's [ Class Representative Name & Number] *</label>
-                    <input type="text" name="crNameNumber" value={formData.crNameNumber} onChange={handleInputChange} required />
+                    <label>CR's [ Class Representative Name & Number] (Optional)</label>
+                    <input type="text" name="crNameNumber" value={formData.crNameNumber} onChange={handleInputChange} />
                   </div>
 
                   <CustomSelect 
@@ -798,6 +785,84 @@ const EnrollmentForm = () => {
                   </div>
                 </div>
             </form>
+          </div>
+        </div>
+
+        <div style={{ marginTop: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '16px', fontWeight: '500' }}>Need assistance? We're here to help.</p>
+          
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <a 
+              href="https://wa.me/918105954318?text=hi%20i%20am%20here%20from%20the%20adodeform" 
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ 
+                display: 'inline-flex', 
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 18px', 
+                background: 'rgba(34, 197, 94, 0.06)', 
+                color: '#4ade80', 
+                border: '1px solid rgba(34, 197, 94, 0.2)', 
+                borderRadius: '30px', 
+                textDecoration: 'none', 
+                fontWeight: '500',
+                fontSize: '0.85rem',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                cursor: 'pointer',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+              }}
+              onMouseEnter={(e) => { 
+                e.currentTarget.style.background = 'rgba(34, 197, 94, 0.15)'; 
+                e.currentTarget.style.borderColor = 'rgba(34, 197, 94, 0.4)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 8px 16px -4px rgba(34, 197, 94, 0.15)';
+              }}
+              onMouseLeave={(e) => { 
+                e.currentTarget.style.background = 'rgba(34, 197, 94, 0.06)'; 
+                e.currentTarget.style.borderColor = 'rgba(34, 197, 94, 0.2)';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
+            >
+              <span style={{ fontSize: '1rem' }}>💬</span> WhatsApp
+            </a>
+
+            <a 
+              href="mailto:support@krutanic.com" 
+              style={{ 
+                display: 'inline-flex', 
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 18px', 
+                background: 'rgba(59, 130, 246, 0.06)', 
+                color: '#60a5fa', 
+                border: '1px solid rgba(59, 130, 246, 0.2)', 
+                borderRadius: '30px', 
+                textDecoration: 'none', 
+                fontWeight: '500',
+                fontSize: '0.85rem',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                cursor: 'pointer',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+              }}
+              onMouseEnter={(e) => { 
+                e.currentTarget.style.background = 'rgba(59, 130, 246, 0.15)'; 
+                e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.4)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 8px 16px -4px rgba(59, 130, 246, 0.15)';
+              }}
+              onMouseLeave={(e) => { 
+                e.currentTarget.style.background = 'rgba(59, 130, 246, 0.06)'; 
+                e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.2)';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
+            >
+              <span style={{ fontSize: '1rem' }}>✉️</span> Email
+            </a>
           </div>
         </div>
       </div>
