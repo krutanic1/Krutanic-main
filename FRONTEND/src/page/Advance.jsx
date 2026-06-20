@@ -80,12 +80,12 @@ function DatabaseIcon(props) {
    ═══════════════════════════════════════════════════════════ */
 
 const programs = [
-  { id:"mern",  icon:<Code2 size={22}/>,        name:"MERN Stack Engineering",    positioning:"Build secure, production-ready full-stack applications.",             dur:"24 Weeks", idealFor:"Aspiring software engineers scaling APIs.",        tools:["React","Node.js","MongoDB"],    link:"/MernStack",          cat:"Engineering",      accentColor:"#3b82f6" },
-  { id:"ds",    icon:<DatabaseIcon size={22}/>,  name:"Data Science",              positioning:"Learn data science, machine learning, and model deployment.",         dur:"24 Weeks", idealFor:"Analysts moving into machine learning.",          tools:["Python","PyTorch","Scikit"],    link:"/DataScience",        cat:"AI & Data",        accentColor:"#818cf8" },
-  { id:"da",    icon:<LineChart size={22}/>,     name:"Data Analytics",            positioning:"Master data visualization, reporting, and business intelligence.",    dur:"24 Weeks", idealFor:"Professionals driving data decisions.",           tools:["PowerBI","SQL","Tableau"],      link:"/DataAnalytics",      cat:"AI & Data",        accentColor:"#818cf8" },
-  { id:"dm",    icon:<Megaphone size={22}/>,     name:"Digital Marketing",         positioning:"Execute SEO, paid media, and performance growth campaigns.",         dur:"24 Weeks", idealFor:"Marketers shifting to performance-driven roles.", tools:["Meta Ads","GA4","SEO"],         link:"/DigitalMarket",      cat:"Business & Growth", accentColor:"#10b981" },
-  { id:"pm",    icon:<Kanban size={22}/>,        name:"Product Management",        positioning:"Learn product strategy, roadmapping, and agile execution.",          dur:"24 Weeks", idealFor:"PMs transitioning from tech or marketing.",       tools:["Jira","Agile","Analytics"],    link:"/ProductManagement",  cat:"Business & Growth", accentColor:"#0ea5e9" },
-  { id:"pe",    icon:<BrainCircuit size={22}/>,  name:"Prompt Engineering",        positioning:"Design robust GenAI workflows and enterprise AI guardrails.",        dur:"24 Weeks", idealFor:"Leaders implementing LLM-powered solutions.",      tools:["Prompting","LangChain","LLMs"], link:"/PromptEngineering",  cat:"GenAI",            accentColor:"#c084fc" },
+  { id:"da",   bg:"/course-bgs/da_bg.png",   icon:<LineChart size={22}/>,     name:"Data Analytics",            positioning:"Master data visualization, reporting, and business intelligence.",    dur:"24 Weeks", idealFor:"Professionals driving data decisions.",           tools:["PowerBI","SQL","Tableau"],      link:"/DataAnalytics",      cat:"AI & Data",        accentColor:"#818cf8" },
+  { id:"ds",   bg:"/course-bgs/ds_bg.png",   icon:<DatabaseIcon size={22}/>,  name:"Data Science",              positioning:"Learn data science, machine learning, and model deployment.",         dur:"24 Weeks", idealFor:"Analysts moving into machine learning.",          tools:["Python","PyTorch","Scikit"],    link:"/DataScience",        cat:"AI & Data",        accentColor:"#818cf8" },
+  { id:"mern", bg:"/course-bgs/mern_bg.png", icon:<Code2 size={22}/>,        name:"MERN Stack Engineering",    positioning:"Build secure, production-ready full-stack applications.",             dur:"24 Weeks", idealFor:"Aspiring software engineers scaling APIs.",        tools:["React","Node.js","MongoDB"],    link:"/MernStack",          cat:"Engineering",      accentColor:"#3b82f6" },
+  { id:"dm",   bg:"/course-bgs/dm_bg.png",   icon:<Megaphone size={22}/>,     name:"Digital Marketing",         positioning:"Execute SEO, paid media, and performance growth campaigns.",         dur:"24 Weeks", idealFor:"Marketers shifting to performance-driven roles.", tools:["Meta Ads","GA4","SEO"],         link:"/DigitalMarket",      cat:"Business & Growth", accentColor:"#10b981" },
+  { id:"pm",   bg:"/course-bgs/pm_bg.png",   icon:<Kanban size={22}/>,        name:"Product Management",        positioning:"Learn product strategy, roadmapping, and agile execution.",          dur:"24 Weeks", idealFor:"PMs transitioning from tech or marketing.",       tools:["Jira","Agile","Analytics"],    link:"/ProductManagement",  cat:"Business & Growth", accentColor:"#0ea5e9" },
+  { id:"pe",   bg:"/course-bgs/pe_bg.png",   icon:<BrainCircuit size={22}/>,  name:"Prompt Engineering",        positioning:"Design robust GenAI workflows and enterprise AI guardrails.",        dur:"24 Weeks", idealFor:"Leaders implementing LLM-powered solutions.",      tools:["Prompting","LangChain","LLMs"], link:"/PromptEngineering",  cat:"GenAI",            accentColor:"#c084fc" },
 ];
 
 const heroData = [
@@ -178,7 +178,7 @@ const Advance = () => {
   };
 
   useEffect(() => {
-    const t = setInterval(() => setActiveHeroIdx(i => (i + 1) % heroData.length), 6000);
+    const t = setInterval(() => setActiveHeroIdx(i => (i + 1) % 4), 6000);
     return () => clearInterval(t);
   }, []);
 
@@ -207,173 +207,106 @@ const Advance = () => {
         </button>
       </motion.div>
 
-      {/* ═══ § 1 — THE UNPRECEDENTED HERO ═════════════════════
-            A cinematic, reactive dark stage.
-            Mouse spotlight, breathing dots, ghost watermark, floating angled cards.
-          ═══════════════════════════════════════════════════════ */}
-      <section 
-        className="adv-hero" 
-        onMouseMove={handleMouseMove}
-        style={{
-          background: `radial-gradient(800px circle at ${mousePos.x}% ${mousePos.y}%, rgba(16,185,129,0.06), transparent 40%), #030014`
-        }}
-      >
-        <div className="adv-hero-ghost">ADVANCE</div>
-        <div className="adv-hero-dots"></div>
-
-
-        <div className="adv-hero-grid">
-          {/* LEFT: The Narrative */}
-          <motion.div initial="hidden" animate="visible" variants={stagger} style={{ position: 'relative', zIndex: 10 }}>
-            
-            <motion.div className="adv-hero-badge" variants={fadeUp}>
-              <span className="adv-badge-dot" />
-              Now Enrolling · Next Cohort Closing Soon
-            </motion.div>
-
-            <motion.div className="adv-hero-headline" variants={fadeUp}>
-              <div className="adv-hl-line1">The career you want</div>
-              <div className="adv-hl-line2">
-                is {heroCount} <span className="adv-hl-weeks">weeks.</span>
-              </div>
-              <div className="adv-hl-line3">one decision away.</div>
-            </motion.div>
-
-            <motion.p className="adv-hero-body" variants={fadeUp}>
-              Stop watching tutorials. Start building real, mentor-validated projects. A brutal, direct 24-week path from where you are, to where you want to be.
-            </motion.p>
-
-            <div className="adv-hero-proof">
-              {[
-                { icon:<CheckCircle2 size={16}/>, color:"#10b981", text:"5,000+ professionals transformed." },
-                { icon:<CheckCircle2 size={16}/>, color:"#818cf8", text:"Strict weekly code reviews & mentor feedback." },
-                { icon:<CheckCircle2 size={16}/>, color:"#c084fc", text:"95% land a high-growth role within 6 months." },
-              ].map((item, i) => (
-                <motion.div key={i} className="adv-hero-proof-item"
-                  initial={{ opacity:0, x:-22 }}
-                  animate={{ opacity:1, x:0 }}
-                  transition={{ delay: 0.5 + i * 0.15, duration:0.55, ease:[0.22,1,0.36,1] }}>
-                  <span style={{ color: item.color, flexShrink:0 }}>{item.icon}</span>
-                  <span>{item.text}</span>
-                </motion.div>
-              ))}
-            </div>
-
-            <motion.div className="adv-hero-ctas" variants={fadeUp}>
-              <button className="adv-btn-primary" id="adv-hero-explore"
-                onClick={() => document.getElementById("catalog").scrollIntoView({ behavior:"smooth" })}>
-                Explore Programs <ArrowRight size={15}/>
-              </button>
-              <button className="adv-btn-secondary" onClick={() => setShowApplyForm(true)}>
-                Request Syllabus
-              </button>
-            </motion.div>
-
-            <motion.div className="adv-trust-pills" variants={fadeUp}>
-              <span className="adv-pill"><Star size={12} style={{color:"#fbbf24"}}/> 4.9/5 Rating</span>
-              <span className="adv-pill"><Users size={12} style={{color:"#818cf8"}}/> 5,000+ Grads</span>
-            </motion.div>
+      {/* ═══ § 1 — THE NEW HERO ═════════════════════ */}
+      <section className="adv-hero-v2">
+        <motion.div className="adv-hero-v2-content" initial="hidden" animate="visible" variants={stagger}>
+          <motion.div className="adv-hero-v2-badge" variants={fadeUp}>
+            <span className="adv-badge-v2-dot" />
+            4 Trending Courses · Now Enrolling
           </motion.div>
 
-          {/* RIGHT: Floating Angled Cards */}
-          <motion.div className="adv-hero-cards"
-            initial={{ opacity:0, x:55 }} animate={{ opacity:1, x:0 }}
-            transition={{ duration:1, delay:0.2, ease:[0.22,1,0.36,1] }}>
+          <motion.h1 className="adv-hero-v2-title" variants={fadeUp}>
+            Where <span className="adv-grad">Tech,</span><br />
+            <span className="adv-grad">Data</span> & <span className="adv-grad-purple">Business</span><br />
+            Converge.
+          </motion.h1>
 
-            {/* Card 1: Stats Bar (-2deg) */}
-            <motion.div className="adv-float-card adv-fc-stats"
-              initial={{ opacity:0, y:-22 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.5, duration:0.65 }}>
-              {[
-                { num:"5,000+", lbl:"Careers Upgraded" }, null,
-                { num:"95%",    lbl:"Success Rate"    }, null,
-                { num:"24 Wks", lbl:"To a New Role"   },
-              ].map((s, i) => s === null ? <div key={i} className="adv-fc-divider" /> : (
-                <div key={i} className="adv-fc-stat-item">
-                  <div className="adv-fc-stat-num">{s.num}</div>
-                  <div className="adv-fc-stat-lbl">{s.lbl}</div>
-                </div>
-              ))}
-            </motion.div>
+          <motion.p className="adv-hero-v2-sub" variants={fadeUp}>
+            Krutanic Advanced Programs are exclusive professional certification programs spanning Software Engineering, Data Science, and Growth — each built for real careers, not just credentials.
+          </motion.p>
 
-            {/* Card 2: Preview (0deg) */}
-            <div className="adv-float-card adv-fc-preview">
-              <div className="adv-glow-ring" />
-              <AnimatePresence mode="wait">
-                <motion.img
-                  key={curHero.id + "-img"}
-                  src={curHero.image}
-                  className="adv-fc-preview-img"
-                  initial={{ opacity:0, scale:1.06 }}
-                  animate={{ opacity:1, scale:1 }}
-                  exit={{ opacity:0 }}
-                  transition={{ duration:0.85 }}
-                />
-              </AnimatePresence>
-              
-              <div className="adv-fc-preview-top">
-                {heroData.map((tab, idx) => (
-                  <button key={tab.id} onClick={() => setActiveHeroIdx(idx)}
-                    className={`adv-tab-btn ${activeHeroIdx === idx ? "active" : ""}`}>
-                    {tab.tab}
-                  </button>
-                ))}
-              </div>
-
-              <div className="adv-fc-preview-bot">
-                <div>
-                  <div style={{ fontSize:"0.6rem", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.1em", color:"rgba(255,255,255,0.45)", marginBottom:"0.15rem" }}>
-                    Showing
-                  </div>
-                  <AnimatePresence mode="wait">
-                    <motion.div key={curHero.id+"-lbl"}
-                      initial={{ opacity:0, y:5 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:-5 }}
-                      transition={{ duration:0.35 }}
-                      style={{ fontSize:"0.95rem", fontWeight:800, color:"#fff" }}>
-                      {curHero.eyebrow}
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
-                <div className="adv-fc-preview-dots">
-                  {heroData.map((_, idx) => (
-                    <div key={idx}
-                      className={`adv-fc-dot ${activeHeroIdx === idx ? "active" : ""}`}
-                      onClick={() => setActiveHeroIdx(idx)} />
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Card 3: Transformation (+2deg) */}
-            <motion.div className="adv-float-card adv-fc-tc"
-              initial={{ opacity:0, y:22 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.75, duration:0.65 }}>
-              <div className="adv-fc-tc-label">⚡ Latest Graduate Outcome</div>
-              <div className="adv-fc-journey">
-                <span className="adv-fc-from">IT Support Engineer</span>
-                <span className="adv-fc-arrow">→</span>
-                <span className="adv-fc-to">Full-Stack Developer</span>
-              </div>
-              <div className="adv-fc-result">
-                <span>Offer Landed: ₹18 LPA</span>
-                <div className="adv-fc-time"><Clock size={11}/> 24 weeks</div>
-              </div>
-            </motion.div>
-
+          <motion.div className="adv-hero-v2-ctas" variants={fadeUp}>
+            <button className="adv-v2-btn-primary" id="adv-hero-explore" onClick={() => document.getElementById("catalog").scrollIntoView({ behavior:"smooth" })}>
+              Explore Programs <ArrowRight size={15} />
+            </button>
+            <button className="adv-v2-btn-secondary" onClick={() => setShowApplyForm(true)}>Apply Now</button>
           </motion.div>
-        </div>
 
-        {/* BOTTOM: All Programs Strip */}
-        <motion.div className="adv-hero-strip-wrap"
-          initial={{ opacity:0, y:18 }} animate={{ opacity:1, y:0 }}
-          transition={{ delay:1.1, duration:0.55 }}>
-          <div className="adv-hero-strip">
-            <span className="adv-strip-label">All Programs →</span>
-            {programs.map(p => (
-              <div key={p.id} className="adv-program-pill" onClick={() => navigate(p.link)}>
-                <div className="adv-program-pill-dot" style={{ background: p.accentColor }} />
-                {p.name}
+          <motion.div className="adv-trust-v2-pills" variants={fadeUp}>
+            <span className="adv-pill-v2"><Star size={12} style={{ color: "#fbbf24" }} /> 4.9 / 5 Rating</span>
+            <span className="adv-pill-v2"><CheckCircle2 size={12} style={{ color: "#22c55e" }} /> 100% Online</span>
+            <span className="adv-pill-v2"><Award size={12} style={{ color: "#c084fc" }} /> Certificate + Rec. Letter</span>
+            <span className="adv-pill-v2"><Users size={12} style={{ color: "#818cf8" }} /> 12,000+ Graduates</span>
+          </motion.div>
+        </motion.div>
+
+        {/* Right — Program Preview Cards */}
+        <motion.div
+          className="adv-hero-v2-cards"
+          initial={{ opacity: 0, scale: 0.85 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 0.3, ease: [0.22,1,0.36,1] }}
+        >
+          {programs.slice(0, 4).map((p, i) => (
+            <motion.div
+              key={p.id}
+              className={`adv-hero-v2-mini-card ${activeHeroIdx === i ? "active" : ""}`}
+              style={{ "--accent": p.accentColor }}
+              onClick={() => setActiveHeroIdx(i)}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 + i * 0.1 }}
+            >
+              <div className="adv-mini-v2-icon" style={{ color: p.accentColor }}>
+                {p.icon}
               </div>
-            ))}
-          </div>
+              <div>
+                <div className="adv-mini-v2-title">{p.name}</div>
+                <div className="adv-mini-v2-sub">{p.dur} · {p.cat}</div>
+              </div>
+              <span style={{ 
+                marginLeft: "auto", 
+                fontSize: "0.75rem", 
+                fontWeight: 800, 
+                textTransform: "uppercase", 
+                padding: "0.25rem 0.6rem", 
+                borderRadius: "4px", 
+                background: p.accentColor, 
+                color: "#000" 
+              }}>
+                TRENDING
+              </span>
+            </motion.div>
+          ))}
+
+          {/* Active program preview */}
+          <AnimatePresence mode="wait">
+            {programs[activeHeroIdx] && (
+              <motion.div
+                key={activeHeroIdx}
+                className="adv-hero-v2-preview"
+                style={{ 
+                  "--accent": programs[activeHeroIdx].accentColor,
+                  backgroundImage: `linear-gradient(90deg, rgba(10,10,20,0.7) 20%, rgba(10,10,20,0.2) 100%), url(${programs[activeHeroIdx].bg})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center"
+                }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4 }}
+              >
+                <div className="adv-preview-v2-tag" style={{ color: programs[activeHeroIdx].accentColor }}>
+                  {programs[activeHeroIdx].cat}
+                </div>
+                <div className="adv-preview-v2-title">{programs[activeHeroIdx].name}</div>
+                <p className="adv-preview-v2-desc">{programs[activeHeroIdx].positioning}</p>
+                <button onClick={() => navigate(programs[activeHeroIdx].link)} className="adv-preview-v2-link" style={{ background: "transparent", border: "none", cursor: "pointer", padding: 0 }}>
+                  View Full Program <ArrowRight size={15} />
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       </section>
 
@@ -479,7 +412,12 @@ const Advance = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ duration: 0.4, type: "spring", bounce: 0.2 }}
-                style={{ "--accent-color": p.accentColor }}
+                style={{ 
+                  "--accent-color": p.accentColor,
+                  backgroundImage: `linear-gradient(to bottom, rgba(10, 10, 15, 0.4), rgba(10, 10, 15, 0.8)), url(${p.bg})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center"
+                }}
                 onClick={() => navigate(p.link)}>
                 <div className="adv-prog-card-body">
                   <div className="adv-prog-icon-row">

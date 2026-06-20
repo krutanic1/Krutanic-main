@@ -45,8 +45,8 @@ const programs = [
     badge: "Bestseller",
     badgeColor: "#f59e0b",
     Icon: MdPsychology,
-    accentColor: "#c084fc",
-    gradient: "linear-gradient(90deg, rgba(10,10,20,0.95) 20%, rgba(192,132,252,0.5) 100%)",
+    accentColor: "#0ea5e9",
+    gradient: "linear-gradient(90deg, rgba(255,255,255,0.95) 20%, rgba(14,165,233,0.5) 100%)",
     image: "/medpro/forensic.png",
     title: "Forensic Psychology",
     subtitle: "Where Law Meets the Mind",
@@ -64,7 +64,7 @@ const programs = [
     badgeColor: "#22c55e",
     Icon: FaBrain,
     accentColor: "#818cf8",
-    gradient: "linear-gradient(90deg, rgba(10,10,20,0.95) 20%, rgba(129,140,248,0.5) 100%)",
+    gradient: "linear-gradient(90deg, rgba(255,255,255,0.95) 20%, rgba(129,140,248,0.5) 100%)",
     image: "/medpro/clinical.png",
     title: "Clinical Psychology",
     subtitle: "Decode the Human Mind",
@@ -81,8 +81,8 @@ const programs = [
     badge: "New",
     badgeColor: "#06b6d4",
     Icon: MdGavel,
-    accentColor: "#e879f9",
-    gradient: "linear-gradient(90deg, rgba(10,10,20,0.95) 20%, rgba(232,121,249,0.5) 100%)",
+    accentColor: "#10b981",
+    gradient: "linear-gradient(90deg, rgba(255,255,255,0.95) 20%, rgba(16,185,129,0.5) 100%)",
     image: "/medpro/law.png",
     title: "Corporate Law",
     subtitle: "Navigate Corporate Power Structures",
@@ -100,7 +100,7 @@ const programs = [
     badgeColor: "#3b82f6",
     Icon: MdOutlineScience,
     accentColor: "#3b82f6",
-    gradient: "linear-gradient(90deg, rgba(10,10,20,0.95) 20%, rgba(59,130,246,0.5) 100%)",
+    gradient: "linear-gradient(90deg, rgba(255,255,255,0.95) 20%, rgba(59,130,246,0.5) 100%)",
     image: "/medpro/psychology.png",
     title: "Psychology",
     subtitle: "Explore the Human Mind & Behavior",
@@ -115,9 +115,9 @@ const programs = [
 ];
 
 const whyKrutanic = [
-  { Icon: FaLightbulb,  color: "#c084fc", title: "Project-First Learning",    desc: "Hands-on case studies and portfolio projects — not passive video lectures." },
+  { Icon: FaLightbulb,  color: "#0ea5e9", title: "Project-First Learning",    desc: "Hands-on case studies and portfolio projects — not passive video lectures." },
   { Icon: FaUserTie,     color: "#818cf8", title: "Practicing Mentors",        desc: "Learn from experts who work in the field, not just academics." },
-  { Icon: FaUsers,      color: "#e879f9", title: "Active Community",          desc: "Peer cohorts, group discussions, and a lifelong professional network." },
+  { Icon: FaUsers,      color: "#10b981", title: "Active Community",          desc: "Peer cohorts, group discussions, and a lifelong professional network." },
   { Icon: FaTrophy,     color: "#fbbf24", title: "Career Outcomes",           desc: "Certificate, letter of recommendation, and internship prep built in." },
   { Icon: FaGlobe,      color: "#22c55e", title: "Culturally Relevant",       desc: "Indian case studies and context for real-world application in India." },
   { Icon: FaChartLine,  color: "#f472b6", title: "Industry-Aligned Curriculum", desc: "Constantly updated to reflect what employers actually hire for." }
@@ -227,7 +227,7 @@ const MedProPacks = () => {
           <motion.div className="mp2-trust-pills" variants={fadeUp}>
             <span className="mp2-pill"><FaStar style={{ color: "#fbbf24" }} /> 4.9 / 5 Rating</span>
             <span className="mp2-pill"><FaCheckCircle style={{ color: "#22c55e" }} /> 100% Online</span>
-            <span className="mp2-pill"><FaAward style={{ color: "#c084fc" }} /> Certificate + Rec. Letter</span>
+            <span className="mp2-pill"><FaAward style={{ color: "#0ea5e9" }} /> Certificate + Rec. Letter</span>
             <span className="mp2-pill"><FaUsers style={{ color: "#818cf8" }} /> 12,000+ Graduates</span>
           </motion.div>
         </motion.div>

@@ -451,8 +451,8 @@ const initializeAttendanceReportScheduler = () => {
 
     // Schedule daily absent check at 12:00 PM IST
     // Cron: 0 12 * * *
-    // Disabled in production as per request
-    if (process.env.NODE_ENV !== 'production') {
+    // Disabled in development to avoid spamming emails locally
+    if (process.env.NODE_ENV === 'production') {
         cron.schedule("0 12 * * *", async () => {
             console.log(`📧 Checking for daily absent emails...`);
             await checkDailyAbsentMails();
@@ -460,7 +460,7 @@ const initializeAttendanceReportScheduler = () => {
             timezone: "Asia/Kolkata"
         });
     } else {
-        console.log(`📧 Daily absent emails cron is DISABLED in production.`);
+        console.log(`📧 Daily absent emails cron is DISABLED in development.`);
     }
 
     console.log("✅ Attendance Schedulers initialized: Monthly (1st, 9PM), Daily Late Alert (12AM)");
