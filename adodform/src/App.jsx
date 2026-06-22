@@ -643,11 +643,9 @@ const EnrollmentForm = () => {
             )}
 
             <form onSubmit={handleSubmit}>
-
-
                 <div className="adv-form-step">
                   <h4 className="adv-step-title">PERSONAL & ACADEMIC DETAILS</h4>
-                  
+      
                   <div className="adv-input-group">
                     <label>Name *</label>
                     <input type="text" name="name" value={formData.name} onChange={handleInputChange} required />

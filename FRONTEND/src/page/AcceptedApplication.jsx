@@ -431,8 +431,9 @@ const DashboardAccessForm = () => {
             <div className="input-field">
               <input
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                type="number"
+                onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
+                type="text"
+                inputMode="numeric"
                 required
               />
               <label htmlFor=" Contact No">Contact No</label>
@@ -441,8 +442,9 @@ const DashboardAccessForm = () => {
             <div className="input-field">
               <input
                 value={whatsAppNumber}
-                onChange={(e) => setWhatsAppNumber(e.target.value)}
-                type="number"
+                onChange={(e) => setWhatsAppNumber(e.target.value.replace(/[^0-9]/g, ""))}
+                type="text"
+                inputMode="numeric"
                 required
               />
               <label htmlFor=" Whatsapp Number">Whatsapp Number</label>
@@ -519,8 +521,9 @@ const DashboardAccessForm = () => {
             <div className="input-field">
               <input
                 value={programPrice}
-                onChange={(e) => setProgramPrice(e.target.value)}
-                type="number"
+                onChange={(e) => setProgramPrice(e.target.value.replace(/[^0-9]/g, ""))}
+                type="text"
+                inputMode="numeric"
                 required
               />
               <label htmlFor="Program Price">Program Price</label>
@@ -529,8 +532,9 @@ const DashboardAccessForm = () => {
             <div className="input-field">
               <input
                 value={paidAmount}
-                onChange={(e) => setPaidAmount(e.target.value)}
-                type="number"
+                onChange={(e) => setPaidAmount(e.target.value.replace(/[^0-9]/g, ""))}
+                type="text"
+                inputMode="numeric"
                 required
               />
               <label htmlFor="Paid Amount">Paid Amount</label>
@@ -539,8 +543,9 @@ const DashboardAccessForm = () => {
             <div className="input-field">
               <input
                 value={remainingAmount}
-                onChange={(e) => setRemainingAmount(e.target.value)}
-                type="number"
+                onChange={(e) => setRemainingAmount(e.target.value.replace(/[^0-9]/g, ""))}
+                type="text"
+                inputMode="numeric"
                 required
               />
               <label htmlFor="Remaining Amount">Remaining Amount</label>
@@ -593,9 +598,10 @@ const DashboardAccessForm = () => {
 
             <div className="input-field">
               <input
-                type="number"
+                type="text"
+                inputMode="numeric"
                 value={aadharNumber}
-                onChange={(e) => setAadharNumber(e.target.value)}
+                onChange={(e) => setAadharNumber(e.target.value.replace(/[^0-9]/g, ""))}
                 required
               />
               <label htmlFor="Aadhar Number">Aadhar Number</label>

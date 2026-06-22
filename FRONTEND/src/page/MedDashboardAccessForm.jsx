@@ -517,8 +517,9 @@ const MedDashboardAccessForm = () => {
             <div className="input-field">
               <input
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
                 type="text"
+                inputMode="numeric"
                 required
               />
               <label htmlFor=" Contact No">Contact No</label>
@@ -527,8 +528,9 @@ const MedDashboardAccessForm = () => {
             <div className="input-field">
               <input
                 value={whatsAppNumber}
-                onChange={(e) => setWhatsAppNumber(e.target.value)}
+                onChange={(e) => setWhatsAppNumber(e.target.value.replace(/[^0-9]/g, ""))}
                 type="text"
+                inputMode="numeric"
                 required
               />
               <label htmlFor=" Whatsapp Number">Whatsapp Number</label>
@@ -547,8 +549,9 @@ const MedDashboardAccessForm = () => {
             <div className="input-field">
               <input
                 value={programPrice}
-                onChange={(e) => setProgramPrice(e.target.value)}
+                onChange={(e) => setProgramPrice(e.target.value.replace(/[^0-9]/g, ""))}
                 type="text"
+                inputMode="numeric"
                 required
               />
               <label htmlFor="Program Price">Program Price</label>
@@ -557,8 +560,9 @@ const MedDashboardAccessForm = () => {
             <div className="input-field">
               <input
                 value={paidAmount}
-                onChange={(e) => setPaidAmount(e.target.value)}
+                onChange={(e) => setPaidAmount(e.target.value.replace(/[^0-9]/g, ""))}
                 type="text"
+                inputMode="numeric"
                 required
               />
               <label htmlFor="Paid Amount">Paid Amount</label>
@@ -567,8 +571,9 @@ const MedDashboardAccessForm = () => {
             <div className="input-field">
               <input
                 value={remainingAmount}
-                onChange={(e) => setRemainingAmount(e.target.value)}
+                onChange={(e) => setRemainingAmount(e.target.value.replace(/[^0-9]/g, ""))}
                 type="text"
+                inputMode="numeric"
                 required
               />
               <label htmlFor="Remaining Amount">Remaining Amount</label>
