@@ -82,6 +82,9 @@ const AdminHeader = () => {
             <Link to="/AddModule">
               <i className="fa fa-list mr-2"></i>Course List
             </Link>
+            <Link to="/AdminMentorshipProjects">
+              <i className="fa fa-folder-open mr-2"></i>Mentorship Projects
+            </Link>
             <Link to="/AdminProjectPage">
               <i className="fa fa-tasks mr-2"></i>Project Management
             </Link>

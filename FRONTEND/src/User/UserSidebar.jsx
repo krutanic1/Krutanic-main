@@ -139,6 +139,7 @@ const UserSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const menuItems = [
     { path: "/Dashboard", label: "Home", icon: "home", restricted: false },
     { path: "/EnrolledCourses", label: "Enrolled Courses", icon: "menu_book", restricted: false },
+    { path: "/MentorshipProjects", label: "Projects", icon: "folder_special", restricted: false },
     { path: "/resume-builder", label: "Resume Builder", icon: "edit_document", restricted: false },
     // { path: "/JobBoard", label: "Job Board", icon: "work", restricted: true, access: "jobboard" },
     { path: "/MyJob", label: "My Job", icon: "person", restricted: true, access: "myjob" },

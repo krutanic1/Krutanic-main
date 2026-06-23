@@ -24,6 +24,7 @@ const NewStudentEnroll = require("./routes/NewStudentEnroll");
 const AdvEnroll = require("./routes/AdvEnroll");
 const CreateMarketing = require("./routes/CreateMarketing");
 const sendMailWithAttchement = require("./routes/SendMailWithAttechment");
+const MentorshipProjectRoutes = require("./routes/MentorshipProjectRoutes");
 const CronRoutes = require("./routes/CronRoutes");
 const adminImpersonation = require("./routes/adminImpersonation");
  // Vercel Cron Routes
@@ -132,6 +133,7 @@ app.use("/", createmedteam);
 app.use("/", createhr);
 // mentorship
 app.use("/", Mentorship);
+app.use("/api", MentorshipProjectRoutes);
 //advance
 app.use("/", Advance);
 //create new student enroll
