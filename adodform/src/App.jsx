@@ -280,6 +280,36 @@ const RoadmapSection = () => {
   );
 };
 
+const ProgramIncludesSection = () => {
+  return (
+    <section className="adv-program-includes">
+      <div className="adv-container">
+        <div className="adv-includes-timeline">
+          <div className="adv-inc-time-col">
+            <div className="adv-inc-month">MONTH 1</div>
+            <div className="adv-inc-title">Skill Training</div>
+            <div className="adv-inc-desc">Technical & industry tools</div>
+          </div>
+          <div className="adv-inc-divider"></div>
+          <div className="adv-inc-time-col">
+            <div className="adv-inc-month">MONTH 2</div>
+            <div className="adv-inc-title">Live Internship</div>
+            <div className="adv-inc-desc">Real projects with MNC teams</div>
+          </div>
+          <div className="adv-inc-divider"></div>
+          <div className="adv-inc-time-col">
+            <div className="adv-inc-month">MONTH 3</div>
+            <div className="adv-inc-title">Placement Support</div>
+            <div className="adv-inc-desc">Resume, interviews & jobs</div>
+          </div>
+        </div>
+
+
+      </div>
+    </section>
+  );
+};
+
 const GuaranteeSection = ({ onShowModal }) => {
   return (
     <section className="adv-guarantee">
@@ -869,6 +899,64 @@ const EnrollmentForm = () => {
   );
 };
 
+const REVIEWS = [
+  { name: 'Karan Malhotra', role: 'SDE II, Microsoft', review: 'The curriculum is built exactly for what product companies ask. I struggled with System Design, but the 1:1 mentorship helped me clear the Microsoft loop with ease. The mock interviews were a game-changer.', rating: 5 },
+  { name: 'Priya Desai', role: 'Frontend Engineer, Razorpay', review: 'I transitioned from a service-based company to a high-growth fintech. The resume optimization they did got me callbacks from 5 top companies within two weeks. Highly recommend this program.', rating: 5 },
+  { name: 'Ankit Verma', role: 'Data Scientist, Walmart', review: 'I had the knowledge but lacked the right projects. The live internship phase gave me actual corporate problems to solve, which became the highlight of my interview at Walmart.', rating: 5 },
+  { name: 'Neha Gupta', role: 'Product Analyst, Swiggy', review: 'Their placement assistance is no joke. They literally scheduled my interviews and guided me on how to negotiate my salary. I got a 150% hike thanks to Krutanic.', rating: 5 },
+  { name: 'Rohan Iyer', role: 'Backend Dev, Cred', review: 'The intensity of this program is unmatched. You have to put in the work, but if you do, the results are guaranteed. The mentors are actually working at top 1% tech companies.', rating: 4.9 },
+  { name: 'Megha Singh', role: 'UI/UX Designer, Zomato', review: 'What I loved most was the completely practical approach. No boring theoretical lectures, just building real things. My portfolio looked incredibly professional after the 3 months.', rating: 5 },
+  { name: 'Aditya Patil', role: 'SDE I, Amazon', review: 'I was stuck at 4 LPA for three years. The career switch felt impossible until I joined. The dedicated referrals helped bypass the HR screening entirely.', rating: 5 },
+  { name: 'Shruti Sharma', role: 'Data Analyst, Deloitte', review: 'Extremely well-structured program. The mentors give brutal but honest feedback on your assignments, which is exactly what you need to improve to corporate standards.', rating: 5 },
+  { name: 'Vikram Joshi', role: 'Full Stack Dev, Paytm', review: 'Best investment I have ever made in my career. The industry tools access gave me hands-on experience with exactly what my current team uses on a daily basis.', rating: 4.8 }
+];
+
+const ReviewsSection = () => {
+  return (
+    <section className="adv-reviews">
+      <div className="adv-container">
+        <div className="adv-reviews-header">
+          <h2 className="adv-h2">Real Results from Real Professionals</h2>
+          <p className="adv-reviews-p">Read what our alumni have to say about their transformation.</p>
+        </div>
+        <div className="adv-reviews-marquee-container">
+          <div className="adv-reviews-marquee">
+            {[...REVIEWS, ...REVIEWS].map((r, i) => (
+              <div key={i} className="adv-review-card">
+                <div className="adv-review-stars" style={{ display: 'flex', whiteSpace: 'nowrap' }}>
+                  {'★'.repeat(Math.floor(r.rating))}
+                  {(r.rating % 1 !== 0) && (
+                    <span style={{ position: 'relative', display: 'inline-block', width: '1em' }}>
+                      <span style={{ color: 'rgba(255,255,255,0.15)', position: 'absolute', left: 0 }}>★</span>
+                      <span style={{ position: 'absolute', left: 0, overflow: 'hidden', width: '50%', color: '#fbbf24' }}>★</span>
+                    </span>
+                  )}
+                </div>
+                <p className="adv-review-text">"{r.review}"</p>
+                <div className="adv-review-author">
+                  <div className="adv-review-avatar">{r.name.charAt(0)}</div>
+                  <div className="adv-review-meta">
+                    <strong>{r.name}</strong>
+                    <span>{r.role}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const AlertBanner = () => (
+  <div className="adv-container" style={{ marginTop: '30px', marginBottom: '-10px', position: 'relative', zIndex: 10 }}>
+    <div className="adv-includes-banner">
+      <span className="adv-banner-dot"></span>
+      High demand alert — 2026 cohort is almost full. Submit your application below to secure your spot.
+    </div>
+  </div>
+);
 
 const App = () => {
   const [showModal, setShowModal] = useState(false);
@@ -877,10 +965,13 @@ const App = () => {
     <div className="adv-landing">
       <Toaster position="top-center" reverseOrder={false} />
       <HeroSection onShowModal={() => setShowModal(true)} />
+      <AlertBanner />
       <PartnersSection />
       <ComparisonSection />
       <RoadmapSection />
+      <ProgramIncludesSection />
       <GuaranteeSection onShowModal={() => setShowModal(true)} />
+      <ReviewsSection />
       <FAQSection />
       <EnrollmentForm />
 
