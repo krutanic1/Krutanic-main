@@ -987,15 +987,15 @@ router.post("/bulk-assign-to-specialist", async (req, res) => {
 
 // POST: Admin Make Leads Reactive
 router.post("/admin-make-reactive", async (req, res) => {
-    const { month, year, outcomes } = req.body;
-    if (!month || !year) return res.status(400).json({ message: "Month and year are required" });
+    const { fromDate, toDate, outcomes } = req.body;
+    if (!fromDate || !toDate) return res.status(400).json({ message: "fromDate and toDate are required" });
     try {
-        const m = parseInt(month) - 1;
-        const y = parseInt(year);
-        const startDate = new Date(y, m, 1);
-        const endDate = new Date(y, m + 1, 0, 23, 59, 59, 999);
+        const startOfDay = new Date(fromDate);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(toDate);
+        endOfDay.setHours(23, 59, 59, 999);
 
-        let query = { created_at: { $gte: startDate, $lte: endDate } };
+        let query = { created_at: { $gte: startOfDay, $lte: endOfDay } };
         
         if (outcomes && outcomes.length > 0 && !outcomes.includes("All")) {
             query.$or = outcomes.map(out => {
@@ -1256,7 +1256,13 @@ router.get("/get-adv-leads", async (req, res) => {
         }
 
         if (status) {
-            andConditions.push({ status });
+            if (status === "reactive") {
+                andConditions.push({ is_reactive: true });
+            } else if (status === "fresh") {
+                andConditions.push({ status: "fresh", is_reactive: { $ne: true } });
+            } else {
+                andConditions.push({ status });
+            }
         }
 
         if (source) {

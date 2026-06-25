@@ -42,8 +42,8 @@ const AdvLeadManagement = () => {
 
     // Make Reactive panel state
     const [showReactivePanel, setShowReactivePanel] = useState(false);
-    const [reactiveMonth, setReactiveMonth] = useState(new Date().getMonth() + 1);
-    const [reactiveYear, setReactiveYear] = useState(new Date().getFullYear());
+    const [reactiveFromDate, setReactiveFromDate] = useState("");
+    const [reactiveToDate, setReactiveToDate] = useState("");
     const [selectedReactiveOutcomes, setSelectedReactiveOutcomes] = useState([]);
     const [isMakingReactive, setIsMakingReactive] = useState(false);
 
@@ -89,9 +89,15 @@ const AdvLeadManagement = () => {
     const fetchLeads = async (page = 1) => {
         setLoading(true);
         try {
-            const res = await axios.get(`${API}/api/adv-leads/get-adv-leads`, {
-                params: { role: "admin", page, limit, month: selectedMonth, year: selectedYear }
-            });
+            const currentLimit = statusFilter === "reactive" ? 50 : limit;
+            const params = { role: "admin", page, limit: currentLimit, status: statusFilter };
+            
+            if (statusFilter !== "reactive") {
+                params.month = selectedMonth;
+                params.year = selectedYear;
+            }
+
+            const res = await axios.get(`${API}/api/adv-leads/get-adv-leads`, { params });
             if (res.data && res.data.leads) {
                 setLeads(res.data.leads);
                 setTotalPages(res.data.totalPages);
@@ -157,7 +163,7 @@ const AdvLeadManagement = () => {
         fetchTemplates();
         fetchSMTPConfig();
         fetchDomains();
-    }, [currentPage, selectedMonth, selectedYear, userId]);
+    }, [currentPage, selectedMonth, selectedYear, userId, statusFilter]);
 
     const handleSaveSMTP = async () => {
         if (!personalEmail || !appPassword) return toast.error("Both fields are required");
@@ -303,12 +309,16 @@ const AdvLeadManagement = () => {
             toast.error("Please select at least one outcome");
             return;
         }
+        if (!reactiveFromDate || !reactiveToDate) {
+            toast.error("Please select both from and to dates");
+            return;
+        }
 
         setIsMakingReactive(true);
         try {
             const res = await axios.post(`${API}/api/adv-leads/admin-make-reactive`, {
-                month: reactiveMonth,
-                year: reactiveYear,
+                fromDate: reactiveFromDate,
+                toDate: reactiveToDate,
                 outcomes: selectedReactiveOutcomes
             });
             toast.success(res.data.message);
@@ -355,7 +365,8 @@ const AdvLeadManagement = () => {
     const filteredLeads = leads.filter(l => {
         const matchSearch = (l.full_name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
             (l.phone_number || "").includes(searchTerm);
-        const matchStatus = !statusFilter || l.status === statusFilter;
+        const matchStatus = !statusFilter || 
+            (statusFilter === 'reactive' ? l.is_reactive : l.status === statusFilter);
         return matchSearch && matchStatus;
     });
 
@@ -417,21 +428,17 @@ const AdvLeadManagement = () => {
                         </div>
                         
                         <p style={{ fontSize: '13px', color: '#666', marginBottom: '20px' }}>
-                            Select the month and the last call outcomes to recycle. These leads will be returned to the unassigned pool as "Reactive" and their previous call logs will be deleted.
+                            Select the date range and the last call outcomes to recycle. These leads will be returned to the unassigned pool as "Reactive" and their previous call logs will be deleted.
                         </p>
 
                         <div style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
                             <div style={{ flex: 1 }}>
-                                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '6px', color: '#333' }}>Month</label>
-                                <select value={reactiveMonth} onChange={e => setReactiveMonth(e.target.value)} style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '6px' }}>
-                                    {months.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
-                                </select>
+                                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '6px', color: '#333' }}>From Date</label>
+                                <input type="date" value={reactiveFromDate} onChange={e => setReactiveFromDate(e.target.value)} style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '6px', boxSizing: 'border-box' }} />
                             </div>
                             <div style={{ flex: 1 }}>
-                                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '6px', color: '#333' }}>Year</label>
-                                <select value={reactiveYear} onChange={e => setReactiveYear(e.target.value)} style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '6px' }}>
-                                    {years.map(y => <option key={y} value={y}>{y}</option>)}
-                                </select>
+                                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '6px', color: '#333' }}>To Date</label>
+                                <input type="date" value={reactiveToDate} onChange={e => setReactiveToDate(e.target.value)} style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '6px', boxSizing: 'border-box' }} />
                             </div>
                         </div>
 
@@ -739,7 +746,7 @@ const AdvLeadManagement = () => {
                         onChange={e => setSearchTerm(e.target.value)}
                         style={{ padding: '8px 12px', border: '1px solid #ddd', borderRadius: '6px', flex: 1, minWidth: '180px' }}
                     />
-                    <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
+                    <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setCurrentPage(1); }}
                         style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '6px' }}>
                         <option value="">All Statuses</option>
                         <option value="fresh">Fresh</option>
