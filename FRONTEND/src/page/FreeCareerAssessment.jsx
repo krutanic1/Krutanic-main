@@ -146,16 +146,35 @@ const FreeCareerAssessment = () => {
     const date = new Date(dateStr);
     const day = date.getDay();
     
+    let slots = [];
     // If it's Monday (1), slots from 12:00 PM to 6:00 PM (12:00 to 18:00)
     if (day === 1) {
-      return [
+      slots = [
         '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', 
         '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00'
       ];
+    } else {
+      // Default slots for other days
+      slots = ['16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'];
     }
+
+    // Filter out past slots for today
+    const now = new Date();
+    const todayStr = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
     
-    // Default slots for other days
-    return ['16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'];
+    if (dateStr === todayStr) {
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+      
+      slots = slots.filter(time => {
+        const [hour, minute] = time.split(':').map(Number);
+        if (hour > currentHour) return true;
+        if (hour === currentHour && minute > currentMinute) return true;
+        return false;
+      });
+    }
+
+    return slots;
   };
 
   const handleSubmit = async (e) => {
