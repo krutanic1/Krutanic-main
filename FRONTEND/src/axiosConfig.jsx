@@ -19,16 +19,26 @@ axios.interceptors.request.use(
 
         // Only apply default tokens if no Authorization header is already set
         if (!config.headers.Authorization) {
+            let selectedToken = null;
+
             if ((bdaPaths.includes(currentPath) || currentPath.includes("bda")) && bdaToken) {
-                config.headers.Authorization = bdaToken.startsWith("Bearer ") ? bdaToken : `Bearer ${bdaToken}`;
+                selectedToken = bdaToken;
             } else if (currentPath.includes("advteam") && advTeamToken) {
-                config.headers.Authorization = advTeamToken.startsWith("Bearer ") ? advTeamToken : `Bearer ${advTeamToken}`;
+                selectedToken = advTeamToken;
             } else if ((advOpPaths.includes(currentPath) || currentPath.includes("advoperation")) && advOperationToken) {
-                config.headers.Authorization = advOperationToken.startsWith("Bearer ") ? advOperationToken : `Bearer ${advOperationToken}`;
+                selectedToken = advOperationToken;
             } else if ((opPaths.includes(currentPath) || currentPath.includes("operation")) && operationToken) {
-                config.headers.Authorization = operationToken.startsWith("Bearer ") ? operationToken : `Bearer ${operationToken}`;
+                selectedToken = operationToken;
             } else if (token) {
-                config.headers.Authorization = token.startsWith("Bearer ") ? token : `Bearer ${token}`;
+                selectedToken = token;
+            } else {
+                // Fallback: If path doesn't match specific roles, use whatever token is available
+                // This prevents 403 errors on common routes that aren't explicitly listed in the path arrays
+                selectedToken = bdaToken || advTeamToken || advOperationToken || operationToken;
+            }
+
+            if (selectedToken) {
+                config.headers.Authorization = selectedToken.startsWith("Bearer ") ? selectedToken : `Bearer ${selectedToken}`;
             }
         }
 
