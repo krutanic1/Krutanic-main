@@ -402,24 +402,15 @@ router.get("/get-outcome-counts", async (req, res) => {
         } else if (roleNorm === "admin") {
             // Admin sees all
         } else if (strictlyOwned === "true") {
-            if (roleNorm === "admin" || roleNorm.includes("manager") || roleNorm.includes("leader")) {
-                baseQuery = {
-                    $or: [
-                        { owner_id: userId },
-                        { current_owner_id: userId },
-                        { status: "fresh", is_reactive: { $ne: true } }
-                    ]
-                };
-            } else {
-                baseQuery = { $or: [{ owner_id: userId }, { current_owner_id: userId }] };
-            }
+            // Strictly owned leads only — no fresh pool access for any role
+            baseQuery = { $or: [{ owner_id: userId }, { current_owner_id: userId }] };
         } else if (roleNorm.includes("manager")) {
+            // Managers see only leads explicitly assigned to their team — NOT the global fresh pool
             const teams = await AdvTeamStructure.find({ manager_id: userId });
             const teamIds = teams.map(t => t._id);
             const teamNames = teams.map(t => t.team_name);
             baseQuery = {
                 $or: [
-                    { status: "fresh", is_reactive: { $ne: true } },
                     { manager_id: userId },
                     { team_id: { $in: teamIds } },
                     { team_name: { $in: teamNames } },
@@ -428,12 +419,12 @@ router.get("/get-outcome-counts", async (req, res) => {
                 ]
             };
         } else if (roleNorm.includes("leader")) {
+            // Leaders see only leads explicitly assigned to their team — NOT the global fresh pool
             const teams = await AdvTeamStructure.find({ leaders: userId });
             const teamIds = teams.map(t => t._id);
             const teamNames = teams.map(t => t.team_name);
             baseQuery = {
                 $or: [
-                    { status: "fresh", is_reactive: { $ne: true } },
                     { leader_id: userId },
                     { team_id: { $in: teamIds } },
                     { team_name: { $in: teamNames } },
@@ -1166,31 +1157,20 @@ router.get("/get-adv-leads", async (req, res) => {
         } else if (roleNorm === "admin") {
             // Admin sees all
         } else if (strictlyOwned === "true") {
-            // Strictly owned + Unassigned (for fresh pool access)
-            const roleNorm = (role || "").toLowerCase();
-            if (roleNorm === "admin" || roleNorm.includes("manager") || roleNorm.includes("leader")) {
-                baseQuery = {
-                    $or: [
-                        { owner_id: userId },
-                        { current_owner_id: userId },
-                        { status: "fresh", is_reactive: { $ne: true } }
-                    ]
-                };
-            } else {
-                baseQuery = {
-                    $or: [
-                        { owner_id: userId },
-                        { current_owner_id: userId }
-                    ]
-                };
-            }
+            // Strictly owned leads only — no fresh pool access for any role
+            baseQuery = {
+                $or: [
+                    { owner_id: userId },
+                    { current_owner_id: userId }
+                ]
+            };
         } else if (roleNorm.includes("manager")) {
+            // Managers see only leads explicitly assigned to their team — NOT the global fresh pool
             const teams = await AdvTeamStructure.find({ manager_id: userId });
             const teamIds = teams.map(t => t._id);
             const teamNames = teams.map(t => t.team_name);
             baseQuery = {
                 $or: [
-                    { status: "fresh", is_reactive: { $ne: true } },
                     { manager_id: userId },
                     { team_id: { $in: teamIds } },
                     { team_name: { $in: teamNames } },
@@ -1199,12 +1179,12 @@ router.get("/get-adv-leads", async (req, res) => {
                 ]
             };
         } else if (roleNorm.includes("leader")) {
+            // Leaders see only leads explicitly assigned to their team — NOT the global fresh pool
             const teams = await AdvTeamStructure.find({ leaders: userId });
             const teamIds = teams.map(t => t._id);
             const teamNames = teams.map(t => t.team_name);
             baseQuery = {
                 $or: [
-                    { status: "fresh", is_reactive: { $ne: true } },
                     { leader_id: userId },
                     { team_id: { $in: teamIds } },
                     { team_name: { $in: teamNames } },

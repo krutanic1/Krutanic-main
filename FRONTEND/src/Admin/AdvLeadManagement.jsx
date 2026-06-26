@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../axiosConfig";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -103,7 +103,7 @@ const AdvLeadManagement = () => {
                 setTotalPages(res.data.totalPages);
                 setTotalCount(res.data.totalCount);
                 setCurrentPage(res.data.currentPage);
-                // freshCount is now bundled in the same response — no extra API call needed
+                // freshCount is now bundled in the same response â€” no extra API call needed
                 if (res.data.freshCount !== undefined) {
                     setFreshCount(res.data.freshCount);
                 }
@@ -159,7 +159,7 @@ const AdvLeadManagement = () => {
         };
         fetchLeads(currentPage);
         fetchManagers();
-        // freshCount is now returned inside fetchLeads — removed separate fetchFreshCount() call
+        // freshCount is now returned inside fetchLeads â€” removed separate fetchFreshCount() call
         fetchTemplates();
         fetchSMTPConfig();
         fetchDomains();
@@ -243,7 +243,7 @@ const AdvLeadManagement = () => {
         }
     };
 
-    // ─── Bulk Assign ─────────────────────────────────────────────────────────────
+    // â”€â”€â”€ Bulk Assign â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const handleBulkAssign = async () => {
         if (!selectedAssignee) { toast.error("Please select a person"); return; }
         const num = parseInt(assignCount);
@@ -411,7 +411,7 @@ const AdvLeadManagement = () => {
         <div id="create-marketing-team">
             <Toaster position="top-center" />
 
-            {/* ── Make Reactive Panel Overlay ─────────────────────── */}
+            {/* â”€â”€ Make Reactive Panel Overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
             {showReactivePanel && (
                 <div style={{
                     position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)',
@@ -422,9 +422,9 @@ const AdvLeadManagement = () => {
                         width: '100%', maxWidth: '500px', boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
                     }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                            <h2 style={{ margin: 0, color: '#c41d7f' }}>♻️ Recycle as Reactive Leads</h2>
+                            <h2 style={{ margin: 0, color: '#c41d7f' }}>â™»ï¸ Recycle as Reactive Leads</h2>
                             <button onClick={() => { setShowReactivePanel(false); setSelectedReactiveOutcomes([]); }}
-                                style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#999' }}>✕</button>
+                                style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#999' }}>âœ•</button>
                         </div>
                         
                         <p style={{ fontSize: '13px', color: '#666', marginBottom: '20px' }}>
@@ -486,7 +486,7 @@ const AdvLeadManagement = () => {
                 </div>
             )}
 
-            {/* ── Assign Panel Overlay ─────────────────────── */}
+            {/* â”€â”€ Assign Panel Overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
             {showAssignPanel && (
                 <div style={{
                     position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)',
@@ -499,7 +499,7 @@ const AdvLeadManagement = () => {
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                             <h2 style={{ margin: 0 }}>Assign Fresh Leads</h2>
                             <button onClick={() => { setShowAssignPanel(false); setSelectedAssignee(null); setAssignCount(""); }}
-                                style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#999' }}>✕</button>
+                                style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#999' }}>âœ•</button>
                         </div>
 
                         {/* Fresh leads available badge */}
@@ -511,7 +511,7 @@ const AdvLeadManagement = () => {
                         {/* Step 1: Select Manager */}
                         <div style={{ marginBottom: '16px' }}>
                             <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '6px', color: '#333' }}>
-                                Step 1 — Select Manager or Leader
+                                Step 1 â€” Select Manager or Leader
                             </label>
                             <select
                                 value={selectedAssignee?._id || ""}
@@ -537,7 +537,7 @@ const AdvLeadManagement = () => {
                         {selectedAssignee && (
                             <div style={{ marginBottom: '20px' }}>
                                 <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '6px', color: '#333' }}>
-                                    Step 2 — How many leads to assign to <strong style={{ color: '#1890ff' }}>{selectedAssignee.fullname}</strong>?
+                                    Step 2 â€” How many leads to assign to <strong style={{ color: '#1890ff' }}>{selectedAssignee.fullname}</strong>?
                                 </label>
                                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                                     <input
@@ -576,14 +576,14 @@ const AdvLeadManagement = () => {
                                 fontWeight: 'bold', cursor: !selectedAssignee || !assignCount ? 'not-allowed' : 'pointer'
                             }}
                         >
-                            {assigning ? "Assigning..." : `✅ Assign ${assignCount || "?"} Leads to ${selectedAssignee?.fullname || "Person"}`}
+                            {assigning ? "Assigning..." : `âœ… Assign ${assignCount || "?"} Leads to ${selectedAssignee?.fullname || "Person"}`}
                         </button>
                     </div>
                 </div>
             )}
 
             <div className="coursetable">
-                {/* ── Header Row ── */}
+                {/* â”€â”€ Header Row â”€â”€ */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
                     <h1>ADV Lead Management</h1>
                     <div style={{ display: 'flex', gap: '10px' }}>
@@ -597,7 +597,7 @@ const AdvLeadManagement = () => {
                                         fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'
                                     }}
                                 >
-                                    🖱️ Manual Assign
+                                    ðŸ–±ï¸ Manual Assign
                                 </button>
                                 <button
                                     onClick={() => setShowAssignPanel(true)}
@@ -607,7 +607,7 @@ const AdvLeadManagement = () => {
                                         fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'
                                     }}
                                 >
-                                    📋 Bulk Assign (Count)
+                                    ðŸ“‹ Bulk Assign (Count)
                                     {freshCount > 0 && (
                                         <span style={{ background: '#fff', color: '#1890ff', borderRadius: '12px', padding: '1px 8px', fontSize: '13px', fontWeight: 'bold' }}>
                                             {freshCount} fresh
@@ -622,7 +622,7 @@ const AdvLeadManagement = () => {
                                         fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'
                                     }}
                                 >
-                                    ♻️ Make Reactive
+                                    â™»ï¸ Make Reactive
                                 </button>
 
                             </>
@@ -635,19 +635,19 @@ const AdvLeadManagement = () => {
                                     fontWeight: 'bold', cursor: 'pointer'
                                 }}
                             >
-                                ❌ Cancel Manual Mode
+                                âŒ Cancel Manual Mode
                             </button>
                         )}
                     </div>
                 </div>
 
-                {/* ── Stats Row ── */}
+                {/* â”€â”€ Stats Row â”€â”€ */}
                 <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
                     {[
                         { label: 'Total Leads', count: totalCount, bg: '#f9f9f9', border: '#d9d9d9', color: '#333' },
-                        { label: '🟢 Fresh', count: freshCount, bg: '#e6f7ff', border: '#91d5ff', color: '#096dd9' },
-                        { label: '🟠 Assigned', count: totalCount - freshCount - leads.filter(l => l.status === 'converted').length, bg: '#fff7e6', border: '#ffd591', color: '#d46b08' },
-                        { label: '✅ Converted', count: 'Check API', bg: '#f6ffed', border: '#b7eb8f', color: '#389e0d' },
+                        { label: 'ðŸŸ¢ Fresh', count: freshCount, bg: '#e6f7ff', border: '#91d5ff', color: '#096dd9' },
+                        { label: 'ðŸŸ  Assigned', count: totalCount - freshCount - leads.filter(l => l.status === 'converted').length, bg: '#fff7e6', border: '#ffd591', color: '#d46b08' },
+                        { label: 'âœ… Converted', count: 'Check API', bg: '#f6ffed', border: '#b7eb8f', color: '#389e0d' },
                     ].map((s, i) => (
                         <div key={i} style={{ padding: '12px 20px', background: s.bg, border: `1px solid ${s.border}`, borderRadius: '8px', flex: 1, minWidth: '110px', textAlign: 'center' }}>
                             <div style={{ fontSize: '22px', fontWeight: 'bold', color: s.color }}>{s.count}</div>
@@ -656,7 +656,7 @@ const AdvLeadManagement = () => {
                     ))}
                 </div>
 
-                {/* ── Manual Assign Bar (Full Width) ── */}
+                {/* â”€â”€ Manual Assign Bar (Full Width) â”€â”€ */}
                 {isManualAssignMode && (
                     <div style={{ 
                         padding: '16px 24px', 
@@ -732,13 +732,13 @@ const AdvLeadManagement = () => {
                                     boxShadow: (selectedLeadIds.length === 0 || !selectedAssignee) ? 'none' : '0 2px 8px rgba(24, 144, 255, 0.3)'
                                 }}
                             >
-                                {assigning ? "Processing..." : <>✅ Confirm Assignment</>}
+                                {assigning ? "Processing..." : <>âœ… Confirm Assignment</>}
                             </button>
                         </div>
                     </div>
                 )}
 
-                {/* ── Filters ── */}
+                {/* â”€â”€ Filters â”€â”€ */}
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '15px', flexWrap: 'wrap' }}>
                     <input
                         placeholder="Search name or phone..."
@@ -760,11 +760,11 @@ const AdvLeadManagement = () => {
                     </select>
                     <button onClick={() => { fetchLeads(1); fetchFreshCount(); }}
                         style={{ padding: '8px 14px', background: '#f0f0f0', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer' }}>
-                        🔄 Refresh
+                        ðŸ”„ Refresh
                     </button>
 
                     <div style={{ display: 'flex', gap: '5px', alignItems: 'center', background: '#fff', padding: '5px 10px', borderRadius: '6px', border: '1px solid #ddd' }}>
-                        <span style={{ fontSize: '13px', color: '#666', fontWeight: 'bold' }}>📅 Month:</span>
+                        <span style={{ fontSize: '13px', color: '#666', fontWeight: 'bold' }}>ðŸ“… Month:</span>
                         <select 
                             value={selectedMonth} 
                             onChange={(e) => { setSelectedMonth(e.target.value); setCurrentPage(1); }}
@@ -782,12 +782,12 @@ const AdvLeadManagement = () => {
                     </div>
                 </div>
 
-                {/* ── Leads Table ── */}
+                {/* â”€â”€ Leads Table â”€â”€ */}
                 {loading ? (
                     <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}>Loading leads...</div>
                 ) : filteredLeads.length === 0 ? (
                     <div style={{ padding: '40px', textAlign: 'center', border: '2px dashed #eee', borderRadius: '8px', color: '#888' }}>
-                        <div style={{ fontSize: '40px' }}>📭</div>
+                        <div style={{ fontSize: '40px' }}>ðŸ“­</div>
                         <p>No leads found.</p>
                     </div>
                 ) : (
@@ -828,7 +828,7 @@ const AdvLeadManagement = () => {
                                         <React.Fragment key={date}>
                                             <tr style={{ background: '#f8f9fa' }}>
                                                 <td colSpan={isManualAssignMode ? "17" : "16"} style={{ fontWeight: '800', textAlign: 'center', padding: '10px', fontSize: '14px', letterSpacing: '1px', borderBottom: '2px solid #ddd' }}>
-                                                    📅 {date}
+                                                    ðŸ“… {date}
                                                 </td>
                                             </tr>
                                             {groupedLeads[date].map((lead, idx) => {
@@ -849,22 +849,22 @@ const AdvLeadManagement = () => {
                                                         <td><strong>{lead.full_name}</strong></td>
                                                         <td style={{ fontSize: '12px', color: '#666' }}>{lead.email}</td>
                                                         <td>{lead.phone_number}</td>
-                                                        <td style={{ fontSize: '12px', color: '#666' }}>{lead.source || '—'}</td>
-                                                        <td style={{ fontSize: '13px' }}>{lead.opted_domain || '—'}</td>
-                                                        <td style={{ fontSize: '12px', color: '#555' }} title={getLeadField(lead, ['preferredLanguages', 'preferredLanguage', 'preferred_language', 'language', 'preferred_language?'])}>{getLeadField(lead, ['preferredLanguages', 'preferredLanguage', 'preferred_language', 'language', 'preferred_language?','what_is_your_preferred_language_?',]) || '—'}</td>
+                                                        <td style={{ fontSize: '12px', color: '#666' }}>{lead.source || 'â€”'}</td>
+                                                        <td style={{ fontSize: '13px' }}>{lead.opted_domain || 'â€”'}</td>
+                                                        <td style={{ fontSize: '12px', color: '#555' }} title={getLeadField(lead, ['preferredLanguages', 'preferredLanguage', 'preferred_language', 'language', 'preferred_language?'])}>{getLeadField(lead, ['preferredLanguages', 'preferredLanguage', 'preferred_language', 'language', 'preferred_language?','what_is_your_preferred_language_?',]) || 'â€”'}</td>
                                                         <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={getLeadField(lead, ['currentSituation', 'what_best_describes_your_current_situation?', 'what_best_describes_your_current_situation'])}>
-                                                            {getLeadField(lead, ['currentSituation', 'what_best_describes_your_current_situation?', 'what_best_describes_your_current_situation']) || '—'}
+                                                            {getLeadField(lead, ['currentSituation', 'what_best_describes_your_current_situation?', 'what_best_describes_your_current_situation']) || 'â€”'}
                                                         </td>
                                                         <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={getLeadField(lead, ['primaryGoal', 'what_is_your_primary_goal_right_now?', 'what_is_your_primary_goal_right_now'])}>
-                                                            {getLeadField(lead, ['primaryGoal', 'what_is_your_primary_goal_right_now?', 'what_is_your_primary_goal_right_now']) || '—'}
+                                                            {getLeadField(lead, ['primaryGoal', 'what_is_your_primary_goal_right_now?', 'what_is_your_primary_goal_right_now']) || 'â€”'}
                                                         </td>
                                                         <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={getLeadField(lead, ['currentChallenge', 'what_is_your_biggest_career_challenge?', 'what_is_your_biggest_career_challenge'])}>
-                                                            {getLeadField(lead, ['currentChallenge', 'what_is_your_biggest_career_challenge?', 'what_is_your_biggest_career_challenge']) || '—'}
+                                                            {getLeadField(lead, ['currentChallenge', 'what_is_your_biggest_career_challenge?', 'what_is_your_biggest_career_challenge']) || 'â€”'}
                                                         </td>
                                                         <td style={{ fontSize: '11px', color: '#666', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={getLeadField(lead, ['readyToInvest', 'upskilling_ready', 'are_you_willing_to_invest_in_a_program_that_provides_training_+internship+100%_placement_support?', 'are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?'])}>
-                                                            {getLeadField(lead, ['readyToInvest', 'upskilling_ready', 'are_you_willing_to_invest_in_a_program_that_provides_training_+internship+100%_placement_support?', 'are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?']) || '—'}
+                                                            {getLeadField(lead, ['readyToInvest', 'upskilling_ready', 'are_you_willing_to_invest_in_a_program_that_provides_training_+internship+100%_placement_support?', 'are_you_willing_to_invest_in_a_program_that_provides_training_+_internship_+100%_placement_support?']) || 'â€”'}
                                                         </td>
-                                                        <td style={{ fontSize: '12px', color: '#555' }}>{lead.current_status || '—'}</td>
+                                                        <td style={{ fontSize: '12px', color: '#555' }}>{lead.current_status || 'â€”'}</td>
                                                         <td>
                                                             <span style={{ padding: '3px 10px', borderRadius: '12px', fontSize: '11px', background: (lead.is_reactive && lead.status === 'fresh') ? '#fff0f6' : sc.bg, border: `1px solid ${(lead.is_reactive && lead.status === 'fresh') ? '#ffadd2' : sc.border}`, color: (lead.is_reactive && lead.status === 'fresh') ? '#c41d7f' : sc.color, whiteSpace: 'nowrap', fontWeight: 'bold' }}>
                                                                 {lead.is_reactive && lead.status === 'fresh' ? 'REACTIVE LEAD' : lead.status?.replace(/_/g, ' ')}
@@ -872,7 +872,7 @@ const AdvLeadManagement = () => {
                                                         </td>
                                                         <td style={{ fontSize: '13px', color: '#555' }}>
                                                             {(() => {
-                                                                const name = lead.owner_name || lead.current_owner_id?.name || '—';
+                                                                const name = lead.owner_name || lead.current_owner_id?.name || 'â€”';
                                                                 const team = lead.team_name || lead.team_id?.team_name || managers.find(m => m.fullname === name || m._id === (lead.owner_id || lead.current_owner_id?._id))?.team;
                                                                 return (
                                                                     <>
@@ -1000,7 +1000,7 @@ const AdvLeadManagement = () => {
                 )}
 
 
-                {/* ─── AI Email Modal ─── */}
+                {/* â”€â”€â”€ AI Email Modal â”€â”€â”€ */}
                 {showEmailModal && (
                     <div style={{
                         position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
@@ -1015,14 +1015,14 @@ const AdvLeadManagement = () => {
                         }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid #f0f0f0', paddingBottom: '16px' }}>
                                 <h2 style={{ margin: 0, color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <span style={{ fontSize: '24px' }}>✉️</span> Send Personalized Mail
+                                    <span style={{ fontSize: '24px' }}>âœ‰ï¸</span> Send Personalized Mail
                                 </h2>
                                 <button onClick={() => setShowEmailModal(false)} style={{ border: 'none', background: '#f5f5f5', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', fontSize: '18px' }}>&times;</button>
                             </div>
 
                             <div style={{ marginBottom: '20px', background: '#f8fafc', padding: '15px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                                 <label style={{ fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    📋 Select existing template (Subject & Body will auto-fill)
+                                    ðŸ“‹ Select existing template (Subject & Body will auto-fill)
                                 </label>
                                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                                     <select 
@@ -1049,7 +1049,7 @@ const AdvLeadManagement = () => {
                                             title="Delete Selected Template"
                                             style={{ padding: '10px', background: '#fee2e2', color: '#ef4444', border: '1px solid #fca5a5', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                         >
-                                            🗑️
+                                            ðŸ—‘ï¸
                                         </button>
                                     )}
                                 </div>
@@ -1099,7 +1099,7 @@ const AdvLeadManagement = () => {
                                         }}
                                         style={{ border: 'none', background: 'linear-gradient(135deg, #722ed1 0%, #1890ff 100%)', color: '#fff', borderRadius: '20px', padding: '4px 12px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '5px' }}
                                     >
-                                        <span style={{ fontSize: '14px' }}>🤖</span> Generate with ChatGPT
+                                        <span style={{ fontSize: '14px' }}>ðŸ¤–</span> Generate with ChatGPT
                                     </button>
                                 </div>
                                 <input 
@@ -1209,7 +1209,7 @@ const AdvLeadManagement = () => {
                     </div>
                 )}
 
-                {/* ─── Save Template Modal ─── */}
+                {/* â”€â”€â”€ Save Template Modal â”€â”€â”€ */}
                 {showSaveTemplateModal && (
                     <div style={{
                         position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
@@ -1221,7 +1221,7 @@ const AdvLeadManagement = () => {
                             backgroundColor: '#fff', padding: '24px', borderRadius: '15px',
                             width: '400px', boxShadow: '0 10px 30px rgba(0,0,0,0.2)'
                         }}>
-                            <h3 style={{ marginTop: 0 }}>💾 Save as Template?</h3>
+                            <h3 style={{ marginTop: 0 }}>ðŸ’¾ Save as Template?</h3>
                             <p style={{ fontSize: '14px', color: '#666' }}>Would you like to save this message as a template for future use?</p>
                             <input 
                                 type="text"
@@ -1249,7 +1249,7 @@ const AdvLeadManagement = () => {
                     </div>
                 )}
 
-                {/* ─── SMTP Setup Modal ─── */}
+                {/* â”€â”€â”€ SMTP Setup Modal â”€â”€â”€ */}
                 {showSMTPModal && (
                     <div style={{
                         position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
@@ -1263,13 +1263,13 @@ const AdvLeadManagement = () => {
                         }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                                 <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <span style={{ fontSize: '24px' }}>📧</span> Email Account Setup
+                                    <span style={{ fontSize: '24px' }}>ðŸ“§</span> Email Account Setup
                                 </h3>
                                 <button onClick={() => setShowSMTPModal(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '24px', color: '#94a3b8' }}>&times;</button>
                             </div>
                             <div style={{ background: '#f0f9ff', padding: '15px', borderRadius: '12px', border: '1px solid #bae6fd', marginBottom: '24px' }}>
                                 <p style={{ fontSize: '13px', color: '#0369a1', margin: 0, lineHeight: '1.5' }}>
-                                    <strong>🔒 Personalize your outreach:</strong> Enter your official email and an <strong>App Password</strong>. This allows the system to send professional emails directly from your account.
+                                    <strong>ðŸ”’ Personalize your outreach:</strong> Enter your official email and an <strong>App Password</strong>. This allows the system to send professional emails directly from your account.
                                 </p>
                             </div>
                             <div style={{ marginBottom: '16px' }}>
@@ -1305,7 +1305,7 @@ const AdvLeadManagement = () => {
                     </div>
                 )}
 
-                {/* ─── Lead Details Modal ─── */}
+                {/* â”€â”€â”€ Lead Details Modal â”€â”€â”€ */}
                 {selectedLeadForDetails && (
                     <div style={{
                         position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
@@ -1326,7 +1326,7 @@ const AdvLeadManagement = () => {
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px', background: '#f8fafc', padding: '15px', borderRadius: '12px' }}>
                                 <div>
                                     <label style={{ fontSize: '11px', fontWeight: '800', color: '#64748b', textTransform: 'uppercase' }}>Email Address</label>
-                                    <div style={{ fontSize: '14px', fontWeight: '600', color: '#1e293b', wordBreak: 'break-all' }}>{selectedLeadForDetails.email || '—'}</div>
+                                    <div style={{ fontSize: '14px', fontWeight: '600', color: '#1e293b', wordBreak: 'break-all' }}>{selectedLeadForDetails.email || 'â€”'}</div>
                                 </div>
                                 <div>
                                     <label style={{ fontSize: '11px', fontWeight: '800', color: '#64748b', textTransform: 'uppercase' }}>Phone Number</label>
@@ -1349,7 +1349,7 @@ const AdvLeadManagement = () => {
                             )}
 
                             <div style={{ background: '#ffffff', padding: '0px', borderRadius: '0px' }}>
-                                <h3 style={{ marginTop: 0, marginBottom: '16px', fontSize: '14px', fontWeight: '800', color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>🚀 Candidate Screening Questionnaire</h3>
+                                <h3 style={{ marginTop: 0, marginBottom: '16px', fontSize: '14px', fontWeight: '800', color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>ðŸš€ Candidate Screening Questionnaire</h3>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                                     {[
                                         { label: 'Current Situation', value: getLeadField(selectedLeadForDetails, ['currentSituation', 'what_best_describes_your_current_situation?', 'what_best_describes_your_current_situation']) },
@@ -1361,7 +1361,7 @@ const AdvLeadManagement = () => {
                                         item.value && (
                                             <div key={i} style={{ padding: '12px', background: '#f0f9ff', borderRadius: '10px', border: '1px solid #bae6fd' }}>
                                                 <div style={{ fontSize: '10px', fontWeight: '800', color: '#0369a1', textTransform: 'uppercase', marginBottom: '4px', opacity: 0.8 }}>{item.label}</div>
-                                                <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '600', lineHeight: '1.4' }}>{item.value || '—'}</div>
+                                                <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '600', lineHeight: '1.4' }}>{item.value || 'â€”'}</div>
                                             </div>
                                         )
                                     ))}
@@ -1377,7 +1377,7 @@ const AdvLeadManagement = () => {
                                         .map(([key, val]) => (
                                             <div key={key}>
                                                 <div style={{ fontSize: '10px', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '2px' }}>{key.replace(/_/g, ' ')}</div>
-                                                <div style={{ fontSize: '13px', color: '#475569', fontWeight: '500' }}>{val || '—'}</div>
+                                                <div style={{ fontSize: '13px', color: '#475569', fontWeight: '500' }}>{val || 'â€”'}</div>
                                             </div>
                                         ))}
                                     

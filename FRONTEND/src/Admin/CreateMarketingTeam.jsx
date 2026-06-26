@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API from "../API";
-import axios from "axios";
+import axios from "../axiosConfig";
 import toast, { Toaster } from "react-hot-toast";
 const CreateMarketingTeam = () => {
   const [loading, setLoading] = useState(true);
@@ -216,7 +216,7 @@ const CreateMarketingTeam = () => {
         <div className="form">
           <form onSubmit={handleSubmit}>
             <h2>{editingOperationId ? "Edit Account" : "Create Account"}</h2>
-            <span onClick={resetForm}>✖</span>
+            <span onClick={resetForm}>âœ–</span>
             <input
               value={formData.fullname}
               onChange={handleChange}

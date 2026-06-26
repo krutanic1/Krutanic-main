@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import axios from "axios";
+import axios from "../axiosConfig";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
 import { saveAs } from "file-saver";
@@ -708,7 +708,7 @@ const AdminAttendance = () => {
                    <div style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: 'rgba(255,255,255,0.8)', letterSpacing: '0.5px' }}>ALL PRESENT</div>
                    <div style={{ fontSize: '20px', fontWeight: '900', color: '#fff' }}>{dailySummary.reduce((acc, curr) => acc + curr.count, 0)} <span style={{ fontSize: '12px', fontWeight: '600', color: 'rgba(255,255,255,0.8)' }}>Present</span></div>
                 </div>
-                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)', fontWeight: '600' }}>Click to view ›</div>
+                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)', fontWeight: '600' }}>Click to view â€º</div>
               </div>
             )}
             
@@ -726,7 +726,7 @@ const AdminAttendance = () => {
                <div style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: '#94a3b8', letterSpacing: '0.5px' }}>{s.department || "Other"}</div>
                <div style={{ fontSize: '20px', fontWeight: '900', color: '#1e293b' }}>{s.count} <span style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8' }}>Present</span></div>
             </div>
-            <div style={{ fontSize: '10px', color: '#cbd5e1', fontWeight: '600' }}>Click to view ›</div>
+            <div style={{ fontSize: '10px', color: '#cbd5e1', fontWeight: '600' }}>Click to view â€º</div>
           </div>
         )) : <div style={{ padding: '20px', color: '#94a3b8', fontStyle: 'italic', fontSize: '13px' }}>No records found for today</div>}
         </>
@@ -794,7 +794,7 @@ const AdminAttendance = () => {
                          <div style={{ fontSize: '11px', color: '#64748b', fontWeight: '500' }}>{role}</div>
                       </div>
                       <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
-                         <div style={{ background: '#dcfce7', color: '#16a34a', fontSize: '10px', fontWeight: '800', padding: '3px 8px', borderRadius: '6px' }}>✓ Present</div>
+                         <div style={{ background: '#dcfce7', color: '#16a34a', fontSize: '10px', fontWeight: '800', padding: '3px 8px', borderRadius: '6px' }}>âœ“ Present</div>
                          <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '3px' }}><Clock size={10} /> {timeStr}</div>
                       </div>
                     </div>

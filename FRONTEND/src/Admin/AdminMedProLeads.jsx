@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../axiosConfig";
 import "./AdminPanel.css";
 import toast from "react-hot-toast";
 

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../axiosConfig";
 import React, { useState, useEffect } from "react";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
@@ -341,7 +341,7 @@ const BookedList = () => {
       {iscourseFormVisible && (
         <div className="form">
           <form onSubmit={handleSubmit} className="space-y-5">
-            <span onClick={resetForm}>✖</span>
+            <span onClick={resetForm}>âœ–</span>
             <h2>
               {editingStudentId
                 ? "Edit Enrolled Details"

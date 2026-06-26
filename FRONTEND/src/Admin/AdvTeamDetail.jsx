@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../axiosConfig";
 import API from "../API";
 
 
@@ -392,9 +392,9 @@ const AdvTeamDetail = () => {
                     <tr key={index}>
                       <td>{data.date}</td>
                       <td>{data.count}</td>
-                      <td>₹ {data.total}</td>
-                      <td>₹ {data.credited}</td>
-                      <td>₹ {data.total - data.credited}</td>
+                      <td>â‚¹ {data.total}</td>
+                      <td>â‚¹ {data.credited}</td>
+                      <td>â‚¹ {data.total - data.credited}</td>
                     </tr>
                   ))
                 ) : (
@@ -422,9 +422,9 @@ const AdvTeamDetail = () => {
                     <tr key={index}>
                       <td>{data.month}</td>
                       <td>{data.count}</td>
-                      <td>₹ {data.total}</td>
-                      <td>₹ {data.credited}</td>
-                      <td>₹ {data.total - data.credited}</td>
+                      <td>â‚¹ {data.total}</td>
+                      <td>â‚¹ {data.credited}</td>
+                      <td>â‚¹ {data.total - data.credited}</td>
                     </tr>
                   ))
                 ) : (
@@ -450,14 +450,14 @@ const AdvTeamDetail = () => {
                   <tr>
                     <td>{selectedAgent.enrollments.length}</td>
                     <td>
-                      ₹{" "}
+                      â‚¹{" "}
                       {selectedAgent.enrollments.reduce(
                         (sum, item) => sum + (item.programPrice || 0),
                         0
                       )}
                     </td>
                     <td>
-                      ₹{" "}
+                      â‚¹{" "}
                       {selectedAgent.enrollments.reduce((sum, item) => {
                         const isFullPaid = item.status === "fullPaid";
                         const hasHalfClearedRemark =
@@ -471,7 +471,7 @@ const AdvTeamDetail = () => {
                       }, 0)}
                     </td>
                     <td>
-                      ₹{" "}
+                      â‚¹{" "}
                       {selectedAgent.enrollments.reduce(
                         (sum, item) => sum + (item.programPrice || 0),
                         0
@@ -544,7 +544,7 @@ const AdvTeamDetail = () => {
         <h3 className="text-base font-semibold text-slate-700 mb-2">Leaderboard</h3>
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 my-6">
           <div className="border rounded-md p-3 bg-white overflow-x-auto">
-            <h3 className="text-lg font-bold mb-2">🏆 Top 3 Teams</h3>
+            <h3 className="text-lg font-bold mb-2">ðŸ† Top 3 Teams</h3>
             <table className="bdarevenuetable w-full" border="1">
               <thead>
                 <tr>
@@ -567,7 +567,7 @@ const AdvTeamDetail = () => {
 
           {/* Top 3 Managers */}
           <div className="border rounded-md p-3 bg-white overflow-x-auto">
-            <h3 className="text-lg font-bold mb-2">⭐ Top 3 Managers</h3>
+            <h3 className="text-lg font-bold mb-2">â­ Top 3 Managers</h3>
             <table className="bdarevenuetable w-full" border="1">
               <thead>
                 <tr>
@@ -602,19 +602,19 @@ const AdvTeamDetail = () => {
           {[
             {
               title: "Top 3 Leaders",
-              icon: "👑",
+              icon: "ðŸ‘‘",
               roles: ["leader", "adv_leader"],
               emptyLabel: "No Leaders",
             },
             {
               title: "Top 3 Inside Sales Specialists",
-              icon: "📞",
+              icon: "ðŸ“ž",
               roles: ["inside_sales_specialist", "inside sales specialist"],
               emptyLabel: "No Inside Sales Specialists",
             },
             {
               title: "Top 3 SR Inside Sales Specialists",
-              icon: "⭐",
+              icon: "â­",
               roles: ["sr_inside_sales_specialist", "sr inside sales specialist"],
               emptyLabel: "No SR Specialists",
             },

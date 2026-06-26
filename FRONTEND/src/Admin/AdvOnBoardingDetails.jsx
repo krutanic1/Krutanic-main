@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../axiosConfig";
 import React, { useState, useEffect } from "react";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
@@ -230,8 +230,8 @@ const AdvOnBoardingDetails = () => {
                         <td>{item.email || "N/A"}</td>
                         <td>{item.domain || "N/A"}</td>
                         <td>{item.monthOpted || "N/A"}</td>
-                        <td className="text-green-600 font-bold">₹{item.programPrice || 0}</td>
-                        <td>₹{item.paidAmount || 0}</td>
+                        <td className="text-green-600 font-bold">â‚¹{item.programPrice || 0}</td>
+                        <td>â‚¹{item.paidAmount || 0}</td>
                         <td>{item.counselor || "N/A"}</td>
                         <td>{item.executive || item.lead || "N/A"}</td>
                         <td>{item.operationName || "N/A"}</td>
@@ -320,13 +320,13 @@ const AdvOnBoardingDetails = () => {
                   <strong>Domain:</strong> {dialogData.domain || "N/A"}
                 </p>
                 <p>
-                  <strong>Program Price:</strong> ₹{dialogData.programPrice || 0}
+                  <strong>Program Price:</strong> â‚¹{dialogData.programPrice || 0}
                 </p>
                 <p>
-                  <strong>Paid Amount:</strong> ₹{dialogData.paidAmount || 0}
+                  <strong>Paid Amount:</strong> â‚¹{dialogData.paidAmount || 0}
                 </p>
                 <p className="text-red-600 font-bold">
-                  <strong>Remaining Amount:</strong> ₹{dialogData.remainingAmount || 0}
+                  <strong>Remaining Amount:</strong> â‚¹{dialogData.remainingAmount || 0}
                 </p>
                 <p>
                   <strong>Transaction ID:</strong> {dialogData.transactionId || "N/A"}
@@ -358,25 +358,25 @@ const AdvOnBoardingDetails = () => {
                 <p>
                   <strong>User Created:</strong>{" "}
                   <span style={{ color: dialogData.userCreated ? "green" : "red", fontWeight: "bold" }}>
-                    {dialogData.userCreated ? "Yes ✓" : "No ✗"}
+                    {dialogData.userCreated ? "Yes âœ“" : "No âœ—"}
                   </span>
                 </p>
                 <p>
                   <strong>Mail Sent:</strong>{" "}
                   <span style={{ color: dialogData.mailSended ? "green" : "red", fontWeight: "bold" }}>
-                    {dialogData.mailSended ? "Yes ✓" : "No ✗"}
+                    {dialogData.mailSended ? "Yes âœ“" : "No âœ—"}
                   </span>
                 </p>
                 <p>
                   <strong>Onboarding Sent:</strong>{" "}
                   <span style={{ color: dialogData.onboardingSended ? "green" : "red", fontWeight: "bold" }}>
-                    {dialogData.onboardingSended ? "Yes ✓" : "No ✗"}
+                    {dialogData.onboardingSended ? "Yes âœ“" : "No âœ—"}
                   </span>
                 </p>
                 <p>
                   <strong>Offer Letter Sent:</strong>{" "}
                   <span style={{ color: dialogData.offerlettersended ? "green" : "red", fontWeight: "bold" }}>
-                    {dialogData.offerlettersended ? "Yes ✓" : "No ✗"}
+                    {dialogData.offerlettersended ? "Yes âœ“" : "No âœ—"}
                   </span>
                 </p>
                 <p>

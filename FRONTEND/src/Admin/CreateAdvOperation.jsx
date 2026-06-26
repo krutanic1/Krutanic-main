@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../axiosConfig";
 import React, { useEffect, useState } from "react";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
@@ -293,7 +293,7 @@ const CreateAdvOperation = () => {
                 ? "Edit ADV Operation Account"
                 : "Create ADV Operation Account"}
             </h2>
-            <span onClick={resetForm}>✖</span>
+            <span onClick={resetForm}>âœ–</span>
             <input
               value={formData.fullname}
               onChange={handleChange}
@@ -493,7 +493,7 @@ const CreateAdvOperation = () => {
                 onClick={closeDialog}
                 className="text-gray-500 hover:text-gray-700 text-2xl"
               >
-                ✖
+                âœ–
               </button>
             </div>
 
@@ -516,13 +516,13 @@ const CreateAdvOperation = () => {
                         <tr key={date}>
                           <td className="border border-gray-300 px-4 py-2">{date}</td>
                           <td className="border border-gray-300 px-4 py-2">
-                            ₹{data.total.toLocaleString()}
+                            â‚¹{data.total.toLocaleString()}
                           </td>
                           <td className="border border-gray-300 px-4 py-2">
-                            ₹{data.credited.toLocaleString()}
+                            â‚¹{data.credited.toLocaleString()}
                           </td>
                           <td className="border border-gray-300 px-4 py-2">
-                            ₹{data.pending.toLocaleString()}
+                            â‚¹{data.pending.toLocaleString()}
                           </td>
                         </tr>
                       ))}
@@ -547,13 +547,13 @@ const CreateAdvOperation = () => {
                         <tr key={month}>
                           <td className="border border-gray-300 px-4 py-2">{month}</td>
                           <td className="border border-gray-300 px-4 py-2">
-                            ₹{data.total.toLocaleString()}
+                            â‚¹{data.total.toLocaleString()}
                           </td>
                           <td className="border border-gray-300 px-4 py-2">
-                            ₹{data.credited.toLocaleString()}
+                            â‚¹{data.credited.toLocaleString()}
                           </td>
                           <td className="border border-gray-300 px-4 py-2">
-                            ₹{data.pending.toLocaleString()}
+                            â‚¹{data.pending.toLocaleString()}
                           </td>
                         </tr>
                       ))}
@@ -564,7 +564,7 @@ const CreateAdvOperation = () => {
                 {/* Total Revenue */}
                 <div className="bg-[#f15b29] text-white p-4 rounded">
                   <h3 className="text-xl font-semibold">
-                    Total Revenue: ₹{revenueData.totalRevenue.toLocaleString()}
+                    Total Revenue: â‚¹{revenueData.totalRevenue.toLocaleString()}
                   </h3>
                 </div>
               </div>

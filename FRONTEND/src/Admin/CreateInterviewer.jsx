@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../axiosConfig";
 import { toast, Toaster } from "react-hot-toast";
 import API from "../API";
 
@@ -71,7 +71,7 @@ const CreateInterviewer = () => {
             {isFormVisible && (
                 <div className="form">
                     <form onSubmit={handleSubmit}>
-                        <span onClick={toggleVisibility}>✖</span>
+                        <span onClick={toggleVisibility}>âœ–</span>
                         <h2>Create Interviewer Account</h2>
                         <input
                             type="text"

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import API from "../API";
-import axios from "axios";
+import axios from "../axiosConfig";
 
 const PendingApplication = () => {
   const [users, setUsers] = useState([]);

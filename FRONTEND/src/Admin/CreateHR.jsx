@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../axiosConfig";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -143,7 +143,7 @@ const CreateHR = () => {
       {isFormVisible && (
         <div className="form">
           <form onSubmit={handleSubmit}>
-            <span onClick={resetForm}>✖</span>
+            <span onClick={resetForm}>âœ–</span>
             <h2>{editingHrId ? "Edit HR Account" : "Create HR Account"}</h2>
             <input
               value={formData.fullname}

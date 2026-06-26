@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../axiosConfig";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -365,7 +365,7 @@ const Target = () => {
                         team.target[team.target.length - 1].currentMonth ===
                         currentMonth ? (
                         <p>
-                          {team.target[team.target.length - 1].currentMonth} : ₹
+                          {team.target[team.target.length - 1].currentMonth} : â‚¹
                           {team.target[team.target.length - 1].targetValue}
                           <i
                             className="fa fa-trash cursor-pointer text-red-600 ml-2"
@@ -385,13 +385,13 @@ const Target = () => {
                     </td>
                     <td>
                       <p className="text-green-600 font-semibold">
-                        ₹{teamRevenue[team.teamname]?.toLocaleString() || 0}
+                        â‚¹{teamRevenue[team.teamname]?.toLocaleString() || 0}
                       </p>
                     </td>
                     <td>
                       <p className="text-red-600 font-semibold">
                         {team.target.length > 0 && team.target[team.target.length - 1].currentMonth === currentMonth
-                          ? `₹${(Number(team.target[team.target.length - 1].targetValue) - (teamRevenue[team.teamname] || 0)).toLocaleString()}`
+                          ? `â‚¹${(Number(team.target[team.target.length - 1].targetValue) - (teamRevenue[team.teamname] || 0)).toLocaleString()}`
                           : "N/A"}
                       </p>
                     </td>
@@ -494,7 +494,7 @@ const Target = () => {
                       bda.target[bda.target.length - 1].currentMonth ===
                       currentMonth ? (
                       <p>
-                        {bda.target[bda.target.length - 1].currentMonth} : ₹
+                        {bda.target[bda.target.length - 1].currentMonth} : â‚¹
                         {bda.target[bda.target.length - 1].targetValue}
                         <i
                           className="fa fa-trash cursor-pointer text-red-600 ml-2"

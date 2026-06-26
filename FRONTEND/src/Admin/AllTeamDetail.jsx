@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../axiosConfig";
 import API from "../API";
 
 const AllTeamDetail = () => {
@@ -371,10 +371,10 @@ const AllTeamDetail = () => {
                     <tr key={index}>
                       <td>{data.date}</td>
                       <td>{data.count}</td>
-                      <td>₹ {data.total}</td>
-                      {/* <td>₹ {data.booked}</td> */}
-                      <td>₹ {data.credited}</td>
-                      <td>₹ {data.total - data.credited} </td>
+                      <td>â‚¹ {data.total}</td>
+                      {/* <td>â‚¹ {data.booked}</td> */}
+                      <td>â‚¹ {data.credited}</td>
+                      <td>â‚¹ {data.total - data.credited} </td>
                     </tr>
                   ))
                 ) : (
@@ -402,9 +402,9 @@ const AllTeamDetail = () => {
                     <tr key={index}>
                       <td>{data.month}</td>
                       <td>{data.count}</td>
-                      <td>₹ {data.total}</td>
-                      <td>₹ {data.credited}</td>
-                      <td>₹ {data.total - data.credited}</td>
+                      <td>â‚¹ {data.total}</td>
+                      <td>â‚¹ {data.credited}</td>
+                      <td>â‚¹ {data.total - data.credited}</td>
                     </tr>
                   ))
                 ) : (
@@ -429,14 +429,14 @@ const AllTeamDetail = () => {
                   <tr>
                     <td>{selectedBda.enrollments.length}</td>
                     <td>
-                      ₹{" "}
+                      â‚¹{" "}
                       {selectedBda.enrollments.reduce(
                         (sum, item) => sum + (item.programPrice || 0),
                         0
                       )}
                     </td>
                     <td>
-                      ₹{" "}
+                      â‚¹{" "}
                       {selectedBda.enrollments.reduce((sum, item) => {
                         const isFullPaid = item.status === "fullPaid";
                         const hasHalfClearedRemark =
@@ -452,7 +452,7 @@ const AllTeamDetail = () => {
                       }, 0)}
                     </td>
                     <td>
-                      ₹{" "}
+                      â‚¹{" "}
                       {selectedBda.enrollments.reduce(
                         (sum, item) => sum + (item.programPrice || 0),
                         0
@@ -661,7 +661,7 @@ const AllTeamDetail = () => {
         <div className="flex gap-4 my-6 flex-wrap">
           {/* Top 3 Teams */}
           <div className="flex-1 min-w-[300px]">
-            <h3 className="text-lg font-bold mb-2">🏆 Top 3 Teams (Current Month - {currentMonth})</h3>
+            <h3 className="text-lg font-bold mb-2">ðŸ† Top 3 Teams (Current Month - {currentMonth})</h3>
             <table className="bdarevenuetable">
               <thead>
                 <tr>
@@ -677,8 +677,8 @@ const AllTeamDetail = () => {
                   <tr key={index}>
                     <td>#{index + 1}</td>
                     <td>{team.team}</td>
-                    <td>₹ {team.creditedRevenue.toLocaleString()}</td>
-                    <td>₹ {team.totalRevenue.toLocaleString()}</td>
+                    <td>â‚¹ {team.creditedRevenue.toLocaleString()}</td>
+                    <td>â‚¹ {team.totalRevenue.toLocaleString()}</td>
                     <td>{team.paymentCount}</td>
                   </tr>
                 ))}
@@ -688,7 +688,7 @@ const AllTeamDetail = () => {
 
           {/* Top 3 Leaders */}
           <div className="flex-1 min-w-[300px]">
-            <h3 className="text-lg font-bold mb-2">⭐ Top 3 Leaders (Current Month - {currentMonth})</h3>
+            <h3 className="text-lg font-bold mb-2">â­ Top 3 Leaders (Current Month - {currentMonth})</h3>
             <table className="bdarevenuetable">
               <thead>
                 <tr>
@@ -706,8 +706,8 @@ const AllTeamDetail = () => {
                     <td>#{index + 1}</td>
                     <td>{leader.fullname}</td>
                     <td>{leader.team}</td>
-                    <td>₹ {leader.creditedRevenue.toLocaleString()}</td>
-                    <td>₹ {leader.totalRevenue.toLocaleString()}</td>
+                    <td>â‚¹ {leader.creditedRevenue.toLocaleString()}</td>
+                    <td>â‚¹ {leader.totalRevenue.toLocaleString()}</td>
                     <td>{leader.paymentCount}</td>
                   </tr>
                 ))}
@@ -717,7 +717,7 @@ const AllTeamDetail = () => {
         </div>
 
         <div className="flex flex-col mt-6">
-          <h3>🏆 Top 5 BDAs by Gross Revenue (Month-wise)</h3>
+          <h3>ðŸ† Top 5 BDAs by Gross Revenue (Month-wise)</h3>
           {[currentMonth, prevMonth1, prevMonth2, prevMonth3].map((month) => {
             const top5BDAs = getTop5BDAsByGrossRevenue(month);
 
@@ -741,7 +741,7 @@ const AllTeamDetail = () => {
               >
                 <h4>{month}</h4>
                 <p>
-                  <strong>💰 Total Payment Count:</strong> {totalPayments}
+                  <strong>ðŸ’° Total Payment Count:</strong> {totalPayments}
                 </p>
                 <table className="bdarevenuetable mt-2">
                   <thead>
@@ -760,7 +760,7 @@ const AllTeamDetail = () => {
                           <td>#{idx + 1}</td>
                           <td>{bda.fullname}</td>
                           <td>{bda.team}</td>
-                          <td>₹ {bda.grossRevenue.toLocaleString()}</td>
+                          <td>â‚¹ {bda.grossRevenue.toLocaleString()}</td>
                           <td>{bda.paymentCount}</td>
                         </tr>
                       ))
@@ -841,18 +841,18 @@ const AllTeamDetail = () => {
                 >
                   <h3>Target Summary - {selectedTeam}</h3>
                   <p>
-                    <strong>🎯Target:</strong> ₹ {lastTarget.toLocaleString()}
+                    <strong>ðŸŽ¯Target:</strong> â‚¹ {lastTarget.toLocaleString()}
                   </p>
                   <p>
-                    <strong>✅Achieved:</strong> ₹{" "}
+                    <strong>âœ…Achieved:</strong> â‚¹{" "}
                     {achievedTarget.toLocaleString()}
                   </p>
                   <p>
-                    <strong>⏳Pending:</strong> ₹{" "}
+                    <strong>â³Pending:</strong> â‚¹{" "}
                     {pendingTarget.toLocaleString()}
                   </p>
-                  <p>📅 No Of Payments : {assignedPaymentNumber}</p>
-                  <p>💰 Payments Received: {actualPayments}</p>
+                  <p>ðŸ“… No Of Payments : {assignedPaymentNumber}</p>
+                  <p>ðŸ’° Payments Received: {actualPayments}</p>
                 </div>
               );
             })()}
@@ -860,7 +860,7 @@ const AllTeamDetail = () => {
 
 
         <div className="flex flex-col">
-          <h3>📊 Previous Month Revenue Summary</h3>
+          <h3>ðŸ“Š Previous Month Revenue Summary</h3>
           <table className="bdarevenuetable">
             <thead>
               <tr>
@@ -879,10 +879,10 @@ const AllTeamDetail = () => {
                   <tr key={month}>
                     <td>{month}</td>
                     <td>{revenue.noOfPayments}</td>
-                    <td>₹ {revenue.totalProgram.toLocaleString()}</td>
-                    <td>₹ {revenue.totalPaid.toLocaleString()}</td>
-                    <td>₹ {revenue.totalPending.toLocaleString()}</td>
-                    <td>₹ {revenue.totalDefault.toLocaleString()}</td>
+                    <td>â‚¹ {revenue.totalProgram.toLocaleString()}</td>
+                    <td>â‚¹ {revenue.totalPaid.toLocaleString()}</td>
+                    <td>â‚¹ {revenue.totalPending.toLocaleString()}</td>
+                    <td>â‚¹ {revenue.totalDefault.toLocaleString()}</td>
                   </tr>
                 );
               })}

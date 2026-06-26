@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../axiosConfig";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -368,7 +368,7 @@ const AddEvent = () => {
           <div className="bg-white p-6 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold">{editId ? "Edit Event" : "Add Event"}</h2>
-              <span onClick={resetForm} className="cursor-pointer text-xl font-bold">✖</span>
+              <span onClick={resetForm} className="cursor-pointer text-xl font-bold">âœ–</span>
             </div>
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -643,7 +643,7 @@ const AddEvent = () => {
                   onChange={handleChange}
                   type="text"
                   name="prizeMoney"
-                  placeholder="e.g. ₹50,000 or Win Goodies"
+                  placeholder="e.g. â‚¹50,000 or Win Goodies"
                   className="w-full p-2 border rounded"
                 />
               </div>
@@ -726,7 +726,7 @@ const AddEvent = () => {
                       }}
                       className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 h-fit mt-1"
                     >
-                      ✖
+                      âœ–
                     </button>
                   </div>
                 ))}
@@ -755,7 +755,7 @@ const AddEvent = () => {
           <div className="bg-white p-6 rounded-lg w-full max-w-md">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">{editId ? "Edit Question" : "Add Question"}</h2>
-              <span onClick={resetForm} className="cursor-pointer text-xl font-bold">✖</span>
+              <span onClick={resetForm} className="cursor-pointer text-xl font-bold">âœ–</span>
             </div>
             <form onSubmit={handleSubmitQuestion} className="flex flex-col gap-3">
               <input
@@ -836,7 +836,7 @@ const AddEvent = () => {
           <div className="bg-white p-6 rounded-lg w-full max-w-2xl max-h-[90vh] flex flex-col">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">Bulk Upload Questions (JSON)</h2>
-              <span onClick={resetForm} className="cursor-pointer text-xl font-bold">✖</span>
+              <span onClick={resetForm} className="cursor-pointer text-xl font-bold">âœ–</span>
             </div>
             <p className="text-sm text-gray-500 mb-2">
               Paste a JSON array of questions. Correct format:
@@ -876,7 +876,7 @@ const AddEvent = () => {
           <div className="bg-white rounded-lg w-full max-w-4xl m-4 max-h-[80vh] flex flex-col relative">
             <div className="flex justify-between items-center p-6 border-b shrink-0">
               <h2 className="text-2xl font-bold">Applied Users</h2>
-              <span onClick={() => setShowAppliedDetails(null)} className="cursor-pointer text-xl font-bold hover:text-red-800">✖</span>
+              <span onClick={() => setShowAppliedDetails(null)} className="cursor-pointer text-xl font-bold hover:text-red-800">âœ–</span>
             </div>
 
             <div className="overflow-y-auto p-6">

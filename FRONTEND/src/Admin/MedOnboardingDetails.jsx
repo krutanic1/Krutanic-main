@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../axiosConfig";
 import React, { useState, useEffect } from "react";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
@@ -280,10 +280,10 @@ const MedOnboardingDetails = () => {
                         </td>
                         <td>
                           <div className="flex flex-col text-xs text-left w-max">
-                            <span>Offer: {item.offerlettersended ? "✅" : "❌"}</span>
-                            <span>User: {item.userCreated ? "✅" : "❌"}</span>
-                            <span>Login: {item.mailSended ? "✅" : "❌"}</span>
-                            <span>Onboarding: {item.onboardingSended ? "✅" : "❌"}</span>
+                            <span>Offer: {item.offerlettersended ? "âœ…" : "âŒ"}</span>
+                            <span>User: {item.userCreated ? "âœ…" : "âŒ"}</span>
+                            <span>Login: {item.mailSended ? "âœ…" : "âŒ"}</span>
+                            <span>Onboarding: {item.onboardingSended ? "âœ…" : "âŒ"}</span>
                           </div>
                         </td>
                         <td>

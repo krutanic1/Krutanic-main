@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../axiosConfig";
 import API from "../API";
 import "react-quill/dist/quill.snow.css";
 
@@ -97,7 +97,7 @@ const AddMedCourse = () => {
        <div className="form">
           <form onSubmit={handleSumbit}>
             <h2>{editingCourseId ? "Edit Med Course" : "Add New Med Course"}</h2>
-            <span onClick={resetForm}>✖</span>
+            <span onClick={resetForm}>âœ–</span>
             <input
               type="text"
               value={title}

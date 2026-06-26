@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axios from "../axiosConfig";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../API";
 import checkAdminAuth from "../checkAdminAuth";

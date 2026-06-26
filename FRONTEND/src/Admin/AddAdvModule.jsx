@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../axiosConfig";
 import React, { useState, useEffect } from "react";
 import API from "../API";
 import logo from "../assets/logo.jpg";
@@ -166,7 +166,7 @@ const AddAdvModule = () => {
                 {selectedCourse && (
                     <div>
                         <div className="moduletop">
-                            <span onClick={leftVisibility}>☰</span>
+                            <span onClick={leftVisibility}>â˜°</span>
                             <h2>{selectedCourse.title}</h2>
                             <span onClick={() => setisModuleFormVisible(true)}>+ Add Session</span>
                         </div>
@@ -176,7 +176,7 @@ const AddAdvModule = () => {
                                 <form onSubmit={handleModuleSubmit}>
                                     <h2>{editingModule ? "Update Session" : "Add New Session"}</h2>
                                     <strong>
-                                        <span onClick={resetForm}>✖</span>
+                                        <span onClick={resetForm}>âœ–</span>
                                     </strong>
                                     <input
                                         type="text"

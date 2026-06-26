@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../axiosConfig";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -180,7 +180,7 @@ const AdminProjectPage = () => {
                     <form onSubmit={handleSubmit} style={{ maxWidth: '800px', height: '80vh' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                             <h2 style={{ margin: 0 }}>{editingProjectId ? "Edit Project" : "Add New Project"}</h2>
-                            <span onClick={resetForm} style={{ fontSize: '24px', cursor: 'pointer' }}>✖</span>
+                            <span onClick={resetForm} style={{ fontSize: '24px', cursor: 'pointer' }}>âœ–</span>
                         </div>
 
                         <label>Select Course</label>

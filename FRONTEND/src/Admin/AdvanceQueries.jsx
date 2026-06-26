@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../axiosConfig";
 import React, { useEffect, useState } from "react";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
@@ -125,7 +125,7 @@ const AdvanceQueries = () => {
                         <td>{query.phone}</td>
                         <td className=" capitalize">{query.currentRole}</td>
                         <td>{query.experience}</td>
-                        <td>{query.passedOutYear || "—"}</td>
+                        <td>{query.passedOutYear || "â€”"}</td>
                         <td className=" capitalize">{query.interestedDomain}</td>
                         <td className=" capitalize">
                           {query.goal === "Other"

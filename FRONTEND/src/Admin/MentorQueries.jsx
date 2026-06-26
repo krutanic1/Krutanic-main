@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../axiosConfig";
 import React, { useEffect, useState } from "react";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";

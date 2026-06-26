@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import axios from "../axiosConfig";
 import API from "../API";
 import { toast } from "react-hot-toast";
 
@@ -254,9 +254,9 @@ const RevenueSheet = () => {
                 dailyRows.map((data, index) => (
                   <tr key={data.date} className={`text-sm ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}>
                     <td className="border p-3">{data.date}</td>
-                    <td className="border p-3">₹{data.total.toFixed(2)}</td>
-                    <td className="border p-3">₹{data.credited.toFixed(2)}</td>
-                    <td className="border p-3">₹{data.pending.toFixed(2)}</td>
+                    <td className="border p-3">â‚¹{data.total.toFixed(2)}</td>
+                    <td className="border p-3">â‚¹{data.credited.toFixed(2)}</td>
+                    <td className="border p-3">â‚¹{data.pending.toFixed(2)}</td>
                     <td className="border p-3 text-center">{data.payments}</td>
                     <td className="border p-3 text-center">{data.sgfl || 0}</td>
                     <td className="border p-3 text-center">{data.cgfl || 0}</td>
@@ -297,9 +297,9 @@ const RevenueSheet = () => {
                 monthlyStats.map((stat, index) => (
                   <tr key={stat.month} className={`text-sm ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}>
                     <td className="border p-3 font-medium">{stat.month}</td>
-                    <td className="border p-3">₹{stat.total.toFixed(2)}</td>
-                    <td className="border p-3">₹{stat.credited.toFixed(2)}</td>
-                    <td className="border p-3">₹{stat.pending.toFixed(2)}</td>
+                    <td className="border p-3">â‚¹{stat.total.toFixed(2)}</td>
+                    <td className="border p-3">â‚¹{stat.credited.toFixed(2)}</td>
+                    <td className="border p-3">â‚¹{stat.pending.toFixed(2)}</td>
                     <td className="border p-3 text-center">{stat.payments}</td>
                     <td className="border p-3 text-center">
                       <span className="text-blue-600 cursor-pointer underline" onClick={() => handleLeadClick(stat.month, "SGFL")}>
@@ -322,7 +322,7 @@ const RevenueSheet = () => {
         {showLeadModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col relative">
-              <button className="absolute top-4 right-4 text-gray-500 hover:text-black" onClick={() => setShowLeadModal(false)}>✕</button>
+              <button className="absolute top-4 right-4 text-gray-500 hover:text-black" onClick={() => setShowLeadModal(false)}>âœ•</button>
               <h3 className="text-xl font-semibold mb-4">{leadModalTitle}</h3>
               <div className="overflow-y-auto">
                 {loadingModal ? (
@@ -403,7 +403,7 @@ const RevenueSheet = () => {
         <h2 className="text-xl font-semibold mb-2">Total Revenue Till Now</h2>
         <p className="mb-2 text-2xl text-green-700">
           {/* Fallback to 0 if grandTotal logic fails or isn't arrived yet */}
-          ₹{grandTotal ? grandTotal.toFixed(2) : "0.00"}
+          â‚¹{grandTotal ? grandTotal.toFixed(2) : "0.00"}
         </p>
       </section>
     </div>

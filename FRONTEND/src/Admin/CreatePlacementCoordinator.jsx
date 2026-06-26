@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../axiosConfig";
 import API from "../API";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -159,7 +159,7 @@ const CreatePlacementCoordinator = () => {
                 ? "Edit Placement Coordinator"
                 : "Create Placement Coordinator"}
             </h2>
-            <span onClick={resetForm}>✖</span>
+            <span onClick={resetForm}>âœ–</span>
             <input
               value={formData.fullname}
               onChange={handleChange}
