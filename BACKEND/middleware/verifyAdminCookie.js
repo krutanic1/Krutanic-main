@@ -1,7 +1,17 @@
 const jwt = require("jsonwebtoken");
 
 const verifyAdminCookie = (req, res, next) => {
-  const token = req.cookies.adminToken;
+  let token = req.cookies.adminToken;
+  let authHeader = req.headers.authorization;
+
+  if (!token && authHeader) {
+    if (authHeader.startsWith("Bearer ")) {
+      token = authHeader.slice(7);
+    } else {
+      token = authHeader;
+    }
+  }
+
   if (!token) {
     return res.status(401).json({ message: "Unauthorized: No token" });
   }

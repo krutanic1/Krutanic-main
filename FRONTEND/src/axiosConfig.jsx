@@ -9,6 +9,7 @@ axios.interceptors.request.use(
         const advOperationToken = localStorage.getItem("advOperationToken");
         const advTeamToken = localStorage.getItem("advTeamToken");
         const token = localStorage.getItem("token");
+        const adminToken = localStorage.getItem("adminToken");
 
         const currentPath = window.location.pathname.toLowerCase();
 
@@ -34,7 +35,7 @@ axios.interceptors.request.use(
             } else {
                 // Fallback: If path doesn't match specific roles, use whatever token is available
                 // This prevents 403 errors on common routes that aren't explicitly listed in the path arrays
-                selectedToken = bdaToken || advTeamToken || advOperationToken || operationToken;
+                selectedToken = adminToken || bdaToken || advTeamToken || advOperationToken || operationToken;
             }
 
             if (selectedToken) {
