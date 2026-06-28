@@ -358,25 +358,25 @@ const AdvOnBoardingDetails = () => {
                 <p>
                   <strong>User Created:</strong>{" "}
                   <span style={{ color: dialogData.userCreated ? "green" : "red", fontWeight: "bold" }}>
-                    {dialogData.userCreated ? "Yes âœ“" : "No ✗"}
+                    {dialogData.userCreated ? "Yes ✓" : "No ✗"}
                   </span>
                 </p>
                 <p>
                   <strong>Mail Sent:</strong>{" "}
                   <span style={{ color: dialogData.mailSended ? "green" : "red", fontWeight: "bold" }}>
-                    {dialogData.mailSended ? "Yes âœ“" : "No ✗"}
+                    {dialogData.mailSended ? "Yes ✓" : "No ✗"}
                   </span>
                 </p>
                 <p>
                   <strong>Onboarding Sent:</strong>{" "}
                   <span style={{ color: dialogData.onboardingSended ? "green" : "red", fontWeight: "bold" }}>
-                    {dialogData.onboardingSended ? "Yes âœ“" : "No ✗"}
+                    {dialogData.onboardingSended ? "Yes ✓" : "No ✗"}
                   </span>
                 </p>
                 <p>
                   <strong>Offer Letter Sent:</strong>{" "}
                   <span style={{ color: dialogData.offerlettersended ? "green" : "red", fontWeight: "bold" }}>
-                    {dialogData.offerlettersended ? "Yes âœ“" : "No ✗"}
+                    {dialogData.offerlettersended ? "Yes ✓" : "No ✗"}
                   </span>
                 </p>
                 <p>

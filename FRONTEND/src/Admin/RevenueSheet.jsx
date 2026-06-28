@@ -322,7 +322,7 @@ const RevenueSheet = () => {
         {showLeadModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col relative">
-              <button className="absolute top-4 right-4 text-gray-500 hover:text-black" onClick={() => setShowLeadModal(false)}>âœ•</button>
+              <button className="absolute top-4 right-4 text-gray-500 hover:text-black" onClick={() => setShowLeadModal(false)}>✕</button>
               <h3 className="text-xl font-semibold mb-4">{leadModalTitle}</h3>
               <div className="overflow-y-auto">
                 {loadingModal ? (

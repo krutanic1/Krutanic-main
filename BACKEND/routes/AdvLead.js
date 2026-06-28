@@ -1139,7 +1139,7 @@ router.get("/get-adv-leads", async (req, res) => {
     const { 
         role, userId, page = 1, limit = 25, 
         outcome, strictlyOwned, date, status, stage, disposition,
-        search, source, month, year, fromDate, toDate
+        search, source, month, year, fromDate, toDate, reminderOnly
     } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
@@ -1352,6 +1352,10 @@ router.get("/get-adv-leads", async (req, res) => {
             });
         }
 
+        if (reminderOnly === 'true') {
+            andConditions.push({ next_followup_at: { $exists: true, $ne: null } });
+        }
+
         // Final Aggregate Query
         const query = andConditions.length > 0 ? { $and: andConditions } : {};
 
@@ -1363,7 +1367,7 @@ router.get("/get-adv-leads", async (req, res) => {
                 .select(BLACKLIST_PROJECTION)
                 .populate("team_id", "team_name")
                 .populate("current_owner_id", "name")
-                .sort({ created_at: -1 })
+                .sort(reminderOnly === 'true' ? { next_followup_at: 1 } : { created_at: -1 })
                 .skip(skip)
                 .limit(parseInt(limit))
                 .lean(),  // Skip Mongoose document hydration for faster JSON serialization

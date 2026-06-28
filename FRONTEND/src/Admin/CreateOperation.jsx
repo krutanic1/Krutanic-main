@@ -306,7 +306,7 @@ const CreateOperation = () => {
                 ? "Edit Operation Account"
                 : "Create Operation Account"}
             </h2>
-            <span onClick={resetForm}>âœ–</span>
+            <span onClick={resetForm}>✖</span>
             <input
               value={formData.fullname}
               onChange={handleChange}

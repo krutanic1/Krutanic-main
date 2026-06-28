@@ -424,7 +424,7 @@ const AdvLeadManagement = () => {
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                             <h2 style={{ margin: 0, color: '#c41d7f' }}>♻️ Recycle as Reactive Leads</h2>
                             <button onClick={() => { setShowReactivePanel(false); setSelectedReactiveOutcomes([]); }}
-                                style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#999' }}>âœ•</button>
+                                style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#999' }}>✕</button>
                         </div>
                         
                         <p style={{ fontSize: '13px', color: '#666', marginBottom: '20px' }}>
@@ -499,7 +499,7 @@ const AdvLeadManagement = () => {
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                             <h2 style={{ margin: 0 }}>Assign Fresh Leads</h2>
                             <button onClick={() => { setShowAssignPanel(false); setSelectedAssignee(null); setAssignCount(""); }}
-                                style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#999' }}>âœ•</button>
+                                style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#999' }}>✕</button>
                         </div>
 
                         {/* Fresh leads available badge */}
@@ -607,7 +607,7 @@ const AdvLeadManagement = () => {
                                         fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'
                                     }}
                                 >
-                                    📋‹ Bulk Assign (Count)
+                                    📋 Bulk Assign (Count)
                                     {freshCount > 0 && (
                                         <span style={{ background: '#fff', color: '#1890ff', borderRadius: '12px', padding: '1px 8px', fontSize: '13px', fontWeight: 'bold' }}>
                                             {freshCount} fresh
@@ -635,13 +635,13 @@ const AdvLeadManagement = () => {
                                     fontWeight: 'bold', cursor: 'pointer'
                                 }}
                             >
-                                âŒ Cancel Manual Mode
+                                ❌ Cancel Manual Mode
                             </button>
                         )}
                     </div>
                 </div>
 
-                {/* â”€â”€ Stats Row â”€â”€ */}
+                {/* ── Stats Row ── */}
                 <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
                     {[
                         { label: 'Total Leads', count: totalCount, bg: '#f9f9f9', border: '#d9d9d9', color: '#333' },
@@ -764,7 +764,7 @@ const AdvLeadManagement = () => {
                     </button>
 
                     <div style={{ display: 'flex', gap: '5px', alignItems: 'center', background: '#fff', padding: '5px 10px', borderRadius: '6px', border: '1px solid #ddd' }}>
-                        <span style={{ fontSize: '13px', color: '#666', fontWeight: 'bold' }}>📋… Month:</span>
+                        <span style={{ fontSize: '13px', color: '#666', fontWeight: 'bold' }}>📅 Month:</span>
                         <select 
                             value={selectedMonth} 
                             onChange={(e) => { setSelectedMonth(e.target.value); setCurrentPage(1); }}
@@ -787,7 +787,7 @@ const AdvLeadManagement = () => {
                     <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}>Loading leads...</div>
                 ) : filteredLeads.length === 0 ? (
                     <div style={{ padding: '40px', textAlign: 'center', border: '2px dashed #eee', borderRadius: '8px', color: '#888' }}>
-                        <div style={{ fontSize: '40px' }}>📋­</div>
+                        <div style={{ fontSize: '40px' }}>📮</div>
                         <p>No leads found.</p>
                     </div>
                 ) : (
@@ -828,7 +828,7 @@ const AdvLeadManagement = () => {
                                         <React.Fragment key={date}>
                                             <tr style={{ background: '#f8f9fa' }}>
                                                 <td colSpan={isManualAssignMode ? "17" : "16"} style={{ fontWeight: '800', textAlign: 'center', padding: '10px', fontSize: '14px', letterSpacing: '1px', borderBottom: '2px solid #ddd' }}>
-                                                    📋… {date}
+                                                    📅 {date}
                                                 </td>
                                             </tr>
                                             {groupedLeads[date].map((lead, idx) => {
@@ -1022,7 +1022,7 @@ const AdvLeadManagement = () => {
 
                             <div style={{ marginBottom: '20px', background: '#f8fafc', padding: '15px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                                 <label style={{ fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    📋‹ Select existing template (Subject & Body will auto-fill)
+                                    📋 Select existing template (Subject & Body will auto-fill)
                                 </label>
                                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                                     <select 
@@ -1263,7 +1263,7 @@ const AdvLeadManagement = () => {
                         }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                                 <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <span style={{ fontSize: '24px' }}>📋§</span> Email Account Setup
+                                    <span style={{ fontSize: '24px' }}>📧</span> Email Account Setup
                                 </h3>
                                 <button onClick={() => setShowSMTPModal(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '24px', color: '#94a3b8' }}>&times;</button>
                             </div>

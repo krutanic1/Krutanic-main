@@ -341,7 +341,7 @@ const BookedList = () => {
       {iscourseFormVisible && (
         <div className="form">
           <form onSubmit={handleSubmit} className="space-y-5">
-            <span onClick={resetForm}>âœ–</span>
+            <span onClick={resetForm}>✖</span>
             <h2>
               {editingStudentId
                 ? "Edit Enrolled Details"

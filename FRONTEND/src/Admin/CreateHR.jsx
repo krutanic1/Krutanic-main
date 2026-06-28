@@ -143,7 +143,7 @@ const CreateHR = () => {
       {isFormVisible && (
         <div className="form">
           <form onSubmit={handleSubmit}>
-            <span onClick={resetForm}>âœ–</span>
+            <span onClick={resetForm}>✖</span>
             <h2>{editingHrId ? "Edit HR Account" : "Create HR Account"}</h2>
             <input
               value={formData.fullname}

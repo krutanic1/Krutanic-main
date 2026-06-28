@@ -71,7 +71,7 @@ const CreateInterviewer = () => {
             {isFormVisible && (
                 <div className="form">
                     <form onSubmit={handleSubmit}>
-                        <span onClick={toggleVisibility}>âœ–</span>
+                        <span onClick={toggleVisibility}>✖</span>
                         <h2>Create Interviewer Account</h2>
                         <input
                             type="text"

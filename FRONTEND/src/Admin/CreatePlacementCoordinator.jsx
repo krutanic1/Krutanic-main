@@ -159,7 +159,7 @@ const CreatePlacementCoordinator = () => {
                 ? "Edit Placement Coordinator"
                 : "Create Placement Coordinator"}
             </h2>
-            <span onClick={resetForm}>âœ–</span>
+            <span onClick={resetForm}>✖</span>
             <input
               value={formData.fullname}
               onChange={handleChange}

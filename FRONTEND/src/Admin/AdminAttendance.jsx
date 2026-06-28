@@ -794,7 +794,7 @@ const AdminAttendance = () => {
                          <div style={{ fontSize: '11px', color: '#64748b', fontWeight: '500' }}>{role}</div>
                       </div>
                       <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
-                         <div style={{ background: '#dcfce7', color: '#16a34a', fontSize: '10px', fontWeight: '800', padding: '3px 8px', borderRadius: '6px' }}>âœ“ Present</div>
+                         <div style={{ background: '#dcfce7', color: '#16a34a', fontSize: '10px', fontWeight: '800', padding: '3px 8px', borderRadius: '6px' }}>✓ Present</div>
                          <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '3px' }}><Clock size={10} /> {timeStr}</div>
                       </div>
                     </div>

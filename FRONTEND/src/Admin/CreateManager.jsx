@@ -166,7 +166,7 @@ const Createmanager = () => {
                 ? "Edit manager Account"
                 : "Create manager Account"}
             </h2>
-            <span onClick={resetForm}>âœ–</span>
+            <span onClick={resetForm}>✖</span>
             <input
               value={formData.fullname}
               onChange={handleChange}

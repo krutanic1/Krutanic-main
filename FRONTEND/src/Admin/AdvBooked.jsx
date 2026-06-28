@@ -212,7 +212,7 @@ const AdvBooked = () => {
       {iscourseFormVisible && (
         <div className="form">
           <form onSubmit={handleSubmit} className="space-y-5">
-            <span onClick={resetForm}>âœ–</span>
+            <span onClick={resetForm}>✖</span>
             <h2>Edit Advanced Enrollment</h2>
             <input value={fullname} onChange={(e) => setFullname(e.target.value)} type="text" placeholder="Candidate Full Name" required />
             <input value={email} onChange={(e) => setEmail(e.target.value)} type="text" placeholder="Candidate Email" required />

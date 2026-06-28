@@ -411,48 +411,77 @@ const FreeCareerAssessment = () => {
             </motion.div>
 
             <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, delay: 0.2 }}>
-              <div 
-                className="rounded-[32px] p-8 md:p-12 relative overflow-hidden shadow-2xl"
-                style={{
-                  backgroundImage: "url('/decision_arrows.png')",
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center'
-                }}
-              >
-                {/* Dark overlay for readability and premium feel */}
-                <div className="absolute inset-0 bg-[#09090b]/60 backdrop-blur-[1px]"></div>
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-emerald-500/10 mix-blend-color"></div>
-                <div className="relative z-10 text-center">
-                  <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mx-auto mb-6 border border-indigo-500/20">
-                    <Target size={32} />
-                  </div>
-                  <h3 className="text-2xl font-bold text-white mb-4">Book Your Slot Today</h3>
-                  <p className="text-zinc-400 leading-relaxed mb-6 font-light">
-                    Take the skill evaluation test. Pay the nominal fee to secure your 30-minute 1-on-1 career consultation slot.
-                  </p>
-                  
-                  {currentStep === 0 && (
-                    <div className="flex flex-col gap-3">
-                      <button 
-                        onClick={() => setShowPrePaymentModal(true)} 
-                        disabled={isProcessingPayment}
-                        className="w-full py-4 rounded-xl font-bold text-white shadow-xl flex items-center justify-center gap-3 bg-gradient-to-r from-indigo-600 to-emerald-500 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-70 disabled:hover:scale-100 text-lg"
+              {currentStep === 0 ? (
+                <div className="glass-panel rounded-[28px] p-8 relative overflow-hidden shadow-2xl border border-white/10">
+                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-emerald-500/5 pointer-events-none"></div>
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center border border-indigo-500/20">
+                        <Target size={22} />
+                      </div>
+                      <h3 className="text-xl font-bold text-white">Start Your Assessment</h3>
+                    </div>
+                    <p className="text-sm text-zinc-400 mb-6 pl-[52px]">Fill in your details to reserve your slot before payment.</p>
+
+                    <form onSubmit={handlePrePaymentSubmit} className="space-y-4">
+                      <div>
+                        <label className="form-label">Full Name *</label>
+                        <input required type="text" name="fullName" value={formData.fullName} onChange={handleInputChange} className="form-input" placeholder="John Doe" />
+                      </div>
+                      <div>
+                        <label className="form-label">Email ID *</label>
+                        <input required type="email" name="email" value={formData.email} onChange={handleInputChange} className="form-input" placeholder="john@example.com" />
+                      </div>
+                      <div>
+                        <label className="form-label">Contact Number *</label>
+                        <input required type="tel" name="mobileNumber" value={formData.mobileNumber} onChange={handleInputChange} className="form-input" placeholder="+91 9876543210" />
+                      </div>
+                      <div>
+                        <label className="form-label">Total Years of Experience *</label>
+                        <select required name="yearsOfExperience" value={formData.yearsOfExperience} onChange={handleInputChange} className="form-input form-select">
+                          <option value="" disabled>Select Experience</option>
+                          <option value="1–3 Years">1–3 Years</option>
+                          <option value="3–5 Years">3–5 Years</option>
+                          <option value="5–7 Years">5–7 Years</option>
+                          <option value="7–9 Years">7–9 Years</option>
+                          <option value="10+ Years">10+ Years</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="form-label">Current Working Domain *</label>
+                        <select required name="currentWorkingDomain" value={formData.currentWorkingDomain} onChange={handleInputChange} className="form-input form-select">
+                          <option value="" disabled>Select Domain</option>
+                          <option value="IT / Software Development">IT / Software Development</option>
+                          <option value="Digital Marketing">Digital Marketing</option>
+                          <option value="Sales & Business Development">Sales & Business Development</option>
+                          <option value="Finance / Accounting">Finance / Accounting</option>
+                          <option value="HR / Operations">HR / Operations</option>
+                          <option value="Customer Support">Customer Support</option>
+                          <option value="Education / Training">Education / Training</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                      <button
+                        type="submit"
+                        disabled={isSubmittingPrePayment}
+                        className="w-full py-4 rounded-xl font-bold text-white shadow-xl flex items-center justify-center gap-3 bg-gradient-to-r from-indigo-600 to-emerald-500 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-70 disabled:hover:scale-100 text-base mt-2"
                       >
-                        {isProcessingPayment ? "Processing..." : <>Book My Live Session <ArrowRight size={18}/></>}
+                        {isSubmittingPrePayment ? 'Saving...' : <>Proceed to Payment <ArrowRight size={18}/></>}
                       </button>
-                      <p className="text-emerald-400 text-sm font-medium">Only ₹101 – Fully Adjustable in Program Fee</p>
-                    </div>
-                  )}
-                  {currentStep > 0 && (
-                    <div className="w-full py-4 rounded-xl font-bold text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 flex items-center justify-center gap-3">
-                      <CheckCircle2 size={20}/> Payment Successful
-                    </div>
-                  )}
+                      <p className="text-emerald-400 text-sm font-medium text-center">Only ₹101 – Fully Adjustable in Program Fee</p>
+                    </form>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="glass-panel rounded-[28px] p-12 relative overflow-hidden shadow-2xl border border-emerald-500/30 flex flex-col items-center justify-center min-h-[320px]">
+                  <CheckCircle2 size={56} className="text-emerald-400 mb-4" />
+                  <h3 className="text-2xl font-bold text-white mb-2">Payment Successful</h3>
+                  <p className="text-zinc-400 text-center">Your slot has been reserved. Please complete the booking below.</p>
+                </div>
+              )}
 
               {statsData.length > 0 && (
-                <div className="mt-8 relative h-16 w-full max-w-[320px] mx-auto" style={{ perspective: 1000 }}>
+                <div className="mt-6 relative h-16 w-full max-w-[320px] mx-auto" style={{ perspective: 1000 }}>
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={statIndex}
@@ -470,7 +499,7 @@ const FreeCareerAssessment = () => {
               )}
 
               {/* Mobile Only Alert Below Card */}
-              <div className="block lg:hidden mt-8 bg-amber-500/10 border border-amber-500/20 p-5 rounded-2xl backdrop-blur-sm">
+              <div className="block lg:hidden mt-6 bg-amber-500/10 border border-amber-500/20 p-5 rounded-2xl backdrop-blur-sm">
                 <h4 className="text-amber-400 font-bold text-sm mb-2 uppercase tracking-wider flex items-center gap-2">
                   <AlertTriangle size={18} className="shrink-0" />
                   Limited Skill Evaluation Slots Available Daily
@@ -484,68 +513,7 @@ const FreeCareerAssessment = () => {
           </div>
         </div>
 
-        {/* Pre-Payment Modal */}
-        {showPrePaymentModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4">
-            <div className="glass-panel rounded-2xl w-full max-w-md p-6 relative bg-zinc-900 border border-white/10">
-              <button 
-                onClick={() => setShowPrePaymentModal(false)}
-                className="absolute top-4 right-4 text-zinc-400 hover:text-white font-bold"
-              >
-                ✕
-              </button>
-              <h3 className="text-xl font-bold text-white mb-4">Start Your Assessment</h3>
-              <p className="text-sm text-zinc-400 mb-6">Please provide a few details to reserve your spot before payment.</p>
-              
-              <form onSubmit={handlePrePaymentSubmit} className="space-y-4">
-                <div>
-                  <label className="form-label">Full Name *</label>
-                  <input required type="text" name="fullName" value={formData.fullName} onChange={handleInputChange} className="form-input" placeholder="John Doe" />
-                </div>
-                <div>
-                  <label className="form-label">Email ID *</label>
-                  <input required type="email" name="email" value={formData.email} onChange={handleInputChange} className="form-input" placeholder="john@example.com" />
-                </div>
-                <div>
-                  <label className="form-label">Contact Number *</label>
-                  <input required type="tel" name="mobileNumber" value={formData.mobileNumber} onChange={handleInputChange} className="form-input" placeholder="+91 9876543210" />
-                </div>
-                <div>
-                  <label className="form-label">Total Years of Experience *</label>
-                  <select required name="yearsOfExperience" value={formData.yearsOfExperience} onChange={handleInputChange} className="form-input form-select">
-                    <option value="" disabled>Select Experience</option>
-                    <option value="1–3 Years">1–3 Years</option>
-                    <option value="3–5 Years">3–5 Years</option>
-                    <option value="5–7 Years">5–7 Years</option>
-                    <option value="7–9 Years">7–9 Years</option>
-                    <option value="10+ Years">10+ Years</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="form-label">Current Working Domain *</label>
-                  <select required name="currentWorkingDomain" value={formData.currentWorkingDomain} onChange={handleInputChange} className="form-input form-select">
-                    <option value="" disabled>Select Domain</option>
-                    <option value="IT / Software Development">IT / Software Development</option>
-                    <option value="Digital Marketing">Digital Marketing</option>
-                    <option value="Sales & Business Development">Sales & Business Development</option>
-                    <option value="Finance / Accounting">Finance / Accounting</option>
-                    <option value="HR / Operations">HR / Operations</option>
-                    <option value="Customer Support">Customer Support</option>
-                    <option value="Education / Training">Education / Training</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-                <button 
-                  type="submit" 
-                  disabled={isSubmittingPrePayment}
-                  className="w-full py-3 mt-4 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-500 transition-colors disabled:opacity-70"
-                >
-                  {isSubmittingPrePayment ? 'Saving...' : 'Proceed to Payment'}
-                </button>
-              </form>
-            </div>
-          </div>
-        )}
+
       </section>
       )}
 
@@ -1184,7 +1152,7 @@ const FreeCareerAssessment = () => {
 
       {/* Floating WhatsApp Button */}
       <a
-        href="https://wa.me/919380736449?text=I%20am%20here%20from%20career%20assessment"
+        href={`https://wa.me/919380736449?text=${encodeURIComponent("Hi Krutanic Team,\nI am facing an issue while booking my Skill Evaluation Test slot.\nKindly help me resolve it.")}`}
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 z-50 bg-green-500 text-white rounded-full py-2 px-4 shadow-lg hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-green-500/30 font-semibold"

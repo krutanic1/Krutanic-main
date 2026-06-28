@@ -462,6 +462,17 @@ const AdvTeamHeader = () => {
                 <i className="fa fa-book"></i> Leads Book
               </Link>
             )}
+          {/* {(advTeamData?.designation === "ADV Manager" ||
+            advTeamData?.designation === "MANAGER" ||
+            advTeamData?.designation === "ADV Leader" ||
+            advTeamData?.designation === "LEADER" ||
+            advTeamData?.designation === "SR Inside Sales Specialist" ||
+            advTeamData?.designation === "Inside Sales Specialist" ||
+            advTeamData?.designation === "inside_sales_specialist") && (
+              // <Link to="/advteam/followups">
+              //   <i className="fa fa-bell"></i> Follow-ups
+              // </Link>
+            )} */}
           {(advTeamData?.designation === "ADV Manager" ||
             advTeamData?.designation === "MANAGER" ||
             advTeamData?.designation === "ADV Leader" ||

@@ -107,7 +107,7 @@ const AddAdvCourse = () => {
         <div className="form">
           <form onSubmit={handleSumbit}>
             <h2>{editingCourseId ? "Edit Advance Course" : "Add New Advance Course"}</h2>
-            <span onClick={resetForm}>âœ–</span>
+            <span onClick={resetForm}>✖</span>
             <input
               type="text"
               value={title}

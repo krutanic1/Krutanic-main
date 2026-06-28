@@ -661,7 +661,7 @@ const AllTeamDetail = () => {
         <div className="flex gap-4 my-6 flex-wrap">
           {/* Top 3 Teams */}
           <div className="flex-1 min-w-[300px]">
-            <h3 className="text-lg font-bold mb-2">ðŸ† Top 3 Teams (Current Month - {currentMonth})</h3>
+            <h3 className="text-lg font-bold mb-2">🏆 Top 3 Teams (Current Month - {currentMonth})</h3>
             <table className="bdarevenuetable">
               <thead>
                 <tr>
@@ -717,7 +717,7 @@ const AllTeamDetail = () => {
         </div>
 
         <div className="flex flex-col mt-6">
-          <h3>ðŸ† Top 5 BDAs by Gross Revenue (Month-wise)</h3>
+          <h3>🏆 Top 5 BDAs by Gross Revenue (Month-wise)</h3>
           {[currentMonth, prevMonth1, prevMonth2, prevMonth3].map((month) => {
             const top5BDAs = getTop5BDAsByGrossRevenue(month);
 
@@ -851,7 +851,7 @@ const AllTeamDetail = () => {
                     <strong>â³Pending:</strong> ₹{" "}
                     {pendingTarget.toLocaleString()}
                   </p>
-                  <p>📋… No Of Payments : {assignedPaymentNumber}</p>
+                  <p>📅 No Of Payments : {assignedPaymentNumber}</p>
                   <p>💰 Payments Received: {actualPayments}</p>
                 </div>
               );

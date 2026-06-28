@@ -293,7 +293,7 @@ const CreateAdvOperation = () => {
                 ? "Edit ADV Operation Account"
                 : "Create ADV Operation Account"}
             </h2>
-            <span onClick={resetForm}>âœ–</span>
+            <span onClick={resetForm}>✖</span>
             <input
               value={formData.fullname}
               onChange={handleChange}
@@ -493,7 +493,7 @@ const CreateAdvOperation = () => {
                 onClick={closeDialog}
                 className="text-gray-500 hover:text-gray-700 text-2xl"
               >
-                âœ–
+                ✖
               </button>
             </div>
 

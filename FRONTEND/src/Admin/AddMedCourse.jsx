@@ -97,7 +97,7 @@ const AddMedCourse = () => {
        <div className="form">
           <form onSubmit={handleSumbit}>
             <h2>{editingCourseId ? "Edit Med Course" : "Add New Med Course"}</h2>
-            <span onClick={resetForm}>âœ–</span>
+            <span onClick={resetForm}>✖</span>
             <input
               type="text"
               value={title}

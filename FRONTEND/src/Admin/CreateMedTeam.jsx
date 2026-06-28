@@ -305,7 +305,7 @@ const CreateMedTeam = () => {
       {iscourseFormVisible && (
         <div className="form">
           <form onSubmit={handleSumbit}>
-            <span onClick={resetForm}>âœ–</span>
+            <span onClick={resetForm}>✖</span>
             <h2>{editingMedTeamId ? "Edit MedTeam Account" : "Create MedTeam Account"}</h2>
             <input
               value={formData.fullname}
@@ -364,7 +364,7 @@ const CreateMedTeam = () => {
                         className="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600"
                         title="Remove Team"
                       >
-                        âœ–
+                        ✖
                       </button>
                     )}
                   </div>

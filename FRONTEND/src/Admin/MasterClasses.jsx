@@ -362,7 +362,7 @@ const MasterClasses = () => {
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px', maxWidth: '650px', height: '650px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h2>{editClassId ? "Edit MasterClass" : "Add New MasterClass"}</h2>
-              <span onClick={resetForm} style={{ fontSize: '20px', cursor: 'pointer', fontWeight: 'bold' }}>âœ–</span>
+              <span onClick={resetForm} style={{ fontSize: '20px', cursor: 'pointer', fontWeight: 'bold' }}>✖</span>
             </div>
             
             {/* Tab Headers */}
@@ -479,7 +479,7 @@ const MasterClasses = () => {
                       Open the file in Drive â†’ right-click â†’ "Share" â†’ copy the file share link.
                     </span>
                   ) : (
-                    <span style={{ fontSize: '10px', color: '#f15b29' }}>âœ“ Google Drive FILE links are auto-converted — paste your Drive file share URL directly</span>
+                    <span style={{ fontSize: '10px', color: '#f15b29' }}>✓ Google Drive FILE links are auto-converted — paste your Drive file share URL directly</span>
                   )}
                   {formData.image && !isDriveFolderUrl(formData.image) && (
                     <img
@@ -636,7 +636,7 @@ const MasterClasses = () => {
                         onChange={handleChange}
                         placeholder="Paste image URL or Google Drive share link"
                       />
-                      <span style={{ fontSize: '10px', color: '#f15b29' }}>âœ“ Google Drive links are auto-converted — paste your Drive share URL directly</span>
+                      <span style={{ fontSize: '10px', color: '#f15b29' }}>✓ Google Drive links are auto-converted — paste your Drive share URL directly</span>
                     </div>
                     {formData.instructorPhoto && (
                       <img
@@ -899,7 +899,7 @@ const MasterClasses = () => {
             <div className="title">
               <h2>{selectedMC.title}</h2>
               <span onClick={exportToExcel} >Download Excel</span>
-              < span onClick={() => setSelectedMC(null)} >âœ–</span>
+              < span onClick={() => setSelectedMC(null)} >✖</span>
             </div>
             <a href={selectedMC.link} target="_blank" rel="noopener noreferrer">{selectedMC.link}</a>
             
@@ -938,8 +938,8 @@ const MasterClasses = () => {
         <div className="jobdetails" style={{ zIndex: 10000 }}>
           <div className="jobdetailsdiv" style={{ maxWidth: '500px', height: 'auto', borderRadius: '15px', padding: '25px', boxShadow: '0 10px 30px rgba(0,0,0,0.3)', border: 'none' }}>
             <div className="title" style={{ borderBottom: '1px solid #eee', paddingBottom: '10px', marginBottom: '20px' }}>
-              <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#f15b29', margin: 0 }}>📋§ Certificate Delivery Report</h2>
-              <span onClick={() => setCertSummary(null)} style={{ fontSize: '20px', cursor: 'pointer', fontWeight: 'bold' }}>âœ–</span>
+              <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#f15b29', margin: 0 }}>📧 Certificate Delivery Report</h2>
+              <span onClick={() => setCertSummary(null)} style={{ fontSize: '20px', cursor: 'pointer', fontWeight: 'bold' }}>✖</span>
             </div>
             
             <p style={{ fontSize: '14px', color: '#555', marginBottom: '15px' }}>

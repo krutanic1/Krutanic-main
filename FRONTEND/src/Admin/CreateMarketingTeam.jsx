@@ -216,7 +216,7 @@ const CreateMarketingTeam = () => {
         <div className="form">
           <form onSubmit={handleSubmit}>
             <h2>{editingOperationId ? "Edit Account" : "Create Account"}</h2>
-            <span onClick={resetForm}>âœ–</span>
+            <span onClick={resetForm}>✖</span>
             <input
               value={formData.fullname}
               onChange={handleChange}

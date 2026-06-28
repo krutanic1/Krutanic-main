@@ -159,7 +159,7 @@ const AddModule = () => {
         {selectedCourse && (
           <div>
             <div className="moduletop">
-              <span onClick={leftVisibility}>â˜°</span>
+              <span onClick={leftVisibility}>☰</span>
               <h2>{selectedCourse.title}</h2>
               <span onClick={() => setisModuleFormVisible(true)}>
                 + Add Session
@@ -172,7 +172,7 @@ const AddModule = () => {
                     {editingModule ? "Update Session" : "Add New Session"}{" "}
                   </h2>
                   <strong>
-                    <span onClick={resetForm}>âœ–</span>
+                    <span onClick={resetForm}>✖</span>
                   </strong>
                   <input
                     type="text"
