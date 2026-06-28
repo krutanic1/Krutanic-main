@@ -10,7 +10,34 @@ const {
   sendSkillEvaluationAdminNotification, 
   sendSkillEvaluationExecutiveNotification 
 } = require("../utils/emailService");
-// POST: Create a new career assessment
+// POST: Capture initial details before payment
+router.post("/pre-payment", async (req, res) => {
+  try {
+    const { fullName, email, mobileNumber, yearsOfExperience, currentWorkingDomain } = req.body;
+    
+    if (!fullName || !email || !mobileNumber) {
+      return res.status(400).json({ error: "Name, email, and mobile number are required." });
+    }
+
+    const newPrePayment = new CareerAssessment({
+      fullName,
+      email,
+      mobileNumber,
+      yearsOfExperience,
+      currentWorkingDomain,
+      city: 'Pending',
+      paymentStatus: 'Pending'
+    });
+
+    await newPrePayment.save();
+    return res.status(201).json({ prePaymentId: newPrePayment._id });
+  } catch (error) {
+    console.error("Pre-payment Error:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// POST: Create a new career assessment (or update existing from pre-payment)
 router.post("/careerassessment", async (req, res) => {
   try {
     const { paymentId } = req.body;
@@ -73,7 +100,19 @@ router.post("/careerassessment", async (req, res) => {
 
     // 4. Slot locked successfully! Safe to save the form to Database.
     try {
-        const newAssessment = new CareerAssessment(req.body);
+        const { prePaymentId, ...assessmentData } = req.body;
+        
+        let newAssessment;
+        if (prePaymentId) {
+            newAssessment = await CareerAssessment.findById(prePaymentId);
+            if (!newAssessment) {
+                return res.status(404).json({ error: "Initial assessment record not found." });
+            }
+            // Update existing with new data
+            Object.assign(newAssessment, assessmentData);
+        } else {
+            newAssessment = new CareerAssessment(assessmentData);
+        }
 
         // ATTEMPT TO MATCH WITH EXISTING LEAD IN ADV TEAM
         try {

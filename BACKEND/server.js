@@ -158,6 +158,9 @@ app.use("/api/adv-users", AdvUserRoutes);
 app.use("/api/adv-teams", AdvTeamRoutes);
 app.use("/api/adv-reports", AdvReportRoutes);
 app.use("/api/adv-notifications", AdvNotificationRoutes);
+
+const deviceCallLogRoutes = require("./routes/deviceCallLogRoutes");
+app.use("/api/call-logs", deviceCallLogRoutes);
 app.use("/api/admin", AdvAdminRoutes);
 app.use("/api/admin", adminImpersonation);
 const atdRoutes = require("./routes/atdRoutes");

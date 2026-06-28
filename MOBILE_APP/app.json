@@ -23,7 +23,8 @@
       },
       "permissions": [
         "WAKE_LOCK",
-        "READ_PHONE_STATE"
+        "READ_PHONE_STATE",
+        "READ_CALL_LOG"
       ],
       "package": "com.krutanic.crm",
       "versionCode": 2

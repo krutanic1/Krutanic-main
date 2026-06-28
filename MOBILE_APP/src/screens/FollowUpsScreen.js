@@ -8,7 +8,8 @@ import {
     ActivityIndicator,
     RefreshControl,
     Platform,
-    StatusBar
+    StatusBar,
+    TouchableOpacity
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';

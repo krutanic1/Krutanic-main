@@ -487,7 +487,7 @@ const AppContent = () => {
 
   useEffect(() => {
     // Auto-popup logic
-    const allowedPaths = ["/", "/advance", "/advancecourses", "/referandearn", "/events", "/alumni", "/career-assessment"];
+    const allowedPaths = ["/", "/advance", "/advancecourses", "/referandearn", "/events", "/alumni"];
     const currentPath = location.pathname.toLowerCase().replace(/\/$/, "");
     const isAllowed = allowedPaths.includes(currentPath || "/");
 

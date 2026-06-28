@@ -97,7 +97,7 @@ const AdvCareerAssessments = ({ isAdmin }) => {
                                     <td style={{ padding: '12px', whiteSpace: 'nowrap' }}>
                                         {a.bookedDate ? `${new Date(a.bookedDate).toLocaleDateString()} ${formatTime12Hour(a.bookedTimeSlot)}` : 'Not Booked'}
                                     </td>
-                                    <td style={{ padding: '12px' }}>{new Date(a.createdAt).toLocaleDateString()}</td>
+                                    <td style={{ padding: '12px', whiteSpace: 'nowrap' }}>{new Date(a.createdAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true })} IST</td>
                                     <td style={{ padding: '12px' }}>
                                         <button 
                                             onClick={() => setSelectedAssessment(a)}

@@ -52,6 +52,51 @@ const designTokens = {
     }
 };
 
+const AudioButton = ({ url }) => {
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [audio, setAudio] = useState(null);
+
+    useEffect(() => {
+        const newAudio = new Audio(url);
+        newAudio.addEventListener('ended', () => setIsPlaying(false));
+        newAudio.addEventListener('pause', () => setIsPlaying(false));
+        setAudio(newAudio);
+        return () => {
+            newAudio.pause();
+        };
+    }, [url]);
+
+    const togglePlay = (e) => {
+        e.stopPropagation();
+        if (isPlaying) {
+            audio.pause();
+        } else {
+            audio.play().then(() => setIsPlaying(true)).catch(console.error);
+        }
+    };
+
+    return (
+        <button
+            onClick={togglePlay}
+            style={{
+                width: '32px', height: '32px', borderRadius: '50%',
+                background: isPlaying ? '#fce8e6' : '#e8f0fe',
+                border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer', transition: 'all 0.2s', padding: 0
+            }}
+            title={isPlaying ? "Pause Recording" : "Play Recording"}
+        >
+            <span className="material-symbols-outlined" style={{ 
+                color: isPlaying ? '#c5221f' : designTokens.colors.primary, 
+                fontSize: '18px', 
+                marginLeft: isPlaying ? '0px' : '2px' 
+            }}>
+                {isPlaying ? 'pause' : 'play_arrow'}
+            </span>
+        </button>
+    );
+};
+
 const AdvLeadsBook = () => {
     const [leads, setLeads] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -415,7 +460,8 @@ const AdvLeadsBook = () => {
                 duration: activeCallLeadId === lead._id && callStartTime ? Math.floor((Date.now() - callStartTime) / 1000) : 0,
                 demoScheduleDate: form.demoScheduleDate || undefined,
                 followUpDate: form.followUpDate || undefined,
-                expectedPaymentDate: form.expectedPaymentDate || undefined
+                expectedPaymentDate: form.expectedPaymentDate || undefined,
+                isWeb: true
             });
             toast.success("Activity logged successfully!");
             setCallStartTime(null);
@@ -432,7 +478,7 @@ const AdvLeadsBook = () => {
         }
     };
 
-    const handleRemoteDial = (phoneNumber, leadId) => {
+    const handleRemoteDial = async (phoneNumber, leadId) => {
         const dialNumber = String(phoneNumber || "").replace(/\D/g, "");
         if (!dialNumber) {
             toast.error("Phone number is not available.");
@@ -440,7 +486,18 @@ const AdvLeadsBook = () => {
         }
         setCallStartTime(Date.now());
         setActiveCallLeadId(leadId);
-        window.location.href = `tel:${dialNumber}`;
+
+        try {
+            await axios.post(`${API}/api/adv-leads/remote-dial-request`, {
+                specialistId: userId,
+                leadId: leadId
+            });
+            toast.success("Dialing from your mobile app...");
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to trigger mobile dialer. Dialing locally.");
+            window.location.href = `tel:${dialNumber}`;
+        }
     };
 
     const StatusBadge = ({ lead }) => {
@@ -1070,10 +1127,9 @@ const AdvLeadsBook = () => {
                                                                 >
                                                                     <i className="fa fa-whatsapp"></i>
                                                                 </a>
-                                                                <a
-                                                                    href={`tel:${lead.phone_number.replace(/\D/g, '')}`}
+                                                                <button
                                                                     title="Dial"
-                                                                    onClick={(e) => { e.stopPropagation(); handleRemoteDial(lead.phone_number, lead._id); }}
+                                                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRemoteDial(lead.phone_number, lead._id); }}
                                                                     style={{
                                                                         ...styles.iconBtn(designTokens.colors.warning, 'linear-gradient(135deg, #FF9966 0%, #FF5E62 100%)'),
                                                                         border: activeCallLeadId === lead._id ? '2px solid white' : 'none',
@@ -1083,7 +1139,7 @@ const AdvLeadsBook = () => {
                                                                     onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 8px 16px rgba(255, 94, 98, 0.25)'; }}
                                                                 >
                                                                     <i className="fa fa-phone"></i>
-                                                                </a>
+                                                                </button>
                                                                 <a
                                                                     href="https://meet.google.com/new"
                                                                     target="_blank"
@@ -1148,14 +1204,7 @@ const AdvLeadsBook = () => {
                                                     <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '24px' }}>
                                                         {lead.last_recording_url && (
                                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={e => e.stopPropagation()}>
-                                                                <span className="material-symbols-outlined" style={{ color: designTokens.colors.primary, fontSize: '20px' }}>mic</span>
-                                                                <audio
-                                                                    controls
-                                                                    controlsList="nodownload"
-                                                                    style={{ width: '180px', height: '30px' }}
-                                                                >
-                                                                    <source src={lead.last_recording_url} type="audio/mpeg" />
-                                                                </audio>
+                                                                <AudioButton url={lead.last_recording_url} />
                                                             </div>
                                                         )}
                                                         {isManager && (
@@ -1450,8 +1499,19 @@ const AdvLeadsBook = () => {
                                                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                                                     <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: designTokens.colors.primary }}></div>
                                                                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                                                                        <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.primary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                                                                            {ACTION_TYPES.find(a => a.value === h.actionType)?.label || "📞 Interaction"}
+                                                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                                            <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.primary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                                                                                {ACTION_TYPES.find(a => a.value === h.actionType)?.label || "📞 Interaction"}
+                                                                                            </div>
+                                                                                            {h.deviceCallType && (
+                                                                                                <span style={{
+                                                                                                    padding: '2px 6px', borderRadius: '4px', fontSize: '9px', fontWeight: 'bold', letterSpacing: '0.05em',
+                                                                                                    background: h.deviceCallType === 'INCOMING' ? '#e6f4ea' : h.deviceCallType === 'MISSED' ? '#fce8e6' : '#e8f0fe',
+                                                                                                    color: h.deviceCallType === 'INCOMING' ? '#137333' : h.deviceCallType === 'MISSED' ? '#c5221f' : '#1a73e8'
+                                                                                                }}>
+                                                                                                    {h.deviceCallType}
+                                                                                                </span>
+                                                                                            )}
                                                                                         </div>
                                                                                         <span style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.textPrimary }}>
                                                                                             {h.stage ? `${h.stage} (${h.disposition})` : (h.callOutcome || "Unknown").toUpperCase()}
@@ -1488,15 +1548,8 @@ const AdvLeadsBook = () => {
                                                                             <p style={{ margin: 0, fontSize: '13px', color: designTokens.colors.textSecondary, display: '-webkit-box', WebkitLineClamp: expandedLogId === h._id ? 'unset' : 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{h.summary || "Archived interactions trace."}</p>
 
                                                                             {h.recordingUrl && (
-                                                                                <div style={{ marginTop: '12px' }} onClick={(e) => e.stopPropagation()}>
-                                                                                    <audio
-                                                                                        controls
-                                                                                        controlsList="nodownload"
-                                                                                        style={{ width: '100%', height: '32px', borderRadius: '8px' }}
-                                                                                    >
-                                                                                        <source src={h.recordingUrl} type="audio/mpeg" />
-                                                                                        Your browser does not support the audio element.
-                                                                                    </audio>
+                                                                                <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={(e) => e.stopPropagation()}>
+                                                                                    <AudioButton url={h.recordingUrl} />
                                                                                 </div>
                                                                             )}
 

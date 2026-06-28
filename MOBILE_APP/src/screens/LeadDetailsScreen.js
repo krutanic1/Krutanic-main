@@ -78,12 +78,12 @@ const LeadDetailsScreen = ({ route, navigation }) => {
         try {
             const payload = {
                 leadId: activeCallData.leadId,
-                specialistId: user.id,
+                specialistId: user._id || user.id,
                 specialistName: user.name,
                 teamId: user.team_id,
                 stage: logData.stage,
                 disposition: logData.disposition,
-                summary: logData.summary,
+                summary: logData.summary || "Call logged via mobile app",
                 remark: logData.remark,
                 duration: logData.durationSec,
                 status: logData.status,

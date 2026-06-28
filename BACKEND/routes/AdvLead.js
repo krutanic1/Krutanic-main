@@ -10,6 +10,7 @@ const os = require("os");
 const upload = multer({ dest: path.join(os.tmpdir(), "uploads") });
 const AdvLead = require("../models/AdvLead");
 const AdvCallActivity = require("../models/AdvCallActivity");
+const DeviceCallLog = require("../models/DeviceCallLog");
 const AdvFollowup = require("../models/AdvFollowup");
 const AdvTeamStructure = require("../models/AdvTeamStructure");
 const rateLimit = require("express-rate-limit");
@@ -1775,7 +1776,7 @@ router.post("/log-call-activity", async (req, res) => {
         leadId, specialistId, specialistName, remark,
         summary, actionType, stage, disposition, 
         demoScheduleDate, followUpDate, duration, recordingUrl,
-        expectedPaymentDate
+        expectedPaymentDate, isWeb
     } = req.body;
 
     if (!leadId || !specialistId || !stage || !disposition || !summary) {
@@ -1796,7 +1797,55 @@ router.post("/log-call-activity", async (req, res) => {
             return res.status(400).json({ message: "Demo Date is required for Demo Booked" });
         }
 
-        // 2. Activity Logging (Mandatory - No Overwriting)
+        let actualDuration = duration;
+        let deviceCallType = null;
+        let actualCallTime = new Date();
+
+        // 2. Anti-Fake Call Log Verification
+        if (!isWeb && (!actionType || actionType.toLowerCase() === "call")) {
+            // Only strictly enforce verification for dispositions that imply a call was made
+            const verifiedDispositions = [
+                "RNR (Ring Not Answer)", 
+                "Connected", 
+                "Busy", 
+                "Not Reachable", 
+                "Switch Off", 
+                "Callback Requested"
+            ];
+            
+            // Allow loose matching just in case the string is slightly different, but apply it generally
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // Extract the last 10 digits of the lead's phone number to handle +91 or 0 prefixes
+            const leadPhoneBase = lead.phone_number.slice(-10);
+
+            const realCallExists = await DeviceCallLog.findOne({
+                userId: specialistId,
+                phoneNumber: { $regex: new RegExp(leadPhoneBase + "$") }, // Matches if phone number ends with these 10 digits
+                startedAt: { $gte: today } // Call must have been made today
+            }).sort({ startedAt: -1 }); // Get the most recent call
+
+            if (!realCallExists) {
+                return res.status(403).json({ 
+                    message: "FAKE LOG DETECTED: No actual device call found for this lead today. Please make a real call from your synced device before logging." 
+                });
+            }
+
+            // For Connected calls, ensure the duration was greater than 0
+            if (disposition === "Connected" && realCallExists.durationSeconds <= 0) {
+                return res.status(403).json({
+                    message: "FAKE LOG DETECTED: The device logged a 0-second duration for this call, but you marked it as 'Connected'."
+                });
+            }
+
+            // Override user's manual duration with the exact duration from the device call log
+            actualDuration = realCallExists.durationSeconds;
+            deviceCallType = realCallExists.callType;
+            actualCallTime = realCallExists.startedAt;
+        }
+
+        // 3. Activity Logging (Mandatory - No Overwriting)
         const activity = new AdvCallActivity({
             leadId,
             teamId: lead.team_id || team?._id,
@@ -1809,9 +1858,11 @@ router.post("/log-call-activity", async (req, res) => {
             stage,
             disposition,
             callOutcome: disposition, // Mirroring for compatibility with older dashboard views
+            deviceCallType,
             remark,
             summary,
-            duration,
+            duration: actualDuration,
+            createdAt: actualCallTime, // Override the activity creation time to match the real call
             recordingUrl,
             demoScheduleDate: demoScheduleDate || undefined,
             followUpDate: followUpDate || undefined,
@@ -1843,9 +1894,9 @@ router.post("/log-call-activity", async (req, res) => {
             updateFields.stage_updated_at = new Date();
         }
 
-        if (actionType === "call") {
+        if (!actionType || actionType.toLowerCase() === "call") {
             updateFields.attempt_count = (lead.attempt_count || 0) + 1;
-            updateFields.last_contacted_at = new Date();
+            updateFields.last_contacted_at = actualCallTime;
         }
 
         // 4. Automation Rules

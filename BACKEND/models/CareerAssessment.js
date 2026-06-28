@@ -9,6 +9,7 @@ const careerAssessmentSchema = new mongoose.Schema({
   currentStatus: { type: String },
   fieldOfStudy: { type: String },
   currentJobRole: { type: String },
+  currentWorkingDomain: { type: String },
   yearsOfExperience: { type: String },
   primaryCareerGoal: { type: String },
   goalTimeline: { type: String },
