@@ -254,9 +254,9 @@ const RevenueSheet = () => {
                 dailyRows.map((data, index) => (
                   <tr key={data.date} className={`text-sm ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}>
                     <td className="border p-3">{data.date}</td>
-                    <td className="border p-3">â‚¹{data.total.toFixed(2)}</td>
-                    <td className="border p-3">â‚¹{data.credited.toFixed(2)}</td>
-                    <td className="border p-3">â‚¹{data.pending.toFixed(2)}</td>
+                    <td className="border p-3">₹{data.total.toFixed(2)}</td>
+                    <td className="border p-3">₹{data.credited.toFixed(2)}</td>
+                    <td className="border p-3">₹{data.pending.toFixed(2)}</td>
                     <td className="border p-3 text-center">{data.payments}</td>
                     <td className="border p-3 text-center">{data.sgfl || 0}</td>
                     <td className="border p-3 text-center">{data.cgfl || 0}</td>
@@ -297,9 +297,9 @@ const RevenueSheet = () => {
                 monthlyStats.map((stat, index) => (
                   <tr key={stat.month} className={`text-sm ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}>
                     <td className="border p-3 font-medium">{stat.month}</td>
-                    <td className="border p-3">â‚¹{stat.total.toFixed(2)}</td>
-                    <td className="border p-3">â‚¹{stat.credited.toFixed(2)}</td>
-                    <td className="border p-3">â‚¹{stat.pending.toFixed(2)}</td>
+                    <td className="border p-3">₹{stat.total.toFixed(2)}</td>
+                    <td className="border p-3">₹{stat.credited.toFixed(2)}</td>
+                    <td className="border p-3">₹{stat.pending.toFixed(2)}</td>
                     <td className="border p-3 text-center">{stat.payments}</td>
                     <td className="border p-3 text-center">
                       <span className="text-blue-600 cursor-pointer underline" onClick={() => handleLeadClick(stat.month, "SGFL")}>
@@ -403,7 +403,7 @@ const RevenueSheet = () => {
         <h2 className="text-xl font-semibold mb-2">Total Revenue Till Now</h2>
         <p className="mb-2 text-2xl text-green-700">
           {/* Fallback to 0 if grandTotal logic fails or isn't arrived yet */}
-          â‚¹{grandTotal ? grandTotal.toFixed(2) : "0.00"}
+          ₹{grandTotal ? grandTotal.toFixed(2) : "0.00"}
         </p>
       </section>
     </div>

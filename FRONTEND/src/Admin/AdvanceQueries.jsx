@@ -125,7 +125,7 @@ const AdvanceQueries = () => {
                         <td>{query.phone}</td>
                         <td className=" capitalize">{query.currentRole}</td>
                         <td>{query.experience}</td>
-                        <td>{query.passedOutYear || "â€”"}</td>
+                        <td>{query.passedOutYear || "—"}</td>
                         <td className=" capitalize">{query.interestedDomain}</td>
                         <td className=" capitalize">
                           {query.goal === "Other"

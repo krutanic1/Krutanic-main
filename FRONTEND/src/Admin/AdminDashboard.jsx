@@ -67,7 +67,7 @@ const AdminDashboard = () => {
 
   const fetchNewStudent = async () => {
     try {
-      // âœ… OPTIMIZATION: Limit to 1000 records for dashboard statistics
+      // ✅ OPTIMIZATION: Limit to 1000 records for dashboard statistics
       // (Full data available via pagination on dedicated pages)
       const response = await axios.get(`${API}/getnewstudentenroll?all=true`);
       setPayment(response.data);
@@ -86,7 +86,7 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
-    // âœ… OPTIMIZATION: Sequential + batched loading to reduce Vercel instance spawn
+    // ✅ OPTIMIZATION: Sequential + batched loading to reduce Vercel instance spawn
     // Old: 4 parallel requests â†’ 4 Vercel instances â†’ 40 connections (with old minPoolSize: 10)
     // New: Sequential + 2 parallel max â†’ 2 instances â†’ reduced connection pressure
     (async () => {

@@ -261,7 +261,7 @@ const AdvProjectPage = () => {
 
             <div className="coursetable">
                 <div style={{ marginBottom: '20px' }}>
-                    <h2>Advance Course â€” Project Management</h2>
+                    <h2>Advance Course — Project Management</h2>
                     <button className="p-2 border border-black rounded-md" onClick={toggleForm}>
                         + Add New Advance Project
                     </button>

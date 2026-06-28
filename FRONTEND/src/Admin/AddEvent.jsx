@@ -643,7 +643,7 @@ const AddEvent = () => {
                   onChange={handleChange}
                   type="text"
                   name="prizeMoney"
-                  placeholder="e.g. â‚¹50,000 or Win Goodies"
+                  placeholder="e.g. ₹50,000 or Win Goodies"
                   className="w-full p-2 border rounded"
                 />
               </div>

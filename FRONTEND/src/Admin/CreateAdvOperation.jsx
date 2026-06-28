@@ -516,13 +516,13 @@ const CreateAdvOperation = () => {
                         <tr key={date}>
                           <td className="border border-gray-300 px-4 py-2">{date}</td>
                           <td className="border border-gray-300 px-4 py-2">
-                            â‚¹{data.total.toLocaleString()}
+                            ₹{data.total.toLocaleString()}
                           </td>
                           <td className="border border-gray-300 px-4 py-2">
-                            â‚¹{data.credited.toLocaleString()}
+                            ₹{data.credited.toLocaleString()}
                           </td>
                           <td className="border border-gray-300 px-4 py-2">
-                            â‚¹{data.pending.toLocaleString()}
+                            ₹{data.pending.toLocaleString()}
                           </td>
                         </tr>
                       ))}
@@ -547,13 +547,13 @@ const CreateAdvOperation = () => {
                         <tr key={month}>
                           <td className="border border-gray-300 px-4 py-2">{month}</td>
                           <td className="border border-gray-300 px-4 py-2">
-                            â‚¹{data.total.toLocaleString()}
+                            ₹{data.total.toLocaleString()}
                           </td>
                           <td className="border border-gray-300 px-4 py-2">
-                            â‚¹{data.credited.toLocaleString()}
+                            ₹{data.credited.toLocaleString()}
                           </td>
                           <td className="border border-gray-300 px-4 py-2">
-                            â‚¹{data.pending.toLocaleString()}
+                            ₹{data.pending.toLocaleString()}
                           </td>
                         </tr>
                       ))}
@@ -564,7 +564,7 @@ const CreateAdvOperation = () => {
                 {/* Total Revenue */}
                 <div className="bg-[#f15b29] text-white p-4 rounded">
                   <h3 className="text-xl font-semibold">
-                    Total Revenue: â‚¹{revenueData.totalRevenue.toLocaleString()}
+                    Total Revenue: ₹{revenueData.totalRevenue.toLocaleString()}
                   </h3>
                 </div>
               </div>

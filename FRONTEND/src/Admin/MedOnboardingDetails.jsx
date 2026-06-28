@@ -280,10 +280,10 @@ const MedOnboardingDetails = () => {
                         </td>
                         <td>
                           <div className="flex flex-col text-xs text-left w-max">
-                            <span>Offer: {item.offerlettersended ? "âœ…" : "âŒ"}</span>
-                            <span>User: {item.userCreated ? "âœ…" : "âŒ"}</span>
-                            <span>Login: {item.mailSended ? "âœ…" : "âŒ"}</span>
-                            <span>Onboarding: {item.onboardingSended ? "âœ…" : "âŒ"}</span>
+                            <span>Offer: {item.offerlettersended ? "✅" : "âŒ"}</span>
+                            <span>User: {item.userCreated ? "✅" : "âŒ"}</span>
+                            <span>Login: {item.mailSended ? "✅" : "âŒ"}</span>
+                            <span>Onboarding: {item.onboardingSended ? "✅" : "âŒ"}</span>
                           </div>
                         </td>
                         <td>

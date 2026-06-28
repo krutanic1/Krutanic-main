@@ -92,7 +92,7 @@ const MasterClasses = () => {
   };
 
   // â”€â”€â”€ Google Drive URL helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  // Detects if a URL is a Drive FOLDER (not an image file â€” cannot be embedded)
+  // Detects if a URL is a Drive FOLDER (not an image file — cannot be embedded)
   const isDriveFolderUrl = (url) =>
     typeof url === "string" && url.includes("drive.google.com/drive/folders");
 
@@ -105,7 +105,7 @@ const MasterClasses = () => {
   //   https://lh3.googleusercontent.com/d/FILE_ID  (already correct)
   const convertGoogleDriveUrl = (url) => {
     if (!url || typeof url !== "string") return url;
-    if (isDriveFolderUrl(url)) return null; // folder â€” not an image
+    if (isDriveFolderUrl(url)) return null; // folder — not an image
     const trimmed = url.trim();
     // Already the correct lh3 format
     if (trimmed.includes("lh3.googleusercontent.com")) return trimmed;
@@ -475,11 +475,11 @@ const MasterClasses = () => {
                   />
                   {isDriveFolderUrl(formData.image) ? (
                     <span style={{ fontSize: '11px', color: 'red', fontWeight: 'bold' }}>
-                      âœ— This is a FOLDER link â€” it cannot be used as an image.<br/>
+                      ✗ This is a FOLDER link — it cannot be used as an image.<br/>
                       Open the file in Drive â†’ right-click â†’ "Share" â†’ copy the file share link.
                     </span>
                   ) : (
-                    <span style={{ fontSize: '10px', color: '#f15b29' }}>âœ“ Google Drive FILE links are auto-converted â€” paste your Drive file share URL directly</span>
+                    <span style={{ fontSize: '10px', color: '#f15b29' }}>âœ“ Google Drive FILE links are auto-converted — paste your Drive file share URL directly</span>
                   )}
                   {formData.image && !isDriveFolderUrl(formData.image) && (
                     <img
@@ -636,7 +636,7 @@ const MasterClasses = () => {
                         onChange={handleChange}
                         placeholder="Paste image URL or Google Drive share link"
                       />
-                      <span style={{ fontSize: '10px', color: '#f15b29' }}>âœ“ Google Drive links are auto-converted â€” paste your Drive share URL directly</span>
+                      <span style={{ fontSize: '10px', color: '#f15b29' }}>âœ“ Google Drive links are auto-converted — paste your Drive share URL directly</span>
                     </div>
                     {formData.instructorPhoto && (
                       <img
@@ -938,7 +938,7 @@ const MasterClasses = () => {
         <div className="jobdetails" style={{ zIndex: 10000 }}>
           <div className="jobdetailsdiv" style={{ maxWidth: '500px', height: 'auto', borderRadius: '15px', padding: '25px', boxShadow: '0 10px 30px rgba(0,0,0,0.3)', border: 'none' }}>
             <div className="title" style={{ borderBottom: '1px solid #eee', paddingBottom: '10px', marginBottom: '20px' }}>
-              <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#f15b29', margin: 0 }}>ðŸ“§ Certificate Delivery Report</h2>
+              <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#f15b29', margin: 0 }}>📋§ Certificate Delivery Report</h2>
               <span onClick={() => setCertSummary(null)} style={{ fontSize: '20px', cursor: 'pointer', fontWeight: 'bold' }}>âœ–</span>
             </div>
             

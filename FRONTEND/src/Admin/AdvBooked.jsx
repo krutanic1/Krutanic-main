@@ -332,7 +332,7 @@ const AdvBooked = () => {
                         <td>{item.email || "N/A"}</td>
                         <td>{item.domain || "N/A"}</td>
                         <td className="capitalize">{item.monthOpted || "N/A"}</td>
-                        <td className="text-green-600 font-bold">â‚¹{item.programPrice || 0}</td>
+                        <td className="text-green-600 font-bold">₹{item.programPrice || 0}</td>
                         <td>{item.paidAmount || 0}</td>
                         <td>{item.counselor || "N/A"}</td>
                         <td>{item.operationName || "N/A"}</td>
@@ -395,9 +395,9 @@ const AdvBooked = () => {
                 <p><strong>Phone:</strong> {dialogData.phone}</p>
                 <p><strong>WhatsApp:</strong> {dialogData.whatsAppNumber}</p>
                 <p><strong>Domain:</strong> {dialogData.domain}</p>
-                <p><strong>Program Price:</strong> â‚¹{dialogData.programPrice}</p>
-                <p><strong>Paid Amount:</strong> â‚¹{dialogData.paidAmount}</p>
-                <p className="text-red-600 font-bold"><strong>Pending:</strong> â‚¹{dialogData.programPrice - dialogData.paidAmount}</p>
+                <p><strong>Program Price:</strong> ₹{dialogData.programPrice}</p>
+                <p><strong>Paid Amount:</strong> ₹{dialogData.paidAmount}</p>
+                <p className="text-red-600 font-bold"><strong>Pending:</strong> ₹{dialogData.programPrice - dialogData.paidAmount}</p>
                 <p><strong>Counselor:</strong> {dialogData.counselor}</p>
                 <p><strong>Operation:</strong> {dialogData.operationName}</p>
                 <p><strong>College:</strong> {dialogData.collegeName}</p>

@@ -135,9 +135,9 @@ const AdvDefault = () => {
                         <td>{item.email || "N/A"}</td>
                         <td>{item.whatsAppNumber || item.phone || "N/A"}</td>
                         <td>{item.domain || "N/A"}</td>
-                        <td className="text-green-600 font-bold">â‚¹{item.programPrice?.toLocaleString() || 0}</td>
-                        <td className="text-blue-600 font-bold">â‚¹{item.paidAmount?.toLocaleString() || 0}</td>
-                        <td className="text-red-600 font-bold">â‚¹{item.remainingAmount?.toLocaleString() || 0}</td>
+                        <td className="text-green-600 font-bold">₹{item.programPrice?.toLocaleString() || 0}</td>
+                        <td className="text-blue-600 font-bold">₹{item.paidAmount?.toLocaleString() || 0}</td>
+                        <td className="text-red-600 font-bold">₹{item.remainingAmount?.toLocaleString() || 0}</td>
                         <td>{item.monthOpted || "N/A"}</td>
                         <td>{item.counselor || "N/A"}</td>
                         <td>{item.executive || item.lead || "N/A"}</td>
