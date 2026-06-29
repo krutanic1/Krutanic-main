@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 
 const CountdownTimer = () => {
   const [timeLeft, setTimeLeft] = useState({
-    hours: 23,
-    minutes: 7,
-    seconds: 57,
+    hours: 3,
+    minutes: 59,
+    seconds: 59,
   });
 
   useEffect(() => {
@@ -24,9 +24,9 @@ const CountdownTimer = () => {
               minutes = 59;
               seconds = 59;
             } else {
-              // Reset to 23:59:59 if it hits zero, or keep it at 0
+              // Reset to 3:59:59 if it hits zero, or keep it at 0
               // For urgency, let's keep a consistent countdown
-              hours = 23;
+              hours = 3;
               minutes = 59;
               seconds = 59;
             }

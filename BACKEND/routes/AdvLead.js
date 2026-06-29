@@ -1353,7 +1353,8 @@ router.get("/get-adv-leads", async (req, res) => {
         }
 
         if (reminderOnly === 'true') {
-            andConditions.push({ next_followup_at: { $exists: true, $ne: null } });
+            andConditions.push({ next_followup_at: { $exists: true, $ne: null, $lte: new Date() } });
+            andConditions.push({ stage: { $nin: ["Closed Won", "Closed Lost"] } });
         }
 
         // Final Aggregate Query
@@ -1904,15 +1905,31 @@ router.post("/log-call-activity", async (req, res) => {
         }
 
         // 4. Automation Rules
-        // Rule: If RNR >= 15 attempts -> Suggest move to Closed Lost
-        if (disposition === "RNR" && (lead.attempt_count + 1) >= 15) {
-            updateFields.stage = "Closed Lost";
-            updateFields.disposition = "No Response";
-            updateFields.closed = true;
+        // Rule: If 10 consecutive RNRs -> Auto move to Closed Lost
+        if (disposition === "RNR") {
+            const currentRnrCount = (lead.countrnr || 0) + 1;
+            updateFields.countrnr = currentRnrCount;
+            
+            if (currentRnrCount >= 10) {
+                updateFields.stage = "Closed Lost";
+                updateFields.disposition = "No Response";
+                updateFields.closed = true;
+                updateFields.countrnr_max_reached = true;
+                updateFields.last_note = "Auto Closed Lost: 10 RNR reached. " + (updateFields.last_note || "");
+                // Force follow-up to null when auto-closing
+                updateFields.next_followup_at = null;
+            }
+        } else {
+            // Reset consecutive RNR count on non-RNR disposition
+            updateFields.countrnr = 0;
         }
 
         if (followUpDate) {
             updateFields.next_followup_at = followUpDate;
+        } else {
+            // No new follow-up date submitted → clear the old one so the lead
+            // leaves the follow-up queue. Closed stages also always clear it.
+            updateFields.next_followup_at = null;
         }
 
         if (disposition === "Callback Requested" && followUpDate) {

@@ -53,6 +53,8 @@ const AdvLeadSchema = new mongoose.Schema({
         default: "New Lead"
     },
     attempt_count: { type: Number, default: 0 },
+    countrnr: { type: Number, default: 0 },
+    countrnr_max_reached: { type: Boolean, default: false },
     last_contacted_at: { type: Date },
     next_followup_at: { type: Date },
     last_note: { type: String },

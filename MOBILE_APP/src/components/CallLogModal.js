@@ -18,6 +18,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import { Audio } from 'expo-av';
 import { uploadToCloudinary } from '../utils/cloudinary';
 import { COLORS, SPACING, TYPOGRAPHY, SHADOWS } from '../utils/theme';
+import CallLogSyncService from '../services/CallLogSyncService';
 
 const CallLogModal = ({ visible, callData, onSave, onCancel }) => {
     const [stage, setStage] = useState('Fresh Lead');
@@ -135,6 +136,9 @@ const CallLogModal = ({ visible, callData, onSave, onCancel }) => {
     const handleSave = async () => {
         setLoading(true);
         try {
+            // Force a sync right before saving to ensure the backend sees the call
+            await CallLogSyncService.syncCallLogs();
+
             const finalDurationSec = (parseInt(minutes) || 0) * 60 + (parseInt(seconds) || 0);
 
             const formatToFakeUTC = (date) => {

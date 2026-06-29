@@ -7,19 +7,13 @@ class CallLogSyncService {
     async requestPermissions() {
         if (Platform.OS === 'android') {
             try {
-                const granted = await PermissionsAndroid.request(
+                const granted = await PermissionsAndroid.requestMultiple([
                     PermissionsAndroid.PERMISSIONS.READ_CALL_LOG,
-                    {
-                        title: 'Call Log Permission',
-                        message: 'App needs access to your call logs to sync them automatically.',
-                        buttonNeutral: 'Ask Me Later',
-                        buttonNegative: 'Cancel',
-                        buttonPositive: 'OK',
-                    }
-                );
-                return granted === PermissionsAndroid.RESULTS.GRANTED;
+                    PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE
+                ]);
+                return granted[PermissionsAndroid.PERMISSIONS.READ_CALL_LOG] === PermissionsAndroid.RESULTS.GRANTED;
             } catch (err) {
-                console.warn('Error requesting CALL_LOG permission:', err);
+                console.warn('Error requesting permissions:', err);
                 return false;
             }
         }

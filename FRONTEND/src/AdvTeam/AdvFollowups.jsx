@@ -1,1165 +1,692 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import API from "../API";
 
-const STAGES_AND_DISPOSITIONS = {
-    "Fresh Lead": ["New Lead", "Invalid Lead"],
-    "Attempting Contact": ["RNR", "Callback Requested", "No Response (Multi-touch)"],
-    "First Call Connected": ["In Conversation", "Demo Booked"],
-    "Demo Conducted": ["Decision Pending", "Negotiation Review", "Expected Payment Date"],
-    "Closed Won": ["Converted"],
-    "Closed Lost": ["Irrelevant Lead", "Not Interested", "Pricing Does Not Match", "No Response"]
+/* ─── Constants ──────────────────────────────────────────────── */
+const STAGES = {
+  "Fresh Lead":          ["New Lead", "Invalid Lead"],
+  "Attempting Contact":  ["RNR", "Callback Requested", "No Response (Multi-touch)"],
+  "First Call Connected":["In Conversation", "Demo Booked"],
+  "Demo Conducted":      ["Decision Pending", "Negotiation Review", "Expected Payment Date"],
+  "Closed Won":          ["Converted"],
+  "Closed Lost":         ["Irrelevant Lead", "Not Interested", "Pricing Does Not Match", "No Response"],
 };
 
 const ACTION_TYPES = [
-    { value: "call", label: "📞 Call", icon: "call" },
-    { value: "email", label: "📧 Email", icon: "mail" },
-    { value: "whatsapp", label: "💬 WhatsApp", icon: "chat" },
-    { value: "meeting", label: "🤝 Meeting", icon: "groups" },
-    { value: "note", label: "📝 Note", icon: "note" }
+  { value: "call",     emoji: "📞", label: "Call" },
+  { value: "email",    emoji: "📧", label: "Email" },
+  { value: "whatsapp", emoji: "💬", label: "WhatsApp" },
+  { value: "meeting",  emoji: "🤝", label: "Meeting" },
+  { value: "note",     emoji: "📝", label: "Note" },
 ];
 
-const designTokens = {
-    colors: {
-        primary: "#6366F1", // Indigo
-        secondary: "#8B5CF6", // Violet
-        accent: "#F43F5E", // Rose
-        background: "#F1F5F9",
-        surface: "#FFFFFF",
-        border: "#E2E8F0",
-        textPrimary: "#0F172A",
-        textSecondary: "#64748B",
-        success: "#10B981",
-        warning: "#F59E0B",
-        danger: "#EF4444",
-        info: "#0EA5E9",
-        royal: "#312E81",
-        glass: "rgba(255, 255, 255, 0.7)"
-    },
-    shadows: {
-        sm: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
-        md: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-        lg: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-        xl: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-        premium: "0 25px 50px -12px rgba(99, 102, 241, 0.12)"
-    },
-    radius: {
-        sm: "6px",
-        md: "12px",
-        lg: "20px",
-        xl: "30px",
-    }
+const STAGE_COLORS = {
+  "Fresh Lead":           "#64748B",
+  "Attempting Contact":   "#F59E0B",
+  "First Call Connected": "#0EA5E9",
+  "Demo Conducted":       "#8B5CF6",
+  "Closed Won":           "#10B981",
+  "Closed Lost":          "#EF4444",
+  "Reactive Lead":        "#EC4899",
 };
 
-const AudioButton = ({ url }) => {
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [audio, setAudio] = useState(null);
-
-    useEffect(() => {
-        const newAudio = new Audio(url);
-        newAudio.addEventListener('ended', () => setIsPlaying(false));
-        newAudio.addEventListener('pause', () => setIsPlaying(false));
-        setAudio(newAudio);
-        return () => {
-            newAudio.pause();
-        };
-    }, [url]);
-
-    const togglePlay = (e) => {
-        e.stopPropagation();
-        if (isPlaying) {
-            audio.pause();
-        } else {
-            audio.play().then(() => setIsPlaying(true)).catch(console.error);
-        }
-    };
-
-    return (
-        <button
-            onClick={togglePlay}
-            style={{
-                width: '32px', height: '32px', borderRadius: '50%',
-                background: isPlaying ? '#fce8e6' : '#e8f0fe',
-                border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer', transition: 'all 0.2s', padding: 0
-            }}
-            title={isPlaying ? "Pause Recording" : "Play Recording"}
-        >
-            <span className="material-symbols-outlined" style={{ 
-                color: isPlaying ? '#c5221f' : designTokens.colors.primary, 
-                fontSize: '18px', 
-                marginLeft: isPlaying ? '0px' : '2px' 
-            }}>
-                {isPlaying ? 'pause' : 'play_arrow'}
-            </span>
-        </button>
-    );
+/* ─── Helpers ────────────────────────────────────────────────── */
+const formatIST = (val, opts = { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) => {
+  if (!val) return "—";
+  const ms = Date.parse(val);
+  if (isNaN(ms)) return "—";
+  // Dates stored as UTC+5:30, subtract offset to get the "intended local" time
+  const adjusted = new Date(ms - (5 * 60 + 30) * 60 * 1000);
+  return adjusted.toLocaleString("en-IN", opts);
 };
 
+const timeSince = (dateStr) => {
+  if (!dateStr) return null;
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const h = Math.floor(diff / 3_600_000);
+  const d = Math.floor(h / 24);
+  if (d > 0) return `${d}d ago`;
+  if (h > 0) return `${h}h ago`;
+  const m = Math.floor(diff / 60_000);
+  return `${m}m ago`;
+};
+
+const urgencyColor = (followup_at) => {
+  if (!followup_at) return "#64748B";
+  const diffH = (new Date(followup_at) - Date.now()) / 3_600_000;
+  if (diffH < 0) return "#EF4444";      // overdue
+  if (diffH < 2) return "#F59E0B";      // urgent
+  return "#10B981";                      // on track
+};
+
+/* ─── Sub-components ─────────────────────────────────────────── */
+const StagePill = ({ stage, isReactive, isManagerOrLeader }) => {
+  const display = isReactive && isManagerOrLeader ? "Reactive Lead" : (stage || "Fresh Lead");
+  const color = STAGE_COLORS[display] || "#64748B";
+  return (
+    <span style={{
+      padding: "3px 10px", borderRadius: 999, fontSize: 11, fontWeight: 700,
+      background: `${color}18`, color, border: `1px solid ${color}35`,
+      letterSpacing: "0.04em", textTransform: "uppercase", whiteSpace: "nowrap",
+    }}>
+      {display}
+    </span>
+  );
+};
+
+const AudioPlayer = ({ url }) => {
+  const [playing, setPlaying] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    ref.current = new Audio(url);
+    ref.current.addEventListener("ended", () => setPlaying(false));
+    return () => { ref.current.pause(); };
+  }, [url]);
+  const toggle = (e) => {
+    e.stopPropagation();
+    playing ? ref.current.pause() : ref.current.play().then(() => setPlaying(true)).catch(console.error);
+  };
+  return (
+    <button onClick={toggle} title={playing ? "Pause" : "Play"} style={{
+      width: 30, height: 30, borderRadius: "50%", border: "none", cursor: "pointer",
+      background: playing ? "#fee2e2" : "#e0e7ff", color: playing ? "#dc2626" : "#4f46e5",
+      display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14,
+      transition: "all 0.2s", flexShrink: 0,
+    }}>
+      {playing ? "⏸" : "▶"}
+    </button>
+  );
+};
+
+/* ─── Main Component ─────────────────────────────────────────── */
 const AdvFollowups = () => {
-    const [leads, setLeads] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [advTeamId, setAdvTeamId] = useState(null);
-    const [userName, setUserName] = useState(null);
-    const [userDesignation, setUserDesignation] = useState(null);
-    
-    // Action Panel State
-    const [activeLead, setActiveLead] = useState(null);
-    const [callHistory, setCallHistory] = useState({});
-    const [submitting, setSubmitting] = useState(null);
-    const [formState, setFormState] = useState({});
-    const [expandedLogId, setExpandedLogId] = useState(null);
-    const [callStartTime, setCallStartTime] = useState(null);
-    const [activeCallLeadId, setActiveCallLeadId] = useState(null);
+  const [leads, setLeads]     = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch]   = useState("");
+  const [filter, setFilter]   = useState("all");
 
-    // Dummy states for features not needed here but referenced by ActionPanel
-    const [showReassignModal, setShowReassignModal] = useState(false);
-    const [selectedLeadForReassign, setSelectedLeadForReassign] = useState(null);
-    const [selectedLeadForEmail, setSelectedLeadForEmail] = useState(null);
-    const [emailRecipient, setEmailRecipient] = useState("");
-    const [emailSubject, setEmailSubject] = useState("");
-    const [emailDomain, setEmailDomain] = useState("");
-    const [showEmailModal, setShowEmailModal] = useState(false);
-    
-    // Pagination dummy
-    const limit = 100;
-    const currentPage = 1;
+  // Auth
+  const advTeamId       = localStorage.getItem("advTeamId")    || "";
+  const userName        = localStorage.getItem("advTeamName")  || "";
+  const userDesignation = localStorage.getItem("advTeamDesignation") || "";
+  const isManager       = userDesignation.toLowerCase().includes("manager") || userDesignation.toLowerCase().includes("leader") || userName.toLowerCase().includes("sumeetha");
 
-    useEffect(() => {
-        const storedId = localStorage.getItem("advTeamId");
-        const storedName = localStorage.getItem("advTeamName");
-        const storedDesig = localStorage.getItem("advTeamDesignation");
-        if (storedId) {
-            setAdvTeamId(storedId);
-            setUserName(storedName);
-            setUserDesignation(storedDesig);
-        } else {
-            toast.error("User ID not found. Please log in again.");
-        }
-    }, []);
+  // Panel state
+  const [openId, setOpenId]           = useState(null);
+  const [forms, setForms]             = useState({});
+  const [histories, setHistories]     = useState({});
+  const [histLoading, setHistLoading] = useState({});
+  const [submitting, setSubmitting]   = useState(null);
+  const [callStartTime, setCallStartTime]   = useState(null);
+  const [activeCallId, setActiveCallId]     = useState(null);
+  const [expandedLog, setExpandedLog]       = useState(null);
 
-    useEffect(() => {
-        if (advTeamId) {
-            fetchFollowups();
-        }
-    }, [advTeamId]);
+  /* ── Fetch ── */
+  const fetchFollowups = async () => {
+    if (!advTeamId) { toast.error("Not logged in"); return; }
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("advTeamToken");
+      const res = await axios.get(`${API}/api/adv-leads/get-adv-leads`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { userId: advTeamId, role: userDesignation || "adv_team", limit: 200, reminderOnly: true },
+      });
+      setLeads(res.data.leads || []);
+    } catch {
+      toast.error("Failed to fetch follow-ups");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const fetchFollowups = async () => {
-        setLoading(true);
-        try {
-            const token = localStorage.getItem('advTeamToken');
-            const res = await axios.get(`${API}/api/adv-leads/get-adv-leads`, {
-                headers: { 'Authorization': `Bearer ${token}` },
-                params: {
-                    userId: advTeamId,
-                    role: userDesignation || "adv_team",
-                    limit: 100, 
-                    reminderOnly: true 
-                }
-            });
-            if (res.data.success || res.data.leads) {
-                setLeads(res.data.leads || []);
-            }
-        } catch (err) {
-            console.error(err);
-            toast.error("Failed to fetch follow-ups");
-        } finally {
-            setLoading(false);
-        }
-    };
+  useEffect(() => { fetchFollowups(); }, [advTeamId]);
 
-    const isManager = (userDesignation || "").toLowerCase().includes("manager") || (userName || "").toLowerCase().includes("sumeetha");
-    const userId = advTeamId;
+  const fetchHistory = async (leadId) => {
+    if (histories[leadId]) return;
+    setHistLoading(p => ({ ...p, [leadId]: true }));
+    try {
+      const res = await axios.get(`${API}/api/adv-leads/lead-call-history/${leadId}`);
+      setHistories(p => ({ ...p, [leadId]: res.data || [] }));
+    } catch {
+      setHistories(p => ({ ...p, [leadId]: [] }));
+    } finally {
+      setHistLoading(p => ({ ...p, [leadId]: false }));
+    }
+  };
 
-    const fetchHistory = async (leadId) => {
-        if (callHistory[leadId]) return;
-        try {
-            const res = await axios.get(`${API}/api/adv-leads/lead-call-history/${leadId}`);
-            setCallHistory(prev => ({ ...prev, [leadId]: res.data || [] }));
-        } catch {
-            setCallHistory(prev => ({ ...prev, [leadId]: [] }));
-        }
-    };
+  /* ── Panel helpers ── */
+  const togglePanel = (lead) => {
+    if (openId === lead._id) { setOpenId(null); return; }
+    setOpenId(lead._id);
+    fetchHistory(lead._id);
+  };
 
-    const toggleRow = (lead) => {
-        if (activeLead === lead._id) {
-            setActiveLead(null);
-        } else {
-            setActiveLead(lead._id);
-            fetchHistory(lead._id);
-        }
-    };
+  const setField = (leadId, field, value) => {
+    setForms(p => {
+      const cur = p[leadId] || {};
+      const next = { ...cur, [field]: value };
+      if (field === "stage") next.disposition = "";
+      return { ...p, [leadId]: next };
+    });
+  };
 
-    const updateForm = (leadId, field, value) => {
-        setFormState(prev => {
-            const newState = {
-                ...prev,
-                [leadId]: { ...(prev[leadId] || {}), [field]: value }
-            };
-            // If stage changes, reset disposition
-            if (field === "stage") {
-                newState[leadId].disposition = "";
-            }
-            return newState;
-        });
-    };
+  /* ── Dial ── */
+  const handleDial = async (phone, leadId) => {
+    const num = String(phone || "").replace(/\D/g, "");
+    if (!num) { toast.error("No phone number available"); return; }
+    setCallStartTime(Date.now());
+    setActiveCallId(leadId);
+    try {
+      await axios.post(`${API}/api/adv-leads/remote-dial-request`, { specialistId: advTeamId, leadId });
+      toast.success("Dialing via mobile app…");
+    } catch {
+      window.location.href = `tel:${num}`;
+    }
+  };
 
-    const handleLogCall = async (lead) => {
-        const form = formState[lead._id] || {};
-        if (!form.stage) { toast.error("Please select a lead stage"); return; }
-        if (!form.disposition) { toast.error("Please select a disposition"); return; }
-        if (!form.actionType) { toast.error("Please select an action type"); return; }
-        if (!form.summary || form.summary.trim() === "") {
-            toast.error("Executive Summary is mandatory. Please provide conversation highlights.");
-            return;
-        }
+  /* ── Log Activity ── */
+  const handleLogCall = async (lead) => {
+    const f = forms[lead._id] || {};
+    if (!f.stage)       { toast.error("Select a stage"); return; }
+    if (!f.disposition) { toast.error("Select a disposition"); return; }
+    if (!f.actionType)  { toast.error("Select an action type"); return; }
+    if (!f.summary?.trim()) { toast.error("Executive summary is required"); return; }
+    if (f.disposition === "Callback Requested" && !f.followUpDate) {
+      toast.error("Follow-up date required for Callback Requested"); return;
+    }
+    if (f.disposition === "Demo Booked" && !f.demoScheduleDate) {
+      toast.error("Demo date required for Demo Booked"); return;
+    }
 
-        // Mandatory rules
-        if (form.disposition === "Callback Requested" && !form.followUpDate) {
-            toast.error("Next Follow-up Date is mandatory for Callback Requested");
-            return;
-        }
-        if (form.disposition === "Demo Booked" && !form.demoScheduleDate) {
-            toast.error("Demo Date is required for Demo Booked");
-            return;
-        }
+    setSubmitting(lead._id);
+    try {
+      await axios.post(`${API}/api/adv-leads/log-call-activity`, {
+        leadId: lead._id,
+        specialistId: advTeamId,
+        specialistName: userName,
+        actionType: f.actionType,
+        stage: f.stage,
+        disposition: f.disposition,
+        summary: f.summary || "",
+        remark: f.remark || "",
+        duration: activeCallId === lead._id && callStartTime ? Math.floor((Date.now() - callStartTime) / 1000) : 0,
+        demoScheduleDate: f.demoScheduleDate || undefined,
+        followUpDate: f.followUpDate || undefined,
+        expectedPaymentDate: f.expectedPaymentDate || undefined,
+        isWeb: true,
+      });
+      toast.success("Activity logged!");
+      setCallStartTime(null);
+      setActiveCallId(null);
+      setForms(p => ({ ...p, [lead._id]: {} }));
+      setHistories(p => { const n = { ...p }; delete n[lead._id]; return n; });
+      fetchHistory(lead._id);
+      fetchFollowups();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to log activity");
+    } finally {
+      setSubmitting(null);
+    }
+  };
 
-        setSubmitting(lead._id);
-        try {
-            await axios.post(`${API}/api/adv-leads/log-call-activity`, {
-                leadId: lead._id,
-                specialistId: userId,
-                specialistName: userName,
-                actionType: form.actionType,
-                stage: form.stage,
-                disposition: form.disposition,
-                summary: form.summary || "",
-                remark: form.remark || "",
-                duration: activeCallLeadId === lead._id && callStartTime ? Math.floor((Date.now() - callStartTime) / 1000) : 0,
-                demoScheduleDate: form.demoScheduleDate || undefined,
-                followUpDate: form.followUpDate || undefined,
-                expectedPaymentDate: form.expectedPaymentDate || undefined,
-                isWeb: true
-            });
-            toast.success("Activity logged successfully!");
-            setCallStartTime(null);
-            setActiveCallLeadId(null);
-            setFormState(prev => ({ ...prev, [lead._id]: {} }));
-            setCallHistory(prev => { const n = { ...prev }; delete n[lead._id]; return n; });
-            fetchHistory(lead._id);
-            fetchFollowups();
-        } catch (err) {
-            toast.error(err.response?.data?.message || "Failed to log activity");
-        } finally {
-            setSubmitting(null);
-        }
-    };
+  /* ── Filtered / searched leads ── */
+  const now = Date.now();
+  const displayed = leads.filter(l => {
+    const q = search.toLowerCase();
+    const match = !q || (l.full_name || "").toLowerCase().includes(q) || (l.phone_number || "").includes(q);
+    if (!match) return false;
+    if (filter === "overdue") {
+      return l.next_followup_at && new Date(l.next_followup_at).getTime() < now;
+    }
+    if (filter === "today") {
+      if (!l.next_followup_at) return false;
+      const d = new Date(l.next_followup_at);
+      const t = new Date();
+      return d.toDateString() === t.toDateString();
+    }
+    return true;
+  });
 
-    const handleRemoteDial = async (phoneNumber, leadId) => {
-        const dialNumber = String(phoneNumber || "").replace(/\D/g, "");
-        if (!dialNumber) {
-            toast.error("Phone number is not available.");
-            return;
-        }
-        setCallStartTime(Date.now());
-        setActiveCallLeadId(leadId);
+  /* ── Urgency counts ── */
+  const overdue = leads.filter(l => l.next_followup_at && new Date(l.next_followup_at) < now).length;
+  const today   = leads.filter(l => {
+    if (!l.next_followup_at) return false;
+    return new Date(l.next_followup_at).toDateString() === new Date().toDateString();
+  }).length;
 
-        try {
-            await axios.post(`${API}/api/adv-leads/remote-dial-request`, {
-                specialistId: userId,
-                leadId: leadId
-            });
-            toast.success("Dialing from your mobile app...");
-        } catch (error) {
-            console.error(error);
-            toast.error("Failed to trigger mobile dialer. Dialing locally.");
-            window.location.href = `tel:${dialNumber}`;
-        }
-    };
+  /* ─── Render ─────────────────────────────────────────────── */
+  return (
+    <div style={{ marginLeft: 280, minHeight: "100vh", background: "#0f1117", fontFamily: "'Inter', sans-serif", color: "#e2e8f0" }}>
+      <Toaster position="top-right" toastOptions={{ style: { background: "#1e293b", color: "#e2e8f0", border: "1px solid #334155" } }} />
 
-    // StatusBadge is defined after styles (see below)
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        .fu-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .fu-card:hover { transform: translateY(-1px); }
+        .fu-card.open { box-shadow: 0 0 0 2px #6366f1; }
+        .fu-btn { transition: all 0.15s; cursor: pointer; border: none; }
+        .fu-btn:hover { opacity: 0.85; }
+        .fu-chip { transition: all 0.15s; cursor: pointer; }
+        .fu-chip:hover { opacity: 0.85; transform: scale(1.03); }
+        .fu-stage-btn { cursor: pointer; transition: all 0.15s; border: 1.5px solid transparent; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 600; }
+        .fu-stage-btn:hover { border-color: #6366f1 !important; }
+        .fu-action-input { width: 100%; background: #1e293b; border: 1.5px solid #334155; border-radius: 10px; padding: 10px 14px; color: #e2e8f0; font-size: 13px; outline: none; transition: border 0.2s; box-sizing: border-box; font-family: inherit; }
+        .fu-action-input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
+        .fu-action-input::placeholder { color: #475569; }
+        .fu-log-entry { transition: background 0.15s; }
+        .fu-log-entry:hover { background: #1e293b !important; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spinning { animation: spin 0.8s linear infinite; display: inline-block; }
+        @keyframes slideDown { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform: translateY(0); } }
+        .slide-down { animation: slideDown 0.25s ease; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+      `}</style>
 
-    const styles = {
-        container: {
-            padding: '40px',
-            marginLeft: '280px',
-            background: designTokens.colors.background,
-            minHeight: '100vh',
-            fontFamily: "'Lexend', 'Inter', sans-serif"
-        },
-        header: {
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '24px',
-            marginBottom: '32px',
-            maxWidth: '100%',
-        },
-        headerTop: {
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            gap: '20px',
-        },
-        headerBottom: {
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            gap: '20px',
-            background: 'rgba(255, 255, 255, 0.4)',
-            padding: '12px',
-            borderRadius: '16px',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255, 255, 255, 0.5)',
-        },
-        titleSection: {
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '8px'
-        },
-        title: {
-            fontSize: '28px',
-            fontWeight: '800',
-            color: designTokens.colors.textPrimary,
-            margin: 0,
-            letterSpacing: '-0.025em',
-            background: `linear-gradient(135deg, ${designTokens.colors.primary}, ${designTokens.colors.secondary})`,
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-        },
-        subtitle: {
-            fontSize: '14px',
-            color: designTokens.colors.textSecondary,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            fontWeight: '500'
-        },
-        statsRow: {
-            display: 'flex',
-            gap: '12px',
-            alignItems: 'center',
-            flexShrink: 0
-        },
-        statCard: {
-            height: '48px',
-            padding: '0 16px',
-            background: '#FFFFFF',
-            borderRadius: designTokens.radius.md,
-            border: `1px solid ${designTokens.colors.border}`,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.3s ease',
-            boxShadow: designTokens.shadows.sm,
-            minWidth: '100px'
-        },
-        filterRow: {
-            display: 'flex',
-            alignItems: 'center',
-            background: '#fff',
-            padding: '2px',
-            borderRadius: '12px',
-            border: `1px solid ${designTokens.colors.border}`,
-            boxShadow: designTokens.shadows.sm,
-            height: '48px',
-            flex: '1',
-            minWidth: '400px',
-            overflow: 'hidden'
-        },
-        searchSection: {
-            display: 'flex',
-            gap: '8px',
-            alignItems: 'center',
-            padding: '0 12px',
-            background: '#F8FAFC',
-            height: '100%',
-            flex: 1,
-        },
-        dateSection: {
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '0 15px',
-            borderRight: `1px solid ${designTokens.colors.border}`,
-            height: '100%',
-        },
-        filterBtn: (active, color) => ({
-            padding: '8px 16px',
-            height: '40px',
-            borderRadius: '12px',
-            background: active ? `${color}15` : 'transparent',
-            color: active ? color : designTokens.colors.textSecondary,
-            cursor: 'pointer',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            whiteSpace: 'nowrap',
-            fontWeight: active ? '700' : '600',
-            fontSize: '13px',
-            border: active ? `1px solid ${color}30` : '1px solid transparent'
-        }),
-        compactBtn: (active, color) => ({
-            padding: '5px 12px',
-            height: '32px',
-            borderRadius: '10px',
-            background: active ? `${color}15` : 'transparent',
-            color: active ? color : designTokens.colors.textSecondary,
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            whiteSpace: 'nowrap',
-            fontWeight: active ? '700' : '600',
-            fontSize: '12px',
-            border: active ? `1px solid ${color}30` : '1px solid transparent'
-        }),
-        leadCard: {
-            background: designTokens.colors.surface,
-            borderRadius: designTokens.radius.lg,
-            border: `1px solid ${designTokens.colors.border}`,
-            marginBottom: '16px',
-            overflow: 'hidden',
-            transition: 'all 0.5s cubic-bezier(0.23, 1, 0.32, 1)',
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01)',
-            position: 'relative',
-        },
-        leadCardActive: {
-            boxShadow: designTokens.shadows.premium,
-            borderColor: `${designTokens.colors.primary}40`,
-            transform: 'scale(1.005) translateY(-4px)',
-        },
-        summaryRow: (isActive) => ({
-            padding: '28px 36px',
-            display: 'flex',
-            alignItems: 'center',
-            cursor: 'pointer',
-            background: isActive ? 'linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)' : '#FFFFFF',
-            transition: 'all 0.4s ease',
-            position: 'relative',
-            zIndex: 1,
-            borderLeft: isActive ? `6px solid ${designTokens.colors.primary}` : `6px solid transparent`
-        }),
-        outcomeBtn: (active, color) => ({
-            padding: '10px 18px',
-            borderRadius: '12px',
-            fontSize: '13px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            border: `2px solid ${active ? color : designTokens.colors.border}`,
-            background: active ? `${color}15` : designTokens.colors.surface,
-            color: active ? color : designTokens.colors.textSecondary,
-            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            boxShadow: active ? `0 4px 12px ${color}20` : 'none',
-            transform: active ? 'translateY(-1px)' : 'none'
-        }),
-        input: {
-            width: '100%',
-            padding: '14px 18px',
-            borderRadius: '14px',
-            border: `1.5px solid ${designTokens.colors.border}`,
-            fontSize: '14px',
-            color: designTokens.colors.textPrimary,
-            outline: 'none',
-            transition: 'all 0.2s ease',
-            boxSizing: 'border-box',
-            background: '#F9FAFB',
-            fontFamily: 'Inter, sans-serif'
-        },
-        inputFocus: {
-            borderColor: designTokens.colors.primary,
-            boxShadow: `0 0 0 4px ${designTokens.colors.primary}15`,
-            background: designTokens.colors.surface
-        },
-        pagination: {
-            marginTop: '40px',
-            padding: '24px 32px',
-            borderRadius: '24px',
-            background: '#fff',
-            boxShadow: designTokens.shadows.sm,
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            border: `1px solid ${designTokens.colors.border}`,
-        },
-        pageBtn: (isActive, disabled) => ({
-            width: '40px',
-            height: '40px',
-            borderRadius: '12px',
-            background: isActive ? designTokens.colors.primary : (disabled ? '#F8FAFC' : '#fff'),
-            color: isActive ? '#fff' : (disabled ? '#CBD5E1' : designTokens.colors.textPrimary),
-            fontWeight: '800',
-            fontSize: '14px',
-            cursor: disabled ? 'not-allowed' : 'pointer',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: isActive ? `0 8px 16px ${designTokens.colors.primary}30` : 'none',
-            border: isActive ? 'none' : `1px solid ${designTokens.colors.border}`,
-        }),
-        navBtn: (disabled) => ({
-            padding: '0 20px',
-            height: '40px',
-            borderRadius: '12px',
-            border: `1px solid ${designTokens.colors.border}`,
-            background: disabled ? '#F8FAFC' : '#fff',
-            color: disabled ? '#CBD5E1' : designTokens.colors.textPrimary,
-            fontWeight: '700',
-            fontSize: '13px',
-            cursor: disabled ? 'not-allowed' : 'pointer',
-            transition: 'all 0.3s ease',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-        }),
-        actionPanel: {
-            padding: '40px',
-            background: '#FFFFFF',
-            borderTop: `1px solid ${designTokens.colors.border}`,
-            display: 'grid',
-            gridTemplateColumns: 'minmax(300px, 1.2fr) minmax(400px, 2fr) minmax(300px, 1.2fr)',
-            gap: '40px',
-            animation: 'fadeIn 0.5s ease'
-        },
-        badge: (color) => ({
-            padding: '6px 14px',
-            borderRadius: '100px',
-            fontSize: '11px',
-            fontWeight: '700',
-            background: `${color}10`,
-            color: color,
-            border: `1px solid ${color}30`,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em'
-        }),
-        timelineItem: (isActive) => ({
-            padding: '20px',
-            borderRadius: '16px',
-            background: isActive ? '#F8FAFC' : 'transparent',
-            border: `1px solid ${isActive ? designTokens.colors.primary + '40' : designTokens.colors.border}`,
-            position: 'relative',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            marginLeft: '12px'
-        }),
-        iconBtn: (color, gradient) => ({
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '42px',
-            height: '42px',
-            borderRadius: '14px',
-            background: gradient || color,
-            color: '#fff',
-            fontSize: '20px',
-            textDecoration: 'none',
-            transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-            boxShadow: `0 8px 16px ${color}25`,
-            border: 'none',
-            cursor: 'pointer',
-        })
-    };
-
-    const StatusBadge = ({ lead }) => {
-        const isManagerOrLeader = (userDesignation || "").toLowerCase().includes("manager") || (userDesignation || "").toLowerCase().includes("leader") || (userName || "").toLowerCase().includes("sumeetha");
-        const displayStage = (lead.is_reactive && isManagerOrLeader) ? "Reactive Lead" : (lead.stage || "Fresh Lead");
-
-        const getStyles = (s) => {
-            const map = {
-                "Fresh Lead": { color: "#64748B" },
-                "Reactive Lead": { color: "#c41d7f" },
-                "Attempting Contact": { color: designTokens.colors.warning },
-                "First Call Connected": { color: designTokens.colors.info },
-                "Demo Conducted": { color: designTokens.colors.secondary },
-                "Closed Won": { color: designTokens.colors.success },
-                "Closed Lost": { color: designTokens.colors.danger }
-            };
-            return map[s] || { color: designTokens.colors.textSecondary };
-        };
-        const styles_badge = getStyles(displayStage);
-        return (
-            <span style={styles.badge(styles_badge.color)}>
-                {displayStage}
-            </span>
-        );
-    };
-
-    const globalStyles = `
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        .spinning {
-            animation: spin 2s linear infinite;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: ${designTokens.colors.primary} !important;
-            box-shadow: 0 0 0 4px ${designTokens.colors.primary}15 !important;
-        }
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: ${designTokens.colors.border};
-            border-radius: 10px;
-        }
-        .filter-row::-webkit-scrollbar {
-            display: none;
-        }
-    `;
-
-    
-
-    return (
-        <div id="create-marketing-team" style={{ padding: "24px", minHeight: "100vh", backgroundColor: designTokens.colors.background }}>
-            <Toaster position="top-right" />
-            
-            <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-                    <div>
-                        <h1 style={{ fontSize: "28px", fontWeight: "700", color: designTokens.colors.textPrimary, margin: "0 0 8px 0" }}>
-                            ⏰ Upcoming Follow-ups
-                        </h1>
-                        <p style={{ color: designTokens.colors.textSecondary, margin: 0 }}>
-                            Prioritized list of leads you need to contact today.
-                        </p>
-                    </div>
-                    <button 
-                        onClick={fetchFollowups}
-                        style={{
-                            padding: "10px 16px",
-                            backgroundColor: designTokens.colors.surface,
-                            border: `1px solid ${designTokens.colors.border}`,
-                            borderRadius: designTokens.radius.md,
-                            cursor: "pointer",
-                            fontWeight: "500",
-                            boxShadow: designTokens.shadows.sm
-                        }}
-                    >
-                        🔄 Refresh List
-                    </button>
-                </div>
-
-                {loading ? (
-                    <div style={{ textAlign: "center", padding: "40px" }}>Loading follow-ups...</div>
-                ) : leads.length === 0 ? (
-                    <div style={{ 
-                        backgroundColor: designTokens.colors.surface, 
-                        padding: "48px", 
-                        borderRadius: designTokens.radius.lg,
-                        textAlign: "center",
-                        boxShadow: designTokens.shadows.sm
-                    }}>
-                        <div style={{ fontSize: "48px", marginBottom: "16px" }}>🎉</div>
-                        <h3 style={{ margin: "0 0 8px 0", color: designTokens.colors.textPrimary }}>All Caught Up!</h3>
-                        <p style={{ color: designTokens.colors.textSecondary }}>You have no pending follow-ups scheduled.</p>
-                    </div>
-                ) : (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                        {leads.map((lead, idx) => {
-                            const isOpen = activeLead === lead._id;
-                            const form = formState[lead._id] || {};
-                            const history = callHistory[lead._id] || [];
-                            const demoNeeded = ["interested", "callback_requested", "follow_up"].includes(form.callOutcome);
-
-return (
-                                            <div key={lead._id} style={{
-                                                ...styles.leadCard,
-                                                ...(isOpen ? styles.leadCardActive : {})
-                                            }}>
-                                                <div
-                                                    onClick={() => toggleRow(lead)}
-                                                    style={styles.summaryRow(isOpen)}
-                                                >
-                                                    <div style={{ width: '48px', color: designTokens.colors.textSecondary, fontWeight: '800', fontSize: '14px', opacity: 0.5 }}>
-                                                        {String((currentPage - 1) * limit + idx + 1).padStart(2, '0')}
-                                                    </div>
-
-                                                    <div style={{ flex: 2 }}>
-                                                        <div style={{ fontWeight: '800', fontSize: '18px', color: designTokens.colors.textPrimary, letterSpacing: '-0.01em' }}>{lead.full_name}</div>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '6px' }}>
-                                                            <div style={{ fontSize: '13px', color: designTokens.colors.textSecondary, fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>call</span>
-                                                                {lead.phone_number}
-                                                            </div>
-                                                            <div style={{ display: 'flex', gap: '10px' }}>
-                                                                <a
-                                                                    href={`https://wa.me/${lead.phone_number.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${lead.full_name}, this is from Krutanic`)}`}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    title="WhatsApp"
-                                                                    onClick={(e) => e.stopPropagation()}
-                                                                    style={styles.iconBtn('#25D366', 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)')}
-                                                                    onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.1)'; e.currentTarget.style.boxShadow = '0 12px 20px rgba(37, 211, 102, 0.4)'; }}
-                                                                    onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 8px 16px rgba(37, 211, 102, 0.25)'; }}
-                                                                >
-                                                                    <i className="fa fa-whatsapp"></i>
-                                                                </a>
-                                                                <button
-                                                                    title="Dial"
-                                                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRemoteDial(lead.phone_number, lead._id); }}
-                                                                    style={{
-                                                                        ...styles.iconBtn(designTokens.colors.warning, 'linear-gradient(135deg, #FF9966 0%, #FF5E62 100%)'),
-                                                                        border: activeCallLeadId === lead._id ? '2px solid white' : 'none',
-                                                                        boxShadow: activeCallLeadId === lead._id ? `0 0 20px ${designTokens.colors.warning}` : styles.iconBtn(designTokens.colors.warning, 'linear-gradient(135deg, #FF9966 0%, #FF5E62 100%)').boxShadow
-                                                                    }}
-                                                                    onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.1)'; e.currentTarget.style.boxShadow = '0 12px 20px rgba(255, 94, 98, 0.4)'; }}
-                                                                    onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 8px 16px rgba(255, 94, 98, 0.25)'; }}
-                                                                >
-                                                                    <i className="fa fa-phone"></i>
-                                                                </button>
-                                                                <a
-                                                                    href="https://meet.google.com/new"
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    title="Video Meet"
-                                                                    onClick={(e) => e.stopPropagation()}
-                                                                    style={styles.iconBtn('#EA4335', 'linear-gradient(135deg, #EE0979 0%, #FF6A00 100%)')}
-                                                                    onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.1)'; e.currentTarget.style.boxShadow = '0 12px 20px rgba(238, 9, 121, 0.4)'; }}
-                                                                    onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 8px 16px rgba(238, 9, 121, 0.25)'; }}
-                                                                >
-                                                                    <i className="fa fa-video-camera"></i>
-                                                                </a>
-                                                                <button
-                                                                    title="Send Mail"
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        setSelectedLeadForEmail(lead);
-                                                                        setEmailRecipient(lead.email || "");
-                                                                        setEmailSubject(`Registration Confirmation - ${lead.opted_domain || "General"} | Krutanic`);
-                                                                        setEmailDomain(lead.opted_domain || "General");
-                                                                        setShowEmailModal(true);
-                                                                    }}
-                                                                    style={styles.iconBtn(designTokens.colors.primary, 'linear-gradient(135deg, #00B4DB 0%, #0083B0 100%)')}
-                                                                    onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.1)'; e.currentTarget.style.boxShadow = '0 12px 20px rgba(0, 180, 219, 0.4)'; }}
-                                                                    onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 180, 219, 0.25)'; }}
-                                                                >
-                                                                    <i className="fa fa-envelope"></i>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div style={{ flex: 3.5, display: 'flex', alignItems: 'center', gap: '30px' }}>
-                                                        <div style={{ minWidth: '140px' }}>
-                                                            <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>terminal</span> Target Domain
-                                                            </div>
-                                                            <div style={{ fontSize: '15px', fontWeight: '800', color: designTokens.colors.textPrimary, letterSpacing: '-0.01em' }}>{lead.opted_domain || 'General'}</div>
-                                                        </div>
-                                                        {!isManager && (
-                                                            <div style={{ minWidth: '110px' }}>
-                                                                <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                                    <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>corporate_fare</span> Entity
-                                                                </div>
-                                                                <div style={{ fontSize: '14px', fontWeight: '700', color: designTokens.colors.textSecondary }}>{lead.company_name || 'Individual'}</div>
-                                                            </div>
-                                                        )}
-                                                        <div style={{ minWidth: '130px' }}>
-                                                            <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>history_toggle_off</span> Created On
-                                                            </div>
-                                                            <div style={{ fontSize: '13px', fontWeight: '700', color: designTokens.colors.textPrimary }}>{lead.created_at ? new Date(lead.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}</div>
-                                                        </div>
-                                                        <div style={{ minWidth: '130px' }}>
-                                                            <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>assignment_ind</span> Assigned On
-                                                            </div>
-                                                            <div style={{ fontSize: '13px', fontWeight: '700', color: designTokens.colors.textPrimary }}>{lead.assigned_at ? new Date(lead.assigned_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}</div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '24px' }}>
-                                                        {lead.last_recording_url && (
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={e => e.stopPropagation()}>
-                                                                <AudioButton url={lead.last_recording_url} />
-                                                            </div>
-                                                        )}
-                                                        {isManager && (
-                                                            <button 
-                                                                onClick={(e) => { e.stopPropagation(); setSelectedLeadForReassign(lead); setShowReassignModal(true); }}
-                                                                style={{ padding: '6px 12px', borderRadius: '8px', border: `1px solid ${designTokens.colors.primary}`, background: '#fff', color: designTokens.colors.primary, fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
-                                                            >
-                                                                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>swap_horiz</span> Reassign
-                                                            </button>
-                                                        )}
-                                                        <StatusBadge lead={lead} />
-                                                        <div className="material-symbols-outlined" style={{
-                                                            width: '32px', height: '32px', borderRadius: '10px', background: isOpen ? designTokens.colors.primary : designTokens.colors.background,
-                                                            display: 'flex', alignItems: 'center', justifyContent: 'center', color: isOpen ? '#fff' : designTokens.colors.textSecondary,
-                                                            fontSize: '20px', transition: 'all 0.3s ease', cursor: 'pointer',
-                                                            boxShadow: isOpen ? `0 4px 12px ${designTokens.colors.primary}40` : 'none'
-                                                        }}>
-                                                            {isOpen ? 'expand_less' : 'expand_more'}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* Action Panel */}
-                                                {isOpen && (
-                                                    <div style={styles.actionPanel}>
-                                                        {/* COLUMN 1: Lead Intelligence */}
-                                                        <div style={{ borderRight: `1px solid ${designTokens.colors.border}`, paddingRight: '32px' }}>
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
-                                                                <div style={{ padding: '10px', background: `${designTokens.colors.success}15`, borderRadius: '12px', color: designTokens.colors.success }}>
-                                                                    <span className="material-symbols-outlined">analytics</span>
-                                                                </div>
-                                                                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: designTokens.colors.textPrimary }}>Intelligence</h3>
-                                                            </div>
-
-                                                            <div style={{
-                                                                display: 'flex',
-                                                                flexDirection: 'column',
-                                                                gap: '20px',
-                                                                maxHeight: '600px',
-                                                                overflowY: 'auto',
-                                                                paddingRight: '12px',
-                                                                scrollbarWidth: 'thin'
-                                                            }}>
-                                                                {[
-                                                                    { label: 'Pipeline Stage', value: lead.stage, icon: 'account_tree' },
-                                                                    { label: 'Disposition', value: lead.disposition, icon: 'label_important' },
-                                                                     { label: 'Contact Attempts', value: `${lead.attempt_count || 0} Attempts`, icon: 'call_log' },
-                                                                    { label: 'Last called at', value: lead.last_contacted_at ? new Date(lead.last_contacted_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'Never Called', icon: 'history' },
-                                                                    { 
-                                                                        label: 'Next Follow-up', 
-                                                                        value: lead.next_followup_at 
-                                                                            ? subtractFiveThirtyAndFormat(lead.next_followup_at) 
-                                                                            : (Object.keys(lead.extra_fields || {}).some(k => k.toLowerCase().includes('followup') || k.toLowerCase().includes('call back') || k.toLowerCase().includes('callback')) ? '' : 'Not Scheduled'), 
-                                                                        icon: 'schedule' 
-                                                                    },
-                                                                    { label: 'Primary Contact', value: lead.email, icon: 'mail' },
-                                                                    { label: 'Workplace', value: lead.company_name, icon: 'business' },
-                                                                    { label: 'Educational Background', value: lead.education_background, icon: 'school' },
-                                                                    { label: 'Growth Readiness', value: lead.upskilling_ready, icon: 'trending_up' },
-                                                                ].filter(item => !isManager || item.label !== 'Workplace').map((item, i) => (
-                                                                    item.value && (
-                                                                        <div key={i} style={{ display: 'flex', gap: '12px' }}>
-                                                                            <span className="material-symbols-outlined" style={{ fontSize: '18px', color: designTokens.colors.textSecondary, marginTop: '2px' }}>{item.icon}</span>
-                                                                            <div>
-                                                                                <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '4px', opacity: 0.6 }}>{item.label}</div>
-                                                                                <div style={{ fontSize: '13px', fontWeight: '700', color: designTokens.colors.textPrimary, wordBreak: 'break-all' }}>{item.value}</div>
-                                                                            </div>
-                                                                        </div>
-                                                                    )
-                                                                ))}
-
-                                                                {lead.extra_fields && Object.keys(lead.extra_fields).length > 0 && (
-                                                                    <div style={{ borderTop: `1px dashed ${designTokens.colors.border}`, marginTop: '10px', paddingTop: '20px' }}>
-                                                                        <div style={{ display: 'grid', gap: '16px' }}>
-                                                                            {Object.entries(lead.extra_fields).map(([key, val]) => (
-                                                                                <div key={key}>
-                                                                                    <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase', marginBottom: '4px', opacity: 0.6 }}>{key.replace(/_/g, ' ')}</div>
-                                                                                    <div style={{ fontSize: '13px', fontWeight: '600', color: designTokens.colors.textPrimary }}>{val || '—'}</div>
-                                                                                </div>
-                                                                            ))}
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </div>
-
-                                                        {/* COLUMN 2: Interaction Hub */}
-                                                        <div>
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
-                                                                <div style={{ padding: '10px', background: `${designTokens.colors.primary}15`, borderRadius: '12px', color: designTokens.colors.primary }}>
-                                                                    <span className="material-symbols-outlined">call_log</span>
-                                                                </div>
-                                                                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: designTokens.colors.textPrimary }}>Interaction Hub</h3>
-                                                            </div>
-
-                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                                                    <label style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase' }}>Action Type</label>
-                                                                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                                                                        {ACTION_TYPES.map(a => (
-                                                                            <button
-                                                                                key={a.value}
-                                                                                onClick={() => updateForm(lead._id, 'actionType', a.value)}
-                                                                                style={styles.outcomeBtn(form.actionType === a.value, designTokens.colors.primary)}
-                                                                            >
-                                                                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>{a.icon}</span>
-                                                                                {a.label}
-                                                                            </button>
-                                                                        ))}
-                                                                    </div>
-                                                                </div>
-
-                                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                                                    <label style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase' }}>Lead Stage</label>
-                                                                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                                                                        {Object.keys(STAGES_AND_DISPOSITIONS).map(s => (
-                                                                            <button
-                                                                                key={s}
-                                                                                onClick={() => updateForm(lead._id, 'stage', s)}
-                                                                                style={styles.outcomeBtn(form.stage === s, designTokens.colors.secondary)}
-                                                                            >
-                                                                                {s}
-                                                                            </button>
-                                                                        ))}
-                                                                    </div>
-                                                                </div>
-
-                                                                {form.stage && (
-                                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                                                        <label style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase' }}>Disposition</label>
-                                                                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                                                                            {STAGES_AND_DISPOSITIONS[form.stage].map(d => (
-                                                                                <button
-                                                                                    key={d}
-                                                                                    onClick={() => updateForm(lead._id, 'disposition', d)}
-                                                                                    style={styles.outcomeBtn(form.disposition === d, designTokens.colors.success)}
-                                                                                >
-                                                                                    {d}
-                                                                                </button>
-                                                                            ))}
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-
-                                                                <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '24px' }}>
-                                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                                                        <label style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase' }}>Executive Summary</label>
-                                                                        <textarea
-                                                                            style={{ ...styles.input, height: '140px', resize: 'none' }}
-                                                                            placeholder="Detail the conversation highlights..."
-                                                                            value={form.summary || ""}
-                                                                            onChange={e => updateForm(lead._id, 'summary', e.target.value)}
-                                                                        />
-                                                                    </div>
-                                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                                                            <label style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.textSecondary, textTransform: 'uppercase' }}>Internal Notes</label>
-                                                                            <input
-                                                                                style={styles.input}
-                                                                                placeholder="Private remarks..."
-                                                                                value={form.remark || ""}
-                                                                                onChange={e => updateForm(lead._id, 'remark', e.target.value)}
-                                                                            />
-                                                                        </div>
-
-                                                                        {(!["Closed Won", "Closed Lost"].includes(form.stage)) && (
-                                                                            <div style={{
-                                                                                display: 'flex',
-                                                                                flexDirection: 'column',
-                                                                                gap: '10px',
-                                                                                padding: '16px',
-                                                                                background: `${designTokens.colors.info}10`,
-                                                                                borderRadius: '16px',
-                                                                                border: `1px solid ${designTokens.colors.info}30`
-                                                                            }}>
-                                                                                <label style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.info, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                                                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>event_repeat</span>
-                                                                                    Next Follow-up
-                                                                                </label>
-                                                                                <input
-                                                                                    type="datetime-local"
-                                                                                    style={{ ...styles.input, border: 'none', background: '#FFFFFF', padding: '10px 14px' }}
-                                                                                    value={form.followUpDate || ""}
-                                                                                    onChange={e => updateForm(lead._id, 'followUpDate', e.target.value)}
-                                                                                />
-                                                                            </div>
-                                                                        )}
-
-                                                                        {form.disposition === "Demo Booked" && (
-                                                                            <div style={{
-                                                                                display: 'flex',
-                                                                                flexDirection: 'column',
-                                                                                gap: '10px',
-                                                                                padding: '16px',
-                                                                                background: `${designTokens.colors.warning}10`,
-                                                                                borderRadius: '16px',
-                                                                                border: `1px solid ${designTokens.colors.warning}30`
-                                                                            }}>
-                                                                                <label style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.warning, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                                                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>calendar_month</span>
-                                                                                    Schedule Demo
-                                                                                </label>
-                                                                                <input
-                                                                                    type="datetime-local"
-                                                                                    style={{ ...styles.input, border: 'none', background: '#FFFFFF', padding: '10px 14px' }}
-                                                                                    value={form.demoScheduleDate || ""}
-                                                                                    onChange={e => updateForm(lead._id, 'demoScheduleDate', e.target.value)}
-                                                                                />
-                                                                            </div>
-                                                                        )}
-
-                                                                        {(form.disposition === "Expected Payment Date" || form.disposition === "Converted") && (
-                                                                            <div style={{
-                                                                                display: 'flex',
-                                                                                flexDirection: 'column',
-                                                                                gap: '10px',
-                                                                                padding: '16px',
-                                                                                background: `${designTokens.colors.success}10`,
-                                                                                borderRadius: '16px',
-                                                                                border: `1px solid ${designTokens.colors.success}30`
-                                                                            }}>
-                                                                                <label style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.success, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                                                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>payments</span>
-                                                                                    Payment Date
-                                                                                </label>
-                                                                                <input
-                                                                                    type="date"
-                                                                                    style={{ ...styles.input, border: 'none', background: '#FFFFFF', padding: '10px 14px' }}
-                                                                                    value={form.expectedPaymentDate || ""}
-                                                                                    onChange={e => updateForm(lead._id, 'expectedPaymentDate', e.target.value)}
-                                                                                />
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
-                                                                </div>
-
-                                                                <button
-                                                                    disabled={submitting === lead._id || !form.disposition}
-                                                                    onClick={() => handleLogCall(lead)}
-                                                                    style={{
-                                                                        marginTop: '12px',
-                                                                        padding: '18px',
-                                                                        borderRadius: '16px',
-                                                                        border: 'none',
-                                                                        background: !form.disposition ? designTokens.colors.border : `linear-gradient(135deg, ${designTokens.colors.primary}, ${designTokens.colors.secondary})`,
-                                                                        color: '#fff',
-                                                                        fontWeight: '800',
-                                                                        fontSize: '16px',
-                                                                        cursor: 'pointer',
-                                                                        transition: 'all 0.3s ease',
-                                                                        boxShadow: form.disposition ? `0 12px 24px ${designTokens.colors.primary}40` : 'none',
-                                                                        display: 'flex',
-                                                                        alignItems: 'center',
-                                                                        justifyContent: 'center',
-                                                                        gap: '12px'
-                                                                    }}
-                                                                >
-                                                                    {submitting === lead._id ? (
-                                                                        <>
-                                                                            <span className="material-symbols-outlined spinning">sync</span>
-                                                                            Executing Protocol...
-                                                                        </>
-                                                                    ) : (
-                                                                        <>
-                                                                            <span className="material-symbols-outlined">save</span>
-                                                                            Log Activity & Progress
-                                                                        </>
-                                                                    )}
-                                                                </button>
-                                                            </div>
-                                                        </div>
-
-                                                        {/* COLUMN 3: Historical Records */}
-                                                        <div style={{ borderLeft: `1px solid ${designTokens.colors.border}`, paddingLeft: '32px' }}>
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
-                                                                <div style={{ padding: '10px', background: `${designTokens.colors.secondary}15`, borderRadius: '12px', color: designTokens.colors.secondary }}>
-                                                                    <span className="material-symbols-outlined">history</span>
-                                                                </div>
-                                                                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: designTokens.colors.textPrimary }}>Records</h3>
-                                                            </div>
-
-                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: '500px', overflowY: 'auto', paddingRight: '16px' }}>
-                                                                {history.length === 0 ? (
-                                                                    <div style={{ padding: '40px 20px', textAlign: 'center', background: designTokens.colors.background, borderRadius: '20px', border: '1px solid #E2E8F0' }}>
-                                                                        <span className="material-symbols-outlined" style={{ fontSize: '48px', color: designTokens.colors.border, marginBottom: '12px' }}>cloud_off</span>
-                                                                        <p style={{ margin: 0, fontSize: '13px', color: designTokens.colors.textSecondary, fontWeight: '500' }}>No historical sequences found in the archives.</p>
-                                                                    </div>
-                                                                ) : (
-                                                                    history.map((h, i) => (
-                                                                        <div key={i} style={styles.timelineItem(expandedLogId === h._id)} onClick={() => setExpandedLogId(expandedLogId === h._id ? null : h._id)}>
-                                                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                                                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: designTokens.colors.primary }}></div>
-                                                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                                                            <div style={{ fontSize: '10px', fontWeight: '800', color: designTokens.colors.primary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                                                                                {ACTION_TYPES.find(a => a.value === h.actionType)?.label || "📞 Interaction"}
-                                                                                            </div>
-                                                                                            {h.deviceCallType && (
-                                                                                                <span style={{
-                                                                                                    padding: '2px 6px', borderRadius: '4px', fontSize: '9px', fontWeight: 'bold', letterSpacing: '0.05em',
-                                                                                                    background: h.deviceCallType === 'INCOMING' ? '#e6f4ea' : h.deviceCallType === 'MISSED' ? '#fce8e6' : '#e8f0fe',
-                                                                                                    color: h.deviceCallType === 'INCOMING' ? '#137333' : h.deviceCallType === 'MISSED' ? '#c5221f' : '#1a73e8'
-                                                                                                }}>
-                                                                                                    {h.deviceCallType}
-                                                                                                </span>
-                                                                                            )}
-                                                                                        </div>
-                                                                                        <span style={{ fontSize: '12px', fontWeight: '800', color: designTokens.colors.textPrimary }}>
-                                                                                            {h.stage ? `${h.stage} (${h.disposition})` : (h.callOutcome || "Unknown").toUpperCase()}
-                                                                                        </span>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <span style={{ fontSize: '11px', color: designTokens.colors.textSecondary, fontWeight: '600' }}>
-                                                                                    {new Date(h.createdAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })} {new Date(h.createdAt).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' })}
-                                                                                </span>
-                                                                            </div>
-
-                                                                            {/* Scheduled Dates Display */}
-                                                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '8px' }}>
-                                                                                {h.followUpDate && (
-                                                                                    <div style={{ fontSize: '11px', background: `${designTokens.colors.info}15`, color: designTokens.colors.info, padding: '4px 8px', borderRadius: '6px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                                                        <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>event_repeat</span>
-                                                                                        Follow-up: {subtractFiveThirtyAndFormat(h.followUpDate)}
-                                                                                    </div>
-                                                                                )}
-                                                                                {h.demoScheduleDate && (
-                                                                                    <div style={{ fontSize: '11px', background: `${designTokens.colors.warning}15`, color: designTokens.colors.warning, padding: '4px 8px', borderRadius: '6px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                                                        <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>calendar_month</span>
-                                                                                        Demo: {subtractFiveThirtyAndFormat(h.demoScheduleDate)}
-                                                                                    </div>
-                                                                                )}
-                                                                                {h.expectedPaymentDate && (
-                                                                                    <div style={{ fontSize: '11px', background: `${designTokens.colors.success}15`, color: designTokens.colors.success, padding: '4px 8px', borderRadius: '6px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                                                        <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>payments</span>
-                                                                                        Payment: {new Date(h.expectedPaymentDate).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}
-                                                                                    </div>
-                                                                                )}
-                                                                            </div>
-
-                                                                            <p style={{ margin: 0, fontSize: '13px', color: designTokens.colors.textSecondary, display: '-webkit-box', WebkitLineClamp: expandedLogId === h._id ? 'unset' : 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{h.summary || "Archived interactions trace."}</p>
-
-                                                                            {h.recordingUrl && (
-                                                                                <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={(e) => e.stopPropagation()}>
-                                                                                    <AudioButton url={h.recordingUrl} />
-                                                                                </div>
-                                                                            )}
-
-                                                                            {expandedLogId === h._id && h.remark && (
-                                                                                <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px dashed #E2E8F0', fontSize: '12px', color: designTokens.colors.textSecondary, fontStyle: 'italic' }}>
-                                                                                    Internal Note: {h.remark}
-                                                                                </div>
-                                                                            )}
-                                                                        </div>
-                                                                    ))
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        );
-                                    })}
-                    </div>
-                )}
+      {/* ── Header ── */}
+      <div style={{ padding: "32px 40px 0" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
+              <div style={{ width: 40, height: 40, borderRadius: 12, background: "linear-gradient(135deg,#6366f1,#8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>⏰</div>
+              <h1 style={{ margin: 0, fontSize: 26, fontWeight: 800, background: "linear-gradient(135deg,#818cf8,#a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                Follow-up Queue
+              </h1>
             </div>
+            <p style={{ margin: 0, color: "#64748b", fontSize: 14 }}>
+              Leads scheduled for contact — {leads.length} total
+            </p>
+          </div>
+
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            {/* Stats chips */}
+            {overdue > 0 && (
+              <div style={{ padding: "6px 14px", background: "#fee2e218", border: "1px solid #ef444430", borderRadius: 99, fontSize: 13, fontWeight: 700, color: "#ef4444", display: "flex", alignItems: "center", gap: 6 }}>
+                🔴 {overdue} Overdue
+              </div>
+            )}
+            {today > 0 && (
+              <div style={{ padding: "6px 14px", background: "#fef9c318", border: "1px solid #f59e0b30", borderRadius: 99, fontSize: 13, fontWeight: 700, color: "#f59e0b", display: "flex", alignItems: "center", gap: 6 }}>
+                🟡 {today} Today
+              </div>
+            )}
+            <button className="fu-btn" onClick={fetchFollowups} style={{
+              padding: "8px 18px", borderRadius: 10, background: "#1e293b", border: "1px solid #334155",
+              color: "#94a3b8", fontWeight: 600, fontSize: 13, cursor: "pointer",
+            }}>
+              ↺ Refresh
+            </button>
+          </div>
         </div>
-    );
+
+        {/* ── Filter / Search bar ── */}
+        <div style={{ display: "flex", gap: 12, marginBottom: 28, flexWrap: "wrap" }}>
+          <div style={{ flex: 1, minWidth: 220, position: "relative" }}>
+            <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#475569", fontSize: 16 }}>🔍</span>
+            <input
+              className="fu-action-input"
+              style={{ paddingLeft: 38 }}
+              placeholder="Search by name or phone…"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
+          <div style={{ display: "flex", gap: 6, background: "#1e293b", padding: 4, borderRadius: 10, border: "1px solid #334155" }}>
+            {[["all","All"], ["overdue","Overdue"], ["today","Today"]].map(([val, label]) => (
+              <button key={val} className="fu-btn" onClick={() => setFilter(val)} style={{
+                padding: "6px 16px", borderRadius: 8, fontWeight: 600, fontSize: 13, cursor: "pointer",
+                background: filter === val ? "#6366f1" : "transparent",
+                color: filter === val ? "#fff" : "#64748b",
+                border: "none",
+              }}>{label}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Content ── */}
+      <div style={{ padding: "0 40px 60px" }}>
+        {loading ? (
+          <div style={{ textAlign: "center", padding: "80px 0", color: "#475569" }}>
+            <div className="spinning" style={{ fontSize: 32, marginBottom: 16 }}>⟳</div>
+            <p style={{ margin: 0 }}>Loading follow-ups…</p>
+          </div>
+        ) : displayed.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "80px 0", background: "#1e293b", borderRadius: 20, border: "1px solid #334155" }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>🎉</div>
+            <h3 style={{ margin: "0 0 8px", color: "#e2e8f0" }}>All Clear!</h3>
+            <p style={{ margin: 0, color: "#64748b" }}>No follow-ups{search ? " matching your search" : " scheduled"}.</p>
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {displayed.map((lead, idx) => {
+              const isOpen = openId === lead._id;
+              const f      = forms[lead._id] || {};
+              const hist   = histories[lead._id] || [];
+              const urgColor = urgencyColor(lead.next_followup_at);
+
+              return (
+                <div key={lead._id} className={`fu-card${isOpen ? " open" : ""}`} style={{
+                  background: "#1a2035", borderRadius: 16, border: "1px solid #1e293b",
+                  overflow: "hidden", borderLeft: `4px solid ${urgColor}`,
+                }}>
+                  {/* ── Summary Row ── */}
+                  <div onClick={() => togglePanel(lead)} style={{
+                    padding: "18px 24px", display: "grid", cursor: "pointer",
+                    gridTemplateColumns: "32px 1fr auto auto auto",
+                    alignItems: "center", gap: 16,
+                    background: isOpen ? "rgba(99,102,241,0.05)" : "transparent",
+                  }}>
+                    {/* Index */}
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "#475569" }}>
+                      {String(idx + 1).padStart(2, "0")}
+                    </span>
+
+                    {/* Name + phone + next followup */}
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 16, color: "#f1f5f9", marginBottom: 4 }}>
+                        {lead.full_name || "—"}
+                      </div>
+                      <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "center" }}>
+                        <span style={{ fontSize: 13, color: "#94a3b8" }}>📞 {lead.phone_number || "—"}</span>
+                        {lead.opted_domain && (
+                          <span style={{ fontSize: 12, color: "#64748b", fontWeight: 500 }}>🎯 {lead.opted_domain}</span>
+                        )}
+                        {lead.next_followup_at && (
+                          <span style={{ fontSize: 12, fontWeight: 700, color: urgColor }}>
+                            {new Date(lead.next_followup_at) < now ? "⚠ Overdue · " : "🕐 "}
+                            {formatIST(lead.next_followup_at)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Quick actions */}
+                    <div style={{ display: "flex", gap: 8 }} onClick={e => e.stopPropagation()}>
+                      <a
+                        href={`https://wa.me/${(lead.phone_number || "").replace(/\D/g, "")}?text=${encodeURIComponent(`Hello ${lead.full_name}, this is from Krutanic`)}`}
+                        target="_blank" rel="noopener noreferrer" title="WhatsApp"
+                        style={{ width: 34, height: 34, borderRadius: 10, background: "#25d366", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 16, textDecoration: "none", flexShrink: 0 }}
+                      >
+                        <i className="fa fa-whatsapp" />
+                      </a>
+                      <button className="fu-btn" title="Dial" onClick={() => handleDial(lead.phone_number, lead._id)} style={{
+                        width: 34, height: 34, borderRadius: 10,
+                        background: activeCallId === lead._id ? "#ef4444" : "linear-gradient(135deg,#f97316,#ef4444)",
+                        color: "#fff", fontSize: 14, cursor: "pointer",
+                        display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                        boxShadow: activeCallId === lead._id ? "0 0 14px #ef4444" : "none",
+                      }}>
+                        <i className="fa fa-phone" />
+                      </button>
+                    </div>
+
+                    {/* Stage badge */}
+                    <StagePill stage={lead.stage} isReactive={lead.is_reactive} isManagerOrLeader={isManager} />
+
+                    {/* Expand chevron */}
+                    <span style={{ color: "#6366f1", fontSize: 18, fontWeight: 700, userSelect: "none" }}>
+                      {isOpen ? "▲" : "▼"}
+                    </span>
+                  </div>
+
+                  {/* ── Action Panel ── */}
+                  {isOpen && (
+                    <div className="slide-down" style={{
+                      borderTop: "1px solid #1e293b",
+                      display: "grid", gridTemplateColumns: "1fr 1.6fr 1fr",
+                      gap: 0,
+                    }}>
+                      {/* ── Col 1: Intelligence ── */}
+                      <div style={{ padding: "28px 24px", borderRight: "1px solid #1e293b", maxHeight: "70vh", overflowY: "auto" }}>
+                        <h4 style={{ margin: "0 0 20px", fontSize: 13, fontWeight: 800, color: "#6366f1", textTransform: "uppercase", letterSpacing: "0.06em", display: "flex", alignItems: "center", gap: 8 }}>
+                          🧠 Intelligence
+                        </h4>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                          {[
+                            { label: "Pipeline Stage",     value: lead.stage },
+                            { label: "Disposition",        value: lead.disposition },
+                            { label: "Contact Attempts",   value: lead.attempt_count != null ? `${lead.attempt_count} attempts` : null },
+                            { label: "Last Contacted",     value: lead.last_contacted_at ? timeSince(lead.last_contacted_at) : "Never" },
+                            { label: "Next Follow-up",     value: lead.next_followup_at ? formatIST(lead.next_followup_at) : "Not scheduled" },
+                            { label: "Email",              value: lead.email },
+                            { label: "Company",            value: !isManager ? lead.company_name : null },
+                            { label: "Education",          value: lead.education_background },
+                            { label: "Upskilling Ready",   value: lead.upskilling_ready },
+                            { label: "Assigned",           value: lead.assigned_at ? formatIST(lead.assigned_at, { day: "2-digit", month: "short" }) : null },
+                          ].filter(x => x.value).map((x, i) => (
+                            <div key={i} style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                              <span style={{ fontSize: 10, fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: "0.06em" }}>{x.label}</span>
+                              <span style={{ fontSize: 13, fontWeight: 600, color: "#cbd5e1", wordBreak: "break-word" }}>{x.value}</span>
+                            </div>
+                          ))}
+                          {/* Extra fields */}
+                          {lead.extra_fields && Object.entries(lead.extra_fields).filter(([, v]) => v).map(([k, v]) => (
+                            <div key={k} style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                              <span style={{ fontSize: 10, fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: "0.06em" }}>{k.replace(/_/g, " ")}</span>
+                              <span style={{ fontSize: 12, fontWeight: 500, color: "#94a3b8" }}>{String(v)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* ── Col 2: Log Activity ── */}
+                      <div style={{ padding: "28px 28px", borderRight: "1px solid #1e293b", maxHeight: "70vh", overflowY: "auto" }}>
+                        <h4 style={{ margin: "0 0 20px", fontSize: 13, fontWeight: 800, color: "#a78bfa", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                          📋 Log Activity
+                        </h4>
+
+                        <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+                          {/* Action Type */}
+                          <div>
+                            <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>Action Type</label>
+                            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                              {ACTION_TYPES.map(a => (
+                                <button key={a.value} className="fu-chip fu-btn" onClick={() => setField(lead._id, "actionType", a.value)} style={{
+                                  padding: "6px 12px", borderRadius: 8, fontSize: 12, fontWeight: 600,
+                                  background: f.actionType === a.value ? "#6366f120" : "#1e293b",
+                                  color: f.actionType === a.value ? "#818cf8" : "#64748b",
+                                  border: `1.5px solid ${f.actionType === a.value ? "#6366f1" : "#334155"}`,
+                                }}>
+                                  {a.emoji} {a.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Stage */}
+                          <div>
+                            <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>Lead Stage</label>
+                            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                              {Object.keys(STAGES).map(s => {
+                                const c = STAGE_COLORS[s] || "#6366f1";
+                                const active = f.stage === s;
+                                return (
+                                  <button key={s} className="fu-stage-btn fu-btn" onClick={() => setField(lead._id, "stage", s)} style={{
+                                    background: active ? `${c}20` : "#1e293b",
+                                    color: active ? c : "#64748b",
+                                    borderColor: active ? c : "#334155",
+                                  }}>
+                                    {s}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {/* Disposition */}
+                          {f.stage && (
+                            <div>
+                              <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>Disposition</label>
+                              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                                {STAGES[f.stage].map(d => {
+                                  const active = f.disposition === d;
+                                  return (
+                                    <button key={d} className="fu-stage-btn fu-btn" onClick={() => setField(lead._id, "disposition", d)} style={{
+                                      background: active ? "#10b98120" : "#1e293b",
+                                      color: active ? "#10b981" : "#64748b",
+                                      borderColor: active ? "#10b981" : "#334155",
+                                    }}>
+                                      {d}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Summary + Notes row */}
+                          <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 16 }}>
+                            <div>
+                              <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>Executive Summary *</label>
+                              <textarea className="fu-action-input" rows={4} style={{ resize: "none" }}
+                                placeholder="Conversation highlights…"
+                                value={f.summary || ""}
+                                onChange={e => setField(lead._id, "summary", e.target.value)}
+                              />
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                              <div>
+                                <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>Internal Notes</label>
+                                <input className="fu-action-input" placeholder="Private remarks…" value={f.remark || ""} onChange={e => setField(lead._id, "remark", e.target.value)} />
+                              </div>
+
+                              {/* Conditional date fields */}
+                              {!["Closed Won","Closed Lost"].includes(f.stage) && (
+                                <div>
+                                  <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#0ea5e9", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>🗓 Next Follow-up</label>
+                                  <input type="datetime-local" className="fu-action-input" value={f.followUpDate || ""} onChange={e => setField(lead._id, "followUpDate", e.target.value)} />
+                                </div>
+                              )}
+                              {f.disposition === "Demo Booked" && (
+                                <div>
+                                  <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#f59e0b", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>📅 Schedule Demo</label>
+                                  <input type="datetime-local" className="fu-action-input" value={f.demoScheduleDate || ""} onChange={e => setField(lead._id, "demoScheduleDate", e.target.value)} />
+                                </div>
+                              )}
+                              {["Expected Payment Date","Converted"].includes(f.disposition) && (
+                                <div>
+                                  <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#10b981", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>💳 Payment Date</label>
+                                  <input type="date" className="fu-action-input" value={f.expectedPaymentDate || ""} onChange={e => setField(lead._id, "expectedPaymentDate", e.target.value)} />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Submit */}
+                          <button className="fu-btn" onClick={() => handleLogCall(lead)} disabled={submitting === lead._id} style={{
+                            width: "100%", padding: "14px", borderRadius: 12, border: "none", cursor: "pointer",
+                            background: f.disposition ? "linear-gradient(135deg,#6366f1,#8b5cf6)" : "#334155",
+                            color: "#fff", fontWeight: 700, fontSize: 15,
+                            boxShadow: f.disposition ? "0 8px 20px rgba(99,102,241,0.35)" : "none",
+                            display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+                            opacity: submitting === lead._id ? 0.7 : 1,
+                          }}>
+                            {submitting === lead._id ? (
+                              <><span className="spinning">⟳</span> Saving…</>
+                            ) : (
+                              <>💾 Log Activity &amp; Progress</>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* ── Col 3: History ── */}
+                      <div style={{ padding: "28px 24px", maxHeight: "70vh", overflowY: "auto" }}>
+                        <h4 style={{ margin: "0 0 20px", fontSize: 13, fontWeight: 800, color: "#10b981", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                          🕘 History
+                        </h4>
+
+                        {histLoading[lead._id] ? (
+                          <div style={{ textAlign: "center", color: "#475569", paddingTop: 40 }}>
+                            <span className="spinning" style={{ fontSize: 24 }}>⟳</span>
+                          </div>
+                        ) : hist.length === 0 ? (
+                          <div style={{ textAlign: "center", padding: "40px 12px", background: "#0f1117", borderRadius: 12, border: "1px solid #1e293b" }}>
+                            <p style={{ margin: 0, fontSize: 13, color: "#475569" }}>No activity recorded yet.</p>
+                          </div>
+                        ) : (
+                          <div style={{ display: "flex", flexDirection: "column", gap: 10, maxHeight: 440, overflowY: "auto", paddingRight: 4 }}>
+                            {hist.map((h, i) => {
+                              const expanded = expandedLog === h._id;
+                              return (
+                                <div key={i} className="fu-log-entry" onClick={() => setExpandedLog(expanded ? null : h._id)} style={{
+                                  padding: "14px 16px", borderRadius: 12, background: "#0f1117",
+                                  border: `1px solid ${expanded ? "#6366f1" : "#1e293b"}`, cursor: "pointer",
+                                }}>
+                                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+                                    <div>
+                                      <div style={{ fontSize: 11, fontWeight: 800, color: "#6366f1", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 3 }}>
+                                        {ACTION_TYPES.find(a => a.value === h.actionType)?.emoji || "📞"} {ACTION_TYPES.find(a => a.value === h.actionType)?.label || "Interaction"}
+                                      </div>
+                                      <div style={{ fontSize: 12, fontWeight: 700, color: "#e2e8f0" }}>
+                                        {h.stage ? `${h.stage} → ${h.disposition}` : (h.callOutcome || "Unknown")}
+                                      </div>
+                                    </div>
+                                    <span style={{ fontSize: 11, color: "#475569", fontWeight: 500, whiteSpace: "nowrap", paddingLeft: 8 }}>
+                                      {new Date(h.createdAt).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short" })}
+                                    </span>
+                                  </div>
+
+                                  {/* Date tags */}
+                                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: h.summary ? 8 : 0 }}>
+                                    {h.followUpDate && (
+                                      <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 6, background: "#0ea5e920", color: "#0ea5e9" }}>
+                                        🗓 FU: {formatIST(h.followUpDate)}
+                                      </span>
+                                    )}
+                                    {h.demoScheduleDate && (
+                                      <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 6, background: "#f59e0b20", color: "#f59e0b" }}>
+                                        📅 Demo: {formatIST(h.demoScheduleDate)}
+                                      </span>
+                                    )}
+                                    {h.expectedPaymentDate && (
+                                      <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 6, background: "#10b98120", color: "#10b981" }}>
+                                        💳 Pay: {new Date(h.expectedPaymentDate).toLocaleDateString("en-IN")}
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  {h.summary && (
+                                    <p style={{
+                                      margin: 0, fontSize: 12, color: "#64748b", lineHeight: 1.5,
+                                      display: "-webkit-box", WebkitLineClamp: expanded ? "unset" : 2,
+                                      WebkitBoxOrient: "vertical", overflow: "hidden",
+                                    }}>
+                                      {h.summary}
+                                    </p>
+                                  )}
+
+                                  {expanded && h.remark && (
+                                    <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px dashed #1e293b", fontSize: 12, color: "#475569", fontStyle: "italic" }}>
+                                      Note: {h.remark}
+                                    </div>
+                                  )}
+
+                                  {h.recordingUrl && (
+                                    <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 8 }} onClick={e => e.stopPropagation()}>
+                                      <AudioPlayer url={h.recordingUrl} />
+                                      <span style={{ fontSize: 11, color: "#475569" }}>Recording</span>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default AdvFollowups;
