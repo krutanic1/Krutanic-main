@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
-const { v4: uuidv4 } = require("uuid");
+const crypto = require("crypto");
 
 const AdvTaskSchema = new mongoose.Schema({
-    task_id: { type: String, unique: true, default: () => uuidv4() },
+    task_id: { type: String, unique: true, default: () => crypto.randomUUID() },
     
     // Lead Information
     lead_id: { type: mongoose.Schema.Types.ObjectId, ref: "AdvLead", required: true },
