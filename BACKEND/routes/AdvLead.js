@@ -1795,8 +1795,8 @@ router.post("/log-call-activity", async (req, res) => {
         const team = await AdvTeamStructure.findOne({ "members.userId": specialistId });
 
         // 1. Mandatory Rules Validation
-        if (disposition === "Callback Requested" && !followUpDate) {
-            return res.status(400).json({ message: "Next Follow-up Date is mandatory for Callback Requested" });
+        if (!["Closed Won", "Closed Lost"].includes(stage) && !followUpDate) {
+            return res.status(400).json({ message: "Next Follow-up Date is mandatory" });
         }
         if (disposition === "Demo Booked" && !demoScheduleDate) {
             return res.status(400).json({ message: "Demo Date is required for Demo Booked" });

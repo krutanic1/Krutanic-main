@@ -437,8 +437,8 @@ const AdvLeadsBook = () => {
         }
 
         // Mandatory rules
-        if (form.disposition === "Callback Requested" && !form.followUpDate) {
-            toast.error("Next Follow-up Date is mandatory for Callback Requested");
+        if (!["Closed Won", "Closed Lost"].includes(form.stage) && !form.followUpDate) {
+            toast.error("Next Follow-up Date is mandatory");
             return;
         }
         if (form.disposition === "Demo Booked" && !form.demoScheduleDate) {

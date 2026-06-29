@@ -192,8 +192,8 @@ const AdvFollowups = () => {
     if (!f.disposition) { toast.error("Select a disposition"); return; }
     if (!f.actionType)  { toast.error("Select an action type"); return; }
     if (!f.summary?.trim()) { toast.error("Executive summary is required"); return; }
-    if (f.disposition === "Callback Requested" && !f.followUpDate) {
-      toast.error("Follow-up date required for Callback Requested"); return;
+    if (!["Closed Won", "Closed Lost"].includes(f.stage) && !f.followUpDate) {
+      toast.error("Next Follow-up date is required"); return;
     }
     if (f.disposition === "Demo Booked" && !f.demoScheduleDate) {
       toast.error("Demo date required for Demo Booked"); return;
