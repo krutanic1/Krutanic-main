@@ -143,7 +143,7 @@ const EnrollmentForm = () => {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
-
+//jsgfkuhsdli
   const validateForm = () => {
     let stepErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
