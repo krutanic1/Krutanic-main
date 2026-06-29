@@ -505,6 +505,17 @@ const AdvTeamHeader = () => {
           {(advTeamData?.designation === "ADV Manager" ||
             advTeamData?.designation === "MANAGER" ||
             advTeamData?.designation === "ADV Leader" ||
+            advTeamData?.designation === "LEADER" ||
+            advTeamData?.designation === "SR Inside Sales Specialist" ||
+            advTeamData?.designation === "Inside Sales Specialist" ||
+            advTeamData?.designation === "inside_sales_specialist") && (
+               <Link to="/advteam/tasks">
+                 <i className="fa fa-check-square-o"></i> Daily Tasks
+               </Link>
+            )}
+          {(advTeamData?.designation === "ADV Manager" ||
+            advTeamData?.designation === "MANAGER" ||
+            advTeamData?.designation === "ADV Leader" ||
             advTeamData?.designation === "LEADER") && (
               <Link to="/advteam/lead-management">
                 <i className="fa fa-tasks"></i> Lead Management

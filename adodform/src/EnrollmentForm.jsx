@@ -131,7 +131,12 @@ const EnrollmentForm = () => {
   });
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    let { name, value, type, checked } = e.target;
+    
+    if (name === 'contactNumber' || name === 'whatsappNumber') {
+      value = value.replace(/\s/g, '');
+    }
+    
     setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
     // Clear error when user types
     if (errors[name]) {

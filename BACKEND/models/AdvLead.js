@@ -113,5 +113,68 @@ AdvLeadSchema.set("toObject", {
 });
 
 
+// --- Mongoose Hooks for Auto-Task Creation (Permanent Fix) ---
+async function handleSpecialistAssignment(lead, AdvTask) {
+    if (!lead || lead.current_owner_role !== "sr_inside_sales_specialist" || !lead.owner_id) return;
+    
+    // Prevent duplicate pending tasks for the same lead
+    const existingTask = await AdvTask.findOne({ lead_id: lead._id, task_type: "First Call", status: "Pending" });
+    if (existingTask) return;
+
+    const now = new Date();
+    const dueDateTime = new Date(now.getTime() + (5 * 60 * 60 * 1000));
+    const dueTimeString = `${String(dueDateTime.getHours()).padStart(2, '0')}:${String(dueDateTime.getMinutes()).padStart(2, '0')}`;
+    
+    await new AdvTask({
+        lead_id: lead._id,
+        lead_name: lead.full_name || lead.owner_name || "New Lead",
+        student_mobile: lead.phone_number,
+        counsellor_id: lead.owner_id,
+        team_id: lead.team_id,
+        task_type: "First Call",
+        priority: "High",
+        due_date: dueDateTime,
+        due_time: dueTimeString,
+        remarks: "Auto-generated: Please make the first contact within 5 hours.",
+        status: "Pending",
+        created_at: now
+    }).save();
+}
+
+AdvLeadSchema.post("save", async function(doc) {
+    const AdvTask = mongoose.models.AdvTask || require("./AdvTask");
+    await handleSpecialistAssignment(doc, AdvTask);
+});
+
+AdvLeadSchema.post("findOneAndUpdate", async function(doc) {
+    if (!doc) return;
+    const AdvTask = mongoose.models.AdvTask || require("./AdvTask");
+    await handleSpecialistAssignment(doc, AdvTask);
+});
+
+AdvLeadSchema.post("updateMany", async function() {
+    const update = this.getUpdate();
+    if (!update) return;
+    
+    // Detect if this update operation assigned leads to a specialist
+    const isSpecialistAssignment = update.$set && (update.$set.current_owner_role === "sr_inside_sales_specialist" || update.$set.status === "assigned_to_specialist");
+    
+    if (isSpecialistAssignment) {
+        const AdvTask = mongoose.models.AdvTask || require("./AdvTask");
+        const filter = this.getFilter();
+        const AdvLead = mongoose.models.AdvLead || mongoose.model("AdvLead", AdvLeadSchema);
+        
+        try {
+            const affectedLeads = await AdvLead.find(filter);
+            for (let lead of affectedLeads) {
+                await handleSpecialistAssignment(lead, AdvTask);
+            }
+        } catch (err) {
+            console.error("Error in updateMany hook for auto tasks:", err);
+        }
+    }
+});
+// -----------------------------------------------------------
+
 const AdvLead = mongoose.models.AdvLead || mongoose.model("AdvLead", AdvLeadSchema);
 module.exports = AdvLead;

@@ -830,9 +830,12 @@ router.post("/admin-bulk-assign", async (req, res) => {
         let dbRole = "manager";
         let dbStatus = "assigned_to_manager";
 
-        if (assigneeRole.includes("Leader")) {
+        if (assigneeRole.includes("Leader") || assigneeRole.toLowerCase().includes("leader")) {
             dbRole = "leader";
             dbStatus = "assigned_to_leader";
+        } else if (assigneeRole.toLowerCase().includes("specialist") || assigneeRole.toLowerCase().includes("sales")) {
+            dbRole = "sr_inside_sales_specialist";
+            dbStatus = "assigned_to_specialist";
         }
 
         await AdvLead.updateMany(

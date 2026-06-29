@@ -11,18 +11,17 @@ import sachinImg from "../../../assets/mentors/sachin.jpg";
 import "./CourseDetails.css";
 
 // Countdown component for sticky CTA
-const Countdown = ({ targetOffsetHours = 48 }) => {
-  const target = useMemo(() => Date.now() + targetOffsetHours * 3600 * 1000, [targetOffsetHours]);
+const Countdown = ({ targetOffsetMinutes = 30 }) => {
+  const target = useMemo(() => Date.now() + targetOffsetMinutes * 60 * 1000, [targetOffsetMinutes]);
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
   const diff = Math.max(0, Math.floor((target - now) / 1000));
-  const hrs = String(Math.floor(diff / 3600)).padStart(2, '0');
-  const mins = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
+  const mins = String(Math.floor(diff / 60)).padStart(2, '0');
   const secs = String(diff % 60).padStart(2, '0');
-  return <span style={{display:'inline-flex',gap:8,alignItems:'center',fontFamily:'monospace'}}>{hrs} : {mins} : {secs}</span>;
+  return <span className="ai-countdown-timer">{mins}:{secs}</span>;
 };
 
 const learningCategories = [
@@ -446,10 +445,16 @@ const FullStackDetails = () => {
       {/* Sticky Bottom CTA - same across all mentorship courses */}
       <div className="ai-sticky-bar" role="dialog" aria-label="Promo">
         <div className="ai-left">
-          <span className="ai-emoji">🎓</span>
-          <div className="ai-text">50% Scholarship closing in just 2 days.</div>
-          <br />
-          <div className="ai-countdown">Batch closing in &nbsp;<Countdown targetOffsetHours={48} /></div>
+          <div className="ai-promo-info">
+            <div className="ai-text">🎓 UP TO 40% SCHOLARSHIP</div>
+            <div className="ai-promo-desc">Limited Scholarship Slots • Registration Closes When the Current Intake Is Full</div>
+          </div>
+          <div className="ai-promo-timer-wrap">
+            <div className="ai-promo-timer-label">Ends In</div>
+            <div className="ai-countdown">
+              <Countdown targetOffsetMinutes={30} />
+            </div>
+          </div>
         </div>
         <div className="ai-actions">
           <button className="ai-cta ai-cta-primary" onClick={() => setShowForm(true)}>Enroll in {data.title}</button>

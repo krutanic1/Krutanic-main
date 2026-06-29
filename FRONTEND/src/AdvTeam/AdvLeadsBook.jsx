@@ -458,8 +458,8 @@ const AdvLeadsBook = () => {
                 summary: form.summary || "",
                 remark: form.remark || "",
                 duration: activeCallLeadId === lead._id && callStartTime ? Math.floor((Date.now() - callStartTime) / 1000) : 0,
-                demoScheduleDate: form.demoScheduleDate || undefined,
-                followUpDate: form.followUpDate || undefined,
+                demoScheduleDate: form.demoScheduleDate ? `${form.demoScheduleDate}:00.000Z` : undefined,
+                followUpDate: form.followUpDate ? `${form.followUpDate}:00.000Z` : undefined,
                 expectedPaymentDate: form.expectedPaymentDate || undefined,
                 isWeb: true
             });

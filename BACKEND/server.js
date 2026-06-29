@@ -152,12 +152,14 @@ const AdvTeamRoutes = require("./routes/AdvTeam");
 const AdvReportRoutes = require("./routes/AdvReport");
 const AdvNotificationRoutes = require("./routes/AdvNotification");
 const AdvAdminRoutes = require("./routes/AdvAdmin");
+const AdvTaskRoutes = require("./routes/AdvTask");
 
 app.use("/api/adv-leads", AdvLeadRoutes);
 app.use("/api/adv-users", AdvUserRoutes);
 app.use("/api/adv-teams", AdvTeamRoutes);
 app.use("/api/adv-reports", AdvReportRoutes);
 app.use("/api/adv-notifications", AdvNotificationRoutes);
+app.use("/api/adv-tasks", AdvTaskRoutes);
 
 const deviceCallLogRoutes = require("./routes/deviceCallLogRoutes");
 app.use("/api/call-logs", deviceCallLogRoutes);
@@ -321,11 +323,13 @@ if (process.env.NODE_ENV !== "production") {
     const { initializeAttendanceReportScheduler } = require("./services/attendanceReportService");
     const { initializeMasterclassReminderScheduler } = require("./services/masterclassReminderService");
     const { initializeMedEnrollAutomation } = require("./services/medEnrollAutomationService");
+    const { initializeTaskCron } = require("./services/taskCronService");
     
     initializePaymentReminderScheduler();
     initializeAttendanceReportScheduler();
     initializeMasterclassReminderScheduler();
     initializeMedEnrollAutomation();
+    initializeTaskCron();
 
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
