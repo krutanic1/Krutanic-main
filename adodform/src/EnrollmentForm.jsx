@@ -147,7 +147,7 @@ const EnrollmentForm = () => {
   const validateForm = () => {
     let stepErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    
+    //hfgdgf uagf f
     // Personal Details
     if (!formData.name.trim()) stepErrors.name = 'Name is required';
     if (!formData.personalEmailId.trim() || !emailRegex.test(formData.personalEmailId)) stepErrors.personalEmailId = 'Valid personal email is required';
