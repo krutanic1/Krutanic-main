@@ -109,6 +109,11 @@ const AdvTeamHeader = () => {
   };
 
   const markNotificationRead = async (id) => {
+    if (String(id).startsWith("15m_")) {
+      setActiveReminder(null);
+      return;
+    }
+
     try {
       await axios.post(`${API}/api/adv-leads/mark-notification-read`, { notificationId: id });
       setNotifications(prev => prev.filter(n => n._id !== id));
@@ -128,6 +133,28 @@ const AdvTeamHeader = () => {
       setDailyStats(res.data);
     } catch (err) {
       console.error("Failed to fetch daily stats");
+    }
+  };
+
+  const fetchDueReminders = async () => {
+    if (!advTeamId) return;
+    try {
+      const res = await axios.get(`${API}/api/adv-leads/due-reminders`, { params: { specialistId: advTeamId } });
+      const dueLeads = res.data.dueReminders || [];
+      
+      dueLeads.forEach(lead => {
+        const alerted = sessionStorage.getItem(`alerted_15m_${lead._id}`);
+        if (!alerted) {
+          sessionStorage.setItem(`alerted_15m_${lead._id}`, "true");
+          setActiveReminder({
+            _id: `15m_${lead._id}`,
+            title: "Upcoming Follow-up ⏰",
+            message: `You have a scheduled call with ${lead.full_name} in 15 minutes! (${lead.phone_number})`
+          });
+        }
+      });
+    } catch (err) {
+      console.error("Failed to fetch due reminders");
     }
   };
 
@@ -152,9 +179,11 @@ const AdvTeamHeader = () => {
     fetchAdvTeamData();
     fetchNotifications();
     fetchDailyStats();
+    fetchDueReminders();
     const interval = setInterval(() => {
       fetchNotifications();
       fetchDailyStats();
+      fetchDueReminders();
     }, 30000); // Poll every 30s
     return () => clearInterval(interval);
   }, [advTeamId, selectedDate]);

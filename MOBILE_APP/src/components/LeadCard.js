@@ -126,6 +126,13 @@ const LeadCard = ({ lead, onViewDetails }) => {
                 )}
             </View>
 
+            {lead.last_note && (
+                <View style={styles.lastNoteContainer}>
+                    <Text style={styles.lastNoteLabel}>LATEST SUMMARY</Text>
+                    <Text style={styles.lastNoteText} numberOfLines={2}>{lead.last_note}</Text>
+                </View>
+            )}
+
             <View style={styles.actions}>
                 <TouchableOpacity onPress={handleCall} style={[styles.actionBtn, { borderColor: COLORS.success + '40' }]}>
                     <Ionicons name="call" size={18} color={COLORS.success} />
@@ -227,7 +234,31 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         ...SHADOWS.small,
     },
-    viewDetailsText: { color: '#fff', fontSize: 14, fontWeight: '700' },
+    viewDetailsText: {
+        color: '#fff',
+        fontSize: 13,
+        fontWeight: '700',
+    },
+    lastNoteContainer: {
+        marginTop: 12,
+        padding: 12,
+        backgroundColor: '#F8FAFC',
+        borderRadius: 8,
+        borderLeftWidth: 3,
+        borderLeftColor: COLORS.primary,
+    },
+    lastNoteLabel: {
+        fontSize: 10,
+        fontWeight: '700',
+        color: COLORS.primary,
+        textTransform: 'uppercase',
+        marginBottom: 4,
+    },
+    lastNoteText: {
+        fontSize: 13,
+        color: '#475569',
+        lineHeight: 18,
+    }
 });
 
 export default React.memo(LeadCard);

@@ -35,14 +35,22 @@ export const requestNotificationPermissions = async () => {
 };
 
 export const scheduleFollowUpNotification = async (leadName, followUpDate) => {
-    const triggerDate = new Date(followUpDate);
+    const targetDate = new Date(followUpDate);
+    let triggerDate = new Date(targetDate.getTime() - 15 * 60000); // 15 mins before
+    const now = new Date();
 
-    // Only schedule if the date is in the future
-    if (triggerDate > new Date()) {
+    // If the 15-minute warning window has already passed, but the call is still in the future,
+    // (e.g. you schedule a call for 5 minutes from now), trigger the notification immediately!
+    if (triggerDate <= now && targetDate > now) {
+        triggerDate = new Date(now.getTime() + 5000); // Trigger in 5 seconds
+    }
+
+    // Only schedule if the trigger date is in the future
+    if (triggerDate > now) {
         const id = await Notifications.scheduleNotificationAsync({
             content: {
-                title: "Follow-Up Reminder 📅",
-                body: `Time to call ${leadName}. Don't let the lead go cold!`,
+                title: "Follow-Up Reminder ⏰",
+                body: `Upcoming Follow-up! Call ${leadName} in 15 minutes.`,
                 data: { type: 'follow_up' },
                 android: {
                     channelId: 'follow-up',

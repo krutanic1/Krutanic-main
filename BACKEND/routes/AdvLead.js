@@ -2119,7 +2119,6 @@ router.get("/upcoming-followups", async (req, res) => {
         const followUps = await AdvCallActivity.find({
             specialistId: specialistId,
             callOutcome: { $in: ["callback_requested", "Callback Requested", "demo_booked", "Demo Booked"] },
-            followUpDate: { $gte: now },
             followUpStatus: "pending"
         })
             .populate("leadId", "full_name phone_number opted_domain")
@@ -2130,6 +2129,28 @@ router.get("/upcoming-followups", async (req, res) => {
     } catch (error) {
         console.error(`[FOLLOWUPS] ROUTE ERROR:`, error);
         res.status(500).json({ message: "Internal server error fetching follow-ups", error: error.message });
+    }
+});
+
+// GET: Fetch lightweight 15-minute reminders for the Web popup
+router.get("/due-reminders", async (req, res) => {
+    try {
+        const { specialistId } = req.query;
+        if (!specialistId) return res.status(400).json({ message: "specialistId is required" });
+
+        const now = new Date();
+        const in15Mins = new Date(now.getTime() + 15 * 60000);
+        const twoHoursAgo = new Date(now.getTime() - 2 * 60 * 60000); // include recently overdue
+
+        const dueLeads = await AdvLead.find({
+            $or: [{ owner_id: specialistId }, { current_owner_id: specialistId }],
+            next_followup_at: { $gte: twoHoursAgo, $lte: in15Mins }
+        }).select("_id full_name phone_number next_followup_at").lean();
+
+        res.status(200).json({ dueReminders: dueLeads });
+    } catch (error) {
+        console.error(`[REMINDERS] ROUTE ERROR:`, error);
+        res.status(500).json({ message: "Internal server error fetching due reminders" });
     }
 });
 

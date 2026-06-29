@@ -156,7 +156,7 @@ const CallLogModal = ({ visible, callData, onSave, onCancel }) => {
                 remark,
                 durationSec: finalDurationSec,
                 status: finalDurationSec >= 60 ? 'Connected' : 'Not Connected',
-                followUpDate: disposition === 'Callback Requested' || disposition === 'Demo Booked' ? formatToFakeUTC(followUpDate) : null,
+                followUpDate: !['Closed Won', 'Closed Lost'].includes(stage) ? formatToFakeUTC(followUpDate) : null,
                 rawFollowUpDate: followUpDate, // Pass original Date object for notifications
                 recordingUrl: recordingUrl 
             });
@@ -282,7 +282,7 @@ const CallLogModal = ({ visible, callData, onSave, onCancel }) => {
                         </View>
 
                         {/* Follow-Up Section */}
-                        {(disposition === 'Callback Requested' || disposition === 'Expected Payment Date') && (
+                        {!['Closed Won', 'Closed Lost'].includes(stage) && (
                             <View style={styles.followUpContainer}>
                                 <Text style={styles.sectionTitle}>Follow-Up Time</Text>
                                 <TouchableOpacity
