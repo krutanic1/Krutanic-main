@@ -1353,7 +1353,7 @@ router.get("/get-adv-leads", async (req, res) => {
         }
 
         if (reminderOnly === 'true') {
-            andConditions.push({ next_followup_at: { $exists: true, $ne: null, $lte: new Date() } });
+            andConditions.push({ next_followup_at: { $exists: true, $ne: null } });
             andConditions.push({ stage: { $nin: ["Closed Won", "Closed Lost"] } });
         }
 
