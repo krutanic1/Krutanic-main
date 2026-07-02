@@ -88,6 +88,7 @@ const LeadDetailsScreen = ({ route, navigation }) => {
                 duration: logData.durationSec,
                 status: logData.status,
                 followUpDate: logData.followUpDate,
+                demoScheduleDate: logData.demoScheduleDate,
                 recordingUrl: logData.recordingUrl
             };
             const logResponse = await leadService.logCall(payload);

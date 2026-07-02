@@ -180,7 +180,7 @@ const AdvTeamHome = () => {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '40px' }}>
         <LeadStatCard label="Fresh Leads" count={outcomeCounts["Fresh Lead"]} icon="🆕" color="#64748B" />
         <LeadStatCard label="Attempting Contact" count={outcomeCounts["Attempting Contact"]} icon="📞" color="#F59E0B" />
-        <LeadStatCard label="First Call Connected" count={outcomeCounts["First Call Connected"]} icon="🤝" color="#3B82F6" />
+        <LeadStatCard label="In Conversation" count={outcomeCounts["In Conversation"]} icon="🤝" color="#3B82F6" />
         <LeadStatCard label="Demo Conducted" count={outcomeCounts["Demo Conducted"]} icon="🖥️" color="#8B5CF6" />
         <LeadStatCard label="Closed Won" count={outcomeCounts["Closed Won"]} icon="🏆" color="#10B981" />
         <LeadStatCard label="Closed Lost" count={outcomeCounts["Closed Lost"]} icon="❌" color="#EF4444" />
@@ -193,7 +193,7 @@ const AdvTeamHome = () => {
               {[
                   { label: "Fresh Leads", count: outcomeCounts["Fresh Lead"] || 0, color: "#64748B" },
                   { label: "Attempting Contact", count: outcomeCounts["Attempting Contact"] || 0, color: "#F59E0B" },
-                  { label: "First Call Connected", count: outcomeCounts["First Call Connected"] || 0, color: "#3B82F6" },
+                  { label: "In Conversation", count: outcomeCounts["In Conversation"] || 0, color: "#3B82F6" },
                   { label: "Demo Conducted", count: outcomeCounts["Demo Conducted"] || 0, color: "#8B5CF6" },
                   { label: "Closed Won", count: outcomeCounts["Closed Won"] || 0, color: "#10B981" }
               ].map((stage, idx, arr) => {

@@ -30,7 +30,7 @@ const CallLogModal = ({ visible, callData, onSave, onCancel }) => {
     const STAGES_AND_DISPOSITIONS = {
         "Fresh Lead": ["New Lead", "Invalid Lead"],
         "Attempting Contact": ["RNR", "Callback Requested", "No Response (Multi-touch)"],
-        "First Call Connected": ["In Conversation", "Demo Booked"],
+        "In Conversation": ["Hot", "Warm"],
         "Demo Conducted": ["Decision Pending", "Negotiation Review", "Expected Payment Date"],
         "Closed Won": ["Converted"],
         "Closed Lost": ["Irrelevant Lead", "Not Interested", "Pricing Does Not Match", "No Response"]
@@ -40,6 +40,8 @@ const CallLogModal = ({ visible, callData, onSave, onCancel }) => {
     const [followUpDate, setFollowUpDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
+
+
 
     // Recording state
     const [recordingUri, setRecordingUri] = useState(null);
@@ -91,6 +93,8 @@ const CallLogModal = ({ visible, callData, onSave, onCancel }) => {
             setFollowUpDate(currentDate);
         }
     };
+
+
 
     const handlePickDocument = async () => {
         try {
@@ -317,6 +321,8 @@ const CallLogModal = ({ visible, callData, onSave, onCancel }) => {
                                 )}
                             </View>
                         )}
+
+
 
                         {/* Recording Section */}
                         <Text style={styles.sectionTitle}>Call Recording</Text>

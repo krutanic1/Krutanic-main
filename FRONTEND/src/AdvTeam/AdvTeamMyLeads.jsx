@@ -6,7 +6,7 @@ import API from "../API";
 const STAGES_AND_DISPOSITIONS = {
     "Fresh Lead": ["New Lead", "Invalid Lead"],
     "Attempting Contact": ["RNR", "Callback Requested", "No Response (Multi-touch)"],
-    "First Call Connected": ["In Conversation", "Demo Booked"],
+    "In Conversation": ["Hot", "Warm"],
     "Demo Conducted": ["Decision Pending", "Negotiation Review", "Expected Payment Date"],
     "Closed Won": ["Converted"],
     "Closed Lost": ["Irrelevant Lead", "Not Interested", "Pricing Does Not Match", "No Response"]
@@ -497,7 +497,7 @@ const AdvTeamMyLeads = () => {
                             <option value="Reactive Lead">♻️ Reactive Lead ({outcomeCounts["Reactive Lead"] || 0})</option>
                         )}
                         <option value="Attempting Contact">📞 Attempting Contact ({outcomeCounts["Attempting Contact"] || 0})</option>
-                        <option value="First Call Connected">✅ First Call Connected ({outcomeCounts["First Call Connected"] || 0})</option>
+                        <option value="In Conversation">✅ In Conversation ({outcomeCounts["In Conversation"] || 0})</option>
                         <option value="Demo Conducted">🎯 Demo Conducted ({outcomeCounts["Demo Conducted"] || 0})</option>
                         <option value="Closed Won">🏆 Closed Won ({outcomeCounts["Closed Won"] || 0})</option>
                         <option value="Closed Lost">❌ Closed Lost ({outcomeCounts["Closed Lost"] || 0})</option>

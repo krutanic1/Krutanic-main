@@ -7,7 +7,7 @@ import API from "../API";
 const STAGES = {
   "Fresh Lead":          ["New Lead", "Invalid Lead"],
   "Attempting Contact":  ["RNR", "Callback Requested", "No Response (Multi-touch)"],
-  "First Call Connected":["In Conversation", "Demo Booked"],
+  "In Conversation": ["Hot", "Warm"],
   "Demo Conducted":      ["Decision Pending", "Negotiation Review", "Expected Payment Date"],
   "Closed Won":          ["Converted"],
   "Closed Lost":         ["Irrelevant Lead", "Not Interested", "Pricing Does Not Match", "No Response"],
@@ -24,7 +24,7 @@ const ACTION_TYPES = [
 const STAGE_COLORS = {
   "Fresh Lead":           "#64748B",
   "Attempting Contact":   "#F59E0B",
-  "First Call Connected": "#0EA5E9",
+  "In Conversation": "#0EA5E9",
   "Demo Conducted":       "#8B5CF6",
   "Closed Won":           "#10B981",
   "Closed Lost":          "#EF4444",

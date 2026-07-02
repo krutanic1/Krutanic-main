@@ -7,7 +7,7 @@ import API from "../API";
 const STAGES_AND_DISPOSITIONS = {
     "Fresh Lead": ["New Lead", "Invalid Lead"],
     "Attempting Contact": ["RNR", "Callback Requested", "No Response (Multi-touch)"],
-    "First Call Connected": ["In Conversation", "Demo Booked"],
+    "In Conversation": ["Hot", "Warm"],
     "Demo Conducted": ["Decision Pending", "Negotiation Review", "Expected Payment Date"],
     "Closed Won": ["Converted"],
     "Closed Lost": ["Irrelevant Lead", "Not Interested", "Pricing Does Not Match", "No Response"]
@@ -300,7 +300,7 @@ const AdvTeamFilter = () => {
             "Fresh Lead": "#64748B",
             "Reactive Lead": "#c41d7f",
             "Attempting Contact": designTokens.colors.warning,
-            "First Call Connected": designTokens.colors.info,
+            "In Conversation": designTokens.colors.info,
             "Demo Conducted": designTokens.colors.secondary,
             "Closed Won": designTokens.colors.success,
             "Closed Lost": designTokens.colors.danger

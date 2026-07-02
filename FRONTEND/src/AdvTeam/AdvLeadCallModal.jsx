@@ -8,7 +8,7 @@ import API from '../API';
 const STAGES_AND_DISPOSITIONS = {
     "Fresh Lead": ["New Lead", "Invalid Lead"],
     "Attempting Contact": ["RNR", "Callback Requested", "No Response (Multi-touch)"],
-    "First Call Connected": ["In Conversation", "Demo Booked"],
+    "In Conversation": ["Hot", "Warm"],
     "Demo Conducted": ["Decision Pending", "Negotiation Review", "Expected Payment Date"],
     "Closed Won": ["Converted"],
     "Closed Lost": ["Irrelevant Lead", "Not Interested", "Pricing Does Not Match", "No Response"]
@@ -48,9 +48,7 @@ export default function AdvLeadCallModal({ isOpen, onClose, onSuccess, leadId, l
         if (!["Closed Won", "Closed Lost"].includes(formState.stage) && !formState.followUpDate) {
             return toast.error("Next Follow-up Date is mandatory");
         }
-        if (formState.disposition === "Demo Booked" && !formState.demoScheduleDate) {
-            return toast.error("Demo Date is required for Demo Booked");
-        }
+
 
         const userId = localStorage.getItem("advTeamId");
         const userName = localStorage.getItem("advTeamName");
@@ -174,17 +172,7 @@ export default function AdvLeadCallModal({ isOpen, onClose, onSuccess, leadId, l
                                         />
                                     </div>
                                 )}
-                                {formState.disposition === "Demo Booked" && (
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-300 mb-2">Demo Date (IST) *</label>
-                                        <input
-                                            type="datetime-local"
-                                            value={formState.demoScheduleDate}
-                                            onChange={(e) => setFormState({ ...formState, demoScheduleDate: e.target.value })}
-                                            className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all [color-scheme:dark]"
-                                        />
-                                    </div>
-                                )}
+
                                 {formState.disposition === "Expected Payment Date" && (
                                     <div>
                                         <label className="block text-sm font-medium text-slate-300 mb-2">Expected Payment Date</label>

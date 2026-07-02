@@ -323,7 +323,7 @@ const AdvLeadManagement = () => {
         const map = {
             "Fresh Lead": { bg: '#f5f5f5', border: '#d9d9d9', color: '#666' },
             "Attempting Contact": { bg: '#fff7e6', border: '#ffd591', color: '#fa8c16' },
-            "First Call Connected": { bg: '#e6f7ff', border: '#91d5ff', color: '#1890ff' },
+            "In Conversation": { bg: '#e6f7ff', border: '#91d5ff', color: '#1890ff' },
             "Demo Conducted": { bg: '#f9f0ff', border: '#d3adf7', color: '#722ed1' },
             "Closed Won": { bg: '#f6ffed', border: '#b7eb8f', color: '#52c41a' },
             "Closed Lost": { bg: '#fff1f0', border: '#ffa39e', color: '#f5222d' }
@@ -488,7 +488,7 @@ const AdvLeadManagement = () => {
                         <option value="">All Stages</option>
                         <option value="Fresh Lead">Fresh Lead</option>
                         <option value="Attempting Contact">Attempting Contact</option>
-                        <option value="First Call Connected">First Call Connected</option>
+                        <option value="In Conversation">In Conversation</option>
                         <option value="Demo Conducted">Demo Conducted</option>
                         <option value="Closed Won">Closed Won</option>
                         <option value="Closed Lost">Closed Lost</option>

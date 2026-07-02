@@ -39,7 +39,7 @@ const AdvLeadSchema = new mongoose.Schema({
         enum: [
             "Fresh Lead",
             "Attempting Contact",
-            "First Call Connected",
+            "In Conversation",
             "Demo Conducted",
             "Closed Won",
             "Closed Lost"

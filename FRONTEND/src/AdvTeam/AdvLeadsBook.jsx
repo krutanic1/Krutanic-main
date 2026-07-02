@@ -6,7 +6,7 @@ import API from "../API";
 const STAGES_AND_DISPOSITIONS = {
     "Fresh Lead": ["New Lead", "Invalid Lead"],
     "Attempting Contact": ["RNR", "Callback Requested", "No Response (Multi-touch)"],
-    "First Call Connected": ["In Conversation", "Demo Booked"],
+    "In Conversation": ["Hot", "Warm"],
     "Demo Conducted": ["Decision Pending", "Negotiation Review", "Expected Payment Date"],
     "Closed Won": ["Converted"],
     "Closed Lost": ["Irrelevant Lead", "Not Interested", "Pricing Does Not Match", "No Response"]
@@ -509,7 +509,7 @@ const AdvLeadsBook = () => {
                 "Fresh Lead": { color: "#64748B" },
                 "Reactive Lead": { color: "#c41d7f" },
                 "Attempting Contact": { color: designTokens.colors.warning },
-                "First Call Connected": { color: designTokens.colors.info },
+                "In Conversation": { color: designTokens.colors.info },
                 "Demo Conducted": { color: designTokens.colors.secondary },
                 "Closed Won": { color: designTokens.colors.success },
                 "Closed Lost": { color: designTokens.colors.danger }

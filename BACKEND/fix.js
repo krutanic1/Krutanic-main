@@ -37,7 +37,7 @@ if (matchDup) {
 const stages = `const STAGES_AND_DISPOSITIONS = {
     "Fresh Lead": ["New Lead", "Invalid Lead"],
     "Attempting Contact": ["RNR", "Callback Requested", "No Response (Multi-touch)"],
-    "First Call Connected": ["In Conversation", "Demo Booked"],
+    "In Conversation": ["Cold", "Warm", "Demo Booked"],
     "Demo Conducted": ["Decision Pending", "Negotiation Review", "Expected Payment Date"],
     "Closed Won": ["Converted"],
     "Closed Lost": ["Irrelevant Lead", "Not Interested", "Pricing Does Not Match", "No Response"]

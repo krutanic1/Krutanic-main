@@ -60,7 +60,7 @@ const LeadCard = ({ lead, onViewDetails }) => {
         switch (status) {
             case 'Fresh Lead': return COLORS.textDim;
             case 'Attempting Contact': return COLORS.warning;
-            case 'First Call Connected': return COLORS.info;
+            case 'In Conversation': return COLORS.info;
             case 'Demo Conducted': return COLORS.secondary;
             case 'Closed Won': return COLORS.success;
             case 'Closed Lost': return COLORS.error;

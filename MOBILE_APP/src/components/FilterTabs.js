@@ -7,7 +7,7 @@ const FilterTabs = ({ activeTab, onTabChange }) => {
         { id: 'all', label: 'All' },
         { id: 'Fresh Lead', label: 'Fresh' },
         { id: 'Attempting Contact', label: 'Attempting' },
-        { id: 'First Call Connected', label: 'Connected' },
+        { id: 'In Conversation', label: 'Connected' },
         { id: 'Demo Conducted', label: 'Demo' },
         { id: 'Closed Won', label: 'Won' },
         { id: 'Closed Lost', label: 'Lost' },

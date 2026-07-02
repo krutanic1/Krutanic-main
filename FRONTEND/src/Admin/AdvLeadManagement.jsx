@@ -401,7 +401,7 @@ const AdvLeadManagement = () => {
     const reactiveOutcomeOptions = [
         "All", 
         "RNR", "Callback Requested", "Not Reachable", "Not Interested", "Junk", "Switched Off",
-        "Attempting Contact", "First Call Connected", "Demo Conducted", "Closed Lost",
+        "Attempting Contact", "In Conversation", "Demo Conducted", "Closed Lost",
         "Invalid Lead", "No Response (Multi-touch)", "In Conversation", "Demo Booked", 
         "Decision Pending", "Negotiation Review", "Expected Payment Date", 
         "Irrelevant Lead", "Pricing Does Not Match", "No Response"

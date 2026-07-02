@@ -6,7 +6,7 @@ const AdvNotificationSchema = new mongoose.Schema({
     message: { type: String, required: true },
     type: {
         type: String,
-        enum: ["lead_assigned", "followup_due", "alert", "conversion", "demo_reminder", "task_reminder"],
+        enum: ["lead_assigned", "followup_due", "alert", "conversion", "demo_reminder", "task_reminder", "task_alert"],
         default: "alert"
     },
     isRead: { type: Boolean, default: false },

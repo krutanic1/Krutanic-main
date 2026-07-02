@@ -27,7 +27,7 @@ const { sendEmail } = require("../controllers/emailController");
 const STAGES_AND_DISPOSITIONS = {
     "Fresh Lead": ["New Lead", "Invalid Lead"],
     "Attempting Contact": ["RNR", "Callback Requested", "No Response (Multi-touch)"],
-    "First Call Connected": ["In Conversation", "Demo Booked"],
+    "In Conversation": ["Hot", "Warm"],
     "Demo Conducted": ["Decision Pending", "Negotiation Review", "Expected Payment Date"],
     "Closed Won": ["Converted"],
     "Closed Lost": ["Irrelevant Lead", "Not Interested", "Pricing Does Not Match", "No Response"]
@@ -523,7 +523,7 @@ router.get("/get-outcome-counts", async (req, res) => {
         const stages = [
             "Fresh Lead",
             "Attempting Contact",
-            "First Call Connected",
+            "In Conversation",
             "Demo Conducted",
             "Closed Won",
             "Closed Lost"
