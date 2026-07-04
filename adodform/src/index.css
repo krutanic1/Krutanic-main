@@ -1730,4 +1730,9 @@ h1, h2, h3, h4, h5 {
 
   /* H2 sizes */
   .adv-h2 { font-size: 1.7rem; }
+  
+  /* Hide Comparison Section on Mobile */
+  .adv-comparison {
+    display: none !important;
+  }
 }
