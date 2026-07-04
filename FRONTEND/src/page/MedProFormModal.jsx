@@ -110,6 +110,7 @@ const MedProFormModal = ({ isOpen, onClose, selectedCourse }) => {
                       <option value="Forensic Psychology" style={{ color: "#000" }}>Forensic Psychology</option>
                       <option value="Clinical Psychology" style={{ color: "#000" }}>Clinical Psychology</option>
                       <option value="Corporate Law" style={{ color: "#000" }}>Corporate Law</option>
+                      <option value="Psychology" style={{ color: "#000" }}>Psychology</option>
                     </select>
                   </div>
 

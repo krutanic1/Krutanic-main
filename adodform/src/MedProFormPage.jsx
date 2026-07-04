@@ -447,14 +447,9 @@ const MedProFormPage = () => {
                         error={errors.interestedDomain}
                         options={[
                           "Forensic Psychology", 
-                          "Forensic Science",
+                          "Clinical Psychology",
                           "Corporate Law", 
-                          "Criminal Law",
-                          "Clinical Psychology", 
-                          "Physiotherapy",
-                          "Medical Ethics",
-                          "Healthcare Management",
-                          "Biomedical Sciences"
+                          "Psychology"
                         ]}
                       />
 
@@ -503,7 +498,7 @@ const MedProFormPage = () => {
                         {isSubmitting ? (
                           <><span className="medpro-spinner"></span> Processing...</>
                         ) : (
-                          'Enroll Now'
+                          'Apply Now'
                         )}
                       </button>
                     </div>
