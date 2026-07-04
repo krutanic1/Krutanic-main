@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { 
@@ -10,10 +10,10 @@ import {
   BarChart3, Rocket, Award, Search, Gift, AlertTriangle
 } from 'lucide-react';
 import API from '../API';
+import logoWhite from '../assets/logowhite.png';
 
-const FreeCareerAssessment = () => {
+const SkillEvaluationTest = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [statIndex, setStatIndex] = useState(0);
   const [statsData, setStatsData] = useState([]);
 
@@ -69,15 +69,6 @@ const FreeCareerAssessment = () => {
   });
 
   useEffect(() => {
-    if (location.state && location.state.paymentDetails && location.state.formData) {
-       setPaymentDetails(location.state.paymentDetails);
-       setPrePaymentId(location.state.prePaymentId);
-       setFormData(location.state.formData);
-       setCurrentStep(1);
-    }
-  }, [location.state]);
-
-  useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
     script.async = true;
@@ -114,13 +105,20 @@ const FreeCareerAssessment = () => {
   const handlePayment = async () => {
     // Bypass payment in development mode for easier testing
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      setPaymentDetails({
+      const devPaymentDetails = {
         id: 'dev_bypass_payment_' + Date.now(),
         orderId: 'dev_order_' + Date.now(),
         signature: 'dev_signature'
-      });
+      };
+      setPaymentDetails(devPaymentDetails);
       toast.success('Development Mode: Payment bypassed!');
-      setCurrentStep(1);
+      navigate('/career-assessment', { 
+        state: { 
+          paymentDetails: devPaymentDetails, 
+          prePaymentId: prePaymentId,
+          formData: formData 
+        } 
+      });
       return;
     }
 
@@ -144,13 +142,20 @@ const FreeCareerAssessment = () => {
               razorpay_signature: response.razorpay_signature
             });
             if (verifyRes.data.success) {
-              setPaymentDetails({
+              const newPaymentDetails = {
                 id: response.razorpay_payment_id,
                 orderId: response.razorpay_order_id,
                 signature: response.razorpay_signature
-              });
+              };
+              setPaymentDetails(newPaymentDetails);
               toast.success('Payment successful!');
-              setCurrentStep(1); // Move to booking step
+              navigate('/career-assessment', { 
+                state: { 
+                  paymentDetails: newPaymentDetails, 
+                  prePaymentId: prePaymentId,
+                  formData: formData 
+                } 
+              });
             } else {
               toast.error('Payment verification failed');
             }
@@ -294,6 +299,10 @@ const FreeCareerAssessment = () => {
         <title>Skill Evaluation Test | Krutanic</title>
         <meta name="description" content="Discover Your Career Potential, Strengths, Skill Gaps & Personalized Growth Roadmap." />
       </Helmet>
+
+      <nav className="absolute top-0 left-0 w-full px-6 md:px-10 py-6 z-[100] flex items-center">
+        <img src={logoWhite} alt="Krutanic Logo" className="h-9 w-auto" />
+      </nav>
 
       <style>{`
         .glass-panel {
@@ -1178,4 +1187,4 @@ const FreeCareerAssessment = () => {
   );
 };
 
-export default FreeCareerAssessment;
+export default SkillEvaluationTest;

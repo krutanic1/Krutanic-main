@@ -3,6 +3,7 @@ import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import Confetti from "react-confetti";
 import API from "../API";
+import * as XLSX from "xlsx";
 
 const STAGES_AND_DISPOSITIONS = {
     "Fresh Lead": ["New Lead", "Invalid Lead"],
@@ -177,6 +178,55 @@ const AdvTeamFilter = () => {
         }
     };
 
+    const handleExport = async () => {
+        try {
+            toast.loading("Preparing Excel export...", { id: "export" });
+            const res = await axios.get(`${API}/api/adv-leads/get-adv-leads`, {
+                params: { 
+                    role: apiRole, 
+                    userId, 
+                    page: 1, 
+                    limit: 10000, 
+                    stage: selectedStages.join(','),
+                    disposition: selectedDispositions.join(','),
+                    source: selectedSources.join(','), 
+                    strictlyOwned: selectedMembers.length === 0, 
+                    memberIds: selectedMembers.join(','),
+                    fromDate,
+                    toDate,
+                    search: searchTerm
+                }
+            });
+            
+            if (res.data && res.data.leads && res.data.leads.length > 0) {
+                const data = res.data.leads.map(lead => ({
+                    "Full Name": lead.full_name,
+                    "Phone": lead.phone_number,
+                    "Email": lead.email,
+                    "Domain": lead.opted_domain,
+                    "Stage": lead.stage || "Fresh Lead",
+                    "Disposition": lead.disposition || "",
+                    "Source": lead.source || "",
+                    "Created On": new Date(lead.created_at).toLocaleDateString("en-GB"),
+                    "Last Contact": lead.last_interaction_at ? new Date(lead.last_interaction_at).toLocaleDateString("en-GB") : "",
+                    "Owner": lead.owner_name || ""
+                }));
+                
+                const worksheet = XLSX.utils.json_to_sheet(data);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Filtered Leads");
+                XLSX.writeFile(workbook, `Filtered_Team_Leads_${new Date().getTime()}.xlsx`);
+                
+                toast.success("Export successful!", { id: "export" });
+            } else {
+                toast.error("No leads found to export", { id: "export" });
+            }
+        } catch (error) {
+            console.error("Export error", error);
+            toast.error("Failed to export leads", { id: "export" });
+        }
+    };
+
     const fetchOutcomeCounts = async () => {
         try {
             const res = await axios.get(`${API}/api/adv-leads/get-outcome-counts`, {
@@ -330,15 +380,23 @@ const AdvTeamFilter = () => {
                             <input type="date" style={styles.input} value={toDate} onChange={e => { setToDate(e.target.value); setCurrentPage(1); }} />
                         </div>
                     </div>
-                    <div style={styles.inputGroup}>
-                        <label style={styles.label}>Search</label>
-                        <input 
-                            type="text" 
-                            style={{...styles.input, minWidth: '280px'}} 
-                            placeholder="Name, Phone, Email..." 
-                            value={searchTerm} 
-                            onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} 
-                        />
+                    <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-end' }}>
+                        <div style={styles.inputGroup}>
+                            <label style={styles.label}>Search</label>
+                            <input 
+                                type="text" 
+                                style={{...styles.input, minWidth: '280px'}} 
+                                placeholder="Name, Phone, Email..." 
+                                value={searchTerm} 
+                                onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} 
+                            />
+                        </div>
+                        <button 
+                            onClick={handleExport}
+                            style={{ padding: '10px 16px', background: designTokens.colors.success, color: 'white', borderRadius: '10px', border: 'none', fontWeight: '600', cursor: 'pointer', height: '41px' }}
+                        >
+                            Export to Excel
+                        </button>
                     </div>
                 </div>
             </div>

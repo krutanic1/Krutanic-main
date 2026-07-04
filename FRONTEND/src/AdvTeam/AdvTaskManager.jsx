@@ -17,6 +17,8 @@ const AdvTaskManager = () => {
     const [filter, setFilter] = useState({ status: "", date: "" });
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [callModalLead, setCallModalLead] = useState(null);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     
     // Auth Token
     const getAuthHeaders = () => {
@@ -27,10 +29,14 @@ const AdvTaskManager = () => {
     const advTeamId = localStorage.getItem("advTeamId");
 
     useEffect(() => {
+        setPage(1);
+    }, [filter]);
+
+    useEffect(() => {
         const designation = localStorage.getItem("advTeamDesignation") || "";
         setIsManager(["manager", "admin", "leader", "adv manager", "adv leader"].some(role => designation.toLowerCase().includes(role)));
         fetchData();
-    }, [filter]);
+    }, [filter, page]);
 
     const fetchData = async () => {
         setLoading(true);
@@ -38,13 +44,14 @@ const AdvTaskManager = () => {
             const [tasksRes, dashRes] = await Promise.all([
                 axios.get(`${API_URL}/api/adv-tasks`, {
                     headers: getAuthHeaders(),
-                    params: { ...filter, counsellor_id: !isManager ? advTeamId : undefined, team_id: isManager ? localStorage.getItem("advTeamId") : undefined } // Adjust for actual needs
+                    params: { ...filter, counsellor_id: !isManager ? advTeamId : undefined, team_id: isManager ? localStorage.getItem("advTeamId") : undefined, page, limit: 50 } 
                 }),
                 axios.get(`${API_URL}/api/adv-tasks/dashboard/counsellor?counsellor_id=${advTeamId}`, {
                     headers: getAuthHeaders()
                 })
             ]);
             setTasks(tasksRes.data.data);
+            setTotalPages(tasksRes.data.totalPages || 1);
             setDashboard(dashRes.data.data);
         } catch (error) {
             console.error("Failed to fetch tasks", error);
@@ -129,10 +136,11 @@ const AdvTaskManager = () => {
                         value={filter.status}
                         onChange={(e) => setFilter({...filter, status: e.target.value})}
                     >
-                        <option value="">All Statuses</option>
+                        <option value="">Active Tasks</option>
                         <option value="Pending">Pending</option>
                         <option value="In Progress">In Progress</option>
                         <option value="Completed">Completed</option>
+                        <option value="All">All (Including Completed)</option>
                     </select>
                     <input 
                         type="date"
@@ -184,7 +192,7 @@ const AdvTaskManager = () => {
                                                 exit={{ opacity: 0 }}
                                                 key={task._id} 
                                                 className="border-b border-slate-700/50 hover:bg-slate-800/50 transition-colors group cursor-pointer"
-                                                onClick={() => setCallModalLead({ id: task.lead_id, name: task.lead_name })}
+                                                onClick={() => setCallModalLead({ id: task.lead_id, name: task.lead_name, taskId: task._id })}
                                             >
                                                 <td className="p-4">
                                                     <p className="font-medium text-slate-200">{task.lead_name}</p>
@@ -212,10 +220,13 @@ const AdvTaskManager = () => {
                                                 <td className="p-4 text-right">
                                                     {task.status !== 'Completed' ? (
                                                         <button 
-                                                            onClick={() => handleUpdateStatus(task._id, 'Completed')}
-                                                            className="text-xs font-medium bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-green-500/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 ml-auto"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setCallModalLead({ id: task.lead_id, name: task.lead_name, taskId: task._id });
+                                                            }}
+                                                            className="text-xs font-medium bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 border border-indigo-500/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 ml-auto"
                                                         >
-                                                            <CheckCircle2 className="w-3.5 h-3.5" /> Mark Done
+                                                            <CheckCircle2 className="w-3.5 h-3.5" /> Add Log & Complete
                                                         </button>
                                                     ) : (
                                                         <span className="text-xs font-medium text-slate-500 italic">Completed</span>
@@ -226,6 +237,25 @@ const AdvTaskManager = () => {
                                     </AnimatePresence>
                                 </tbody>
                             </table>
+                            {totalPages > 1 && (
+                                <div className="flex items-center justify-between px-6 py-4 border-t border-slate-700/50 bg-[#1E293B]">
+                                    <button 
+                                        onClick={() => setPage(prev => Math.max(prev - 1, 1))} 
+                                        disabled={page === 1}
+                                        className="px-4 py-2 bg-[#0F172A] border border-slate-700 text-slate-300 rounded-lg disabled:opacity-50 hover:bg-slate-800 transition-colors"
+                                    >
+                                        Previous
+                                    </button>
+                                    <span className="text-slate-400 text-sm font-medium">Page {page} of {totalPages}</span>
+                                    <button 
+                                        onClick={() => setPage(prev => Math.min(prev + 1, totalPages))} 
+                                        disabled={page === totalPages}
+                                        className="px-4 py-2 bg-[#0F172A] border border-slate-700 text-slate-300 rounded-lg disabled:opacity-50 hover:bg-slate-800 transition-colors"
+                                    >
+                                        Next
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
@@ -247,6 +277,7 @@ const AdvTaskManager = () => {
                 onSuccess={() => { setCallModalLead(null); fetchData(); }}
                 leadId={callModalLead?.id}
                 leadName={callModalLead?.name}
+                taskId={callModalLead?.taskId}
             />
         </div>
     );

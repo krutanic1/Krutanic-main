@@ -50,7 +50,7 @@ exports.createTask = async (req, res, next) => {
 
 exports.getTasks = async (req, res, next) => {
     try {
-        const { date, counsellor_id, team_id, status, type } = req.query;
+        const { date, counsellor_id, team_id, status, type, page = 1, limit = 50 } = req.query;
         let query = {};
 
         // Manager or Counsellor filtering
@@ -64,7 +64,15 @@ exports.getTasks = async (req, res, next) => {
             query.counsellor_id = counsellor_id; // For flexibility
         }
 
-        if (status) query.status = status;
+        if (status) {
+            if (status === 'All') {
+                // Do not filter by status
+            } else {
+                query.status = status;
+            }
+        } else {
+            query.status = { $ne: "Completed" };
+        }
         if (type) query.task_type = type;
         
         if (date) {
@@ -74,8 +82,23 @@ exports.getTasks = async (req, res, next) => {
             };
         }
 
-        const tasks = await AdvTask.find(query).sort({ due_date: 1, due_time: 1 });
-        res.status(200).json({ success: true, data: tasks });
+        const pageNumber = parseInt(page, 10) || 1;
+        const limitNumber = parseInt(limit, 10) || 50;
+        const skip = (pageNumber - 1) * limitNumber;
+
+        const totalItems = await AdvTask.countDocuments(query);
+        const tasks = await AdvTask.find(query)
+            .sort({ due_date: 1, due_time: 1 })
+            .skip(skip)
+            .limit(limitNumber);
+
+        res.status(200).json({ 
+            success: true, 
+            data: tasks,
+            currentPage: pageNumber,
+            totalPages: Math.ceil(totalItems / limitNumber),
+            totalItems
+        });
     } catch (error) {
         next(error);
     }

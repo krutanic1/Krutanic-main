@@ -22,7 +22,7 @@ const ACTION_TYPES = [
     { value: "note", label: "📝 Note" }
 ];
 
-export default function AdvLeadCallModal({ isOpen, onClose, onSuccess, leadId, leadName }) {
+export default function AdvLeadCallModal({ isOpen, onClose, onSuccess, leadId, leadName, taskId }) {
     const [formState, setFormState] = useState({
         actionType: 'call',
         stage: '',
@@ -69,7 +69,14 @@ export default function AdvLeadCallModal({ isOpen, onClose, onSuccess, leadId, l
                 expectedPaymentDate: formState.expectedPaymentDate || undefined,
                 isWeb: true
             });
-            toast.success("Activity logged and task created successfully!");
+
+            if (taskId) {
+                await axios.put(`${API}/api/adv-tasks/${taskId}`, { status: 'Completed' }, {
+                    headers: { Authorization: `Bearer ${localStorage.getItem("advTeamToken") || localStorage.getItem("adminToken") || localStorage.getItem("token")}` }
+                });
+            }
+
+            toast.success("Activity logged and task completed successfully!");
             onSuccess(); // Close and refresh
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to log activity");

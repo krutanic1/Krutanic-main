@@ -70,6 +70,7 @@ const AdminHeader = () => {
         </Link>
         {!isAdvToggleOn && (
           <>
+            <div className="sidebar-section-label" style={{ color: '#888', fontSize: '11px', fontWeight: 'bold', padding: '15px 15px 5px', textTransform: 'uppercase' }}>Course Management</div>
             <Link to="/AddCourse">
               <i className="fa fa-plus-circle mr-2"></i>Create Course
             </Link>
@@ -82,6 +83,8 @@ const AdminHeader = () => {
             <Link to="/AddModule">
               <i className="fa fa-list mr-2"></i>Course List
             </Link>
+
+            <div className="sidebar-section-label" style={{ color: '#888', fontSize: '11px', fontWeight: 'bold', padding: '15px 15px 5px', textTransform: 'uppercase' }}>Project Management</div>
             <Link to="/AdminMentorshipProjects">
               <i className="fa fa-folder-open mr-2"></i>Mentorship Projects
             </Link>
@@ -91,6 +94,8 @@ const AdminHeader = () => {
             <Link to="/AdvProjectPage">
               <i className="fa fa-tasks mr-2"></i>Adv Project Mgmt
             </Link>
+
+            <div className="sidebar-section-label" style={{ color: '#888', fontSize: '11px', fontWeight: 'bold', padding: '15px 15px 5px', textTransform: 'uppercase' }}>Team Management</div>
             <Link to="/CreateOperation">
               <i className="fa fa-briefcase mr-2"></i>Create Operation
             </Link>
@@ -118,9 +123,8 @@ const AdminHeader = () => {
             <Link to="/CreateHR">
                <i className="fa fa-user-circle-o mr-2"></i>Create HR A/c
             </Link>
-            <Link to="/CreateInterview">
-              <i className="fa fa-calendar-plus-o mr-2"></i>Create Mock Interview
-            </Link>
+
+            <div className="sidebar-section-label" style={{ color: '#888', fontSize: '11px', fontWeight: 'bold', padding: '15px 15px 5px', textTransform: 'uppercase' }}>User Management</div>
             <Link to="/AcceptedApplication">
               <i className="fa fa-check-circle mr-2"></i>Active Users
             </Link>
@@ -133,6 +137,8 @@ const AdminHeader = () => {
             <Link to="/MedOnboardingDetails">
               <i className="fa fa-info-circle mr-2" style={{ color: "#2196f3" }}></i>Med OnBoarding Details
             </Link>
+
+            <div className="sidebar-section-label" style={{ color: '#888', fontSize: '11px', fontWeight: 'bold', padding: '15px 15px 5px', textTransform: 'uppercase' }}>Financials</div>
             <Link to="/BookedList">
               <i className="fa fa-book mr-2"></i>Booked Amount
             </Link>
@@ -144,6 +150,14 @@ const AdminHeader = () => {
             </Link>
             <Link to="/FullPaidList">
               <i className="fa fa-check mr-2"></i>Full Paid Amount
+            </Link>
+            <Link to="/RevenueSheet">
+              <i className="fa fa-line-chart mr-2"></i>Revenue Sheet
+            </Link>
+
+            <div className="sidebar-section-label" style={{ color: '#888', fontSize: '11px', fontWeight: 'bold', padding: '15px 15px 5px', textTransform: 'uppercase' }}>Events & Misc</div>
+            <Link to="/CreateInterview">
+              <i className="fa fa-calendar-plus-o mr-2"></i>Create Mock Interview
             </Link>
             <Link to="/MentorQueries">
               <i className="fa fa-question-circle mr-2"></i>Mentor&apos;s Queries
@@ -168,9 +182,6 @@ const AdminHeader = () => {
             </Link>
             <Link to="/Admin/Attendance">
               <i className="fa fa-calendar mr-2"></i>Attendance
-            </Link>
-            <Link to="/RevenueSheet">
-              <i className="fa fa-line-chart mr-2"></i>Revenue Sheet
             </Link>
 
           </>

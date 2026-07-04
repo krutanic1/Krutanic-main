@@ -1,0 +1,361 @@
+/* SkillEvaluationTest.css */
+
+.skill-eval-navbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 24px 5%;
+  z-index: 100;
+}
+
+.skill-eval-logo {
+  height: 36px;
+  width: auto;
+}
+
+.skill-eval-container {
+  min-height: 100vh;
+  background-color: #0b0c10;
+  /* Add a subtle radial gradient to mimic the space background slightly */
+  background-image: radial-gradient(circle at center, #151a28 0%, #08090d 100%);
+  color: #ffffff;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  position: relative;
+  overflow-x: hidden;
+  padding-top: 80px; /* Adjust based on header height */
+  padding-bottom: 60px;
+}
+
+.skill-eval-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+
+@media (min-width: 1024px) {
+  .skill-eval-content {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+/* LEFT SECTION */
+.skill-eval-left {
+  flex: 1;
+  max-width: 600px;
+}
+
+.premium-pill {
+  display: inline-flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 24px;
+  color: #c9d1d9;
+}
+
+.premium-pill .star-icon {
+  margin-right: 6px;
+  font-size: 12px;
+}
+
+.skill-eval-title {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 20px;
+  font-family: 'Georgia', serif; /* Or use the exact serif font if known */
+}
+
+.highlight-test {
+  background: linear-gradient(90deg, #4b9beb, #25d3a5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: 'Inter', sans-serif; /* Keep 'Test' as sans-serif if it looks like it */
+  font-weight: 800;
+}
+
+.skill-eval-desc {
+  font-size: 1rem;
+  color: #9ca3af;
+  line-height: 1.6;
+  margin-bottom: 40px;
+  max-width: 90%;
+}
+
+.receive-card {
+  background-color: #13141a;
+  border: 1px solid #23252d;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.receive-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.shield-icon {
+  font-size: 20px;
+  margin-right: 12px;
+}
+
+.receive-header h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.receive-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 600px) {
+  .receive-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.receive-item {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #d1d5db;
+}
+
+.check-icon {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid #1ad1a5;
+  color: #1ad1a5;
+  font-size: 10px;
+  margin-right: 10px;
+}
+
+.warning-card {
+  background-color: #211910;
+  border: 1px solid #4a3416;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.warning-title {
+  display: flex;
+  align-items: center;
+  color: #e5b35a;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.warning-icon {
+  margin-right: 8px;
+  font-size: 14px;
+}
+
+.warning-desc {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #a1a1aa;
+  line-height: 1.5;
+}
+
+/* RIGHT SECTION */
+.skill-eval-right {
+  flex: 1;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.form-card {
+  background-color: #161822;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.form-header {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 30px;
+}
+
+.target-icon-wrapper {
+  background-color: #1f2235;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  flex-shrink: 0;
+}
+
+.target-icon {
+  color: #6366f1;
+  font-size: 20px;
+}
+
+.form-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 6px 0;
+}
+
+.form-subtitle {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.eval-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #9ca3af;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  background-color: #1c1f2e;
+  border: 1px solid #2d3142;
+  color: #ffffff;
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.form-group input::placeholder {
+  color: #6b7280;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #4b9beb;
+}
+
+.select-wrapper {
+  position: relative;
+}
+
+.select-wrapper::after {
+  content: '▼';
+  font-size: 10px;
+  color: #6b7280;
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.form-group select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.proceed-btn {
+  background: linear-gradient(90deg, #5364ee, #25d3a5);
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+  margin-top: 10px;
+}
+
+.proceed-btn:hover {
+  opacity: 0.9;
+}
+
+.proceed-btn:active {
+  transform: scale(0.98);
+}
+
+.arrow-icon {
+  margin-left: 8px;
+  font-size: 1.1rem;
+}
+
+.price-note {
+  text-align: center;
+  color: #25d3a5;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-top: 16px;
+}
+
+/* LIVE SUPPORT BUTTON */
+.live-support-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background-color: #25D366;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  z-index: 100;
+}
+
+.live-support-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37, 211, 102, 0.5);
+}
+
+.whatsapp-icon {
+  margin-left: 8px;
+  font-size: 1.1rem;
+}

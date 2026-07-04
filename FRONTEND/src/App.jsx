@@ -258,6 +258,7 @@ import ProfilePage from "./new_user/pages/ProfilePage";
 
 import ForgotPassword from "./page/ForgotPassword.jsx";
 import Exercise from "./User/Excercise.jsx";
+import SkillEvaluationTest from "./page/SkillEvaluationTest.jsx";
 
 const queryClient = new QueryClient();
 
@@ -566,6 +567,7 @@ const AppContent = () => {
         <Route path="/advance-apply" element={<AdvanceApplyPage />} />
         <Route path="/advanceform" element={<AdvanceForm />} />
         <Route path="/career-assessment" element={<FreeCareerAssessment />} />
+        <Route path="/skillevlutiontest" element={<SkillEvaluationTest />} />
         <Route path="/Mentorship" element={<Mentorship />} />
         <Route path="/mentorship/:courseSlug" element={<MentorshipCourseDetails />} />
         <Route path="/DataScience" element={<DataScience />} />
