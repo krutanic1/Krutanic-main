@@ -45,6 +45,7 @@ const AdvLeadManagement = () => {
     const [reactiveFromDate, setReactiveFromDate] = useState("");
     const [reactiveToDate, setReactiveToDate] = useState("");
     const [selectedReactiveOutcomes, setSelectedReactiveOutcomes] = useState([]);
+    const [selectedReactiveMembers, setSelectedReactiveMembers] = useState(["All"]);
     const [isMakingReactive, setIsMakingReactive] = useState(false);
 
 
@@ -319,7 +320,8 @@ const AdvLeadManagement = () => {
             const res = await axios.post(`${API}/api/adv-leads/admin-make-reactive`, {
                 fromDate: reactiveFromDate,
                 toDate: reactiveToDate,
-                outcomes: selectedReactiveOutcomes
+                outcomes: selectedReactiveOutcomes,
+                teamMembers: selectedReactiveMembers
             });
             toast.success(res.data.message);
             setShowReactivePanel(false);
@@ -464,6 +466,41 @@ const AdvLeadManagement = () => {
                                             style={{ display: 'none' }}
                                         />
                                         {outcome}
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div style={{ marginBottom: '20px' }}>
+                            <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>Target Team Members</label>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', maxHeight: '150px', overflowY: 'auto', padding: '5px', border: '1px solid #eee', borderRadius: '8px' }}>
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '14px', cursor: 'pointer', background: '#f5f5f5', padding: '6px 12px', borderRadius: '20px', border: selectedReactiveMembers.includes("All") ? '1px solid #c41d7f' : '1px solid #ddd', color: selectedReactiveMembers.includes("All") ? '#c41d7f' : '#333' }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedReactiveMembers.includes("All")}
+                                        onChange={(e) => {
+                                            if (e.target.checked) setSelectedReactiveMembers(["All"]);
+                                            else setSelectedReactiveMembers([]);
+                                        }}
+                                        style={{ display: 'none' }}
+                                    />
+                                    All
+                                </label>
+                                {managers.map(m => (
+                                    <label key={m._id} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '14px', cursor: 'pointer', background: '#f5f5f5', padding: '6px 12px', borderRadius: '20px', border: selectedReactiveMembers.includes(m._id) ? '1px solid #c41d7f' : '1px solid #ddd', color: selectedReactiveMembers.includes(m._id) ? '#c41d7f' : '#333' }}>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedReactiveMembers.includes(m._id)}
+                                            onChange={(e) => {
+                                                let newArr = [...selectedReactiveMembers].filter(id => id !== "All");
+                                                if (e.target.checked) newArr.push(m._id);
+                                                else newArr = newArr.filter(id => id !== m._id);
+                                                if (newArr.length === 0) newArr = ["All"];
+                                                setSelectedReactiveMembers(newArr);
+                                            }}
+                                            style={{ display: 'none' }}
+                                        />
+                                        {m.fullname}
                                     </label>
                                 ))}
                             </div>

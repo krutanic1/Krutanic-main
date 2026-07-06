@@ -982,7 +982,7 @@ router.post("/bulk-assign-to-specialist", async (req, res) => {
 
 // POST: Admin Make Leads Reactive
 router.post("/admin-make-reactive", async (req, res) => {
-    const { fromDate, toDate, outcomes } = req.body;
+    const { fromDate, toDate, outcomes, teamMembers } = req.body;
     if (!fromDate || !toDate) return res.status(400).json({ message: "fromDate and toDate are required" });
     try {
         const startOfDay = new Date(fromDate);
@@ -990,10 +990,16 @@ router.post("/admin-make-reactive", async (req, res) => {
         const endOfDay = new Date(toDate);
         endOfDay.setHours(23, 59, 59, 999);
 
-        let query = { created_at: { $gte: startOfDay, $lte: endOfDay } };
+        let query = {
+            $or: [
+                { assigned_at: { $gte: startOfDay, $lte: endOfDay } },
+                { assigned_at: { $exists: false }, created_at: { $gte: startOfDay, $lte: endOfDay } }
+            ]
+        };
+        let conditions = [];
         
         if (outcomes && outcomes.length > 0 && !outcomes.includes("All")) {
-            query.$or = outcomes.map(out => {
+            const outcomeOrs = outcomes.map(out => {
                 const outcomeLower = out.toLowerCase();
                 const outcomeWithUnderscore = outcomeLower.replace(/\s+/g, '_');
                 return {
@@ -1005,6 +1011,20 @@ router.post("/admin-make-reactive", async (req, res) => {
                     ]
                 };
             }).flatMap(q => q.$or);
+            conditions.push({ $or: outcomeOrs });
+        }
+
+        if (teamMembers && teamMembers.length > 0 && !teamMembers.includes("All")) {
+            conditions.push({
+                $or: [
+                    { owner_id: { $in: teamMembers } },
+                    { current_owner_id: { $in: teamMembers } }
+                ]
+            });
+        }
+
+        if (conditions.length > 0) {
+            query.$and = conditions;
         }
 
         const leads = await AdvLead.find(query);
