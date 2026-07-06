@@ -2,6 +2,32 @@ const express = require('express');
 const router = express.Router();
 const assignExecutive = require('../utils/assignExecutive');
 const NewEnrollStudent = require('../models/NewStudentEnroll');
+const AdvLead = require('../models/AdvLead');
+
+// Endpoint triggered by Vercel Cron
+router.get('/api/cron/daily-adv-tasks', async (req, res) => {
+    try {
+        console.log("⏰ Running Vercel Cron: Adding daily task targets to AdvLeads...");
+        
+        // Add +3 for Attempting Contact
+        await AdvLead.updateMany(
+            { stage: "Attempting Contact" },
+            { $inc: { pending_tasks: 3 } }
+        );
+
+        // Add +1 for other active stages
+        await AdvLead.updateMany(
+            { stage: { $nin: ["Attempting Contact", "Closed Won", "Closed Lost"] } },
+            { $inc: { pending_tasks: 1 } }
+        );
+
+        console.log("✅ Daily task targets successfully added to AdvLeads.");
+        res.status(200).json({ success: true, message: "Daily tasks added." });
+    } catch (error) {
+        console.error("❌ Error adding daily tasks to AdvLeads:", error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
 
 // Endpoint triggered by Vercel Cron
 router.get('/api/cron/auto-assign', async (req, res) => {

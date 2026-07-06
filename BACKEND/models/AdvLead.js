@@ -74,6 +74,7 @@ const AdvLeadSchema = new mongoose.Schema({
     last_recording_url: { type: String }, // NEW: Store the most recent Cloudinary recording link
     converted: { type: Boolean, default: false }, // For Closed Won
     closed: { type: Boolean, default: false }, // For Closed Won/Lost
+    pending_tasks: { type: Number, default: 1 }, // For task tracking
     created_at: { type: Date, default: Date.now }
 });
 

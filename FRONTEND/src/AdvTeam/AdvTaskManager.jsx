@@ -179,6 +179,7 @@ const AdvTaskManager = () => {
                                         <th className="p-4 font-semibold text-slate-300 text-sm">Task Type</th>
                                         <th className="p-4 font-semibold text-slate-300 text-sm">Due Date & Time</th>
                                         <th className="p-4 font-semibold text-slate-300 text-sm">Priority</th>
+                                        <th className="p-4 font-semibold text-slate-300 text-sm">Pending Tasks</th>
                                         <th className="p-4 font-semibold text-slate-300 text-sm">Status</th>
                                         <th className="p-4 font-semibold text-slate-300 text-sm text-right">Actions</th>
                                     </tr>
@@ -192,7 +193,7 @@ const AdvTaskManager = () => {
                                                 exit={{ opacity: 0 }}
                                                 key={task._id} 
                                                 className="border-b border-slate-700/50 hover:bg-slate-800/50 transition-colors group cursor-pointer"
-                                                onClick={() => setCallModalLead({ id: task.lead_id, name: task.lead_name, taskId: task._id })}
+                                                onClick={() => setCallModalLead({ id: task.lead_id?._id || task.lead_id, name: task.lead_name, taskId: task._id })}
                                             >
                                                 <td className="p-4">
                                                     <p className="font-medium text-slate-200">{task.lead_name}</p>
@@ -212,6 +213,11 @@ const AdvTaskManager = () => {
                                                     </span>
                                                 </td>
                                                 <td className="p-4">
+                                                    <span className={`px-2.5 py-1 rounded-md text-xs font-bold border ${task.lead_id?.pending_tasks > 0 ? 'text-red-400 bg-red-400/10 border-red-400/20' : 'text-green-400 bg-green-400/10 border-green-400/20'}`}>
+                                                        {task.lead_id?.pending_tasks || 0}
+                                                    </span>
+                                                </td>
+                                                <td className="p-4">
                                                     <span className={`px-2.5 py-1 rounded-md text-xs font-medium border flex items-center gap-1.5 w-max ${getStatusColor(task.status, task.due_date, task.due_time)}`}>
                                                         <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
                                                         {task.status}
@@ -222,7 +228,7 @@ const AdvTaskManager = () => {
                                                         <button 
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
-                                                                setCallModalLead({ id: task.lead_id, name: task.lead_name, taskId: task._id });
+                                                                setCallModalLead({ id: task.lead_id?._id || task.lead_id, name: task.lead_name, taskId: task._id });
                                                             }}
                                                             className="text-xs font-medium bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 border border-indigo-500/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 ml-auto"
                                                         >

@@ -1516,6 +1516,7 @@ router.post("/log-call/:id", async (req, res) => {
         else if (outcome === "not_interested") lead.status = "closed";
 
         lead.isLocked = false;
+        lead.pending_tasks = Math.max(0, (lead.pending_tasks || 0) - 1);
         await lead.save();
 
         res.status(200).json({ success: true, lead });
@@ -1910,12 +1911,23 @@ router.post("/log-call-activity", async (req, res) => {
 
         await activity.save();
 
+        let newPendingTasks = Math.max(0, (lead.pending_tasks || 0) - 1);
+        
+        if (stage === "Attempting Contact" && lead.stage !== "Attempting Contact") {
+            // If just moved to Attempting Contact, they want it to show 3 pending tasks
+            newPendingTasks = 3;
+        } else if (stage !== "Attempting Contact" && lead.stage === "Attempting Contact") {
+            // If they moved out of Attempting Contact, target is 1 (or 0 if done)
+            newPendingTasks = 0; 
+        }
+
         // 3. Lead Update Logic
         const updateFields = {
             stage,
             disposition,
             last_note: summary || remark,
-            last_interaction_at: new Date()
+            last_interaction_at: new Date(),
+            pending_tasks: newPendingTasks
         };
 
         if (stage !== lead.stage) {

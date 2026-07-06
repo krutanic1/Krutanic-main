@@ -90,7 +90,8 @@ exports.getTasks = async (req, res, next) => {
         const tasks = await AdvTask.find(query)
             .sort({ due_date: 1, due_time: 1 })
             .skip(skip)
-            .limit(limitNumber);
+            .limit(limitNumber)
+            .populate("lead_id", "pending_tasks score");
 
         res.status(200).json({ 
             success: true, 
@@ -169,13 +170,11 @@ exports.getCounsellorDashboard = async (req, res, next) => {
             AdvTask.find({ counsellor_id })
         ]);
 
-        let pendingCount = 0;
         let dueTodayCount = 0;
         let overdueCount = 0;
 
         allTasks.forEach(task => {
             if (task.status !== "Completed" && task.status !== "Missed") {
-                pendingCount++;
                 const dueDateTime = new Date(task.due_date);
                 if (task.due_time) {
                     const [hrs, mins] = task.due_time.split(":");
@@ -191,6 +190,15 @@ exports.getCounsellorDashboard = async (req, res, next) => {
                 }
             }
         });
+
+        // Fetch sum of AdvLead pending tasks for this counsellor
+        const pendingTasksAgg = await AdvLead.aggregate([
+            { $match: { 
+                $or: [{ owner_id: counsellor_id }, { current_owner_id: counsellor_id }]
+            }},
+            { $group: { _id: null, totalPending: { $sum: "$pending_tasks" } } }
+        ]);
+        const pendingCount = pendingTasksAgg.length > 0 ? pendingTasksAgg[0].totalPending : 0;
 
         const completionRate = createdToday > 0 ? ((completedToday / createdToday) * 100).toFixed(0) : 0;
 

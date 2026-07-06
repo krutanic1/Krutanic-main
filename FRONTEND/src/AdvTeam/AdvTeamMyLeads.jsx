@@ -625,6 +625,7 @@ const AdvTeamMyLeads = () => {
                                          <th>Created At</th>
                                          <th>Assigned Date</th>
                                          <th>Score</th>
+                                         <th>Pending Tasks</th>
                                          <th>Actions</th>
                                       </tr>
                                 </thead>
@@ -681,6 +682,11 @@ const AdvTeamMyLeads = () => {
                                                 <td>
                                                     <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '12px', background: (lead.score || 0) > 15 ? '#f6ffed' : '#f5f5f5', border: `1px solid ${(lead.score || 0) > 15 ? '#b7eb8f' : '#d9d9d9'}` }}>
                                                         {lead.score || 0}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', background: lead.pending_tasks > 0 ? '#fff1f0' : '#f6ffed', color: lead.pending_tasks > 0 ? '#f5222d' : '#52c41a', border: `1px solid ${lead.pending_tasks > 0 ? '#ffa39e' : '#b7eb8f'}` }}>
+                                                        {lead.pending_tasks || 0}
                                                     </span>
                                                 </td>
                                                 <td>
