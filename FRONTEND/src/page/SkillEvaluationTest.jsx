@@ -113,6 +113,9 @@ const SkillEvaluationTest = () => {
       };
       setPaymentDetails(devPaymentDetails);
       toast.success('Development Mode: Payment bypassed!');
+      if (window.fbq) {
+        window.fbq('track', 'Lead');
+      }
       navigate('/career-assessment', { 
         state: { 
           paymentDetails: devPaymentDetails, 
@@ -150,6 +153,9 @@ const SkillEvaluationTest = () => {
               };
               setPaymentDetails(newPaymentDetails);
               toast.success('Payment successful!');
+              if (window.fbq) {
+                window.fbq('track', 'Lead');
+              }
               navigate('/career-assessment', { 
                 state: { 
                   paymentDetails: newPaymentDetails, 
