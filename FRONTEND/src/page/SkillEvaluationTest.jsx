@@ -10,6 +10,7 @@ import {
   BarChart3, Rocket, Award, Search, Gift, AlertTriangle
 } from 'lucide-react';
 import API from '../API';
+import { getAvailableDates, getSlotsForDate } from '../utils/slotScheduler';
 import logoWhite from '../assets/logowhite.png';
 
 const SkillEvaluationTest = () => {
@@ -194,41 +195,7 @@ const SkillEvaluationTest = () => {
     }
   };
 
-  const getSlotsForDate = (dateStr) => {
-    if (!dateStr) return [];
-    const date = new Date(dateStr);
-    const day = date.getDay();
-    
-    let slots = [];
-    // If it's Monday (1), slots from 12:00 PM to 6:00 PM (12:00 to 18:00)
-    if (day === 1) {
-      slots = [
-        '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', 
-        '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00'
-      ];
-    } else {
-      // Default slots for other days
-      slots = ['16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'];
-    }
 
-    // Filter out past slots for today
-    const now = new Date();
-    const todayStr = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
-    
-    if (dateStr === todayStr) {
-      const currentHour = now.getHours();
-      const currentMinute = now.getMinutes();
-      
-      slots = slots.filter(time => {
-        const [hour, minute] = time.split(':').map(Number);
-        if (hour > currentHour) return true;
-        if (hour === currentHour && minute > currentMinute) return true;
-        return false;
-      });
-    }
-
-    return slots;
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -827,30 +794,17 @@ const SkillEvaluationTest = () => {
                 <div>
                   <label className="form-label flex items-center gap-2"><Calendar size={16}/> Select Date *</label>
                   <div className="grid grid-cols-2 gap-4">
-                    {(() => {
-                      const dates = [];
-                      let d = new Date();
-                      while (dates.length < 2) {
-                        if (d.getDay() !== 2) { // 2 = Tuesday
-                          const localDate = new Date(d.getTime() - (d.getTimezoneOffset() * 60000));
-                          const dateStr = localDate.toISOString().split('T')[0];
-                          const displayStr = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-                          dates.push({ dateStr, displayStr });
-                        }
-                        d.setDate(d.getDate() + 1);
-                      }
-                      return dates.map((item, i) => (
-                        <button
-                          key={i}
-                          type="button"
-                          onClick={() => fetchSlots(item.dateStr)}
-                          className={`slot-btn py-3 ${selectedDate === item.dateStr ? 'selected' : ''}`}
-                        >
-                          {item.displayStr}
-                          {item.dateStr === new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] && ' (Today)'}
-                        </button>
-                      ));
-                    })()}
+                    {getAvailableDates(2).map((item, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => fetchSlots(item.dateStr)}
+                        className={`slot-btn py-3 ${selectedDate === item.dateStr ? 'selected' : ''}`}
+                      >
+                        {item.displayStr}
+                        {item.isToday && ' (Today)'}
+                      </button>
+                    ))}
                   </div>
                 </div>
                 
