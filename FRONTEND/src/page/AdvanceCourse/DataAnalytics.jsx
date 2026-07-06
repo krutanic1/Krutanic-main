@@ -351,7 +351,7 @@ const DataAnalytics = () => {
       <section className="da-section">
         <div className="shell">
            <Certification isDark={false} />
-           <ProgramCohorts courseValue="Data Analytics" date="6th July" />
+           <ProgramCohorts courseValue="Data Analytics" date="10th Aug" />
         </div>
       </section>
 
