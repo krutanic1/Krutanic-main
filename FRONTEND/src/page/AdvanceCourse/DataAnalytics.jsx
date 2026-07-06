@@ -57,7 +57,7 @@ const heroStats = [
   { label: "Duration", value: "24 Weeks" },
   { label: "Program Rating", value: "4.9/5" },
   { label: "Avg. Salary Hike", value: "55%" },
-  { label: "Batch Starting", value: "6th July" },
+  { label: "Batch Starting", value: "10th Aug" },
 ];
 
 const audience = [
