@@ -9,20 +9,22 @@ import PrabhleenImg from '../assets/alumini/prabhleen.jpg';
 import BirendraImg from '../assets/alumini/birendra.jpg';
 import ManishImg from '../assets/alumini/manish.jpg';
 import MithunImg from '../assets/alumini/mithun.jpg';
+import greenCardBg from '../assets/green_card_bg.png';
+import benefitsBg from '../assets/benefits_bg.png';
 
 /* --- Data --- */
-const PARTNERS = ['Google', 'Microsoft', 'Amazon', 'Meta', 'Netflix', 'Uber', 'Airbnb'];
+const PARTNERS = ['Google', 'Microsoft', 'Amazon', 'Meta', 'Netflix', 'Uber', 'Airbnb', 'Spotify', 'Apple', 'Tesla', 'Stripe', 'Adobe'];
 
 /* --- Reviews (from adodform) --- */
 const REVIEWS = [
   { name: 'Karan Malhotra', role: 'SDE II, Microsoft', review: 'The curriculum is built exactly for what product companies ask. I struggled with System Design, but the 1:1 mentorship helped me clear the Microsoft loop with ease. The mock interviews were a game-changer.', rating: 5, photo: RohanImg },
   { name: 'Priya Desai', role: 'Frontend Engineer, Razorpay', review: 'I transitioned from a service-based company to a high-growth fintech. The resume optimization they did got me callbacks from 5 top companies within two weeks. Highly recommend this program.', rating: 5, photo: PrabhleenImg },
   { name: 'Ankit Verma', role: 'Data Scientist, Walmart', review: 'I had the knowledge but lacked the right projects. The live internship phase gave me actual corporate problems to solve, which became the highlight of my interview at Walmart.', rating: 5, photo: RajaImg },
-  { name: 'Neha Gupta', role: 'Product Analyst, Swiggy', review: 'Their placement assistance is no joke. They literally scheduled my interviews and guided me on how to negotiate my salary. I got a 150% hike thanks to Krutanic.', rating: 5, photo: ManishImg },
+  { name: 'Neha Gupta', role: 'Product Analyst, Swiggy', review: 'Their placement assistance is no joke. They literally scheduled my interviews and guided me on how to negotiate my salary. I got a 150% hike thanks to Krutanic.', rating: 5, photo: null },
   { name: 'Rohan Iyer', role: 'Backend Dev, Cred', review: 'The intensity of this program is unmatched. You have to put in the work, but if you do, the results are guaranteed. The mentors are actually working at top 1% tech companies.', rating: 4.9, photo: BirendraImg },
-  { name: 'Megha Singh', role: 'UI/UX Designer, Zomato', review: 'What I loved most was the completely practical approach. No boring theoretical lectures, just building real things. My portfolio looked incredibly professional after the 3 months.', rating: 5, photo: MithunImg },
+  { name: 'Megha Singh', role: 'UI/UX Designer, Zomato', review: 'What I loved most was the completely practical approach. No boring theoretical lectures, just building real things. My portfolio looked incredibly professional after the 3 months.', rating: 5, photo: null },
   { name: 'Aditya Patil', role: 'SDE I, Amazon', review: 'I was stuck at 4 LPA for three years. The career switch felt impossible until I joined. The dedicated referrals helped bypass the HR screening entirely.', rating: 5, photo: RudraImg },
-  { name: 'Shruti Sharma', role: 'Data Analyst, Deloitte', review: 'Extremely well-structured program. The mentors give brutal but honest feedback on your assignments, which is exactly what you need to improve to corporate standards.', rating: 5, photo: SubhraImg },
+  { name: 'Shruti Sharma', role: 'Data Analyst, Deloitte', review: 'Extremely well-structured program. The mentors give brutal but honest feedback on your assignments, which is exactly what you need to improve to corporate standards.', rating: 5, photo: null },
   { name: 'Vikram Joshi', role: 'Full Stack Dev, Paytm', review: 'Best investment I have ever made in my career. The industry tools access gave me hands-on experience with exactly what my current team uses on a daily basis.', rating: 4.8, photo: null },
 ];
 
@@ -88,11 +90,11 @@ const SvgTrophy = () => (
 );
 
 const BENEFITS = [
-  { icon: <SvgTarget />, title: 'Personalized Career Roadmap', desc: 'Get a 1-on-1 career assessment and a customized learning path based on your experience and career goals.' },
-  { icon: <SvgBriefcase />, title: 'Interview Opportunities with Hiring Partners', desc: 'Get access to multiple interview opportunities through our hiring network after meeting the program\'s eligibility criteria.' },
-  { icon: <SvgUserTie />, title: 'Dedicated Placement & Career Mentorship', desc: 'Receive end-to-end support including resume building, LinkedIn optimization, mock interviews, and salary negotiation.' },
-  { icon: <SvgBarChart />, title: 'Real Industry Projects & Portfolio', desc: 'Build a job-ready portfolio by working on real-world projects designed to match current industry expectations.' },
-  { icon: <SvgTrophy />, title: 'Learn from Industry Experts', desc: 'Get mentored by experienced professionals who have worked with leading companies and understand what recruiters are looking for.' }
+  { icon: <SvgTarget />, title: 'Personalized Career Roadmap', desc: 'Get a 1-on-1 career assessment and a customized learning path based on your experience and career goals.', bgImage: benefitsBg },
+  { icon: <SvgBriefcase />, title: 'Interview Opportunities with Hiring Partners', desc: 'Get access to multiple interview opportunities through our hiring network after meeting the program\'s eligibility criteria.', bgImage: benefitsBg },
+  { icon: <SvgUserTie />, title: 'Dedicated Placement & Career Mentorship', desc: 'Receive end-to-end support including resume building, LinkedIn optimization, mock interviews, and salary negotiation.', bgImage: benefitsBg },
+  { icon: <SvgBarChart />, title: 'Real Industry Projects & Portfolio', desc: 'Build a job-ready portfolio by working on real-world projects designed to match current industry expectations.', bgImage: benefitsBg },
+  { icon: <SvgTrophy />, title: 'Learn from Industry Experts', desc: 'Get mentored by experienced professionals who have worked with leading companies and understand what recruiters are looking for.', bgImage: benefitsBg }
 ];
 
 const TRUST_BUILDERS = [
@@ -258,8 +260,11 @@ const HeroSection = ({ onShowModal }) => {
 const PartnersSection = () => (
   <section className="adv-partners">
     <p className="adv-partners-title">OUR ALUMNI THRIVE AT TOP TIER FIRMS</p>
-    <div className="adv-partners-track">
-      {PARTNERS.map(p => <span key={p} className="adv-partner-logo">{p}</span>)}
+    <div className="adv-partners-marquee">
+      <div className="adv-partners-track">
+        {PARTNERS.map((p, i) => <span key={`a-${i}`} className="adv-partner-logo">{p}</span>)}
+        {PARTNERS.map((p, i) => <span key={`b-${i}`} className="adv-partner-logo">{p}</span>)}
+      </div>
     </div>
   </section>
 );
@@ -274,7 +279,15 @@ const BenefitsSection = () => (
       
       <div className="adv-benefits-grid">
         {BENEFITS.map((b, i) => (
-          <div key={i} className="adv-benefit-card">
+          <div 
+            key={i} 
+            className="adv-benefit-card"
+            style={{ 
+              backgroundImage: `linear-gradient(to bottom right, rgba(2, 44, 34, 0.9), rgba(16, 185, 129, 0.8)), url(${b.bgImage})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}
+          >
             <div className="adv-benefit-icon">{b.icon}</div>
             <h3 className="adv-benefit-title">{b.title}</h3>
             <p className="adv-benefit-desc">{b.desc}</p>

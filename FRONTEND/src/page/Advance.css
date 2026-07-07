@@ -68,7 +68,7 @@
 /* ── BUTTONS ── */
 .adv-btn-primary {
   display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
-  background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: #fff; padding: 1rem 2.2rem; border-radius: 100px;
   font-weight: 700; font-size: 1rem; text-decoration: none;
   box-shadow: 0 8px 30px rgba(16,185,129,0.4);
