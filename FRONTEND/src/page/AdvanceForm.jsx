@@ -6,9 +6,25 @@ import RudraImg from '../assets/mentors/rudra.jpg';
 import RohanImg from '../assets/alumini/rohan.jpg';
 import RajaImg from '../assets/alumini/raja.jpg';
 import PrabhleenImg from '../assets/alumini/prabhleen.jpg';
+import BirendraImg from '../assets/alumini/birendra.jpg';
+import ManishImg from '../assets/alumini/manish.jpg';
+import MithunImg from '../assets/alumini/mithun.jpg';
 
 /* --- Data --- */
 const PARTNERS = ['Google', 'Microsoft', 'Amazon', 'Meta', 'Netflix', 'Uber', 'Airbnb'];
+
+/* --- Reviews (from adodform) --- */
+const REVIEWS = [
+  { name: 'Karan Malhotra', role: 'SDE II, Microsoft', review: 'The curriculum is built exactly for what product companies ask. I struggled with System Design, but the 1:1 mentorship helped me clear the Microsoft loop with ease. The mock interviews were a game-changer.', rating: 5, photo: RohanImg },
+  { name: 'Priya Desai', role: 'Frontend Engineer, Razorpay', review: 'I transitioned from a service-based company to a high-growth fintech. The resume optimization they did got me callbacks from 5 top companies within two weeks. Highly recommend this program.', rating: 5, photo: PrabhleenImg },
+  { name: 'Ankit Verma', role: 'Data Scientist, Walmart', review: 'I had the knowledge but lacked the right projects. The live internship phase gave me actual corporate problems to solve, which became the highlight of my interview at Walmart.', rating: 5, photo: RajaImg },
+  { name: 'Neha Gupta', role: 'Product Analyst, Swiggy', review: 'Their placement assistance is no joke. They literally scheduled my interviews and guided me on how to negotiate my salary. I got a 150% hike thanks to Krutanic.', rating: 5, photo: ManishImg },
+  { name: 'Rohan Iyer', role: 'Backend Dev, Cred', review: 'The intensity of this program is unmatched. You have to put in the work, but if you do, the results are guaranteed. The mentors are actually working at top 1% tech companies.', rating: 4.9, photo: BirendraImg },
+  { name: 'Megha Singh', role: 'UI/UX Designer, Zomato', review: 'What I loved most was the completely practical approach. No boring theoretical lectures, just building real things. My portfolio looked incredibly professional after the 3 months.', rating: 5, photo: MithunImg },
+  { name: 'Aditya Patil', role: 'SDE I, Amazon', review: 'I was stuck at 4 LPA for three years. The career switch felt impossible until I joined. The dedicated referrals helped bypass the HR screening entirely.', rating: 5, photo: RudraImg },
+  { name: 'Shruti Sharma', role: 'Data Analyst, Deloitte', review: 'Extremely well-structured program. The mentors give brutal but honest feedback on your assignments, which is exactly what you need to improve to corporate standards.', rating: 5, photo: SubhraImg },
+  { name: 'Vikram Joshi', role: 'Full Stack Dev, Paytm', review: 'Best investment I have ever made in my career. The industry tools access gave me hands-on experience with exactly what my current team uses on a daily basis.', rating: 4.8, photo: null },
+];
 
 const COMPARISON = [
   { feature: 'Curriculum', traditional: 'Theoretical, outdated syllabi', krutanic: 'Built backwards from current JD requirements' },
@@ -392,64 +408,455 @@ const CustomSelect = ({ label, name, value, options, onChange, placeholder }) =>
   );
 };
 
+/* ─────────────────────────────────────────────
+   REVIEWS SECTION
+───────────────────────────────────────────── */
+const StarRating = ({ rating }) => {
+  const full = Math.floor(rating);
+  const half = rating % 1 !== 0;
+  return (
+    <div className="rev-stars">
+      {'★'.repeat(full)}
+      {half && (
+        <span className="rev-star-half">
+          <span className="rev-star-bg">★</span>
+          <span className="rev-star-fill">★</span>
+        </span>
+      )}
+    </div>
+  );
+};
+
+const ReviewsSection = () => (
+  <section className="adv-reviews">
+    <div className="adv-container">
+      <div className="adv-reviews-header">
+        <h2 className="adv-h2">Real Results from Real Professionals</h2>
+        <p className="adv-reviews-p">What our alumni say about their transformation with Krutanic Advance.</p>
+      </div>
+    </div>
+    {/* Marquee 1 — left to right */}
+    <div className="adv-reviews-marquee-container">
+      <div className="adv-reviews-marquee">
+        {[...REVIEWS, ...REVIEWS].map((r, i) => (
+          <div key={i} className="adv-review-card">
+            <StarRating rating={r.rating} />
+            <p className="adv-review-text">"{r.review}"</p>
+            <div className="adv-review-author">
+              {r.photo
+                ? <img src={r.photo} alt={r.name} className="adv-review-avatar-img" />
+                : <div className="adv-review-avatar">{r.name.charAt(0)}</div>
+              }
+              <div className="adv-review-meta">
+                <strong>{r.name}</strong>
+                <span>{r.role}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+    {/* Marquee 2 — right to left (offset) */}
+    <div className="adv-reviews-marquee-container">
+      <div className="adv-reviews-marquee adv-reviews-marquee-reverse">
+        {[...REVIEWS.slice(3), ...REVIEWS, ...REVIEWS.slice(0, 3)].map((r, i) => (
+          <div key={i} className="adv-review-card">
+            <StarRating rating={r.rating} />
+            <p className="adv-review-text">"{r.review}"</p>
+            <div className="adv-review-author">
+              {r.photo
+                ? <img src={r.photo} alt={r.name} className="adv-review-avatar-img" />
+                : <div className="adv-review-avatar">{r.name.charAt(0)}</div>
+              }
+              <div className="adv-review-meta">
+                <strong>{r.name}</strong>
+                <span>{r.role}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+/* ─────────────────────────────────────────────
+   FOMO HOOK BAR — above the form
+───────────────────────────────────────────── */
+const TOTAL_SEATS = 30;
+const SEATS_LEFT = 7;
+const COHORT_DEADLINE = (() => {
+  const key = 'krutanic_adv_deadline_1day';
+  const stored = localStorage.getItem(key);
+  if (stored) return parseInt(stored, 10);
+  // Deadline: 1 day from first visit
+  const d = Date.now() + 1 * 24 * 60 * 60 * 1000;
+  localStorage.setItem(key, String(d));
+  return d;
+})();
+
+const TICKER_MESSAGES = [
+  'Rohan from Pune just applied',
+  '23 people are viewing this page right now',
+  'Sneha from Bangalore just applied',
+  '4 applicants joined in the last hour',
+  'Amit from Delhi just submitted his application',
+  '18 people are viewing this page right now',
+  'Priya from Hyderabad just applied',
+  'This cohort is 77% full',
+];
+
+const useFomoCountdown = () => {
+  const calc = () => {
+    const diff = COHORT_DEADLINE - Date.now();
+    if (diff <= 0) return { d: 0, h: 0, m: 0, s: 0 };
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    return { d, h, m, s };
+  };
+  const [time, setTime] = useState(calc);
+  useEffect(() => {
+    const t = setInterval(() => setTime(calc()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  return time;
+};
+
+const FomoBanner = () => {
+  const { d, h, m, s } = useFomoCountdown();
+  const [tickerIdx, setTickerIdx] = useState(0);
+  const [tickerVisible, setTickerVisible] = useState(true);
+  const filled = TOTAL_SEATS - SEATS_LEFT;
+  const pct = (filled / TOTAL_SEATS) * 100;
+
+  useEffect(() => {
+    const iv = setInterval(() => {
+      setTickerVisible(false);
+      setTimeout(() => {
+        setTickerIdx(i => (i + 1) % TICKER_MESSAGES.length);
+        setTickerVisible(true);
+      }, 350);
+    }, 4000);
+    return () => clearInterval(iv);
+  }, []);
+
+  const pad = n => String(n).padStart(2, '0');
+
+  return (
+    <div className="fomo-banner">
+      {/* Seat scarcity bar */}
+      <div className="fomo-seats-row">
+        <div className="fomo-seats-label">
+          <span className="fomo-pulse-dot"></span>
+          <strong>Super 30 Cohort — Nov 2026</strong>
+          <span className="fomo-seats-left">— {SEATS_LEFT} SEATS LEFT</span>
+        </div>
+        <div className="fomo-seats-bar-wrap">
+          <div className="fomo-seats-bar">
+            <div className="fomo-seats-fill" style={{ width: `${pct}%` }}></div>
+          </div>
+          <span className="fomo-seats-count">{filled}/{TOTAL_SEATS} seats taken</span>
+        </div>
+      </div>
+
+      {/* Countdown timer */}
+      <div className="fomo-countdown-row">
+        <span className="fomo-countdown-label">Applications close in:</span>
+        <div className="fomo-countdown">
+          <div className="fomo-cd-unit"><span>{pad(d)}</span><small>Days</small></div>
+          <div className="fomo-cd-sep">:</div>
+          <div className="fomo-cd-unit"><span>{pad(h)}</span><small>Hrs</small></div>
+          <div className="fomo-cd-sep">:</div>
+          <div className="fomo-cd-unit"><span>{pad(m)}</span><small>Min</small></div>
+          <div className="fomo-cd-sep">:</div>
+          <div className="fomo-cd-unit"><span>{pad(s)}</span><small>Sec</small></div>
+        </div>
+      </div>
+
+      {/* Activity ticker */}
+      <div className={`fomo-ticker ${tickerVisible ? 'visible' : ''}`}>
+        {TICKER_MESSAGES[tickerIdx]}
+      </div>
+
+      {/* Micro-copy */}
+      <p className="fomo-micro-copy">
+        Seats are allocated <strong>first-come, first-evaluated</strong>. Late applicants are waitlisted for the Feb 2027 cohort.
+      </p>
+    </div>
+  );
+};
+
+/* ─────────────────────────────────────────────
+   ANIMATED SVG ICONS — Duolingo-style
+───────────────────────────────────────────── */
+const SvgSalary = () => (
+  <svg className="gate-svg gate-svg-salary" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {/* Coin stack base */}
+    <ellipse cx="32" cy="50" rx="18" ry="6" fill="#fde68a" />
+    <ellipse cx="32" cy="44" rx="18" ry="6" fill="#fbbf24" />
+    <ellipse cx="32" cy="38" rx="18" ry="6" fill="#f59e0b" />
+    <ellipse cx="32" cy="32" rx="18" ry="6" fill="#fbbf24" />
+    {/* Coin rim */}
+    <rect x="14" y="32" width="36" height="12" fill="#fbbf24" />
+    <rect x="14" y="38" width="36" height="6" fill="#f59e0b" />
+    {/* Dollar sign */}
+    <text x="32" y="42" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#92400e" fontFamily="Arial">$</text>
+    {/* Upward arrow */}
+    <path d="M44 18 L50 10 L56 18" stroke="#10b981" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="gate-svg-arrow" />
+    <line x1="50" y1="10" x2="50" y2="28" stroke="#10b981" strokeWidth="3" strokeLinecap="round" className="gate-svg-arrow" />
+  </svg>
+);
+
+const SvgNoResponse = () => (
+  <svg className="gate-svg gate-svg-mail" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {/* Envelope body */}
+    <rect x="8" y="18" width="48" height="34" rx="4" fill="#6366f1" />
+    <path d="M8 22 L32 38 L56 22" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    {/* X mark — no response */}
+    <circle cx="48" cy="16" r="10" fill="#ef4444" />
+    <line x1="44" y1="12" x2="52" y2="20" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+    <line x1="52" y1="12" x2="44" y2="20" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+  </svg>
+);
+
+const SvgSkillsGap = () => (
+  <svg className="gate-svg gate-svg-gap" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {/* Bar chart */}
+    <rect x="8" y="36" width="10" height="20" rx="2" fill="#a5b4fc" />
+    <rect x="22" y="28" width="10" height="28" rx="2" fill="#818cf8" />
+    <rect x="36" y="20" width="10" height="36" rx="2" fill="#6366f1" />
+    {/* Gap indicator line — falling */}
+    <path d="M8 30 L36 44" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="4 3" className="gate-svg-dash" />
+    {/* Target line */}
+    <path d="M36 14 L56 14" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" />
+    <circle cx="56" cy="14" r="3" fill="#10b981" />
+    {/* Gap arrow */}
+    <path d="M50 20 L50 40" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeDasharray="3 2" />
+    <path d="M47 38 L50 44 L53 38" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const SvgCompass = () => (
+  <svg className="gate-svg gate-svg-compass" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {/* Compass circle */}
+    <circle cx="32" cy="32" r="24" fill="#0f172a" stroke="#4f46e5" strokeWidth="3" />
+    <circle cx="32" cy="32" r="18" fill="#1e293b" />
+    {/* Cardinal markers */}
+    <text x="32" y="16" textAnchor="middle" fontSize="7" fill="#94a3b8" fontFamily="Arial" fontWeight="bold">N</text>
+    <text x="32" y="53" textAnchor="middle" fontSize="7" fill="#94a3b8" fontFamily="Arial" fontWeight="bold">S</text>
+    <text x="13" y="35" textAnchor="middle" fontSize="7" fill="#94a3b8" fontFamily="Arial" fontWeight="bold">W</text>
+    <text x="51" y="35" textAnchor="middle" fontSize="7" fill="#94a3b8" fontFamily="Arial" fontWeight="bold">E</text>
+    {/* Compass needle — animated rotation */}
+    <g className="gate-svg-needle" style={{ transformOrigin: '32px 32px' }}>
+      <polygon points="32,18 30,32 32,36 34,32" fill="#ef4444" />
+      <polygon points="32,46 30,32 32,28 34,32" fill="#e2e8f0" />
+    </g>
+    {/* Center dot */}
+    <circle cx="32" cy="32" r="3" fill="#4f46e5" />
+  </svg>
+);
+
+const GATE_SVG_MAP = [SvgSalary, SvgNoResponse, SvgSkillsGap, SvgCompass];
+
+/* ─────────────────────────────────────────────
+   COMMITMENT GATE — Step 1
+───────────────────────────────────────────── */
+const GATE_OPTIONS = [
+  { label: 'Stuck at low salary despite experience' },
+  { label: 'No response from top companies' },
+  { label: 'Skills gap vs job market' },
+  { label: 'Ready to switch but no guidance' },
+];
+
+const CommitmentGate = ({ onSelect }) => {
+  const [selected, setSelected] = useState(null);
+
+  const pick = (idx) => {
+    setSelected(idx);
+    setTimeout(() => onSelect(GATE_OPTIONS[idx].label), 600);
+  };
+
+  return (
+    <div className="fomo-gate">
+      <div className="fomo-gate-header">
+        <span className="fomo-step-badge">STEP 1 OF 4</span>
+        <h3 className="fomo-gate-q">What's holding your career back right now?</h3>
+        <p className="fomo-gate-sub">Tap one — your answer helps us match you to the right track.</p>
+      </div>
+      <div className="fomo-gate-grid">
+        {GATE_OPTIONS.map((opt, idx) => {
+          const SvgIcon = GATE_SVG_MAP[idx];
+          return (
+            <button
+              key={idx}
+              type="button"
+              className={`fomo-gate-card ${
+                selected === idx ? 'selected' : selected !== null ? 'dimmed' : ''
+              }`}
+              onClick={() => pick(idx)}
+            >
+              <span className="fomo-gate-icon"><SvgIcon /></span>
+              <span className="fomo-gate-text">{opt.label}</span>
+              {selected === idx && <span className="fomo-gate-check">✓</span>}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+/* ─────────────────────────────────────────────
+   FOMO MULTI-STEP ENROLLMENT FORM
+───────────────────────────────────────────── */
+const SvgDataScience = () => (
+  <svg className="domain-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="24" cy="24" r="20" fill="#eef2ff" />
+    <circle cx="24" cy="14" r="5" fill="#6366f1" className="ds-node" />
+    <circle cx="14" cy="30" r="5" fill="#8b5cf6" className="ds-node" />
+    <circle cx="34" cy="30" r="5" fill="#4f46e5" className="ds-node" />
+    <line x1="24" y1="19" x2="14" y2="25" stroke="#a5b4fc" strokeWidth="2" />
+    <line x1="24" y1="19" x2="34" y2="25" stroke="#a5b4fc" strokeWidth="2" />
+    <line x1="19" y1="30" x2="29" y2="30" stroke="#a5b4fc" strokeWidth="2" />
+  </svg>
+);
+
+const SvgAnalytics = () => (
+  <svg className="domain-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="24" cy="24" r="20" fill="#ecfdf5" />
+    <rect x="10" y="30" width="6" height="12" rx="2" fill="#34d399" className="da-bar" />
+    <rect x="19" y="22" width="6" height="20" rx="2" fill="#10b981" className="da-bar" />
+    <rect x="28" y="16" width="6" height="26" rx="2" fill="#059669" className="da-bar" />
+    <path d="M10 28 L19 20 L28 14 L38 10" stroke="#fbbf24" strokeWidth="2.5" strokeLinecap="round" className="da-line" />
+    <circle cx="38" cy="10" r="3" fill="#fbbf24" />
+  </svg>
+);
+
+const SvgMarketing = () => (
+  <svg className="domain-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="24" cy="24" r="20" fill="#fff7ed" />
+    {/* Megaphone */}
+    <path d="M12 20 L12 28 L18 28 L26 34 L26 14 L18 20 Z" fill="#f97316" />
+    <rect x="12" y="20" width="6" height="8" rx="1" fill="#ea580c" />
+    {/* Signal waves */}
+    <path d="M29 18 Q33 21 33 24 Q33 27 29 30" stroke="#f97316" strokeWidth="2.5" strokeLinecap="round" fill="none" className="dm-wave" />
+    <path d="M32 15 Q38 19 38 24 Q38 29 32 33" stroke="#fb923c" strokeWidth="2" strokeLinecap="round" fill="none" className="dm-wave" />
+  </svg>
+);
+
+const DOMAIN_SVG_MAP = [SvgDataScience, SvgAnalytics, SvgMarketing];
+
+const DOMAIN_OPTIONS = [
+  { label: 'Data Science' },
+  { label: 'Data Analytics & Business Intelligence' },
+  { label: 'Digital Marketing & Growth Accelerator' },
+];
+
+const LS_KEY = 'krutanic_adv_form_v2';
+
+const loadSaved = () => {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+};
+
+const formatCTC = (val) => {
+  if (val >= 100) return `₹${val}L+`;
+  return `₹${val}L`;
+};
+
 const EnrollmentForm = () => {
-  const [step, setStep] = useState(1);
+  const saved = loadSaved();
+  const [step, setStep] = useState(0); // Always start at 0 (Commitment Gate) on refresh
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [applicantNum, setApplicantNum] = useState(0);
+  const [sameWhatsapp, setSameWhatsapp] = useState(false);
 
   const [formData, setFormData] = useState({
-    fullName: '', email: '', contactNumber: '', whatsappNumber: '',
-    currentSituation: '', preferredLanguages: [], 
-    primaryGoal: '', currentChallenge: '', interestReason: '',
-    domain: '', commitmentLevel: '', readyToInvest: '',
-    startTime: '', importanceReason: '', connectTime: '',
+    challenge: saved?.challenge || '',
+    fullName: saved?.fullName || '',
+    email: saved?.email || '',
+    contactNumber: saved?.contactNumber || '',
+    whatsappNumber: saved?.whatsappNumber || '',
+    currentSituation: saved?.currentSituation || '',
+    currentCtc: saved?.currentCtc || 6,
+    targetCtc: saved?.targetCtc || 16,
+    domain: saved?.domain || '',
+    preferredLanguages: saved?.preferredLanguages || [],
+    commitmentLevel: saved?.commitmentLevel || '',
+    readyToInvest: saved?.readyToInvest || '',
+    connectTime: saved?.connectTime || '',
     paidAgreement: false,
-    website: '', // Honeypot field
-    captchaAnswer: '' // User's answer to math captcha
+    primaryGoal: '',
+    currentChallenge: '',
+    interestReason: '',
+    startTime: '',
+    importanceReason: '',
+    website: '',        // Honeypot
+    captchaAnswer: '',
   });
 
   const [captcha, setCaptcha] = useState({ a: 0, b: 0 });
 
+  useEffect(() => { generateCaptcha(); }, [step]);
+
+  // Auto-save form data to localStorage (do not persist step index)
   useEffect(() => {
-    generateCaptcha();
-  }, [step]);
+    const { paidAgreement, website, captchaAnswer, ...saveable } = formData;
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify(saveable));
+    } catch {}
+  }, [formData]);
 
   const generateCaptcha = () => {
-    setCaptcha({
-      a: Math.floor(Math.random() * 10) + 1,
-      b: Math.floor(Math.random() * 10) + 1
-    });
+    setCaptcha({ a: Math.floor(Math.random() * 10) + 1, b: Math.floor(Math.random() * 10) + 1 });
   };
 
   const languageOptions = ['English', 'Hindi', 'Telugu', 'Tamil', 'Kannada', 'Malayalam', 'Marathi', 'Gujarati', 'Bengali'];
 
-  const handleInputChange = (e) => setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => {
+      const next = { ...prev, [name]: value };
+      if (name === 'contactNumber' && sameWhatsapp) next.whatsappNumber = value;
+      return next;
+    });
+  };
+
   const handleLanguageToggle = (lang) => {
     setFormData(prev => ({
       ...prev,
-      preferredLanguages: prev.preferredLanguages.includes(lang) 
-        ? prev.preferredLanguages.filter(l => l !== lang) 
+      preferredLanguages: prev.preferredLanguages.includes(lang)
+        ? prev.preferredLanguages.filter(l => l !== lang)
         : [...prev.preferredLanguages, lang]
     }));
   };
 
-  const nextStep = (e) => { e.preventDefault(); setStep(2); };
-  const prevStep = () => setStep(1);
+  const handleGateSelect = (challengeLabel) => {
+    setFormData(prev => ({
+      ...prev,
+      challenge: challengeLabel,
+      currentChallenge: challengeLabel,
+    }));
+    setStep(1);
+  };
+
+  const progressPct = [0, 25, 60, 85, 100][Math.min(step, 4)];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 0. Honeypot check: If the hidden 'website' field is filled, it's likely a bot
     if (formData.website) {
-      console.warn("Honeypot filled. Bot detected.");
-      setSubmitted(true); // Pretend success to bots
+      setSubmitted(true);
       return;
     }
 
-    // 1. Math Captcha check
     if (parseInt(formData.captchaAnswer) !== (captcha.a + captcha.b)) {
-      toast.error(`Incorrect answer: ${captcha.a} + ${captcha.b} is not ${formData.captchaAnswer}`);
+      toast.error(`Incorrect answer: ${captcha.a} + ${captcha.b} ≠ ${formData.captchaAnswer}`);
       generateCaptcha();
       setFormData(prev => ({ ...prev, captchaAnswer: '' }));
       return;
@@ -466,26 +873,27 @@ const EnrollmentForm = () => {
       params.append('whatsappNumber', formData.whatsappNumber);
       params.append('currentSituation', formData.currentSituation);
       params.append('preferredLanguages', formData.preferredLanguages.join(', '));
-      params.append('primaryGoal', formData.primaryGoal);
+      params.append('primaryGoal', formData.challenge);
       params.append('currentChallenge', formData.currentChallenge);
-      params.append('interestReason', formData.interestReason);
+      params.append('interestReason', formData.interestReason || 'N/A');
       params.append('domain', formData.domain);
       params.append('commitmentLevel', formData.commitmentLevel);
       params.append('readyToInvest', formData.readyToInvest);
-      params.append('startTime', formData.startTime);
-      params.append('importanceReason', formData.importanceReason);
+      params.append('startTime', formData.startTime || 'Immediately');
+      params.append('importanceReason', formData.importanceReason || 'N/A');
       params.append('connectTime', formData.connectTime);
+      params.append('currentCTC', `${formData.currentCtc}L`);
+      params.append('targetCTC', `${formData.targetCtc}L`);
       params.append('paidAgreement', formData.paidAgreement ? 'Yes' : 'No');
-      params.append('source', 'Krutanic Advance Form');
+      params.append('source', 'Krutanic Advance Form v2 FOMO');
 
-      await fetch(googleFormUrl, { 
-        method: 'POST', 
+      await fetch(googleFormUrl, {
+        method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: params.toString() 
+        body: params.toString()
       });
 
-      // 2. Submit to Backend Database (AdvFormLead collection)
       try {
         const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
         await fetch(`${apiUrl}/api/adv-leads/submit-adv-form-lead`, {
@@ -497,89 +905,146 @@ const EnrollmentForm = () => {
         console.error("Database sync error:", dbErr);
       }
 
-      setIsSubmitting(false); 
+      // Generate believable applicant number (session-stable)
+      const base = 1847;
+      const n = base + ((Date.now() >> 4) % 53);
+      setApplicantNum(n);
+      localStorage.removeItem(LS_KEY);
+      setIsSubmitting(false);
       setSubmitted(true);
     } catch (err) {
       console.error("Form submission error:", err);
-      setIsSubmitting(false); 
-      setSubmitted(true); 
+      setIsSubmitting(false);
+      setSubmitted(true);
     }
   };
 
+  /* ── Confirmation Screen ── */
   if (submitted) {
     return (
       <section className="adv-form-section" id="enrollment-form">
-        <div className="adv-success-box">
-          <div className="adv-success-icon">✓</div>
-          <h3>Application Received</h3>
-          <p>Your profile is under review by our admissions board. We will contact you within 24 hours.</p>
+        <FomoBanner />
+        <div className="fomo-success">
+          <div className="fomo-success-num">#{applicantNum || 1894}</div>
+          <div className="fomo-success-icon">✓</div>
+          <h3 className="fomo-success-h3">Seat Secured — Application Received</h3>
+          <p className="fomo-success-msg">
+            You are applicant <strong>#{applicantNum || 1894}</strong> for the Nov 2026 Cohort.<br />
+            Your evaluation call will be scheduled within <strong>24 hours</strong>.
+          </p>
+          <div className="fomo-success-tags">
+            <span>✓ Position locked</span>
+            <span>✓ Evaluation batch: This week</span>
+            <span>✓ Response within 24 hrs</span>
+          </div>
         </div>
       </section>
     );
   }
 
+  const gapLakhs = Math.max(0, formData.targetCtc - formData.currentCtc);
+  const avgHike = (formData.targetCtc / Math.max(1, formData.currentCtc)).toFixed(1);
+
   return (
     <section className="adv-form-section" id="enrollment-form">
+      {/* Pre-form FOMO hook bar — always visible */}
+      <FomoBanner />
+
       <div className="adv-container">
-        <div className="adv-form-wrapper">
-          <div className="adv-form-sidebar">
-            <h3>The Super 30 Cohort</h3>
-            <p>We select candidates based on ambition, clarity of goals, and readiness to execute. Take your time to fill this out accurately.</p>
-            <div className="adv-form-sidebar-perks">
-              <div className="adv-perk">✓ 100% Placement Assistance</div>
-              <div className="adv-perk">✓ 1:1 Industry Mentorship</div>
-              <div className="adv-perk">✓ Corporate Internship</div>
-              <div className="adv-perk">✓ 15 Interview Guarantee</div>
+        {/* Multi-step progress bar */}
+        {step > 0 && (
+          <div className="fomo-progress-wrap">
+            <div className="fomo-progress-bar-bg">
+              <div className="fomo-progress-bar-fill" style={{ width: `${progressPct}%` }}></div>
             </div>
-
-
+            <p className="fomo-progress-label">
+              {step === 1 && '25% — Profile details'}
+              {step === 2 && '60% — Almost qualified!'}
+              {step === 3 && '85% — Final step — you\'re almost in!'}
+            </p>
           </div>
-          
-          <div className="adv-form-content">
-            <div className="adv-stepper">
-              <div className={`adv-step ${step >= 1 ? 'active' : ''}`}>1. Profile</div>
-              <div className="adv-step-line"></div>
-              <div className={`adv-step ${step >= 2 ? 'active' : ''}`}>2. Career Goals</div>
+        )}
+
+        <div className="adv-form-wrapper fomo-form-wrapper">
+          {/* Sidebar — only shown from step 1+ */}
+          {step > 0 && (
+            <div className="adv-form-sidebar fomo-sidebar">
+              <h3>The Super 30 Cohort</h3>
+              <p>We select candidates based on ambition, clarity of goals, and readiness to execute.</p>
+              <div className="adv-form-sidebar-perks">
+                <div className="adv-perk">✓ 100% Placement Assistance</div>
+                <div className="adv-perk">✓ 1:1 Industry Mentorship</div>
+                <div className="adv-perk">✓ Corporate Internship</div>
+                <div className="adv-perk">✓ 15 Interview Guarantee</div>
+              </div>
+              <div className="fomo-sidebar-warn">
+                <span className="fomo-pulse-dot fomo-pulse-red"></span>
+                <span>{SEATS_LEFT} seats remaining for Nov 2026</span>
+              </div>
+            </div>
+          )}
+
+          <div className={`adv-form-content ${step === 0 ? 'fomo-full-width' : ''}`}>
+            {/* STEP 0: Commitment Gate */}
+            {step === 0 && (
+              <CommitmentGate onSelect={handleGateSelect} />
+            )}
+
+            {/* Honeypot — hidden */}
+            <div style={{ display: 'none' }} aria-hidden="true">
+              <input type="text" name="website" tabIndex="-1" autoComplete="off" value={formData.website} onChange={handleInputChange} />
             </div>
 
-            <form onSubmit={step === 1 ? nextStep : handleSubmit}>
-              {/* Security Honeypot: Hidden from humans, tempting for bots */}
-              <div style={{ display: 'none' }} aria-hidden="true">
-                <input 
-                  type="text" 
-                  name="website" 
-                  tabIndex="-1" 
-                  autoComplete="off" 
-                  value={formData.website} 
-                  onChange={handleInputChange} 
-                />
-              </div>
-
-              {step === 1 && (
+            {/* STEP 1: Profile */}
+            {step === 1 && (
+              <form onSubmit={(e) => { e.preventDefault(); setStep(2); }}>
+                <div className="fomo-step-header">
+                  <span className="fomo-step-badge">STEP 2 OF 4</span>
+                  <h3 className="fomo-step-h3">Your Profile</h3>
+                </div>
                 <div className="adv-form-step">
                   <div className="adv-input-group">
                     <label>Full Professional Name</label>
-                    <input type="text" name="fullName" value={formData.fullName} onChange={handleInputChange} required />
+                    <input type="text" name="fullName" value={formData.fullName} onChange={handleInputChange} required placeholder="e.g. Arjun Mehta" />
                   </div>
                   <div className="adv-input-group">
                     <label>Primary Email Address</label>
-                    <input type="email" name="email" value={formData.email} onChange={handleInputChange} required />
+                    <input type="email" name="email" value={formData.email} onChange={handleInputChange} required placeholder="you@example.com" />
                   </div>
-                  <div className="adv-input-row">
-                    <div className="adv-input-group">
-                      <label>Contact Number</label>
-                      <input type="tel" name="contactNumber" value={formData.contactNumber} onChange={handleInputChange} required />
-                    </div>
-                    <div className="adv-input-group">
+                  <div className="adv-input-group">
+                    <label>Contact Number</label>
+                    <input type="tel" name="contactNumber" value={formData.contactNumber} onChange={handleInputChange} required placeholder="+91 98765 43210" />
+                  </div>
+                  <div className="fomo-whatsapp-row">
+                    <div className="adv-input-group" style={{ flex: 1 }}>
                       <label>WhatsApp Number</label>
-                      <input type="tel" name="whatsappNumber" value={formData.whatsappNumber} onChange={handleInputChange} required />
+                      <input
+                        type="tel"
+                        name="whatsappNumber"
+                        value={sameWhatsapp ? formData.contactNumber : formData.whatsappNumber}
+                        onChange={handleInputChange}
+                        required
+                        disabled={sameWhatsapp}
+                        placeholder="+91 98765 43210"
+                      />
                     </div>
+                    <label className="fomo-same-toggle">
+                      <input
+                        type="checkbox"
+                        checked={sameWhatsapp}
+                        onChange={e => {
+                          setSameWhatsapp(e.target.checked);
+                          if (e.target.checked) setFormData(p => ({ ...p, whatsappNumber: p.contactNumber }));
+                        }}
+                      />
+                      <span>Same as call number</span>
+                    </label>
                   </div>
-                  <CustomSelect 
-                    label="Current Professional Status" 
-                    name="currentSituation" 
-                    value={formData.currentSituation} 
-                    onChange={handleInputChange} 
+                  <CustomSelect
+                    label="Current Professional Status"
+                    name="currentSituation"
+                    value={formData.currentSituation}
+                    onChange={handleInputChange}
                     placeholder="Select status"
                     options={[
                       'Recent Graduate (0–1 year)',
@@ -588,76 +1053,87 @@ const EnrollmentForm = () => {
                       'Looking for a Career Switch'
                     ]}
                   />
-                  <button type="submit" className="adv-btn-primary adv-btn-full">Proceed to Career Goals</button>
+                  <button type="submit" className="adv-btn-primary adv-btn-full fomo-btn-next">
+                    Continue — Goal Calibration <span>→</span>
+                  </button>
                 </div>
-              )}
+              </form>
+            )}
 
-              {step === 2 && (
+            {/* STEP 2: Goal Calibration */}
+            {step === 2 && (
+              <form onSubmit={(e) => { e.preventDefault(); setStep(3); }}>
+                <div className="fomo-step-header">
+                  <span className="fomo-step-badge">STEP 3 OF 4</span>
+                  <h3 className="fomo-step-h3">Goal Calibration — Personalized Assessment</h3>
+                </div>
                 <div className="adv-form-step">
-                  <h4 className="adv-step-title">CAREER GOALS & READINESS</h4>
-                  
-                  <CustomSelect 
-                    label="PRIMARY CAREER GOAL *" 
-                    name="primaryGoal" 
-                    value={formData.primaryGoal} 
-                    onChange={handleInputChange} 
-                    placeholder="Select your goal"
-                    options={[
-                      'Get my first job',
-                      'Switch to a better role / company',
-                      'Increase salary / package',
-                      'Build strong practical skills'
-                    ]}
-                  />
+                  {/* CTC Sliders */}
+                  <div className="adv-input-group">
+                    <label>Current CTC (Annual)</label>
+                    <div className="fomo-slider-wrap">
+                      <input
+                        type="range" min="1" max="30" step="0.5"
+                        value={formData.currentCtc}
+                        onChange={e => setFormData(p => ({ ...p, currentCtc: parseFloat(e.target.value) }))}
+                        className="fomo-slider"
+                      />
+                      <div className="fomo-slider-val">{formatCTC(formData.currentCtc)}</div>
+                    </div>
+                  </div>
+                  <div className="adv-input-group">
+                    <label>Target CTC (Annual)</label>
+                    <div className="fomo-slider-wrap">
+                      <input
+                        type="range" min="5" max="100" step="0.5"
+                        value={formData.targetCtc}
+                        onChange={e => setFormData(p => ({ ...p, targetCtc: parseFloat(e.target.value) }))}
+                        className="fomo-slider"
+                      />
+                      <div className="fomo-slider-val fomo-slider-val-target">{formatCTC(formData.targetCtc)}</div>
+                    </div>
+                  </div>
+                  {/* Live gap badge */}
+                  <div className="fomo-gap-badge">
+                    <div className="fomo-gap-left">
+                      <span className="fomo-gap-label">Your target salary gap</span>
+                      <strong className="fomo-gap-value">₹{gapLakhs.toFixed(1)}L</strong>
+                    </div>
+                    <div className="fomo-gap-divider"></div>
+                    <div className="fomo-gap-right">
+                      <span className="fomo-gap-label">Our avg hike for this profile</span>
+                      <strong className="fomo-gap-hike">{avgHike}x &uarr;</strong>
+                    </div>
+                  </div>
 
-                  <CustomSelect 
-                    label="CURRENT CHALLENGE *" 
-                    name="currentChallenge" 
-                    value={formData.currentChallenge} 
-                    onChange={handleInputChange} 
-                    placeholder="Select your challenge"
-                    options={[
-                      'Not getting interview calls',
-                      'Lack of practical / industry skills',
-                      'Stuck in low-paying job',
-                      'No career direction'
-                    ]}
-                  />
+                  {/* Domain tappable cards */}
+                  <div className="adv-input-group">
+                    <label>DOMAIN OF INTEREST *</label>
+                    <div className="fomo-domain-grid">
+                      {DOMAIN_OPTIONS.map((opt, idx) => {
+                          const DomSvg = DOMAIN_SVG_MAP[idx];
+                          return (
+                            <button
+                              type="button"
+                              key={idx}
+                              className={`fomo-domain-card ${formData.domain === opt.label ? 'selected' : ''}`}
+                              onClick={() => setFormData(p => ({ ...p, domain: opt.label }))}
+                            >
+                              <span className="fomo-domain-icon"><DomSvg /></span>
+                              <span className="fomo-domain-label">{opt.label}</span>
+                              {formData.domain === opt.label && <span className="fomo-domain-check">✓</span>}
+                            </button>
+                          );
+                        })}
+                    </div>
+                  </div>
 
-                  <CustomSelect 
-                    label="WHY ARE YOU INTERESTED IN THIS PROGRAM? *" 
-                    name="interestReason" 
-                    value={formData.interestReason} 
-                    onChange={handleInputChange} 
-                    placeholder="Select the best reason"
-                    options={[
-                      'I want guaranteed placement support to land my first job',
-                      'I need structured mentorship to bridge my skill gaps',
-                      'I want real internship experience with top companies',
-                      'I\'m looking for a career switch with a higher salary',
-                      'I want industry-recognized certification to boost my profile',
-                      'I need a clear, guided roadmap to reach my career goals'
-                    ]}
-                  />
-
-                  <CustomSelect 
-                    label="DOMAIN OF INTEREST *" 
-                    name="domain" 
-                    value={formData.domain} 
-                    onChange={handleInputChange} 
-                    placeholder="Select a domain"
-                    options={[
-                      'Data Science',
-                      'Data Analytics & Business Intelligence',
-                      'Digital Marketing & Growth Accelerator'
-                    ]}
-                  />
-
+                  {/* Commitment level */}
                   <div className="adv-input-group">
                     <label>CAREER COMMITMENT LEVEL *</label>
                     <div className="adv-choice-grid">
                       {['100% Committed', 'Very Serious', 'Considering', 'Just Exploring'].map(lvl => (
-                        <div key={lvl} className={`adv-choice-item ${formData.commitmentLevel === lvl ? 'selected' : ''}`} onClick={() => setFormData(p => ({...p, commitmentLevel: lvl}))}>
+                        <div key={lvl} className={`adv-choice-item ${formData.commitmentLevel === lvl ? 'selected' : ''}`} onClick={() => setFormData(p => ({ ...p, commitmentLevel: lvl }))}>
                           <div className="adv-choice-circle"></div>
                           {lvl}
                         </div>
@@ -665,45 +1141,7 @@ const EnrollmentForm = () => {
                     </div>
                   </div>
 
-                  <div className="adv-input-group">
-                    <label>READY TO INVEST IN YOUR GROWTH? *</label>
-                    <div className="adv-choice-grid">
-                      {['Yes, I\'m ready', 'Need more details'].map(ans => (
-                        <div key={ans} className={`adv-choice-item ${formData.readyToInvest === ans ? 'selected' : ''}`} onClick={() => setFormData(p => ({...p, readyToInvest: ans}))}>
-                          <div className="adv-choice-circle"></div>
-                          {ans}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <CustomSelect 
-                    label="WHEN ARE YOU PLANNING TO START? *" 
-                    name="startTime" 
-                    value={formData.startTime} 
-                    onChange={handleInputChange} 
-                    placeholder="Select timeline"
-                    options={[
-                      'Immediately',
-                      'In 1 week',
-                      'In 1 month'
-                    ]}
-                  />
-
-                  <CustomSelect 
-                    label="WHY IS THIS PROGRAM IMPORTANT FOR YOU? *" 
-                    name="importanceReason" 
-                    value={formData.importanceReason} 
-                    onChange={handleInputChange} 
-                    placeholder="Select an option"
-                    options={[
-                      'To secure my future with a stable job',
-                      'To gain high-level technical expertise',
-                      'To network with industry professionals',
-                      'To get an edge over other candidates'
-                    ]}
-                  />
-
+                  {/* Preferred connect time */}
                   <div className="adv-input-group">
                     <label>PREFERRED TIME TO CONNECT *</label>
                     <div className="adv-choice-grid three-col">
@@ -712,7 +1150,7 @@ const EnrollmentForm = () => {
                         { val: 'Afternoon', time: '3pm–5:30pm' },
                         { val: 'Evening', time: '6pm–8pm' }
                       ].map(item => (
-                        <div key={item.val} className={`adv-choice-item ${formData.connectTime === item.val ? 'selected' : ''}`} onClick={() => setFormData(p => ({...p, connectTime: item.val}))}>
+                        <div key={item.val} className={`adv-choice-item ${formData.connectTime === item.val ? 'selected' : ''}`} onClick={() => setFormData(p => ({ ...p, connectTime: item.val }))}>
                           <div className="adv-choice-circle"></div>
                           <div className="adv-choice-text">
                             <strong>{item.val}</strong>
@@ -723,6 +1161,7 @@ const EnrollmentForm = () => {
                     </div>
                   </div>
 
+                  {/* Language chips */}
                   <div className="adv-input-group">
                     <label>PREFERRED COMMUNICATION LANGUAGE *</label>
                     <div className="adv-chips">
@@ -734,35 +1173,82 @@ const EnrollmentForm = () => {
                     </div>
                   </div>
 
+                  <div className="adv-form-actions-v2">
+                    <button type="submit" className="adv-btn-primary adv-btn-full fomo-btn-next">
+                      Continue — Final Step <span>→</span>
+                    </button>
+                    <button type="button" className="adv-btn-back" onClick={() => setStep(1)}>← Back</button>
+                  </div>
+                </div>
+              </form>
+            )}
+
+            {/* STEP 3: FOMO Close + Submit */}
+            {step === 3 && (
+              <form onSubmit={handleSubmit}>
+                <div className="fomo-step-header fomo-close-header">
+                  <span className="fomo-step-badge">STEP 4 OF 4 — FINAL</span>
+                  <h3 className="fomo-close-h3">You're one step from securing your evaluation slot.</h3>
+                  <p className="fomo-close-sub">
+                    Slots are reviewed in the order received. Submitting now <strong>locks your place</strong> in this week's evaluation batch.
+                  </p>
+                </div>
+
+                <div className="adv-form-step">
+                  {/* Ready to invest */}
+                  <div className="adv-input-group">
+                    <label>READY TO INVEST IN YOUR GROWTH? *</label>
+                    <div className="adv-choice-grid">
+                      {['Yes, I\'m ready', 'Need more details'].map(ans => (
+                        <div key={ans} className={`adv-choice-item ${formData.readyToInvest === ans ? 'selected' : ''}`} onClick={() => setFormData(p => ({ ...p, readyToInvest: ans }))}>
+                          <div className="adv-choice-circle"></div>
+                          {ans}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Captcha */}
                   <div className="adv-input-group adv-captcha-group">
                     <label>SECURITY CHECK: WHAT IS {captcha.a} + {captcha.b}? *</label>
-                    <input 
-                      type="number" 
-                      name="captchaAnswer" 
-                      placeholder="Enter the sum" 
-                      value={formData.captchaAnswer} 
-                      onChange={handleInputChange} 
-                      required 
+                    <input
+                      type="number"
+                      name="captchaAnswer"
+                      placeholder="Enter the sum"
+                      value={formData.captchaAnswer}
+                      onChange={handleInputChange}
+                      required
                       className="adv-captcha-input"
                     />
                   </div>
 
+                  {/* Paid agreement */}
                   <div className="adv-input-group adv-checkbox-group highlight">
-                    <input type="checkbox" id="paidAgreement" name="paidAgreement" checked={formData.paidAgreement} onChange={(e) => setFormData(p => ({...p, paidAgreement: e.target.checked}))} required />
+                    <input type="checkbox" id="paidAgreement" name="paidAgreement" checked={formData.paidAgreement} onChange={e => setFormData(p => ({ ...p, paidAgreement: e.target.checked }))} required />
                     <label htmlFor="paidAgreement">I understand this is a paid program and I'm ready to invest in my career growth.</label>
                   </div>
 
-                  <div className="adv-form-actions-v2">
-                    <button type="submit" className="adv-btn-submit" disabled={isSubmitting}>
-                      {isSubmitting ? 'SUBMITTING APPLICATION...' : 'SUBMIT MY APPLICATION — SECURE MY SEAT'}
+                  {/* FOMO CTA */}
+                  <div className="fomo-cta-wrap">
+                    <button type="submit" className="fomo-cta-btn" disabled={isSubmitting}>
+                      {isSubmitting ? (
+                        <><span className="fomo-spinner"></span> Securing your slot...</>
+                      ) : (
+                        <>Secure My Seat <span className="fomo-cta-arrow">→</span></>
+                      )}
                     </button>
-                    <button type="button" className="adv-btn-back" onClick={prevStep}>
-                      ← BACK TO STEP 1
-                    </button>
+                    <p className="fomo-cta-warning">
+                      ⚠ <strong>4 other applicants</strong> are completing this form right now for the same cohort.
+                    </p>
+                    <p className="fomo-cta-waitlist">
+                      Late applicants are automatically waitlisted for Feb 2027.
+                    </p>
                   </div>
+
+                  <button type="button" className="adv-btn-back" onClick={() => setStep(2)}>← Back</button>
                 </div>
-              )}
-            </form>
+              </form>
+            )}
           </div>
         </div>
       </div>
@@ -782,6 +1268,7 @@ const AdvanceForm = () => {
       <RoadmapSection />
       <GuaranteeSection onShowModal={() => setShowModal(true)} />
       <FAQSection />
+      <ReviewsSection />
       <EnrollmentForm />
 
       {showModal && <PlacementModal onClose={() => setShowModal(false)} />}
