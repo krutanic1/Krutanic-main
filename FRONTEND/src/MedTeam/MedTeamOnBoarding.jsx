@@ -78,12 +78,11 @@ const OnBoarding = () => {
     setLoading(true);
     const medTeamName = localStorage.getItem("medTeamName");
     try {
-      const response = await axios.get(`${API}/get-med-enroll?all=true`);
-      const studentsData = response.data.filter(
-        (item) => item.counselor?.toLowerCase() === medTeamName?.toLowerCase()
-      );
-      setNewStudent(studentsData);
-      setFilteredStudents(studentsData);
+      const response = await axios.get(`${API}/get-med-enroll`, {
+        params: { all: "true", counselor: medTeamName }
+      });
+      setNewStudent(response.data);
+      setFilteredStudents(response.data);
     } catch (error) {
       console.error("There was an error fetching new student:", error);
     } finally {

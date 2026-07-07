@@ -33,12 +33,11 @@ const Home = () => {
 
   const fetchNewStudent = async () => {
     try {
-      const response = await axios.get(`${API}/get-med-enroll?all=true`);
-      setNewStudent(
-        response.data.filter(
-          (item) => item.counselor && item.counselor.toLowerCase() === medTeamName.toLowerCase()
-        )
-      );
+      const medTeamName = localStorage.getItem("medTeamName");
+      const response = await axios.get(`${API}/get-med-enroll`, {
+        params: { all: "true", counselor: medTeamName }
+      });
+      setNewStudent(response.data);
     } catch (error) {
       console.error("There was an error fetching new student:", error);
     }

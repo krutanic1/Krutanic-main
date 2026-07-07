@@ -11,11 +11,10 @@ const MedTeamRevenueSheet = () => {
   const fetchNewStudent = async () => {
     const medTeamName = localStorage.getItem("medTeamName");
     try {
-      const response = await axios.get(`${API}/get-med-enroll?all=true`);
-      const filteredData = response.data.filter(
-        (item) => item.counselor && item.counselor.toLowerCase() === medTeamName.toLowerCase()
-      );
-      setNewStudent(filteredData);
+      const response = await axios.get(`${API}/get-med-enroll`, {
+        params: { all: "true", counselor: medTeamName }
+      });
+      setNewStudent(response.data);
     } catch (err) {
       setError("There was an error fetching new students.");
       console.error("Error fetching new students:", err);
