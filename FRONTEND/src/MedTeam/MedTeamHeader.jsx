@@ -58,9 +58,11 @@ const MedTeamHeader = () => {
   const checkSession = () => {
     const sessionStartTime = localStorage.getItem("sessionStartTime");
     if (sessionStartTime) {
+      const startMs = Number(sessionStartTime);
+      if (isNaN(startMs)) return; // guard against bad values — don't kick out
       const currentTime = new Date().getTime();
-      const expirationTime = 3 * 60 * 60 * 1000;
-      if (currentTime - sessionStartTime > expirationTime) {
+      const expirationTime = 3 * 60 * 60 * 1000; // 3 hours
+      if (currentTime - startMs > expirationTime) {
         toast.error("Session Time Out");
         localStorage.removeItem("bdaId");
         localStorage.removeItem("medTeamId");

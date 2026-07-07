@@ -34,16 +34,19 @@ const MedTeamLogin = () => {
     try {
       const response = await axios.post(`${API}/medteamverifyotp`, { email, otp });
       if (response.status === 200) {
-      toast.success("Login successful!");
-      const loginTime = new Date().getTime();
-      setTimeout(() => {
-      localStorage.setItem("medTeamId", response.data.medTeamId);
-      localStorage.setItem("medTeamName", response.data.medTeamName);
-      localStorage.setItem("medTeamToken", response.data.token);
-       localStorage.setItem("sessionStartTime", loginTime);
-      navigate("/medteam/home");
-    }, 2000);
-    }
+        // Write all keys synchronously BEFORE the toast delay
+        // so the localStorage proxy handles them all in one consistent context
+        const loginTime = String(new Date().getTime());
+        localStorage.setItem("medTeamToken", response.data.token);
+        localStorage.setItem("medTeamId", response.data.medTeamId);
+        localStorage.setItem("medTeamName", response.data.medTeamName);
+        localStorage.setItem("sessionStartTime", loginTime);
+
+        toast.success("Login successful!");
+        setTimeout(() => {
+          navigate("/medteam/home");
+        }, 1500);
+      }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to verify OTP!");
     }

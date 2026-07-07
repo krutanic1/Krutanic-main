@@ -270,7 +270,7 @@ router.post("/medteamverifyotp", async (req, res) => {
     if (!medteam) {
       return res.status(404).json({ message: "MedTeam not found" });
     }
-    if (medteam.otp !== otp) {
+    if (Number(medteam.otp) !== Number(otp)) {
       return res.status(400).json({ message: "Invalid OTP" });
     }
     if (medteam.status === "Inactive") {
