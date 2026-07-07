@@ -1520,39 +1520,58 @@
 
 @media (max-width: 600px) {
   .adv-h1 {
-    font-size: 2.5rem;
+    font-size: 2rem;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+  .adv-h2 {
+    font-size: 1.8rem;
+    line-height: 1.2;
+    word-break: break-word;
   }
   .adv-glass-card {
-    padding: 24px;
+    padding: 20px;
   }
   .adv-glass-card-small {
     display: none;
   }
   .adv-salary-jump {
     flex-direction: column;
-    gap: 16px;
-    align-items: flex-start;
+    gap: 12px;
+    align-items: center;
+    text-align: center;
   }
   .adv-salary-arrow {
     transform: rotate(90deg);
-    margin-left: 16px;
+    margin: 4px 0;
   }
   .adv-hero-stats {
-    flex-direction: column;
-    gap: 16px;
-    align-items: center;
-    text-align: center;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
     margin-top: 40px;
     border-top: none;
+    text-align: center;
   }
-  
   .stat-card {
     width: 100%;
-    max-width: 340px;
-    padding: 32px;
+    max-width: none;
+    padding: 20px 12px;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
+    border-radius: 12px;
     background: rgba(255, 255, 255, 0.03);
+  }
+  .stat-value {
+    font-size: 1.5rem;
+  }
+  .stat-label {
+    font-size: 0.75rem;
+  }
+  .adv-hero-trust {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
   }
   .adv-comp-table th, .adv-comp-table td {
     padding: 16px;
@@ -2428,23 +2447,37 @@
 /* ── Responsive adjustments ── */
 @media (max-width: 768px) {
   .fomo-banner {
-    padding: 16px 16px;
+    padding: 16px 12px;
   }
   .fomo-seats-row {
     flex-direction: column;
     align-items: center;
     gap: 12px;
   }
+  .fomo-seats-label {
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+    gap: 6px;
+  }
   .fomo-countdown-row {
     flex-direction: column;
     align-items: center;
+    gap: 12px;
+  }
+  .fomo-countdown {
+    gap: 4px;
   }
   .fomo-cd-unit {
-    min-width: 44px;
-    padding: 5px 8px;
+    min-width: 40px;
+    padding: 6px;
   }
   .fomo-cd-unit span {
-    font-size: 1rem;
+    font-size: 1.1rem;
+  }
+  .fomo-cd-sep {
+    font-size: 1.2rem;
+    margin: 0;
   }
   .fomo-gate-q {
     font-size: 1.3rem;
