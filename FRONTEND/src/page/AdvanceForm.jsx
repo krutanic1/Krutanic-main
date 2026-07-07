@@ -150,7 +150,7 @@ const HeroSection = ({ onShowModal }) => {
       <div className="adv-marquee-banner">
         <div className="adv-marquee-content">
           {[...Array(8)].map((_, i) => (
-            <span key={i}><span className="adv-hero-highlight-icon">✓</span> 15 Guaranteed Interview Opportunities with Hiring Partners*</span>
+            <span key={i}><span className="adv-hero-highlight-icon">✓</span> 15 Guaranteed Interview Opportunities with Hiring Partners</span>
           ))}
         </div>
       </div>
@@ -1094,7 +1094,7 @@ const EnrollmentForm = () => {
               </div>
               <div className="fomo-sidebar-warn">
                 <span className="fomo-pulse-dot fomo-pulse-red"></span>
-                <span>{SEATS_LEFT} seats remaining for Nov 2026</span>
+                <span>{SEATS_LEFT} seats remaining for upcoming batch</span>
               </div>
             </div>
           )}
