@@ -709,7 +709,11 @@ router.post("/add-form-lead-to-crm", async (req, res) => {
                 startTime: formLead.startTime,
                 importanceReason: formLead.importanceReason,
                 connectTime: formLead.connectTime,
-                paidAgreement: formLead.paidAgreement
+                paidAgreement: formLead.paidAgreement,
+                challenge: formLead.challenge,
+                currentCtc: formLead.currentCtc,
+                targetCtc: formLead.targetCtc,
+                preferredLanguages: formLead.preferredLanguages
             }
         });
 
