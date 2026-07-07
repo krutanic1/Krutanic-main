@@ -46,6 +46,66 @@ const FAQS = [
   { q: 'What is the time commitment required?', a: 'Expect to dedicate 12-15 hours per week. This program is intensive by design, to ensure you achieve years of growth in just 6 months.' }
 ];
 
+const SvgTarget = () => (
+  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <circle cx="12" cy="12" r="6"/>
+    <circle cx="12" cy="12" r="2"/>
+  </svg>
+);
+
+const SvgBriefcase = () => (
+  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+  </svg>
+);
+
+const SvgUserTie = () => (
+  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+    <circle cx="9" cy="7" r="4"/>
+    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+  </svg>
+);
+
+const SvgBarChart = () => (
+  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ec4899" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="12" y1="20" x2="12" y2="10"/>
+    <line x1="18" y1="20" x2="18" y2="4"/>
+    <line x1="6" y1="20" x2="6" y2="16"/>
+  </svg>
+);
+
+const SvgTrophy = () => (
+  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M8 21h8"/>
+    <path d="M12 17v4"/>
+    <path d="M7 4h10"/>
+    <path d="M4 4h16v3.2A7.8 7.8 0 0 1 12 15a7.8 7.8 0 0 1-8-7.8V4z"/>
+  </svg>
+);
+
+const BENEFITS = [
+  { icon: <SvgTarget />, title: 'Personalized Career Roadmap', desc: 'Get a 1-on-1 career assessment and a customized learning path based on your experience and career goals.' },
+  { icon: <SvgBriefcase />, title: 'Interview Opportunities with Hiring Partners', desc: 'Get access to multiple interview opportunities through our hiring network after meeting the program\'s eligibility criteria.' },
+  { icon: <SvgUserTie />, title: 'Dedicated Placement & Career Mentorship', desc: 'Receive end-to-end support including resume building, LinkedIn optimization, mock interviews, and salary negotiation.' },
+  { icon: <SvgBarChart />, title: 'Real Industry Projects & Portfolio', desc: 'Build a job-ready portfolio by working on real-world projects designed to match current industry expectations.' },
+  { icon: <SvgTrophy />, title: 'Learn from Industry Experts', desc: 'Get mentored by experienced professionals who have worked with leading companies and understand what recruiters are looking for.' }
+];
+
+const TRUST_BUILDERS = [
+  'AI-Powered Skill Gap Assessment',
+  'Live Interactive Sessions (No Pre-recorded Learning)',
+  'Small Batch Size for Personalized Attention',
+  'Lifetime Access to Career Support Community',
+  'Industry-Recognized Certificate',
+  '4.8★+ Learner Satisfaction Rating',
+  'Thousands of Professionals Trained',
+  'Hiring Network Across 500+ Companies'
+];
+
 /* --- Components --- */
 
 const AnimatedStat = ({ value, label }) => {
@@ -85,51 +145,61 @@ const HeroSection = ({ onShowModal }) => {
 
   return (
     <section className="adv-hero">
+      <div className="adv-marquee-banner">
+        <div className="adv-marquee-content">
+          {[...Array(8)].map((_, i) => (
+            <span key={i}><span className="adv-hero-highlight-icon">✓</span> 15 Guaranteed Interview Opportunities with Hiring Partners*</span>
+          ))}
+        </div>
+      </div>
       <div className="adv-hero-bg-glow"></div>
       <div className="adv-hero-bg-grid"></div>
       <div className="adv-hero-container">
         
-        <div className="adv-hero-grid">
-          <div className="adv-hero-left">
+        <div className="adv-hero-flexbox">
+          <div className="adv-hero-content">
             <div className="adv-badge">
               <span className="adv-pulse-dot"></span> Next Cohort: Super 30 Professionals
             </div>
+            
             <h1 className="adv-h1">
               Break the Salary Barrier.<br/>
               <span className="adv-h1-accent">Command Your Worth.</span>
             </h1>
+            
             <p className="adv-hero-p">
               The elite 6-Month Placement Acceleration Program. We bridge the gap between your current stagnation and high-paying tech roles through 1:1 mentorship, corporate internships, and an uncompromising placement guarantee.
             </p>
             
-            <div className="adv-hero-cta-group">
-              <button className="adv-btn-primary" onClick={scrollToForm}>
-                Apply for the 2026 Cohort <span className="adv-arrow">→</span>
-              </button>
-              <div className="adv-hero-trust">
-                <div className="adv-avatars">
-                  <img className="adv-avatar adv-avatar-photo" src={SubhraImg} alt="Subhra" />
-                  <img className="adv-avatar adv-avatar-photo" src={RudraImg} alt="Rudra" />
-                  <img className="adv-avatar adv-avatar-photo" src={RohanImg} alt="Rohan" />
-                  <img className="adv-avatar adv-avatar-photo" src={RajaImg} alt="Raja" />
-                  <img className="adv-avatar adv-avatar-photo" src={PrabhleenImg} alt="Prabhleen" />
-                  <div className="adv-avatar adv-avatar-more">+4k</div>
-                </div>
-                <div className="adv-trust-text">
-                  <span>Trusted by 4,000+ professionals</span>
-                  <div className="adv-stars">
-                    ★★★★★ 4.9/5 Rating
-                    <div className="adv-rating-info">
-                      ?
-                      <span className="adv-rating-tooltip">Based on 4,000+ verified student reviews across all 2024-2025 cohorts.</span>
-                    </div>
+
+            
+            <button className="adv-btn-primary" onClick={scrollToForm}>
+              Apply for the 2026 Cohort <span className="adv-arrow">→</span>
+            </button>
+            
+            <div className="adv-hero-trust">
+              <div className="adv-avatars">
+                <img className="adv-avatar adv-avatar-photo" src={SubhraImg} alt="Subhra" />
+                <img className="adv-avatar adv-avatar-photo" src={RudraImg} alt="Rudra" />
+                <img className="adv-avatar adv-avatar-photo" src={RohanImg} alt="Rohan" />
+                <img className="adv-avatar adv-avatar-photo" src={RajaImg} alt="Raja" />
+                <img className="adv-avatar adv-avatar-photo" src={PrabhleenImg} alt="Prabhleen" />
+                <div className="adv-avatar adv-avatar-more">+4k</div>
+              </div>
+              <div className="adv-trust-text">
+                <span>Trusted by 4,000+ professionals</span>
+                <div className="adv-stars">
+                  ★★★★★ 4.9/5 Rating
+                  <div className="adv-rating-info">
+                    ?
+                    <span className="adv-rating-tooltip">Based on 4,000+ verified student reviews across all 2024-2025 cohorts.</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
           
-          <div className="adv-hero-right">
+          <div className="adv-hero-visuals">
             <div className="adv-glass-card">
               <div className="adv-glass-header">
                 <div className="adv-glass-icon">💼</div>
@@ -190,6 +260,38 @@ const PartnersSection = () => (
     <p className="adv-partners-title">OUR ALUMNI THRIVE AT TOP TIER FIRMS</p>
     <div className="adv-partners-track">
       {PARTNERS.map(p => <span key={p} className="adv-partner-logo">{p}</span>)}
+    </div>
+  </section>
+);
+
+const BenefitsSection = () => (
+  <section className="adv-benefits">
+    <div className="adv-container">
+      <div className="adv-benefits-header">
+        <h2 className="adv-h2">Why Top Professionals Choose Us</h2>
+        <p className="adv-p-lead">Everything you need to break the salary barrier and secure an elite role.</p>
+      </div>
+      
+      <div className="adv-benefits-grid">
+        {BENEFITS.map((b, i) => (
+          <div key={i} className="adv-benefit-card">
+            <div className="adv-benefit-icon">{b.icon}</div>
+            <h3 className="adv-benefit-title">{b.title}</h3>
+            <p className="adv-benefit-desc">{b.desc}</p>
+          </div>
+        ))}
+      </div>
+      
+      <div className="adv-trust-builders">
+        <h3 className="adv-trust-title">Program Highlights</h3>
+        <div className="adv-trust-grid">
+          {TRUST_BUILDERS.map((item, i) => (
+            <div key={i} className="adv-trust-item">
+              <span className="adv-trust-check">✔️</span> <span>{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   </section>
 );
@@ -1264,6 +1366,7 @@ const AdvanceForm = () => {
       <Toaster position="top-center" reverseOrder={false} />
       <HeroSection onShowModal={() => setShowModal(true)} />
       <PartnersSection />
+      <BenefitsSection />
       <ComparisonSection />
       <RoadmapSection />
       <GuaranteeSection onShowModal={() => setShowModal(true)} />

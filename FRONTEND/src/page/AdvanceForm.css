@@ -33,6 +33,41 @@
   overflow: hidden;
 }
 
+.adv-marquee-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(16, 185, 129, 0.15);
+  border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+  overflow: hidden;
+  white-space: nowrap;
+  z-index: 10;
+  padding: 10px 0;
+  color: #34d399;
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: flex;
+}
+
+.adv-marquee-content {
+  display: inline-block;
+  white-space: nowrap;
+  animation: advScrollMarquee 30s linear infinite;
+}
+
+.adv-marquee-content span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 40px;
+}
+
+@keyframes advScrollMarquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
 .adv-hero-bg-glow {
   position: absolute;
   top: -150px;
@@ -61,16 +96,28 @@
   z-index: 1;
 }
 
-.adv-hero-grid {
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 60px;
+.adv-hero-flexbox {
+  display: flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: space-between;
+  gap: 60px;
   margin-bottom: 80px;
 }
 
-.adv-hero-left {
+.adv-hero-content {
+  flex: 1.1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   text-align: left;
+}
+
+.adv-hero-visuals {
+  flex: 0.9;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .adv-badge {
@@ -121,8 +168,34 @@
   font-size: 1.15rem;
   color: #94a3b8;
   max-width: 540px;
-  margin-bottom: 40px;
+  margin-bottom: 24px;
   line-height: 1.7;
+}
+
+.adv-hero-highlight {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #34d399;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  margin-bottom: 32px;
+}
+
+.adv-hero-highlight-icon {
+  background: #10b981;
+  color: #0f172a;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
 }
 
 .adv-hero-cta-group {
@@ -585,6 +658,88 @@
   font-weight: 800;
   color: #94a3b8;
   filter: grayscale(100%);
+}
+
+/* --- Benefits Section --- */
+.adv-benefits {
+  padding: 80px 24px;
+  background: white;
+}
+
+.adv-benefits-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.adv-benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-bottom: 60px;
+}
+
+.adv-benefit-card {
+  padding: 30px;
+  border-radius: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.adv-benefit-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px -10px rgba(0,0,0,0.1);
+}
+
+.adv-benefit-icon {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.adv-benefit-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 12px;
+}
+
+.adv-benefit-desc {
+  color: #64748b;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.adv-trust-builders {
+  background: transparent;
+  padding: 20px 0;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.adv-trust-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.adv-trust-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.adv-trust-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.adv-trust-check {
+  margin-top: 2px;
 }
 
 /* --- Comparison Section --- */
@@ -1489,13 +1644,13 @@
   .adv-faq-left {
     position: static;
   }
-  .adv-hero-grid {
-    grid-template-columns: 1fr;
-    gap: 60px;
-  }
-  .adv-hero-left {
-    display: flex;
+  .adv-hero-flexbox {
     flex-direction: column;
+    gap: 40px;
+    align-items: center;
+  }
+  .adv-hero-content, .adv-hero-visuals {
+    width: 100%;
     align-items: center;
     text-align: center;
   }
@@ -1524,6 +1679,9 @@
 }
 
 @media (max-width: 600px) {
+  .adv-trust-builders {
+    padding: 10px 0;
+  }
   .adv-h1 {
     font-size: 2rem;
     line-height: 1.2;
