@@ -1,4 +1,5 @@
 import React from 'react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { FaPlay, FaRegFileAlt, FaChevronRight } from 'react-icons/fa';
 import heroImg from '../../assets/mentorship_hero.png';
 
@@ -44,9 +45,15 @@ const MentorshipHero = ({ onOpenForm }) => {
         </div>
 
         <div className="km-hero__visual" data-aos="fade-left">
-          <div className="km-hero__img-wrap">
-            <img src={heroImg} alt="Mentorship" className="km-hero__img" />
-            <div className="km-hero__img-glow"></div>
+          <div style={{ position: 'relative', width: '180%', left: '-40%' }}>
+            <DotLottieReact
+              src="https://lottie.host/817ffd17-da62-4ac8-a9df-498070d0bc20/rftXYj1bK0.lottie"
+              loop
+              autoplay
+              className="km-hero__img"
+              renderConfig={{ devicePixelRatio: window.devicePixelRatio }}
+              style={{ width: '100%', display: 'block' }}
+            />
           </div>
           
           <div className="km-hero__badge km-hero__badge--top">

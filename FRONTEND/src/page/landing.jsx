@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { Link } from "react-router-dom";
 // import { color } from "framer-motion";
 import AOS from "aos";
@@ -183,7 +184,13 @@ const HomePage = () => {
           </div>
         </div>
         <div className="learning-centre-image" data-aos="zoom-in" data-aos-delay="250">
-          <img src={corporate} alt="Krutanic learning centre support" />
+          <DotLottieReact
+            src="https://lottie.host/0369968a-ddd1-4f45-ad4d-ad9242b7326d/crTSP8AyQA.lottie"
+            loop
+            autoplay
+            renderConfig={{ devicePixelRatio: window.devicePixelRatio }}
+            style={{ width: '100%', minHeight: '380px', maxHeight: '520px', objectFit: 'cover' }}
+          />
         </div>
       </div>
       {/* section learning centre end */}
@@ -331,7 +338,17 @@ const HomePage = () => {
               <h3 className="provide-cta-title">Ready to begin your data journey?</h3>
               <p className="provide-cta-desc">Join the next cohort. Limited spots are available for the premium mentorship path.</p>
             </div>
-            <Link to="/Advance" className="provide-cta-btn">Claim Your Spot</Link>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <div className="hidden md:block" style={{ width: '120px', height: '120px', flexShrink: 0 }}>
+                <DotLottieReact
+                  src="https://lottie.host/467b072c-44b8-4703-91ee-f700866de888/aHhJMvlutX.json"
+                  loop
+                  autoplay
+                  renderConfig={{ devicePixelRatio: window.devicePixelRatio }}
+                />
+              </div>
+              <Link to="/Advance" className="provide-cta-btn">Claim Your Spot</Link>
+            </div>
           </div>
         </div>
       </div>
@@ -418,14 +435,25 @@ const HomePage = () => {
       {/* section mission vission  */}
 
       <div className="misvis">
-        <div className="mission">
-          <h1 data-aos="zoom-in">| OUR MISSION</h1>
-          <ul>
-            <li> Expert faculty with real-world experience</li>
-            <li>Comprehensive support for students</li>
-            <li>Interactive learning approach</li>
-            <li>Proven track record of success</li>
-          </ul>
+        <div className="mission" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
+            <DotLottieReact
+              src="https://lottie.host/df48c918-6a42-4af7-83ff-a50720654df3/0AoDL8HTwq.json"
+              loop
+              autoplay
+              renderConfig={{ devicePixelRatio: window.devicePixelRatio }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          </div>
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <h1 data-aos="zoom-in">| OUR MISSION</h1>
+            <ul>
+              <li> Expert faculty with real-world experience</li>
+              <li>Comprehensive support for students</li>
+              <li>Interactive learning approach</li>
+              <li>Proven track record of success</li>
+            </ul>
+          </div>
         </div>
         <div className="vission">
           <h1 data-aos="zoom-in">| OUR VISION</h1>

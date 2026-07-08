@@ -423,6 +423,9 @@ const BookedList = () => {
               <option value="" selected disabled>
                 Select Opted Month
               </option>
+              {monthOpted && !monthsToShow.includes(monthOpted) && (
+                <option value={monthOpted}>{monthOpted}</option>
+              )}
               {monthsToShow.map((month, index) => (
                 <option key={index} value={month}>
                   {month}

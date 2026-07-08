@@ -1208,12 +1208,14 @@ h1 {
   box-shadow: 0 16px 34px rgba(19, 40, 86, 0.14);
 }
 
-#landingpage .learning-centre .learning-centre-image img {
-  width: 100%;
-  height: auto;
+#landingpage .learning-centre .learning-centre-image img,
+#landingpage .learning-centre .learning-centre-image canvas,
+#landingpage .learning-centre .learning-centre-image svg {
+  width: 100% !important;
+  height: auto !important;
   min-height: 380px;
   max-height: 520px;
-  object-fit: cover;
+  object-fit: cover !important;
   border-radius: 0 !important;
 }
 
