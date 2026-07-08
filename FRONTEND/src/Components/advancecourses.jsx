@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import mernBrochure from "../../krutanic/Mern Stack Web Development Advanced Program.pdf";
 import dataScienceBrochure from "../../krutanic/DataScienceAdvancedProgram.pdf";
-import dataAnalyticsBrochure from "../../krutanic/Data Analytics Advanced program.pdf";
+import dataAnalyticsBrochure from "../../krutanic/dataanalytices new advnace Brouchuer.pdf";
 import digitalMarketingBrochure from "../../krutanic/Digital Marketing Advanced Program.pdf";
 import investmentBankingBrochure from "../../krutanic/Investment Banking Advanced Program.pdf";
 import productManagementBrochure from "../../krutanic/Product management Advanced program.pdf";
@@ -54,7 +54,7 @@ const AdvanceCounses = () => {
       support: "Placement & Portfolio Support",
       credential: "Advanced Certificate",
       duration: "6 Months",
-      batch: "31st May",
+      batch: "Upcoming",
       brochure: digitalMarketingBrochure,
     },
 

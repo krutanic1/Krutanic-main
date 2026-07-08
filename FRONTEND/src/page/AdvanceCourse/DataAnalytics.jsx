@@ -51,7 +51,7 @@ import AdvanceBanner from "./Components/AdvanceBanner";
 
 import DownloadBrochureButton from "./Components/DownloadBrochureButton";
 import CountdownTimer from "./Components/CountdownTimer";
-import daBrochure from "../../../krutanic/Data Analytics Advanced program.pdf";
+import daBrochure from "../../../krutanic/dataanalytices new advnace Brouchuer.pdf";
 
 const heroStats = [
   { label: "Duration", value: "24 Weeks" },
