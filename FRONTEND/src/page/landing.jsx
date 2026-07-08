@@ -338,7 +338,7 @@ const HomePage = () => {
               <h3 className="provide-cta-title">Ready to begin your data journey?</h3>
               <p className="provide-cta-desc">Join the next cohort. Limited spots are available for the premium mentorship path.</p>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+            <div className="flex w-full items-center justify-center md:justify-start gap-[15px]">
               <div className="hidden md:block" style={{ width: '120px', height: '120px', flexShrink: 0 }}>
                 <DotLottieReact
                   src="https://lottie.host/467b072c-44b8-4703-91ee-f700866de888/aHhJMvlutX.json"
