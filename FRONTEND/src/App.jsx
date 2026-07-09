@@ -99,7 +99,8 @@ import AdvUserManagement from "./Admin/AdvUserManagement";
 import LiveSalesMonitor from "./Admin/LiveSalesMonitor";
 import AdvFormLeads from "./Admin/AdvFormLeads";
 import AdminMedProLeads from "./Admin/AdminMedProLeads";
-
+import AdminMedRevenue from "./Admin/AdminMedRevenue";
+import AdminMedLeaderboard from "./Admin/AdminMedLeaderboard";
 
 
 // Operation Team
@@ -506,7 +507,7 @@ const AppContent = () => {
     ReactPixel.pageView();
   }, [location]);
 
-  const adminheaderPaths = ["/admindashboard", "/adminmentorshipprojects", "/admininterviewquestions", "/adminaptitudequestions", "/addcourse", "/addmedcourse", "/addadvcourse", "/addmodule", "/addmedmodule", "/addadvmodule", "/pendingapplication", "/acceptedapplication", "/bookedlist", "/halfpayment", "/defaultlist", "/fullpaidlist", "/createoperation", "/createadvoperation", "/createbda", "/createmedteam", "/createadvteam", "/createmanager", "/mentorqueries", "/advancequeries", "/revenuesheet", "/advrevenuesheet", "/createplacementcoordinator", "/onboardingdetails", "/advonboardingdetails", "/medonboardingdetails", "/advbooked", "/advfullpaid", "/advdefault", "/allteamdetail", "/advteamdetail", "/masterclasses", "/addevent", "/eventregistration", "/target", "/alumnidata", "/inactivebda", "/referandearnresponse", "/createmarketingteam", "/createinterviewer", "/createhr", "/createinterview", "/adminprojectpage", "/advprojectpage", "/advexercisepage", "/advleadmanagement", "/adminanalytics", "/advadmindashboard", "/admin/agents", "/admin/teams", "/admin/leadassignments", "/admin/agentactivity", "/admin/reports", "/bulkimport", "/admin/attendance", "/advusermanagement", "/admin/livemonitor", "/admin/calllogs", "/advformleads", "/admin/leads-count", "/admin/medpro-leads", "/admin/career-assessments", "/admin/adv-filter"];
+  const adminheaderPaths = ["/admindashboard", "/adminmentorshipprojects", "/admininterviewquestions", "/adminaptitudequestions", "/addcourse", "/addmedcourse", "/addadvcourse", "/addmodule", "/addmedmodule", "/addadvmodule", "/pendingapplication", "/acceptedapplication", "/bookedlist", "/halfpayment", "/defaultlist", "/fullpaidlist", "/createoperation", "/createadvoperation", "/createbda", "/createmedteam", "/createadvteam", "/createmanager", "/mentorqueries", "/advancequeries", "/revenuesheet", "/advrevenuesheet", "/createplacementcoordinator", "/onboardingdetails", "/advonboardingdetails", "/medonboardingdetails", "/advbooked", "/advfullpaid", "/advdefault", "/allteamdetail", "/advteamdetail", "/masterclasses", "/addevent", "/eventregistration", "/target", "/alumnidata", "/inactivebda", "/referandearnresponse", "/createmarketingteam", "/createinterviewer", "/createhr", "/createinterview", "/adminprojectpage", "/advprojectpage", "/advexercisepage", "/advleadmanagement", "/adminanalytics", "/advadmindashboard", "/admin/agents", "/admin/teams", "/admin/leadassignments", "/admin/agentactivity", "/admin/reports", "/bulkimport", "/admin/attendance", "/advusermanagement", "/admin/livemonitor", "/admin/calllogs", "/advformleads", "/admin/leads-count", "/admin/medpro-leads", "/admin/career-assessments", "/admin/adv-filter", "/adminmedrevenue", "/adminmedleaderboard"];
 
   const operationheaderPaths = ["/operationdashboard", "/fullpayment", "/bookedpayment", "/defaultpayment", "/operationrevenuesheet"];
   const advoperationheaderPaths = ["/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet"];
@@ -614,6 +615,8 @@ const AppContent = () => {
         <Route path="/CreateAdvOperation" element={isAuthenticatedAdmin() ? <CreateAdvOperation /> : <Navigate to="/AdminLogin" />} />
         <Route path="/CreateBDA" element={isAuthenticatedAdmin() ? <CreateBDA /> : <Navigate to="/AdminLogin" />} />
         <Route path="/CreateMedTeam" element={isAuthenticatedAdmin() ? <CreateMedTeam /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/AdminMedRevenue" element={isAuthenticatedAdmin() ? <AdminMedRevenue /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/AdminMedLeaderboard" element={isAuthenticatedAdmin() ? <AdminMedLeaderboard /> : <Navigate to="/AdminLogin" />} />
         <Route path="/CreateAdvTeam" element={isAuthenticatedAdmin() ? <CreateAdvTeam /> : <Navigate to="/AdminLogin" />} />
         <Route path="/PendingApplication" element={isAuthenticatedAdmin() ? <PendingApplication /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AcceptedApplication" element={isAuthenticatedAdmin() ? <AcceptedApplication /> : <Navigate to="/AdminLogin" />} />

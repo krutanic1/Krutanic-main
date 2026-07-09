@@ -435,6 +435,8 @@ router.get("/getmedmonthlyrevenue", verifyAnyAuth, async (req, res) => {
           creditedRevenue: { $sum: "$creditedAmount" },
           pendingRevenue: { $sum: "$pendingAmount" },
           totalPayments: { $sum: 1 },
+          sgflCount: { $sum: { $cond: { if: { $eq: ["$lead", "SGFL"] }, then: 1, else: 0 } } },
+          cgflCount: { $sum: { $cond: { if: { $eq: ["$lead", "CGFL"] }, then: 1, else: 0 } } },
           firstDate: { $min: "$createdAt" } // Used for sorting
         }
       },
@@ -473,7 +475,9 @@ router.get("/getmedmonthlyrevenue", verifyAnyAuth, async (req, res) => {
           booked: "$bookedRevenue",
           credited: "$creditedRevenue",
           pending: "$pendingRevenue",
-          payments: "$totalPayments"
+          payments: "$totalPayments",
+          sgfl: { $ifNull: ["$sgflCount", 0] },
+          cgfl: { $ifNull: ["$cgflCount", 0] }
         }
       }
     ];
@@ -507,6 +511,63 @@ router.get("/getmedmonthlyrevenue", verifyAnyAuth, async (req, res) => {
     res.status(500).json({ message: "Server error fetching monthly revenue", error: error.message });
   }
 });
+
+// GET /getmedmonthlyleads
+router.get("/getmedmonthlyleads", verifyAnyAuth, async (req, res) => {
+  try {
+    const { monthStr, leadType, page = 1, limit = 30 } = req.query; // monthStr like "June 2026", leadType like "SGFL"
+    
+    if (!monthStr || !leadType) {
+      return res.status(400).json({ error: "monthStr and leadType are required" });
+    }
+
+    const [monthName, yearStr] = monthStr.split(" ");
+    const year = parseInt(yearStr);
+    
+    const monthMap = {
+      "January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6,
+      "July": 7, "August": 8, "September": 9, "October": 10, "November": 11, "December": 12
+    };
+    
+    const month = monthMap[monthName];
+    if (!month || !year) {
+      return res.status(400).json({ error: "Invalid month format" });
+    }
+
+    // Determine the date range for the specified month and year
+    // Note: JavaScript Date months are 0-indexed.
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 1); // Start of next month
+    
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    
+    const query = {
+      createdAt: { $gte: startDate, $lt: endDate },
+      lead: leadType
+    };
+    
+    const leads = await MedEnroll.find(query)
+      .select('fullname email counselor createdAt')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit))
+      .lean();
+      
+    const totalLeads = await MedEnroll.countDocuments(query);
+    const totalPages = Math.ceil(totalLeads / parseInt(limit));
+    
+    res.status(200).json({
+      leads,
+      currentPage: parseInt(page),
+      totalPages,
+      totalLeads
+    });
+  } catch (error) {
+    console.error("Error in /getmedmonthlyleads:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 
 // GET request to retrieve all new student enroll
 router.get("/get-med-enroll", verifyAnyAuth, async (req, res) => {
@@ -967,9 +1028,9 @@ router.post("/update-project-progress", authMiddleware, async (req, res) => {
   }
 });
 
-router.get("/bda-with-enrolls", async (req, res) => {
+router.get("/medbda-with-enrolls", async (req, res) => {
   try {
-    const bdaWithEnrolls = await CreateBDA.aggregate([
+    const bdaWithEnrolls = await CreateMedTeam.aggregate([
       {
         $match: {
           status: { $ne: "Inactive" },
@@ -977,7 +1038,7 @@ router.get("/bda-with-enrolls", async (req, res) => {
       },
       {
         $lookup: {
-          from: "newenrolls",
+          from: "medenrolls",
           localField: "fullname",
           foreignField: "counselor",
           as: "enrollments",
@@ -1022,9 +1083,9 @@ router.get("/databybdaname", async (req, res) => {
 });
 
 
-// GET /getdailyrevenue
+// GET /getmeddailyrevenue
 // Aggregates revenue data by day within a month or custom range.
-router.get("/getdailyrevenue", async (req, res) => {
+router.get("/getmeddailyrevenue", async (req, res) => {
   const { month, year, startDate, endDate } = req.query;
 
   try {

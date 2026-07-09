@@ -7,14 +7,20 @@ import toast, { Toaster } from "react-hot-toast";
 
 const AdminHeader = () => {
   const navigate = useNavigate();
-  const [isAdvToggleOn, setIsAdvToggleOn] = useState(
-    localStorage.getItem("adminAdvToggle") === "true"
-  );
+  
+  // Use "mentorship" as default. Values: "mentorship", "med", "advance"
+  const [activeSection, setActiveSection] = useState(() => {
+    // Legacy support: if adminAdvToggle was true, default to "advance"
+    if (localStorage.getItem("adminAdvToggle") === "true") {
+      localStorage.removeItem("adminAdvToggle");
+      return "advance";
+    }
+    return localStorage.getItem("adminActiveSection") || "mentorship";
+  });
 
-  // Update localStorage whenever the toggle changes
   React.useEffect(() => {
-    localStorage.setItem("adminAdvToggle", isAdvToggleOn);
-  }, [isAdvToggleOn]);
+    localStorage.setItem("adminActiveSection", activeSection);
+  }, [activeSection]);
 
   const handleLogout = async () => {
     try {
@@ -26,11 +32,11 @@ const AdminHeader = () => {
       }, 2000);
     } catch (error) {
       console.error("Logout error:", error);
-      // Even if backend fails, clear local storage and redirect
       localStorage.removeItem("adminToken");
       navigate("/AdminLogin");
     }
   };
+
   return (
     <div id="AdminHeader">
       <Toaster position="top-center" reverseOrder={false} />
@@ -40,62 +46,49 @@ const AdminHeader = () => {
             <img src={logo} alt="Logo" />
           </Link>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <span style={{ marginRight: '10px', color: 'white', fontWeight: 'bold' }}>
-            {isAdvToggleOn ? "Advance" : "Mentorship"}
-          </span>
-          <label style={{ position: 'relative', display: 'inline-block', width: '50px', height: '24px' }}>
-            <input
-              type="checkbox"
-              checked={isAdvToggleOn}
-              onChange={() => setIsAdvToggleOn(!isAdvToggleOn)}
-              style={{ opacity: 0, width: 0, height: 0 }}
-            />
-            <span style={{
-              position: 'absolute', cursor: 'pointer', top: 0, left: 0, right: 0, bottom: 0,
-              backgroundColor: isAdvToggleOn ? '#4CAF50' : '#ccc', transition: '.4s', borderRadius: '24px'
-            }}>
-              <span style={{
-                position: 'absolute', content: '""', height: '18px', width: '18px',
-                left: isAdvToggleOn ? '28px' : '3px', bottom: '3px', backgroundColor: 'white',
-                transition: '.4s', borderRadius: '50%'
-              }} />
-            </span>
-          </label>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#f1f5f9', padding: '4px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+          {["mentorship", "med", "advance"].map((section) => (
+            <button
+              key={section}
+              onClick={() => setActiveSection(section)}
+              style={{
+                padding: '6px 16px',
+                border: 'none',
+                borderRadius: '6px',
+                backgroundColor: activeSection === section ? 'white' : 'transparent',
+                color: activeSection === section ? '#0f172a' : '#64748b',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                boxShadow: activeSection === section ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                transition: 'all 0.3s'
+              }}
+            >
+              {section === "mentorship" ? "Mentorship" : section === "med" ? "Medical" : "Advance"}
+            </button>
+          ))}
         </div>
       </div>
       <div className="sidebar">
         <Link to="/AdminDashboard">
           <i className="fa fa-home"></i> Home
         </Link>
-        {!isAdvToggleOn && (
+
+        {activeSection === "mentorship" && (
           <>
-            <div className="sidebar-section-label" style={{ color: '#888', fontSize: '11px', fontWeight: 'bold', padding: '15px 15px 5px', textTransform: 'uppercase' }}>Course Management</div>
             <Link to="/AddCourse">
               <i className="fa fa-plus-circle mr-2"></i>Create Course
-            </Link>
-            <Link to="/AddMedCourse">
-              <i className="fa fa-plus-circle mr-2" style={{color: '#818cf8'}}></i>Create Med Course
-            </Link>
-            <Link to="/AddMedModule">
-              <i className="fa fa-list mr-2" style={{color: '#818cf8'}}></i>Med Course List
             </Link>
             <Link to="/AddModule">
               <i className="fa fa-list mr-2"></i>Course List
             </Link>
 
-            <div className="sidebar-section-label" style={{ color: '#888', fontSize: '11px', fontWeight: 'bold', padding: '15px 15px 5px', textTransform: 'uppercase' }}>Project Management</div>
             <Link to="/AdminMentorshipProjects">
               <i className="fa fa-folder-open mr-2"></i>Mentorship Projects
             </Link>
             <Link to="/AdminProjectPage">
               <i className="fa fa-tasks mr-2"></i>Project Management
             </Link>
-            <Link to="/AdvProjectPage">
-              <i className="fa fa-tasks mr-2"></i>Adv Project Mgmt
-            </Link>
 
-            <div className="sidebar-section-label" style={{ color: '#888', fontSize: '11px', fontWeight: 'bold', padding: '15px 15px 5px', textTransform: 'uppercase' }}>Team Management</div>
             <Link to="/CreateOperation">
               <i className="fa fa-briefcase mr-2"></i>Create Operation
             </Link>
@@ -104,9 +97,6 @@ const AdminHeader = () => {
             </Link>
             <Link to="/CreateBDA">
               <i className="fa fa-users mr-2"></i>Create Team A/c
-            </Link>
-            <Link to="/CreateMedTeam">
-              <i className="fa fa-users mr-2" style={{color: '#818cf8'}}></i>Create Med Team
             </Link>
             <Link to="/CreateMarketingTeam">
               <i className="fa fa-users mr-2"></i>Create Marketing
@@ -124,7 +114,6 @@ const AdminHeader = () => {
                <i className="fa fa-user-circle-o mr-2"></i>Create HR A/c
             </Link>
 
-            <div className="sidebar-section-label" style={{ color: '#888', fontSize: '11px', fontWeight: 'bold', padding: '15px 15px 5px', textTransform: 'uppercase' }}>User Management</div>
             <Link to="/AcceptedApplication">
               <i className="fa fa-check-circle mr-2"></i>Active Users
             </Link>
@@ -134,11 +123,7 @@ const AdminHeader = () => {
             <Link to="/OnBoardingDetails">
               <i className="fa fa-info-circle mr-2"></i>OnBoarding Details
             </Link>
-            <Link to="/MedOnboardingDetails">
-              <i className="fa fa-info-circle mr-2" style={{ color: "#2196f3" }}></i>Med OnBoarding Details
-            </Link>
 
-            <div className="sidebar-section-label" style={{ color: '#888', fontSize: '11px', fontWeight: 'bold', padding: '15px 15px 5px', textTransform: 'uppercase' }}>Financials</div>
             <Link to="/BookedList">
               <i className="fa fa-book mr-2"></i>Booked Amount
             </Link>
@@ -155,7 +140,6 @@ const AdminHeader = () => {
               <i className="fa fa-line-chart mr-2"></i>Revenue Sheet
             </Link>
 
-            <div className="sidebar-section-label" style={{ color: '#888', fontSize: '11px', fontWeight: 'bold', padding: '15px 15px 5px', textTransform: 'uppercase' }}>Events & Misc</div>
             <Link to="/CreateInterview">
               <i className="fa fa-calendar-plus-o mr-2"></i>Create Mock Interview
             </Link>
@@ -183,12 +167,39 @@ const AdminHeader = () => {
             <Link to="/Admin/Attendance">
               <i className="fa fa-calendar mr-2"></i>Attendance
             </Link>
-
           </>
         )}
-        {isAdvToggleOn && (
+
+        {activeSection === "med" && (
           <>
-            <div className="sidebar-section-label" style={{ color: '#888', fontSize: '11px', fontWeight: 'bold', padding: '15px 15px 5px', textTransform: 'uppercase' }}>CRM Governance</div>
+            <Link to="/AddMedCourse">
+              <i className="fa fa-plus-circle mr-2" style={{color: '#818cf8'}}></i>Create Med Course
+            </Link>
+            <Link to="/AddMedModule">
+              <i className="fa fa-list mr-2" style={{color: '#818cf8'}}></i>Med Course List
+            </Link>
+
+            <Link to="/CreateMedTeam">
+              <i className="fa fa-users mr-2" style={{color: '#818cf8'}}></i>Create Med Team
+            </Link>
+            <Link to="/AdminMedRevenue">
+              <i className="fa fa-line-chart mr-2" style={{color: '#818cf8'}}></i>Med Revenue
+            </Link>
+            <Link to="/AdminMedLeaderboard">
+              <i className="fa fa-trophy mr-2" style={{color: '#818cf8'}}></i>Med Leaderboard
+            </Link>
+
+            <Link to="/MedOnboardingDetails">
+              <i className="fa fa-info-circle mr-2" style={{ color: "#2196f3" }}></i>Med OnBoarding Details
+            </Link>
+            <Link to="/admin/medpro-leads">
+              <i className="fa fa-medkit mr-2" style={{color: '#818cf8'}}></i>MedPro Leads
+            </Link>
+          </>
+        )}
+
+        {activeSection === "advance" && (
+          <>
             <Link to="/AdvAdminDashboard">
               <i className="fa fa-dashboard mr-2"></i>Admin Dashboard
             </Link>
@@ -203,7 +214,6 @@ const AdminHeader = () => {
               <i className="fa fa-file-excel-o mr-2"></i>System Reports
             </Link>
 
-            <div className="sidebar-section-label" style={{ color: '#888', fontSize: '11px', fontWeight: 'bold', padding: '15px 15px 5px', textTransform: 'uppercase' }}>Course Management</div>
             <Link to="/AddAdvCourse">
               <i className="fa fa-plus-circle mr-2"></i>Create Adv Course
             </Link>
@@ -213,15 +223,23 @@ const AdminHeader = () => {
             <Link to="/AdvExercisePage">
               <i className="fa fa-code mr-2"></i>Adv Exercise Builder
             </Link>
+            
             <Link to="/CreateAdvOperation">
               <i className="fa fa-briefcase mr-2"></i>Create ADV Operation
             </Link>
             <Link to="/CreateAdvTeam">
               <i className="fa fa-users mr-2"></i>Create Adv Team
             </Link>
+            <Link to="/AdvTeamDetail">
+              <i className="fa fa-users mr-2"></i>ADV Team Details
+            </Link>
+            <Link to="/AdvUserManagement">
+              <i className="fa fa-users-cog mr-2"></i>ADV User Management
+            </Link>
             <Link to="/AdvOnBoardingDetails">
               <i className="fa fa-graduation-cap mr-2"></i>ADV Onboarding
             </Link>
+
             <Link to="/AdvBooked">
               <i className="fa fa-bookmark mr-2"></i>ADV Booked
             </Link>
@@ -230,6 +248,13 @@ const AdminHeader = () => {
             </Link>
             <Link to="/AdvDefault">
               <i className="fa fa-times-circle mr-2"></i>ADV Default
+            </Link>
+            <Link to="/AdvRevenueSheet">
+              <i className="fa fa-line-chart mr-2"></i>ADV Revenue Sheet
+            </Link>
+
+            <Link to="/AdvProjectPage">
+              <i className="fa fa-tasks mr-2"></i>Adv Project Mgmt
             </Link>
             <Link to="/AdvanceQueries">
               <i className="fa fa-question-circle mr-2"></i>Adv Course Queries
@@ -255,24 +280,12 @@ const AdminHeader = () => {
             <Link to="/AdvFormLeads">
               <i className="fa fa-wpforms mr-2"></i>Adv Form Leads
             </Link>
-            <Link to="/admin/medpro-leads">
-              <i className="fa fa-medkit mr-2" style={{color: '#818cf8'}}></i>MedPro Leads
-            </Link>
-            <Link to="/AdvTeamDetail">
-              <i className="fa fa-users mr-2"></i>ADV Team Details
-            </Link>
-            <Link to="/AdvUserManagement">
-              <i className="fa fa-users-cog mr-2"></i>ADV User Management
-            </Link>
             <Link to="/AdminAnalytics">
               <i className="fa fa-area-chart mr-2"></i>ADV Analytics
             </Link>
 
             <Link to="/BulkImport">
               <i className="fa fa-upload mr-2"></i>Bulk Import Leads
-            </Link>
-            <Link to="/AdvRevenueSheet">
-              <i className="fa fa-line-chart mr-2"></i>ADV Revenue Sheet
             </Link>
           </>
         )}
