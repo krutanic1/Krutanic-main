@@ -50,7 +50,10 @@ const AdminHeader = () => {
           {["mentorship", "med", "advance"].map((section) => (
             <button
               key={section}
-              onClick={() => setActiveSection(section)}
+              onClick={() => {
+                setActiveSection(section);
+                navigate("/AdminDashboard");
+              }}
               style={{
                 padding: '6px 16px',
                 border: 'none',

@@ -4,7 +4,8 @@ import axios from "axios";
 import { useNavigate , Link } from "react-router-dom";
 import API from "../API";
 import toast ,{Toaster} from 'react-hot-toast';
-
+                             
+                                 
 const MedTeamLogin = () => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
@@ -12,6 +13,7 @@ const MedTeamLogin = () => {
   const errorRef = useRef(null);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+                                                                                                                                      
 
  // Send OTP 
   const handleSendOTP = async (e) => {
