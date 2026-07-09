@@ -16,7 +16,7 @@ const MedTeamDetail = () => {
   const [monthlyRevenue, setMonthlyRevenue] = useState([]);
   const [showAddMedTeamForm, setShowAddMedTeamForm] = useState(false);
   const [selectedTeamForNewMedTeam, setSelectedTeamForNewMedTeam] = useState(""); // Team selection for new MedTeam
-  const [selectedDesignation, setSelectedDesignation] = useState("MedTeam"); // Designation selection (MedTeam or LEADER for managers)
+  const [selectedDesignation, setSelectedDesignation] = useState("BOE"); // Designation selection
   const [isSubmittingMedTeam, setIsSubmittingMedTeam] = useState(false); // Loading state for form submission
   const [newMedTeamForm, setNewMedTeamForm] = useState({
     fullname: "",
@@ -209,14 +209,14 @@ const MedTeamDetail = () => {
     const defaultTeam = selectedTeam || managerTeams[0] || medTeamData?.team || "";
     setSelectedTeamForNewMedTeam(defaultTeam);
     // Default designation to MedTeam
-    setSelectedDesignation("MedTeam");
+    setSelectedDesignation("BOE");
     setShowAddMedTeamForm(true);
   };
 
   const handleCloseAddMedTeamForm = () => {
     setShowAddMedTeamForm(false);
     setSelectedTeamForNewMedTeam("");
-    setSelectedDesignation("MedTeam");
+    setSelectedDesignation("BOE");
     setIsSubmittingMedTeam(false);
     setNewMedTeamForm({
       fullname: "",
@@ -277,7 +277,7 @@ const MedTeamDetail = () => {
       password: newMedTeamForm.password.trim(),
       designation: selectedDesignation,
       team: selectedTeamForNewMedTeam,
-      teams: selectedDesignation === "LEADER" ? [selectedTeamForNewMedTeam] : [], // Leaders get team in teams array
+      teams: selectedDesignation === "MED LEADER" ? [selectedTeamForNewMedTeam] : [], // Leaders get team in teams array
     };
 
     setIsSubmittingMedTeam(true);
@@ -629,13 +629,14 @@ const MedTeamDetail = () => {
                     cursor: isSubmittingMedTeam ? "not-allowed" : "pointer",
                   }}
                 >
-                  <option value="MedTeam">MedTeam</option>
-                  <option value="LEADER">LEADER</option>
+                  <option value="MED MANAGER">MED MANAGER</option>
+                  <option value="MED LEADER">MED LEADER</option>
+                  <option value="BOE">BOE</option>
                 </select>
               ) : (
                 <input
                   type="text"
-                  value="MedTeam"
+                  value="BOE"
                   readOnly
                   disabled
                   style={{ backgroundColor: "#f0f0f0", cursor: "not-allowed" }}

@@ -145,7 +145,7 @@ const AssignTarget = () => {
     ) : (
       <p>No target assigned</p>
     )}</div>
-          {medTeamData && medTeamData.designation === "MANAGER" && (
+          {medTeamData && medTeamData.designation?.toUpperCase().includes("MANAGER") && (
             <select value={selectedTeam} onChange={(e) => setSelectedTeam(e.target.value)}>
               {medTeamData && medTeamData.team && <option value={medTeamData.team}>Your Team</option>}
               {getteamName.map((team, index) => {return(<option key={index} value={team.teamname}>{team.teamname}</option>)})}

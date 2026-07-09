@@ -182,6 +182,9 @@ const AdminHeader = () => {
             <Link to="/CreateMedTeam">
               <i className="fa fa-users mr-2" style={{color: '#818cf8'}}></i>Create Med Team
             </Link>
+            <Link to="/AdminMedTarget">
+              <i className="fa fa-bullseye mr-2" style={{color: '#818cf8'}}></i>Med Target Assign
+            </Link>
             <Link to="/AdminMedRevenue">
               <i className="fa fa-line-chart mr-2" style={{color: '#818cf8'}}></i>Med Revenue
             </Link>

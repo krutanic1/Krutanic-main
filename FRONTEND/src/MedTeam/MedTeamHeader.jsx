@@ -135,6 +135,9 @@ const MedTeamHeader = () => {
           <Link to="/medteam/revenue">
             <i className="fa fa-line-chart"></i> Revenue
           </Link>
+          <Link to="/medteam/leaderboard">
+            <i className="fa fa-trophy"></i> Leaderboard
+          </Link>
           {medTeamData && (medTeamData.designation?.toUpperCase().includes("LEADER") || medTeamData.designation?.toUpperCase().includes("MANAGER")) && (
             <>
               <Link to="/medteam/teamdetail">
