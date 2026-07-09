@@ -800,7 +800,7 @@ const SkillEvaluationTest = () => {
                 <div>
                   <label className="form-label flex items-center gap-2"><Calendar size={16}/> Select Date *</label>
                   <div className="grid grid-cols-2 gap-4">
-                    {getAvailableDates(2).map((item, i) => (
+                    {getAvailableDates(1).map((item, i) => (
                       <button
                         key={i}
                         type="button"

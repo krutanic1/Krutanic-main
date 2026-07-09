@@ -35,7 +35,7 @@ export const getSlotsForDate = (dateStr) => {
   // Timing is 4 PM to 8 PM India Time
   let slots = [
     '16:00', '16:30', '17:00', '17:30', 
-    '18:00', '18:30', '19:00', '19:30', '20:00'
+    '18:00', '18:30', '19:00', '19:30', '20:00','20:30'
   ];
 
   const istNow = getISTTime();
