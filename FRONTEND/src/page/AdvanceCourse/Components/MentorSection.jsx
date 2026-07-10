@@ -15,7 +15,7 @@ const MentorSection = () => {
           <div className="w-full md:w-1/3 flex flex-col items-center text-center z-10">
             <div className="w-48 h-56 rounded-2xl overflow-hidden mb-6 border-4 border-white shadow-xl bg-gray-100">
               <img 
-                src="/mentor.png"
+                src="/image.png"
                 alt="Kumaraguru MJ" 
                 className="w-full h-full object-cover object-top scale-105"
                 onError={(e) => { e.target.src = 'https://ui-avatars.com/api/?name=Kumaraguru+MJ&size=200&background=086F70&color=fff'; }}
