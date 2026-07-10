@@ -38,6 +38,7 @@ const ResumeATS = require("./routes/resumeats");
 const User = require("./routes/User");
 const ProfileRoute = require("./routes/Profile");
 const admin = require("./routes/AdminLogin")
+const AdminDashboardStats = require("./routes/AdminDashboardStats");
 const bodyParser = require("body-parser");
 
 const CreateJob = require("./routes/CreateJob");
@@ -165,6 +166,7 @@ const deviceCallLogRoutes = require("./routes/deviceCallLogRoutes");
 app.use("/api/call-logs", deviceCallLogRoutes);
 app.use("/api/admin", AdvAdminRoutes);
 app.use("/api/admin", adminImpersonation);
+app.use("/api/admin", AdminDashboardStats);
 const atdRoutes = require("./routes/atdRoutes");
 app.use("/api/atd", atdRoutes);
 app.use("/api/activity", activityRoutes);

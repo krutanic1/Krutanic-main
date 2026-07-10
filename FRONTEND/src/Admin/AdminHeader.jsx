@@ -219,7 +219,7 @@ const AdminHeader = () => {
             <Link to="/Admin/Reports">
               <i className="fa fa-file-excel-o mr-2"></i>System Reports
             </Link>
-
+             
             <Link to="/AddAdvCourse">
               <i className="fa fa-plus-circle mr-2"></i>Create Adv Course
             </Link>
@@ -239,9 +239,9 @@ const AdminHeader = () => {
             <Link to="/AdvTeamDetail">
               <i className="fa fa-users mr-2"></i>ADV Team Details
             </Link>
-            <Link to="/AdvUserManagement">
-              <i className="fa fa-users-cog mr-2"></i>ADV User Management
-            </Link>
+              <Link to="/AdvUserManagement">
+               <i className="fa fa-users-cog mr-2"></i>ADV User Management
+             </Link>
             <Link to="/AdvOnBoardingDetails">
               <i className="fa fa-graduation-cap mr-2"></i>ADV Onboarding
             </Link>
