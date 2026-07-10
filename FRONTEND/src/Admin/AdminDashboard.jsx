@@ -76,58 +76,49 @@ const AdminDashboard = () => {
     <div id="AdminDashboard" >
       <Toaster position="top-center" reverseOrder={false} />
       
-      {loading ? (
-        <div id="loader">
-          <div className="three-body">
-            <div className="three-body__dot"></div>
-            <div className="three-body__dot"></div>
-            <div className="three-body__dot"></div>
-          </div>
+      <div className="numberdiv">
+        <div>
+          <i className="text-blue-700	fa fa-book"></i>
+          <h2>COURSE</h2>
+          <span>{loading ? "..." : (dashboardData?.totals?.courses || 0)}</span>
         </div>
-      ) : (
-        <>
-          <div className="numberdiv">
-            <div>
-              <i className="text-blue-700	fa fa-book"></i>
-              <h2>COURSE</h2>
-              <span>{dashboardData?.totals?.courses || 0}</span>
-            </div>
-            <div>
-              <i className="fa fa-book text-purple-700"></i>
-              <h2>ADV COURSE</h2>
-              <span>{dashboardData?.totals?.advCourses || 0}</span>
-            </div>
-            <div>
-              <i className="fa fa-user-secret"></i>
-              <h2>OPERATION</h2>
-              <span>{dashboardData?.totals?.operations || 0}</span>
-            </div>
-            <div>
-              <i className="fa fa-user-secret text-purple-600"></i>
-              <h2>ADV OPERATION</h2>
-              <span>{dashboardData?.totals?.advOperations || 0}</span>
-            </div>
-            <div>
-              <i className="fa fa-users"></i>
-              <h2>BDA</h2>
-              <span>{dashboardData?.totals?.bdas || 0}</span>
-            </div>
-            <div>
-              <i className="text-yellow-500 fa fa-calendar"></i>
-              <h2>Booked</h2>
-              <span>{dashboardData?.totals?.booked || 0}</span>
-            </div>
-            <div>
-              <i className="text-green-700	fa fa-money"></i>
-              <h2>Full PAID</h2>
-              <span>{dashboardData?.totals?.fullPaid || 0}</span>
-            </div>
-            <div >
-              <i className="text-red-700 fa fa-times-circle"></i>
-              <h2>Default</h2>
-              <span>{dashboardData?.totals?.default || 0}</span>
-            </div>
-          </div>
+        <div>
+          <i className="fa fa-book text-purple-700"></i>
+          <h2>ADV COURSE</h2>
+          <span>{loading ? "..." : (dashboardData?.totals?.advCourses || 0)}</span>
+        </div>
+        <div>
+          <i className="fa fa-user-secret"></i>
+          <h2>OPERATION</h2>
+          <span>{loading ? "..." : (dashboardData?.totals?.operations || 0)}</span>
+        </div>
+        <div>
+          <i className="fa fa-user-secret text-purple-600"></i>
+          <h2>ADV OPERATION</h2>
+          <span>{loading ? "..." : (dashboardData?.totals?.advOperations || 0)}</span>
+        </div>
+        <div>
+          <i className="fa fa-users"></i>
+          <h2>BDA</h2>
+          <span>{loading ? "..." : (dashboardData?.totals?.bdas || 0)}</span>
+        </div>
+        <div>
+          <i className="text-yellow-500 fa fa-calendar"></i>
+          <h2>Booked</h2>
+          <span>{loading ? "..." : (dashboardData?.totals?.booked || 0)}</span>
+        </div>
+        <div>
+          <i className="text-green-700	fa fa-money"></i>
+          <h2>Full PAID</h2>
+          <span>{loading ? "..." : (dashboardData?.totals?.fullPaid || 0)}</span>
+        </div>
+        <div >
+          <i className="text-red-700 fa fa-times-circle"></i>
+          <h2>Default</h2>
+          <span>{loading ? "..." : (dashboardData?.totals?.default || 0)}</span>
+        </div>
+      </div>
+
 
           <div className="p-4 relative">
             <button onClick={() => setShowFilters(!showFilters)} className="bg-blue-500 text-white py-2 px-4 rounded">
@@ -193,7 +184,10 @@ const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {dashboardData?.courses?.map((course, index) => (
+                {loading ? (
+                  <tr><td colSpan="7" className="text-center py-4">Loading data...</td></tr>
+                ) : (
+                  dashboardData?.courses?.map((course, index) => (
                   <tr key={course._id}>
                     <td>{index + 1}</td>
                     <td>{course.title}</td>
@@ -203,7 +197,7 @@ const AdminDashboard = () => {
                     <td>{course.nextMonthCount}</td>
                     <td className="text-green-600 font-bold">{course.nextMonthFullPaid}</td>
                   </tr>
-                ))}
+                )))}
               </tbody>
             </table>
           </div>
@@ -224,7 +218,10 @@ const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {dashboardData?.advCourses?.map((course, index) => (
+                {loading ? (
+                  <tr><td colSpan="7" className="text-center py-4">Loading data...</td></tr>
+                ) : (
+                  dashboardData?.advCourses?.map((course, index) => (
                   <tr key={course._id}>
                     <td>{index + 1}</td>
                     <td>{course.title}</td>
@@ -234,12 +231,10 @@ const AdminDashboard = () => {
                     <td>{course.nextMonthCount}</td>
                     <td className="text-green-600 font-bold">{course.nextMonthFullPaid}</td>
                   </tr>
-                ))}
+                )))}
               </tbody>
             </table>
           </div>
-        </>
-      )}
     </div>
   );
 };
