@@ -44,6 +44,7 @@ import CourseHeroBanner from "./Components/CourseHeroBanner";
 import ImageSlider from "./Components/ImageSlider";
 
 import ToolStack from "./Components/ToolStack";
+import MentorSection from "./Components/MentorSection";
 import TopOnePercent from "../../Components/TopOnePercent";
 import CareerSupport from "../../Components/CareerSupport";
 import ProgramCohorts from "./Components/ProgramCohorts";
@@ -288,8 +289,11 @@ const DataAnalytics = () => {
                  </div>
               ))}
            </div>
-        </div>
+         </div>
       </section>
+
+      {/* 5.5 MENTOR */}
+      <MentorSection />
 
       {/* 6. FORMAT */}
       <section className="da-section">
