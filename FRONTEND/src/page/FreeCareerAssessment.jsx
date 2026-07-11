@@ -36,6 +36,7 @@ const FreeCareerAssessment = () => {
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState('');
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [razorpayReady, setRazorpayReady] = useState(!!window.Razorpay);
   const [slotsLoading, setSlotsLoading] = useState(false);
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -79,9 +80,15 @@ const FreeCareerAssessment = () => {
   }, [location.state]);
 
   useEffect(() => {
+    if (window.Razorpay) {
+      setRazorpayReady(true);
+      return;
+    }
     const script = document.createElement('script');
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
     script.async = true;
+    script.onload = () => setRazorpayReady(true);
+    script.onerror = () => toast.error('Payment gateway failed to load. Please refresh the page.');
     document.body.appendChild(script);
     return () => {
       document.body.removeChild(script);
@@ -97,13 +104,20 @@ const FreeCareerAssessment = () => {
     e.preventDefault();
     if (isSubmittingPrePayment) return;
     
+    if (!razorpayReady) {
+      toast.error('Payment gateway is still loading. Please wait a moment and try again.');
+      return;
+    }
+
     try {
       setIsSubmittingPrePayment(true);
       const res = await axios.post(`${API}/pre-payment`, formData);
       if (res.data.prePaymentId) {
-        setPrePaymentId(res.data.prePaymentId);
+        const savedPrePaymentId = res.data.prePaymentId;
+        setPrePaymentId(savedPrePaymentId);
         setShowPrePaymentModal(false);
-        handlePayment();
+        // Pass the ID and formData snapshot directly to avoid React stale closure
+        handlePayment(savedPrePaymentId, { ...formData });
       }
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to save details.");
@@ -112,7 +126,11 @@ const FreeCareerAssessment = () => {
     }
   };
 
-  const handlePayment = async () => {
+  const handlePayment = async (savedPrePaymentId, savedFormData) => {
+    // Use passed-in values to avoid React stale closure issues
+    const currentPrePaymentId = savedPrePaymentId || prePaymentId;
+    const currentFormData = savedFormData || { ...formData };
+
     // Bypass payment in development mode for easier testing
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
       const pDetails = {
@@ -122,17 +140,34 @@ const FreeCareerAssessment = () => {
       };
       setPaymentDetails(pDetails);
       toast.success('Development Mode: Payment bypassed!');
-      navigate('/paymentsucess', { state: { paymentDetails: pDetails, prePaymentId, formData } });
+      navigate('/paymentsucess', { state: { paymentDetails: pDetails, prePaymentId: currentPrePaymentId, formData: currentFormData } });
+      return;
+    }
+
+    // Safety check: ensure Razorpay script is loaded
+    if (!window.Razorpay) {
+      toast.error('Payment gateway not loaded. Please refresh the page and try again.');
       return;
     }
 
     try {
       setIsProcessingPayment(true);
-      const res = await axios.post(`${API}/api/assessment-payment/create-order`);
-      const { order } = res.data;
+
+      // Retry logic for order creation (handles Vercel cold starts / network hiccups)
+      let order;
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+          const res = await axios.post(`${API}/api/assessment-payment/create-order`);
+          order = res.data.order;
+          break;
+        } catch (orderErr) {
+          if (attempt === 2) throw orderErr;
+          await new Promise(r => setTimeout(r, 1500)); // Wait 1.5s before retry
+        }
+      }
 
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_1DP5mmOlF5G5ag', // Use env variable in prod
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_1DP5mmOlF5G5ag',
         amount: order.amount,
         currency: order.currency,
         name: 'Krutanic',
@@ -152,13 +187,23 @@ const FreeCareerAssessment = () => {
                 signature: response.razorpay_signature
               };
               setPaymentDetails(pDetails);
+              setIsProcessingPayment(false);
               toast.success('Payment successful!');
-              navigate('/paymentsucess', { state: { paymentDetails: pDetails, prePaymentId, formData } });
+              // Use the captured values, NOT the stale state
+              navigate('/paymentsucess', { state: { paymentDetails: pDetails, prePaymentId: currentPrePaymentId, formData: currentFormData } });
             } else {
-              toast.error('Payment verification failed');
+              setIsProcessingPayment(false);
+              toast.error('Payment verification failed. Please contact support.');
             }
           } catch (err) {
-            toast.error('Payment verification failed');
+            setIsProcessingPayment(false);
+            console.error('Payment verification error:', err);
+            toast.error('Payment verification failed. If money was deducted, please contact support.');
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            setIsProcessingPayment(false);
           }
         },
         theme: {
@@ -168,13 +213,14 @@ const FreeCareerAssessment = () => {
       
       const rzp1 = new window.Razorpay(options);
       rzp1.on('payment.failed', function (response) {
-        toast.error('Payment failed: ' + response.error.description);
+        setIsProcessingPayment(false);
+        toast.error('Payment failed: ' + (response.error?.description || 'Unknown error'));
       });
       rzp1.open();
     } catch (err) {
-      toast.error('Failed to initiate payment');
-    } finally {
       setIsProcessingPayment(false);
+      console.error('Payment initiation error:', err);
+      toast.error('Failed to initiate payment. Please try again.');
     }
   };
 
@@ -442,10 +488,14 @@ const FreeCareerAssessment = () => {
                       </div>
                       <button
                         type="submit"
-                        disabled={isSubmittingPrePayment}
+                        disabled={isSubmittingPrePayment || isProcessingPayment}
                         className="w-full py-4 rounded-xl font-bold text-white shadow-xl flex items-center justify-center gap-3 bg-gradient-to-r from-indigo-600 to-emerald-500 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-70 disabled:hover:scale-100 text-base mt-2"
                       >
-                        {isSubmittingPrePayment ? 'Saving...' : <>Proceed to Payment <ArrowRight size={18}/></>}
+                        {isSubmittingPrePayment || isProcessingPayment ? (
+                          <span className="flex items-center gap-2"><div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div> Processing...</span>
+                        ) : (
+                          <>Proceed to Payment <ArrowRight size={18}/></>
+                        )}
                       </button>
                       <p className="text-emerald-400 text-sm font-medium text-center">Only ₹101 – Fully Adjustable in Program Fee</p>
                     </form>

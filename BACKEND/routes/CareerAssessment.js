@@ -106,10 +106,13 @@ router.post("/careerassessment", async (req, res) => {
         if (prePaymentId) {
             newAssessment = await CareerAssessment.findById(prePaymentId);
             if (!newAssessment) {
-                return res.status(404).json({ error: "Initial assessment record not found." });
+                console.warn(`Pre-payment record not found for ID: ${prePaymentId}. Creating fresh assessment.`);
+                // Instead of returning 404, create a new assessment (handles edge case where pre-payment was lost)
+                newAssessment = new CareerAssessment(assessmentData);
+            } else {
+                // Update existing with new data
+                Object.assign(newAssessment, assessmentData);
             }
-            // Update existing with new data
-            Object.assign(newAssessment, assessmentData);
         } else {
             newAssessment = new CareerAssessment(assessmentData);
         }
@@ -177,9 +180,14 @@ router.post("/careerassessment", async (req, res) => {
             emailPromises.push(sendSkillEvaluationExecutiveNotification(savedAssessment.managerEmail, savedAssessment));
         }
 
-        // Wait for all emails to finish so they don't get killed when the response is sent (especially in serverless environments)
-        await Promise.allSettled(emailPromises);
+        // Wait for all emails to finish, but cap at 10 seconds to prevent hanging
+        const emailTimeout = new Promise(resolve => setTimeout(resolve, 10000));
+        await Promise.race([
+            Promise.allSettled(emailPromises),
+            emailTimeout
+        ]);
 
+        console.log(`Career assessment saved successfully. ID: ${savedAssessment._id}, PaymentID: ${savedAssessment.paymentId}`);
         res.status(201).json({ message: "Assessment submitted successfully", data: savedAssessment });
     } catch (dbError) {
         // ROLLBACK: If form fails to save, unlock the slot so the user doesn't lose it forever

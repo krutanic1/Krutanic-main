@@ -47,7 +47,7 @@ const PaymentSuccess = () => {
     clearRoadmap: '',
     rightSkills: '',
     topCareerChallenge12Months: '',
-    ...initialFormData
+    ...(initialFormData || {})
   });
 
   const handleInputChange = (e) => {
@@ -73,12 +73,23 @@ const PaymentSuccess = () => {
     e.preventDefault();
     if (isSubmitting) return;
 
+    // Validate that essential payment data exists
+    if (!paymentDetails?.id) {
+      toast.error('Payment details are missing. Please go back and complete payment again.');
+      navigate('/career-assessment', { replace: true });
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       
       const payload = {
         ...formData,
-        prePaymentId,
+        // Include name/email/phone from initialFormData since they were collected pre-payment
+        fullName: formData.fullName || initialFormData?.fullName || '',
+        email: formData.email || initialFormData?.email || '',
+        mobileNumber: formData.mobileNumber || initialFormData?.mobileNumber || '',
+        prePaymentId: prePaymentId || null,
         paymentId: paymentDetails.id,
         razorpayOrderId: paymentDetails.orderId,
         razorpaySignature: paymentDetails.signature,
@@ -92,12 +103,16 @@ const PaymentSuccess = () => {
         setCurrentStep(3);
       }
     } catch (error) {
-      console.error(error);
+      console.error('Assessment submission error:', error);
       if (error.response?.data?.error === "SLOT_TAKEN") {
           toast.error(error.response?.data?.message || "Slot taken by another user. Please pick another.");
           setCurrentStep(1); // Go back to calendar
+      } else if (error.response?.data?.error === "This payment has already been used for an assessment.") {
+          // Payment was already used — the assessment was likely already submitted successfully
+          toast.success('Your assessment has already been submitted successfully!');
+          setCurrentStep(3);
       } else {
-          toast.error(error.response?.data?.message || error.response?.data?.error || "Failed to submit assessment.");
+          toast.error(error.response?.data?.message || error.response?.data?.error || "Failed to submit assessment. Please try again.");
       }
     } finally {
       setIsSubmitting(false);
