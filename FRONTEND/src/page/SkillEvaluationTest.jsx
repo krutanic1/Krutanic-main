@@ -70,6 +70,52 @@ const SkillEvaluationTest = () => {
     topCareerChallenge12Months: ''
   });
 
+  // Mobile UPI Recovery: When user returns from Google Pay/PhonePe, the browser may have
+  // killed this page's JS context. On reload, check if there's a pending payment to recover.
+  useEffect(() => {
+    const recoverMobilePayment = async () => {
+      try {
+        const pending = sessionStorage.getItem('krutanic_pending_payment');
+        if (!pending) return;
+
+        const { orderId, prePaymentId: savedPPId, formData: savedFD, timestamp } = JSON.parse(pending);
+        
+        // Only recover payments less than 30 minutes old
+        if (Date.now() - timestamp > 30 * 60 * 1000) {
+          sessionStorage.removeItem('krutanic_pending_payment');
+          return;
+        }
+
+        // Check with backend if this order was paid
+        const res = await axios.get(`${API}/api/assessment-payment/check-order/${orderId}`);
+        
+        if (res.data.success && res.data.paid) {
+          // Payment was successful! Clear storage and redirect.
+          sessionStorage.removeItem('krutanic_pending_payment');
+          const pDetails = {
+            id: res.data.payment.razorpay_payment_id,
+            orderId: res.data.payment.razorpay_order_id,
+            signature: res.data.payment.razorpay_signature
+          };
+          toast.success('Payment recovered successfully!');
+          if (window.fbq) {
+            window.fbq('track', 'Lead');
+          }
+          navigate('/paymentsucess', { 
+            state: { paymentDetails: pDetails, prePaymentId: savedPPId, formData: savedFD },
+            replace: true 
+          });
+        } else {
+          console.log('Pending payment not yet captured, keeping recovery state.');
+        }
+      } catch (err) {
+        console.error('Mobile payment recovery failed:', err);
+      }
+    };
+
+    recoverMobilePayment();
+  }, []);
+
   useEffect(() => {
     if (window.Razorpay) {
       setRazorpayReady(true);
@@ -166,6 +212,16 @@ const SkillEvaluationTest = () => {
         }
       }
 
+      // Save payment context to sessionStorage BEFORE opening Razorpay.
+      // On mobile, when Google Pay / PhonePe opens, the browser may kill this page.
+      // When the user comes back, the useEffect recovery will pick this up.
+      sessionStorage.setItem('krutanic_pending_payment', JSON.stringify({
+        orderId: order.id,
+        prePaymentId: currentPrePaymentId,
+        formData: currentFormData,
+        timestamp: Date.now()
+      }));
+
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_1DP5mmOlF5G5ag',
         amount: order.amount,
@@ -174,6 +230,7 @@ const SkillEvaluationTest = () => {
         description: 'Live Mentor Assessment',
         order_id: order.id,
         handler: async function (response) {
+          sessionStorage.removeItem('krutanic_pending_payment');
           try {
             const verifyRes = await axios.post(`${API}/api/assessment-payment/verify-payment`, {
               razorpay_order_id: response.razorpay_order_id,
@@ -192,7 +249,6 @@ const SkillEvaluationTest = () => {
               if (window.fbq) {
                 window.fbq('track', 'Lead');
               }
-              // Use the captured values, NOT the stale state
               navigate('/paymentsucess', { 
                 state: { 
                   paymentDetails: newPaymentDetails, 
@@ -212,6 +268,7 @@ const SkillEvaluationTest = () => {
         },
         modal: {
           ondismiss: function () {
+            sessionStorage.removeItem('krutanic_pending_payment');
             setIsProcessingPayment(false);
           }
         },
@@ -222,6 +279,7 @@ const SkillEvaluationTest = () => {
       
       const rzp1 = new window.Razorpay(options);
       rzp1.on('payment.failed', function (response) {
+        sessionStorage.removeItem('krutanic_pending_payment');
         setIsProcessingPayment(false);
         toast.error('Payment failed: ' + (response.error?.description || 'Unknown error'));
       });
