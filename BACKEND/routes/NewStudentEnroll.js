@@ -4,6 +4,7 @@ const CreateBDA = require("../models/CreateBDA");
 const NewEnrollStudent = require("../models/NewStudentEnroll");
 const CreateCourse = require("../models/CreateCourse");
 const AdvEnroll = require("../models/AdvEnroll");
+const MedEnroll = require("../models/MedEnroll");
 const TransactionId = require("../models/AddTransactionId");
 const CreateOperation = require("../models/CreateOperation");
 const mongoose = require("mongoose");
@@ -838,10 +839,16 @@ router.post("/update-operation/:id", verifyAnyAuth, async (req, res) => {
 router.get("/enrollments", async (req, res) => {
   const { userEmail } = req.query;
   try {
-    // Fetch all enrollments
-    const enrollments = await NewEnrollStudent.find({
+    // Fetch all enrollments from both collections
+    const newEnrollments = await NewEnrollStudent.find({
       email: userEmail,
     }).lean();
+
+    const medEnrollments = await MedEnroll.find({
+      email: userEmail,
+    }).lean();
+
+    const enrollments = [...newEnrollments, ...medEnrollments];
 
     // Iterate over enrollments and replace domainId with course data
     const updatedEnrollments = await Promise.all(
@@ -893,7 +900,11 @@ router.get("/enrollments", async (req, res) => {
 router.get("/enrollments/:id/sessions", async (req, res) => {
   try {
     const { id } = req.params;
-    const enrollment = await NewEnrollStudent.findById(id).lean();
+    let enrollment = await NewEnrollStudent.findById(id).lean();
+    if (!enrollment) {
+      enrollment = await MedEnroll.findById(id).lean();
+    }
+    
     if (!enrollment || !enrollment.domainId) {
       return res.status(404).json({ message: "Enrollment or domain not found" });
     }
