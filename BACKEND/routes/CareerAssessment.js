@@ -163,17 +163,22 @@ router.post("/careerassessment", async (req, res) => {
         slot.bookedBy = savedAssessment._id;
         await slot.save();
 
-        // FIRE AUTOMATED EMAILS ASYNCHRONOUSLY
-        sendSkillEvaluationWelcomeEmail(savedAssessment.email, savedAssessment.fullName, savedAssessment.bookedDate, savedAssessment.bookedTimeSlot);
-        sendSkillEvaluationAdminNotification(savedAssessment);
+        // FIRE AUTOMATED EMAILS
+        const emailPromises = [
+            sendSkillEvaluationWelcomeEmail(savedAssessment.email, savedAssessment.fullName, savedAssessment.bookedDate, savedAssessment.bookedTimeSlot),
+            sendSkillEvaluationAdminNotification(savedAssessment)
+        ];
         
         if (savedAssessment.assignedExecutiveEmail) {
-            sendSkillEvaluationExecutiveNotification(savedAssessment.assignedExecutiveEmail, savedAssessment);
+            emailPromises.push(sendSkillEvaluationExecutiveNotification(savedAssessment.assignedExecutiveEmail, savedAssessment));
         }
         
         if (savedAssessment.managerEmail) {
-            sendSkillEvaluationExecutiveNotification(savedAssessment.managerEmail, savedAssessment);
+            emailPromises.push(sendSkillEvaluationExecutiveNotification(savedAssessment.managerEmail, savedAssessment));
         }
+
+        // Wait for all emails to finish so they don't get killed when the response is sent (especially in serverless environments)
+        await Promise.allSettled(emailPromises);
 
         res.status(201).json({ message: "Assessment submitted successfully", data: savedAssessment });
     } catch (dbError) {

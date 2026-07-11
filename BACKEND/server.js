@@ -309,8 +309,8 @@ app.get("/", async (req, res) => {
 // ✅ Connect to MongoDB on startup (for local development)
 const PORT = process.env.PORT || 5000;
 
-// Only start server locally (Vercel handles this automatically)
-if (process.env.NODE_ENV !== "production") {
+// Only start server locally or on a persistent VPS (Vercel handles this automatically)
+if (!process.env.VERCEL) {
   connectDB().then(() => {
     // Run seeders if needed
     try {
@@ -319,8 +319,8 @@ if (process.env.NODE_ENV !== "production") {
       console.error("❌ Seeding failed, but continuing startup:", seedErr.message);
     }
 
-    // Initialize Schedulers (local development only)
-    // Note: Production uses Vercel Cron (see vercel.json and CronRoutes.js)
+    // Initialize Schedulers
+    // Note: Production uses Vercel Cron if on Vercel, but if on a VPS we want them to run!
     const { initializePaymentReminderScheduler } = require("./services/paymentReminderService");
     const { initializeAttendanceReportScheduler } = require("./services/attendanceReportService");
     const { initializeMasterclassReminderScheduler } = require("./services/masterclassReminderService");
@@ -340,7 +340,7 @@ if (process.env.NODE_ENV !== "production") {
     console.error("❌ Failed to start server:", err.message);
   });
 } else {
-  // For production/Vercel: Connect DB on cold start
+  // For Vercel Serverless: Connect DB on cold start
   connectDB().catch((err) => {
     console.error("❌ MongoDB connection error on cold start:", err.message);
   });

@@ -19,7 +19,7 @@ const MentorSection = () => {
                 alt="Kumaraguru MJ" 
                 className="w-full h-full object-cover object-top scale-105"
                 onError={(e) => { e.target.src = 'https://ui-avatars.com/api/?name=Kumaraguru+MJ&size=200&background=086F70&color=fff'; }}
-              />
+              />                                                                     
             </div>
             <h3 className="text-2xl font-extrabold text-gray-900 mb-1">Kumaraguru MJ</h3>
             <p className="text-teal-700 font-bold text-sm mb-4">Senior Technical Trainer</p>
