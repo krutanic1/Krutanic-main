@@ -889,6 +889,37 @@ const sendSkillEvaluationExecutiveNotification = async (executiveEmail, assessme
         console.error("Error sending executive notification email:", error);
     }
 };
+const sendSkillEvaluationAssignmentNotification = async (executiveEmail, assessmentDetails) => {
+    try {
+        const mailOptions = {
+            from: senderEmail,
+            to: executiveEmail,
+            subject: "NEW ASSIGNMENT: Skill Evaluation Lead Assigned to You",
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #3498db; border-radius: 10px;">
+                    <h2 style="color: #3498db;">New Lead Assigned!</h2>
+                    <p style="color: #34495e;">Dear Executive,</p>
+                    <p style="color: #34495e;">The Admin has assigned a new <strong>Skill Evaluation Test</strong> lead to you.</p>
+                    <p style="color: #34495e; font-weight: bold;">Please review the lead details below and take necessary action!</p>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 20px; margin-bottom: 20px;">
+                        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Lead Name</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${assessmentDetails.fullName}</td></tr>
+                        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Email</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${assessmentDetails.email}</td></tr>
+                        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Mobile Number</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${assessmentDetails.mobileNumber}</td></tr>
+                        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Payment Status</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${assessmentDetails.paymentStatus || 'Pending'}</td></tr>
+                        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Slot Time</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${assessmentDetails.bookedDate || 'Not Booked'} at ${assessmentDetails.bookedTimeSlot || ''}</td></tr>
+                    </table>
+                    <p style="color: #34495e;">You can view the full details of their assessment on your ADV Dashboard under Skill Evaluations.</p>
+                    <p style="color: #34495e;">Best regards,<br><strong>Krutanic Admin</strong></p>
+                </div>
+            `
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log(`Assignment notification email sent to ${executiveEmail}`);
+    } catch (error) {
+        console.error("Error sending assignment notification email:", error);
+    }
+};
 
 module.exports = { 
     sendWelcomeEmail, 
@@ -901,5 +932,6 @@ module.exports = {
     sendMasterclassTodayReminder,
     sendSkillEvaluationWelcomeEmail,
     sendSkillEvaluationAdminNotification,
-    sendSkillEvaluationExecutiveNotification
+    sendSkillEvaluationExecutiveNotification,
+    sendSkillEvaluationAssignmentNotification
 };

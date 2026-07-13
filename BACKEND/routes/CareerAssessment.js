@@ -5,10 +5,12 @@ const AssessmentSlot = require("../models/AssessmentSlot");
 const Razorpay = require('razorpay');
 const AdvLead = require("../models/AdvLead");
 const AdvUser = require("../models/AdvUser");
+const AdvTeam = require("../models/CreateAdvTeam");
 const { 
   sendSkillEvaluationWelcomeEmail, 
   sendSkillEvaluationAdminNotification, 
-  sendSkillEvaluationExecutiveNotification 
+  sendSkillEvaluationExecutiveNotification,
+  sendSkillEvaluationAssignmentNotification
 } = require("../utils/emailService");
 // POST: Capture initial details before payment
 router.post("/pre-payment", async (req, res) => {
@@ -230,6 +232,49 @@ router.get("/careerassessment", async (req, res) => {
   } catch (error) {
     console.error("Error fetching career assessments:", error);
     res.status(500).json({ error: "Failed to fetch assessments" });
+  }
+});
+
+// POST: Assign a career assessment lead to an AdvTeam member
+router.post("/assign", async (req, res) => {
+  try {
+    const { assessmentId, memberId } = req.body;
+    
+    if (!assessmentId || !memberId) {
+      return res.status(400).json({ error: "assessmentId and memberId are required." });
+    }
+
+    const assessment = await CareerAssessment.findById(assessmentId);
+    if (!assessment) {
+      return res.status(404).json({ error: "Assessment not found." });
+    }
+
+    const member = await AdvTeam.findById(memberId);
+    if (!member) {
+      return res.status(404).json({ error: "Advance Team member not found." });
+    }
+
+    // Update the assessment with the assigned member's details
+    assessment.assignedExecutiveId = member._id;
+    assessment.assignedExecutiveName = member.fullname;
+    assessment.assignedExecutiveEmail = member.email;
+    
+    // Attempt to set manager details if the member belongs to a team
+    // In many schemas, manager's ID might be tracked differently, but we'll try basic fields if present
+    if (member.managerId) assessment.managerId = member.managerId;
+    if (member.managerEmail) assessment.managerEmail = member.managerEmail;
+
+    await assessment.save();
+
+    // Send the automated notification email to the executive
+    if (member.email) {
+      await sendSkillEvaluationAssignmentNotification(member.email, assessment);
+    }
+
+    res.status(200).json({ message: "Successfully assigned lead.", assessment });
+  } catch (error) {
+    console.error("Error assigning lead:", error);
+    res.status(500).json({ error: "Failed to assign lead." });
   }
 });
 

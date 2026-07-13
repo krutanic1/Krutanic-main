@@ -8,17 +8,14 @@ import {
 import { TrendingUp, TrendingDown, Calendar, Database, Target, PhoneCall, Info, Users, X, ChevronRight, Award, DollarSign, AlertCircle, BarChart2, Filter, RotateCw } from 'lucide-react';
 import API from '../API';
 
-// ────────────── CALL OUTCOME CONFIG ──────────────
-const OUTCOMES = [
-    { key: 'fresh',              label: 'Fresh',             icon: 'fiber_new',       color: '#64748B', bg: '#f1f5f9' },
-    { key: 'interested',         label: 'Interested',        icon: 'check_circle',    color: '#10B981', bg: '#ecfdf5' },
-    { key: 'follow_up',          label: 'Follow Up',         icon: 'call',            color: '#3B82F6', bg: '#eff6ff' },
-    { key: 'callback_requested', label: 'Callback',          icon: 'history',         color: '#8B5CF6', bg: '#f5f3ff' },
-    { key: 'no_answer',          label: 'No Answer',         icon: 'phone_disabled',  color: '#F59E0B', bg: '#fffbeb' },
-    { key: 'not_interested',     label: 'Not Interested',    icon: 'cancel',          color: '#EF4444', bg: '#fef2f2' },
-    { key: 'junk',               label: 'Junk',              icon: 'delete',          color: '#94A3B8', bg: '#f8fafc' },
-    { key: 'converted',          label: 'Converted',         icon: 'stars',           color: '#EC4899', bg: '#fdf4ff' },
-    { key: 'unused',             label: 'Unused',            icon: 'block',           color: '#CBD5E1', bg: '#f8fafc' },
+// ────────────── LEAD STAGE CONFIG ──────────────
+const STAGES = [
+    { key: 'Fresh Lead',          label: 'Fresh Lead',         icon: 'fiber_new',       color: '#64748B', bg: '#f1f5f9' },
+    { key: 'Attempting Contact',  label: 'Attempting Contact', icon: 'call',            color: '#3B82F6', bg: '#eff6ff' },
+    { key: 'In Conversation',     label: 'In Conversation',    icon: 'forum',           color: '#F59E0B', bg: '#fffbeb' },
+    { key: 'Demo Conducted',      label: 'Demo Conducted',     icon: 'co_present',      color: '#8B5CF6', bg: '#f5f3ff' },
+    { key: 'Closed Won',          label: 'Closed Won',         icon: 'stars',           color: '#10B981', bg: '#ecfdf5' },
+    { key: 'Closed Lost',         label: 'Closed Lost',        icon: 'cancel',          color: '#EF4444', bg: '#fef2f2' }
 ];
 
 const AdminAnalytics = () => {
@@ -545,7 +542,7 @@ const AdminAnalytics = () => {
 
                                     {/* Outcome Chips Row */}
                                     <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '14px' }}>
-                                        {OUTCOMES.map(o => (
+                                        {STAGES.map(o => (
                                             <div key={o.key} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px', background: o.bg, borderRadius: '8px', border: `1px solid ${o.color}20` }}>
                                                 <span className="material-symbols-outlined" style={{ fontSize: '13px', color: o.color }}>
                                                     {o.icon}
@@ -649,14 +646,14 @@ const AdminAnalytics = () => {
 
                         {/* Drawer Body */}
                         <div style={{ padding: '24px 28px', flex: 1 }}>
-                            {/* All 9 Outcome Breakdown */}
+                            {/* All 6 Stage Breakdown */}
                             <div style={{ marginBottom: '28px' }}>
                                 <h3 style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: '700', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <Award size={18} color="#6366f1" /> Lead Outcome Breakdown
+                                    <Award size={18} color="#6366f1" /> Lead Stage Breakdown
                                     <span style={{ marginLeft: 'auto', fontSize: '11px', color: '#94a3b8', fontWeight: '500' }}>Click any card to see call logs</span>
                                 </h3>
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                                    {OUTCOMES.map(o => {
+                                    {STAGES.map(o => {
                                         const val = selectedMember[o.key] || 0;
                                         const pct = selectedMember.totalLeads > 0 ? ((val / selectedMember.totalLeads) * 100).toFixed(1) : '0.0';
                                         const isActive = selectedOutcome === o.key;
@@ -693,18 +690,18 @@ const AdminAnalytics = () => {
 
                                 {/* ── Call Logs Panel ── */}
                                 {selectedOutcome && (
-                                    <div style={{ marginTop: '20px', borderRadius: '16px', border: `1px solid ${OUTCOMES.find(o => o.key === selectedOutcome)?.color}30`, overflow: 'hidden', animation: 'fadeIn 0.25s ease' }}>
+                                    <div style={{ marginTop: '20px', borderRadius: '16px', border: `1px solid ${STAGES.find(o => o.key === selectedOutcome)?.color}30`, overflow: 'hidden', animation: 'fadeIn 0.25s ease' }}>
                                         {/* Panel Header */}
-                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', background: `${OUTCOMES.find(o => o.key === selectedOutcome)?.color}10`, borderBottom: `1px solid ${OUTCOMES.find(o => o.key === selectedOutcome)?.color}20` }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', background: `${STAGES.find(o => o.key === selectedOutcome)?.color}10`, borderBottom: `1px solid ${STAGES.find(o => o.key === selectedOutcome)?.color}20` }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                <span className="material-symbols-outlined" style={{ fontSize: '18px', color: OUTCOMES.find(o => o.key === selectedOutcome)?.color }}>
-                                                    {OUTCOMES.find(o => o.key === selectedOutcome)?.icon}
+                                                <span className="material-symbols-outlined" style={{ fontSize: '18px', color: STAGES.find(o => o.key === selectedOutcome)?.color }}>
+                                                    {STAGES.find(o => o.key === selectedOutcome)?.icon}
                                                 </span>
                                                 <span style={{ fontWeight: '800', fontSize: '14px', color: '#1e293b' }}>
-                                                    {OUTCOMES.find(o => o.key === selectedOutcome)?.label} Leads
+                                                    {STAGES.find(o => o.key === selectedOutcome)?.label} Leads
                                                 </span>
                                                 {!logsLoading && (
-                                                    <span style={{ background: OUTCOMES.find(o => o.key === selectedOutcome)?.color, color: '#fff', fontSize: '11px', fontWeight: '700', padding: '2px 8px', borderRadius: '20px' }}>
+                                                    <span style={{ background: STAGES.find(o => o.key === selectedOutcome)?.color, color: '#fff', fontSize: '11px', fontWeight: '700', padding: '2px 8px', borderRadius: '20px' }}>
                                                         {outcomeLogs.length} records
                                                     </span>
                                                 )}
@@ -863,10 +860,10 @@ const AdminAnalytics = () => {
                                                     <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} />
                                                     <Tooltip content={<LeadTooltip />} />
                                                     <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
-                                                    <Bar dataKey="converted" name="Converted" fill="#10b981" radius={[4, 4, 0, 0]} />
-                                                    <Bar dataKey="interested" name="Interested" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                                                    <Bar dataKey="not_interested" name="Not Interested" fill="#ef4444" radius={[4, 4, 0, 0]} />
-                                                    <Bar dataKey="junk" name="Junk" fill="#94a3b8" radius={[4, 4, 0, 0]} />
+                                                    <Bar dataKey="Closed Won" name="Closed Won" fill="#10b981" radius={[4, 4, 0, 0]} />
+                                                    <Bar dataKey="Demo Conducted" name="Demo Conducted" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                                                    <Bar dataKey="In Conversation" name="In Conversation" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                                                    <Bar dataKey="Attempting Contact" name="Attempting Contact" fill="#3b82f6" radius={[4, 4, 0, 0]} />
                                                 </BarChart>
                                             </ResponsiveContainer>
                                         </div>

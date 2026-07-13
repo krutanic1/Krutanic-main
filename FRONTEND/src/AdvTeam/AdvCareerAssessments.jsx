@@ -7,6 +7,9 @@ const AdvCareerAssessments = ({ isAdmin }) => {
     const [assessments, setAssessments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedAssessment, setSelectedAssessment] = useState(null);
+    const [teamMembers, setTeamMembers] = useState([]);
+    const [rowSelections, setRowSelections] = useState({});
+    const [assigningId, setAssigningId] = useState(null);
 
     const userDesignation = isAdmin ? "admin" : (localStorage.getItem("designation") || "ADV Leader");
     const advUserId = isAdmin ? localStorage.getItem("adminToken") : (localStorage.getItem("advTeamId") || localStorage.getItem("id"));
@@ -24,7 +27,41 @@ const AdvCareerAssessments = ({ isAdmin }) => {
             }
         };
         fetchAssessments();
+
+        if (isAdmin) {
+            axios.get(`${API}/getadvteam`)
+                .then(res => setTeamMembers(res.data))
+                .catch(err => console.error("Failed to fetch team members"));
+        }
     }, []);
+
+    const handleAssign = async (assessment) => {
+        const memberId = rowSelections[assessment._id];
+        if (!memberId) {
+            toast.error("Please select a team member");
+            return;
+        }
+        setAssigningId(assessment._id);
+        try {
+            const res = await axios.post(`${API}/assign`, {
+                assessmentId: assessment._id,
+                memberId: memberId
+            });
+            toast.success("Lead assigned successfully!");
+            
+            // Update local state
+            setAssessments(prev => prev.map(a => 
+                a._id === assessment._id 
+                ? { ...a, assignedExecutiveName: res.data.assessment.assignedExecutiveName, assignedExecutiveId: res.data.assessment.assignedExecutiveId } 
+                : a
+            ));
+        } catch (err) {
+            console.error("Assignment error", err);
+            toast.error("Failed to assign lead");
+        } finally {
+            setAssigningId(null);
+        }
+    };
 
     const formatTime12Hour = (timeStr) => {
         if (!timeStr || typeof timeStr !== 'string' || !timeStr.includes(':')) return timeStr;
@@ -63,6 +100,7 @@ const AdvCareerAssessments = ({ isAdmin }) => {
                                 <th style={{ padding: '12px', textAlign: 'center', fontWeight: '600' }}>Score</th>
                                 <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600' }}>Payment</th>
                                 <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600' }}>Slot Booked</th>
+                                {isAdmin && <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600' }}>Assign To</th>}
                                 <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600' }}>Date</th>
                                 <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600' }}>Details</th>
                             </tr>
@@ -97,6 +135,38 @@ const AdvCareerAssessments = ({ isAdmin }) => {
                                     <td style={{ padding: '12px', whiteSpace: 'nowrap' }}>
                                         {a.bookedDate ? `${new Date(a.bookedDate).toLocaleDateString()} ${formatTime12Hour(a.bookedTimeSlot)}` : 'Not Booked'}
                                     </td>
+                                    {isAdmin && (
+                                        <td style={{ padding: '12px', minWidth: '220px' }}>
+                                            {a.assignedExecutiveName ? (
+                                                <div style={{ fontSize: '13px', color: '#096dd9', fontWeight: '500', marginBottom: '8px' }}>
+                                                    Assigned to: {a.assignedExecutiveName}
+                                                </div>
+                                            ) : null}
+                                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                                <select 
+                                                    value={rowSelections[a._id] || ""} 
+                                                    onChange={(e) => setRowSelections(prev => ({ ...prev, [a._id]: e.target.value }))}
+                                                    style={{ flex: 1, padding: '6px 8px', borderRadius: '4px', border: '1px solid #d9d9d9', outline: 'none', fontSize: '12px' }}
+                                                >
+                                                    <option value="">Select Member...</option>
+                                                    {teamMembers.map(m => (
+                                                        <option key={m._id} value={m._id}>{m.fullname}</option>
+                                                    ))}
+                                                </select>
+                                                <button 
+                                                    onClick={() => handleAssign(a)} 
+                                                    disabled={assigningId === a._id}
+                                                    style={{ 
+                                                        padding: '6px 12px', background: '#52c41a', color: '#fff', border: 'none', 
+                                                        borderRadius: '4px', fontWeight: '600', cursor: assigningId === a._id ? 'not-allowed' : 'pointer',
+                                                        opacity: assigningId === a._id ? 0.7 : 1, fontSize: '12px'
+                                                    }}
+                                                >
+                                                    {assigningId === a._id ? "..." : "Assign"}
+                                                </button>
+                                            </div>
+                                        </td>
+                                    )}
                                     <td style={{ padding: '12px', whiteSpace: 'nowrap' }}>{new Date(a.createdAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true })} IST</td>
                                     <td style={{ padding: '12px' }}>
                                         <button 
@@ -148,8 +218,9 @@ const AdvCareerAssessments = ({ isAdmin }) => {
                                 </div>
                             ))}
                         </div>
+                        
                         <div style={{ marginTop: '24px', textAlign: 'right' }}>
-                            <button onClick={() => setSelectedAssessment(null)} style={{ padding: '10px 24px', background: '#1890ff', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={(e) => e.target.style.background = '#096dd9'} onMouseLeave={(e) => e.target.style.background = '#1890ff'}>Close Details</button>
+                            <button onClick={() => { setSelectedAssessment(null); }} style={{ padding: '10px 24px', background: '#1890ff', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={(e) => e.target.style.background = '#096dd9'} onMouseLeave={(e) => e.target.style.background = '#1890ff'}>Close Details</button>
                         </div>
                     </div>
                 </div>

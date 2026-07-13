@@ -646,7 +646,7 @@ router.get("/team-analysis", async (req, res) => {
             },
             {
                 $group: {
-                    _id: { owner: "$owner_id", outcome: "$last_outcome" },
+                    _id: { owner: "$owner_id", outcome: "$stage" },
                     count: { $sum: 1 }
                 }
             }
@@ -674,15 +674,26 @@ router.get("/team-analysis", async (req, res) => {
 
         // 4. Build lookup maps for fast access
         const outcomesMap = {}; // memberId -> { outcome: count }
-        const OUTCOMES = ["fresh","interested","follow_up","callback_requested","no_answer","not_interested","junk","converted","unused"];
+        const STAGES = [
+            "Fresh Lead", "Attempting Contact", "In Conversation", 
+            "Demo Conducted", "Closed Won", "Closed Lost"
+        ];
 
         for (const row of leadAgg) {
             const { owner, outcome } = row._id;
+            const stageName = outcome || "Fresh Lead";
+            
             if (!outcomesMap[owner]) {
                 outcomesMap[owner] = { totalLeads: 0 };
-                OUTCOMES.forEach(o => (outcomesMap[owner][o] = 0));
+                STAGES.forEach(s => (outcomesMap[owner][s] = 0));
             }
-            outcomesMap[owner][outcome || "fresh"] = (outcomesMap[owner][outcome || "fresh"] || 0) + row.count;
+            
+            if (outcomesMap[owner][stageName] !== undefined) {
+                outcomesMap[owner][stageName] += row.count;
+            } else {
+                // If an unexpected stage appears, default it to Fresh Lead to avoid losing count
+                outcomesMap[owner]["Fresh Lead"] += row.count;
+            }
             outcomesMap[owner].totalLeads += row.count;
         }
 
@@ -702,7 +713,7 @@ router.get("/team-analysis", async (req, res) => {
             const name = m.fullname;
             const outcomes = outcomesMap[id]   || { totalLeads: 0 };
             const revenue  = revenueMap[name]  || { totalRevenue: 0, pendingRevenue: 0, enrollCount: 0 };
-            OUTCOMES.forEach(o => { if (outcomes[o] === undefined) outcomes[o] = 0; });
+            STAGES.forEach(s => { if (outcomes[s] === undefined) outcomes[s] = 0; });
             return {
                 _id: id,
                 name,
@@ -770,7 +781,7 @@ router.get("/member-monthly", async (req, res) => {
             },
             {
                 $group: {
-                    _id: { month: { $month: "$created_at" }, outcome: "$last_outcome" },
+                    _id: { month: { $month: "$created_at" }, outcome: "$stage" },
                     count: { $sum: 1 }
                 }
             }
@@ -795,15 +806,19 @@ router.get("/member-monthly", async (req, res) => {
         const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
         const monthly = MONTHS.map((name, i) => ({
             month: name,
-            totalLeads: 0, converted: 0, interested: 0, junk: 0, not_interested: 0,
+            totalLeads: 0, "Closed Won": 0, "Demo Conducted": 0, "In Conversation": 0, "Attempting Contact": 0, "Fresh Lead": 0, "Closed Lost": 0,
             revenue: 0, pending: 0
         }));
 
         for (const row of leadsByMonth) {
             const idx = row._id.month - 1;
-            const outcome = row._id.outcome || "fresh";
+            const stageName = row._id.outcome || "Fresh Lead";
             monthly[idx].totalLeads += row.count;
-            if (monthly[idx][outcome] !== undefined) monthly[idx][outcome] += row.count;
+            if (monthly[idx][stageName] !== undefined) {
+                monthly[idx][stageName] += row.count;
+            } else {
+                monthly[idx]["Fresh Lead"] += row.count;
+            }
         }
 
         for (const row of revenueByMonth) {
@@ -836,7 +851,7 @@ router.get("/member-outcome-logs", async (req, res) => {
 
         const query = {
             owner_id: memberId,
-            last_outcome: outcome,
+            stage: outcome,
             created_at: { $gte: startDate, $lte: endDate }
         };
 
@@ -863,8 +878,7 @@ router.get("/member-outcome-logs", async (req, res) => {
         const callLogs = await AdvCallActivity.aggregate([
             {
                 $match: {
-                    leadId: { $in: leadIds },
-                    callOutcome: outcome
+                    leadId: { $in: leadIds }
                 }
             },
             { $sort: { createdAt: -1 } },
