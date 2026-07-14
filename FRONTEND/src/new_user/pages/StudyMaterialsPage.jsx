@@ -149,29 +149,58 @@ const StudyMaterialsPage = () => {
             </div>
             
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '30px' }}>
-                <a 
-                    href="https://drive.google.com/file/d/1MtzompuCslZJfN0dVvNN9RrlcXYNLyaT/view?usp=drive_link" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="premium-book-card"
-                >
-                    <div className="bg-blob"></div>
-                    <span className="book-badge">PDF Guide</span>
-                    <div className="book-icon-wrapper">
-                        <span className="material-symbols-outlined" style={{ fontSize: '38px' }}>
-                            auto_stories
-                        </span>
-                    </div>
-                    <h3 className="book-title">Data Foundation<br/>Complete Guide</h3>
-                    <p className="book-desc">Master the core concepts of data foundation. Dive deep into essential analytics, structures, and modern workflows required for your career.</p>
-                    <div className="book-action">
-                        <span>Access Resource</span>
-                        <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>arrow_forward</span>
-                    </div>
-                </a>
+                {[
+                    {
+                        title: "Introduction",
+                        subtitle: "Course Overview",
+                        desc: "Start your learning journey here. This introduction covers all the essentials and sets the foundation for your career.",
+                        icon: "rocket_launch",
+                        badge: "Start Here",
+                        link: "https://drive.google.com/file/d/1nxy5LXAJoHrJIFu-TIhkHoY04Vh3c9sY/view?usp=drive_link"
+                    },
+                    {
+                        title: "Data Foundation",
+                        subtitle: "Complete Guide",
+                        desc: "Master the core concepts of data foundation. Dive deep into essential analytics, structures, and modern workflows required for your career.",
+                        icon: "auto_stories",
+                        badge: "PDF Guide",
+                        link: "https://drive.google.com/file/d/1MtzompuCslZJfN0dVvNN9RrlcXYNLyaT/view?usp=drive_link"
+                    },
+                    {
+                        title: "Microsoft Excel",
+                        subtitle: "Mastery Guide",
+                        desc: "Unlock the full potential of Microsoft Excel. Learn advanced formulas, pivot tables, data visualization, and automation techniques.",
+                        icon: "table_view",
+                        badge: "E-Book",
+                        link: "https://drive.google.com/file/d/1ZhJH6682ECVKmPsw4Jb8e_2eR62fVYG6/view?usp=drive_link"
+                    }
+                ].map((book, index) => (
+                    <a 
+                        key={index}
+                        href={book.link} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="premium-book-card"
+                    >
+                        <div className="bg-blob"></div>
+                        <span className="book-badge">{book.badge}</span>
+                        <div className="book-icon-wrapper">
+                            <span className="material-symbols-outlined" style={{ fontSize: '38px' }}>
+                                {book.icon}
+                            </span>
+                        </div>
+                        <h3 className="book-title">{book.title}<br/>{book.subtitle}</h3>
+                        <p className="book-desc">{book.desc}</p>
+                        <div className="book-action">
+                            <span>Access Resource</span>
+                            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>arrow_forward</span>
+                        </div>
+                    </a>
+                ))}
             </div>
+                    
         </section>
     );
 };
-
+ 
 export default StudyMaterialsPage;
