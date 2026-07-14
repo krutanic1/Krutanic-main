@@ -33,7 +33,7 @@ const AdminAnalytics = () => {
     const [selectedMember, setSelectedMember] = useState(null);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [memberMonthly, setMemberMonthly] = useState([]);
-    const [memberLoading, setMemberLoading] = useState(false);
+    const [memberLoading, setMemberLoading] = useState(false);                  
     const [activeRoleTab, setActiveRoleTab] = useState('specialists');
     const [teamSearchQuery, setTeamSearchQuery] = useState('');
     const drawerRef = useRef(null);
@@ -44,7 +44,7 @@ const AdminAnalytics = () => {
     const [logsLoading, setLogsLoading] = useState(false);
     const [sourceFilter, setSourceFilter] = useState('');
     const [uniqueSources, setUniqueSources] = useState([]);
-    const [logsPage, setLogsPage] = useState(1);
+    const [logsPage, setLogsPage] = useState(1);        
     const [totalLogsPages, setTotalLogsPages] = useState(1);
 
     const months = [

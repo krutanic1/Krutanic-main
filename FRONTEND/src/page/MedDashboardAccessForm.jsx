@@ -605,9 +605,22 @@ const MedDashboardAccessForm = () => {
               <option value="" selected disabled>
                 Select Opted Domain
               </option>
-              {course.map((item) => (
-                <option value={item.title}>{item.title}</option>
+              {course.map((item, index) => (
+                <option key={index} value={item.title}>{item.title}</option>
               ))}
+              <option value="Full Stack Web Development">Full Stack Web Development</option>
+              <option value="Android App Development">Android App Development</option>
+              <option value="Artificial Intelligence">Artificial Intelligence</option>
+              <option value="Machine Learning">Machine Learning</option>
+              <option value="Cyber Security">Cyber Security</option>
+              <option value="Data Science">Data Science</option>
+              <option value="Data Analytics">Data Analytics</option>
+              <option value="UI/UX Design">UI/UX Design</option>
+              <option value="DevOps">DevOps</option>
+              <option value="Graphics Design">Graphics Design</option>
+              <option value="Embedded System">Embedded System</option>
+              <option value="Cloud Computing">Cloud Computing</option>
+             
             </select>
 
             <select
