@@ -257,6 +257,7 @@ const CalendarPage = lazy(() => import("./new_user/pages/CalendarPage"));
 const AdvanceLearningPage = lazy(() => import("./new_user/AdvanceLearningPage"));
 const InterviewQuestionsPage = lazy(() => import("./new_user/pages/InterviewQuestionsPage"));
 const CompaniesReferralsPage = lazy(() => import("./new_user/pages/CompaniesReferralsPage"));
+const StudyMaterialsPage = lazy(() => import("./new_user/pages/StudyMaterialsPage"));
 import ResumeBuilderPage from "./new_user/pages/ResumeBuilderPage";
 import ProfilePage from "./new_user/pages/ProfilePage";
 
@@ -838,6 +839,7 @@ const AppContent = () => {
           <Route path="interview-questions" element={<InterviewQuestionsPage />} />
           <Route path="aptitude-test" element={<AptitudeTest />} />
           <Route path="companies-referrals" element={<CompaniesReferralsPage />} />
+          <Route path="study-materials" element={<StudyMaterialsPage />} />
         </Route>
         {/* Advanced dashboard video player — standalone, no old sidebar */}
         <Route path="/advancedashboard/learning" element={<AdvanceLearningPage />} />
