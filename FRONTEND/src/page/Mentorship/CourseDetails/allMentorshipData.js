@@ -1172,11 +1172,14 @@ export const allMentorshipData = {
       { name: 'Bloomberg Terminal' }, { name: 'DCF Valuation' }, { name: 'ERP Systems' }
     ],
     curriculum: [
-      { module: 'Module 1', title: 'Introduction to Corporate Finance', topics: ['Financial Statements', 'Time Value of Money', 'Cost of Capital', 'Capital Budgeting'] },
-      { module: 'Module 2', title: 'Financial Modeling & Valuation', topics: ['Building 3-Statement Models', 'DCF Valuation', 'Comparable Company Analysis', 'Precedent Transactions'] },
-      { module: 'Module 3', title: 'Investment Banking & M&A', topics: ['M&A Process', 'LBO Models', 'Synergies', 'Deal Structuring'] },
-      { module: 'Module 4', title: 'Portfolio Management & Risk', topics: ['Asset Allocation', 'Modern Portfolio Theory', 'Risk Assessment', 'Derivatives Basics'] },
-      { module: 'Module 5', title: 'Financial Analytics & Capstone', topics: ['Python for Data Analysis', 'Forecasting', 'Presenting Findings', 'Final Capstone Project'] }
+      { module: 'Module 1', title: 'Advanced Financial Accounting & Reporting', topics: ['Financial Statement Analysis (FSA)', 'US GAAP vs IFRS nuances', 'Earnings Quality & Manipulation Detection', 'Complex Consolidation Accounting'] },
+      { module: 'Module 2', title: 'Advanced Financial Modeling & Forecasting', topics: ['Complex 3-Statement Integration', 'Scenario & Sensitivity Analysis', 'Working Capital & Depreciation Schedules', 'Dynamic Assumptions & Debt Schedules'] },
+      { module: 'Module 3', title: 'Corporate Valuation Deep-Dive', topics: ['Advanced DCF & Terminal Value Scenarios', 'Sum-of-the-Parts (SOTP) Valuation', 'Precedent Transactions & Comps Analysis', 'Dilution Analysis & WACC Optimization'] },
+      { module: 'Module 4', title: 'Mergers, Acquisitions (M&A) & LBOs', topics: ['Accretion/Dilution (M&A) Modeling', 'Leveraged Buyout (LBO) Modeling from scratch', 'Deal Structuring & Synergies', 'Distressed Debt & Restructuring Basics'] },
+      { module: 'Module 5', title: 'Quantitative Finance & Portfolio Management', topics: ['Modern Portfolio Theory & Risk Parity', 'Monte Carlo Simulations', 'Alpha Generation & Factor Investing', 'Asset Allocation Strategies'] },
+      { module: 'Module 6', title: 'Derivatives, Hedging & Risk Management', topics: ['Options Pricing Models (Black-Scholes)', 'Interest Rate Swaps & Hedging', 'Credit Default Swaps (CDS)', 'Value at Risk (VaR) Calculation'] },
+      { module: 'Module 7', title: 'Data Science & Tech in Finance', topics: ['Python for Financial Analysis (Pandas, NumPy)', 'Algorithmic Trading Basics', 'Machine Learning for Stock Prediction', 'Sentiment Analysis with Financial News'] },
+      { module: 'Module 8', title: 'Final Capstone: Real-world Investment Pitch', topics: ['End-to-End M&A/LBO Deal Simulation', 'Drafting an Investment Memo', 'Building a Professional Pitch Deck', 'Presenting to Industry Experts'] }
     ],
     projects: [
       {
