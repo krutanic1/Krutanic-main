@@ -212,6 +212,7 @@ app.use("/api/student-requests", studentRequestRoutes);
 // Career Assessment
 app.use("/", require("./routes/CareerAssessment"));
 app.use("/api/assessment-payment", require("./routes/AssessmentPayment"));
+app.use("/api/paytest-payment", require("./routes/PayTestPayment")); // ₹1 test payment
 app.use("/api/assessment-slots", require("./routes/AssessmentSlot"));
 
 //send mail with attchement

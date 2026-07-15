@@ -967,6 +967,7 @@ const BookedAmount = () => {
                   {monthsToShow.map((month, index) => (
                     <option key={index} value={month}>{month}</option>
                   ))}
+                  
                 </select>
               </div>
 

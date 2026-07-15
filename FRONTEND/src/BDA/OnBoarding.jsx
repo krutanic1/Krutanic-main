@@ -223,6 +223,7 @@ const OnBoarding = () => {
               </option>
               {course.map((item) => (
                 <option value={item.title}>{item.title}</option>
+               
               ))}
             </select>
             <select

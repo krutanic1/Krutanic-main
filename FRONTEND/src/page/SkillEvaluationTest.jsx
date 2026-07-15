@@ -40,7 +40,6 @@ const SkillEvaluationTest = () => {
   const [slotsLoading, setSlotsLoading] = useState(false);
   
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPrePaymentModal, setShowPrePaymentModal] = useState(false);
   const [prePaymentId, setPrePaymentId] = useState(null);
   const [isSubmittingPrePayment, setIsSubmittingPrePayment] = useState(false);
   const [formData, setFormData] = useState({
@@ -90,21 +89,23 @@ const SkillEvaluationTest = () => {
         const res = await axios.get(`${API}/api/assessment-payment/check-order/${orderId}`);
         
         if (res.data.success && res.data.paid) {
-          // Payment was successful! Clear storage and redirect.
+          // Payment was successful! Set state and advance to slot booking — NO navigation.
           sessionStorage.removeItem('krutanic_pending_payment');
           const pDetails = {
             id: res.data.payment.razorpay_payment_id,
             orderId: res.data.payment.razorpay_order_id,
             signature: res.data.payment.razorpay_signature
           };
+          setPaymentDetails(pDetails);
+          setPrePaymentId(savedPPId);
+          if (savedFD) {
+            setFormData(prev => ({ ...prev, ...savedFD }));
+          }
           toast.success('Payment recovered successfully!');
           if (window.fbq) {
             window.fbq('track', 'Lead');
           }
-          navigate('/paymentsucess', { 
-            state: { paymentDetails: pDetails, prePaymentId: savedPPId, formData: savedFD },
-            replace: true 
-          });
+          setCurrentStep(1); // Stay on this page — go directly to slot booking
         } else {
           console.log('Pending payment not yet captured, keeping recovery state.');
         }
@@ -128,7 +129,10 @@ const SkillEvaluationTest = () => {
     script.onerror = () => toast.error('Payment gateway failed to load. Please refresh the page.');
     document.body.appendChild(script);
     return () => {
-      document.body.removeChild(script);
+      // Guard: only remove if still in DOM (avoid crash on fast unmounts)
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
     };
   }, []);
 
@@ -152,7 +156,6 @@ const SkillEvaluationTest = () => {
       if (res.data.prePaymentId) {
         const savedPrePaymentId = res.data.prePaymentId;
         setPrePaymentId(savedPrePaymentId);
-        setShowPrePaymentModal(false);
         // Pass the ID and formData snapshot directly to avoid React stale closure
         handlePayment(savedPrePaymentId, { ...formData });
       }
@@ -168,7 +171,7 @@ const SkillEvaluationTest = () => {
     const currentPrePaymentId = savedPrePaymentId || prePaymentId;
     const currentFormData = savedFormData || { ...formData };
 
-    // Bypass payment in development mode for easier testing
+    // Dev bypass
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
       const devPaymentDetails = {
         id: 'dev_bypass_payment_' + Date.now(),
@@ -180,13 +183,7 @@ const SkillEvaluationTest = () => {
       if (window.fbq) {
         window.fbq('track', 'Lead');
       }
-      navigate('/paymentsucess', { 
-        state: { 
-          paymentDetails: devPaymentDetails, 
-          prePaymentId: currentPrePaymentId,
-          formData: currentFormData 
-        } 
-      });
+      setCurrentStep(1); // Stay on this page — go to slot booking
       return;
     }
 
@@ -249,13 +246,8 @@ const SkillEvaluationTest = () => {
               if (window.fbq) {
                 window.fbq('track', 'Lead');
               }
-              navigate('/paymentsucess', { 
-                state: { 
-                  paymentDetails: newPaymentDetails, 
-                  prePaymentId: currentPrePaymentId,
-                  formData: currentFormData 
-                } 
-              });
+              // CRITICAL FIX: stay on this page, advance to slot booking step
+              setCurrentStep(1);
             } else {
               setIsProcessingPayment(false);
               toast.error('Payment verification failed. Please contact support.');
@@ -311,11 +303,20 @@ const SkillEvaluationTest = () => {
     e.preventDefault();
     if (isSubmitting) return;
 
+    if (!paymentDetails?.id) {
+      toast.error('Payment details are missing. Please go back and complete payment again.');
+      setCurrentStep(0);
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       
       const payload = {
         ...formData,
+        fullName: formData.fullName || '',
+        email: formData.email || '',
+        mobileNumber: formData.mobileNumber || '',
         prePaymentId,
         paymentId: paymentDetails.id,
         razorpayOrderId: paymentDetails.orderId,
@@ -330,10 +331,13 @@ const SkillEvaluationTest = () => {
         setCurrentStep(3);
       }
     } catch (error) {
-      console.error(error);
+      console.error('Assessment submission error:', error);
       if (error.response?.data?.error === "SLOT_TAKEN") {
           toast.error(error.response.data.message || "Slot taken by another user. Please pick another.");
           setCurrentStep(1); // Go back to calendar
+      } else if (error.response?.data?.error === "This payment has already been used for an assessment.") {
+          toast.success('Your assessment has already been submitted successfully!');
+          setCurrentStep(3);
       } else {
           toast.error(error.response?.data?.message || error.response?.data?.error || "Failed to submit assessment.");
       }
@@ -615,6 +619,367 @@ const SkillEvaluationTest = () => {
 
 
       </section>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          STEP 1 — SLOT BOOKING (post-payment)
+      ═══════════════════════════════════════════════════════════════════ */}
+      {currentStep === 1 && (
+        <section className="py-10 relative z-10 pt-24">
+          <div className="max-w-[800px] mx-auto px-6">
+
+            {/* Payment confirmed banner */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 glass-panel rounded-2xl p-5 border border-emerald-500/30 bg-emerald-500/5 flex items-center gap-4"
+            >
+              <div className="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30 shrink-0">
+                <CheckCircle2 size={22} />
+              </div>
+              <div>
+                <p className="text-emerald-400 font-bold">Payment Successful!</p>
+                <p className="text-zinc-400 text-sm">Now select your live mentor slot below to complete your booking.</p>
+              </div>
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-panel rounded-[24px] p-8 border-white/10">
+              <div className="flex items-center gap-3 mb-8 border-b border-white/10 pb-6">
+                <div className="w-10 h-10 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold">1</div>
+                <h3 className="text-2xl font-bold text-white">Select Your Live Mentor Slot</h3>
+              </div>
+
+              <div className="space-y-6">
+                <div>
+                  <label className="form-label flex items-center gap-2"><Calendar size={16}/> Select Date *</label>
+                  <div className="grid grid-cols-2 gap-4">
+                    {getAvailableDates(1).map((item, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => fetchSlots(item.dateStr)}
+                        className={`slot-btn py-3 ${selectedDate === item.dateStr ? 'selected' : ''}`}
+                      >
+                        {item.displayStr}
+                        {item.isToday && ' (Today)'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {selectedDate && (
+                  <div>
+                    <label className="form-label flex items-center gap-2 mt-6 mb-4"><Clock size={16}/> Select Available Time Slot (30 Mins) *</label>
+                    {slotsLoading ? (
+                      <p className="text-indigo-400">Loading slots...</p>
+                    ) : (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                        {getSlotsForDate(selectedDate).map(time => {
+                          const isBooked = availableSlots.some(s => s.timeSlot === time && s.isBooked);
+                          return (
+                            <button
+                              key={time}
+                              type="button"
+                              disabled={isBooked}
+                              onClick={() => setSelectedSlot(time)}
+                              className={`slot-btn ${selectedSlot === time ? 'selected' : ''}`}
+                            >
+                              {formatTime(time)}
+                              {isBooked && <span className="block text-[10px] text-red-400 mt-1">Booked</span>}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {selectedDate && selectedSlot && (
+                <div className="mt-8 pt-6 border-t border-white/10 flex justify-end">
+                  <button
+                    onClick={() => setCurrentStep(2)}
+                    className="px-8 py-3 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-500 transition-colors flex items-center gap-2"
+                  >
+                    Continue to Assessment <ArrowRight size={18}/>
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        </section>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          STEP 2 — FULL ASSESSMENT FORM
+      ═══════════════════════════════════════════════════════════════════ */}
+      {currentStep === 2 && (
+        <section id="assessment-form" className="py-10 relative z-10 pt-24">
+          <div className="max-w-[800px] mx-auto px-6">
+            <form onSubmit={handleSubmit} className="space-y-12">
+
+              {/* Booking summary bar */}
+              <div className="glass-panel rounded-[24px] p-6 border-emerald-500/30 bg-emerald-500/5 mb-8 flex justify-between items-center flex-wrap gap-4">
+                <div>
+                  <h4 className="text-emerald-400 font-bold">Booking Confirmed:</h4>
+                  <p className="text-zinc-300">{selectedDate.split('-').reverse().join('/')} at {formatTime(selectedSlot)}</p>
+                </div>
+                <button type="button" onClick={() => setCurrentStep(1)} className="text-indigo-400 text-sm hover:underline">Change Slot</button>
+              </div>
+
+              {/* Section 1: Basic Information */}
+              <div className="glass-panel rounded-[24px] p-8 border-white/10">
+                <div className="flex items-center gap-3 mb-8 border-b border-white/10 pb-6">
+                  <div className="w-10 h-10 rounded-lg bg-zinc-800 text-white flex items-center justify-center font-bold">2</div>
+                  <h3 className="text-2xl font-bold text-white">Basic Information</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="form-label">City *</label>
+                    <input required type="text" name="city" value={formData.city} onChange={handleInputChange} className="form-input" placeholder="e.g. Bangalore" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="form-label">Age Group *</label>
+                    <select required name="ageGroup" value={formData.ageGroup} onChange={handleInputChange} className="form-input form-select">
+                      <option value="" disabled>Select Age Group</option>
+                      <option value="22–25">22–25</option>
+                      <option value="26–30">26–30</option>
+                      <option value="31–35">31–35</option>
+                      <option value="35+">35+</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 2: Professional Profile */}
+              <div className="glass-panel rounded-[24px] p-8 border-white/10">
+                <div className="flex items-center gap-3 mb-8 border-b border-white/10 pb-6">
+                  <div className="w-10 h-10 rounded-lg bg-zinc-800 text-white flex items-center justify-center font-bold">3</div>
+                  <h3 className="text-2xl font-bold text-white">Professional Profile</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="md:col-span-2">
+                    <label className="form-label">Which best describes you? *</label>
+                    <select required name="currentStatus" value={formData.currentStatus} onChange={handleInputChange} className="form-input form-select">
+                      <option value="" disabled>Select Option</option>
+                      <option value="Final Year Student">Final Year Student</option>
+                      <option value="Graduate Seeking Job">Graduate Seeking Job</option>
+                      <option value="Working Professional">Working Professional</option>
+                      <option value="Freelancer">Freelancer</option>
+                      <option value="Entrepreneur">Entrepreneur</option>
+                      <option value="Career Break">Career Break</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="form-label">Field of Study</label>
+                    <select name="fieldOfStudy" value={formData.fieldOfStudy} onChange={handleInputChange} className="form-input form-select">
+                      <option value="">Select Field</option>
+                      <option value="Engineering">Engineering</option>
+                      <option value="Commerce">Commerce</option>
+                      <option value="Management">Management</option>
+                      <option value="Arts">Arts</option>
+                      <option value="Science">Science</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="form-label">Current Job Role (if applicable)</label>
+                    <input type="text" name="currentJobRole" value={formData.currentJobRole} onChange={handleInputChange} className="form-input" placeholder="e.g. Data Analyst" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 3: Goals & Challenges */}
+              <div className="glass-panel rounded-[24px] p-8 border-white/10">
+                <div className="flex items-center gap-3 mb-8 border-b border-white/10 pb-6">
+                  <div className="w-10 h-10 rounded-lg bg-zinc-800 text-white flex items-center justify-center font-bold">4</div>
+                  <h3 className="text-2xl font-bold text-white">Goals & Challenges</h3>
+                </div>
+                <div className="space-y-6">
+                  <div>
+                    <label className="form-label">What is your primary career goal? *</label>
+                    <select required name="primaryCareerGoal" value={formData.primaryCareerGoal} onChange={handleInputChange} className="form-input form-select">
+                      <option value="" disabled>Select Goal</option>
+                      <option value="Get My First Job">Get My First Job</option>
+                      <option value="Switch Career">Switch Career</option>
+                      <option value="Get Promotion">Get Promotion</option>
+                      <option value="Increase Salary">Increase Salary</option>
+                      <option value="Learn New Skills">Learn New Skills</option>
+                      <option value="Become Industry Ready">Become Industry Ready</option>
+                      <option value="Explore Career Options">Explore Career Options</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="form-label">When do you want to achieve this goal? *</label>
+                    <select required name="goalTimeline" value={formData.goalTimeline} onChange={handleInputChange} className="form-input form-select">
+                      <option value="" disabled>Select Timeline</option>
+                      <option value="Within 3 Months">Within 3 Months</option>
+                      <option value="Within 6 Months">Within 6 Months</option>
+                      <option value="Within 12 Months">Within 12 Months</option>
+                      <option value="Within 24 Months">Within 24 Months</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="form-label">What is your biggest career challenge today? *</label>
+                    <select required name="biggestChallenge" value={formData.biggestChallenge} onChange={handleInputChange} className="form-input form-select">
+                      <option value="" disabled>Select Challenge</option>
+                      <option value="Lack of Skills">Lack of Skills</option>
+                      <option value="Lack of Direction">Lack of Direction</option>
+                      <option value="Not Getting Interviews">Not Getting Interviews</option>
+                      <option value="Low Salary">Low Salary</option>
+                      <option value="Career Growth Stagnation">Career Growth Stagnation</option>
+                      <option value="Lack of Confidence">Lack of Confidence</option>
+                      <option value="Lack of Industry Exposure">Lack of Industry Exposure</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 4: Skills Assessment */}
+              <div className="glass-panel rounded-[24px] p-8 border-white/10">
+                <div className="flex items-center gap-3 mb-8 border-b border-white/10 pb-6">
+                  <div className="w-10 h-10 rounded-lg bg-zinc-800 text-white flex items-center justify-center font-bold">5</div>
+                  <h3 className="text-2xl font-bold text-white">Skills Assessment</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="form-label">Communication Skills (1-10) *</label>
+                    <input required type="number" min="1" max="10" name="communicationSkills" value={formData.communicationSkills} onChange={handleInputChange} className="form-input" placeholder="Scale 1-10" />
+                  </div>
+                  <div>
+                    <label className="form-label">Problem-Solving Skills (1-10) *</label>
+                    <input required type="number" min="1" max="10" name="problemSolvingSkills" value={formData.problemSolvingSkills} onChange={handleInputChange} className="form-input" placeholder="Scale 1-10" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="form-label">How comfortable are you with technology? *</label>
+                    <select required name="techComfort" value={formData.techComfort} onChange={handleInputChange} className="form-input form-select">
+                      <option value="" disabled>Select Level</option>
+                      <option value="Beginner">Beginner</option>
+                      <option value="Intermediate">Intermediate</option>
+                      <option value="Advanced">Advanced</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="form-label">Weekly Learning Dedication *</label>
+                    <select required name="weeklyLearningHours" value={formData.weeklyLearningHours} onChange={handleInputChange} className="form-input form-select">
+                      <option value="" disabled>Select Hours</option>
+                      <option value="Less than 3 Hours">Less than 3 Hours</option>
+                      <option value="3–5 Hours">3–5 Hours</option>
+                      <option value="5–10 Hours">5–10 Hours</option>
+                      <option value="10–15 Hours">10–15 Hours</option>
+                      <option value="15+ Hours">15+ Hours</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="form-label">What motivates you most? *</label>
+                    <select required name="primaryMotivator" value={formData.primaryMotivator} onChange={handleInputChange} className="form-input form-select">
+                      <option value="" disabled>Select Motivator</option>
+                      <option value="Better Salary">Better Salary</option>
+                      <option value="Career Growth">Career Growth</option>
+                      <option value="New Opportunities">New Opportunities</option>
+                      <option value="Personal Development">Personal Development</option>
+                      <option value="Industry Recognition">Industry Recognition</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 5: Career Confidence Score */}
+              <div className="glass-panel rounded-[24px] p-8 border-white/10">
+                <div className="flex items-center gap-3 mb-8 border-b border-white/10 pb-6">
+                  <div className="w-10 h-10 rounded-lg bg-zinc-800 text-white flex items-center justify-center font-bold">6</div>
+                  <h3 className="text-2xl font-bold text-white">Career Confidence Score</h3>
+                </div>
+                <div className="space-y-6">
+                  <div>
+                    <label className="form-label">How confident are you about achieving your career goals? (1-10) *</label>
+                    <input required type="number" min="1" max="10" name="confidenceScore" value={formData.confidenceScore} onChange={handleInputChange} className="form-input" placeholder="Scale 1-10" />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="form-label">Do you have a clear career roadmap? *</label>
+                      <select required name="clearRoadmap" value={formData.clearRoadmap} onChange={handleInputChange} className="form-input form-select">
+                        <option value="" disabled>Select Option</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                        <option value="Not Sure">Not Sure</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="form-label">Right skills for future opportunities? *</label>
+                      <select required name="rightSkills" value={formData.rightSkills} onChange={handleInputChange} className="form-input form-select">
+                        <option value="" disabled>Select Option</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                        <option value="Partially">Partially</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 6: Consultation Qualification */}
+              <div className="glass-panel rounded-[24px] p-8 border-white/10 border-indigo-500/30 relative overflow-hidden">
+                <div className="absolute inset-0 bg-indigo-500/5 pointer-events-none"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center gap-3 mb-8 border-b border-white/10 pb-6">
+                    <div className="w-10 h-10 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold">7</div>
+                    <h3 className="text-2xl font-bold text-white">Consultation Qualification</h3>
+                  </div>
+                  <div className="space-y-6">
+                    <div>
+                      <label className="form-label text-indigo-300">Most Important Question: If you could solve ONE career challenge in the next 12 months, what would it be? *</label>
+                      <textarea required name="topCareerChallenge12Months" value={formData.topCareerChallenge12Months} onChange={handleInputChange} rows="3" className="form-input resize-none border-indigo-500/30" placeholder="Type your answer here..."></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full py-5 rounded-2xl font-bold text-white shadow-[0_0_30px_-10px_rgba(99,102,241,0.5)] flex items-center justify-center gap-3 bg-gradient-to-r from-indigo-600 to-emerald-500 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-70 disabled:hover:scale-100 text-lg"
+              >
+                {isSubmitting ? (
+                  <span className="flex items-center gap-2"><div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div> Submitting Assessment...</span>
+                ) : (
+                  <><Send size={20}/> Submit Assessment</>
+                )}
+              </button>
+            </form>
+          </div>
+        </section>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          STEP 3 — FINAL SUCCESS
+      ═══════════════════════════════════════════════════════════════════ */}
+      {currentStep === 3 && (
+        <div className="max-w-[800px] mx-auto px-6 text-center py-32 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="glass-panel rounded-[32px] p-12 relative overflow-hidden shadow-2xl border-emerald-500/30"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-teal-600/5"></div>
+            <div className="relative z-10">
+              <div className="w-24 h-24 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-8 border border-emerald-500/30 shadow-[0_0_50px_rgba(16,185,129,0.3)]">
+                <CheckCircle2 size={48} />
+              </div>
+              <h2 className="text-4xl font-bold text-white mb-6">Slot Booked Successfully!</h2>
+              <p className="text-xl text-zinc-300 mb-8 max-w-lg mx-auto font-light leading-relaxed">
+                Thank you for completing the payment and submitting your assessment. Your live 1-on-1 mentor slot is confirmed for{' '}
+                <strong>{selectedDate.split('-').reverse().join('/')} at {formatTime(selectedSlot)}</strong>.
+              </p>
+              <button
+                onClick={() => navigate('/')}
+                className="px-8 py-4 rounded-xl font-bold text-white flex items-center justify-center gap-3 bg-white/10 hover:bg-white/20 transition-all mx-auto border border-white/20"
+              >
+                <ArrowRight size={18} className="rotate-180" /> Return to Homepage
+              </button>
+            </div>
+          </motion.div>
+        </div>
       )}
 
       {/* WHY IS THIS MANDATORY SECTION - Visible on Landing */}

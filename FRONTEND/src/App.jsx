@@ -50,7 +50,8 @@ import Attendance from "./page/Attendance";
 import AdvanceApplyPage from "./page/AdvanceApplyPage";
 import AdvanceForm from "./page/AdvanceForm";
 import FreeCareerAssessment from "./page/FreeCareerAssessment";
-import PaymentSuccess from "./page/PaymentSuccess";
+import PayTest from "./page/PayTest";
+// PaymentSuccess page eliminated — success UI now lives inside FreeCareerAssessment (single-page flow)
 // Admin
 import AdminHeader from "./Admin/AdminHeader";
 import AddCourse from "./Admin/AddCourse";
@@ -521,9 +522,9 @@ const AppContent = () => {
   const medteamheaderPaths = ["/medteam/home", "/medteam/onboarding", "/medteam/adduser", "/medteam/revenue", "/medteam/teamdetail", "/medteam/assigntarget", "/medteam/leaderboard"];
   const hrheaderPaths = ["/hrdashboard"];
   const lmsFooterPaths = ["/jobboard"];
-  const noFooterPaths = ["/operationdashboard", "/bookedpayment", "/fullpayment", "/defaultpayment", "/operationrevenuesheet", "/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet", "/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/advteam/leaderboard", "/advteam/filter", "/advteam/followups", "/advteam/tasks", "/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/leaderboard", "/setting", "/medteam/home", "/medteam/onboarding", "/medteam/adduser", "/medteam/revenue", "/medteam/teamdetail", "/medteam/assigntarget", "/medteam/leaderboard", "/admin/adv-filter", "/paymentsucess"];
+  const noFooterPaths = ["/operationdashboard", "/bookedpayment", "/fullpayment", "/defaultpayment", "/operationrevenuesheet", "/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet", "/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/advteam/leaderboard", "/advteam/filter", "/advteam/followups", "/advteam/tasks", "/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/leaderboard", "/setting", "/medteam/home", "/medteam/onboarding", "/medteam/adduser", "/medteam/revenue", "/medteam/teamdetail", "/medteam/assigntarget", "/medteam/leaderboard", "/admin/adv-filter", "/paytest"];
   const placementcoodinatorHeaderPaths = ["/pcdashboard", "/jobpost"];
-  const headerPaths = ["/", "/login", "/loginwithotp", "/forgotpassword", "/contactus", "/aboutus", "/career", "/collabration", "/advancecourses", "/terms", "/privacy", "/refundpolicy", "/feestructure", "/advance", "/advance-apply", "/mentorship", "/datascience", "/dataanalytics", "/digitalmarket", "/mernstack", "/investmentbanking", "/productmanagement", "/automationtesting", "/promptengineering", "/generativeai", "/forensic-psychology", "/clinical-psychology", "/corporate-law", "/medpro-packs", "/psychology", "/operationlogin", "/advoperationlogin", "/teamlogin", "/adminlogin", "/managerlogin", "/loginadmin", "/pclogin", "/advteamlogin", "/medloginteam", "/dashboardaccessform", "/meddashboardaccessform", "/advancedashboardaccess", "/masterclass", "/alumni", "/verify", "/referandearn", "/marketing/login", "/interviewer-login", "/interviewerlogin", "/hrlogin", "/advanceform", "/career-assessment", "/paymentsucess"];
+  const headerPaths = ["/", "/login", "/loginwithotp", "/forgotpassword", "/contactus", "/aboutus", "/career", "/collabration", "/advancecourses", "/terms", "/privacy", "/refundpolicy", "/feestructure", "/advance", "/advance-apply", "/mentorship", "/datascience", "/dataanalytics", "/digitalmarket", "/mernstack", "/investmentbanking", "/productmanagement", "/automationtesting", "/promptengineering", "/generativeai", "/forensic-psychology", "/clinical-psychology", "/corporate-law", "/medpro-packs", "/psychology", "/operationlogin", "/advoperationlogin", "/teamlogin", "/adminlogin", "/managerlogin", "/loginadmin", "/pclogin", "/advteamlogin", "/medloginteam", "/dashboardaccessform", "/meddashboardaccessform", "/advancedashboardaccess", "/masterclass", "/alumni", "/verify", "/referandearn", "/marketing/login", "/interviewer-login", "/interviewerlogin", "/hrlogin", "/advanceform", "/career-assessment"];
 
   return (
     <div>
@@ -572,8 +573,8 @@ const AppContent = () => {
         <Route path="/advance-apply" element={<AdvanceApplyPage />} />
         <Route path="/advanceform" element={<AdvanceForm />} />
         <Route path="/career-assessment" element={<FreeCareerAssessment />} />
-        <Route path="/paymentsucess" element={<PaymentSuccess />} />
         <Route path="/skillevlutiontest" element={<SkillEvaluationTest />} />
+        <Route path="/paytest" element={<PayTest />} />
         <Route path="/Mentorship" element={<Mentorship />} />
         <Route path="/mentorship/:courseSlug" element={<MentorshipCourseDetails />} />
         <Route path="/DataScience" element={<DataScience />} />
