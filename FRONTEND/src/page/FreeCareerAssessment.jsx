@@ -100,16 +100,38 @@ const FreeCareerAssessment = () => {
           return;
         }
 
-        // Check with backend if this order was paid
-        const res = await axios.get(`${API}/api/assessment-payment/check-order/${orderId}`);
+        // ─── POLLING LOGIC: Retry if Razorpay is slow to update UPI status ───
+        const maxRetries = 4;
+        const delayMs = 3000;
+        let isPaid = false;
+        let paymentData = null;
 
-        if (res.data.success && res.data.paid) {
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+          try {
+            const res = await axios.get(`${API}/api/assessment-payment/check-order/${orderId}`);
+            if (res.data.success && res.data.paid) {
+              isPaid = true;
+              paymentData = res.data.payment;
+              break;
+            }
+          } catch (err) {
+            console.error(`Recovery attempt ${attempt} failed:`, err);
+          }
+          
+          // If not paid and we have retries left, wait and try again
+          if (!isPaid && attempt < maxRetries) {
+            console.log(`Payment not yet captured. Retrying in 3s... (Attempt ${attempt}/${maxRetries})`);
+            await new Promise(resolve => setTimeout(resolve, delayMs));
+          }
+        }
+
+        if (isPaid && paymentData) {
           // Payment was successful! Set state and advance to slot booking — NO navigation.
           sessionStorage.removeItem('krutanic_pending_payment');
           const pDetails = {
-            id: res.data.payment.razorpay_payment_id,
-            orderId: res.data.payment.razorpay_order_id,
-            signature: res.data.payment.razorpay_signature
+            id: paymentData.razorpay_payment_id,
+            orderId: paymentData.razorpay_order_id,
+            signature: paymentData.razorpay_signature
           };
           setPaymentDetails(pDetails);
           setPrePaymentId(savedPPId);
@@ -119,8 +141,8 @@ const FreeCareerAssessment = () => {
           toast.success('Payment recovered successfully!');
           setCurrentStep(1); // Go directly to slot booking on same page
         } else {
-          // Payment not yet captured — keep storage, let user retry if needed.
-          console.log('Pending payment not yet captured, keeping recovery state.');
+          // Payment not yet captured after all retries — keep storage, let user retry manually if needed.
+          console.log('Pending payment not captured after polling, keeping recovery state.');
         }
       } catch (err) {
         console.error('Mobile payment recovery failed:', err);
