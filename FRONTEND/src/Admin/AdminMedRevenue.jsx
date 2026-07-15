@@ -334,6 +334,7 @@ const AdminMedRevenue = () => {
                         <th className="border p-2">Lead Name</th>
                         <th className="border p-2">Lead Email</th>
                         <th className="border p-2">Counselor Name</th>
+                        <th className="border p-2">Date & Time</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -342,6 +343,9 @@ const AdminMedRevenue = () => {
                           <td className="p-2 border">{lead.fullname || 'N/A'}</td>
                           <td className="p-2 border">{lead.email || 'N/A'}</td>
                           <td className="p-2 border">{lead.counselor || 'N/A'}</td>
+                          <td className="p-2 border">
+                            {lead.createdAt ? new Date(lead.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'short', timeStyle: 'short' }) : 'N/A'}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
