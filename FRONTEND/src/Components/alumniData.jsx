@@ -1,7 +1,7 @@
 const AlumniData = [
   {
     "name": "Dhruthi L",
-    "role": "Designation",
+    "role": "Machine Learning Engineer",
     "location": "Kolkata",
     "rating": 4.5,
     "pre": "Fresher",
@@ -12,12 +12,12 @@ const AlumniData = [
     "package": "8.5 LPA",
     "experience": "Gained teamwork skills during internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Backend Developer",
     "linkdinUrl": ""
   },
   {
     "name": "Harsha Vardhan S D",
-    "role": "Designation",
+    "role": "Software Engineer",
     "location": "Mumbai",
     "rating": 5,
     "pre": "Fresher",
@@ -28,12 +28,12 @@ const AlumniData = [
     "package": "11 LPA",
     "experience": "Developed coding expertise in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Product Manager",
     "linkdinUrl": ""
   },
   {
     "name": "Chinmaya M A",
-    "role": "Designation",
+    "role": "Product Manager",
     "location": "Bangalore",
     "rating": 4,
     "pre": "Fresher",
@@ -44,12 +44,12 @@ const AlumniData = [
     "package": "7.2 LPA",
     "experience": "Enhanced problem-solving through internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Business Analyst",
     "linkdinUrl": ""
   },
   {
     "name": "Anusha M G",
-    "role": "Designation",
+    "role": "Product Manager",
     "location": "Puen",
     "rating": 4.5,
     "pre": "Fresher",
@@ -60,12 +60,12 @@ const AlumniData = [
     "package": "9.8 LPA",
     "experience": "Learned project management in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "System Analyst",
     "linkdinUrl": ""
   },
   {
     "name": "Monika B",
-    "role": "Designation",
+    "role": "Data Scientist",
     "location": "Bangalore",
     "rating": 4,
     "pre": "Fresher",
@@ -76,12 +76,12 @@ const AlumniData = [
     "package": "8 LPA",
     "experience": "Built technical skills via internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Business Analyst",
     "linkdinUrl": ""
   },
   {
     "name": "Keshav Regmi",
-    "role": "Designation",
+    "role": "Machine Learning Engineer",
     "location": "Hyderabad",
     "rating": 5,
     "pre": "Fresher",
@@ -92,12 +92,12 @@ const AlumniData = [
     "package": "10 LPA",
     "experience": "Improved communication during internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Machine Learning Engineer",
     "linkdinUrl": ""
   },
   {
     "name": "Aastha Singh",
-    "role": "Designation",
+    "role": "System Analyst",
     "location": "Bangalore",
     "rating": 4.5,
     "pre": "Fresher",
@@ -108,12 +108,12 @@ const AlumniData = [
     "package": "8.7 LPA",
     "experience": "Mastered debugging in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Data Analyst",
     "linkdinUrl": ""
   },
   {
     "name": "Abhishek Singh Chauhan",
-    "role": "Designation",
+    "role": "System Analyst",
     "location": "Pune",
     "rating": 4,
     "pre": "Fresher",
@@ -124,12 +124,12 @@ const AlumniData = [
     "package": "7.5 LPA",
     "experience": "Honed analytical skills in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Product Manager",
     "极linkdinUrl": ""
   },
   {
     "name": "Dhiraj Mandal",
-    "role": "Designation",
+    "role": "QA Engineer",
     "location": "Surat",
     "rating": 5,
     "pre": "Fresher",
@@ -140,12 +140,12 @@ const AlumniData = [
     "package": "11 LPA",
     "experience": "Gained industry exposure through internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "QA Engineer",
     "linkdinUrl": ""
   },
   {
     "name": "Adarsh Gidd",
-    "role": "Designation",
+    "role": "Backend Developer",
     "location": "Kolkata",
     "rating": 4.5,
     "pre": "Fresher",
@@ -156,12 +156,12 @@ const AlumniData = [
     "package": "9.2 LPA",
     "experience": "Developed software极 tools in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "QA Engineer",
     "linkdinUrl": ""
   },
   {
     "name": "Deepak Kumar",
-    "role": "Designation",
+    "role": "Cloud Architect",
     "location": "Mumbai",
     "rating": 4,
     "pre": "Fresher",
@@ -172,12 +172,12 @@ const AlumniData = [
     "package": "8.3 LPA",
     "experience": "Learned agile methods in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Software Engineer",
     "linkdinUrl": ""
   },
   {
     "name": "Harshitha",
-    "role": "Designation",
+    "role": "Machine Learning Engineer",
     "location": "Delhi",
     "rating": 5,
     "pre": "极Fresher",
@@ -188,12 +188,12 @@ const AlumniData = [
     "package": "10 LPA",
     "experience": "Improved coding proficiency via internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Full Stack Developer",
     "linkdinUrl": ""
   },
   {
     "name": "Jeevan S J",
-    "role": "Designation",
+    "role": "Machine Learning Engineer",
     "location": "Delhi",
     "rating": 4.5,
     "pre": "Fresher",
@@ -204,12 +204,12 @@ const AlumniData = [
     "package": "7.8 LPA",
     "experience": "Enhanced teamwork in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "UI/UX Designer",
     "linkdinUrl": ""
   },
   {
     "name": "Ankitha R",
-    "role": "Designation",
+    "role": "Business Analyst",
     "location": "Surat",
     "rating": 4,
     "pre": "Fresher",
@@ -220,12 +220,12 @@ const AlumniData = [
     "package": "8 LPA",
     "experience": "Built project experience in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "DevOps Engineer",
     "linkdinUrl": ""
   },
   {
     "name": "Gagana Y R",
-    "role": "Designation",
+    "role": "Full Stack Developer",
     "location": "Pune",
     "rating": 5,
     "pre": "Fresher",
@@ -236,12 +236,12 @@ const AlumniData = [
     "package": "12 LPA",
     "experience": "Mastered time management in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Business Analyst",
     "linkdinUrl": ""
   },
   {
     "name": "Chandana N",
-    "role": "Designation",
+    "role": "Software Engineer",
     "location": "Pune",
     "rating": 4.5,
     "pre": "Fresher",
@@ -252,12 +252,12 @@ const AlumniData = [
     "package": "9.5 LPA",
     "experience": "Developed leadership skills via internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Full Stack Developer",
     "linkdinUrl": ""
   },
   {
     "name": "Jeevan S Jayaramegowda",
-    "role": "Designation",
+    "role": "Data Scientist",
     "location": "Bangalore",
     "rating": 4,
     "pre": "Fresher",
@@ -268,12 +268,12 @@ const AlumniData = [
     "package": "7.2 LPA",
     "极experience": "Gained practical experience in internship",
     "pre极Role": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "QA Engineer",
     "linkdinUrl": ""
   },
   {
     "name": "Kruthik B",
-    "role": "Designation",
+    "role": "Full Stack Developer",
     "location": "Hyderabad",
     "rating": 5,
     "pre": "Fresher",
@@ -284,12 +284,12 @@ const AlumniData = [
     "package": "11 LPA",
     "experience": "Improved technical expertise in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "QA Engineer",
     "linkdinUrl": ""
   },
   {
     "name": "Monika Muniraju",
-    "role": "Designation",
+    "role": "System Analyst",
     "location": "Bangalore",
     "rating": 4.5,
     "pre": "Fresher",
@@ -300,12 +300,12 @@ const AlumniData = [
     "package": "8.9 LPA",
     "experience": "Learned collaboration skills in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Machine Learning Engineer",
     "linkdinUrl": ""
   },
   {
     "name": "Arvind Kumar G",
-    "role": "Designation",
+    "role": "Data Analyst",
     "location": "Kolkata",
     "rating": 4,
     "pre": "Fresher",
@@ -316,12 +316,12 @@ const AlumniData = [
     "package": "7.4 LPA",
     "experience": "Honed programming skills via internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Business Analyst",
     "linkdinUrl": ""
   },
   {
     "name": "Kumar Vedant",
-    "role": "Designation",
+    "role": "Machine Learning Engineer",
     "location": "Hyderabad",
     "rating": 5,
     "pre": "Fresher",
@@ -332,12 +332,12 @@ const AlumniData = [
     "package": "10 LPA",
     "experience": "Built industry knowledge in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Cloud Architect",
     "linkdinUrl": ""
   },
   {
     "name": "极Gagan C",
-    "role": "Designation",
+    "role": "Frontend Developer",
     "location": "Kolkata",
     "rating": 4.5,
     "pre": "Fresher",
@@ -348,7 +348,7 @@ const AlumniData = [
     "package": "9.1 LPA",
     "experience": "Developed problem-solving skills in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Product Manager",
     "linkdinUrl": ""
   },
   {
@@ -364,12 +364,12 @@ const AlumniData = [
     "package": "8 LPA",
     "experience": "Gained frontend experience in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Data Scientist",
     "linkdinUrl": ""
   },
   {
     "name": "Anirudh B Mitta",
-    "role": "Designation",
+    "role": "Data Scientist",
     "location": "Pune",
     "rating": 5,
     "pre": "Fresher",
@@ -380,12 +380,12 @@ const AlumniData = [
     "package": "12 LPA",
     "experience": "Learned software development in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Data Analyst",
     "linkdinUrl": ""
   },
   {
     "name": "Keerthana S C",
-    "role": "Designation",
+    "role": "UI/UX Designer",
     "location": "Chennai",
    "rating": 4.5,
     "pre": "Fresher",
@@ -396,12 +396,12 @@ const AlumniData = [
     "package": "8.6 LPA",
     "experience": "Improved teamwork skills via internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Business Analyst",
     "linkdinUrl": ""
   },
   {
     "name": "Apurv",
-    "role": "Designation",
+    "role": "Frontend Developer",
     "location": "Bangalore",
     "rating": 4,
     "pre": "Fresher",
@@ -412,12 +412,12 @@ const AlumniData = [
     "package": "7.3 LPA",
     "experience":"Developed coding skills in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "DevOps Engineer",
     "linkdinUrl": ""
   },
   {
     "name": "Bhargav Urs S",
-    "role": "Designation",
+    "role": "DevOps Engineer",
     "location": "Mumbai",
     "rating": 5,
     "pre": "Fresher",
@@ -428,12 +428,12 @@ const AlumniData = [
     "package": "11 LPA",
     "experience": "Gained project experience via internship",
     "preRole": "Internship from Krutan极ic",
-    "postRole":"Designation ",
+    "postRole": "Frontend Developer",
     "linkdinUrl": ""
   },
   {
     "name": "Beluvigi Sreeranga",
-    "role": "Designation",
+    "role": "DevOps Engineer",
     "location": "Bangalore",
     "rating": 4.5,
     "pre": "极Fresher",
@@ -444,12 +444,12 @@ const AlumniData = [
     "package": "9.4 LPA",
     "experience": "Honed technical skills in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "UI/UX Designer",
     "linkdin极Url": ""
   },
   {
     "name": "Govind Biradar",
-    "role": "Designation",
+    "role": "Data Scientist",
     "location": "Surat",
     "rating": 4,
     "pre": "Fresher",
@@ -460,12 +460,12 @@ const AlumniData = [
     "package": "7.7 LPA",
     "experience": "Learned agile practices in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Data Analyst",
     "linkdinUrl": ""
   },
   {
     "name": "Ayush Kumar Mishra",
-    "role": "Designation",
+    "role": "Software Engineer",
     "location": "Delhi",
     "rating": 5,
     "pre": "Fresher",
@@ -476,12 +476,12 @@ const AlumniData = [
     "package": "10 LPA",
     "experience": "Built coding proficiency in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Full Stack Developer",
     "linkdinUrl": ""
   },
   {
     "name": "Lavanya YN",
-    "role": "Designation",
+    "role": "Data Analyst",
     "location": "Hyderabad",
     "rating": 4.5,
     "pre": "Fresher",
@@ -492,12 +492,12 @@ const AlumniData = [
     "package": "8.8 LPA",
     "experience": "Gained leadership skills in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Full Stack Developer",
     "linkdinUrl": ""
   },
   {
     "name": "Issat Riyaz",
-    "role": "Designation",
+    "role": "Machine Learning Engineer",
     "location": "Mumbai",
     "rating": 4,
     "pre": "Fresher",
@@ -508,12 +508,12 @@ const AlumniData = [
     "package": "7 LPA",
     "experience": "Improved problem-solving in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Software Engineer",
     "linkdinUrl": ""
   },
   {
     "name": "Mansi Srinivas",
-    "role": "Designation",
+    "role": "Data Scientist",
     "location": "Bangalore",
     "rating": 5,
     "pre": "Fresher",
@@ -524,12 +524,12 @@ const AlumniData = [
     "package": "12 LPA",
     "experience": "Developed teamwork skills in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Backend Developer",
     "linkdinUrl": ""
   },
   {
     "name": "Bhuvaneshwari R",
-    "role": "Designation",
+    "role": "DevOps Engineer",
     "location": "Delhi",
     "rating": 4.5,
     "pre": "Fresher",
@@ -540,12 +540,12 @@ const AlumniData = [
     "package": "9.3 LPA",
     "experience": "Honed coding skills via internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Machine Learning Engineer",
     "linkdinUrl": ""
   },
   {
     "name": "Kartik Dandooti",
-    "role": "Designation",
+    "role": "Software Engineer",
     "location": "Kolkata",
     "rating": 4,
     "pre": "Fresher",
@@ -556,12 +556,12 @@ const AlumniData = [
     "package": "8 LPA",
     "experience": "Gained industry insights in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "UI/UX Designer",
     "linkdinUrl": ""
   },
   {
     "name": "Aruna K",
-    "role": "Designation",
+    "role": "Frontend Developer",
     "location": "Delhi",
     "rating": 5,
     "pre": "Fresher",
@@ -572,12 +572,12 @@ const AlumniData = [
     "package": "11 LPA",
     "experience": "Learned project skills in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "UI/UX Designer",
     "linkdinUrl": ""
   },
   {
     "name": "Maheshwari Khelge",
-    "role": "Designation",
+    "role": "Business Analyst",
     "location": "Delhi",
    "rating": 4.5,
     "pre": "Fresher",
@@ -588,12 +588,12 @@ const AlumniData = [
     "package": "8.2 LPA",
     "experience": "Built technical expertise in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Data Scientist",
     "linkdinUrl": ""
   },
   {
     "name": "Anusha Makam Gopalakrishna",
-    "role": "Designation",
+    "role": "Product Manager",
     "location": "Bangalore",
     "rating": 4,
     "pre": "Fresher",
@@ -604,12 +604,12 @@ const AlumniData = [
     "package": "7.6 LPA",
     "experience": "极Gained coding experience in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Machine Learning Engineer",
     "linkdinUrl": ""
   },
   {
     "name": "Bhavana Hs",
-    "role": "Designation",
+    "role": "Data Scientist",
     "location": "Delhi",
     "rating": 5,
     "pre": "Fresher",
@@ -620,12 +620,12 @@ const AlumniData = [
     "package": "10 LPA",
     "experience": "Developed professional skills in internship",
     "pre极Role": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Data Scientist",
     "linkdinUrl": ""
   },
   {
     "name": "Ashwas Ajay",
-    "role": "Designation",
+    "role": "Frontend Developer",
     "location": "Pune",
     "rating": 4.5,
     "pre": "Fresher",
@@ -636,12 +636,12 @@ const AlumniData = [
     "package": "9.7 LPA",
     "experience": "Honed problem-solving skills in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "DevOps Engineer",
     "linkdinUrl": ""
   },
   {
     "name": "Dhruvin Kanani",
-    "role": "Designation",
+    "role": "Software Engineer",
     "location": "Delhi",
     "rating": 4,
     "pre": "Fresher",
@@ -652,12 +652,12 @@ const AlumniData = [
     "package": "8 LPA",
     "experience": "Gained technical skills in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Frontend Developer",
     "linkdinUrl": ""
   },
   {
     "name": "CHANDRIKA S N",
-    "role": "Designation",
+    "role": "Software Engineer",
     "location": "Bangalore",
     "rating": 5,
     "pre": "Fresher",
@@ -668,12 +668,12 @@ const AlumniData = [
     "package": "12 LPA",
     "experience": "Learned industry practices in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "System Analyst",
     "linkdinUrl": ""
   },
   {
     "name": "LAXMAN KUDDEMMI",
-    "role": "Designation",
+    "role": "Backend Developer",
     "location": "Kolkata",
     "rating": 4.5,
     "pre": "Fresher",
@@ -684,12 +684,12 @@ const AlumniData = [
     "package": "8.4 LPA",
     "experience": "Developed coding expertise in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Machine Learning Engineer",
     "linkdinUrl": ""
   },
   {
     "name": "Tejas M极 N",
-    "role": "Designation",
+    "role": "Software Engineer",
     "location": "Kolkata",
     "极rating": 4,
     "pre": "Fresher",
@@ -700,12 +700,12 @@ const AlumniData = [
     "package": "7.9 LPA",
     "experience": "Gained project management in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Machine Learning Engineer",
     "linkdinUrl": ""
   },
   {
     "name": "Abhijit Nashi",
-    "role": "Designation",
+    "role": "Product Manager",
     "location": "Bangalore",
     "rating": 5,
     "极pre": "Fresher",
@@ -716,12 +716,12 @@ const AlumniData = [
     "package": "11 LPA",
     "experience": "Honed software skills in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Data Scientist",
     "linkdinUrl": ""
   },
   {
     "name": "Kavya R",
-    "role": "Designation",
+    "role": "QA Engineer",
     "location": "Pune",
     "rating": 4.5,
     "pre": "Fresher",
@@ -737,7 +737,7 @@ const AlumniData = [
   },
   {
     "name": "Dinesh N",
-    "role": "Designation",
+    "role": "Product Manager",
     "location": "Chennai",
     "rating": 4,
     "pre": "Fresher",
@@ -748,12 +748,12 @@ const AlumniData = [
     "package": "7.1 LPA",
     "experience": "Gained coding proficiency in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Frontend Developer",
     "linkdinUrl": ""
   },
   {
     "name": "Adnan Haider",
-    "role": "Designation",
+    "role": "Data Analyst",
     "location": "Mumbai",
     "rating": 5,
     "pre": "Fresher",
@@ -764,12 +764,12 @@ const AlumniData = [
     "package": "10 LPA",
     "experience": "Developed technical skills in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Data Scientist",
     "linkdinUrl": ""
   },
   {
     "name": "MOHAMMAD ROOH ULLAH",
-    "role": "Designation",
+    "role": "Software Engineer",
     "location": "Pune",
     "rating": 4.5,
     "pre": "Fresher",
@@ -780,12 +780,12 @@ const AlumniData = [
     "package": "8.5 LPA",
     "experience": "Honed leadership skills in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "System Analyst",
     "linkdinUrl": ""
   },
   {
     "name": "Gagana C M",
-    "role": "Designation",
+    "role": "Data Scientist",
     "location": "Bangalore",
     "rating": 4,
     "pre": "Fresher",
@@ -796,12 +796,12 @@ const AlumniData = [
     "package": "7 LPA",
     "experience": "Gained industry experience in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "UI/UX Designer",
     "linkdinUrl": ""
   },
   {
     "name": "Deepak Somayya Gond",
-    "role": "Designation",
+    "role": "Product Manager",
     "location": "Chennai",
     "rating": 5,
     "pre": "Fresher",
@@ -812,12 +812,12 @@ const AlumniData = [
     "package": "12 LPA",
     "experience":"Built software skills in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Machine Learning Engineer",
     "linkdinUrl": ""
   },
   {
     "name": "Ayshna Goenka",
-    "role": "Designation",
+    "role": "Software Engineer",
     "location": "Chennai",
     "rating": 4.5,
     "pre": "Fresher",
@@ -828,12 +828,12 @@ const AlumniData = [
     "package": "9.9 LPA",
     "experience": "Learned coding techniques in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Backend Developer",
     "linkdinUrl": ""
   },
   {
     "name": "Anusha Akula",
-    "role": "Designation",
+    "role": "Frontend Developer",
     "location": "Bangalore",
     "rating": 5,
     "pre": "Fresher",
@@ -844,12 +844,12 @@ const AlumniData = [
     "package": "11 LPA",
     "experience": "Gained professional experience in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Cloud Architect",
     "linkdinUrl": ""
   },
   {
     "name": "Suhas Indgiri",
-    "role": "Designation",
+    "role": "Data Analyst",
     "location": "Delhi",
     "rating": 4,
     "pre": "Fresher",
@@ -860,12 +860,12 @@ const AlumniData = [
     "package": "8 LPA",
     "experience": "Developed teamwork skills极 in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Business Analyst",
     "linkdinUrl": ""
   },
   {
     "name": "INCHARA KARANTH",
-    "role": "Designation",
+    "role": "QA Engineer",
     "location": "Pune",
     "rating": 5,
     "pre": "Fresher",
@@ -876,12 +876,12 @@ const AlumniData = [
     "package": "10 LPA",
     "experience": "Honed coding expertise in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Business Analyst",
     "linkdinUrl": ""
   },
   {
     "name": "AJAY H Hegde",
-    "role": "Designation",
+    "role": "QA Engineer",
     "location": "Chennai",
     "rating": 4.5,
     "pre": "Fresher",
@@ -892,12 +892,12 @@ const AlumniData = [
     "package": "8.1 LPA",
     "experience": "Gained project skills in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Software Engineer",
     "linkdinUrl": ""
   },
   {
     "name": "Chiranjeevi B Shankara",
-    "role": "Designation",
+    "role": "Machine Learning Engineer",
     "location": "Delhi",
     "rating": 4,
     "pre": "Fresher",
@@ -908,12 +908,12 @@ const AlumniData = [
     "package": "7.5 LPA",
     "experience": "Built technical skills in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "DevOps Engineer",
     "linkdinUrl": ""
   },
   {
     "name": "Harshitha K M",
-    "role": "Designation",
+    "role": "UI/UX Designer",
     "location": "Chennai",
     "rating": 5,
     "pre": "Fresher",
@@ -924,7 +924,7 @@ const AlumniData = [
     "package": "11 LPA",
     "experience": "Learned software skills in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Frontend Developer",
     "linkdinUrl": ""
   },
   {
@@ -940,7 +940,7 @@ const AlumniData = [
     "package": "9.5 LPA",
     "experience": "Developed UI/UX design skills during internship",
     "preRole": "Internship from Krutan极ic",
-    "postRole": "Designation ",
+    "postRole": "Full Stack Developer",
     "linkdinUrl": ""
   },
   {
@@ -956,7 +956,7 @@ const AlumniData = [
     "package": "8.2 LPA",
     "experience": "Gained software development expertise in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Cloud Architect",
     "linkdinUrl": ""
   },
   {
@@ -972,7 +972,7 @@ const AlumniData = [
     "package": "7.3 LPA",
     "experience": "Enhanced coding proficiency through internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Cloud Architect",
     "linkdinUrl": "https://www.linked极in.com/in/suba-dharshini-p-51325323a"
   },
   {
@@ -988,7 +988,7 @@ const AlumniData = [
     "package": "6.5 LPA",
     "experience": "Acquired management skills during internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Cloud Architect",
     "linkdinUrl": ""
   },
   {
@@ -1004,7 +1004,7 @@ const AlumniData = [
     "package": "7.8 LPA",
     "experience": "Honed business development skills in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Software Engineer",
     "linkdinUrl": "www.linkedin.com/in/pavani-durga-165408215"
   },
   {
@@ -1020,7 +1020,7 @@ const AlumniData = [
     "package": "8.9 LPA",
     "experience": "Strengthened backend support skills during internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Data Scientist",
     "linkdinUrl": "https://www.linkedin.com/in/anu-sha-7b6a31233"
   },
   {
@@ -1036,7 +1036,7 @@ const AlumniData = [
     "package": "9.1 LPA",
     "experience": "Improved budgeting and forecasting skills in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Data Scientist",
     "linkdinUrl": "https://www.linkedin.com/in/saanchitha-devraj-21615022a?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3BtMaK极df50Tte4J%2B3极zRFtpDQ%3D%3D"
   },
   {
@@ -1052,7 +1052,7 @@ const AlumniData = [
     "package": "8.4 LPA",
     "experience": "Gained process optimization skills during internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Data Analyst",
     "linkdinUrl": "https://www.linkedin.com/in/gokulakannan-k-51277b242"
   },
   {
@@ -1068,7 +1068,7 @@ const AlumniData = [
     "package": "7.6 LPA",
     "experience": "Enhanced accounting skills through internship",
     "极preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Full Stack Developer",
     "linkdinUrl": "https://www.linkedin.com/in/anusha-g-93968834a?"
   },
   {
@@ -1084,7 +1084,7 @@ const AlumniData = [
     "package": "10 LPA",
     "experience": "Developed process management skills in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "QA Engineer",
     "linkdinUrl": "https://www.linkedin.com/in/rishabh-nagar-2895471a5"
   },
   {
@@ -1100,7 +1100,7 @@ const AlumniData = [
     "package": "11 LPA",
     "experience": "Mastered full stack development during internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Data Scientist",
     "linkdinUrl": "https://www.linkedin.com/in/jayita-ghorai-867a4b261?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
   },
   {
@@ -1116,7 +1116,7 @@ const AlumniData = [
     "package": "8.7 LPA",
     "experience": "Built financial planning skills in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "DevOps Engineer",
     "linkdinUrl": "https://www.linkedin.com/in/bhavin-s307/"
   },
   {
@@ -1132,7 +1132,7 @@ const AlumniData = [
     "package": "9.3 LPA",
     "experience": "Refined user interface design skills during internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "DevOps Engineer",
     "linkdinUrl": "https://www.linkedin.com/in/hrushikesh-s-520a8b27a?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
   },
   {
@@ -1148,7 +1148,7 @@ const AlumniData = [
     "package": "8.6 LPA",
     "experience": "Sharpened debugging skills in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "DevOps Engineer",
     "linkdinUrl": "www.linkedin.com/in/kartik-chauhan-4b0041230"
   },
   {
@@ -1164,7 +1164,7 @@ const AlumniData = [
     "package": "7.4 LPA",
     "experience": "Cultivated leadership skills during internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "Backend Developer",
     "linkdin极Url": "https://www.linkedin.com/in/pavani-durga-165408215"
   },
   {
@@ -1180,7 +1180,7 @@ const AlumniData = [
     "package": "10 LPA",
     "experience": "Advanced user experience design skills in internship",
     "preRole": "Internship from Krutanic",
-    "postRole": "Designation ",
+    "postRole": "DevOps Engineer",
     "linkdinUrl": "https://www.linkedin.com/in/pushpanjali-verma-3b757a2bb?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app"
   }
 ];
