@@ -5,6 +5,7 @@ import {
 
 import { fullStackData } from './fullStackData';
 import { androidAppData } from './androidAppData';
+import { embeddedSystemsData } from './embeddedSystemsData';
 import aashishImg from '../../../assets/mentors/aashish.jpg';
 import akashImg from '../../../assets/mentors/akash.jpg';
 import deepakImg from '../../../assets/mentors/deepak.jpg';
@@ -17,6 +18,7 @@ import nishithaImg from '../../../assets/mentors/nishitha.jpg';
 export const allMentorshipData = {
   'full-stack-web-development': { ...fullStackData, thumbnail: '/course_thumbnails/Full Stack Web.jpg', mentorImage: sachinImg },
   'android-app-development': { ...androidAppData, thumbnail: '/course_thumbnails/Android App.jpg', mentorImage: deepakImg },
+  'embedded-systems': { ...embeddedSystemsData, thumbnail: '/course_thumbnails/Embedded Systems.jpg', mentorImage: akashImg },
 
   'artificial-intelligence': {
     id: 'artificial-intelligence',
