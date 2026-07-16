@@ -61,12 +61,12 @@ export const embeddedSystemsData = {
     "Capstone Project & Interview Preparation"
   ],
   mentor: {
-    name: "Akash",
+    name: "Rahul Srivastava",
     role: "Embedded Systems Engineer",
-    experience: "10+ Years",
+    experience: "19+ Years",
     bio: "Industry expert with hands-on experience designing embedded hardware and software systems for various electronic devices.",
   },
-  mentorImage: "/src/assets/mentors/akash.jpg",
+  mentorImage: "/src/assets/mentors/rahul.jpg",
   outcomes: [
     { title: "Hardware Integration", desc: "Understand and connect hardware components like microcontrollers, sensors, and actuators.", icon: FaMicrochip },
     { title: "Low-Level Programming", desc: "Write efficient code in Embedded C to control hardware.", icon: FaCode },
