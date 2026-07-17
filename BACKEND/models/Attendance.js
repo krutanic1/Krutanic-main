@@ -33,6 +33,14 @@ const attendanceSchema = new mongoose.Schema({
     isHalfDayOverride: {
         type: Boolean,
         default: false
+    },
+    totalMinutes: {
+        type: Number,
+        default: 0
+    },
+    isMarked: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true });
 

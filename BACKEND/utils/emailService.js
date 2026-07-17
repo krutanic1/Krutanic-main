@@ -728,6 +728,7 @@ const sendSkillEvaluationWelcomeEmail = async (userEmail, fullName, slotDate, sl
         const mailOptions = {
             from: senderEmail,
             to: userEmail,
+            cc: "tarunsai.kola@krutanic.org",
             subject: "Your Skill Evaluation Test & Career Consultation Slot is Confirmed - Krutanic",
             html: `
 <div style="background:#f5f7fb;padding:40px 20px;font-family:'Segoe UI',Arial,sans-serif;">
@@ -889,7 +890,8 @@ const sendSkillEvaluationExecutiveNotification = async (executiveEmail, assessme
         console.error("Error sending executive notification email:", error);
     }
 };
-const sendSkillEvaluationAssignmentNotification = async (executiveEmail, assessmentDetails) => {
+
+const sendSkillEvaluationAssignmentNotification = async (executiveEmail, assessmentDetails) => {
     try {
         const mailOptions = {
             from: senderEmail,

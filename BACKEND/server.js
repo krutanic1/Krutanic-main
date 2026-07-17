@@ -9,6 +9,7 @@ const connectDB = require("./config/db");
 
 // ✅ FIX #4: Import Error Handling Middleware
 const { requestTimeout, dbErrorHandler, globalErrorHandler } = require("./middleware/errorHandler");
+const feedback = require("./routes/feedback")
 
 const createcourse = require("./routes/CreateCourse");
 const createadvcourse = require("./routes/CreateAdvCourse");
@@ -143,6 +144,8 @@ app.use("/", NewStudentEnroll);
 app.use("/", AdvEnroll);
 //user
 app.use("/", User);
+// feedback
+app.use("/feedback", feedback);
 // profile
 app.use("/", ProfileRoute);
 // admin

@@ -148,6 +148,7 @@ const UserSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     { path: "/AptitudeTest", label: "Aptitude Test", icon: "quiz", restricted: false },
     { path: "/ResumeATS", label: "ATS Checker", icon: "fact_check", restricted: true, access: "atschecker" },
     { path: "/events", label: "Join Events", icon: "celebration", restricted: false },
+    { path: "/feedback", label: "Feedback", icon: "feedback", restricted: false },
   ];
 
   return (

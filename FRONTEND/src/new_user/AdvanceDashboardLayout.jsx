@@ -22,6 +22,7 @@ const sidebarItems = [
     { id: "interview-questions", path: "/advancedashboard/interview-questions", emoji: "💬", icon: "forum", label: "Interview Questions" },
     { id: "aptitude-test", path: "/advancedashboard/aptitude-test", emoji: "🧠", icon: "quiz", label: "Aptitude Test" },
     { id: "companies-referrals", path: "/advancedashboard/companies-referrals", emoji: "🏢", icon: "business", label: "Companies & Referrals" },
+    { id: "feedback", path: "/feedback", emoji: "📝", icon: "feedback", label: "Feedback" },
 ];
 
 const Sidebar = ({ collapsed, setCollapsed, onLogout, mobileOpen, setMobileOpen }) => {

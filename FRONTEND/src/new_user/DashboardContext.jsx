@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import API from "../API";
@@ -112,7 +112,6 @@ export const DashboardProvider = ({ children }) => {
         staleTime: 1000 * 60 * 5,
         retry: 1, // Don't retry infinitely if profile doesn't exist
     });
-
     const loading = isUserLoading || isEnrollLoading || isProfileLoading;
     const enrollData = Array.isArray(enrollRes) ? enrollRes : [];
 

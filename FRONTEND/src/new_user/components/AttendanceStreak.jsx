@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import API from "../../API";
 import "../attendance.css";
@@ -11,9 +11,14 @@ const AttendanceStreak = ({ userId }) => {
         const fetchStats = async () => {
             try {
                 const token = localStorage.getItem("token");
-                const res = await axios.get(`${API}/attendance/stats/${userId}`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const headers = { Authorization: `Bearer ${token}` };
+                
+                // First, ensure today's attendance is marked
+                await axios.post(`${API}/attendance/mark`, {}, { headers }).catch(err => console.error("Error marking attendance", err));
+
+                // Then fetch the updated stats
+                const res = await axios.get(`${API}/attendance/stats/${userId}`, { headers });
+                
                 if (res.data.success) {
                     setAttendance(res.data.data);
                 }

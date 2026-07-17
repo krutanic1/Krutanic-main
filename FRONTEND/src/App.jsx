@@ -154,6 +154,7 @@ import ExercisePage from "./User/ExercisePage";
 import ResumeATSPage from "./User/ResumeATSPage";
 import AptitudeTest from "./User/AptitudeTest";
 import LmsFooter from './User/LmsFooter';
+import Feedback from "./new_user/feedback";
 import AdminDashboard from "./Admin/AdminDashboard";
 import PageNotFound from "./PageNotFound";
 import AdvanceQueries from "./Admin/AdvanceQueries";
@@ -173,6 +174,7 @@ import AdminInterviewQuestions from "./Admin/AdminInterviewQuestions";
 import AdminAptitudeQuestions from "./Admin/AdminAptitudeQuestions";
 
 import BulkImport from "./Admin/BulkImport";
+import AdminFeedback from "./Admin/AdminFeedback";
 import UserLayout from "./User/UserLayout";
 
 
@@ -512,7 +514,7 @@ const AppContent = () => {
     ReactPixel.pageView();
   }, [location]);
 
-  const adminheaderPaths = ["/admindashboard", "/adminmentorshipprojects", "/admininterviewquestions", "/adminaptitudequestions", "/addcourse", "/addmedcourse", "/addadvcourse", "/addmodule", "/addmedmodule", "/addadvmodule", "/pendingapplication", "/acceptedapplication", "/bookedlist", "/halfpayment", "/defaultlist", "/fullpaidlist", "/createoperation", "/createadvoperation", "/createbda", "/createmedteam", "/createadvteam", "/createmanager", "/mentorqueries", "/advancequeries", "/revenuesheet", "/advrevenuesheet", "/createplacementcoordinator", "/onboardingdetails", "/advonboardingdetails", "/medonboardingdetails", "/advbooked", "/advfullpaid", "/advdefault", "/allteamdetail", "/advteamdetail", "/masterclasses", "/addevent", "/eventregistration", "/target", "/alumnidata", "/inactivebda", "/referandearnresponse", "/createmarketingteam", "/createinterviewer", "/createhr", "/createinterview", "/adminprojectpage", "/advprojectpage", "/advexercisepage", "/advleadmanagement", "/adminanalytics", "/advadmindashboard", "/admin/agents", "/admin/teams", "/admin/leadassignments", "/admin/agentactivity", "/admin/reports", "/bulkimport", "/admin/attendance", "/advusermanagement", "/admin/livemonitor", "/admin/calllogs", "/advformleads", "/admin/leads-count", "/admin/medpro-leads", "/admin/career-assessments", "/admin/adv-filter", "/adminmedrevenue", "/adminmedleaderboard", "/adminmedtarget"];
+  const adminheaderPaths = ["/adminfeedback", "/admindashboard", "/adminmentorshipprojects", "/admininterviewquestions", "/adminaptitudequestions", "/addcourse", "/addmedcourse", "/addadvcourse", "/addmodule", "/addmedmodule", "/addadvmodule", "/pendingapplication", "/acceptedapplication", "/bookedlist", "/halfpayment", "/defaultlist", "/fullpaidlist", "/createoperation", "/createadvoperation", "/createbda", "/createmedteam", "/createadvteam", "/createmanager", "/mentorqueries", "/advancequeries", "/revenuesheet", "/advrevenuesheet", "/createplacementcoordinator", "/onboardingdetails", "/advonboardingdetails", "/medonboardingdetails", "/advbooked", "/advfullpaid", "/advdefault", "/allteamdetail", "/advteamdetail", "/masterclasses", "/addevent", "/eventregistration", "/target", "/alumnidata", "/inactivebda", "/referandearnresponse", "/createmarketingteam", "/createinterviewer", "/createhr", "/createinterview", "/adminprojectpage", "/advprojectpage", "/advexercisepage", "/advleadmanagement", "/adminanalytics", "/advadmindashboard", "/admin/agents", "/admin/teams", "/admin/leadassignments", "/admin/agentactivity", "/admin/reports", "/bulkimport", "/admin/attendance", "/advusermanagement", "/admin/livemonitor", "/admin/calllogs", "/advformleads", "/admin/leads-count", "/admin/medpro-leads", "/admin/career-assessments", "/admin/adv-filter", "/adminmedrevenue", "/adminmedleaderboard", "/adminmedtarget"];
 
   const operationheaderPaths = ["/operationdashboard", "/fullpayment", "/bookedpayment", "/defaultpayment", "/operationrevenuesheet"];
   const advoperationheaderPaths = ["/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet"];
@@ -701,6 +703,7 @@ const AppContent = () => {
         <Route path="/AdminAptitudeQuestions" element={isAuthenticatedAdmin() ? <AdminAptitudeQuestions /> : <Navigate to="/AdminLogin" />} />
 
         <Route path="/BulkImport" element={isAuthenticatedAdmin() ? (<BulkImport />) : (<Navigate to="/AdminLogin" />)} />
+        <Route path="/AdminFeedback" element={isAuthenticatedAdmin() ? (<AdminFeedback />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/Admin/Attendance" element={isAuthenticatedAdmin() ? <AdminAttendance /> : <Navigate to="/AdminLogin" />} />
         <Route path="/Admin/LiveMonitor" element={isAuthenticatedAdmin() ? <LiveSalesMonitor /> : <Navigate to="/AdminLogin" />} />
 
@@ -803,6 +806,7 @@ const AppContent = () => {
           <Route path="/Exercise" element={isAuthenticated() ? <ExercisePage /> : <Navigate to="/login" />} />
           <Route path="/AptitudeTest" element={isAuthenticated() ? <AptitudeTest /> : <Navigate to="/login" />} />
           <Route path="/resume-builder" element={<ResumeBuilderPage />} />
+          <Route path="/feedback" element={isAuthenticated() ? <Feedback /> : <Navigate to="/login" />} />
         </Route>
         {/* User Panel End */}
 
