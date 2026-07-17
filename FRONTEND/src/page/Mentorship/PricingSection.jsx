@@ -39,7 +39,7 @@ const PricingSection = () => {
               alignItems: 'center',
               gap: '10px'
             }}
-          >
+          >                                             
             Explore Pricing Plans <FaArrowRight style={{ marginLeft: '12px' }} />
           </button>
         </div>

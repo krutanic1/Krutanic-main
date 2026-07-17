@@ -265,7 +265,7 @@ const CourseMentor = ({ hideHeading = false }) => {
       {
         id: 20,
         title: "IOT & Robotics",
-        image: thumbnail("iot-robotics.jpg"),
+        image: thumbnail("IOT & Robotics.jpg"),
         pdf: `${pdf17}`,
         description:
           "Developing robots and devices that communicate over the internet to perform tasks.",

@@ -1622,7 +1622,7 @@ export const allMentorshipData = {
   'iot-robotics': {
     id: 'iot-robotics',
     title: 'IOT & Robotics',
-    thumbnail: '/course_thumbnails/iot-robotics.jpg',
+    thumbnail: '/course_thumbnails/IOT & Robotics.jpg',
     duration: '2/3 Months',
     format: 'Live Mentor-led',
     level: 'Beginner to Pro',
