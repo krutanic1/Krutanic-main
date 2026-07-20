@@ -1202,11 +1202,11 @@ const AdvLeadsBook = () => {
                                                     </div>
 
                                                     <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '24px' }}>
-                                                        {lead.last_recording_url && (
+                                                        {/* {lead.last_recording_url && (
                                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={e => e.stopPropagation()}>
                                                                 <AudioButton url={lead.last_recording_url} />
                                                             </div>
-                                                        )}
+                                                        )} */}
                                                         {isManager && (
                                                             <button 
                                                                 onClick={(e) => { e.stopPropagation(); setSelectedLeadForReassign(lead); setShowReassignModal(true); }}
