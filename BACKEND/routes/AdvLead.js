@@ -852,6 +852,7 @@ router.post("/admin-bulk-assign", async (req, res) => {
                     status: dbStatus,
                     team_id: team ? team._id : null,
                     assigned_at: new Date(),
+                    pending_tasks: 1,
                     ...(dbRole === "manager" ? { manager_id: assigneeId } : { leader_id: assigneeId })
                 }
             }
@@ -906,7 +907,7 @@ router.post("/bulk-assign-to-leader", async (req, res) => {
         const leadIds = myLeads.map(l => l._id);
         await AdvLead.updateMany(
             { _id: { $in: leadIds } },
-            { $set: { owner_id: leaderId, owner_name: leaderName, leader_id: leaderId, current_owner_role: "leader", status: "assigned_to_leader", assigned_at: new Date() } }
+            { $set: { owner_id: leaderId, owner_name: leaderName, leader_id: leaderId, current_owner_role: "leader", status: "assigned_to_leader", assigned_at: new Date(), pending_tasks: 1 } }
         );
 
         // 🔔 Trigger Notification
@@ -955,7 +956,7 @@ router.post("/bulk-assign-to-specialist", async (req, res) => {
         const leadIds = myLeads.map(l => l._id);
         await AdvLead.updateMany(
             { _id: { $in: leadIds } },
-            { $set: { owner_id: specialistId, owner_name: specialistName, specialist_id: specialistId, current_owner_role: "sr_inside_sales_specialist", status: "assigned_to_specialist", assigned_at: new Date() } }
+            { $set: { owner_id: specialistId, owner_name: specialistName, specialist_id: specialistId, current_owner_role: "sr_inside_sales_specialist", status: "assigned_to_specialist", assigned_at: new Date(), pending_tasks: 1 } }
         );
 
         // 🔔 Trigger Notification
@@ -1064,6 +1065,7 @@ router.post("/admin-make-reactive", async (req, res) => {
             lead.last_outcome = "";
             lead.attempt_count = 0;
             lead.last_contacted_at = null;
+            lead.pending_tasks = 1;
             
             await lead.save();
             updatedCount++;
@@ -1118,7 +1120,8 @@ router.post("/manual-bulk-assign", async (req, res) => {
             current_owner_role: dbRole,
             status: dbStatus,
             team_id: team ? team._id : null,
-            assigned_at: new Date()
+            assigned_at: new Date(),
+            pending_tasks: 1
         };
 
         if (dbRole === "manager") updateData.manager_id = assigneeId;
