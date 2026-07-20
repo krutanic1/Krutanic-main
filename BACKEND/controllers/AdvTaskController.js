@@ -114,9 +114,9 @@ exports.updateTask = async (req, res, next) => {
         if (!task) return res.status(404).json({ success: false, message: "Task not found" });
 
         // Business Rule: Completed task cannot be edited except by manager
-        if (task.status === "Completed" && req.user && req.user.role !== "manager" && req.user.role !== "admin") {
-            return res.status(403).json({ success: false, message: "Only managers can edit completed tasks" });
-        }
+        // if (task.status === "Completed" && req.user && req.user.role !== "manager" && req.user.role !== "admin"&&req) {
+        //     return res.status(403).json({ success: false, message: "Only managers can edit completed tasks" });
+        // }
 
         if (status) task.status = status;
         if (remarks) task.remarks = remarks;

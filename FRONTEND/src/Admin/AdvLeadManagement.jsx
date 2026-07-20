@@ -18,6 +18,7 @@ const AdvLeadManagement = () => {
     const [managers, setManagers] = useState([]);
     const [freshCount, setFreshCount] = useState(0);
     const [reactiveFreshCount, setReactiveFreshCount] = useState(0);
+    const [filteredStats, setFilteredStats] = useState({ fresh: 0, reactive: 0, assigned: 0, converted: 0 });
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -26,7 +27,7 @@ const AdvLeadManagement = () => {
     const limit = 25;
 
     // Filters
-    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+    const [selectedMonth, setSelectedMonth] = useState("All");
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
@@ -112,6 +113,12 @@ const AdvLeadManagement = () => {
                 if (res.data.reactiveFreshCount !== undefined) {
                     setReactiveFreshCount(res.data.reactiveFreshCount);
                 }
+                setFilteredStats({
+                    fresh: res.data.filteredFreshCount || 0,
+                    reactive: res.data.filteredReactiveFreshCount || 0,
+                    assigned: res.data.filteredAssignedCount || 0,
+                    converted: res.data.filteredConvertedCount || 0
+                });
             } else {
                 setLeads([]);
             }
@@ -686,10 +693,10 @@ const AdvLeadManagement = () => {
                 <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
                     {[
                         { label: 'Total Leads', count: totalCount, bg: '#f9f9f9', border: '#d9d9d9', color: '#333' },
-                        { label: '🟢 Fresh', count: freshCount, bg: '#e6f7ff', border: '#91d5ff', color: '#096dd9' },
-                        { label: '♻️ Reactive Fresh', count: reactiveFreshCount, bg: '#fff0f6', border: '#ffadd2', color: '#c41d7f' },
-                        { label: '🟠 Assigned', count: totalCount - freshCount - reactiveFreshCount - leads.filter(l => l.status === 'converted').length, bg: '#fff7e6', border: '#ffd591', color: '#d46b08' },
-                        { label: '✅ Converted', count: 'Check API', bg: '#f6ffed', border: '#b7eb8f', color: '#389e0d' },
+                        { label: '🟢 Fresh', count: filteredStats.fresh, bg: '#e6f7ff', border: '#91d5ff', color: '#096dd9' },
+                        { label: '♻️ Reactive Fresh', count: filteredStats.reactive, bg: '#fff0f6', border: '#ffadd2', color: '#c41d7f' },
+                        { label: '🟠 Assigned', count: filteredStats.assigned, bg: '#fff7e6', border: '#ffd591', color: '#d46b08' },
+                        { label: '✅ Converted', count: filteredStats.converted, bg: '#f6ffed', border: '#b7eb8f', color: '#389e0d' },
                     ].map((s, i) => (
                         <div key={i} style={{ padding: '12px 20px', background: s.bg, border: `1px solid ${s.border}`, borderRadius: '8px', flex: 1, minWidth: '110px', textAlign: 'center' }}>
                             <div style={{ fontSize: '22px', fontWeight: 'bold', color: s.color }}>{s.count}</div>

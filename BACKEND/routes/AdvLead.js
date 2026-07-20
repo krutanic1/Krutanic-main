@@ -468,7 +468,7 @@ router.get("/get-outcome-counts", async (req, res) => {
             }
         }
 
-        if (month && year) {
+        if (month && year && month !== "All") {
             const m = parseInt(month) - 1;
             const y = parseInt(year);
             const startDate = new Date(y, m, 1);
@@ -1289,7 +1289,7 @@ router.get("/get-adv-leads", async (req, res) => {
             andConditions.push({ $or: sourceOrs });
         }
 
-        if (month && year) {
+        if (month && year && month !== "All") {
             const m = parseInt(month) - 1;
             const y = parseInt(year);
             const startDate = new Date(y, m, 1);
@@ -1392,7 +1392,7 @@ router.get("/get-adv-leads", async (req, res) => {
 
 
         // Run all queries concurrently — count, leads fetch, and fresh count in one shot
-        const [totalCount, leads, freshCount, reactiveFreshCount] = await Promise.all([
+        const [totalCount, leads, freshCount, reactiveFreshCount, filteredFreshCount, filteredReactiveFreshCount, filteredAssignedCount, filteredConvertedCount] = await Promise.all([
             AdvLead.countDocuments(query),
             AdvLead.find(query)
                 .select(BLACKLIST_PROJECTION)
@@ -1410,7 +1410,11 @@ router.get("/get-adv-leads", async (req, res) => {
                 .lean(),  // Skip Mongoose document hydration for faster JSON serialization
             // Only fetch fresh count when admin requests, reuse from existing data for others
             roleNorm === "admin" ? AdvLead.countDocuments({ status: "fresh", is_reactive: { $ne: true } }) : Promise.resolve(0),
-            roleNorm === "admin" ? AdvLead.countDocuments({ status: "fresh", is_reactive: true }) : Promise.resolve(0)
+            roleNorm === "admin" ? AdvLead.countDocuments({ status: "fresh", is_reactive: true }) : Promise.resolve(0),
+            roleNorm === "admin" ? AdvLead.countDocuments({ ...query, status: "fresh", is_reactive: { $ne: true } }) : Promise.resolve(0),
+            roleNorm === "admin" ? AdvLead.countDocuments({ ...query, status: "fresh", is_reactive: true }) : Promise.resolve(0),
+            roleNorm === "admin" ? AdvLead.countDocuments({ ...query, status: { $nin: ["fresh", "converted", "closed"] } }) : Promise.resolve(0),
+            roleNorm === "admin" ? AdvLead.countDocuments({ ...query, status: "converted" }) : Promise.resolve(0)
         ]);
 
         res.status(200).json({
@@ -1419,7 +1423,11 @@ router.get("/get-adv-leads", async (req, res) => {
             totalCount,
             currentPage: parseInt(page),
             freshCount,  // Bundled into this response — eliminates a separate API round-trip
-            reactiveFreshCount
+            reactiveFreshCount,
+            filteredFreshCount,
+            filteredReactiveFreshCount,
+            filteredAssignedCount,
+            filteredConvertedCount
         });
     } catch (error) {
         res.status(400).json({ message: error.message });
