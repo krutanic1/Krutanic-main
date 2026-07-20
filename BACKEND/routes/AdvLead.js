@@ -729,7 +729,7 @@ router.post("/add-form-lead-to-crm", async (req, res) => {
 // GET: Count fresh leads
 router.get("/fresh-leads-count", async (req, res) => {
     try {
-        const count = await AdvLead.countDocuments({ status: "fresh" });
+        const count = await AdvLead.countDocuments({ status: "fresh", is_reactive: { $ne: true } });
         res.status(200).json({ count });
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -815,7 +815,7 @@ router.post("/admin-bulk-assign", async (req, res) => {
         return res.status(400).json({ message: "assigneeId, assigneeRole and count are required" });
     }
     try {
-        const freshLeads = await AdvLead.find({ status: "fresh" })
+        const freshLeads = await AdvLead.find({ status: "fresh", is_reactive: { $ne: true } })
             .sort({ created_at: 1 })
             .limit(parseInt(count));
 
@@ -1389,18 +1389,25 @@ router.get("/get-adv-leads", async (req, res) => {
 
 
         // Run all queries concurrently — count, leads fetch, and fresh count in one shot
-        const [totalCount, leads, freshCount] = await Promise.all([
+        const [totalCount, leads, freshCount, reactiveFreshCount] = await Promise.all([
             AdvLead.countDocuments(query),
             AdvLead.find(query)
                 .select(BLACKLIST_PROJECTION)
                 .populate("team_id", "team_name")
                 .populate("current_owner_id", "name")
-                .sort(reminderOnly === 'true' ? { next_followup_at: 1 } : { created_at: -1 })
+                .sort(
+                    reminderOnly === 'true' 
+                        ? { next_followup_at: 1 } 
+                        : (status === 'reactive' || (stage && stage.includes('Reactive Lead')))
+                            ? { owner_name: 1, current_owner_id: 1, created_at: -1 }
+                            : { created_at: -1 }
+                )
                 .skip(skip)
                 .limit(parseInt(limit))
                 .lean(),  // Skip Mongoose document hydration for faster JSON serialization
             // Only fetch fresh count when admin requests, reuse from existing data for others
-            roleNorm === "admin" ? AdvLead.countDocuments({ status: "fresh" }) : Promise.resolve(0)
+            roleNorm === "admin" ? AdvLead.countDocuments({ status: "fresh", is_reactive: { $ne: true } }) : Promise.resolve(0),
+            roleNorm === "admin" ? AdvLead.countDocuments({ status: "fresh", is_reactive: true }) : Promise.resolve(0)
         ]);
 
         res.status(200).json({
@@ -1408,7 +1415,8 @@ router.get("/get-adv-leads", async (req, res) => {
             totalPages: Math.ceil(totalCount / limit),
             totalCount,
             currentPage: parseInt(page),
-            freshCount  // Bundled into this response — eliminates a separate API round-trip
+            freshCount,  // Bundled into this response — eliminates a separate API round-trip
+            reactiveFreshCount
         });
     } catch (error) {
         res.status(400).json({ message: error.message });

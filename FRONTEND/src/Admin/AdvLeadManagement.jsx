@@ -17,6 +17,7 @@ const AdvLeadManagement = () => {
     const [loading, setLoading] = useState(true);
     const [managers, setManagers] = useState([]);
     const [freshCount, setFreshCount] = useState(0);
+    const [reactiveFreshCount, setReactiveFreshCount] = useState(0);
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -107,6 +108,9 @@ const AdvLeadManagement = () => {
                 // freshCount is now bundled in the same response — no extra API call needed
                 if (res.data.freshCount !== undefined) {
                     setFreshCount(res.data.freshCount);
+                }
+                if (res.data.reactiveFreshCount !== undefined) {
+                    setReactiveFreshCount(res.data.reactiveFreshCount);
                 }
             } else {
                 setLeads([]);
@@ -683,7 +687,8 @@ const AdvLeadManagement = () => {
                     {[
                         { label: 'Total Leads', count: totalCount, bg: '#f9f9f9', border: '#d9d9d9', color: '#333' },
                         { label: '🟢 Fresh', count: freshCount, bg: '#e6f7ff', border: '#91d5ff', color: '#096dd9' },
-                        { label: '🟠 Assigned', count: totalCount - freshCount - leads.filter(l => l.status === 'converted').length, bg: '#fff7e6', border: '#ffd591', color: '#d46b08' },
+                        { label: '♻️ Reactive Fresh', count: reactiveFreshCount, bg: '#fff0f6', border: '#ffadd2', color: '#c41d7f' },
+                        { label: '🟠 Assigned', count: totalCount - freshCount - reactiveFreshCount - leads.filter(l => l.status === 'converted').length, bg: '#fff7e6', border: '#ffd591', color: '#d46b08' },
                         { label: '✅ Converted', count: 'Check API', bg: '#f6ffed', border: '#b7eb8f', color: '#389e0d' },
                     ].map((s, i) => (
                         <div key={i} style={{ padding: '12px 20px', background: s.bg, border: `1px solid ${s.border}`, borderRadius: '8px', flex: 1, minWidth: '110px', textAlign: 'center' }}>
