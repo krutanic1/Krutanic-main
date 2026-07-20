@@ -491,7 +491,7 @@ const AdvTeamHeader = () => {
                 <i className="fa fa-book"></i> Leads Book
               </Link>
             )}
-           {(advTeamData?.designation === "ADV Manager" ||
+           {/* {(advTeamData?.designation === "ADV Manager" ||
             advTeamData?.designation === "MANAGER" ||
             advTeamData?.designation === "ADV Leader" ||
             advTeamData?.designation === "LEADER" ||
@@ -501,7 +501,7 @@ const AdvTeamHeader = () => {
                <Link to="/advteam/followups">
                  <i className="fa fa-bell"></i> Follow-ups
                </Link>
-            )} 
+            )}  */}
           {(advTeamData?.designation === "ADV Manager" ||
             advTeamData?.designation === "MANAGER" ||
             advTeamData?.designation === "ADV Leader" ||
@@ -521,9 +521,15 @@ const AdvTeamHeader = () => {
                 <i className="fa fa-tasks"></i> Lead Management
               </Link>
             )}
-          <Link to="/advteam/filter">
+            {(advTeamData?.designation === "ADV Manager" ||
+            advTeamData?.designation === "MANAGER" ||
+            advTeamData?.designation === "ADV Leader" ||
+            advTeamData?.designation === "LEADER") && (
+             <Link to="/advteam/filter">
             <i className="fa fa-filter"></i> Advanced Filter
           </Link>
+            )}
+        
           <Link to="/advteam/leads-count">
             <i className="fa fa-bar-chart"></i> Leads Count
           </Link>

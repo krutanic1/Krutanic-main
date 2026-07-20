@@ -15,6 +15,7 @@ const AdvFollowup = require("../models/AdvFollowup");
 const AdvTeamStructure = require("../models/AdvTeamStructure");
 const rateLimit = require("express-rate-limit");
 const AdvUser = require("../models/AdvUser");
+const AdvTask = require("../models/AdvTask");
 const AdvNotification = require("../models/AdvNotification");
 const AdvTeamMember = require("../models/CreateAdvTeam");
 const AdvFormLead = require("../models/AdvFormLead");
@@ -858,6 +859,13 @@ router.post("/admin-bulk-assign", async (req, res) => {
             }
         );
 
+        // ✅ Directly create First Call tasks for specialist assignments (bypasses hook)
+        if (dbRole === "sr_inside_sales_specialist") {
+            for (const lead of freshLeads) {
+                await createFirstCallTaskForLead(lead, assigneeId, assigneeName);
+            }
+        }
+
         // 🔔 Trigger Notification
         await new AdvNotification({
             userId: assigneeId,
@@ -865,6 +873,7 @@ router.post("/admin-bulk-assign", async (req, res) => {
             message: `Admin has assigned ${freshLeads.length} leads to you.`,
             type: "lead_assigned"
         }).save();
+
 
         try {
             await sendLeadAssignmentEmail({
@@ -937,6 +946,42 @@ router.post("/bulk-assign-to-leader", async (req, res) => {
     }
 });
 
+// Helper: Create a First Call task for a specialist-assigned lead (bypasses unreliable updateMany hook)
+async function createFirstCallTaskForLead(lead, specialistId, specialistName) {
+    try {
+        // Dedup check: do not create if a pending First Call task already exists for this lead+counsellor
+        const counsellorObjectId = new mongoose.Types.ObjectId(specialistId);
+        const existingTask = await AdvTask.findOne({
+            lead_id: lead._id,
+            task_type: "First Call",
+            status: "Pending",
+            counsellor_id: counsellorObjectId
+        });
+        if (existingTask) return;
+
+        const now = new Date();
+        const dueDateTime = new Date(now.getTime() + (5 * 60 * 60 * 1000));
+        const dueTimeString = `${String(dueDateTime.getHours()).padStart(2, '0')}:${String(dueDateTime.getMinutes()).padStart(2, '0')}`;
+
+        await new AdvTask({
+            lead_id: lead._id,
+            lead_name: lead.full_name || lead.owner_name || specialistName || "New Lead",
+            student_mobile: lead.phone_number,
+            counsellor_id: counsellorObjectId,
+            team_id: lead.team_id,
+            task_type: "First Call",
+            priority: "High",
+            due_date: dueDateTime,
+            due_time: dueTimeString,
+            remarks: "Auto-generated: Please make the first contact within 5 hours.",
+            status: "Pending",
+            created_at: now
+        }).save();
+    } catch (err) {
+        console.error(`[createFirstCallTaskForLead] Failed for lead ${lead._id}:`, err.message);
+    }
+}
+
 // POST: Leader bulk-assigns N of their leads to a specialist
 router.post("/bulk-assign-to-specialist", async (req, res) => {
     const { leaderId, specialistId, specialistName, count, assignerName } = req.body;
@@ -958,6 +1003,11 @@ router.post("/bulk-assign-to-specialist", async (req, res) => {
             { _id: { $in: leadIds } },
             { $set: { owner_id: specialistId, owner_name: specialistName, specialist_id: specialistId, current_owner_role: "sr_inside_sales_specialist", status: "assigned_to_specialist", assigned_at: new Date(), pending_tasks: 1 } }
         );
+
+        // ✅ Directly create First Call tasks for each assigned lead (reliable, bypasses hook)
+        for (const lead of myLeads) {
+            await createFirstCallTaskForLead(lead, specialistId, specialistName);
+        }
 
         // 🔔 Trigger Notification
         await new AdvNotification({
@@ -1132,6 +1182,13 @@ router.post("/manual-bulk-assign", async (req, res) => {
             { _id: { $in: leadIds } },
             { $set: updateData }
         );
+
+        // ✅ Directly create First Call tasks for specialist assignments (bypasses hook)
+        if (dbRole === "sr_inside_sales_specialist") {
+            for (const lead of leadsToAssign) {
+                await createFirstCallTaskForLead(lead, assigneeId, assigneeName);
+            }
+        }
 
         // 🔔 Trigger Notification
         await new AdvNotification({
@@ -2362,6 +2419,11 @@ router.post("/leader-bulk-assign-specialist", async (req, res) => {
                 }
             }
         );
+
+        // ✅ Directly create First Call tasks for specialist assignments (bypasses hook)
+        for (const lead of myLeads) {
+            await createFirstCallTaskForLead(lead, specialistId, specialistName || specialist?.fullname);
+        }
 
         // 🔔 Trigger Notification
         await new AdvNotification({

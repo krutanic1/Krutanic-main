@@ -116,10 +116,27 @@ AdvLeadSchema.set("toObject", {
 
 // --- Mongoose Hooks for Auto-Task Creation (Permanent Fix) ---
 async function handleSpecialistAssignment(lead, AdvTask) {
-    if (!lead || lead.current_owner_role !== "sr_inside_sales_specialist" || !lead.owner_id) return;
+    if (!lead || lead.current_owner_role !== "sr_inside_sales_specialist") return;
     
-    // Prevent duplicate pending tasks for the same lead
-    const existingTask = await AdvTask.findOne({ lead_id: lead._id, task_type: "First Call", status: "Pending" });
+    // Resolve the correct counsellor ID — prefer current_owner_id (ObjectId ref), fallback to owner_id (string)
+    const counsellorRawId = lead.current_owner_id || lead.owner_id;
+    if (!counsellorRawId) return;
+
+    let counsellorObjectId;
+    try {
+        counsellorObjectId = new mongoose.Types.ObjectId(counsellorRawId.toString());
+    } catch (e) {
+        console.error("[handleSpecialistAssignment] Invalid counsellor ID:", counsellorRawId);
+        return;
+    }
+
+    // Per-counsellor dedup: only skip if THIS counsellor already has a pending First Call for this lead
+    const existingTask = await AdvTask.findOne({
+        lead_id: lead._id,
+        task_type: "First Call",
+        status: "Pending",
+        counsellor_id: counsellorObjectId
+    });
     if (existingTask) return;
 
     const now = new Date();
@@ -130,7 +147,7 @@ async function handleSpecialistAssignment(lead, AdvTask) {
         lead_id: lead._id,
         lead_name: lead.full_name || lead.owner_name || "New Lead",
         student_mobile: lead.phone_number,
-        counsellor_id: lead.owner_id,
+        counsellor_id: counsellorObjectId,
         team_id: lead.team_id,
         task_type: "First Call",
         priority: "High",
