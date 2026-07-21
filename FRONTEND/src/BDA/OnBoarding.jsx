@@ -50,17 +50,59 @@ const OnBoarding = () => {
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
-  const fetchNewStudent = async () => {
+  const fetchNewStudent = async (page = 1) => {
     setLoading(true);
     const bdaName = localStorage.getItem("bdaName");
+    const bdaId = localStorage.getItem("bdaId");
     try {
-      const response = await axios.get(`${API}/getnewstudentenroll?all=true`);
-      const studentsData = response.data.filter(
-        (item) => item.status === "booked" && item.counselor?.toLowerCase() === bdaName?.toLowerCase()
-      );
-      setNewStudent(studentsData);
-      setFilteredStudents(studentsData);
+      let teamMemberNames = bdaName ? [bdaName.toLowerCase()] : [];
+
+      if (bdaId) {
+        const currentBdaRes = await axios.get(`${API}/getbda`, { params: { bdaId } });
+        const currentBda = currentBdaRes.data;
+
+        if (currentBda && (currentBda.designation === "MANAGER" || currentBda.designation === "LEADER")) {
+          const teamsArray = currentBda.teams && currentBda.teams.length > 0
+            ? currentBda.teams
+            : currentBda.team ? currentBda.team.split(",").map(t => t.trim()) : [];
+
+          const allBdasRes = await axios.get(`${API}/getbda`);
+          const teamBdas = allBdasRes.data.filter(b => teamsArray.includes(b.team));
+          
+          teamBdas.forEach(b => {
+            if (b.fullname && !teamMemberNames.includes(b.fullname.toLowerCase())) {
+              teamMemberNames.push(b.fullname.toLowerCase());
+            }
+          });
+        }
+      }
+
+      const counselorStr = teamMemberNames.join('|');
+      const response = await axios.get(`${API}/getnewstudentenroll`, {
+        params: {
+          page: page,
+          limit: 50,
+          status: "booked",
+          counselor: counselorStr,
+          search: searchQuery
+        }
+      });
+      
+      if (response.data && response.data.data) {
+        setNewStudent(response.data.data);
+        setFilteredStudents(response.data.data);
+        setTotalPages(response.data.pagination.totalPages);
+        setTotalItems(response.data.pagination.totalItems);
+      } else {
+        setNewStudent(response.data);
+        setFilteredStudents(response.data);
+        setTotalPages(1);
+        setTotalItems(response.data.length);
+      }
     } catch (error) {
       console.error("There was an error fetching new student:", error);
     } finally {
@@ -69,8 +111,11 @@ const OnBoarding = () => {
   };
 
   useEffect(() => {
-    fetchNewStudent();
-  }, []);
+    const delayDebounceFn = setTimeout(() => {
+      fetchNewStudent(currentPage);
+    }, 500);
+    return () => clearTimeout(delayDebounceFn);
+  }, [currentPage, searchQuery]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -112,7 +157,7 @@ const OnBoarding = () => {
         (minimalResponse.status === 200 || minimalResponse.status === 201)
       ) {
         toast.success("Onboarding Form submitted successfully.");
-        fetchNewStudent();
+        fetchNewStudent(currentPage);
         resetForm();
       } else {
         toast.error("Error submitting the form.");
@@ -129,18 +174,8 @@ const OnBoarding = () => {
 
 
   const handleSearchChange = (event) => {
-    const value = event.target.value;
-    setSearchQuery(value);
-    const filtered = newStudent.filter(
-      (student) =>
-        student.email.toLowerCase().includes(value.toLowerCase()) ||
-        student.phone.toLowerCase().includes(value.toLowerCase()) ||
-        student.fullname.toLowerCase().includes(value.toLowerCase()) ||
-        student.counselor.toLowerCase().includes(value.toLowerCase()) ||
-        student.operationName.toLowerCase().includes(value.toLowerCase()) ||
-        student.createdAt.toLowerCase().includes(value.toLowerCase())
-    );
-    setFilteredStudents(filtered);
+    setSearchQuery(event.target.value);
+    setCurrentPage(1);
   };
 
   const formatDate = (date) => new Date(date).toLocaleDateString("en-GB");
@@ -362,6 +397,28 @@ const OnBoarding = () => {
                 )}
               </tbody>
             </table>
+
+            {totalPages > 1 && (
+              <div className="flex justify-between items-center mt-4 p-2 bg-gray-100 rounded">
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 bg-blue-500 text-white rounded disabled:bg-gray-300"
+                >
+                  Previous
+                </button>
+                <span>
+                  Page {currentPage} of {totalPages} (Total Items: {totalItems})
+                </span>
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 bg-blue-500 text-white rounded disabled:bg-gray-300"
+                >
+                  Next
+                </button>
+              </div>
+            )}
 
             {dialogVisible && dialogData && (
               <div className="fixed flex flex-col rounded-md top-[30%] left-[50%] shadow-black shadow-sm transform translate-x-[-50%] transalate-y-[-50%] bg-white p-[20px] z-[1000]">
