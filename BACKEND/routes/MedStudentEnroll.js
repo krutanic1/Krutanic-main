@@ -1039,8 +1039,16 @@ router.get("/medbda-with-enrolls", async (req, res) => {
       {
         $lookup: {
           from: "medenrolls",
-          localField: "fullname",
-          foreignField: "counselor",
+          let: { bdaName: { $toLower: "$fullname" } },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: [{ $toLower: { $ifNull: ["$counselor", ""] } }, "$$bdaName"]
+                }
+              }
+            }
+          ],
           as: "enrollments",
         },
       },
