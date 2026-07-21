@@ -30,7 +30,12 @@ const AdvCareerAssessments = ({ isAdmin }) => {
 
         if (isAdmin) {
             axios.get(`${API}/getadvteam`)
-                .then(res => setTeamMembers(res.data))
+                .then(res => {
+                    const managersAndLeads = res.data.filter(m => 
+                        m.status === "Active" && m.designation && ["ADV MANAGER", "MANAGER", "ADV LEADER", "LEADER"].includes(m.designation.toUpperCase())
+                    );
+                    setTeamMembers(managersAndLeads);
+                })
                 .catch(err => console.error("Failed to fetch team members"));
         }
     }, []);

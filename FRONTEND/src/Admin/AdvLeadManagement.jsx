@@ -134,8 +134,10 @@ const AdvLeadManagement = () => {
         try {
             const res = await axios.get(`${API}/getadvteam`);
             const data = res.data || [];
-            // For Admin, show all active team members (Managers, Leaders, Specialists) as potential assignees
-            setManagers(data.filter(m => m.status === "Active"));
+            // For Admin, show only active Managers and Team Leaders as potential assignees
+            setManagers(data.filter(m => 
+                m.status === "Active" && m.designation && ["ADV MANAGER", "MANAGER", "ADV LEADER", "LEADER"].includes(m.designation.toUpperCase())
+            ));
         } catch (err) {
             console.error("Failed to fetch assignees");
         }
@@ -754,7 +756,7 @@ const AdvLeadManagement = () => {
                                     transition: 'border-color 0.3s'
                                 }}
                             >
-                                <option value="">-- Select Assignee (Manager / Leader / Specialist) --</option>
+                                <option value="">-- Select Assignee (Manager / Leader) --</option>
                                 {managers.map(m => (
                                     <option key={m._id} value={m._id}>
                                         {m.fullname} ({m.designation} - {m.team || 'No Team'})
