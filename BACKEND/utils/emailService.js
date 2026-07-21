@@ -729,6 +729,7 @@ const sendSkillEvaluationWelcomeEmail = async (userEmail, fullName, slotDate, sl
             from: senderEmail,
             to: userEmail,
             cc: "tarunsai.kola@krutanic.org",
+            bcc: "fedrick_sarone@krutanic.org",
             subject: "Your Skill Evaluation Test & Career Consultation Slot is Confirmed - Krutanic",
             html: `
 <div style="background:#f5f7fb;padding:40px 20px;font-family:'Segoe UI',Arial,sans-serif;">
@@ -839,6 +840,7 @@ const sendSkillEvaluationAdminNotification = async (assessmentDetails) => {
         const mailOptions = {
             from: senderEmail,
             to: "fedrick_sarone@krutanic.org",
+            cc: "tarunsai.kola@krutanic.org",
             subject: "New Enrollment: Skill Evaluation Test Submitted",
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">

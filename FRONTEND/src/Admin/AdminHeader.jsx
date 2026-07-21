@@ -98,6 +98,9 @@ const AdminHeader = () => {
             <Link to="/Target">
               <i className="fa fa-bullseye mr-2"></i>Target Assign
             </Link>
+            <Link to="/AdminTeamAnalysis">
+              <i className="fa fa-bar-chart mr-2"></i>Team Analysis
+            </Link>
             <Link to="/CreateBDA">
               <i className="fa fa-users mr-2"></i>Create Team A/c
             </Link>
