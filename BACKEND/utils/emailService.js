@@ -724,8 +724,23 @@ const sendMasterclassTodayReminder = async (userEmail, userName, masterclassTitl
 };
 const sendPreskillevalution = async (userEmail, fullName, number) => {
     try {
+        // Create a fresh transporter on every call — required for Vercel serverless
+        // (pooled transporters break in serverless because connections can't persist)
+        const freshTransporter = nodemailer.createTransport({
+            host: process.env.SMTP_HOST || "smtp.gmail.com",
+            port: Number(process.env.SMTP_PORT) || 587,
+            secure: false,
+            auth: {
+                user: process.env.SMTP_MAIL,
+                pass: process.env.SMTP_PASSWORD,
+            },
+            tls: { rejectUnauthorized: false },
+            connectionTimeout: 10000,
+            greetingTimeout: 5000,
+        });
+
         const mailoptions = { 
-            from: senderEmail,
+            from: `"Krutanic" <${process.env.SMTP_MAIL}>`,
             to: "fedrick_sarone@krutanic.org",
             cc: "tarunsai.kola@krutanic.org",
             subject: "New Pre-Skill Evaluation Form Submission",
@@ -742,10 +757,10 @@ const sendPreskillevalution = async (userEmail, fullName, number) => {
                 </div>
             `,
         };
-        await transporter.sendMail(mailoptions);
+        await freshTransporter.sendMail(mailoptions);
         console.log(`Pre-skill evaluation email sent for ${userEmail}`);
     } catch (error) {
-        console.error("Error sending pre-skill evaluation email:", error);
+        console.error("Error sending pre-skill evaluation email:", error.message, error.code);
     }
 };
 
@@ -925,6 +940,7 @@ const sendSkillEvaluationAssignmentNotification = async (executiveEmail, assessm
         const mailOptions = {
             from: senderEmail,
             to: executiveEmail,
+            cc: "tarunsai.kola@krutanic.org",
             subject: "NEW ASSIGNMENT: Skill Evaluation Lead Assigned to You",
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #3498db; border-radius: 10px;">
