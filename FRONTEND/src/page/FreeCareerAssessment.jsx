@@ -206,6 +206,7 @@ const FreeCareerAssessment = () => {
         // Pass ID and formData snapshot directly to avoid React stale closure
         handlePayment(savedPrePaymentId, { ...formData });
       }
+      
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to save details.");
     } finally {

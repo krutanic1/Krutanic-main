@@ -10,7 +10,8 @@ const {
   sendSkillEvaluationWelcomeEmail, 
   sendSkillEvaluationAdminNotification, 
   sendSkillEvaluationExecutiveNotification,
-  sendSkillEvaluationAssignmentNotification
+  sendSkillEvaluationAssignmentNotification,
+  sendPreskillevalution
 } = require("../utils/emailService");
 // POST: Capture initial details before payment
 router.post("/pre-payment", async (req, res) => {
@@ -32,6 +33,13 @@ router.post("/pre-payment", async (req, res) => {
     });
 
     await newPrePayment.save();
+
+    // FIRE PRE-SKILL EVALUATION EMAIL
+    try {
+        await sendPreskillevalution(email, fullName, mobileNumber);
+    } catch (emailErr) {
+        console.error("Failed to send pre-skill evaluation email:", emailErr);
+    }    
     return res.status(201).json({ prePaymentId: newPrePayment._id });
   } catch (error) {
     console.error("Pre-payment Error:", error);

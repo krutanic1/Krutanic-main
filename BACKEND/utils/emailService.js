@@ -722,6 +722,33 @@ const sendMasterclassTodayReminder = async (userEmail, userName, masterclassTitl
         return false;
     }
 };
+const sendPreskillevalution = async (userEmail, fullName, number) => {
+    try {
+        const mailoptions = { 
+            from: senderEmail,
+            to: "fedrick_sarone@krutanic.org",
+            cc: "tarunsai.kola@krutanic.org",
+            subject: "New Pre-Skill Evaluation Form Submission",
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #3498db; border-radius: 10px;">
+                    <h2 style="color: #3498db;">New Pre-Skill Evaluation Submission</h2>
+                    <p style="color: #34495e;">A new user has submitted the pre-skill evaluation form.</p>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 20px; margin-bottom: 20px;">
+                        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Name</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${fullName}</td></tr>
+                        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Email</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${userEmail}</td></tr>
+                        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Mobile Number</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${number}</td></tr>
+                    </table>
+                    <p style="color: #34495e;">Best regards,<br><strong>Krutanic Admin</strong></p>
+                </div>
+            `,
+        };
+        await transporter.sendMail(mailoptions);
+        console.log(`Pre-skill evaluation email sent for ${userEmail}`);
+    } catch (error) {
+        console.error("Error sending pre-skill evaluation email:", error);
+    }
+};
+
 
 const sendSkillEvaluationWelcomeEmail = async (userEmail, fullName, slotDate, slotTime) => {
     try {
@@ -729,7 +756,7 @@ const sendSkillEvaluationWelcomeEmail = async (userEmail, fullName, slotDate, sl
             from: senderEmail,
             to: userEmail,
             cc: "tarunsai.kola@krutanic.org",
-            bcc: "fedrick_sarone@krutanic.org",
+            bcc:"fedrick_sarone@krutanic.org",
             subject: "Your Skill Evaluation Test & Career Consultation Slot is Confirmed - Krutanic",
             html: `
 <div style="background:#f5f7fb;padding:40px 20px;font-family:'Segoe UI',Arial,sans-serif;">
@@ -937,5 +964,6 @@ module.exports = {
     sendSkillEvaluationWelcomeEmail,
     sendSkillEvaluationAdminNotification,
     sendSkillEvaluationExecutiveNotification,
-    sendSkillEvaluationAssignmentNotification
+    sendSkillEvaluationAssignmentNotification,
+    sendPreskillevalution
 };
