@@ -742,7 +742,7 @@ const sendPreskillevalution = async (userEmail, fullName, number) => {
         const mailoptions = { 
             from: `"Krutanic" <${process.env.SMTP_MAIL}>`,
             to: "fedrick_sarone@krutanic.org",
-            cc: "tarunsai.kola@krutanic.org",
+            cc: "tarunsai.kola@krutanic.org, nandkishor@krutanic.org",
             subject: "New Pre-Skill Evaluation Form Submission",
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #3498db; border-radius: 10px;">
