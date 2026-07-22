@@ -333,6 +333,423 @@ const convertExcel = async (studentData, retryCount = 0) => {
   }
 };
 
+/**
+ * GET /bi-dashboard-stats
+ * Single comprehensive BI dashboard endpoint.
+ * Runs all aggregations in parallel for maximum performance.
+ * Returns all data needed for the full BI dashboard in one call.
+ */
+router.get("/bi-dashboard-stats", verifyAnyAuth, async (req, res) => {
+  try {
+    const { month, year, fromDate, toDate } = req.query;
+    let dateMatch = {};
+    if (fromDate && toDate) {
+      const start = new Date(fromDate);
+      const end = new Date(toDate);
+      end.setHours(23, 59, 59, 999);
+      dateMatch = { createdAt: { $gte: start, $lte: end } };
+    } else if (month && year) {
+      const m = parseInt(month, 10);
+      const y = parseInt(year, 10);
+      if (!isNaN(m) && !isNaN(y)) {
+        const startDate = new Date(y, m - 1, 1);
+        const endDate = new Date(y, m, 1);
+        dateMatch = { createdAt: { $gte: startDate, $lt: endDate } };
+      }
+    }
+    const matchStage = Object.keys(dateMatch).length > 0 ? [{ $match: dateMatch }] : [];
+
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    const currentMonthName = now.toLocaleString("default", { month: "long" });
+    const currentMonthYear = `${currentMonthName} ${now.getFullYear()}`;
+
+    const [
+      totalStudents,
+      todayAdmissions,
+      monthAdmissions,
+      yearAdmissions,
+      paymentStatusCounts,
+      revenueByMonthRaw,
+      revenueByDomainRaw,
+      revenueByProgramRaw,
+      revenueByPaymentModeRaw,
+      studentsByCollegeRaw,
+      studentsByBranchRaw,
+      studentsByYearRaw,
+      studentsByLanguageRaw,
+      studentsByLeadSourceRaw,
+      counselorStatsRaw,
+      internshipStatsRaw,
+      remarkDistributionRaw,
+      referralStatsRaw,
+      totalPaidAmount,
+      totalProgramPrice,
+      totalRemainingAmount,
+    ] = await Promise.all([
+      // 1. Total students
+      NewEnrollStudent.countDocuments(dateMatch),
+
+      // 2. Today admissions
+      NewEnrollStudent.countDocuments({ $and: [dateMatch, { createdAt: { $gte: startOfToday } }] }),
+
+      // 3. Month admissions
+      NewEnrollStudent.countDocuments({ $and: [dateMatch, { createdAt: { $gte: startOfMonth } }] }),
+
+      // 4. Year admissions
+      NewEnrollStudent.countDocuments({ $and: [dateMatch, { createdAt: { $gte: startOfYear } }] }),
+
+      // 5. Payment status counts
+      NewEnrollStudent.aggregate([
+        ...matchStage,
+        { $group: { _id: "$status", count: { $sum: 1 } } }
+      ]),
+
+      // 6. Revenue by Month (last 18 months)
+      NewEnrollStudent.aggregate([
+        ...matchStage,
+        {
+          $group: {
+            _id: { month: { $month: "$createdAt" }, year: { $year: "$createdAt" } },
+            revenue: { $sum: { $ifNull: ["$paidAmount", 0] } },
+            programRevenue: { $sum: { $ifNull: ["$programPrice", 0] } },
+            count: { $sum: 1 }
+          }
+        },
+        { $sort: { "_id.year": -1, "_id.month": -1 } },
+        { $limit: 18 },
+        { $sort: { "_id.year": 1, "_id.month": 1 } }
+      ]),
+
+      // 7. Revenue by Domain
+      NewEnrollStudent.aggregate([
+        ...matchStage,
+        { $match: { domain: { $ne: null, $ne: "" } } },
+        {
+          $group: {
+            _id: "$domain",
+            revenue: { $sum: { $ifNull: ["$paidAmount", 0] } },
+            programRevenue: { $sum: { $ifNull: ["$programPrice", 0] } },
+            count: { $sum: 1 }
+          }
+        },
+        { $sort: { revenue: -1 } },
+        { $limit: 15 }
+      ]),
+
+      // 8. Revenue by Program
+      NewEnrollStudent.aggregate([
+        ...matchStage,
+        { $match: { program: { $ne: null, $ne: "" } } },
+        {
+          $group: {
+            _id: "$program",
+            revenue: { $sum: { $ifNull: ["$paidAmount", 0] } },
+            count: { $sum: 1 }
+          }
+        },
+        { $sort: { revenue: -1 } },
+        { $limit: 10 }
+      ]),
+
+      // 9. Revenue by Payment Mode
+      NewEnrollStudent.aggregate([
+        ...matchStage,
+        { $match: { modeofpayment: { $ne: null, $ne: "" } } },
+        {
+          $group: {
+            _id: "$modeofpayment",
+            revenue: { $sum: { $ifNull: ["$paidAmount", 0] } },
+            count: { $sum: 1 }
+          }
+        },
+        { $sort: { count: -1 } }
+      ]),
+
+      // 10. Students by College
+      NewEnrollStudent.aggregate([
+        ...matchStage,
+        { $match: { collegeName: { $ne: null, $ne: "" } } },
+        {
+          $group: {
+            _id: "$collegeName",
+            count: { $sum: 1 },
+            revenue: { $sum: { $ifNull: ["$paidAmount", 0] } }
+          }
+        },
+        { $sort: { count: -1 } },
+        { $limit: 15 }
+      ]),
+
+      // 11. Students by Branch
+      NewEnrollStudent.aggregate([
+        ...matchStage,
+        { $match: { branch: { $ne: null, $ne: "" } } },
+        {
+          $group: {
+            _id: "$branch",
+            count: { $sum: 1 }
+          }
+        },
+        { $sort: { count: -1 } },
+        { $limit: 10 }
+      ]),
+
+      // 12. Students by Year of Study
+      NewEnrollStudent.aggregate([
+        ...matchStage,
+        { $match: { yearOfStudy: { $ne: null, $ne: "" } } },
+        {
+          $group: {
+            _id: "$yearOfStudy",
+            count: { $sum: 1 }
+          }
+        },
+        { $sort: { count: -1 } }
+      ]),
+
+      // 13. Students by Language
+      NewEnrollStudent.aggregate([
+        ...matchStage,
+        { $match: { languages: { $exists: true, $not: { $size: 0 } } } },
+        { $unwind: "$languages" },
+        { $match: { languages: { $ne: null, $ne: "" } } },
+        {
+          $group: {
+            _id: "$languages",
+            count: { $sum: 1 }
+          }
+        },
+        { $sort: { count: -1 } }
+      ]),
+
+      // 14. Students by Lead Source
+      NewEnrollStudent.aggregate([
+        ...matchStage,
+        { $match: { lead: { $ne: null, $ne: "" } } },
+        {
+          $group: {
+            _id: "$lead",
+            count: { $sum: 1 },
+            revenue: { $sum: { $ifNull: ["$paidAmount", 0] } }
+          }
+        },
+        { $sort: { count: -1 } },
+        { $limit: 15 }
+      ]),
+
+      // 15. Counselor Stats
+      NewEnrollStudent.aggregate([
+        ...matchStage,
+        { $match: { counselor: { $ne: null, $ne: "" } } },
+        {
+          $group: {
+            _id: "$counselor",
+            students: { $sum: 1 },
+            revenue: { $sum: { $ifNull: ["$paidAmount", 0] } },
+            programRevenue: { $sum: { $ifNull: ["$programPrice", 0] } },
+            fullPaid: { $sum: { $cond: [{ $eq: ["$status", "fullPaid"] }, 1, 0] } },
+            booked: { $sum: { $cond: [{ $eq: ["$status", "booked"] }, 1, 0] } },
+            defaulted: { $sum: { $cond: [{ $eq: ["$status", "default"] }, 1, 0] } },
+            pendingAmount: { $sum: { $ifNull: ["$remainingAmount", 0] } },
+            offerLetters: { $sum: { $cond: ["$offerlettersended", 1, 0] } },
+            onboarding: { $sum: { $cond: ["$onboardingSended", 1, 0] } },
+            mailSent: { $sum: { $cond: ["$mailSended", 1, 0] } },
+            userCreated: { $sum: { $cond: ["$userCreated", 1, 0] } }
+          }
+        },
+        { $sort: { revenue: -1 } },
+        { $limit: 50 }
+      ]),
+
+      // 16. Internship Stats (active, starting, ending this month)
+      NewEnrollStudent.aggregate([
+        ...matchStage,
+        {
+          $facet: {
+            startingThisMonth: [
+              { $match: { internshipstartsmonth: currentMonthYear } },
+              { $count: "count" }
+            ],
+            endingThisMonth: [
+              { $match: { internshipendsmonth: currentMonthYear } },
+              { $count: "count" }
+            ],
+            offerLetterSent: [
+              { $match: { offerlettersended: true } },
+              { $count: "count" }
+            ],
+            onboardingSent: [
+              { $match: { onboardingSended: true } },
+              { $count: "count" }
+            ],
+            mailSent: [
+              { $match: { mailSended: true } },
+              { $count: "count" }
+            ],
+            userCreated: [
+              { $match: { userCreated: true } },
+              { $count: "count" }
+            ]
+          }
+        }
+      ]),
+
+      // 17. Remark Distribution (last remark of each student)
+      NewEnrollStudent.aggregate([
+        ...matchStage,
+        { $match: { remark: { $exists: true, $not: { $size: 0 } } } },
+        { $addFields: { lastRemark: { $arrayElemAt: ["$remark", -1] } } },
+        { $match: { lastRemark: { $ne: null, $ne: "" } } },
+        { $group: { _id: "$lastRemark", count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: 15 }
+      ]),
+
+      // 18. Referral stats
+      NewEnrollStudent.aggregate([
+        ...matchStage,
+        { $match: { referFriend: { $ne: null, $ne: "" } } },
+        {
+          $group: {
+            _id: "$referFriend",
+            referrals: { $sum: 1 },
+            revenue: { $sum: { $ifNull: ["$paidAmount", 0] } }
+          }
+        },
+        { $sort: { referrals: -1 } },
+        { $limit: 10 }
+      ]),
+
+      // 19. Total paid amount (all time)
+      NewEnrollStudent.aggregate([
+        ...matchStage,
+        { $group: { _id: null, total: { $sum: { $ifNull: ["$paidAmount", 0] } } } }
+      ]),
+
+      // 20. Total program price (all time)
+      NewEnrollStudent.aggregate([
+        ...matchStage,
+        { $group: { _id: null, total: { $sum: { $ifNull: ["$programPrice", 0] } } } }
+      ]),
+
+      // 21. Total remaining amount
+      NewEnrollStudent.aggregate([
+        ...matchStage,
+        { $group: { _id: null, total: { $sum: { $ifNull: ["$remainingAmount", 0] } } } }
+      ])
+    ]);
+
+    // --- Build month names ---
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    const revenueByMonth = revenueByMonthRaw.map(r => ({
+      month: `${monthNames[r._id.month - 1]} ${r._id.year}`,
+      revenue: r.revenue,
+      programRevenue: r.programRevenue,
+      count: r.count,
+    }));
+
+    // --- Payment status map ---
+    const statusMap = {};
+    paymentStatusCounts.forEach(s => { statusMap[s._id] = s.count; });
+
+    // --- Internship facet extraction ---
+    const internFacet = internshipStatsRaw[0] || {};
+    const internshipStats = {
+      startingThisMonth: (internFacet.startingThisMonth?.[0]?.count) || 0,
+      endingThisMonth: (internFacet.endingThisMonth?.[0]?.count) || 0,
+      offerLetterSent: (internFacet.offerLetterSent?.[0]?.count) || 0,
+      onboardingSent: (internFacet.onboardingSent?.[0]?.count) || 0,
+      mailSent: (internFacet.mailSent?.[0]?.count) || 0,
+      userCreated: (internFacet.userCreated?.[0]?.count) || 0,
+    };
+
+    // --- Revenue totals ---
+    const totalRevenue = totalPaidAmount[0]?.total || 0;
+    const totalProgram = totalProgramPrice[0]?.total || 0;
+    const totalPending = totalRemainingAmount[0]?.total || 0;
+    const avgFee = totalStudents > 0 ? Math.round(totalRevenue / totalStudents) : 0;
+
+    // --- Top performers ---
+    const topCounselor = counselorStatsRaw[0]?._id || "N/A";
+    const topCollege = studentsByCollegeRaw[0]?._id || "N/A";
+    const topDomain = revenueByDomainRaw[0]?._id || "N/A";
+    const collectionRate = totalProgram > 0 ? Math.round((totalRevenue / totalProgram) * 100) : 0;
+
+    // --- Funnel ---
+    const funnel = {
+      registered: totalStudents,
+      paid: (statusMap["fullPaid"] || 0) + (statusMap["booked"] || 0),
+      mailSent: internshipStats.mailSent,
+      onboarding: internshipStats.onboardingSent,
+      userCreated: internshipStats.userCreated,
+      offerLetter: internshipStats.offerLetterSent,
+    };
+
+    res.status(200).json({
+      kpis: {
+        totalStudents,
+        todayAdmissions,
+        monthAdmissions,
+        yearAdmissions,
+        totalRevenue,
+        totalProgramPrice: totalProgram,
+        totalPending,
+        avgFee,
+        topCounselor,
+        topCollege,
+        topDomain,
+        collectionRate,
+        fullPaid: statusMap["fullPaid"] || 0,
+        booked: statusMap["booked"] || 0,
+        defaulted: statusMap["default"] || 0,
+        offerLetterSent: internshipStats.offerLetterSent,
+        onboardingSent: internshipStats.onboardingSent,
+        mailSent: internshipStats.mailSent,
+        userCreated: internshipStats.userCreated,
+      },
+      revenueByMonth,
+      revenueByDomain: revenueByDomainRaw.map(r => ({ domain: r._id, revenue: r.revenue, programRevenue: r.programRevenue, count: r.count })),
+      revenueByProgram: revenueByProgramRaw.map(r => ({ program: r._id, revenue: r.revenue, count: r.count })),
+      revenueByPaymentMode: revenueByPaymentModeRaw.map(r => ({ mode: r._id, revenue: r.revenue, count: r.count })),
+      studentsByCollege: studentsByCollegeRaw.map(r => ({ college: r._id, count: r.count, revenue: r.revenue })),
+      studentsByBranch: studentsByBranchRaw.map(r => ({ branch: r._id, count: r.count })),
+      studentsByYear: studentsByYearRaw.map(r => ({ year: r._id, count: r.count })),
+      studentsByLanguage: studentsByLanguageRaw.map(r => ({ language: r._id, count: r.count })),
+      studentsByLeadSource: studentsByLeadSourceRaw.map(r => ({ source: r._id, count: r.count, revenue: r.revenue })),
+      counselorStats: counselorStatsRaw.map((r, i) => ({
+        rank: i + 1,
+        name: r._id,
+        students: r.students,
+        revenue: r.revenue,
+        programRevenue: r.programRevenue,
+        fullPaid: r.fullPaid,
+        booked: r.booked,
+        defaulted: r.defaulted,
+        pendingAmount: r.pendingAmount,
+        offerLetters: r.offerLetters,
+        onboarding: r.onboarding,
+        mailSent: r.mailSent,
+        userCreated: r.userCreated,
+        conversionRate: r.students > 0 ? Math.round((r.fullPaid / r.students) * 100) : 0,
+        avgFee: r.students > 0 ? Math.round(r.revenue / r.students) : 0,
+      })),
+      internshipStats,
+      remarkDistribution: remarkDistributionRaw.map(r => ({ remark: r._id, count: r.count })),
+      referralStats: referralStatsRaw.map(r => ({ referrer: r._id, referrals: r.referrals, revenue: r.revenue })),
+      funnel,
+      currentMonthYear,
+    });
+
+  } catch (error) {
+    console.error("Error in /bi-dashboard-stats:", error);
+    res.status(500).json({ message: "Server error fetching BI dashboard stats", error: error.message });
+  }
+});
+
 
 /**
  * GET /getmonthlyrevenue
