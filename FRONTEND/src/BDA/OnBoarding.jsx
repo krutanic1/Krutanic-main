@@ -220,6 +220,13 @@ const OnBoarding = () => {
             <span onClick={resetForm}>✖</span>
             <h2>OnBoarding Form</h2>
             <input
+              value={localStorage.getItem("bdaName") || ""}
+              type="text"
+              placeholder="Counselor Name"
+              disabled
+              title="Counselor name cannot be edited"
+            />
+            <input
               value={fullname}
               onChange={(e) => setFullname(e.target.value)}
               type="text"

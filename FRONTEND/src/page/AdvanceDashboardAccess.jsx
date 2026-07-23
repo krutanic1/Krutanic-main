@@ -420,7 +420,10 @@ const AdvanceDashboardAccess = () => {
               <input
                 type="text"
                 value={counselor}
-                onChange={(e) => setCounselor(e.target.value)}
+                onChange={() => {}}
+                style={{ pointerEvents: 'none', backgroundColor: '#f9f9f9' }}
+                tabIndex={-1}
+                title="Counselor name is auto-filled and cannot be edited"
                 required
               />
               <label htmlFor="Counselor Name">Counselor Name</label>
