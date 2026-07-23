@@ -46,13 +46,11 @@ const MentorshipHero = ({ onOpenForm }) => {
 
         <div className="km-hero__visual" data-aos="fade-left">
           <div style={{ position: 'relative', width: '180%', left: '-40%' }}>
-            <DotLottieReact
-              src="https://lottie.host/817ffd17-da62-4ac8-a9df-498070d0bc20/rftXYj1bK0.lottie"
-              loop
-              autoplay
+            <img 
+              src={heroImg} 
+              alt="Mentorship Hero" 
               className="km-hero__img"
-              renderConfig={{ devicePixelRatio: window.devicePixelRatio }}
-              style={{ width: '100%', display: 'block' }}
+              style={{ width: '100%', display: 'block', maxWidth: '500px', margin: '0 auto' }}
             />
           </div>
           

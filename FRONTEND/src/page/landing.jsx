@@ -22,6 +22,7 @@ import trainingCertificate from "../assets/certificates/c/training.jpg";
 
 // import roadmap from "../assets/roadmap.png";
 import AdvanceCounses from "../Components/advancecourses";
+import learningCentreHero from "../assets/learning-centre-hero-2.png";
 
 const HomePage = () => {
   useEffect(() => {
@@ -184,12 +185,10 @@ const HomePage = () => {
           </div>
         </div>
         <div className="learning-centre-image" data-aos="zoom-in" data-aos-delay="250">
-          <DotLottieReact
-            src="https://lottie.host/0369968a-ddd1-4f45-ad4d-ad9242b7326d/crTSP8AyQA.lottie"
-            loop
-            autoplay
-            renderConfig={{ devicePixelRatio: window.devicePixelRatio }}
-            style={{ width: '100%', minHeight: '380px', maxHeight: '520px', objectFit: 'cover' }}
+          <img 
+            src={learningCentreHero} 
+            alt="Krutanic Learning Centre" 
+            style={{ width: '100%', minHeight: '380px', maxHeight: '520px', objectFit: 'cover', borderRadius: '12px' }} 
           />
         </div>
       </div>
