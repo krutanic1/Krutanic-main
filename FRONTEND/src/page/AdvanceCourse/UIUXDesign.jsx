@@ -87,7 +87,7 @@ const curriculumRoadmap = [
   { weeks: "Weeks 7-10", title: "UI Engineering in Figma", topics: "Auto-layout, components, variants, styles.", details: "Deep-dive into Figma to build production-ready interfaces with systematic precision." },
   { weeks: "Weeks 11-12", title: "UX Psychology", topics: "Gestalt laws, cognitive load, behavioral triggers.", details: "Understand the 'why' behind user behavior and design interfaces that align with human intuition." },
   { weeks: "Weeks 13-16", title: "Advanced Design Systems", topics: "Tokenization, documentation, scalability.", details: "Learn to build and manage cohesive design systems that scale across platforms and teams." },
-  { weeks: "Weeks 17-20", title: "Capstone Product Design", topics: "End-to-end case, Prototyping, Usability testing.", details: "Execute a full product cycleÃ¢â‚¬â€ from research to a high-fidelity interactive prototype." },
+  { weeks: "Weeks 17-20", title: "Capstone Product Design", topics: "End-to-end case, Prototyping, Usability testing.", details: "Execute a full product cycle—from research to a high-fidelity interactive prototype." },
   { weeks: "Weeks 21-24", title: "Portfolio Engineering", topics: "Case study writing, Behance/Dribbble, CV prep.", details: "Translate your projects into a world-class portfolio that captures the attention of elite design leads." }
 ];
 
@@ -242,7 +242,7 @@ const UIUXDesign = () => {
       <section className="ux-sec-white">
         <div className="shell">
           <h2 className="sec-title">The Design Edge</h2>
-          <p className="sec-sub">UX is no longer a luxuryÃ¢â‚¬â€ it is the strategic engine of high-growth product companies and market disruptors.</p>
+          <p className="sec-sub">UX is no longer a luxury—it is the strategic engine of high-growth product companies and market disruptors.</p>
           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(300px, 1fr))', gap:'40px'}}>
              {marketOpportunity.map((item, i) => (
                <div key={i}>

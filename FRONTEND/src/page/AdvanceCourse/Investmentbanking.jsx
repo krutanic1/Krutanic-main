@@ -74,7 +74,7 @@ const curriculumRoadmap = [
   { weeks: "Weeks 1-2", title: "Banking Foundations", topics: "Structure, functions, capital raising, markets.", details: "Understand the lifecycle of a deal and the role of various desks in a global investment bank." },
   { weeks: "Weeks 3-4", title: "Valuation Frameworks", topics: "DCF, Comps, Precedents, LBO concepts.", details: "Learn the core methodologies used to price companies and justify transaction premiums." },
   { weeks: "Weeks 5-6", title: "Capital Markets", topics: "IPOs, Underwriting, Book building, Debt pricing.", details: "Master the mechanics of public offerings and how companies access institutional capital." },
-  { weeks: "Weeks 7-9", title: "Advanced M&A Dynamics", topics: "Due diligence, deal structuring, integration planning.", details: "Navigate the complex workflows of mergersÃ¢â‚¬â€ from initial bid to final integration logic." },
+  { weeks: "Weeks 7-9", title: "Advanced M&A Dynamics", topics: "Due diligence, deal structuring, integration planning.", details: "Navigate the complex workflows of mergers—from initial bid to final integration logic." },
   { weeks: "Weeks 10-12", title: "Financial Modeling", topics: "3-Statement models, Scenario analysis, Forecasting.", details: "Build production-grade Excel models that can withstand the rigors of executive review." },
   { weeks: "Weeks 13-14", title: "Governance & Ethics", topics: "Compliance, insider trading, conflict management.", details: "Learn the regulatory guardrails and high ethical standards required in high-stakes banking." },
   { weeks: "Weeks 15-16", title: "PE & Venture Capital", topics: "Fund structures, term sheets, exit strategies.", details: "Understand the private investment lifecycle from deal sourcing to multi-billion dollar exits." },
@@ -233,7 +233,7 @@ const Investmentbanking = () => {
       <section className="ib-sec-white">
         <div className="shell">
           <h2 className="sec-title">The Banking Advantage</h2>
-          <p className="sec-sub">Investment banking is more than just valuationÃ¢â‚¬â€ it is the strategic bedrock of institutional growth and capital excellence.</p>
+          <p className="sec-sub">Investment banking is more than just valuation—it is the strategic bedrock of institutional growth and capital excellence.</p>
           <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(300px, 1fr))', gap:'40px'}}>
              {marketOpportunity.map((item, i) => (
                <div key={i}>

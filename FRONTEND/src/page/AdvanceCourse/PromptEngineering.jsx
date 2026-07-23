@@ -206,7 +206,7 @@ const PromptEngineering = () => {
       {/* 1. HERO */}
       <CourseHeroBanner
         badge="Generative AI Focus"
-        icon="Ã°Å¸Â§Â "
+        icon="🧠"
         title="Prompt Engineering"
         highlight="Foundations to Pro"
         sub="Master the technical architectures and psychological frameworks required to steer LLMs with surgical precision across production-grade AI workflows."

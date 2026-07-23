@@ -75,7 +75,7 @@ const curriculumRoadmap = [
   { weeks: "Weeks 7-8", title: "Agile Development Cycles", topics: "Scrum, Kanban, User Stories, Backlog Grooming.", details: "Master the execution rituals required to lead engineering teams with clarity and iterative precision." },
   { weeks: "Weeks 9-10", title: "Product Design & UX", topics: "Design thinking, wireframing, usability testing.", details: "Collaborate effectively with designers to translate user empathy into seamless product experiences." },
   { weeks: "Weeks 11-12", title: "Data-Driven Decision Making", topics: "KPI frameworks, A/B testing, product analytics.", details: "Use behavioral data and structured experiments to validate hypotheses and optimize product value." },
-  { weeks: "Weeks 13-16", title: "Monetization & Stakeholders", topics: "Pricing models, unit economics, executive alignment.", details: "Learn the business side of productÃ¢â‚¬â€ from pricing strategy to navigating complex stakeholder hierarchies." },
+  { weeks: "Weeks 13-16", title: "Monetization & Stakeholders", topics: "Pricing models, unit economics, executive alignment.", details: "Learn the business side of product—from pricing strategy to navigating complex stakeholder hierarchies." },
   { weeks: "Weeks 17-20", title: "Launch & GTM Execution", topics: "Launch planning, positioning, messaging, scaling.", details: "Plan and execute a high-impact go-to-market strategy that ensures adoption and market resonance." },
   { weeks: "Weeks 21-24", title: "Capstone & Placement Prep", topics: "End-to-end case, Resume, Mock interviews.", details: "Crystalize your learning into a portfolio-grade deck and prepare for the rigors of PM hiring cycles." }
 ];
@@ -193,7 +193,7 @@ const ProductManagement = () => {
       {/* 1. HERO */}
       <CourseHeroBanner
         badge="Product Leadership"
-        icon="Ã°Å¸â€™Å½"
+        icon="💎"
         title="Product Management"
         highlight="Build & Scale"
         sub="A comprehensive 24-week program to help you build, launch, and scale high-impact products with strategic clarity and business precision."
