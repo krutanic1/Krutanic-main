@@ -164,6 +164,7 @@ import MentorQueries from "./Admin/MentorQueries";
 import AdvLeadManagement from "./Admin/AdvLeadManagement";
 import AdminAnalytics from "./Admin/AdminAnalytics";
 import AdvLeadsCount from "./AdvTeam/AdvLeadsCount";
+import SalesIntelligence from "./Admin/SalesIntelligence";
 
 import AdvAdminDashboard from "./Admin/AdvAdminDashboard";
 import AgentsManagement from "./Admin/AgentsManagement";
@@ -516,7 +517,7 @@ const AppContent = () => {
     ReactPixel.pageView();
   }, [location]);
 
-  const adminheaderPaths = ["/adminfeedback", "/admindashboard", "/adminmentorshipprojects", "/admininterviewquestions", "/adminaptitudequestions", "/addcourse", "/addmedcourse", "/addadvcourse", "/addmodule", "/addmedmodule", "/addadvmodule", "/pendingapplication", "/acceptedapplication", "/bookedlist", "/halfpayment", "/defaultlist", "/fullpaidlist", "/createoperation", "/createadvoperation", "/createbda", "/createmedteam", "/createadvteam", "/createmanager", "/mentorqueries", "/advancequeries", "/revenuesheet", "/advrevenuesheet", "/createplacementcoordinator", "/onboardingdetails", "/advonboardingdetails", "/medonboardingdetails", "/advbooked", "/advfullpaid", "/advdefault", "/allteamdetail", "/advteamdetail", "/masterclasses", "/addevent", "/eventregistration", "/target", "/alumnidata", "/inactivebda", "/referandearnresponse", "/createmarketingteam", "/createinterviewer", "/createhr", "/createinterview", "/adminprojectpage", "/advprojectpage", "/advexercisepage", "/advleadmanagement", "/adminanalytics", "/advadmindashboard", "/admin/agents", "/admin/teams", "/admin/leadassignments", "/admin/agentactivity", "/admin/reports", "/bulkimport", "/admin/attendance", "/advusermanagement", "/admin/livemonitor", "/admin/calllogs", "/advformleads", "/admin/leads-count", "/admin/medpro-leads", "/admin/career-assessments", "/admin/adv-filter", "/adminmedrevenue", "/adminmedleaderboard", "/adminmedtarget", "/adminteamanalysis"];
+  const adminheaderPaths = ["/adminfeedback", "/admindashboard", "/adminmentorshipprojects", "/admininterviewquestions", "/adminaptitudequestions", "/addcourse", "/addmedcourse", "/addadvcourse", "/addmodule", "/addmedmodule", "/addadvmodule", "/pendingapplication", "/acceptedapplication", "/bookedlist", "/halfpayment", "/defaultlist", "/fullpaidlist", "/createoperation", "/createadvoperation", "/createbda", "/createmedteam", "/createadvteam", "/createmanager", "/mentorqueries", "/advancequeries", "/revenuesheet", "/advrevenuesheet", "/createplacementcoordinator", "/onboardingdetails", "/advonboardingdetails", "/medonboardingdetails", "/advbooked", "/advfullpaid", "/advdefault", "/allteamdetail", "/advteamdetail", "/masterclasses", "/addevent", "/eventregistration", "/target", "/alumnidata", "/inactivebda", "/referandearnresponse", "/createmarketingteam", "/createinterviewer", "/createhr", "/createinterview", "/adminprojectpage", "/advprojectpage", "/advexercisepage", "/advleadmanagement", "/adminanalytics", "/advadmindashboard", "/admin/agents", "/admin/teams", "/admin/leadassignments", "/admin/agentactivity", "/admin/reports", "/bulkimport", "/admin/attendance", "/advusermanagement", "/admin/livemonitor", "/admin/calllogs", "/advformleads", "/admin/leads-count", "/admin/medpro-leads", "/admin/career-assessments", "/admin/adv-filter", "/adminmedrevenue", "/adminmedleaderboard", "/adminmedtarget", "/adminteamanalysis", "/admin/sales-intelligence"];
 
   const operationheaderPaths = ["/operationdashboard", "/fullpayment", "/bookedpayment", "/defaultpayment", "/operationrevenuesheet"];
   const advoperationheaderPaths = ["/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet"];
@@ -712,6 +713,7 @@ const AppContent = () => {
 
 
 
+        <Route path="/admin/sales-intelligence" element={isAuthenticatedAdmin() ? (<SalesIntelligence />) : (<Navigate to="/AdminLogin" />)} />
         {/* Admin Panel End */}
 
         {/* Operation Panel Start */}

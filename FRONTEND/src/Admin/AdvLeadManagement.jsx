@@ -134,10 +134,12 @@ const AdvLeadManagement = () => {
         try {
             const res = await axios.get(`${API}/getadvteam`);
             const data = res.data || [];
-            // For Admin, show only active Managers and Team Leaders as potential assignees
-            setManagers(data.filter(m => 
-                m.status === "Active" && m.designation && ["ADV MANAGER", "MANAGER", "ADV LEADER", "LEADER"].includes(m.designation.toUpperCase())
-            ));
+            const isDev = window.location.hostname === "localhost" || import.meta.env.DEV;
+            setManagers(data.filter(m => {
+                if (m.status !== "Active") return false;
+                if (isDev) return true; // Show all active users in development
+                return m.designation && ["ADV MANAGER", "MANAGER", "ADV LEADER", "LEADER"].includes(m.designation.toUpperCase());
+            }));
         } catch (err) {
             console.error("Failed to fetch assignees");
         }

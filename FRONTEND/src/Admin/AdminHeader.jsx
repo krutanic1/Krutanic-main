@@ -215,6 +215,9 @@ const AdminHeader = () => {
             <Link to="/AdvAdminDashboard">
               <i className="fa fa-dashboard mr-2"></i>Admin Dashboard
             </Link>
+            <Link to="/admin/sales-intelligence">
+              <i className="fa fa-bar-chart mr-2" style={{ color: '#8b5cf6' }}></i>Sales Intelligence
+            </Link>
             <Link to="/Admin/CallLogs" className="flex items-center">
               <i className="fa fa-phone mr-2" style={{ color: '#3b82f6' }}></i>Call Activity Logs
             </Link>

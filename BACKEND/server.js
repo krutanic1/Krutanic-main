@@ -165,6 +165,10 @@ app.use("/api/adv-reports", AdvReportRoutes);
 app.use("/api/adv-notifications", AdvNotificationRoutes);
 app.use("/api/adv-tasks", AdvTaskRoutes);
 
+const SalesIntelligenceRoutes = require("./routes/SalesIntelligenceRoutes");
+app.use("/api/sales-intelligence", SalesIntelligenceRoutes);
+
+
 const deviceCallLogRoutes = require("./routes/deviceCallLogRoutes");
 app.use("/api/call-logs", deviceCallLogRoutes);
 app.use("/api/admin", AdvAdminRoutes);
