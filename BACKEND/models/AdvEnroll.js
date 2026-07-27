@@ -65,6 +65,7 @@ const advEnrollSchema = new Schema(
     onboardingSended: { type: Boolean, default: false },
     userCreated: { type: Boolean, default: false },
     offerlettersended: { type: Boolean, default: false },
+    newOfferLetterSended: { type: Boolean, default: false },
 
     whatsAppNumber: { type: String },
     remainingAmount: { type: Number },

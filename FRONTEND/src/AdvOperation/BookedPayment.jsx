@@ -104,6 +104,73 @@ const BookedAmount = () => {
     }
   };
 
+  const [advancedOfferData, setAdvancedOfferData] = useState(null);
+  const [originalProgramFee, setOriginalProgramFee] = useState("89999");
+  const [finalPayableFee, setFinalPayableFee] = useState("35000");
+  const [enrollmentAmountReceived, setEnrollmentAmountReceived] = useState("5000");
+  const [remainingBalance, setRemainingBalance] = useState("30000");
+  const [emiDuration, setEmiDuration] = useState("2 Months");
+  const [monthlyEmi, setMonthlyEmi] = useState("15000");
+  const [firstInstallmentAmount, setFirstInstallmentAmount] = useState("15000");
+  const [firstInstallmentDate, setFirstInstallmentDate] = useState("");
+  const [secondInstallmentAmount, setSecondInstallmentAmount] = useState("15000");
+  const [secondInstallmentDate, setSecondInstallmentDate] = useState("");
+  const [isAdvancedOfferSending, setIsAdvancedOfferSending] = useState(false);
+
+  const resetAdvancedOfferLetter = () => {
+    setAdvancedOfferData(null);
+    setOriginalProgramFee("89999");
+    setFinalPayableFee("35000");
+    setEnrollmentAmountReceived("5000");
+    setRemainingBalance("30000");
+    setEmiDuration("2 Months");
+    setMonthlyEmi("15000");
+    setFirstInstallmentAmount("15000");
+    setFirstInstallmentDate("");
+    setSecondInstallmentAmount("15000");
+    setSecondInstallmentDate("");
+  };
+
+  const sendAdvancedOfferLetter = async (e) => {
+    e.preventDefault();
+    setIsAdvancedOfferSending(true);
+
+    const advancedOfferDetails = {
+      id: advancedOfferData._id,
+      fullname: advancedOfferData.fullname
+        .split(" ")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(" "),
+      domain: advancedOfferData.domain,
+      email: advancedOfferData.email,
+      originalProgramFee,
+      finalPayableFee,
+      enrollmentAmountReceived,
+      remainingBalance,
+      emiDuration,
+      monthlyEmi,
+      firstInstallmentAmount,
+      firstInstallmentDate: new Date(firstInstallmentDate).toLocaleDateString("en-GB", { year: "numeric", month: "long", day: "numeric" }),
+      secondInstallmentAmount,
+      secondInstallmentDate: new Date(secondInstallmentDate).toLocaleDateString("en-GB", { year: "numeric", month: "long", day: "numeric" }),
+      smtpConfig: "SMTP_MAIL2",
+    };
+    try {
+      const response = await axios.post(
+        `${API}/sendnewofferletter`,
+        advancedOfferDetails
+      );
+      toast.success("New offer letter sent successfully");
+      fetchNewStudent();
+      resetAdvancedOfferLetter();
+    } catch (error) {
+      console.error("There was an error sending the new offer letter:", error);
+      toast.error("Failed to send new offer letter");
+    } finally {
+      setIsAdvancedOfferSending(false);
+    }
+  };
+
   const fetchCourses = async () => {
     try {
       const response = await axios.get(`${API}/getadvcourses`);
@@ -845,6 +912,83 @@ const BookedAmount = () => {
           </form>
         </div>
       )}
+      {advancedOfferData && (
+        <div className="form" style={{ zIndex: 1000 }}>
+          <form onSubmit={sendAdvancedOfferLetter} className="relative" style={{ overflowY: 'auto', maxHeight: '90vh' }}>
+            <div
+              onClick={resetAdvancedOfferLetter}
+              className="absolute top-2 right-2 text-gray-600 hover:text-red-500 cursor-pointer text-xl font-bold p-2"
+            >
+              ✖
+            </div>
+            <h2>New Offer Letter Details</h2>
+            <p className="mb-4">
+              Name: <strong>{advancedOfferData?.fullname}</strong>
+              <br />
+              Email: <strong>{advancedOfferData?.email}</strong>
+            </p>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col">
+                <label className="text-sm font-medium mb-1">Original Program Fee (₹):</label>
+                <input type="number" value={originalProgramFee} onChange={(e) => setOriginalProgramFee(e.target.value)} required className="border p-2 rounded" />
+              </div>
+              <div className="flex flex-col">
+                <label className="text-sm font-medium mb-1">Final Payable Fee (₹):</label>
+                <input type="number" value={finalPayableFee} onChange={(e) => setFinalPayableFee(e.target.value)} required className="border p-2 rounded" />
+              </div>
+              <div className="flex flex-col">
+                <label className="text-sm font-medium mb-1">Enrollment Amount Received (₹):</label>
+                <input type="number" value={enrollmentAmountReceived} onChange={(e) => setEnrollmentAmountReceived(e.target.value)} required className="border p-2 rounded" />
+              </div>
+              <div className="flex flex-col">
+                <label className="text-sm font-medium mb-1">Remaining Balance (₹):</label>
+                <input type="number" value={remainingBalance} onChange={(e) => setRemainingBalance(e.target.value)} required className="border p-2 rounded" />
+              </div>
+              <div className="flex flex-col">
+                <label className="text-sm font-medium mb-1">EMI Duration (e.g., 2 Months):</label>
+                <input type="text" value={emiDuration} onChange={(e) => setEmiDuration(e.target.value)} required className="border p-2 rounded" />
+              </div>
+              <div className="flex flex-col">
+                <label className="text-sm font-medium mb-1">Monthly EMI Approx (₹):</label>
+                <input type="number" value={monthlyEmi} onChange={(e) => setMonthlyEmi(e.target.value)} required className="border p-2 rounded" />
+              </div>
+              <div className="flex flex-col">
+                <label className="text-sm font-medium mb-1">1st Installment Amount (₹):</label>
+                <input type="number" value={firstInstallmentAmount} onChange={(e) => setFirstInstallmentAmount(e.target.value)} required className="border p-2 rounded" />
+              </div>
+              <div className="flex flex-col">
+                <label className="text-sm font-medium mb-1">1st Installment Date:</label>
+                <input type="date" value={firstInstallmentDate} onChange={(e) => setFirstInstallmentDate(e.target.value)} required className="border p-2 rounded" />
+              </div>
+              <div className="flex flex-col">
+                <label className="text-sm font-medium mb-1">2nd Installment Amount (₹):</label>
+                <input type="number" value={secondInstallmentAmount} onChange={(e) => setSecondInstallmentAmount(e.target.value)} required className="border p-2 rounded" />
+              </div>
+              <div className="flex flex-col">
+                <label className="text-sm font-medium mb-1">2nd Installment Date:</label>
+                <input type="date" value={secondInstallmentDate} onChange={(e) => setSecondInstallmentDate(e.target.value)} required className="border p-2 rounded" />
+              </div>
+            </div>
+
+            <div className="flex gap-4 mt-6">
+              <button
+                type="button"
+                onClick={resetAdvancedOfferLetter}
+                className="w-full bg-gray-500 text-white p-2 rounded hover:bg-gray-600 transition"
+              >
+                Cancel
+              </button>
+              <input
+                type="submit"
+                value={isAdvancedOfferSending ? "Sending..." : "Send Letter"}
+                className="w-full bg-[#1e40af] text-white p-2 rounded cursor-pointer hover:bg-[#1e3a8a] transition"
+                disabled={isAdvancedOfferSending}
+              />
+            </div>
+          </form>
+        </div>
+      )}
       {iscourseFormVisible && (
         <div className="fixed inset-0 z-[2000] bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-5xl p-6 relative overflow-y-auto max-h-[90vh]">
@@ -1228,6 +1372,7 @@ const BookedAmount = () => {
               <th>Create User account</th>
               <th>Send Onboarding Details</th>
               <th>send offer letter</th>
+              <th>New Offer Letter</th>
               {/* <th>Whatsapp</th> */}
               <th>More Details</th>
               <th>Last Remark</th>
@@ -1348,6 +1493,16 @@ const BookedAmount = () => {
                             <i className="fa fa-send">sended</i>
                           ) : (
                             <i className="fa fa-send"></i>
+                          )}
+                        </td>
+                        <td
+                          onClick={() => setAdvancedOfferData(item)}
+                          style={{ cursor: "pointer", color: "green" }}
+                        >
+                          {item.newOfferLetterSended ? (
+                            <i className="fa fa-file-text">sended</i>
+                          ) : (
+                            <i className="fa fa-file-text"></i>
                           )}
                         </td>
                         {/* <td>

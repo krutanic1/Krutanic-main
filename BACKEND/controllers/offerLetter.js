@@ -411,6 +411,342 @@ Our commitment is to provide you with industry-relevant learning, practical impl
   return pdfBytes;
 };
 
+const createNewAdvanceOfferLetterPDF = async ({ 
+  fullname, date, programName, 
+  originalProgramFee, finalPayableFee, enrollmentAmountReceived, remainingBalance, 
+  emiDuration, monthlyEmi, firstInstallmentAmount, firstInstallmentDate, 
+  secondInstallmentAmount, secondInstallmentDate 
+}) => {
+  const pdfDoc = await PDFDocument.create();
+
+  const imagePath = path.join(__dirname, "offer.jpg");
+  const imageBytes = fs.readFileSync(imagePath);
+  const jpgImage = await pdfDoc.embedJpg(imageBytes);
+
+  const imagePath2 = path.join(__dirname, "offerback.jpg");
+  let jpgImage2;
+  try {
+    const imageBytes2 = fs.readFileSync(imagePath2);
+    jpgImage2 = await pdfDoc.embedJpg(imageBytes2);
+  } catch(e) {
+    jpgImage2 = jpgImage;
+  }
+
+  const stampPathJpg = path.join(__dirname, "stamp.jpg");
+  const stampPathPng = path.join(__dirname, "stamp.png");
+  let stampImage;
+  try {
+    if (fs.existsSync(stampPathJpg)) {
+      stampImage = await pdfDoc.embedJpg(fs.readFileSync(stampPathJpg));
+    } else if (fs.existsSync(stampPathPng)) {
+      stampImage = await pdfDoc.embedPng(fs.readFileSync(stampPathPng));
+    }
+  } catch (e) {
+    console.log("Stamp image not found or invalid format:", e.message);
+  }
+
+  const boldFont = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
+  const regularFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+
+  const a4Width = 595.28;
+  const a4Height = 841.89;
+
+  // PAGE 1
+  const page1 = pdfDoc.addPage([a4Width, a4Height]);
+  page1.drawImage(jpgImage, { x: 0, y: 0, width: a4Width, height: a4Height });
+  
+  const programNameStr = programName || "Professional Program";
+
+  let y = 710;
+  page1.drawText("OFFICIAL OFFER OF ENROLLMENT", { x: 50, y, size: 20, font: boldFont, color: rgb(0,0,0) });
+  y -= 45;
+  page1.drawText(programNameStr, { x: 50, y, size: 13, font: boldFont, color: rgb(0,0,0) });
+  y -= 30;
+  page1.drawText(`Date: [${date || ""}]`, { x: 50, y, size: 13, font: boldFont, color: rgb(0,0,0) });
+  
+  y -= 60;
+  page1.drawText(`Dear ${fullname || ""},`, { x: 50, y, size: 13, font: boldFont, color: rgb(0,0,0) });
+  
+  y -= 55;
+  const p1_text1 = `Congratulations! You Have Been Selected for the ${programNameStr} Professional Program`;
+  page1.drawText(p1_text1, { x: 50, y, size: 12.5, font: regularFont, color: rgb(0,0,0), maxWidth: 495, lineHeight: 26 });
+  
+  y -= 85;
+  const p1_text2 = `Following a comprehensive evaluation of your profile, career aspirations, and professional growth potential, we are delighted to extend an official offer of enrollment into the Krutanic ${programNameStr}.`;
+  page1.drawText(p1_text2, { x: 50, y, size: 12.5, font: regularFont, color: rgb(0,0,0), maxWidth: 495, lineHeight: 26 });
+
+  y -= 105;
+  const p1_text3 = `Your selection reflects our confidence in your ability to successfully transition into one of the most in-demand and high-growth domains in today's data-driven economy.`;
+  page1.drawText(p1_text3, { x: 50, y, size: 12.5, font: regularFont, color: rgb(0,0,0), maxWidth: 495, lineHeight: 26 });
+
+  y -= 95;
+  const p1_text4 = `This industry-focused program has been carefully designed to equip you with practical expertise in Data Analytics, Business Intelligence, SQL, Python, Power BI, Tableau, Machine Learning, and Generative AI through live mentor-led sessions, real-world projects, hands-on assignments, and comprehensive career support.`;
+  page1.drawText(p1_text4, { x: 50, y, size: 12.5, font: regularFont, color: rgb(0,0,0), maxWidth: 495, lineHeight: 26 });
+
+  // Footer removed from Page 1
+
+  // PAGE 2
+  const page2 = pdfDoc.addPage([a4Width, a4Height]);
+  page2.drawImage(jpgImage, { x: 0, y: 0, width: a4Width, height: a4Height });
+  
+  let y2 = 720;
+  page2.drawText("Program Investment Summary", { x: 50, y: y2, size: 18, font: boldFont, color: rgb(0,0,0) });
+  y2 -= 35;
+  page2.drawText("Particulars", { x: 50, y: y2, size: 13, font: boldFont, color: rgb(0,0,0) });
+  page2.drawText("Amount", { x: 300, y: y2, size: 13, font: boldFont, color: rgb(0,0,0) });
+  y2 -= 25;
+  page2.drawText("Original Program Fee", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page2.drawText(`INR ${originalProgramFee}/-`, { x: 300, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y2 -= 25;
+  page2.drawText("Final Payable Fee", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page2.drawText(`INR ${finalPayableFee}/-`, { x: 300, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+
+  y2 -= 40;
+  page2.drawText("Payment Status", { x: 50, y: y2, size: 18, font: boldFont, color: rgb(0,0,0) });
+  y2 -= 35;
+  page2.drawText("Particulars", { x: 50, y: y2, size: 13, font: boldFont, color: rgb(0,0,0) });
+  page2.drawText("Amount", { x: 300, y: y2, size: 13, font: boldFont, color: rgb(0,0,0) });
+  y2 -= 25;
+  page2.drawText("Enrollment Amount Received", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page2.drawText(`INR ${enrollmentAmountReceived}/-`, { x: 300, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y2 -= 25;
+  page2.drawText("Remaining Balance", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page2.drawText(`INR ${remainingBalance}/-`, { x: 300, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+
+  y2 -= 40;
+  page2.drawText("Flexible EMI Facility", { x: 50, y: y2, size: 18, font: boldFont, color: rgb(0,0,0) });
+  y2 -= 25;
+  page2.drawText("To support your learning journey, the remaining balance may be paid through a", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y2 -= 20;
+  page2.drawText("structured EMI plan.", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+
+  y2 -= 40;
+  page2.drawText(`${emiDuration} Installments`, { x: 50, y: y2, size: 18, font: boldFont, color: rgb(0,0,0) });
+  y2 -= 35;
+  page2.drawText("EMI Duration", { x: 50, y: y2, size: 13, font: boldFont, color: rgb(0,0,0) });
+  page2.drawText("Monthly EMI", { x: 300, y: y2, size: 13, font: boldFont, color: rgb(0,0,0) });
+  y2 -= 25;
+  page2.drawText(emiDuration, { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page2.drawText(`INR ${monthlyEmi}/- approx. per month`, { x: 300, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+
+  y2 -= 40;
+  const safeEmiDuration = emiDuration || "";
+  page2.drawText(`Note: The total fee Should be paid in ${safeEmiDuration.toLowerCase()} installments as per the`, { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y2 -= 20;
+  page2.drawText(`schedule below:`, { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y2 -= 25;
+  page2.drawText(`• 1st Installment: INR ${firstInstallmentAmount} on ${firstInstallmentDate}`, { x: 50, y: y2, size: 12.5, font: boldFont, color: rgb(0,0,0) });
+  y2 -= 25;
+  page2.drawText(`• 2nd Installment: INR ${secondInstallmentAmount} on ${secondInstallmentDate}`, { x: 50, y: y2, size: 12.5, font: boldFont, color: rgb(0,0,0) });
+  
+  y2 -= 25;
+  page2.drawText("Kindly ensure that each installment is paid on or before the due date to", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y2 -= 20;
+  page2.drawText("avoid any delay in the payment schedule.", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y2 -= 25;
+  page2.drawText("All payments must be completed through the official Krutanic Learning", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y2 -= 20;
+  page2.drawText("Management System (LMS) as per the agreed schedule.", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+
+  if (stampImage) {
+    const stampDims = stampImage.scale(0.32);
+    page2.drawImage(stampImage, {
+      x: 360,
+      y: y2 - stampDims.height - 10,
+      width: stampDims.width,
+      height: stampDims.height,
+    });
+  }
+
+  // Footer removed from Page 2
+
+  // PAGE 3
+  const page3 = pdfDoc.addPage([a4Width, a4Height]);
+  page3.drawImage(jpgImage, { x: 0, y: 0, width: a4Width, height: a4Height });
+  
+  let y3 = 720;
+  page3.drawText("What You Will Gain", { x: 50, y: y3, size: 18, font: boldFont, color: rgb(0,0,0) });
+  y3 -= 30;
+  page3.drawText("This program has been meticulously designed to bridge the gap between academic", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y3 -= 20;
+  page3.drawText("learning and real-world industry expectations.", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  
+  y3 -= 50;
+  page3.drawText("Professional Learning Experience", { x: 50, y: y3, size: 18, font: boldFont, color: rgb(0,0,0) });
+  y3 -= 30;
+  const p3_bullets = [
+    "Live Instructor-Led Interactive Sessions",
+    "Industry-Oriented Curriculum",
+    "Hands-On Projects & Practical Assignments",
+    "Real Business Case Studies",
+    "Portfolio Development",
+    "Advanced Learning Resources & LMS Access",
+    "Industry Mentorship & Career Guidance",
+    "Resume Building & LinkedIn Optimization",
+    "Interview Preparation Framework",
+    "Mock Interviews & Career Coaching"
+  ];
+  p3_bullets.forEach(bullet => {
+    page3.drawText(`• ${bullet}`, { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+    y3 -= 25;
+  });
+
+  y3 -= 30;
+  page3.drawText("Career Advancement Commitment", { x: 50, y: y3, size: 18, font: boldFont, color: rgb(0,0,0) });
+  y3 -= 30;
+  page3.drawText("At Krutanic, our commitment extends beyond training. Our objective is to help", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y3 -= 20;
+  page3.drawText("learners become industry-ready professionals capable of competing in today's", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y3 -= 20;
+  page3.drawText("evolving job market.", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y3 -= 45;
+  page3.drawText("Eligible learners who successfully complete the program, maintain the required", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y3 -= 20;
+  page3.drawText("attendance, complete all assignments and projects, and actively participate in", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y3 -= 20;
+  page3.drawText("career preparation activities will receive:", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+
+  // Footer removed from Page 3
+
+  // PAGE 4
+  const page4 = pdfDoc.addPage([a4Width, a4Height]);
+  page4.drawImage(jpgImage, { x: 0, y: 0, width: a4Width, height: a4Height });
+  
+  let y4 = 730;
+  const p4_bullets = [
+    "Dedicated Career Mentorship",
+    "Professional Resume Optimization",
+    "LinkedIn Profile Enhancement",
+    "Mock Interview Preparation",
+    "Career Guidance & Job Search Support",
+    "Industry Opportunity Updates",
+  ];
+  p4_bullets.forEach((bullet) => {
+    page4.drawText(`• ${bullet}`, { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+    y4 -= 25;
+  });
+  
+  page4.drawText("• Guaranteed Access to Up to 15 Interview Opportunities Through Our Employer", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y4 -= 20;
+  page4.drawText("  and Hiring Partner Ecosystem", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y4 -= 50;
+
+  page4.drawText("*We are committed to your career success. Upon successful completion of the", { x: 50, y: y4, size: 12.5, font: boldFont, color: rgb(0,0,0) });
+  y4 -= 20;
+  page4.drawText("program, maintaining the required attendance, completing all assignments,", { x: 50, y: y4, size: 12.5, font: boldFont, color: rgb(0,0,0) });
+  y4 -= 20;
+  page4.drawText("projects, and assessments, and fulfilling all academic requirements, you will", { x: 50, y: y4, size: 12.5, font: boldFont, color: rgb(0,0,0) });
+  y4 -= 20;
+  page4.drawText("receive guaranteed access to up to 15 interview opportunities through our", { x: 50, y: y4, size: 12.5, font: boldFont, color: rgb(0,0,0) });
+  y4 -= 20;
+  page4.drawText("employer and hiring partner ecosystem.*", { x: 50, y: y4, size: 12.5, font: boldFont, color: rgb(0,0,0) });
+
+  y4 -= 70;
+  page4.drawText("Learner Expectations", { x: 50, y: y4, size: 18, font: boldFont, color: rgb(0,0,0) });
+  y4 -= 30;
+  page4.drawText("To maximize learning outcomes and maintain program quality standards,", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y4 -= 20;
+  page4.drawText("participants are expected to:", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y4 -= 30;
+  
+  page4.drawText("• Maintain a minimum of 95% attendance", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y4 -= 25;
+  page4.drawText("• Complete 100% of assignments, projects, and assessments", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y4 -= 25;
+  page4.drawText("• Actively participate in live sessions, mentoring activities, and career preparation", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y4 -= 20;
+  page4.drawText("  initiatives", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y4 -= 25;
+  page4.drawText("• Demonstrate professional conduct throughout the program", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y4 -= 25;
+  page4.drawText("• Adhere to all academic and operational policies communicated by Krutanic", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+
+  // Footer removed from Page 4
+
+  // PAGE 5
+  const page5 = pdfDoc.addPage([a4Width, a4Height]);
+  page5.drawImage(jpgImage2, { x: 0, y: 0, width: a4Width, height: a4Height });
+  
+  let y5 = 730;
+  page5.drawText("Important Terms & Conditions", { x: 50, y: y5, size: 18, font: boldFont, color: rgb(0,0,0) });
+  y5 -= 35;
+  
+  page5.drawText("• Enrollment is confirmed upon successful completion of admission formalities", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y5 -= 20;
+  page5.drawText("  and payment requirements.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y5 -= 25;
+  
+  page5.drawText("• Program fees paid are non-refundable under any circumstances.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y5 -= 25;
+  
+  page5.drawText("• Scholarship benefits are applicable only for the current intake and cannot be", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y5 -= 20;
+  page5.drawText("  transferred to future batches.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y5 -= 25;
+  
+  page5.drawText("• Access credentials, onboarding details, class schedules, and learning resources", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y5 -= 20;
+  page5.drawText("  will be shared prior to the commencement of classes.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y5 -= 25;
+  
+  page5.drawText("• All official communication regarding classes, assignments, assessments,", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y5 -= 20;
+  page5.drawText("  placement support, and program updates will be shared through authorized", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y5 -= 20;
+  page5.drawText("  Krutanic communication channels.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  
+  y5 -= 50;
+  page5.drawText("Welcome to Krutanic", { x: 50, y: y5, size: 20, font: boldFont, color: rgb(0,0,0) });
+  y5 -= 30;
+  page5.drawText("You are now part of a community of ambitious professionals committed to", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y5 -= 20;
+  page5.drawText("continuous learning, career transformation, and long-term professional success.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y5 -= 40;
+  page5.drawText("The most successful professionals are not those who wait for opportunities they are", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y5 -= 20;
+  page5.drawText("the ones who prepare for them.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y5 -= 40;
+  page5.drawText("We are excited to be a part of your transformation journey and look forward to", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y5 -= 20;
+  page5.drawText("helping you achieve your career aspirations.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  
+  y5 -= 45;
+  const centeredText = "Welcome to the next phase of your growth.";
+  page5.drawText(centeredText, { 
+    x: (a4Width - boldFont.widthOfTextAtSize(centeredText, 14)) / 2, 
+    y: y5, size: 14, font: boldFont, color: rgb(0,0,0) 
+  });
+  
+  y5 -= 45;
+  page5.drawText("Warm Regards,", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  
+  y5 -= 35;
+  page5.drawText("Admissions & Enrollment Team", { x: 50, y: y5, size: 12.5, font: boldFont, color: rgb(0,0,0) });
+  y5 -= 15;
+  page5.drawText("Krutanic", { x: 50, y: y5, size: 12.5, font: boldFont, color: rgb(0,0,0) });
+  
+  if (stampImage) {
+    const stampDims = stampImage.scale(0.32);
+    page5.drawImage(stampImage, {
+      x: 360,
+      y: y5 - stampDims.height,
+      width: stampDims.width,
+      height: stampDims.height,
+    });
+  } else {
+    // page5.drawText("Shrikant Rathod", { x: 380, y: y5 + 15, size: 12.5, font: boldFont, color: rgb(0,0,0) });
+    // page5.drawText("Executive Director", { x: 380, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  }
+  
+  y5 -= 45;
+  page5.drawText("• Bangalore, Karnataka", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  y5 -= 18;
+  page5.drawText("• Support@krutanic.com", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+
+  const pdfBytes = await pdfDoc.save();
+  return pdfBytes;
+};
+
 const sendOfferLetter = async ({ email, fullname, date, start, end, domain, duration, location, isMentorship: passedIsMentorship }) => {
   const isMentorship = passedIsMentorship !== undefined ? passedIsMentorship : (domain && typeof domain === "string" && /mentorship|mentor/i.test(domain));
   const salutationName = fullname.replace(/\s*candidate\b/gi, "").trim();
@@ -695,4 +1031,170 @@ DATE:
   });
 };
 
-module.exports = { sendOfferLetter, createAdvanceOfferLetterPDF, createOfferLetterPDF };
+const sendNewOfferLetter = async ({ 
+  email, fullname, domain, 
+  originalProgramFee, finalPayableFee, enrollmentAmountReceived, remainingBalance, 
+  emiDuration, monthlyEmi, firstInstallmentAmount, firstInstallmentDate, 
+  secondInstallmentAmount, secondInstallmentDate 
+}) => {
+  const safeFullname = fullname || "";
+  const safeDomain = domain || "";
+  const salutationName = safeFullname.replace(/\s*candidate\b/gi, "").trim();
+  const programName = safeDomain.toLowerCase().includes("program") ? safeDomain : `${safeDomain} Professional Program`;
+  const date = new Date().toLocaleDateString("en-GB", { year: "numeric", month: "long", day: "numeric" });
+  
+  let subject = `Enrollment & Admission Confirmation - ${safeFullname}`;
+
+  let pdfBuffer = await createNewAdvanceOfferLetterPDF({ 
+    fullname: salutationName, 
+    date, 
+    programName, 
+    originalProgramFee, 
+    finalPayableFee, 
+    enrollmentAmountReceived, 
+    remainingBalance, 
+    emiDuration, 
+    monthlyEmi, 
+    firstInstallmentAmount, 
+    firstInstallmentDate, 
+    secondInstallmentAmount, 
+    secondInstallmentDate 
+  });
+
+  let body = `
+          <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 650px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);">
+            <!-- Brand Header -->
+            <div style="background: linear-gradient(135deg, #F15B29 0%, #ff7a45 100%); color: #ffffff; text-align: center; padding: 35px 20px;">
+              <img src="https://lh3.googleusercontent.com/d/1rmHu8ecr-JC3kzrM3Q5QALubDAXwVmx6" alt="Krutanic Logo" style="max-height: 55px; margin-bottom: 15px; display: inline-block; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));">
+              <h1 style="margin: 0; font-size: 22px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #ffffff;">ENROLLMENT & ADMISSION CONFIRMATION</h1>
+            </div>
+    
+            <!-- Main Body Content -->
+            <div style="padding: 40px 30px; color: #333333; font-size: 15px; line-height: 1.6;">
+              <p style="font-size: 14px; color: #666666; margin-bottom: 25px;"><strong>Date:</strong> ${date}</p>
+              
+              <p style="font-size: 16px; margin-bottom: 20px;">Dear <strong>${salutationName}</strong>,</p>
+              
+              <h2 style="font-size: 18px; color: #F15B29; margin-top: 0; margin-bottom: 15px;">Congratulations and Welcome to Krutanic!</h2>
+              
+              <p style="margin-bottom: 20px;">We are pleased to confirm your enrollment in the <strong>${programName}</strong>.</p>
+              
+              <p style="margin-bottom: 25px; color: #555555;">By securing your place in this program, you have taken an important step toward strengthening your analytical capabilities and building expertise in one of the most sought-after professional domains in today's data-driven economy.</p>
+    
+              <hr style="border: 0; border-top: 1px solid #eeeeee; margin: 30px 0;">
+    
+              <!-- Program Investment Summary -->
+              <div style="background-color: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 25px; margin-bottom: 30px;">
+                <h3 style="font-size: 16px; color: #F15B29; margin-top: 0; margin-bottom: 15px; border-bottom: 1px solid #e0e0e0; padding-bottom: 8px; text-transform: uppercase;">Program Investment Summary</h3>
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="font-size: 14px; color: #4f4f4f; line-height: 1.8;">
+                  <tr>
+                    <td style="padding: 5px 0; font-weight: bold; width: 220px;">Particulars</td>
+                    <td style="padding: 5px 0; font-weight: bold;">Amount</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 5px 0;">Original Program Fee</td>
+                    <td style="padding: 5px 0;">INR ${originalProgramFee}/-</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 5px 0;">Final Payable Fee</td>
+                    <td style="padding: 5px 0;">INR ${finalPayableFee}/-</td>
+                  </tr>
+                </table>
+              </div>
+
+              <!-- Payment Status -->
+              <div style="background-color: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 25px; margin-bottom: 30px;">
+                <h3 style="font-size: 16px; color: #F15B29; margin-top: 0; margin-bottom: 15px; border-bottom: 1px solid #e0e0e0; padding-bottom: 8px; text-transform: uppercase;">Payment Status</h3>
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="font-size: 14px; color: #4f4f4f; line-height: 1.8;">
+                  <tr>
+                    <td style="padding: 5px 0; font-weight: bold; width: 220px;">Particulars</td>
+                    <td style="padding: 5px 0; font-weight: bold;">Amount</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 5px 0;">Enrollment Amount Received</td>
+                    <td style="padding: 5px 0;">INR ${enrollmentAmountReceived}/-</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 5px 0;">Remaining Balance</td>
+                    <td style="padding: 5px 0;">INR ${remainingBalance}/-</td>
+                  </tr>
+                </table>
+              </div>
+
+              <!-- Flexible EMI Facility -->
+              <div style="background-color: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 25px; margin-bottom: 30px;">
+                <h3 style="font-size: 16px; color: #F15B29; margin-top: 0; margin-bottom: 15px; border-bottom: 1px solid #e0e0e0; padding-bottom: 8px; text-transform: uppercase;">Flexible EMI Facility</h3>
+                <p style="margin-bottom: 15px; color: #555555;">To support your learning journey, the remaining balance may be paid through a structured EMI plan.</p>
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="font-size: 14px; color: #4f4f4f; line-height: 1.8; margin-bottom: 15px;">
+                  <tr>
+                    <td style="padding: 5px 0; font-weight: bold; width: 220px;">EMI Duration</td>
+                    <td style="padding: 5px 0; font-weight: bold;">Monthly EMI</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 5px 0;">${emiDuration}</td>
+                    <td style="padding: 5px 0;">INR ${monthlyEmi}/- approx. per month</td>
+                  </tr>
+                </table>
+                <p style="margin-bottom: 10px; color: #555555; font-weight: bold;">Note: The total fee Should be paid in ${emiDuration} installments as per the schedule below:</p>
+                <ul style="color: #4f4f4f; font-size: 14px; margin-top: 0; padding-left: 20px;">
+                  <li style="margin-bottom: 5px;">1st Installment: ₹${firstInstallmentAmount} on ${firstInstallmentDate}</li>
+                  <li style="margin-bottom: 5px;">2nd Installment: ₹${secondInstallmentAmount} on ${secondInstallmentDate}</li>
+                </ul>
+              </div>
+    
+              <!-- Closing -->
+              <div style="border-top: 1px solid #eeeeee; padding-top: 30px;">
+                <p style="margin-bottom: 10px;">We are excited to partner with you on this journey. We look forward to supporting your success.</p>
+                
+                <p style="margin: 0; font-size: 14px; color: #333333;">Warm Regards,</p>
+                <p style="margin: 4px 0 0 0; font-size: 15px; font-weight: bold; color: #F15B29;">Team Krutanic</p>
+                <p style="margin: 4px 0 0 0; font-size: 13px; color: #777777;">
+                  Bangalore, Karnataka<br>
+                  📞 +91 7829104024 &bull; 📧 <a href="mailto:support@krutanic.com" style="color: #F15B29; text-decoration: none;">support@krutanic.com</a>
+                </p>
+              </div>
+            </div>
+    
+            <!-- Disclaimer Footer -->
+            <div style="background-color: #f7f7f7; border-top: 1px solid #e0e0e0; padding: 25px 30px; font-size: 12px; color: #777777; text-align: center;">
+              <p style="margin: 0;">&copy; 2026 Krutanic. All Rights Reserved.</p>
+            </div>
+          </div>
+        `;
+
+  const mailOptions = {
+    from: `"Krutanic HR Team" <${process.env.SMTP_MAIL2}>`,
+    replyTo: process.env.SMTP_MAIL2,
+    to: email,
+    cc: ["bhumika@krutanic.org", "shrikant@krutanic.org"],
+    subject,
+    html: body,
+    priority: "normal",
+    headers: {
+      'X-Mailer': 'Krutanic',
+      'X-Priority': '3',
+      'Importance': 'Normal'
+    },
+    attachments: [
+      {
+        filename: "Offer_Letter.pdf",
+        content: pdfBuffer,
+        contentType: "application/pdf",
+      },
+    ],
+  };
+
+  return new Promise((resolve, reject) => {
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error("Error sending email:", error);
+        reject(error);
+      } else {
+        console.log("Email sent successfully!", info.response);
+        resolve(info.response);
+      }
+    });
+  });
+};
+
+module.exports = { sendOfferLetter, sendNewOfferLetter, createAdvanceOfferLetterPDF, createOfferLetterPDF };

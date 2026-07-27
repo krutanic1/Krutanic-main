@@ -6,7 +6,7 @@ const CreateOperation = require("../models/CreateOperation");
 const NewEnrollStudent = require("../models/NewStudentEnroll");
 const AdvEnroll = require("../models/AdvEnroll");
 const { sendEmail } = require("../controllers/emailController");
-const { sendOfferLetter } = require("../controllers/offerLetter")
+const { sendOfferLetter, sendNewOfferLetter } = require("../controllers/offerLetter")
 const jwt = require("jsonwebtoken");
 const { default: mongoose } = require("mongoose");
 require("dotenv").config();
@@ -661,6 +661,43 @@ router.post("/sendofferletter", async (req, res) => {
 
   } catch (error) {
     console.error("Error in /sendofferletter:", error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+});
+
+router.post("/sendnewofferletter", async (req, res) => {
+  try {
+    const { 
+      id, fullname, domain, email, 
+      originalProgramFee, finalPayableFee, enrollmentAmountReceived, remainingBalance, 
+      emiDuration, monthlyEmi, firstInstallmentAmount, firstInstallmentDate, 
+      secondInstallmentAmount, secondInstallmentDate 
+    } = req.body;
+
+    const formattedName = fullname
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+
+    await sendNewOfferLetter({ 
+      email, fullname: formattedName, domain, 
+      originalProgramFee, finalPayableFee, enrollmentAmountReceived, remainingBalance, 
+      emiDuration, monthlyEmi, firstInstallmentAmount, firstInstallmentDate, 
+      secondInstallmentAmount, secondInstallmentDate 
+    });
+
+    let updatedStudent = await NewEnrollStudent.findByIdAndUpdate(id, { newOfferLetterSended: true }, { new: true });
+
+    if (!updatedStudent) {
+      updatedStudent = await AdvEnroll.findByIdAndUpdate(id, { newOfferLetterSended: true }, { new: true });
+    }
+
+    if (!updatedStudent) { return res.status(404).json({ error: "Student not found" }); }
+
+    res.status(200).json({ message: "New offer letter sent and status updated!" });
+
+  } catch (error) {
+    console.error("Error in /sendnewofferletter:", error);
     res.status(500).json({ error: "Something went wrong" });
   }
 });
