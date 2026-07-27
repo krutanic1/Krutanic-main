@@ -7,7 +7,7 @@ import {
   PartnersSection,
   ComparisonSection,
   RoadmapSection,
-  ProgramIncludesSection,
+  ProgramPerksSection,
   GuaranteeSection,
   ReviewsSection,
   FAQSection,
@@ -269,6 +269,11 @@ const MedProFormPage = () => {
       return;
     }
 
+    const userConfirmed = window.confirm("Reminder: A nominal fee applies for the Krutanic MedPro Packs. Do you want to proceed with your application?");
+    if (!userConfirmed) {
+      return;
+    }
+
     setIsSubmitting(true);
 
     const googleWebAppUrl = "https://script.google.com/macros/s/AKfycbzOJAPGeCFFolZIPRXfIo614Gj1TTKyUlxa2w0xgH_WQzjzdGFtwyR3kIRHY9jR8bzPKw/exec";
@@ -301,13 +306,10 @@ const MedProFormPage = () => {
         {/* Full Landing Page Elements for MedPro */}
         <MedProHeroSection onShowModal={() => setShowModal(true)} />
         <AlertBanner />
+        <ProgramPerksSection />
         <PartnersSection isMedPro={true} />
-        <ComparisonSection />
         <RoadmapSection />
-        <ProgramIncludesSection />
-        <GuaranteeSection onShowModal={() => setShowModal(true)} />
         <ReviewsSection isMedPro={true} />
-        <FAQSection />
 
         {showModal && <PlacementModal onClose={() => setShowModal(false)} />}
       </div>
@@ -316,9 +318,13 @@ const MedProFormPage = () => {
       <div className="medpro-page-wrapper" id="medpro-enrollment-form">
         {submitted ? (
           <div className="medpro-success-box premium-glass">
-            <div className="medpro-success-icon bounce-in">✓</div>
-            <h3 className="medpro-gradient-text">Application Received</h3>
-            <p>Your profile is under review for the MedPro Pack. We will contact you shortly.</p>
+            <div className="medpro-success-icon bounce-in">🎉</div>
+            <h3 className="medpro-gradient-text" style={{ fontSize: '1.5rem', marginBottom: '15px' }}>Congratulations! Your registration has been submitted successfully.</h3>
+            <p>Our <strong>Training & Placement Team</strong> will contact you within the <strong>next 24 hours</strong> to guide you through the next steps.</p>
+            <div style={{ backgroundColor: 'rgba(255, 193, 7, 0.1)', borderLeft: '4px solid #ffc107', padding: '15px', borderRadius: '8px', margin: '20px 0', textAlign: 'left' }}>
+              <p style={{ margin: 0 }}><strong>⚠️ Important:</strong> This is a <strong>paid career program</strong> with a basic program fee. Complete details will be shared during your counselling session.</p>
+            </div>
+            <p>Thank you for choosing <strong>Krutanic</strong>. We look forward to helping you achieve your career goals!</p>
             <button className="medpro-btn-outline mt-6" onClick={() => setSubmitted(false)}>Submit Another</button>
           </div>
         ) : (
@@ -475,7 +481,17 @@ const MedProFormPage = () => {
                         {errors.preferredLanguage && <span className="medpro-error-text">{errors.preferredLanguage}</span>}
                       </div>
 
-                      <div className={`medpro-checkbox-group ${errors.isConfirmed ? 'has-error-checkbox' : ''}`}>
+                      <div 
+                        className={`medpro-checkbox-group ${errors.isConfirmed ? 'has-error-checkbox' : ''}`}
+                        style={{
+                          backgroundColor: 'rgba(139, 92, 246, 0.08)',
+                          border: '1px solid rgba(139, 92, 246, 0.3)',
+                          padding: '16px',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 20px rgba(139, 92, 246, 0.15)',
+                          marginTop: '15px'
+                        }}
+                      >
                         <label className="medpro-checkbox-container">
                           <input 
                             type="checkbox" 
@@ -485,7 +501,7 @@ const MedProFormPage = () => {
                           />
                           <span className="medpro-checkmark"></span>
                           <span className="medpro-checkbox-text">
-                            I confirm that all details provided are accurate and acknowledge that a nominal fee applies for the Krutanic MedPro Packs.
+                            I confirm that all details provided are accurate and acknowledge that a <strong style={{color: '#fff'}}>nominal fee applies</strong> for the Krutanic MedPro Packs.
                           </span>
                         </label>
                         {errors.isConfirmed && <span className="medpro-error-text mt-1 d-block">{errors.isConfirmed}</span>}
@@ -509,6 +525,9 @@ const MedProFormPage = () => {
           </div>
         )}
       </div>
+      <ComparisonSection />
+      <GuaranteeSection onShowModal={() => setShowModal(true)} />
+      <FAQSection />
     </>
   );
 };

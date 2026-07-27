@@ -7,7 +7,7 @@ import {
   PartnersSection,
   ComparisonSection,
   RoadmapSection,
-  ProgramIncludesSection,
+  ProgramPerksSection,
   GuaranteeSection,
   ReviewsSection,
   FAQSection,
@@ -22,14 +22,14 @@ const Home = () => {
       <Toaster position="top-center" reverseOrder={false} />
       <HeroSection onShowModal={() => setShowModal(true)} />
       <AlertBanner />
-      <PartnersSection />
-      <ComparisonSection />
+      <ProgramPerksSection />
       <RoadmapSection />
-      <ProgramIncludesSection />
-      <GuaranteeSection onShowModal={() => setShowModal(true)} />
+      <PartnersSection />
       <ReviewsSection />
-      <FAQSection />
       <EnrollmentForm />
+      <ComparisonSection />
+      <GuaranteeSection onShowModal={() => setShowModal(true)} />
+      <FAQSection />
 
       {showModal && <PlacementModal onClose={() => setShowModal(false)} />}
     </div>

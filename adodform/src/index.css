@@ -482,6 +482,78 @@ h1, h2, h3, h4, h5 {
 }
 
 /* ============================================
+   HERO TIMELINE STRIP
+   ============================================ */
+
+.adv-hero-timeline {
+  display: flex;
+  align-items: stretch;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  margin-top: 28px;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+}
+
+.adv-hero-tl-item {
+  flex: 1;
+  padding: 22px 28px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.adv-hero-tl-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(10, 10, 20, 0.82) 0%, rgba(20, 10, 40, 0.75) 100%);
+  z-index: 0;
+  border-radius: inherit;
+}
+
+.adv-hero-tl-content {
+  position: relative;
+  z-index: 1;
+}
+
+.adv-phase-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(10, 10, 20, 0.85) 0%, rgba(20, 10, 40, 0.78) 100%);
+  z-index: 0;
+  border-radius: inherit;
+}
+
+.adv-hero-tl-divider {
+  width: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  align-self: stretch;
+  flex-shrink: 0;
+}
+
+.adv-hero-tl-month {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #7c3aed;
+  margin-bottom: 6px;
+}
+
+.adv-hero-tl-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.adv-hero-tl-desc {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* ============================================
    PARTNERS SECTION
    ============================================ */
 
@@ -1731,8 +1803,133 @@ h1, h2, h3, h4, h5 {
   /* H2 sizes */
   .adv-h2 { font-size: 1.7rem; }
   
+
+
   /* Hide Comparison Section on Mobile */
   .adv-comparison {
     display: none !important;
   }
+}
+ 
+ 
+/* ============================================
+   PROGRAM PERKS SECTION
+   ============================================ */
+
+.adv-perks-section {
+  padding: 80px 0;
+  position: relative;
+  z-index: 10;
+}
+
+.adv-perks-container {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 24px;
+  padding: 48px;
+  backdrop-filter: blur(20px);
+}
+
+.adv-perks-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.adv-perks-header-icon {
+  font-size: 1.5rem;
+}
+
+.adv-perks-header h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  font-family: var(--font-heading);
+}
+
+.adv-perks-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.adv-perk-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 24px;
+  transition: transform 0.3s, background 0.3s;
+}
+
+.adv-perk-card:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.adv-perk-icon {
+  font-size: 1.8rem;
+  margin-bottom: 16px;
+  display: inline-block;
+}
+
+.adv-perk-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.adv-perk-desc {
+  font-size: 0.85rem;
+  color: #a78bfa;
+  line-height: 1.4;
+}
+
+.adv-perks-footer {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.adv-perks-footer strong {
+  color: var(--primary);
+  font-style: italic;
+}
+
+@media (max-width: 900px) {
+  .adv-perks-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .adv-perks-grid { grid-template-columns: 1fr; }
+  .adv-perks-container { padding: 32px 20px; }
+}
+
+.adv-partners-overflow {
+  overflow: hidden;
+  width: 100%;
+  white-space: nowrap;
+  position: relative;
+}
+
+.adv-partners-track.continuous {
+  display: inline-flex !important;
+  gap: 48px;
+  flex-wrap: nowrap !important;
+  justify-content: flex-start !important;
+  animation: marquee 25s linear infinite;
+  min-width: 200%;
+}
+
+.adv-partners-overflow:hover .adv-partners-track.continuous {
+  animation-play-state: paused;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }

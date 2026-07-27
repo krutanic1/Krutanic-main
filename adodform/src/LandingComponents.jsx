@@ -8,10 +8,13 @@ import RudraImg from './assets/mentors/rudra.jpg';
 import RohanImg from './assets/alumini/rohan.jpg';
 import RajaImg from './assets/alumini/raja.jpg';
 import PrabhleenImg from './assets/alumini/prabhleen.jpg';
+import Month1Bg from './assets/month1_skill_training.png';
+import Month2Bg from './assets/month2_live_internship.png';
+import Month3Bg from './assets/month3_placement_support.png';
 
 /* --- Data --- */
-const PARTNERS = ['Google', 'Microsoft', 'Amazon', 'Meta', 'Netflix', 'Uber', 'Airbnb'];
-const MEDPRO_PARTNERS = ['Apollo Hospitals', 'Fortis Healthcare', 'AIIMS', 'Khaitan & Co', 'Cyril Amarchand', 'Max Healthcare'];
+const PARTNERS = ['Google', 'Microsoft', 'Amazon', 'Meta', 'Netflix', 'Uber', 'Airbnb', 'Spotify', 'Apple', 'Tesla', 'IBM', 'Intel', 'Oracle', 'Cisco'];
+const MEDPRO_PARTNERS = ['Apollo Hospitals', 'Fortis Healthcare', 'AIIMS', 'Khaitan & Co', 'Cyril Amarchand', 'Max Healthcare', 'Medanta', 'Tata Memorial', 'Sun Pharma', 'Cipla'];
 
 const COMPARISON = [
   { feature: 'Curriculum', traditional: 'Theoretical, outdated syllabi', krutanic: 'Built backwards from current JD requirements' },
@@ -172,12 +175,37 @@ const HeroSection = ({ onShowModal }) => {
           </div>
         </div>
 
-        <div className="adv-hero-stats">
-          <AnimatedStat value="500+" label="Hiring Partners" />
-          <AnimatedStat value="98%" label="Success Rate" />
-          <AnimatedStat value="3.2x" label="Avg Salary Hike" />
-          <AnimatedStat value="₹12L" label="Average CTC" />
+        {/* 3-Month Timeline Strip */}
+        <div className="adv-hero-timeline">
+          <div className="adv-hero-tl-item" style={{ backgroundImage: `url(${Month1Bg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div className="adv-hero-tl-overlay" />
+            <div className="adv-hero-tl-content">
+              <div className="adv-hero-tl-month">MONTH 1</div>
+              <div className="adv-hero-tl-title">Skill Training</div>
+              <div className="adv-hero-tl-desc">Technical &amp; industry tools</div>
+            </div>
+          </div>
+          <div className="adv-hero-tl-divider" />
+          <div className="adv-hero-tl-item" style={{ backgroundImage: `url(${Month2Bg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div className="adv-hero-tl-overlay" />
+            <div className="adv-hero-tl-content">
+              <div className="adv-hero-tl-month">MONTH 2</div>
+              <div className="adv-hero-tl-title">Live Internship</div>
+              <div className="adv-hero-tl-desc">Real projects with MNC teams</div>
+            </div>
+          </div>
+          <div className="adv-hero-tl-divider" />
+          <div className="adv-hero-tl-item" style={{ backgroundImage: `url(${Month3Bg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div className="adv-hero-tl-overlay" />
+            <div className="adv-hero-tl-content">
+              <div className="adv-hero-tl-month">MONTH 3</div>
+              <div className="adv-hero-tl-title">Placement Support</div>
+              <div className="adv-hero-tl-desc">Resume, interviews &amp; jobs</div>
+            </div>
+          </div>
         </div>
+
+
       </div>
     </section>
   );
@@ -188,8 +216,11 @@ const PartnersSection = ({ isMedPro = false }) => {
   return (
     <section className="adv-partners">
       <p className="adv-partners-title">OUR ALUMNI THRIVE AT TOP TIER FIRMS</p>
-      <div className="adv-partners-track">
-        {partnersToDisplay.map(p => <span key={p} className="adv-partner-logo">{p}</span>)}
+      <div className="adv-partners-overflow">
+        <div className="adv-partners-track continuous">
+          {partnersToDisplay.map((p, index) => <span key={`a-${index}`} className="adv-partner-logo">{p}</span>)}
+          {partnersToDisplay.map((p, index) => <span key={`b-${index}`} className="adv-partner-logo">{p}</span>)}
+        </div>
       </div>
     </section>
   );
@@ -266,16 +297,23 @@ const RoadmapSection = () => {
     <div className="adv-container">
       <h2 className="adv-h2">A 3-Month System Engineered for Outcomes</h2>
       <div className="adv-roadmap-grid">
-        {PHASES.map((phase, i) => (
-          <div key={i} className="adv-phase-card">
-            <div className="adv-phase-num">0{i+1}</div>
-            <div className="adv-phase-month">{phase.month}</div>
-            <h3 className="adv-phase-title">{phase.title}</h3>
-            <p className="adv-phase-desc">{phase.desc}</p>
-          </div>
-        ))}
+        {PHASES.map((phase, i) => {
+          const bgs = [Month1Bg, Month2Bg, Month3Bg];
+          return (
+            <div key={i} className="adv-phase-card" style={{ backgroundImage: `url(${bgs[i]})`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative', overflow: 'hidden' }}>
+              <div className="adv-phase-card-overlay" />
+              <div style={{ position: 'relative', zIndex: 1 }}>
+                <div className="adv-phase-num">0{i+1}</div>
+                <div className="adv-phase-month">{phase.month}</div>
+                <h3 className="adv-phase-title">{phase.title}</h3>
+                <p className="adv-phase-desc">{phase.desc}</p>
+              </div>
+            </div>
+          );
+        })}
       </div>
-      <div style={{ textAlign: 'center', marginTop: '48px' }}>
+
+      <div style={{ textAlign: 'center', marginTop: '32px' }}>
         <button className="adv-btn-primary adv-btn-animated" onClick={scrollToForm}>
           Apply for the 2026 Cohort <span className="adv-arrow">→</span>
         </button>
@@ -285,35 +323,56 @@ const RoadmapSection = () => {
   );
 };
 
-const ProgramIncludesSection = () => {
+const TargetSvg = () => <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{color: 'var(--primary)'}}><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>;
+const CapSvg = () => <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{color: '#8b5cf6'}}><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>;
+const BadgeSvg = () => <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{color: '#34d399'}}><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path><path d="m9 12 2 2 4-4"></path></svg>;
+const MailSvg = () => <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{color: '#f472b6'}}><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>;
+const UserSvg = () => <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{color: '#60a5fa'}}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><polyline points="16 11 18 13 22 9"></polyline></svg>;
+const BriefcaseSvg = () => <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{color: '#fbbf24'}}><rect width="20" height="14" x="2" y="7" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>;
+const ToolSvg = () => <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{color: '#9ca3af'}}><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>;
+
+const ProgramPerksSection = () => {
+  const PERKS = [
+    { icon: <CapSvg />, title: 'Elite Dual-Branded Certification', desc: 'Global validation for your professional profile' },
+    { icon: <BadgeSvg />, title: 'Industry-Recognised Credential', desc: 'Trusted by our 500+ premium hiring partners' },
+    { icon: <MailSvg />, title: 'Performance-Based LoR', desc: 'Direct endorsements from top 1% industry leaders' },
+    { icon: <UserSvg />, title: '1:1 Executive Mentorship', desc: 'Personalized guidance from active tech professionals' },
+    { icon: <BriefcaseSvg />, title: '100% Placement Guarantee', desc: 'End-to-end interview scheduling and salary negotiation' },
+    { icon: <ToolSvg />, title: 'Enterprise Tech Stack Access', desc: 'Hands-on mastery of tools used by Fortune 500 teams' }
+  ];
+
   return (
-    <section className="adv-program-includes">
+    <section className="adv-perks-section">
       <div className="adv-container">
-        <div className="adv-includes-timeline">
-          <div className="adv-inc-time-col">
-            <div className="adv-inc-month">MONTH 1</div>
-            <div className="adv-inc-title">Skill Training</div>
-            <div className="adv-inc-desc">Technical & industry tools</div>
+        <div className="adv-perks-container">
+          <div className="adv-perks-header">
+            <span className="adv-perks-header-icon" style={{display: 'flex', alignItems: 'center'}}><TargetSvg /></span>
+            <h2>Everything included in your premium access</h2>
           </div>
-          <div className="adv-inc-divider"></div>
-          <div className="adv-inc-time-col">
-            <div className="adv-inc-month">MONTH 2</div>
-            <div className="adv-inc-title">Live Internship</div>
-            <div className="adv-inc-desc">Real projects with MNC teams</div>
+          <div className="adv-hero-stats" style={{ margin: '30px 0', width: '100%' }}>
+            <AnimatedStat value="500+" label="Hiring Partners" />
+            <AnimatedStat value="98%" label="Success Rate" />
+            <AnimatedStat value="3.2x" label="Avg Salary Hike" />
+            <AnimatedStat value="₹12L" label="Average CTC" />
           </div>
-          <div className="adv-inc-divider"></div>
-          <div className="adv-inc-time-col">
-            <div className="adv-inc-month">MONTH 3</div>
-            <div className="adv-inc-title">Placement Support</div>
-            <div className="adv-inc-desc">Resume, interviews & jobs</div>
+          <div className="adv-perks-grid">
+            {PERKS.map((perk, i) => (
+              <div key={i} className="adv-perk-card">
+                <span className="adv-perk-icon" style={{display: 'inline-flex', alignItems: 'center'}}>{perk.icon}</span>
+                <div className="adv-perk-title">{perk.title}</div>
+                <div className="adv-perk-desc">{perk.desc}</div>
+              </div>
+            ))}
+          </div>
+          <div className="adv-perks-footer">
+            A one-time investment unlocks your 3-month transformation — <strong>secure your career for life.</strong>
           </div>
         </div>
-
-
       </div>
     </section>
   );
 };
+
 
 const GuaranteeSection = ({ onShowModal }) => {
   return (
@@ -487,7 +546,7 @@ export {
   PartnersSection,
   ComparisonSection,
   RoadmapSection,
-  ProgramIncludesSection,
+  ProgramPerksSection,
   GuaranteeSection,
   ReviewsSection,
   FAQSection,

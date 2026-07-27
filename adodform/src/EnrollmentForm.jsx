@@ -185,6 +185,11 @@ const EnrollmentForm = () => {
       return;
     }
 
+    const userConfirmed = window.confirm("Reminder: A nominal fee applies for the Adobe Certified Program 2026. Do you want to proceed with your application?");
+    if (!userConfirmed) {
+      return;
+    }
+
     setIsSubmitting(true);
 
     // ==========================================
@@ -229,9 +234,13 @@ const EnrollmentForm = () => {
     return (
       <section className="adv-form-section" id="enrollment-form">
         <div className="adv-success-box premium-card">
-          <div className="adv-success-icon bounce-in">✓</div>
-          <h3 className="gradient-text">Application Received</h3>
-          <p>Your profile is under review by our admissions board. We will contact you within 24 hours.</p>
+          <div className="adv-success-icon bounce-in">🎉</div>
+          <h3 className="gradient-text" style={{ fontSize: '1.5rem', marginBottom: '15px' }}>Congratulations! Your registration has been submitted successfully.</h3>
+          <p>Our <strong>Training & Placement Team</strong> will contact you within the <strong>next 24 hours</strong> to guide you through the next steps.</p>
+          <div style={{ backgroundColor: 'rgba(255, 193, 7, 0.1)', borderLeft: '4px solid #ffc107', padding: '15px', borderRadius: '8px', margin: '20px 0', textAlign: 'left' }}>
+            <p style={{ margin: 0 }}><strong>⚠️ Important:</strong> This is a <strong>paid career program</strong> with a basic program fee. Complete details will be shared during your counselling session.</p>
+          </div>
+          <p>Thank you for choosing <strong>Krutanic</strong>. We look forward to helping you achieve your career goals!</p>
           <button className="adv-btn-outline mt-6" onClick={() => window.location.reload()}>Submit Another</button>
         </div>
       </section>
@@ -393,7 +402,16 @@ const EnrollmentForm = () => {
                     {errors.preferredLanguage && <span className="adv-error-text">{errors.preferredLanguage}</span>}
                   </div>
 
-                  <div className={`adv-checkbox-group ${errors.isConfirmed ? 'has-error-checkbox' : ''}`}>
+                  <div 
+                    className={`adv-checkbox-group ${errors.isConfirmed ? 'has-error-checkbox' : ''}`}
+                    style={{
+                      backgroundColor: 'rgba(139, 92, 246, 0.08)',
+                      border: '1px solid rgba(139, 92, 246, 0.3)',
+                      padding: '16px',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 20px rgba(139, 92, 246, 0.15)'
+                    }}
+                  >
                     <label className="checkbox-container">
                       <input 
                         type="checkbox" 
@@ -403,7 +421,7 @@ const EnrollmentForm = () => {
                       />
                       <span className="checkmark"></span>
                       <span className="checkbox-text">
-                        I confirm that all details provided are accurate and acknowledge that a nominal fee applies for the Adobe Certified Program 2026.
+                        I confirm that all details provided are accurate and acknowledge that a <strong style={{color: '#fff'}}>nominal fee applies</strong> for the Adobe Certified Program 2026.
                       </span>
                     </label>
                     {errors.isConfirmed && <span className="adv-error-text mt-1 d-block">{errors.isConfirmed}</span>}
