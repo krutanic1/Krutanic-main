@@ -1,9 +1,10 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
-// Production Backend URL
-const BASE_URL = 'https://krutanic-main.vercel.app';
-//const BASE_URL = 'http://10.85.103.242:5000'; // Updated Development IP
+// Dynamic Backend URL: Local IP in development, Vercel URL in production
+const BASE_URL = __DEV__ 
+    ? 'http://192.168.0.25:5000' 
+    : 'https://krutanic-main.vercel.app';
 
 const api = axios.create({
     baseURL: BASE_URL,

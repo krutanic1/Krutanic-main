@@ -258,10 +258,10 @@ const EnrollmentForm = () => {
               <h3 className="sidebar-title">Adobe Certified Training and Internship Program</h3>
               <p className="sidebar-desc">Please fill out the form carefully to register for the upcoming program.</p>
               <div className="adv-form-sidebar-perks">
-                <div className="adv-perk glass-perk"><span className="check-icon">✓</span> 100% Placement Assistance</div>
-                <div className="adv-perk glass-perk"><span className="check-icon">✓</span> 1:1 Industry Mentorship</div>
-                <div className="adv-perk glass-perk"><span className="check-icon">✓</span> Corporate Internship</div>
-                <div className="adv-perk glass-perk"><span className="check-icon">✓</span> Unlimited AI Mock Interviews</div>
+                <div className="adv-perk glass-perk">100% Placement Assistance</div>
+                <div className="adv-perk glass-perk">1:1 Industry Mentorship</div>
+                <div className="adv-perk glass-perk">Corporate Internship</div>
+                <div className="adv-perk glass-perk">Unlimited AI Mock Interviews</div>
               </div>
             </div>
           </div>

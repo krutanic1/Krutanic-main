@@ -1935,23 +1935,28 @@ router.post("/log-call-activity", async (req, res) => {
                 startedAt: { $gte: today } // Call must have been made today
             }).sort({ startedAt: -1 }); // Get the most recent call
 
-            if (!realCallExists) {
+            if (!realCallExists && !recordingUrl) {
                 return res.status(403).json({ 
                     message: "FAKE LOG DETECTED: No actual device call found for this lead today. Please make a real call from your synced device before logging." 
                 });
             }
 
-            // For Connected calls, ensure the duration was greater than 0
-            if (disposition === "Connected" && realCallExists.durationSeconds <= 0) {
+            if (realCallExists && disposition === "Connected" && realCallExists.durationSeconds <= 0 && !recordingUrl) {
                 return res.status(403).json({
                     message: "FAKE LOG DETECTED: The device logged a 0-second duration for this call, but you marked it as 'Connected'."
                 });
             }
 
             // Override user's manual duration with the exact duration from the device call log
-            actualDuration = realCallExists.durationSeconds;
-            deviceCallType = realCallExists.callType;
-            actualCallTime = realCallExists.startedAt;
+            // UNLESS a recording file is uploaded, in which case we trust the recording's verified duration.
+            if (recordingUrl && duration > 0) {
+                actualDuration = duration;
+            } else if (realCallExists) {
+                actualDuration = realCallExists.durationSeconds;
+            }
+            
+            deviceCallType = realCallExists ? realCallExists.callType : "Manual Upload";
+            actualCallTime = realCallExists ? realCallExists.startedAt : actualCallTime;
         }
 
         // 3. Activity Logging (Mandatory - No Overwriting)

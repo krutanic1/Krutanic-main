@@ -531,13 +531,23 @@ const createNewAdvanceOfferLetterPDF = async ({
 
   y2 -= 40;
   const safeEmiDuration = emiDuration || "";
-  page2.drawText(`Note: The total fee Should be paid in ${safeEmiDuration.toLowerCase()} installments as per the`, { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  const isOneInstallment = !secondInstallmentAmount || secondInstallmentAmount === "0" || secondInstallmentAmount === "";
+  
+  if (isOneInstallment) {
+    page2.drawText(`Note: The total fee Should be paid in 1 installment as per the`, { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  } else {
+    page2.drawText(`Note: The total fee Should be paid in ${safeEmiDuration.toLowerCase()} installments as per the`, { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  }
+  
   y2 -= 20;
   page2.drawText(`schedule below:`, { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
   y2 -= 25;
   page2.drawText(`• 1st Installment: INR ${firstInstallmentAmount} on ${firstInstallmentDate}`, { x: 50, y: y2, size: 12.5, font: boldFont, color: rgb(0,0,0) });
-  y2 -= 25;
-  page2.drawText(`• 2nd Installment: INR ${secondInstallmentAmount} on ${secondInstallmentDate}`, { x: 50, y: y2, size: 12.5, font: boldFont, color: rgb(0,0,0) });
+  
+  if (!isOneInstallment) {
+    y2 -= 25;
+    page2.drawText(`• 2nd Installment: INR ${secondInstallmentAmount} on ${secondInstallmentDate}`, { x: 50, y: y2, size: 12.5, font: boldFont, color: rgb(0,0,0) });
+  }
   
   y2 -= 25;
   page2.drawText("Kindly ensure that each installment is paid on or before the due date to", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
@@ -1135,10 +1145,10 @@ const sendNewOfferLetter = async ({
                     <td style="padding: 5px 0;">INR ${monthlyEmi}/- approx. per month</td>
                   </tr>
                 </table>
-                <p style="margin-bottom: 10px; color: #555555; font-weight: bold;">Note: The total fee Should be paid in ${emiDuration} installments as per the schedule below:</p>
+                <p style="margin-bottom: 10px; color: #555555; font-weight: bold;">Note: The total fee Should be paid in ${(!secondInstallmentAmount || secondInstallmentAmount === "0" || secondInstallmentAmount === "") ? "1 installment" : emiDuration + " installments"} as per the schedule below:</p>
                 <ul style="color: #4f4f4f; font-size: 14px; margin-top: 0; padding-left: 20px;">
                   <li style="margin-bottom: 5px;">1st Installment: ₹${firstInstallmentAmount} on ${firstInstallmentDate}</li>
-                  <li style="margin-bottom: 5px;">2nd Installment: ₹${secondInstallmentAmount} on ${secondInstallmentDate}</li>
+                  ${(!secondInstallmentAmount || secondInstallmentAmount === "0" || secondInstallmentAmount === "") ? "" : `<li style="margin-bottom: 5px;">2nd Installment: ₹${secondInstallmentAmount} on ${secondInstallmentDate}</li>`}
                 </ul>
               </div>
     

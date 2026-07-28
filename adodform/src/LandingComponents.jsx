@@ -11,6 +11,7 @@ import PrabhleenImg from './assets/alumini/prabhleen.jpg';
 import Month1Bg from './assets/month1_skill_training.png';
 import Month2Bg from './assets/month2_live_internship.png';
 import Month3Bg from './assets/month3_placement_support.png';
+import HeroBg from './assets/hero_bg.png';
 
 /* --- Data --- */
 const PARTNERS = ['Google', 'Microsoft', 'Amazon', 'Meta', 'Netflix', 'Uber', 'Airbnb', 'Spotify', 'Apple', 'Tesla', 'IBM', 'Intel', 'Oracle', 'Cisco'];
@@ -83,9 +84,8 @@ const HeroSection = ({ onShowModal }) => {
   }, []);
 
   const p = PLACEMENTS[idx];
-
   return (
-    <section className="adv-hero">
+    <section className="adv-hero" style={{ backgroundImage: `url(${HeroBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', borderRadius: '30px', overflow: 'hidden' }}>
       <div className="adv-hero-bg-glow"></div>
       <div className="adv-hero-bg-grid"></div>
       <div className="adv-hero-container">

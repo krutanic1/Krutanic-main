@@ -115,6 +115,7 @@ const BookedAmount = () => {
   const [firstInstallmentDate, setFirstInstallmentDate] = useState("");
   const [secondInstallmentAmount, setSecondInstallmentAmount] = useState("15000");
   const [secondInstallmentDate, setSecondInstallmentDate] = useState("");
+  const [installmentCount, setInstallmentCount] = useState("2");
   const [isAdvancedOfferSending, setIsAdvancedOfferSending] = useState(false);
 
   const resetAdvancedOfferLetter = () => {
@@ -129,6 +130,7 @@ const BookedAmount = () => {
     setFirstInstallmentDate("");
     setSecondInstallmentAmount("15000");
     setSecondInstallmentDate("");
+    setInstallmentCount("2");
   };
 
   const sendAdvancedOfferLetter = async (e) => {
@@ -151,8 +153,8 @@ const BookedAmount = () => {
       monthlyEmi,
       firstInstallmentAmount,
       firstInstallmentDate: new Date(firstInstallmentDate).toLocaleDateString("en-GB", { year: "numeric", month: "long", day: "numeric" }),
-      secondInstallmentAmount,
-      secondInstallmentDate: new Date(secondInstallmentDate).toLocaleDateString("en-GB", { year: "numeric", month: "long", day: "numeric" }),
+      secondInstallmentAmount: installmentCount === "2" ? secondInstallmentAmount : "",
+      secondInstallmentDate: installmentCount === "2" && secondInstallmentDate ? new Date(secondInstallmentDate).toLocaleDateString("en-GB", { year: "numeric", month: "long", day: "numeric" }) : "",
       smtpConfig: "SMTP_MAIL2",
     };
     try {
@@ -954,6 +956,13 @@ const BookedAmount = () => {
                 <input type="number" value={monthlyEmi} onChange={(e) => setMonthlyEmi(e.target.value)} required className="border p-2 rounded" />
               </div>
               <div className="flex flex-col">
+                <label className="text-sm font-medium mb-1">Number of Installments:</label>
+                <select value={installmentCount} onChange={(e) => setInstallmentCount(e.target.value)} className="border p-2 rounded bg-white">
+                  <option value="1">1 Installment</option>
+                  <option value="2">2 Installments</option>
+                </select>
+              </div>
+              <div className="flex flex-col">
                 <label className="text-sm font-medium mb-1">1st Installment Amount (₹):</label>
                 <input type="number" value={firstInstallmentAmount} onChange={(e) => setFirstInstallmentAmount(e.target.value)} required className="border p-2 rounded" />
               </div>
@@ -961,14 +970,18 @@ const BookedAmount = () => {
                 <label className="text-sm font-medium mb-1">1st Installment Date:</label>
                 <input type="date" value={firstInstallmentDate} onChange={(e) => setFirstInstallmentDate(e.target.value)} required className="border p-2 rounded" />
               </div>
-              <div className="flex flex-col">
-                <label className="text-sm font-medium mb-1">2nd Installment Amount (₹):</label>
-                <input type="number" value={secondInstallmentAmount} onChange={(e) => setSecondInstallmentAmount(e.target.value)} required className="border p-2 rounded" />
-              </div>
-              <div className="flex flex-col">
-                <label className="text-sm font-medium mb-1">2nd Installment Date:</label>
-                <input type="date" value={secondInstallmentDate} onChange={(e) => setSecondInstallmentDate(e.target.value)} required className="border p-2 rounded" />
-              </div>
+              {installmentCount === "2" && (
+                <>
+                  <div className="flex flex-col">
+                    <label className="text-sm font-medium mb-1">2nd Installment Amount (₹):</label>
+                    <input type="number" value={secondInstallmentAmount} onChange={(e) => setSecondInstallmentAmount(e.target.value)} required className="border p-2 rounded" />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-sm font-medium mb-1">2nd Installment Date:</label>
+                    <input type="date" value={secondInstallmentDate} onChange={(e) => setSecondInstallmentDate(e.target.value)} required className="border p-2 rounded" />
+                  </div>
+                </>
+              )}
             </div>
 
             <div className="flex gap-4 mt-6">
