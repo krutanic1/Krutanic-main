@@ -46,7 +46,6 @@ router.get("/getcourses", async (req, res) => {
           "Automation Testing",
           "Supply Chain Management",
           "Fintech",
-          "Psychology",
           "Nano Technology & Genetic Engineering"
         ];
         courses = courses.filter(course => !coursesToExclude.includes(course.title));
