@@ -334,12 +334,14 @@ if (!process.env.VERCEL) {
     const { initializeMasterclassReminderScheduler } = require("./services/masterclassReminderService");
     const { initializeMedEnrollAutomation } = require("./services/medEnrollAutomationService");
     const { initializeTaskCron } = require("./services/taskCronService");
+    const { initializeUnfilledFormReminders } = require("./services/unfilledFormReminderService");
     
     initializePaymentReminderScheduler();
     initializeAttendanceReportScheduler();
     initializeMasterclassReminderScheduler();
     initializeMedEnrollAutomation();
     initializeTaskCron();
+    initializeUnfilledFormReminders();
 
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);

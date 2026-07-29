@@ -68,6 +68,10 @@
     {
       "path": "/api/cron/daily-adv-tasks",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/unfilled-form-reminders",
+      "schedule": "*/30 * * * *"
     }
   ]
 }

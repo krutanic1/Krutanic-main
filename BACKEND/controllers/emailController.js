@@ -169,4 +169,6 @@ const sendEventReminderEmail = async ({ email, subject, message, bcc, textVersio
   });
 };
 
+
+
 module.exports = { sendEmail, sendDikshanntOtpEmail, sendPaymentReminderEmail, sendEventReminderEmail };

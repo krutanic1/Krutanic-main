@@ -399,4 +399,66 @@ router.all('/api/cron/medenroll-automation', async (req, res) => {
     }
 });
 
+// Unfilled Form Reminder Cron Endpoint (Triggered by Vercel Cron)
+router.all('/api/cron/unfilled-form-reminders', async (req, res) => {
+    const timestamp = new Date().toISOString();
+    const istTime = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+    console.log(`⏰ [${istTime} IST] Running Vercel Cron: Unfilled Form Reminders`);
+
+    try {
+        const authHeader = req.headers.authorization;
+        const vercelCronHeader = req.headers['x-vercel-cron'];
+        const expectedAuth = `Bearer ${process.env.CRON_SECRET}`;
+
+        const isVercelCron = vercelCronHeader === '1';
+        const hasValidSecret = process.env.CRON_SECRET && authHeader === expectedAuth;
+
+        if (!isVercelCron && !hasValidSecret) {
+            console.error('❌ Unauthorized cron request - Unfilled Form Reminders');
+            return res.status(401).json({ error: 'Unauthorized', timestamp, istTime });
+        }
+
+        const { checkUnfilledForms } = require('../services/unfilledFormReminderService');
+        const result = await checkUnfilledForms();
+
+        res.status(200).json({
+            success: true,
+            message: `Unfilled form reminders triggered successfully`,
+            result,
+            timestamp,
+            istTime
+        });
+
+    } catch (error) {
+        console.error('❌ Error in Unfilled Form Reminders Cron Route:', error);
+        res.status(500).json({ error: 'Internal Server Error', details: error.message, timestamp, istTime });
+    }
+});
+
+// Test endpoint for manual triggering: Unfilled Form Reminders
+router.get('/api/cron/test-unfilled-form-reminders', async (req, res) => {
+    const timestamp = new Date().toISOString();
+    const istTime = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+    console.log(`🧪 [${istTime} IST] Manual test trigger: Unfilled Form Reminders`);
+
+    try {
+        const { checkUnfilledForms } = require('../services/unfilledFormReminderService');
+        const result = await checkUnfilledForms();
+
+        res.status(200).json({
+            success: true,
+            message: `Test: Unfilled form reminders triggered successfully`,
+            result,
+            timestamp,
+            istTime,
+        });
+
+    } catch (error) {
+        console.error('❌ Error in test endpoint:', error);
+        res.status(500).json({ error: 'Internal Server Error', details: error.message, timestamp, istTime });
+    }
+});
+
 module.exports = router;

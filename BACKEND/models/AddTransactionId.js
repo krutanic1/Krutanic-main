@@ -24,6 +24,13 @@ const AddTransactionIdSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    lastReminderSentAt: {
+        type: Date,
+    },
+    reminderCount: {
+        type: Number,
+        default: 0,
+    },
 
 });
 
