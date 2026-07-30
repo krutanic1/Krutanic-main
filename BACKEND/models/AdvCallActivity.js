@@ -25,7 +25,7 @@ const AdvCallActivitySchema = new mongoose.Schema({
     },
     deviceCallType: {
         type: String,
-        enum: ["INCOMING", "OUTGOING", "MISSED", "REJECTED", "UNKNOWN", null],
+        enum: ["INCOMING", "OUTGOING", "MISSED", "REJECTED", "UNKNOWN", "Manual Upload", null],
         default: null
     },
     followUpDate: { type: Date },

@@ -13,7 +13,7 @@ const DeviceCallLogSchema = new mongoose.Schema({
     },
     callType: { 
         type: String, 
-        enum: ["INCOMING", "OUTGOING", "MISSED", "REJECTED", "UNKNOWN"],
+        enum: ["INCOMING", "OUTGOING", "MISSED", "REJECTED", "UNKNOWN", "Manual Upload"],
         default: "UNKNOWN"
     },
     contactId: { 
