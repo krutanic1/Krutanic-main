@@ -248,6 +248,48 @@
   margin-bottom: 0;
 }
 
+/* Urgency Strip */
+.da-urgency-strip {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.da-urgency-stat {
+  flex: 1;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px 10px;
+  text-align: center;
+  backdrop-filter: blur(12px);
+}
+
+.da-urg-val {
+  display: block;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #f8fafc;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.da-urg-val.da-urg-alert {
+  color: #f87171; /* Eye-catching light red/coral */
+  text-shadow: 0 0 12px rgba(248, 113, 113, 0.4);
+}
+
+.da-urg-lbl {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.3;
+}
+
 /* Form Styles */
 .da-form-card {
   background: rgba(15, 23, 42, 0.6);

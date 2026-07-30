@@ -210,9 +210,6 @@ const DataAnalystFormPage = () => {
                 <button className="da-hero-btn-primary" onClick={() => document.getElementById('hero-form').scrollIntoView({behavior: 'smooth'})}>
                   Book Free Career Consultation
                 </button>
-                <button className="da-hero-btn-secondary" onClick={() => document.getElementById('curriculum').scrollIntoView({behavior: 'smooth'})}>
-                  View Curriculum
-                </button>
               </div>
               <span className="da-hero-microcopy"><CheckCircleIcon size={14} /> Free consultation • No spam • 24h response</span>
             </div>
@@ -243,7 +240,22 @@ const DataAnalystFormPage = () => {
             </div>
           </div>
 
-          <div className="da-form-side">
+          <div className="da-form-side" id="hero-form">
+            <div className="da-urgency-strip">
+              <div className="da-urgency-stat">
+                <span className="da-urg-val">132</span>
+                <span className="da-urg-lbl">Today's Applications</span>
+              </div>
+              <div className="da-urgency-stat">
+                <span className="da-urg-val">89</span>
+                <span className="da-urg-lbl">Skill Evaluations Completed</span>
+              </div>
+              <div className="da-urgency-stat">
+                <span className="da-urg-val da-urg-alert">12</span>
+                <span className="da-urg-lbl">Seats Remaining</span>
+              </div>
+            </div>
+            
             <div className="da-form-card">
               {submitted ? (
                 <div className="da-success-state">
