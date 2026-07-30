@@ -14,7 +14,6 @@ import {
   RealProjects,
   ToolsCovered,
   CareerSupport,
-  Certification,
   HiringPartners,
   FAQBlock,
   FinalCTA
@@ -60,21 +59,29 @@ const DataAnalystFormPage = () => {
   const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
+    // Section 1
     name: '',
     contactNumber: '',
     personalEmailId: '',
+    collegeLocation: '',
+    degreeBranch: '',
+    degreeOther: '',
+    yearOfGraduation: '',
     
-    candidateType: '',
-    specialization: '',
-    yearsOfExperience: '',
-    currentJobTitle: '',
+    // Section 2
+    placementStatus: '',
+    obstacle: '',
     
-    interestedDomain: '',
-    whyLooking: '',
-    preferredMode: '',
+    // Section 3
+    salaryTarget: '',
+    programRouting: '',
+    
+    // Section 4
+    fundingPlan: '',
     startTimeline: '',
     
-    isConfirmed: false
+    // Section 5
+    nextStep: ''
   });
 
   const handleInputChange = (e) => {
@@ -107,6 +114,12 @@ const DataAnalystFormPage = () => {
     if (!formData.personalEmailId.trim() || !emailRegex.test(formData.personalEmailId)) {
       stepErrors.personalEmailId = 'Valid Email Address is required';
     }
+    if (!formData.collegeLocation.trim()) stepErrors.collegeLocation = 'College / University & Location is required';
+    if (!formData.degreeBranch) stepErrors.degreeBranch = 'Degree & Branch of Study is required';
+    if (formData.degreeBranch === 'Other' && !formData.degreeOther.trim()) {
+      stepErrors.degreeOther = 'Please specify your degree';
+    }
+    if (!formData.yearOfGraduation) stepErrors.yearOfGraduation = 'Year of Graduation is required';
     
     setErrors(stepErrors);
     return Object.keys(stepErrors).length === 0;
@@ -114,14 +127,8 @@ const DataAnalystFormPage = () => {
 
   const validateStep2 = () => {
     let stepErrors = {};
-    
-    if (!formData.candidateType) stepErrors.candidateType = 'Please select your current status';
-    if (!formData.specialization.trim()) stepErrors.specialization = 'Please enter your specialization or degree';
-    
-    if (formData.candidateType === 'Working professional') {
-      if (!formData.yearsOfExperience) stepErrors.yearsOfExperience = 'Years of experience is required';
-      if (!formData.currentJobTitle.trim()) stepErrors.currentJobTitle = 'Current job title is required';
-    }
+    if (!formData.placementStatus) stepErrors.placementStatus = 'Please select your current placement status';
+    if (!formData.obstacle) stepErrors.obstacle = 'Please select your biggest obstacle';
     
     setErrors(stepErrors);
     return Object.keys(stepErrors).length === 0;
@@ -129,12 +136,25 @@ const DataAnalystFormPage = () => {
 
   const validateStep3 = () => {
     let stepErrors = {};
+    if (!formData.salaryTarget) stepErrors.salaryTarget = 'Please select your target package';
+    if (!formData.programRouting) stepErrors.programRouting = 'Please select which solution describes your needs';
     
-    if (!formData.interestedDomain) stepErrors.interestedDomain = 'Please select an interested track';
-    if (!formData.whyLooking) stepErrors.whyLooking = 'Please select your primary goal';
-    if (!formData.preferredMode) stepErrors.preferredMode = 'Please select a preferred learning schedule';
-    if (!formData.startTimeline) stepErrors.startTimeline = 'Please select a start timeline';
-    if (!formData.isConfirmed) stepErrors.isConfirmed = 'Please consent to being contacted';
+    setErrors(stepErrors);
+    return Object.keys(stepErrors).length === 0;
+  };
+
+  const validateStep4 = () => {
+    let stepErrors = {};
+    if (!formData.fundingPlan) stepErrors.fundingPlan = 'Please select your funding plan';
+    if (!formData.startTimeline) stepErrors.startTimeline = 'Please select your start timeline';
+    
+    setErrors(stepErrors);
+    return Object.keys(stepErrors).length === 0;
+  };
+
+  const validateStep5 = () => {
+    let stepErrors = {};
+    if (!formData.nextStep) stepErrors.nextStep = 'Please select a next step action';
     
     setErrors(stepErrors);
     return Object.keys(stepErrors).length === 0;
@@ -143,6 +163,8 @@ const DataAnalystFormPage = () => {
   const nextStep = () => {
     if (currentStep === 1 && validateStep1()) setCurrentStep(2);
     else if (currentStep === 2 && validateStep2()) setCurrentStep(3);
+    else if (currentStep === 3 && validateStep3()) setCurrentStep(4);
+    else if (currentStep === 4 && validateStep4()) setCurrentStep(5);
   };
 
   const prevStep = () => {
@@ -151,9 +173,9 @@ const DataAnalystFormPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (currentStep !== 3) return;
+    if (currentStep !== 5) return;
     
-    if (!validateStep3()) return;
+    if (!validateStep5()) return;
 
     setIsSubmitting(true);
 
@@ -167,14 +189,18 @@ const DataAnalystFormPage = () => {
       params.append('personalEmailId', formData.personalEmailId);
       params.append('contactNumber', formData.contactNumber);
       params.append('whatsappNumber', formData.contactNumber); 
-      params.append('collegeName', formData.candidateType); 
-      params.append('branchName', `${formData.specialization} ${formData.currentJobTitle ? '- ' + formData.currentJobTitle : ''}`);
-      params.append('yearOfStudying', formData.yearsOfExperience || 'N/A');
-      params.append('interestedDomain', formData.interestedDomain);
+      params.append('collegeName', formData.collegeLocation); 
+      
+      const fullDegree = formData.degreeBranch === 'Other' ? formData.degreeOther : formData.degreeBranch;
+      params.append('branchName', fullDegree);
+      params.append('yearOfStudying', formData.yearOfGraduation);
+      
+      // Combine some fields to fit into backend's interestedDomain & whyLooking
+      params.append('interestedDomain', formData.salaryTarget + " | " + formData.programRouting);
       params.append('placementCellEmailId', '');
       params.append('crNameNumber', '');
-      params.append('whyLooking', formData.whyLooking);
-      params.append('preferredLanguage', `${formData.preferredMode} - ${formData.startTimeline}`);
+      params.append('whyLooking', formData.placementStatus + " | " + formData.obstacle);
+      params.append('preferredLanguage', formData.fundingPlan + " | " + formData.startTimeline + " | " + formData.nextStep);
 
       await fetch(googleWebAppUrl, { 
         method: 'POST', 
@@ -203,7 +229,10 @@ const DataAnalystFormPage = () => {
           <div className="da-content-side">
             <span className="da-eyebrow">Applications Open for Next Cohort</span>
             <h1 className="da-headline">Build Job-Ready Data Skills with Mentorship & Real Projects</h1>
-            <p className="da-subheadline">Join an elite, NSDC-aligned accelerator designed for ambitious graduates and professionals. Master Python, SQL, and Machine Learning to build a premium portfolio—backed by 15 guaranteed interviews and dedicated placement support.</p>
+            <p className="da-subheadline">
+              <strong>Stop Applying. Start Getting Interview Calls.</strong><br/><br/>
+              Become a Job-Ready Data Analyst through industry-led training, real-world projects, and a structured career acceleration program. Build a recruiter-ready portfolio, receive dedicated placement support, and unlock up to 15 guaranteed interview opportunities with access to 450+ hiring partners.*
+            </p>
             
             <div className="da-hero-actions">
               <div className="da-hero-cta-row">
@@ -277,18 +306,21 @@ const DataAnalystFormPage = () => {
                     <div className={`da-progress-step ${currentStep >= 1 ? 'completed' : ''}`}></div>
                     <div className={`da-progress-step ${currentStep >= 2 ? 'completed' : ''}`}></div>
                     <div className={`da-progress-step ${currentStep >= 3 ? 'completed' : ''}`}></div>
+                    <div className={`da-progress-step ${currentStep >= 4 ? 'completed' : ''}`}></div>
+                    <div className={`da-progress-step ${currentStep >= 5 ? 'completed' : ''}`}></div>
                   </div>
 
+                  {/* STEP 1: Basic Profile & Status */}
                   {currentStep === 1 && (
                     <div className="da-step-content">
                       <div className={`da-input-group ${errors.name ? 'has-error' : ''}`}>
-                        <label>Full Name</label>
+                        <label>1. Full Name</label>
                         <input type="text" name="name" value={formData.name} onChange={handleInputChange} placeholder="E.g. John Doe" />
                         {errors.name && <span className="da-error-text">{errors.name}</span>}
                       </div>
                       
                       <div className={`da-input-group ${errors.contactNumber ? 'has-error' : ''}`}>
-                        <label>Mobile Number</label>
+                        <label>2. Contact Number (WhatsApp Enabled)</label>
                         <input type="tel" name="contactNumber" value={formData.contactNumber} onChange={handleInputChange} placeholder="+91" />
                         {errors.contactNumber && <span className="da-error-text">{errors.contactNumber}</span>}
                       </div>
@@ -298,6 +330,40 @@ const DataAnalystFormPage = () => {
                         <input type="email" name="personalEmailId" value={formData.personalEmailId} onChange={handleInputChange} placeholder="john@example.com" />
                         {errors.personalEmailId && <span className="da-error-text">{errors.personalEmailId}</span>}
                       </div>
+
+                      <div className={`da-input-group ${errors.collegeLocation ? 'has-error' : ''}`}>
+                        <label>3. Current College / University & Location</label>
+                        <input type="text" name="collegeLocation" value={formData.collegeLocation} onChange={handleInputChange} placeholder="E.g. XYZ College, Mumbai" />
+                        {errors.collegeLocation && <span className="da-error-text">{errors.collegeLocation}</span>}
+                      </div>
+
+                      <div className={`da-input-group ${errors.degreeBranch ? 'has-error' : ''}`}>
+                        <label>4. Degree & Branch of Study</label>
+                        <select name="degreeBranch" value={formData.degreeBranch} onChange={handleInputChange}>
+                          <option value="">Select your degree...</option>
+                          <option value="B.Tech / B.E. (CS, IT, AI/ML, ECE, Data Science)">B.Tech / B.E. (CS, IT, AI/ML, ECE, Data Science)</option>
+                          <option value="B.Tech / B.E. (Mechanical, Civil, Electrical, Other)">B.Tech / B.E. (Mechanical, Civil, Electrical, Other)</option>
+                          <option value="BCA / MCA / B.Sc (IT/CS)">BCA / MCA / B.Sc (IT/CS)</option>
+                          <option value="MBA / PGDM / BBA">MBA / PGDM / BBA</option>
+                          <option value="Other">Other</option>
+                        </select>
+                        {formData.degreeBranch === 'Other' && (
+                          <input type="text" name="degreeOther" value={formData.degreeOther} onChange={handleInputChange} placeholder="Specify your degree" style={{marginTop: '8px'}} />
+                        )}
+                        {errors.degreeBranch && <span className="da-error-text">{errors.degreeBranch}</span>}
+                        {errors.degreeOther && <span className="da-error-text">{errors.degreeOther}</span>}
+                      </div>
+
+                      <div className={`da-input-group ${errors.yearOfGraduation ? 'has-error' : ''}`}>
+                        <label>5. Year of Graduation</label>
+                        <select name="yearOfGraduation" value={formData.yearOfGraduation} onChange={handleInputChange}>
+                          <option value="">Select your year of graduation...</option>
+                          <option value="Passed Out (2023 / 2024 / 2025 batch)">Passed Out (2023 / 2024 / 2025 batch)</option>
+                          <option value="Final Year (Graduating in 2026)">Final Year (Graduating in 2026)</option>
+                          <option value="Pre-Final Year (Graduating in 2027)">Pre-Final Year (Graduating in 2027)</option>
+                        </select>
+                        {errors.yearOfGraduation && <span className="da-error-text">{errors.yearOfGraduation}</span>}
+                      </div>
                       
                       <div className="da-form-actions">
                         <button type="button" className="da-btn da-btn-primary" onClick={nextStep}>Continue</button>
@@ -305,50 +371,32 @@ const DataAnalystFormPage = () => {
                     </div>
                   )}
 
+                  {/* STEP 2: Current Placement Status & Pain Points */}
                   {currentStep === 2 && (
                     <div className="da-step-content">
-                      <div className={`da-input-group ${errors.candidateType ? 'has-error' : ''}`}>
-                        <label>You are currently a:</label>
-                        <div className="da-options-grid">
-                          {['Final-year student', 'Graduate', 'Working professional', 'Career switcher'].map(opt => (
-                            <div 
-                              key={opt}
-                              className={`da-option-card ${formData.candidateType === opt ? 'selected' : ''}`}
-                              onClick={() => handleOptionSelect('candidateType', opt)}
-                            >
-                              {opt}
-                            </div>
-                          ))}
-                        </div>
-                        {errors.candidateType && <span className="da-error-text">{errors.candidateType}</span>}
+                      <div className={`da-input-group ${errors.placementStatus ? 'has-error' : ''}`}>
+                        <label>6. What is your current placement status?</label>
+                        <select name="placementStatus" value={formData.placementStatus} onChange={handleInputChange}>
+                          <option value="">Select your current placement status...</option>
+                          <option value="Unplaced & actively searching for opportunities">Unplaced & actively searching for opportunities</option>
+                          <option value="Placed, but salary package is below my target (< ₹5 LPA)">Placed, but salary package is below my target (&lt; ₹5 LPA)</option>
+                          <option value="Internship only; looking for full-time job offer">Internship only; looking for full-time job offer</option>
+                          <option value="Placed with a good package, but looking for a premium company switch">Placed with a good package, but looking for a premium company switch</option>
+                        </select>
+                        {errors.placementStatus && <span className="da-error-text">{errors.placementStatus}</span>}
                       </div>
 
-                      <div className={`da-input-group ${errors.specialization ? 'has-error' : ''}`}>
-                        <label>Current degree or specialization</label>
-                        <input type="text" name="specialization" value={formData.specialization} onChange={handleInputChange} placeholder="E.g. B.Tech Computer Science" />
-                        {errors.specialization && <span className="da-error-text">{errors.specialization}</span>}
+                      <div className={`da-input-group ${errors.obstacle ? 'has-error' : ''}`}>
+                        <label>7. What is your biggest obstacle right now?</label>
+                        <select name="obstacle" value={formData.obstacle} onChange={handleInputChange}>
+                          <option value="">Select your biggest obstacle...</option>
+                          <option value="No Interview Calls: My resume isn't getting shortlisted on job portals.">No Interview Calls: My resume isn't getting shortlisted on job portals.</option>
+                          <option value="Failing Technical/HR Rounds: I get calls, but get rejected in interview rounds.">Failing Technical/HR Rounds: I get calls, but get rejected in interview rounds.</option>
+                          <option value="Skill Gap: I don't feel job-ready in Data Analytics, Business Analytics, or Tech domains.">Skill Gap: I don't feel job-ready in Data Analytics, Business Analytics, or Tech domains.</option>
+                          <option value="Campus Placement Deficit: Our college isn't bringing high-paying companies.">Campus Placement Deficit: Our college isn't bringing high-paying companies.</option>
+                        </select>
+                        {errors.obstacle && <span className="da-error-text">{errors.obstacle}</span>}
                       </div>
-
-                      {formData.candidateType === 'Working professional' && (
-                        <>
-                          <div className={`da-input-group ${errors.yearsOfExperience ? 'has-error' : ''}`}>
-                            <label>Years of experience</label>
-                            <select name="yearsOfExperience" value={formData.yearsOfExperience} onChange={handleInputChange}>
-                              <option value="">Select experience...</option>
-                              <option value="1-3 years">1-3 years</option>
-                              <option value="3-5 years">3-5 years</option>
-                              <option value="5+ years">5+ years</option>
-                            </select>
-                            {errors.yearsOfExperience && <span className="da-error-text">{errors.yearsOfExperience}</span>}
-                          </div>
-
-                          <div className={`da-input-group ${errors.currentJobTitle ? 'has-error' : ''}`}>
-                            <label>Current job title</label>
-                            <input type="text" name="currentJobTitle" value={formData.currentJobTitle} onChange={handleInputChange} placeholder="E.g. Software Engineer" />
-                            {errors.currentJobTitle && <span className="da-error-text">{errors.currentJobTitle}</span>}
-                          </div>
-                        </>
-                      )}
 
                       <div className="da-form-actions">
                         <button type="button" className="da-btn da-btn-secondary" onClick={prevStep}>Back</button>
@@ -357,68 +405,92 @@ const DataAnalystFormPage = () => {
                     </div>
                   )}
 
+                  {/* STEP 3: Salary Target & Program Routing */}
                   {currentStep === 3 && (
                     <div className="da-step-content">
-                      <div className={`da-input-group ${errors.interestedDomain ? 'has-error' : ''}`}>
-                        <label>Interested Path</label>
-                        <select name="interestedDomain" value={formData.interestedDomain} onChange={handleInputChange}>
-                          <option value="">Select path...</option>
-                          <option value="Data Analyst">Data Analyst</option>
-                          <option value="BI Analyst">BI Analyst</option>
-                          <option value="Business Analyst">Business Analyst</option>
-                          <option value="Analytics Career Switch">Analytics Career Switch</option>
+                      <div className={`da-input-group ${errors.salaryTarget ? 'has-error' : ''}`}>
+                        <label>8. What minimum annual package (LPA) are you aiming for in your next role?</label>
+                        <select name="salaryTarget" value={formData.salaryTarget} onChange={handleInputChange}>
+                          <option value="">Select your target package...</option>
+                          <option value="₹4 LPA – ₹6 LPA">₹4 LPA – ₹6 LPA</option>
+                          <option value="₹6 LPA – ₹10 LPA">₹6 LPA – ₹10 LPA</option>
+                          <option value="₹10 LPA – ₹15+ LPA">₹10 LPA – ₹15+ LPA</option>
                         </select>
-                        {errors.interestedDomain && <span className="da-error-text">{errors.interestedDomain}</span>}
+                        {errors.salaryTarget && <span className="da-error-text">{errors.salaryTarget}</span>}
                       </div>
 
-                      <div className={`da-input-group ${errors.whyLooking ? 'has-error' : ''}`}>
-                        <label>Main Goal</label>
-                        <select name="whyLooking" value={formData.whyLooking} onChange={handleInputChange}>
-                          <option value="">Select goal...</option>
-                          <option value="First job">First job</option>
-                          <option value="Career switch">Career switch</option>
-                          <option value="Salary growth">Salary growth</option>
-                          <option value="Upskill">Upskill</option>
+                      <div className={`da-input-group ${errors.programRouting ? 'has-error' : ''}`}>
+                        <label>9. Which solution best describes what you need right now?</label>
+                        <select name="programRouting" value={formData.programRouting} onChange={handleInputChange}>
+                          <option value="">Select solution...</option>
+                          <option value='Guaranteed Interview Track: "I already have the required skills and need guaranteed interview opportunities with top MNCs to secure my next job."'>Guaranteed Interview Track: "I already have the required skills..."</option>
+                          <option value='Career Switch Track: "I want to transition into a high-paying role with expert mentorship, industry-focused training, and end-to-end placement support."'>Career Switch Track: "I want to transition into a high-paying role..."</option>
+                          <option value='Salary Hike Accelerator Track: "I am looking for a 50%–100% salary hike by upgrading my skills and getting placed in a better company."'>Salary Hike Accelerator Track: "I am looking for a 50%–100% salary hike..."</option>
+                          <option value='Placement Success Track: "I want a complete career transformation—from live projects and 1-on-1 mentorship to guaranteed interviews and placement assistance until I get hired."'>Placement Success Track: "I want a complete career transformation..."</option>
                         </select>
-                        {errors.whyLooking && <span className="da-error-text">{errors.whyLooking}</span>}
+                        {errors.programRouting && <span className="da-error-text">{errors.programRouting}</span>}
                       </div>
                       
-                      <div style={{display: 'flex', gap: '16px'}}>
-                        <div className={`da-input-group ${errors.preferredMode ? 'has-error' : ''}`} style={{flex: 1}}>
-                          <label>Learning Schedule</label>
-                          <select name="preferredMode" value={formData.preferredMode} onChange={handleInputChange}>
-                            <option value="">Select...</option>
-                            <option value="Weekday">Weekday</option>
-                            <option value="Weekend">Weekend</option>
-                            <option value="Flexible">Flexible</option>
-                          </select>
-                          {errors.preferredMode && <span className="da-error-text">{errors.preferredMode}</span>}
-                        </div>
-                        
-                        <div className={`da-input-group ${errors.startTimeline ? 'has-error' : ''}`} style={{flex: 1}}>
-                          <label>Start Timeline</label>
-                          <select name="startTimeline" value={formData.startTimeline} onChange={handleInputChange}>
-                            <option value="">Select...</option>
-                            <option value="Immediately">Immediately</option>
-                            <option value="This month">This month</option>
-                            <option value="In 1-3 months">In 1-3 months</option>
-                          </select>
-                          {errors.startTimeline && <span className="da-error-text">{errors.startTimeline}</span>}
-                        </div>
+                      <div className="da-form-actions">
+                        <button type="button" className="da-btn da-btn-secondary" onClick={prevStep}>Back</button>
+                        <button type="button" className="da-btn da-btn-primary" onClick={nextStep}>Continue</button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* STEP 4: High-Intent & Financial Qualification */}
+                  {currentStep === 4 && (
+                    <div className="da-step-content">
+                      <div className={`da-input-group ${errors.fundingPlan ? 'has-error' : ''}`}>
+                        <label style={{ lineHeight: '1.5' }}>
+                          10. If you are selected for Krutanic's Premium Placement & Guaranteed Interview Program, how will you secure your seat?
+                        </label>
+                        <select name="fundingPlan" value={formData.fundingPlan} onChange={handleInputChange} style={{ marginTop: '12px' }}>
+                          <option value="">Select an option...</option>
+                          <option value="I am ready to pay the full fee immediately.">I am ready to pay the full fee immediately.</option>
+                          <option value="I will enroll through an EMI plan.">I will enroll through an EMI plan.</option>
+                          <option value="I can pay the registration amount today and complete the remaining before the batch starts.">I can pay the registration amount today and complete the remaining before the batch starts.</option>
+                          <option value="I want to speak with a Career Advisor before making the payment.">I want to speak with a Career Advisor before making the payment.</option>
+                        </select>
+                        {errors.fundingPlan && <span className="da-error-text">{errors.fundingPlan}</span>}
                       </div>
 
-                      <div className="da-checkbox-group">
-                        <input type="checkbox" id="privacyConsent" name="isConfirmed" checked={formData.isConfirmed} onChange={handleInputChange} />
-                        <label htmlFor="privacyConsent">
-                          Your details are used only for program guidance and admissions support. No spam. No unnecessary calls.
-                        </label>
+                      <div className={`da-input-group ${errors.startTimeline ? 'has-error' : ''}`}>
+                        <label>11. If shortlisted, how soon are you ready to start your interview process / training program?</label>
+                        <select name="startTimeline" value={formData.startTimeline} onChange={handleInputChange}>
+                          <option value="">Select start timeline...</option>
+                          <option value="Immediately (Within 24–48 hours)">Immediately (Within 24–48 hours)</option>
+                          <option value="Within 1–2 weeks">Within 1–2 weeks</option>
+                          <option value="After my final semester exams">After my final semester exams</option>
+                          <option value="Just exploring options for now">Just exploring options for now</option>
+                        </select>
+                        {errors.startTimeline && <span className="da-error-text">{errors.startTimeline}</span>}
                       </div>
-                      {errors.isConfirmed && <span className="da-error-text" style={{marginTop: '4px'}}>{errors.isConfirmed}</span>}
+
+                      <div className="da-form-actions">
+                        <button type="button" className="da-btn da-btn-secondary" onClick={prevStep}>Back</button>
+                        <button type="button" className="da-btn da-btn-primary" onClick={nextStep}>Continue</button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* STEP 5: Next Step Action */}
+                  {currentStep === 5 && (
+                    <div className="da-step-content">
+                      <div className={`da-input-group ${errors.nextStep ? 'has-error' : ''}`}>
+                        <label>12. Are you ready to take a 15-minute Skill Evaluation & Career Diagnostic Test for ₹101 to check your eligibility?</label>
+                        <select name="nextStep" value={formData.nextStep} onChange={handleInputChange}>
+                          <option value="">Select an option...</option>
+                          <option value="Yes! Book my evaluation slot immediately via WhatsApp.">Yes! Book my evaluation slot immediately via WhatsApp.</option>
+                          <option value="No, I want a counselor to call me first to explain the program structure.">No, I want a counselor to call me first to explain the program structure.</option>
+                        </select>
+                        {errors.nextStep && <span className="da-error-text">{errors.nextStep}</span>}
+                      </div>
 
                       <div className="da-form-actions">
                         <button type="button" className="da-btn da-btn-secondary" onClick={prevStep}>Back</button>
                         <button type="submit" className="da-btn da-btn-primary" disabled={isSubmitting}>
-                          {isSubmitting ? 'Processing...' : 'Book Free Career Consultation'}
+                          {isSubmitting ? 'Processing...' : 'Submit Application'}
                         </button>
                       </div>
                     </div>
@@ -426,7 +498,7 @@ const DataAnalystFormPage = () => {
                   
                   <div className="da-trust-blocks">
                     <div className="da-trust-item">
-                      <span className="da-trust-icon"><CheckCircleIcon /></span> NSDC-aligned program with industry-focused curriculum.
+                      <span className="da-trust-icon"><CheckCircleIcon /></span> Built Around Real Industry Hiring Standards to Help You Become a Job-Ready Data Analyst.
                     </div>
                     <div className="da-trust-item">
                       <span className="da-trust-icon"><CheckCircleIcon /></span> 200+ learners placed and 450+ hiring partners.
@@ -454,7 +526,6 @@ const DataAnalystFormPage = () => {
       <RealProjects />
       <ToolsCovered />
       <CareerSupport />
-      <Certification />
       <HiringPartners />
       <FAQBlock />
       <FinalCTA />

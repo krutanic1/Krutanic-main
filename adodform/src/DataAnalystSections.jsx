@@ -164,12 +164,12 @@ export const WhyKrutanic = () => (
       <div className="das-section-header">
         <span className="das-label">About Krutanic</span>
         <h2 className="das-section-title">Built for Job-Readiness, Not Just Learning</h2>
-        <p className="das-section-sub">Krutanic is a Bengaluru-based EdTech platform founded in 2024, aligned with NSDC, and focused on bridging academic learning with real-world industry requirements.</p>
+        <p className="das-section-sub">Krutanic is a career acceleration platform built to help students and professionals transition from learning to employment through industry-aligned training, practical project experience, expert mentorship, and dedicated placement support.</p>
       </div>
       <div className="das-cards-grid-4">
         {[
           { icon: <Icon.MapPin />, title: 'Bengaluru-Based', desc: 'Operating from India\'s technology hub, with direct access to top companies and hiring networks.', img: ImgBengaluru, tag: 'Location' },
-          { icon: <Icon.Shield />, title: 'NSDC Aligned', desc: 'Program curriculum designed to meet National Skill Development Corporation standards for industry relevance.', img: ImgResume, tag: 'Certification' },
+          { icon: <Icon.Shield />, title: 'Career-Focused Learning', desc: 'Every module is designed to build job-ready skills through practical learning, real-world projects, and industry-relevant experience.', img: ImgResume, tag: 'Certification' },
           { icon: <Icon.Users />, title: 'Cohort of 30', desc: 'Small batches designed for focused mentorship, individual attention, and real feedback.', img: ImgMentorship, tag: 'Community' },
           { icon: <Icon.TrendingUp />, title: 'Outcome-First Model', desc: 'Every module is mapped to a job requirement, not an academic syllabus.', img: ImgGrowth, tag: 'Approach' },
         ].map((c) => (
@@ -458,68 +458,6 @@ export const CareerSupport = () => (
   </section>
 );
 
-/* ─── Certification ────────────────────────────────────────────── */
-export const Certification = () => (
-  <section className="das-section das-cert-premium-section">
-    <div className="das-container das-cert-layout">
-      <div className="das-cert-content">
-        <span className="das-label">Certification</span>
-        <h2 className="das-section-title">Industry-Ready Certificates with Verifiable Credential IDs</h2>
-        <p className="das-section-sub">A credential employers can verify and candidates can showcase. Every graduate receives an official certificate of completion with a unique ID.</p>
-        <div className="das-cert-points">
-          {[
-            'Official Certificate of Completion',
-            'Unique verifiable certificate ID',
-            'LinkedIn-ready digital credentials',
-            'NSDC-aligned curriculum standard',
-          ].map((pt) => (
-            <div className="das-cert-point" key={pt}>
-              <span className="das-check-icon"><Icon.CheckCircle /></span>
-              <span>{pt}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="das-cert-preview-hero">
-        <div className="das-cert-hero-card">
-          <div className="das-cert-border-inner">
-            <div className="das-cert-top">
-              <div className="das-cert-brand">Krutanic</div>
-              <div className="das-cert-seal">
-                <Icon.Shield />
-              </div>
-            </div>
-            <div className="das-cert-body-main">
-              <span className="das-cert-eyebrow">CERTIFICATE OF COMPLETION</span>
-              <h3 className="das-cert-student">[Student Name]</h3>
-              <p className="das-cert-program-text">has successfully completed the</p>
-              <h4 className="das-cert-program-name">Advanced Data Analytics Program</h4>
-            </div>
-            <div className="das-cert-bottom">
-              <div className="das-cert-sig">
-                <div className="das-cert-line"></div>
-                <span>Program Director</span>
-              </div>
-              <div className="das-cert-sig">
-                <div className="das-cert-line"></div>
-                <span>Lead Mentor</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Floating Verification Badge */}
-        <div className="das-cert-float-badge">
-          <div className="das-cert-float-icon"><Icon.CheckCircle /></div>
-          <div className="das-cert-float-text">
-            <strong>Verified Credential</strong>
-            <span>ID: KRU-DA-2024-XXXX</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-);
 
 /* ─── Hiring Partners ──────────────────────────────────────────── */
 export const HiringPartners = () => (
