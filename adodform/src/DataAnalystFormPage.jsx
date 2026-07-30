@@ -146,15 +146,7 @@ const DataAnalystFormPage = () => {
   const validateStep4 = () => {
     let stepErrors = {};
     if (!formData.fundingPlan) stepErrors.fundingPlan = 'Please select your funding plan';
-    if (!formData.startTimeline) stepErrors.startTimeline = 'Please select your start timeline';
-    
-    setErrors(stepErrors);
-    return Object.keys(stepErrors).length === 0;
-  };
-
-  const validateStep5 = () => {
-    let stepErrors = {};
-    if (!formData.nextStep) stepErrors.nextStep = 'Please select a next step action';
+    if (!formData.nextStep) stepErrors.nextStep = 'Please select an option';
     
     setErrors(stepErrors);
     return Object.keys(stepErrors).length === 0;
@@ -164,7 +156,6 @@ const DataAnalystFormPage = () => {
     if (currentStep === 1 && validateStep1()) setCurrentStep(2);
     else if (currentStep === 2 && validateStep2()) setCurrentStep(3);
     else if (currentStep === 3 && validateStep3()) setCurrentStep(4);
-    else if (currentStep === 4 && validateStep4()) setCurrentStep(5);
   };
 
   const prevStep = () => {
@@ -173,44 +164,49 @@ const DataAnalystFormPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (currentStep !== 5) return;
+    if (currentStep !== 4) return;
     
-    if (!validateStep5()) return;
+    if (!validateStep4()) return;
 
     setIsSubmitting(true);
 
-    const googleWebAppUrl = "https://script.google.com/macros/s/AKfycbyfly2CXZyI_mqGiLrOIyErIcMFtRkECU68WryLt2tWkMmjdlDJHmriJP4Gk4RLSC7YWg/exec";
+    const googleWebAppUrl = "https://script.google.com/macros/s/AKfycbwb5YK4-lHdJwxRtQDESibo-uyhnXvJU56sn03ztTJYzuEK0c0aUcVJePNy1-k3T3c3Dg/exec";
 
     try {
       const params = new URLSearchParams();
-      // Map the new fields to the existing backend schema
       params.append('name', formData.name);
-      params.append('studentsCollegeEmailId', '');
       params.append('personalEmailId', formData.personalEmailId);
       params.append('contactNumber', formData.contactNumber);
-      params.append('whatsappNumber', formData.contactNumber); 
-      params.append('collegeName', formData.collegeLocation); 
+      params.append('collegeLocation', formData.collegeLocation); 
       
       const fullDegree = formData.degreeBranch === 'Other' ? formData.degreeOther : formData.degreeBranch;
-      params.append('branchName', fullDegree);
-      params.append('yearOfStudying', formData.yearOfGraduation);
+      params.append('degreeBranch', fullDegree);
+      params.append('yearOfGraduation', formData.yearOfGraduation);
       
-      // Combine some fields to fit into backend's interestedDomain & whyLooking
-      params.append('interestedDomain', formData.salaryTarget + " | " + formData.programRouting);
-      params.append('placementCellEmailId', '');
-      params.append('crNameNumber', '');
-      params.append('whyLooking', formData.placementStatus + " | " + formData.obstacle);
-      params.append('preferredLanguage', formData.fundingPlan + " | " + formData.startTimeline + " | " + formData.nextStep);
+      params.append('placementStatus', formData.placementStatus);
+      params.append('obstacle', formData.obstacle);
+      params.append('salaryTarget', formData.salaryTarget);
+      params.append('programRouting', formData.programRouting);
+      params.append('fundingPlan', formData.fundingPlan);
+      params.append('nextStep', formData.nextStep);
 
-      await fetch(googleWebAppUrl, { 
+      const response = await fetch(googleWebAppUrl, { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: params.toString() 
       });
 
+      const data = await response.json();
+
       setIsSubmitting(false); 
-      setSubmitted(true);
-      toast.success("Application successfully submitted!");
+      
+      if (data.result === 'success') {
+        setSubmitted(true);
+        toast.success("Application successfully submitted!");
+      } else {
+        console.error("Form submission error from script:", data.error);
+        toast.error("Script Error: " + data.error);
+      }
     } catch (err) {
       console.error("Form submission error:", err);
       setIsSubmitting(false); 
@@ -307,7 +303,6 @@ const DataAnalystFormPage = () => {
                     <div className={`da-progress-step ${currentStep >= 2 ? 'completed' : ''}`}></div>
                     <div className={`da-progress-step ${currentStep >= 3 ? 'completed' : ''}`}></div>
                     <div className={`da-progress-step ${currentStep >= 4 ? 'completed' : ''}`}></div>
-                    <div className={`da-progress-step ${currentStep >= 5 ? 'completed' : ''}`}></div>
                   </div>
 
                   {/* STEP 1: Basic Profile & Status */}
@@ -438,7 +433,7 @@ const DataAnalystFormPage = () => {
                     </div>
                   )}
 
-                  {/* STEP 4: High-Intent & Financial Qualification */}
+                  {/* STEP 4: High-Intent & Final Action */}
                   {currentStep === 4 && (
                     <div className="da-step-content">
                       <div className={`da-input-group ${errors.fundingPlan ? 'has-error' : ''}`}>
@@ -455,30 +450,8 @@ const DataAnalystFormPage = () => {
                         {errors.fundingPlan && <span className="da-error-text">{errors.fundingPlan}</span>}
                       </div>
 
-                      <div className={`da-input-group ${errors.startTimeline ? 'has-error' : ''}`}>
-                        <label>11. If shortlisted, how soon are you ready to start your interview process / training program?</label>
-                        <select name="startTimeline" value={formData.startTimeline} onChange={handleInputChange}>
-                          <option value="">Select start timeline...</option>
-                          <option value="Immediately (Within 24–48 hours)">Immediately (Within 24–48 hours)</option>
-                          <option value="Within 1–2 weeks">Within 1–2 weeks</option>
-                          <option value="After my final semester exams">After my final semester exams</option>
-                          <option value="Just exploring options for now">Just exploring options for now</option>
-                        </select>
-                        {errors.startTimeline && <span className="da-error-text">{errors.startTimeline}</span>}
-                      </div>
-
-                      <div className="da-form-actions">
-                        <button type="button" className="da-btn da-btn-secondary" onClick={prevStep}>Back</button>
-                        <button type="button" className="da-btn da-btn-primary" onClick={nextStep}>Continue</button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* STEP 5: Next Step Action */}
-                  {currentStep === 5 && (
-                    <div className="da-step-content">
                       <div className={`da-input-group ${errors.nextStep ? 'has-error' : ''}`}>
-                        <label>12. Are you ready to take a 15-minute Skill Evaluation & Career Diagnostic Test for ₹101 to check your eligibility?</label>
+                        <label>11. Are you ready to take a 15-minute Skill Evaluation & Career Diagnostic Test for ₹101 to check your eligibility?</label>
                         <select name="nextStep" value={formData.nextStep} onChange={handleInputChange}>
                           <option value="">Select an option...</option>
                           <option value="Yes! Book my evaluation slot immediately via WhatsApp.">Yes! Book my evaluation slot immediately via WhatsApp.</option>
