@@ -953,6 +953,25 @@ router.get("/all-activities", async (req, res) => {
             .limit(limit)
             .lean();
 
+        // Extract unique specialistStringIds that need lookup
+        const specialistIdsToLookup = [...new Set(logs
+            .filter(log => !log.teamId && !(log.specialistId && log.specialistId.team_id) && log.specialistStringId)
+            .map(log => log.specialistStringId))];
+
+        if (specialistIdsToLookup.length > 0) {
+            const teams = await AdvTeamMember.find({ _id: { $in: specialistIdsToLookup } }, "team").lean();
+            const teamMap = teams.reduce((acc, curr) => {
+                acc[curr._id.toString()] = curr.team;
+                return acc;
+            }, {});
+
+            logs.forEach(log => {
+                if (!log.teamId && !(log.specialistId && log.specialistId.team_id) && log.specialistStringId && teamMap[log.specialistStringId]) {
+                    log.teamId = { team_name: teamMap[log.specialistStringId] };
+                }
+            });
+        }
+
         res.status(200).json({
             logs,
             total,
