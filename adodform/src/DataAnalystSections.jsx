@@ -135,7 +135,7 @@ export const StatsBar = () => (
         {/* Medium Featured Stat */}
         <div className="das-outcome-card das-outcome-hero-alt">
           <div className="das-outcome-value">₹16L</div>
-          <div className="das-outcome-label">Highest CTC</div>
+          <div className="das-outcome-label">Highest Package</div>
           <div className="das-outcome-desc">Achieved by recent cohort graduates in top tech companies.</div>
         </div>
 
@@ -243,9 +243,9 @@ export const CareerRoles = () => (
         ))}
       </div>
       <div className="das-outcomes-strip">
-        <div className="das-outcome-item"><span className="das-outcome-val">₹16L</span><span className="das-outcome-lbl">Highest CTC</span></div>
+        <div className="das-outcome-item"><span className="das-outcome-val">₹16L</span><span className="das-outcome-lbl">Highest Package</span></div>
         <div className="das-outcome-divider"></div>
-        <div className="das-outcome-item"><span className="das-outcome-val">₹8.2L</span><span className="das-outcome-lbl">Average CTC</span></div>
+        <div className="das-outcome-item"><span className="das-outcome-val">₹8.2L</span><span className="das-outcome-lbl">Average Package</span></div>
         <div className="das-outcome-divider"></div>
         <div className="das-outcome-item"><span className="das-outcome-val">93%</span><span className="das-outcome-lbl">Placement Rate</span></div>
         <div className="das-outcome-divider"></div>
@@ -543,7 +543,7 @@ export const HiringPartners = () => (
 
 /* ─── FAQ ──────────────────────────────────────────────────────── */
 const faqs = [
-  { q: 'Who can apply for this program?', a: 'Final-year students, graduates, working professionals with 1–5 years of experience, and career switchers from non-tech backgrounds are all eligible. No prior data or coding experience is required.' },
+  { q: 'Who can apply for this program?', a: 'Final-year students, graduates, working professionals with 1–10 years of experience, and career switchers from non-tech backgrounds are all eligible. No prior data or coding experience is required.' },
   { q: 'Is this suitable for working professionals?', a: 'Yes. The program offers weekday, weekend, and flexible batch options specifically designed around professional schedules. Many of our alumni joined while employed.' },
   { q: 'Is placement support included in the program?', a: 'Yes. Dedicated placement assistance covers resume building, LinkedIn optimization, mock interviews, portfolio review, and active connections with 450+ hiring partners.' },
   { q: 'What tools and technologies will I learn?', a: 'You will work with 40+ tools including Python, SQL, Excel, Power BI, Tableau, pandas, NumPy, Plotly, MySQL, PostgreSQL, BigQuery, Spark, Airflow, Azure, GCP, and machine learning basics.' },

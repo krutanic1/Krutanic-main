@@ -203,7 +203,7 @@ const DataAnalystFormPage = () => {
           <div className="da-content-side">
             <span className="da-eyebrow">Applications Open for Next Cohort</span>
             <h1 className="da-headline">Build Job-Ready Data Skills with Mentorship & Real Projects</h1>
-            <p className="da-subheadline">Join a Bengaluru-based, NSDC-aligned accelerator built for graduates and professionals. Master Python, SQL, and Power BI while building a portfolio that top tech companies hire for.</p>
+            <p className="da-subheadline">Join an elite, NSDC-aligned accelerator designed for ambitious graduates and professionals. Master Python, SQL, and Machine Learning to build a premium portfolio—backed by 15 guaranteed interviews and dedicated placement support.</p>
             
             <div className="da-hero-actions">
               <div className="da-hero-cta-row">
@@ -227,7 +227,7 @@ const DataAnalystFormPage = () => {
             <div className="da-metrics-grid da-metrics-compact">
               <div className="da-metric-box">
                 <div className="da-metric-value">₹16L</div>
-                <div className="da-metric-label">Highest CTC</div>
+                <div className="da-metric-label">Highest Package</div>
               </div>
               <div className="da-metric-box">
                 <div className="da-metric-value">93%</div>

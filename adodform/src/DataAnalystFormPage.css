@@ -411,6 +411,10 @@
   padding: 16px;
   cursor: pointer;
   transition: all 0.2s ease;
+  color: #f8fafc;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
 }
 
 .da-option-card:hover {
@@ -421,6 +425,7 @@
 .da-option-card.selected {
   border-color: #2dd4bf;
   background: rgba(45, 212, 191, 0.1);
+  color: #2dd4bf;
 }
 
 .da-option-card input[type="radio"] {
@@ -432,6 +437,17 @@
   display: block;
   font-size: 0.95rem;
   font-weight: 600;
+  color: #f8fafc;
+}
+
+/* Placeholders and Selects */
+.da-input-group input::placeholder,
+.da-input-group select::placeholder {
+  color: rgba(248, 250, 252, 0.4);
+}
+
+.da-input-group select option {
+  background: #0f172a;
   color: #f8fafc;
 }
 
