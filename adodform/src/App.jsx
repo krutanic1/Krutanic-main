@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './Home';
 import MedProFormPage from './MedProFormPage';
+import DataAnalystFormPage from './DataAnalystFormPage';
 
 const App = () => {
   return (
@@ -9,6 +10,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/form" element={<MedProFormPage />} />
+        <Route path="/dataanalysist" element={<DataAnalystFormPage />} />
       </Routes>
     </Router>
   );

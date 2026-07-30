@@ -1,0 +1,1197 @@
+:root {
+  --das-bg: #F7F6F2;
+  --das-surface: #FFFFFF;
+  --das-surface-soft: #F1EFE8;
+  --das-text: #1F2937;
+  --das-text-muted: #6B7280;
+  --das-primary: #0F766E;
+  --das-primary-hover: #115E59;
+  --das-border: #E5E7EB;
+  --das-success: #2E7D32;
+  --das-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+}
+
+/* ─── Compact Complete Card ─────── */
+.das-compact-card {
+  background: var(--das-surface);
+  border: 1px solid var(--das-border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--das-shadow);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.das-compact-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+}
+
+.das-compact-img {
+  width: 100%;
+  height: 160px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.das-compact-tag {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(15, 118, 110, 0.85);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.das-compact-body {
+  padding: 20px 24px 24px;
+  flex: 1;
+  position: relative;
+}
+
+.das-compact-icon {
+  width: 44px;
+  height: 44px;
+  background: rgba(15, 118, 110, 0.08);
+  color: var(--das-primary);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  border: 1px solid rgba(15, 118, 110, 0.12);
+}
+
+.das-compact-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--das-text);
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+}
+
+.das-compact-desc {
+  font-size: 0.88rem;
+  color: var(--das-text-muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ─── Project Complete Card ─────── */
+.das-project-complete-card {
+  background: var(--das-surface);
+  border: 1px solid var(--das-border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--das-shadow);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.das-project-complete-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+}
+
+.das-project-complete-img {
+  width: 100%;
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.das-project-tags {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.das-project-tags span {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--das-primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(15, 118, 110, 0.2);
+}
+
+.das-project-complete-body {
+  padding: 24px 28px 28px;
+  flex: 1;
+}
+
+.das-project-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--das-primary);
+  padding-top: 16px;
+  border-top: 1px solid var(--das-border);
+}
+
+/* Shared Layout */
+.das-section {
+  padding: 80px 20px;
+  background-color: var(--das-surface);
+}
+
+.das-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.das-section-header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 56px;
+}
+
+.das-label {
+  display: inline-block;
+  background: rgba(15, 118, 110, 0.08);
+  color: var(--das-primary);
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 16px;
+}
+
+.das-section-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--das-text);
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.das-section-sub {
+  font-size: 1.1rem;
+  color: var(--das-text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ─── Outcomes / Proof Stats ─────────── */
+.das-outcomes-section {
+  background-color: #faf9f6;
+  border-top: 1px solid var(--das-border);
+  border-bottom: 1px solid var(--das-border);
+}
+
+.das-outcomes-bento {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+}
+
+.das-outcome-card {
+  background: var(--das-surface);
+  border: 1px solid var(--das-border);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.03);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.das-outcome-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+  border-color: rgba(15, 118, 110, 0.15);
+}
+
+.das-outcome-hero {
+  grid-column: span 3;
+  background: linear-gradient(135deg, #0b1120 0%, #1e293b 100%);
+  color: #ffffff;
+  border: none;
+  padding: 48px;
+}
+
+.das-outcome-hero .das-outcome-value {
+  color: #2dd4bf;
+  font-size: 4rem;
+  margin-bottom: 8px;
+}
+
+.das-outcome-hero .das-outcome-label {
+  color: #ffffff;
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+}
+
+.das-outcome-hero .das-outcome-desc {
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+.das-outcome-hero-alt {
+  grid-column: span 3;
+  background: #ffffff;
+  padding: 48px;
+}
+
+.das-outcome-hero-alt .das-outcome-value {
+  color: var(--das-primary);
+  font-size: 4rem;
+  margin-bottom: 8px;
+}
+
+.das-outcome-hero-alt .das-outcome-label {
+  color: var(--das-text);
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+}
+
+.das-outcome-hero-alt .das-outcome-desc {
+  color: var(--das-text-muted);
+  font-size: 0.95rem;
+}
+
+.das-outcome-small {
+  grid-column: span 2;
+  padding: 24px 32px;
+  text-align: center;
+  align-items: center;
+}
+
+.das-outcome-small .das-outcome-value {
+  font-size: 2.2rem;
+  color: var(--das-text);
+}
+
+.das-outcome-value {
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 8px;
+  letter-spacing: -1px;
+}
+
+.das-outcome-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--das-text-muted);
+}
+
+.das-outcome-desc {
+  margin-top: 12px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--das-text-muted);
+}
+
+@media (max-width: 900px) {
+  .das-outcomes-bento {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .das-outcome-hero, .das-outcome-hero-alt {
+    grid-column: span 2;
+  }
+  .das-outcome-small {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .das-outcomes-bento {
+    grid-template-columns: 1fr;
+  }
+  .das-outcome-small {
+    grid-column: span 1;
+  }
+}
+
+/* ─── Cards Grids ───────────────── */
+.das-cards-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.das-cards-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.das-cards-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.das-card {
+  background: var(--das-surface);
+  border: 1px solid var(--das-border);
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: var(--das-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Card with generated background image */
+.das-card-bg {
+  background-color: var(--das-surface);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.das-card-bg::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 140px;
+  background-image: var(--card-bg);
+  background-size: cover;
+  background-position: center;
+  border-radius: 11px 11px 0 0;
+  opacity: 0.9;
+}
+
+.das-card-bg .das-card-icon {
+  position: absolute;
+  top: 104px;
+  left: 24px;
+  background: var(--das-surface);
+  border: 1px solid var(--das-border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 2;
+  margin-bottom: 0;
+}
+
+.das-card-bg .das-card-title {
+  margin-top: 48px;
+  padding: 0 28px;
+}
+
+.das-card-bg .das-card-desc {
+  padding: 0 28px 28px;
+}
+
+.das-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.1);
+}
+
+
+.das-card-sm {
+  padding: 24px;
+}
+
+.das-card-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(15, 118, 110, 0.08);
+  color: var(--das-primary);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.das-card-icon-sm {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.das-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--das-text);
+  margin: 0 0 10px 0;
+}
+
+.das-card-desc {
+  font-size: 0.9rem;
+  color: var(--das-text-muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ─── Career Roles ──────────────── */
+.das-roles-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 48px;
+}
+
+.das-role-pill {
+  background: var(--das-surface);
+  border: 1px solid var(--das-border);
+  border-radius: 8px;
+  padding: 14px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--das-text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: var(--das-shadow);
+}
+
+.das-role-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--das-primary);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.das-outcomes-strip {
+  background: var(--das-surface-soft);
+  border: 1px solid var(--das-border);
+  border-radius: 12px;
+  padding: 32px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.das-outcome-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.das-outcome-val {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--das-primary);
+}
+
+.das-outcome-lbl {
+  font-size: 0.85rem;
+  color: var(--das-text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.das-outcome-divider {
+  width: 1px;
+  height: 48px;
+  background: var(--das-border);
+}
+
+/* ─── Roadmap ───────────────────── */
+.das-roadmap {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  position: relative;
+}
+
+.das-roadmap-item {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.das-roadmap-marker {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-direction: column;
+}
+
+.das-roadmap-num {
+  width: 44px;
+  height: 44px;
+  background: var(--das-primary);
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.das-roadmap-content {
+  background: var(--das-surface);
+  border: 1px solid var(--das-border);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: var(--das-shadow);
+  flex: 1;
+}
+
+.das-roadmap-phase {
+  font-size: 0.75rem;
+  color: var(--das-primary);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.das-roadmap-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--das-text);
+  margin: 0 0 10px 0;
+}
+
+.das-roadmap-desc {
+  font-size: 0.9rem;
+  color: var(--das-text-muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ─── Projects ──────────────────── */
+.das-project-card {
+  background: var(--das-surface);
+  border: 1px solid var(--das-border);
+  border-radius: 12px;
+  padding: 28px;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  box-shadow: var(--das-shadow);
+  transition: transform 0.2s ease;
+}
+
+.das-project-card:hover {
+  transform: translateY(-2px);
+}
+
+.das-project-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(15, 118, 110, 0.08);
+  color: var(--das-primary);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.das-project-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--das-text);
+  margin: 0 0 10px 0;
+}
+
+.das-project-desc {
+  font-size: 0.9rem;
+  color: var(--das-text-muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Project card with image background at top */
+.das-project-card-bg {
+  padding: 0;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.das-project-card-bg::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 120px;
+  background-image: var(--card-bg);
+  background-size: cover;
+  background-position: center;
+  border-radius: 11px 11px 0 0;
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
+.das-project-card-bg .das-project-icon {
+  position: absolute;
+  top: 84px;
+  left: 24px;
+  background: var(--das-surface);
+  border: 1px solid var(--das-border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 2;
+}
+
+.das-project-card-bg > div {
+  padding: 52px 28px 28px;
+}
+
+/* ─── Tools Bento Grid ────────────── */
+.das-tools-bento-section {
+  background-color: #faf9f6;
+}
+
+.das-bento-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.das-bento-card {
+  background: var(--das-surface);
+  border: 1px solid rgba(229, 231, 235, 0.8);
+  border-radius: 16px;
+  padding: 24px 28px;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.das-bento-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+  border-color: rgba(15, 118, 110, 0.2);
+}
+
+.das-bento-wide {
+  grid-column: span 2;
+}
+
+.das-bento-header {
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--das-border);
+}
+
+.das-bento-cat-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--das-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.das-bento-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.das-bento-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 14px;
+  transition: all 0.2s ease;
+  height: 42px;
+  box-sizing: border-box;
+}
+
+.das-bento-pill:hover {
+  border-color: var(--das-primary);
+  background: rgba(15, 118, 110, 0.04);
+}
+
+.das-bento-img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  flex-shrink: 0;
+  filter: grayscale(10%) contrast(1.1);
+}
+
+.das-bento-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--das-text);
+  white-space: nowrap;
+}
+
+.das-bento-footer {
+  text-align: center;
+  border-top: 1px solid var(--das-border);
+  padding-top: 24px;
+}
+
+.das-bento-footer p {
+  font-size: 0.9rem;
+  color: var(--das-text-muted);
+  margin: 0;
+  font-weight: 500;
+}
+
+/* ─── Responsive Adjustments for Bento */
+@media (max-width: 1024px) {
+  .das-bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .das-bento-wide {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .das-bento-grid {
+    grid-template-columns: 1fr;
+  }
+  .das-bento-wide {
+    grid-column: span 1;
+  }
+}
+
+
+/* ─── Certification (Premium) ─────────────── */
+.das-cert-premium-section {
+  background-color: #f8fafc;
+  overflow: hidden;
+}
+
+.das-cert-layout {
+  display: flex;
+  gap: 80px;
+  align-items: center;
+}
+
+.das-cert-content {
+  flex: 1;
+  max-width: 500px;
+}
+
+.das-cert-points {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.das-cert-point {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 1rem;
+  color: var(--das-text);
+  font-weight: 500;
+  background: #ffffff;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.02);
+}
+
+.das-check-icon {
+  color: var(--das-primary);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Certificate Hero Presentation */
+.das-cert-preview-hero {
+  flex: 1;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.das-cert-hero-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 580px;
+  min-height: 400px;
+  border-radius: 4px;
+  box-shadow: 
+    0 24px 48px -12px rgba(15, 23, 42, 0.15),
+    0 0 0 1px rgba(15, 23, 42, 0.05),
+    0 0 0 8px #ffffff,
+    0 0 0 9px #e2e8f0;
+  padding: 12px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+}
+
+.das-cert-border-inner {
+  border: 2px solid #e2e8f0;
+  flex: 1;
+  padding: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(circle at center, #ffffff 40%, #f8fafc 100%);
+  position: relative;
+}
+
+.das-cert-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.das-cert-brand {
+  font-family: Georgia, serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #0f172a;
+}
+
+.das-cert-seal {
+  width: 48px;
+  height: 48px;
+  background: rgba(15, 118, 110, 0.1);
+  color: var(--das-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.das-cert-body-main {
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 32px;
+}
+
+.das-cert-eyebrow {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 3px;
+  margin-bottom: 24px;
+}
+
+.das-cert-student {
+  font-family: Georgia, serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0 0 16px;
+  font-style: italic;
+  border-bottom: 1px solid #cbd5e1;
+  padding-bottom: 8px;
+  display: inline-block;
+  min-width: 260px;
+}
+
+.das-cert-program-text {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 0 0 8px;
+}
+
+.das-cert-program-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.das-cert-bottom {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.das-cert-sig {
+  text-align: center;
+}
+
+.das-cert-line {
+  width: 120px;
+  height: 1px;
+  background: #cbd5e1;
+  margin-bottom: 8px;
+}
+
+.das-cert-sig span {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Floating Verification Badge */
+.das-cert-float-badge {
+  position: absolute;
+  bottom: 0px;
+  right: -20px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+  border: 1px solid #e2e8f0;
+  z-index: 2;
+  transform: translateY(10px);
+}
+
+.das-cert-float-icon {
+  background: #10b981;
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.das-cert-float-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.das-cert-float-text strong {
+  font-size: 0.95rem;
+  color: #0f172a;
+  margin-bottom: 2px;
+}
+
+.das-cert-float-text span {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-family: monospace;
+}
+
+@media (max-width: 900px) {
+  .das-cert-layout {
+    flex-direction: column;
+    gap: 40px;
+  }
+  .das-cert-float-badge {
+    right: 10px;
+    bottom: -20px;
+  }
+}
+
+/* ─── Hiring Partners ───────────── */
+.das-partners-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.das-partner-badge {
+  background: var(--das-surface-soft);
+  border: 1px solid var(--das-border);
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--das-text-muted);
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+}
+
+.das-partner-badge:hover {
+  border-color: var(--das-primary);
+  color: var(--das-primary);
+}
+
+.das-partners-note {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--das-text-muted);
+  margin: 0;
+}
+
+/* ─── FAQ ───────────────────────── */
+.das-faq-layout {
+  display: flex;
+  gap: 60px;
+  align-items: flex-start;
+}
+
+.das-faq-left {
+  width: 280px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 40px;
+}
+
+.das-faq-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.das-faq-item {
+  background: var(--das-surface);
+  border: 1px solid var(--das-border);
+  border-radius: 10px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.das-faq-item.open {
+  border-color: var(--das-primary);
+}
+
+.das-faq-q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--das-text);
+}
+
+.das-faq-chevron {
+  color: var(--das-text-muted);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  transition: transform 0.25s ease;
+}
+
+.das-faq-chevron.rotated {
+  transform: rotate(180deg);
+  color: var(--das-primary);
+}
+
+.das-faq-a {
+  padding: 0 24px 20px;
+  font-size: 0.9rem;
+  color: var(--das-text-muted);
+  line-height: 1.7;
+  border-top: 1px solid var(--das-border);
+  padding-top: 16px;
+}
+
+/* ─── Final CTA ─────────────────── */
+.das-final-cta {
+  background: var(--das-primary);
+  padding: 64px 20px;
+}
+
+.das-cta-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.das-cta-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 12px;
+}
+
+.das-cta-sub {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.75);
+  margin: 0;
+}
+
+.das-cta-actions {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.das-cta-btn {
+  background: #ffffff;
+  color: var(--das-primary);
+  border: none;
+  padding: 16px 32px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.das-cta-btn:hover {
+  background: var(--das-surface-soft);
+  transform: translateY(-1px);
+}
+
+.das-cta-trust {
+  display: flex;
+  gap: 20px;
+}
+
+.das-cta-trust span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.7);
+}
+
+/* ─── Responsive ────────────────── */
+@media (max-width: 1024px) {
+  .das-cards-grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .das-cards-grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .das-roadmap { grid-template-columns: repeat(2, 1fr); }
+  .das-stats-grid { grid-template-columns: repeat(4, 1fr); }
+  .das-tools-categories { grid-template-columns: repeat(2, 1fr); }
+  .das-cert-layout { flex-direction: column; }
+  .das-cert-preview { width: 100%; }
+  .das-cta-inner { flex-direction: column; text-align: center; align-items: center; }
+  .das-cta-actions { align-items: center; }
+}
+
+@media (max-width: 768px) {
+  .das-section { padding: 60px 20px; }
+  .das-section-title { font-size: 1.8rem; }
+  .das-cards-grid-4, .das-cards-grid-3, .das-cards-grid-2 { grid-template-columns: 1fr; }
+  .das-roadmap { grid-template-columns: 1fr; }
+  .das-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .das-tools-categories { grid-template-columns: 1fr; }
+  .das-faq-layout { flex-direction: column; }
+  .das-faq-left { width: 100%; position: static; }
+  .das-outcomes-strip { flex-direction: column; gap: 24px; }
+  .das-outcome-divider { display: none; }
+}
