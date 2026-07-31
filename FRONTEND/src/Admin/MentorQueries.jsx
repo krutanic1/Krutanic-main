@@ -36,7 +36,7 @@ const MentorQueries = () => {
   const fetchBda = async () => {
     try {
       const response = await axios.get(`${API}/getbda`);
-      setBda(response.data);
+      setBda(response.data.filter(user => user.status === "Active"));
     } catch (error) {
       console.error("There was an error fetching bda:", error);
     } finally {

@@ -35,7 +35,7 @@ const AdvOnBoardingDetails = () => {
   const fetchAdvOperation = async () => {
     try {
       const response = await axios.get(`${API}/getadvoperation`);
-      setAdvOperation(response.data);
+      setAdvOperation(response.data.filter(op => op.status === "Active" || !op.status));
     } catch (error) {
       console.error("There was an error fetching ADV operation:", error);
       toast.error("Failed to fetch ADV operations");

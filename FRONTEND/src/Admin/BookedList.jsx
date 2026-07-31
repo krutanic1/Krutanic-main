@@ -263,7 +263,7 @@ const BookedList = () => {
   const fetchBda = async () => {
     try {
       const response = await axios.get(`${API}/getbda`);
-      setBda(response.data);
+      setBda(response.data.filter(user => user.status === "Active"));
     } catch (error) {
       console.error("There was an error fetching courses:", error);
     }
@@ -272,7 +272,7 @@ const BookedList = () => {
   const fetchOperation = async () => {
     try {
       const response = await axios.get(`${API}/getoperation`);
-      setOperation(response.data);
+      setOperation(response.data.filter(op => op.status === "Active" || !op.status));
     } catch (error) {
       console.error("There was an error fetching operation:", error);
     }

@@ -93,7 +93,7 @@ const OnBoardingDetails = () => {
   const fetchOperation = async () => {
     try {
       const response = await axios.get(`${API}/getoperation`);
-      setOperation(response.data);
+      setOperation(response.data.filter(op => op.status === "Active" || !op.status));
     } catch (error) {
       console.error("There was an error fetching operation:", error);
     }
