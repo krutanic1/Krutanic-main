@@ -491,41 +491,96 @@ const MEDPRO_REVIEWS = [
   { name: 'Ananya Gupta', role: 'Healthcare Admin, Max', review: 'I transitioned from nursing to administration. The MedPro curriculum bridged the exact knowledge gaps I had in healthcare management.', rating: 5 }
 ];
 
-const ReviewsSection = ({ isMedPro = false }) => {
-  const reviewsToDisplay = isMedPro ? MEDPRO_REVIEWS : REVIEWS;
+const DATA_ANALYST_REVIEWS = [
+  { name: 'Siddharth Rao', role: 'Data Analyst, Mu Sigma', background: 'Recent Graduate', review: 'Before joining, I had theoretical knowledge but no project experience I could confidently discuss in interviews. The hands-on work with real datasets gave me solid talking points, and that made a huge difference when I interviewed with Mu Sigma.', outcome: 'Cracked Mu Sigma interview', rating: 5, image: '/review_avatars/male_1.png' },
+  { name: 'Anjali Desai', role: 'Business Analyst, TCS', background: 'Non-tech Graduate', review: 'As someone from a non-tech background, I was nervous about SQL and Python in the beginning. The step-by-step curriculum and mentor support made the learning curve manageable, and I started feeling genuinely confident with analytics tools.', outcome: 'Mastered SQL & Python', rating: 5, image: '/review_avatars/female_1.png' },
+  { name: 'Rahul Sharma', role: 'BI Developer, Accenture', background: 'Working Professional', review: 'The BI modules were one of the strongest parts of the program for me. My capstone project helped me explain my thinking clearly during interviews, especially in discussions around dashboards and business insights.', outcome: 'Cleared technical round', rating: 5, image: '/review_avatars/male_2.png' },
+  { name: 'Kavita Menon', role: 'Product Analyst, Flipkart', background: 'Career Switcher', review: 'I was trying to move out of a BPO role but didn’t know how to position myself for analytics jobs. The mock interviews, resume guidance, and project portfolio gave me a much clearer path to make that transition.', outcome: 'Transitioned into analytics', rating: 5, image: '/review_avatars/female_2.png' },
+  { name: 'Vikram Singh', role: 'Data Scientist, IBM', background: 'Upskilling', review: 'I already knew some Python, but this program helped me apply it with a more analytical mindset. What stood out was how the mentors pushed us to think in terms of business problems, not just code.', outcome: 'Developed business-first mindset', rating: 5, image: '/review_avatars/male_3.png' },
+  { name: 'Neha Patil', role: 'Junior Data Analyst, Capgemini', background: 'Job Seeker', review: 'The mock interviews felt very close to actual hiring rounds. By the time I started interviewing, I was much better prepared to structure my answers, explain my projects, and communicate insights with confidence.', outcome: 'Improved interview performance', rating: 5, image: '/review_avatars/female_3.png' },
+  { name: 'Aditya Kumar', role: 'Operations Analyst, Amazon', background: 'Working Professional', review: 'Learning Excel and SQL together was a big advantage for me because I could immediately connect reporting tasks with data analysis. The program helped me build skills that were practical and directly relevant at work.', outcome: 'Built practical skills', rating: 5, image: '/review_avatars/male_4.png' },
+  { name: 'Pooja Iyer', role: 'Marketing Analyst, Swiggy', background: 'Career Switcher', review: 'I joined to strengthen my analytics foundation, but I ended up applying what I learned even before completing the course. The campaign analysis projects were especially useful because they felt close to real business scenarios.', outcome: 'Applied skills on the job', rating: 5, image: '/review_avatars/female_4.png' }
+];
+
+const ReviewsSection = ({ isMedPro = false, isDataAnalyst = false }) => {
+  const reviewsToDisplay = isDataAnalyst ? DATA_ANALYST_REVIEWS : (isMedPro ? MEDPRO_REVIEWS : REVIEWS);
   
   return (
     <section className="adv-reviews">
       <div className="adv-container">
-        <div className="adv-reviews-header">
-          <h2 className="adv-h2">Real Results from Real Professionals</h2>
-          <p className="adv-reviews-p">Read what our alumni have to say about their transformation.</p>
+        <div className="adv-reviews-header" style={isDataAnalyst ? { textAlign: 'center', maxWidth: '800px', margin: '0 auto 40px' } : {}}>
+          {isDataAnalyst && <span style={{ display: 'inline-block', fontSize: '0.85rem', color: 'var(--primary)', fontWeight: '700', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '12px', background: 'var(--primary-light, rgba(59, 130, 246, 0.1))', padding: '4px 12px', borderRadius: '20px' }}>Learner Outcomes</span>}
+          <h2 className="adv-h2">
+            {isDataAnalyst 
+              ? 'Real Stories from Learners Who Made the Shift' 
+              : 'Real Results from Real Professionals'}
+          </h2>
+          <p className="adv-reviews-p" style={isDataAnalyst ? { fontSize: '1.1rem', lineHeight: '1.6' } : {}}>
+            {isDataAnalyst 
+              ? 'Hear from graduates, career switchers, and working professionals who used real projects, mentorship, and placement support to break into analytics roles with more confidence. With limited seats in every cohort, many applicants join early to avoid waiting for the next batch.'
+              : 'Read what our alumni have to say about their transformation.'}
+          </p>
         </div>
-        <div className="adv-reviews-marquee-container">
-          <div className="adv-reviews-marquee">
-            {[...reviewsToDisplay, ...reviewsToDisplay].map((r, i) => (
-              <div key={i} className="adv-review-card">
-                <div className="adv-review-stars" style={{ display: 'flex', whiteSpace: 'nowrap' }}>
-                  {'★'.repeat(Math.floor(r.rating))}
-                  {(r.rating % 1 !== 0) && (
-                    <span style={{ position: 'relative', display: 'inline-block', width: '1em' }}>
-                      <span style={{ color: 'rgba(255,255,255,0.15)', position: 'absolute', left: 0 }}>★</span>
-                      <span style={{ position: 'absolute', left: 0, overflow: 'hidden', width: '50%', color: '#fbbf24' }}>★</span>
-                    </span>
-                  )}
-                </div>
-                <p className="adv-review-text">"{r.review}"</p>
-                <div className="adv-review-author">
-                  <div className="adv-review-avatar">{r.name.charAt(0)}</div>
-                  <div className="adv-review-meta">
-                    <strong>{r.name}</strong>
-                    <span>{r.role}</span>
+        
+        {isDataAnalyst ? (
+          <div className="adv-reviews-marquee-container">
+            <div className="adv-reviews-marquee">
+              {[...reviewsToDisplay, ...reviewsToDisplay].map((r, i) => (
+                <div key={i} className="adv-review-card" style={{ flex: '0 0 auto', width: '350px', display: 'flex', flexDirection: 'column', padding: '24px', backgroundColor: 'var(--surface, #fff)', border: '1px solid var(--border, #e5e7eb)', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', margin: 0, minHeight: 'auto' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                      {r.image ? (
+                        <img src={r.image} alt={r.name} style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', margin: 0, border: '2px solid #e5e7eb' }} />
+                      ) : (
+                        <div className="adv-review-avatar" style={{ margin: 0 }}>{r.name.charAt(0)}</div>
+                      )}
+                      <div>
+                        <h4 style={{ margin: 0, fontSize: '1.05rem', color: 'var(--text)', fontWeight: '600', lineHeight: '1.2' }}>{r.name}</h4>
+                        <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: 'var(--text-muted)' }}>{r.role}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                     <span style={{ fontSize: '0.75rem', background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6', padding: '4px 10px', borderRadius: '16px', fontWeight: '600', letterSpacing: '0.02em' }}>{r.background}</span>
+                     <div style={{ display: 'flex', color: '#fbbf24', letterSpacing: '2px', fontSize: '1rem' }}>
+                       {'★★★★★'}
+                     </div>
+                  </div>
+                  <p className="adv-review-text" style={{ margin: 0, flexGrow: 1, fontSize: '0.95rem', lineHeight: '1.6', color: 'var(--text)', fontStyle: 'normal' }}>"{r.review}"</p>
+                  <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--border, #e5e7eb)' }}>
+                    <strong style={{ fontSize: '0.85rem', color: 'var(--text)' }}>Outcome:</strong> <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{r.outcome}</span>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="adv-reviews-marquee-container">
+            <div className="adv-reviews-marquee">
+              {[...reviewsToDisplay, ...reviewsToDisplay].map((r, i) => (
+                <div key={i} className="adv-review-card">
+                  <div className="adv-review-stars" style={{ display: 'flex', whiteSpace: 'nowrap' }}>
+                    {'★'.repeat(Math.floor(r.rating))}
+                    {(r.rating % 1 !== 0) && (
+                      <span style={{ position: 'relative', display: 'inline-block', width: '1em' }}>
+                        <span style={{ color: 'rgba(255,255,255,0.15)', position: 'absolute', left: 0 }}>★</span>
+                        <span style={{ position: 'absolute', left: 0, overflow: 'hidden', width: '50%', color: '#fbbf24' }}>★</span>
+                      </span>
+                    )}
+                  </div>
+                  <p className="adv-review-text">"{r.review}"</p>
+                  <div className="adv-review-author">
+                    <div className="adv-review-avatar">{r.name.charAt(0)}</div>
+                    <div className="adv-review-meta">
+                      <strong>{r.name}</strong>
+                      <span>{r.role}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

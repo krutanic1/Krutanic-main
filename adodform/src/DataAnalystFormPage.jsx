@@ -3,7 +3,8 @@ import toast, { Toaster } from 'react-hot-toast';
 import './DataAnalystFormPage.css';
 import {
   ComparisonSection,
-  FAQSection
+  FAQSection,
+  ReviewsSection
 } from './LandingComponents';
 import {
   StatsBar,
@@ -492,6 +493,9 @@ const DataAnalystFormPage = () => {
       </section>
 
       <StatsBar />
+      <div className="da-shared-overrides">
+        <ReviewsSection isDataAnalyst={true} />
+      </div>
       <WhyKrutanic />
       <WhoThisIsFor />
       <CareerRoles />

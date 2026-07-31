@@ -611,7 +611,8 @@
 }
 
 .da-shared-overrides .adv-p-lead,
-.da-shared-overrides .adv-faq-p {
+.da-shared-overrides .adv-faq-p,
+.da-shared-overrides .adv-reviews-p {
   color: var(--text-muted) !important;
 }
 
