@@ -59,13 +59,13 @@ const AdvBooked = () => {
     try {
       const [coursesRes, bdaRes, opsRes, execsRes] = await Promise.all([
         axios.get(`${API}/getadvcourses`),
-        axios.get(`${API}/getbda`),
-        axios.get(`${API}/getoperation`),
+        axios.get(`${API}/getadvteam`),
+        axios.get(`${API}/getadvoperation`),
         axios.get(`${API}/admin/getallmarketingexecutives`)
       ]);
       setCourse(coursesRes.data);
-      setBda(bdaRes.data);
-      setOperation(opsRes.data);
+      setBda(bdaRes.data.filter(user => user.status === "Active"));
+      setOperation(opsRes.data.filter(op => op.status === "Active" || !op.status));
       setExecutives(execsRes.data);
     } catch (error) {
       console.error("Error fetching data:", error);
