@@ -49,7 +49,7 @@ const programGroups = [
       { id: "fin", title: "Finance", description: "Master financial modeling and corporate finance principles.", bullets: ["Financial Modeling", "Valuation", "Risk Management"], tools: ["Excel", "Financial software"], roles: ["Financial Analyst"], link: "/mentorship/finance", rating: "4.6/5", duration: "2-3 Months" },
       { id: "hr", title: "Human Resource", description: "Build and manage high-performing teams effectively.", bullets: ["Talent Acquisition", "Employee Relations", "HR Analytics"], tools: ["HRIS", "LinkedIn Recruiter"], roles: ["HR Manager"], link: "/mentorship/human-resource", rating: "4.7/5", duration: "2-3 Months" },
       { id: "sm", title: "Stock Marketing", description: "Understand market trends and trading strategies in depth.", bullets: ["Technical Analysis", "Portfolio Management", "Derivatives"], tools: ["Trading Terminals", "Chart Software"], roles: ["Trader", "Investment Analyst"], link: "/mentorship/stock-marketing", rating: "4.8/5", duration: "2-3 Months" }
-    ]
+    ]//sdgsudho;sdhp
   },
   {
     id: "elec",
