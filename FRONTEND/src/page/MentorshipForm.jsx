@@ -5,8 +5,9 @@ import toast, { Toaster } from "react-hot-toast";
 import "./MentorshipForm.css";
 import { FaEnvelope, FaUser, FaPhoneAlt, FaGraduationCap, FaBriefcase, FaArrowRight, FaCheckCircle, FaTimes, FaClock } from "react-icons/fa";
 import girlImg from "../assets/girl.png";
+import MentorshipCustomSelect from "./MentorshipCustomSelect";
 
-const MentorshipForm = ({ isPopup, onClose }) => {
+const MentorshipForm = ({ isPopup, onClose, inlineMode = false }) => {
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -127,7 +128,7 @@ const MentorshipForm = ({ isPopup, onClose }) => {
     <>
       <Toaster position="top-right" reverseOrder={false} />
 
-      {!isPopup && (
+      {!isPopup && !inlineMode && (
         <button
           onClick={() => setShowForm(true)}
           className="hidden"
@@ -135,7 +136,163 @@ const MentorshipForm = ({ isPopup, onClose }) => {
         </button>
       )}
 
-      {(showForm || isPopup) && (
+      {inlineMode && (
+        <div className="mentorship-inline-wrapper pm-glass-form">
+          <div className="pm-glass-form-header">
+            <h3>Limited Mentorship Slots Available</h3>
+            <p>Join the top 1% of tech talent. Next cohort fills up soon—secure your spot today!</p>
+          </div>
+          <form onSubmit={handleFormSubmit} className="mentorship-form-grid-new">
+            <div className="form-input-wrapper">
+              <FaUser className="input-icon" />
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder="Full Name"
+                required
+              />
+            </div>
+
+            <div className="form-input-wrapper">
+              <FaEnvelope className="input-icon" />
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                placeholder="Email ID"
+                disabled={emailVerified}
+                required
+              />
+            </div>
+
+            <div className="form-verification-zone">
+              {!emailVerified ? (
+                !otpSent ? (
+                  <button
+                    type="button"
+                    onClick={sendOTP}
+                    className="verify-email-btn"
+                  >
+                    Verify Email
+                  </button>
+                ) : (
+                  <div className="otp-input-group">
+                    <input
+                      type="text"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      placeholder="Enter OTP"
+                    />
+                    <button
+                      type="button"
+                      onClick={verifyOTP}
+                      className="verify-otp-btn"
+                    >
+                      Submit
+                    </button>
+                  </div>
+                )
+              ) : (
+                <div className="verification-success">
+                  <FaCheckCircle /> Email Verified
+                </div>
+              )}
+            </div>
+
+            <div className="form-input-wrapper">
+              <FaEnvelope className="input-icon" />
+              <input
+                type="email"
+                name="collegeEmail"
+                value={formData.collegeEmail}
+                onChange={handleInputChange}
+                placeholder="College Email ID"
+                required
+              />
+            </div>
+
+            <div className="form-input-wrapper">
+              <FaPhoneAlt className="input-icon" />
+              <input
+                type="text"
+                name="number"
+                value={formData.number}
+                onChange={handleInputChange}
+                placeholder="WhatsApp Number"
+                required
+              />
+            </div>
+
+            <div className="form-input-wrapper">
+              <FaGraduationCap className="input-icon" />
+              <input
+                type="text"
+                name="collegeName"
+                value={formData.collegeName}
+                onChange={handleInputChange}
+                placeholder="College Name"
+                required
+              />
+            </div>
+
+            <div className="form-input-wrapper">
+              <MentorshipCustomSelect
+                name="passingyear"
+                value={formData.passingyear}
+                onChange={handleInputChange}
+                placeholder="Year of Study"
+                icon={FaClock}
+                options={[
+                  { label: "1st year", value: "1st year" },
+                  { label: "2nd year", value: "2nd year" },
+                  { label: "3rd year", value: "3rd year" },
+                  { label: "4th year", value: "4th year" },
+                  { label: "Graduated", value: "Graduated" },
+                  { label: "Passed Out", value: "Passed Out" }
+                ]}
+              />
+            </div>
+
+            <div className="form-input-wrapper full-width">
+              <MentorshipCustomSelect
+                name="domain"
+                value={formData.domain}
+                onChange={handleInputChange}
+                placeholder="Select a Domain"
+                icon={FaBriefcase}
+                options={[
+                  "Full Stack Web Development", "Android App Development", "Artificial Intelligence", "Machine Learning", "Cyber Security", "Data Science", "Data Analytics", "UI/UX Design", "DevOps", "Business Analytics", "Finance", "Human Resource", "Digital Marketing", "Stock Marketing", "Graphics Design", "Embedded System", "Cloud Computing", "IOT & Robotics", "Auto Cad", "Psychology"
+                ].map(d => ({ label: d, value: d }))}
+              />
+            </div>
+
+            <div className="form-submit-zone">
+              <button
+                type="submit"
+                disabled={isSubmitting || !emailVerified}
+                className="submit-application-btn"
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="submit-loader"></div>
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    Submit Application <FaArrowRight />
+                  </>
+                )}
+              </button>
+              <p className="form-privacy-note">Your data is secure and encrypted.</p>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {(showForm || isPopup) && !inlineMode && (
         <div className="mentorship-modal-overlay" onClick={ClearForm}>
           <div className="mentorship-modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="mentorship-modal-body">
@@ -295,62 +452,36 @@ const MentorshipForm = ({ isPopup, onClose }) => {
                     />
                   </div>
 
-                  <div className="form-input-wrapper">
-                    <FaClock className="input-icon" />
-                    <select
-                      id="passingyear"
-                      name="passingyear"
-                      value={formData.passingyear}
-                      onChange={handleInputChange}
-                      required
-                    >
-                      <option disabled value="">Year of Study</option>
-                      <option value="1st year">1st year</option>
-                      <option value="2nd year">2nd year</option>
-                      <option value="3rd year">3rd year</option>
-                      <option value="4th year">4th year</option>
-                      <option value="Graduated">Graduated</option>
-                      <option value="Passed Out">Passed Out</option>
-                    </select>
-                  </div>
+            <div className="form-input-wrapper">
+              <MentorshipCustomSelect
+                name="passingyear"
+                value={formData.passingyear}
+                onChange={handleInputChange}
+                placeholder="Year of Study"
+                icon={FaClock}
+                options={[
+                  { label: "1st year", value: "1st year" },
+                  { label: "2nd year", value: "2nd year" },
+                  { label: "3rd year", value: "3rd year" },
+                  { label: "4th year", value: "4th year" },
+                  { label: "Graduated", value: "Graduated" },
+                  { label: "Passed Out", value: "Passed Out" }
+                ]}
+              />
+            </div>
 
-                  <div className="form-input-wrapper full-width">
-                    <FaBriefcase className="input-icon" />
-                    <select
-                      name="domain"
-                      value={formData.domain}
-                      onChange={handleInputChange}
-                      required
-                    >
-                      <option disabled value="">Select a Domain</option>
-                      {[
-                        "Full Stack Web Development",
-                        "Android App Development",
-                        "Artificial Intelligence",
-                        "Machine Learning",
-                        "Cyber Security",
-                        "Data Science",
-                        "Data Analytics",
-                        "UI/UX Design",
-                        "DevOps",
-                        "Business Analytics",
-                        "Finance",
-                        "Human Resource",
-                        "Digital Marketing",
-                        "Stock Marketing",
-                        "Graphics Design",
-                        "Embedded System",
-                        "Cloud Computing",
-                        "IOT & Robotics",
-                        "Auto Cad",
-                        "Psychology",
-                      ].map((domain, index) => (
-                        <option key={index} value={domain}>
-                          {domain}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+            <div className="form-input-wrapper full-width">
+              <MentorshipCustomSelect
+                name="domain"
+                value={formData.domain}
+                onChange={handleInputChange}
+                placeholder="Select a Domain"
+                icon={FaBriefcase}
+                options={[
+                  "Full Stack Web Development", "Android App Development", "Artificial Intelligence", "Machine Learning", "Cyber Security", "Data Science", "Data Analytics", "UI/UX Design", "DevOps", "Business Analytics", "Finance", "Human Resource", "Digital Marketing", "Stock Marketing", "Graphics Design", "Embedded System", "Cloud Computing", "IOT & Robotics", "Auto Cad", "Psychology"
+                ].map(d => ({ label: d, value: d }))}
+              />
+            </div>
 
                   <div className="form-submit-zone">
                     <button

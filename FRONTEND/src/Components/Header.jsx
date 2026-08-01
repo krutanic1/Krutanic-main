@@ -94,10 +94,13 @@ const Header = () => {
                   <div key={item.to} className="relative group">
                     <Link
                       to={item.to}
-                      className={`flex items-center gap-1 rounded-lg px-2 xl:px-3 py-2 text-xs xl:text-sm font-semibold uppercase tracking-[0.02em] transition-colors hover:bg-[#f2f4ff] whitespace-nowrap ${location.pathname.toLowerCase() === item.to.toLowerCase() ? "text-[#f15b29] text-shine" : "text-[#1f2937]"}`}
+                      className={`flex items-center gap-1 rounded-xl px-4 py-2.5 text-xs xl:text-sm font-bold uppercase tracking-[0.02em] transition-colors whitespace-nowrap ${
+                        item.label === "All Programs" 
+                          ? "border-2 border-[#0f172a] bg-white hover:bg-slate-50" 
+                          : "hover:bg-[#f2f4ff]"
+                      } ${location.pathname.toLowerCase() === item.to.toLowerCase() ? "text-[#f15b29]" : "text-[#1f2937]"}`}
                     >
                       {item.label}
-                      <ChevronDown size={14} className="transition-transform group-hover:rotate-180" />
                     </Link>
                     
                     {/* Primary Dropdown Menu (Categories) */}
@@ -105,14 +108,14 @@ const Header = () => {
                       <div className="bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-slate-100 p-2 min-w-[260px] flex flex-col gap-1">
                         {item.categories.map((cat, idx) => (
                           <div key={idx} className="relative group/category">
-                            <div className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-50 transition-colors text-slate-700 cursor-pointer">
-                              <div className="flex items-center gap-3">
-                                <span className="flex items-center justify-center w-8 h-8 rounded-md bg-slate-100 border border-slate-200">
+                            <div className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors text-slate-700 cursor-pointer mb-1">
+                              <div className="flex items-center gap-4">
+                                <span className="flex items-center justify-center w-11 h-11 rounded-xl bg-[#f8fafc] border border-[#e2e8f0]">
                                   {cat.icon}
                                 </span>
-                                <span className="text-sm font-medium">{cat.name}</span>
+                                <span className="text-[15px] font-semibold text-[#334155]">{cat.name}</span>
                               </div>
-                              <ChevronRight size={14} className="text-slate-400 group-hover/category:text-[#f15b29]" />
+                              <ChevronRight size={16} className="text-slate-400 group-hover/category:text-[#f15b29]" />
                             </div>
                             
                             {/* Nested Dropdown Menu (Courses) */}

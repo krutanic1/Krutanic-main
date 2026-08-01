@@ -1,77 +1,52 @@
 import React from 'react';
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
-import { FaPlay, FaRegFileAlt, FaChevronRight } from 'react-icons/fa';
-import heroImg from '../../assets/mentorship_hero.png';
+import { FaArrowRight } from 'react-icons/fa';
+import MentorshipForm from '../MentorshipForm';
+import './MentorshipPremium.css';
 
 const MentorshipHero = ({ onOpenForm }) => {
   return (
-    <section className="km-hero">
-      <div className="km-hero__container">
-        <div className="km-hero__content" data-aos="fade-right">
-          <h1 className="km-hero__headline">
-            Accelerate Your <span className="km-hero__headline-accent">Tech Career</span> with 1:1 Mentorship
+    <section className="pm-hero">
+      <div className="pm-hero-container">
+        <div className="pm-hero-content" data-aos="fade-right">
+          <div className="pm-hero-eyebrow">Premium Career Accelerator</div>
+          <h1 className="pm-hero-title">
+            Choose the mentorship path that shapes your <span className="pm-text-gradient">next profession.</span>
           </h1>
-          <p className="km-hero__sub">
-            Master high-demand skills through live industry sessions, real-world capstone projects, and direct guidance from expert mentors.
+          <p className="pm-hero-subtitle">
+            Structured, mentor-led pathways in engineering, AI, design, and infrastructure for learners building serious careers.
           </p>
-          <div className="km-hero__ctas">
-            <button className="km-btn-primary" onClick={onOpenForm}>
-              Apply for Mentorship <FaChevronRight style={{marginLeft: '10px'}} />
+          
+          <div className="pm-hero-actions">
+            <button className="pm-btn-primary" onClick={onOpenForm}>
+              Explore Pathways <FaArrowRight className="pm-btn-icon" />
+            </button>
+            <button className="pm-btn-secondary" onClick={onOpenForm}>
+              Speak to an Advisor
             </button>
           </div>
-          <div className="km-hero__stats">
-            <div className="km-hero__stat">
-              <div className="km-hero__stat-icon">🎓</div>
-              <div>
-                <strong>10k+</strong>
-                <span>Active Learners</span>
-              </div>
+
+          <div className="pm-hero-trust">
+            <div className="pm-trust-item">
+              <span className="pm-trust-value">10k+</span>
+              <span className="pm-trust-label">Active Learners</span>
             </div>
-            <div className="km-hero__stat">
-              <div className="km-hero__stat-icon">🤝</div>
-              <div>
-                <strong>500+</strong>
-                <span>Hiring Partners</span>
-              </div>
+            <div className="pm-trust-divider"></div>
+            <div className="pm-trust-item">
+              <span className="pm-trust-value">500+</span>
+              <span className="pm-trust-label">Hiring Brands</span>
             </div>
-            <div className="km-hero__stat">
-              <div className="km-hero__stat-icon">🚀</div>
-              <div>
-                <strong>100%</strong>
-                <span>Placement Support</span>
-              </div>
+            <div className="pm-trust-divider"></div>
+            <div className="pm-trust-item">
+              <span className="pm-trust-value">100%</span>
+              <span className="pm-trust-label">Outcome Focused</span>
             </div>
           </div>
         </div>
 
-        <div className="km-hero__visual" data-aos="fade-left">
-          <div style={{ position: 'relative', width: '180%', left: '-40%' }}>
-            <img 
-              src={heroImg} 
-              alt="Mentorship Hero" 
-              className="km-hero__img"
-              style={{ width: '100%', display: 'block', maxWidth: '500px', margin: '0 auto' }}
-            />
+        <div className="pm-hero-visual" data-aos="fade-left">
+          <div style={{ position: 'relative', zIndex: 2, width: '100%' }}>
+            <MentorshipForm inlineMode={true} />
           </div>
-          
-          <div className="km-hero__badge km-hero__badge--top">
-            <div className="km-hero__badge-icon"><FaPlay /></div>
-            <div>
-              <p style={{margin: 0, fontWeight: 700, fontSize: '0.875rem', color: '#0f172a'}}>Live Sessions</p>
-              <p style={{margin: 0, fontSize: '0.75rem', color: '#64748b'}}>Interact with Experts</p>
-            </div>
-          </div>
-
-          <div className="km-hero__badge km-hero__badge--bottom">
-            <div className="km-hero__badge-icon" style={{color: '#0ea5e9'}}><FaRegFileAlt /></div>
-            <div>
-              <p style={{margin: 0, fontWeight: 700, fontSize: '0.875rem', color: '#0f172a'}}>Real Projects</p>
-              <p style={{margin: 0, fontSize: '0.75rem', color: '#64748b'}}>Build Your Portfolio</p>
-            </div>
-          </div>
-
-          <div className="km-hero__blob km-hero__blob--1"></div>
-          <div className="km-hero__blob km-hero__blob--2"></div>
         </div>
       </div>
     </section>

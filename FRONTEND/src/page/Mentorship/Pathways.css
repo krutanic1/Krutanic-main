@@ -1,0 +1,993 @@
+/* Pathways.css - Premium Edtech Layout */
+
+.pm-pathways-section {
+  padding: 100px 5%;
+  background-color: #f8fafc;
+  font-family: 'Inter', sans-serif;
+  color: #0f172a;
+}
+
+.pm-pathways-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+/* Left Column: Intro */
+.pm-pathways-intro {
+  position: sticky;
+  top: 120px;
+}
+
+.pm-pathways-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 1.5rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.pm-pathways-subtitle {
+  font-size: 1.125rem;
+  color: #64748b;
+  line-height: 1.7;
+}
+
+/* Right Column: Interactive Area */
+.pm-pathways-interactive {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top Program Tabs */
+.pm-program-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.pm-program-tab {
+  padding: 0.75rem 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 99px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: 'Inter', sans-serif;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.pm-program-tab:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.pm-program-tab.active {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  border-width: 1px;
+  border-style: solid;
+  transform: none; /* Removed transform to avoid layout shifting */
+}
+
+/* Bottom Layout: Sidebar + Details Panel */
+.pm-pathways-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 2.5rem;
+  align-items: start; /* Fixes long empty sidebar issue */
+}
+
+/* Left Sidebar */
+.pm-course-sidebar {
+  display: flex;
+  flex-direction: column;
+  position: sticky; /* Keep it in view if the right panel gets tall */
+  top: 120px;
+}
+
+.pm-sidebar-inner-timeline {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-left: 1.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+/* The vertical connecting line */
+.pm-sidebar-inner-timeline::before {
+  content: '';
+  position: absolute;
+  top: 25px;
+  bottom: 25px;
+  left: 3px;
+  width: 2px;
+  background: #e2e8f0;
+  z-index: 0;
+}
+
+.pm-timeline-link {
+  display: flex;
+  align-items: center;
+  padding: 1rem 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  text-align: left;
+}
+
+.pm-timeline-node-wrapper {
+  position: absolute;
+  left: -1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 8px;
+  height: 8px;
+}
+
+.pm-timeline-node {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 2px solid transparent;
+  z-index: 2;
+}
+
+.pm-timeline-link.active .pm-timeline-node {
+  width: 16px;
+  height: 16px;
+  border-width: 4px;
+}
+
+.pm-timeline-glow {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  filter: blur(6px);
+  opacity: 0.6;
+  z-index: 1;
+  animation: pulseGlow 2s infinite ease-in-out;
+}
+
+@keyframes pulseGlow {
+  0% { transform: scale(0.8); opacity: 0.4; }
+  50% { transform: scale(1.2); opacity: 0.7; }
+  100% { transform: scale(0.8); opacity: 0.4; }
+}
+
+.pm-timeline-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.pm-timeline-link:hover .pm-timeline-text {
+  color: #0f172a !important; /* Override inline style on hover */
+}
+
+.pm-timeline-link.active .pm-timeline-text {
+  font-weight: 700;
+  transform: translateX(6px);
+  letter-spacing: -0.01em;
+}
+
+/* Right Panel */
+.pm-course-panel {
+  color: #ffffff;
+  transition: background 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px; /* Reduced from 32px for tighter feel */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+}
+
+/* Soft glowing orb effect in the background */
+.pm-course-panel::after {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.pm-course-panel-inner {
+  padding: 2.5rem 3rem; /* Tighter padding for better structure */
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.pm-course-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.pm-course-eyebrow {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 0.75rem;
+}
+
+.pm-course-top h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.75rem; /* Better balance */
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0;
+  max-width: 500px;
+  letter-spacing: -0.02em;
+}
+
+.pm-course-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pm-meta-badge {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+  padding: 0.5rem 1rem;
+  border-radius: 8px; /* Boxier, cleaner */
+  font-size: 0.85rem;
+  font-weight: 700;
+  border: 1px solid rgba(255,255,255,0.2);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.pm-course-desc {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.9);
+  max-width: 600px;
+}
+
+.pm-course-content-grid {
+  margin-top: 2.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.pm-section-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 1rem;
+}
+
+.pm-course-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pm-course-bullets li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.pm-check-icon-white {
+  color: rgba(255,255,255,0.9);
+  flex-shrink: 0;
+  font-size: 1.1rem;
+  margin-top: 0.15rem;
+}
+
+.pm-tools-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.pm-tools-box, .pm-roles-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pm-tools-box span, .pm-roles-box span {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.pm-course-panel-footer {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255,255,255,0.2);
+}
+
+.pm-panel-btn-primary {
+  background: #ffffff;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.pm-panel-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .pm-pathways-container {
+    grid-template-columns: 280px 1fr;
+    gap: 3rem;
+  }
+  .pm-course-panel-inner {
+    padding: 3rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .pm-pathways-container {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .pm-pathways-intro {
+    position: static;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .pm-program-tabs {
+    justify-content: center;
+  }
+  .pm-course-sidebar {
+    position: static;
+  }
+}
+
+/* Base Styles for Split Stats */
+.pm-meta-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.pm-stat-val {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #fbbf24; /* Golden yellow for that premium feel like the wreath */
+  display: flex;
+  align-items: baseline;
+}
+.pm-stat-small {
+  font-size: 1.2rem;
+  opacity: 0.8;
+  margin-left: 0.15rem;
+}
+.pm-stat-lbl {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+  color: rgba(255,255,255,0.7);
+}
+.pm-stat-divider {
+  width: 1px;
+  background: rgba(255,255,255,0.2);
+  margin: 0 1.5rem;
+}
+
+.pm-course-meta {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: transparent;
+  padding: 0;
+  border: none;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   VISIBILITY TOGGLES — Desktop/Mobile Separation
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Desktop-only: hide on ≤ 767px */
+.pm-desktop-only {
+  display: block;
+}
+
+/* Mobile-only: hide on ≥ 768px */
+.pm-mobile-only {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .pm-desktop-only {
+    display: none !important;
+  }
+  .pm-mobile-only {
+    display: block !important;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   MSP — Mobile Specializations (New Component, Scratch-built)
+   Target: 320px – 767px screens
+   ═══════════════════════════════════════════════════════════════ */
+.msp-section {
+  padding: 60px 0 80px;
+  background: #f8fafc;
+  font-family: 'Inter', sans-serif;
+  color: #0f172a;
+  overflow-x: hidden;
+}
+
+/* ─── Intro Block ─────────────────────────────────────────── */
+.msp-intro {
+  padding: 0 20px;
+  margin-bottom: 28px;
+}
+
+.msp-eyebrow {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #64748b;
+  background: #e2e8f0;
+  padding: 4px 12px;
+  border-radius: 99px;
+  margin-bottom: 14px;
+}
+
+.msp-heading {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.85rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: #0f172a;
+  margin: 0 0 10px;
+}
+
+.msp-subtext {
+  font-size: 0.95rem;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 320px;
+}
+
+/* ─── Chip Rail (shared) ──────────────────────────────────── */
+.msp-chip-rail {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  gap: 8px;
+  padding: 4px 20px 16px;
+  /* fade edges */
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 20px, black calc(100% - 20px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 20px, black calc(100% - 20px), transparent 100%);
+}
+
+.msp-chip-rail::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── 2×2 Category Grid ─────────────────────────────────────
+   Premium tile selection grid — fixed, never scrolls
+   ─────────────────────────────────────────────────────────── */
+.msp-cat-grid-wrap {
+  padding: 0 16px;
+  margin-bottom: 22px;
+}
+
+.msp-cat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* ── Base card shell ───────────────────────────────────────── */
+.msp-cat-cell {
+  /* Layout */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  padding: 18px 16px 16px 20px;
+  overflow: hidden;
+
+  /* Surface */
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1.5px solid #e8edf4;
+  box-shadow:
+    0 1px 3px rgba(15,23,42,0.04),
+    0 4px 12px rgba(15,23,42,0.03);
+
+  /* Interaction */
+  cursor: pointer;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition:
+    background 0.28s cubic-bezier(0.16,1,0.3,1),
+    border-color 0.28s ease,
+    box-shadow 0.28s ease,
+    transform 0.18s ease;
+}
+
+.msp-cat-cell:active {
+  transform: scale(0.96);
+}
+
+/* ── Left accent strip (hidden by default) ─────────────────── */
+.msp-cat-strip {
+  position: absolute;
+  left: 0;
+  top: 16%;
+  bottom: 16%;
+  width: 3.5px;
+  border-radius: 0 4px 4px 0;
+  background: var(--cat-accent, transparent);
+  opacity: 0;
+  transform: scaleY(0.4);
+  transform-origin: center;
+  transition:
+    opacity 0.26s ease,
+    transform 0.26s cubic-bezier(0.16,1,0.3,1);
+}
+
+/* ── Top row: icon + check badge ──────────────────────────── */
+.msp-cat-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+/* ── Icon container ───────────────────────────────────────── */
+.msp-cat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: #f1f5f9;
+  font-size: 1.15rem;
+  color: #64748b;
+  flex-shrink: 0;
+  transition:
+    background 0.26s ease,
+    color 0.26s ease,
+    box-shadow 0.26s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+/* ── Check badge (invisible by default) ───────────────────── */
+.msp-cat-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--cat-accent, #2563eb);
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1;
+  opacity: 0;
+  transform: scale(0.5) rotate(-15deg);
+  transition:
+    opacity 0.22s ease,
+    transform 0.28s cubic-bezier(0.34,1.56,0.64,1);
+  flex-shrink: 0;
+}
+
+/* ── Label ────────────────────────────────────────────────── */
+.msp-cat-label {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+  transition: color 0.22s ease;
+}
+
+/* ── Subtitle ─────────────────────────────────────────────── */
+.msp-cat-sub {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #94a3b8;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ACTIVE STATE — all driven by CSS custom props + class
+   ═══════════════════════════════════════════════════════════ */
+.msp-cat-cell-active {
+  background: var(--cat-accent-soft, rgba(37,99,235,0.07));
+  border-color: var(--cat-accent-border, rgba(37,99,235,0.25));
+  box-shadow:
+    0 0 0 1px var(--cat-accent-border, rgba(37,99,235,0.2)),
+    0 6px 20px rgba(var(--cat-accent-rgb, 37,99,235), 0.12),
+    0 2px 6px rgba(0,0,0,0.04);
+}
+
+/* Strip appears */
+.msp-cat-cell-active .msp-cat-strip {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+/* Icon gets tinted */
+.msp-cat-cell-active .msp-cat-icon {
+  background: rgba(var(--cat-accent-rgb, 37,99,235), 0.12);
+  color: var(--cat-accent, #2563eb);
+  box-shadow:
+    0 2px 8px rgba(var(--cat-accent-rgb, 37,99,235), 0.18);
+}
+
+/* Check pops in */
+.msp-cat-cell-active .msp-cat-check {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+/* Label becomes accent-colored */
+.msp-cat-cell-active .msp-cat-label {
+  color: var(--cat-accent, #2563eb);
+  font-weight: 800;
+}
+
+/* Subtitle slightly stronger */
+.msp-cat-cell-active .msp-cat-sub {
+  color: #64748b;
+}
+
+
+.msp-pathway-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  margin-bottom: 8px;
+}
+
+.msp-pathway-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: color 0.2s ease;
+}
+
+.msp-pathway-count {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+/* ─── Pathway Rail ────────────────────────────────────────── */
+.msp-pathway-rail {
+  margin-bottom: 24px;
+}
+
+/* ─── Chip Base ───────────────────────────────────────────── */
+.msp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  padding: 10px 18px;
+  border-radius: 99px;
+  border: 1.5px solid #e2e8f0;
+  background: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.msp-chip:active {
+  transform: scale(0.96);
+}
+
+.msp-chip-active {
+  box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+}
+
+/* Small pathway chips */
+.msp-chip-sm {
+  padding: 8px 14px;
+  font-size: 0.82rem;
+}
+
+/* Chip icon */
+.msp-chip-icon {
+  font-size: 0.8rem;
+  opacity: 0.75;
+  line-height: 1;
+}
+
+/* ─── Card Wrapper ────────────────────────────────────────── */
+.msp-card-wrap {
+  padding: 0 16px;
+}
+
+/* ─── Featured Pathway Card ───────────────────────────────── */
+.msp-card {
+  border-radius: 24px;
+  overflow: hidden;
+  color: #ffffff;
+  padding: 28px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.22);
+  /* smooth bg-image transitions */
+  transition: background-image 0.35s ease;
+  position: relative;
+}
+
+/* subtle shimmer overlay */
+.msp-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at top right, rgba(255,255,255,0.08) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.msp-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Card Header ─────────────────────────────────────────── */
+.msp-card-header {
+  margin-bottom: 14px;
+}
+
+.msp-card-eyebrow {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.65);
+  margin-bottom: 8px;
+}
+
+.msp-card-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.7rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0 0 14px;
+  color: #ffffff;
+}
+
+/* ─── Badges ──────────────────────────────────────────────── */
+.msp-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.msp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 99px;
+  border: 1px solid;
+  font-size: 0.8rem;
+  font-weight: 700;
+  backdrop-filter: blur(6px);
+  line-height: 1;
+}
+
+/* ─── Description ─────────────────────────────────────────── */
+.msp-card-desc {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.85);
+  margin: 0 0 22px;
+}
+
+/* ─── Card Content Blocks ─────────────────────────────────── */
+.msp-card-block {
+  margin-bottom: 20px;
+}
+
+.msp-block-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 10px;
+}
+
+/* ─── Bullet List ─────────────────────────────────────────── */
+.msp-bullet-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.msp-bullet-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 0.93rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: rgba(255,255,255,0.92);
+}
+
+.msp-check-icon {
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+/* ─── Pill Tags ───────────────────────────────────────────── */
+.msp-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.msp-pill {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid;
+  font-size: 0.8rem;
+  font-weight: 600;
+  backdrop-filter: blur(6px);
+  line-height: 1.4;
+  color: rgba(255,255,255,0.92);
+}
+
+.msp-pill-accent {
+  font-weight: 700;
+}
+
+/* ─── Card Footer / CTA ───────────────────────────────────── */
+.msp-card-footer {
+  margin-top: 6px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.15);
+}
+
+.msp-cta-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 15px 20px;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.97rem;
+  font-weight: 700;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  -webkit-tap-highlight-color: transparent;
+  letter-spacing: 0.01em;
+}
+
+.msp-cta-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+
+.msp-cta-arrow {
+  font-size: 0.85rem;
+  transition: transform 0.2s ease;
+}
+
+.msp-cta-btn:hover .msp-cta-arrow {
+  transform: translateX(3px);
+}
+
+/* ─── Micro-tweaks for very small screens ─────────────────── */
+@media (max-width: 380px) {
+  .msp-heading {
+    font-size: 1.6rem;
+  }
+
+  .msp-card-title {
+    font-size: 1.45rem;
+  }
+
+  .msp-card {
+    padding: 22px 18px 20px;
+  }
+
+  .msp-chip {
+    padding: 9px 14px;
+    font-size: 0.84rem;
+  }
+}
+
