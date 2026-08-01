@@ -241,7 +241,7 @@ const CourseMentor = ({ hideHeading = false }) => {
       //   studentsTaken: 1250,
       // },
     ],
-    "Electronics/Electrical": [
+    "Electronics": [
       {
         id: 18,
         title: "Embedded System",

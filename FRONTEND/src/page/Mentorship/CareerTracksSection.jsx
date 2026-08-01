@@ -101,10 +101,7 @@ const CareerTracksSection = () => {
         
         {/* Intro Section */}
         <div className="max-w-3xl mb-16 md:mb-24">
-          <div className="inline-flex items-center space-x-2 bg-blue-600/10 text-blue-700 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-6 border border-blue-600/20">
-            <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-            <span>How Krutanic Works</span>
-          </div>
+
           <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold text-slate-900 tracking-tight leading-[1.1] mb-6" style={{ fontFamily: "'Outfit', sans-serif" }}>
             This isn’t just course content.<br className="hidden md:block"/>
             <span className="text-slate-400 font-medium"> It’s a system built for real career momentum.</span>

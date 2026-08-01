@@ -33,7 +33,7 @@ const programsCategories = [
     ]
   },
   {
-    name: "Electronics/Electrical",
+    name: "Electronics",
     icon: <Settings size={16} className="text-slate-500" />,
     courses: [
       { label: "Embedded Systems", to: "/mentorship/embedded-systems" },

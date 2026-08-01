@@ -19,7 +19,7 @@
    HERO SECTION
    ========================================================== */
 .pm-hero {
-  background: linear-gradient(180deg, #0e7490 0%, #2563eb 65%, #f8fafc 100%);
+  background: linear-gradient(180deg, #0369a1 0%, #0ea5e9 45%, #e0f2fe 85%, #f8fafc 100%);
   background-size: cover;
   background-position: center top;
   background-repeat: no-repeat;
@@ -39,7 +39,7 @@
   position: absolute;
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E");
-  opacity: 0.35;
+  opacity: 0.15;
   mix-blend-mode: overlay;
   pointer-events: none;
   z-index: 1;
@@ -51,8 +51,8 @@
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 20% 50%, rgba(37,99,235,0.13) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 50% at 80% 50%, rgba(30,58,138,0.10) 0%, transparent 70%);
+    radial-gradient(ellipse 80% 60% at 20% 50%, rgba(56, 189, 248, 0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 80% 50%, rgba(2, 132, 199, 0.10) 0%, transparent 70%);
   pointer-events: none;
   z-index: 1;
 }
@@ -186,19 +186,18 @@
 .pm-trust-value {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #ffffff;
-  text-shadow: 0 0 18px rgba(255, 255, 255, 0.4);
+  color: #0f172a;
 }
 
 .pm-trust-label {
   font-size: 0.875rem;
-  color: #e2e8f0;
+  color: #475569;
 }
 
 .pm-trust-divider {
   width: 1px;
   height: 40px;
-  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.3), transparent);
+  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.15), transparent);
 }
 
 /* Abstract Visual Composition for Hero */

@@ -53,7 +53,7 @@ const programGroups = [
   },
   {
     id: "elec",
-    label: "Electronics/Electrical",
+    label: "Electronics",
     subtitle: "Hardware & Systems",
     icon: <FaMicrochip />,
     bgImage: elecBg,

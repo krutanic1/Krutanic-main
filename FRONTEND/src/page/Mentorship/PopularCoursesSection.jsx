@@ -62,10 +62,7 @@ const PopularCoursesSection = () => {
         
         {/* Section Header */}
         <div className="mb-14 md:mb-20 max-w-3xl">
-          <div className="inline-flex items-center space-x-2 bg-blue-50 text-blue-700 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-6">
-            <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-            <span>Curated Pathways</span>
-          </div>
+
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.1]" style={{ fontFamily: "'Outfit', sans-serif" }}>
             Master your craft.<br className="hidden md:block"/>
             <span className="text-slate-400 font-medium"> Accelerate your career.</span>

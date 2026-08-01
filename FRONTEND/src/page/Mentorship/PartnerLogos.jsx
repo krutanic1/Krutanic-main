@@ -79,8 +79,8 @@ const PartnerLogos = () => (
         {/* RIGHT — proof panel */}
         <div className="co-right">
           <div 
-            className="co-proof-panel backdrop-blur-md border border-white/30 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.5)]"
-            style={{ backgroundImage: 'linear-gradient(90deg, #05f 0%, #06b6d4 25%, #05f 50%, #06b6d4 75%, #05f 100%)' }}
+            className="co-proof-panel backdrop-blur-md border border-white/30 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.3)]"
+            style={{ backgroundImage: 'linear-gradient(135deg, #1e40af 0%, #0369a1 100%)' }}
           >
             <div className="co-proof-header">
               <span className="co-proof-label text-white/90">Outcome Snapshot</span>

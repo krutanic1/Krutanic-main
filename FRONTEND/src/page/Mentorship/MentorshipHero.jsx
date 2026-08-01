@@ -96,11 +96,6 @@ const MentorshipHero = ({ onOpenForm }) => {
       <div className="pm-hero-container">
         <div className="pm-hero-content pm-anim-fadein-left">
 
-          {/* Eyebrow with animated pulse dot */}
-          <div className="pm-hero-eyebrow">
-            <span className="pm-eyebrow-dot" />
-            Premium Career Accelerator
-          </div>
 
           {/* Title with stagger */}
           <h1 className="pm-hero-title pm-anim-fadein-up pm-delay-1">
