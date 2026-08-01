@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaLaptopCode, FaUserTie, FaProjectDiagram, FaBuilding, FaUsers, FaInfinity, FaCheckCircle, FaCode } from 'react-icons/fa';
 
+
 const storySteps = [
   {
     id: '01',
@@ -56,12 +57,12 @@ const VisualImage = ({ isActive, src, alt }) => (
   </div>
 );
 
-const VisualOne = ({ isActive }) => <VisualImage isActive={isActive} src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=1200" alt="Structured Learning" />;
-const VisualTwo = ({ isActive }) => <VisualImage isActive={isActive} src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200" alt="Expert Guidance" />;
+const VisualOne = ({ isActive }) => <VisualImage isActive={isActive} src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1200" alt="Structured Learning" />;
+const VisualTwo = ({ isActive }) => <VisualImage isActive={isActive} src="https://images.unsplash.com/photo-1531497865144-0464ef8fb9a9?auto=format&fit=crop&q=80&w=1200" alt="Expert Guidance" />;
 const VisualThree = ({ isActive }) => <VisualImage isActive={isActive} src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=1200" alt="Practical Execution" />;
-const VisualFour = ({ isActive }) => <VisualImage isActive={isActive} src="https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&q=80&w=1200" alt="Career Simulation" />;
-const VisualFive = ({ isActive }) => <VisualImage isActive={isActive} src="https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&q=80&w=1200" alt="Community Ecosystem" />;
-const VisualSix = ({ isActive }) => <VisualImage isActive={isActive} src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1200" alt="Beyond Placement" />;
+const VisualFour = ({ isActive }) => <VisualImage isActive={isActive} src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&q=80&w=1200" alt="Career Simulation" />;
+const VisualFive = ({ isActive }) => <VisualImage isActive={isActive} src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200" alt="Community Ecosystem" />;
+const VisualSix = ({ isActive }) => <VisualImage isActive={isActive} src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&q=80&w=1200" alt="Beyond Placement" />;
 
 
 const CareerTracksSection = () => {

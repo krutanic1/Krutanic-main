@@ -74,14 +74,14 @@ const CredentialSection = () => {
                   className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all duration-300 ${activeCert === 'training' ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'bg-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}
                 >
                   <FaCheckCircle className={activeCert === 'training' ? 'text-white' : 'text-slate-300'} />
-                  Training Cert
+                  Training
                 </button>
                 <button 
                   onClick={() => scrollToCert('internship')}
                   className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all duration-300 ${activeCert === 'internship' ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'bg-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}
                 >
                   <FaCheckCircle className={activeCert === 'internship' ? 'text-white' : 'text-slate-300'} />
-                  Internship Cert
+                  Internship
                 </button>
               </div>
               
@@ -113,7 +113,7 @@ const CredentialSection = () => {
                    </div>
                    <div className="flex items-center justify-between mt-4 md:mt-6 bg-slate-50 px-4 md:px-6 py-4 rounded-xl border border-slate-100">
                       <div>
-                        <span className="text-sm font-bold text-slate-800 capitalize">Krutanic Training Certificate</span>
+                        <span className="text-sm font-bold text-slate-800 capitalize">Certificate</span>
                         <p className="text-xs text-slate-500 mt-0.5">Instant Verification Enabled</p>
                       </div>
                       <div className="flex gap-2 md:gap-3 pointer-events-auto">
@@ -136,7 +136,7 @@ const CredentialSection = () => {
                    </div>
                    <div className="flex items-center justify-between mt-4 md:mt-6 bg-slate-50 px-4 md:px-6 py-4 rounded-xl border border-slate-100">
                       <div>
-                        <span className="text-sm font-bold text-slate-800 capitalize">Krutanic Internship Certificate</span>
+                        <span className="text-sm font-bold text-slate-800 capitalize">Certificate</span>
                         <p className="text-xs text-slate-500 mt-0.5">Instant Verification Enabled</p>
                       </div>
                       <div className="flex gap-2 md:gap-3 pointer-events-auto">

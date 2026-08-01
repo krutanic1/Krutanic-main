@@ -1,9 +1,9 @@
 :root {
-  --das-bg: #F7F6F2;
-  --das-surface: #FFFFFF;
-  --das-surface-soft: #F1EFE8;
-  --das-text: #1F2937;
-  --das-text-muted: #6B7280;
+  --das-bg: #0B1121;
+  --das-surface: #131E32;
+  --das-surface-soft: #1E293B;
+  --das-text: #F3F4F6;
+  --das-text-muted: #9CA3AF;
   --das-primary: #0F766E;
   --das-primary-hover: #115E59;
   --das-border: #E5E7EB;

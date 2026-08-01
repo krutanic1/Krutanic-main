@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { FaLaptopCode, FaDatabase, FaPaintBrush, FaShieldAlt, FaArrowRight, FaCheckCircle, FaChartBar, FaMicrochip, FaCogs, FaStar, FaClock } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import bgImage from '../../assets/pathways_bg.png';
-import csBg from '../../assets/cs_bg_1785571507526.png';
-import mgtBg from '../../assets/mgt_bg_1785571525124.png';
-import elecBg from '../../assets/elec_bg_1785571541852.png';
-import mechBg from '../../assets/mech_bg_1785571557620.png';
+import csBg from '../../assets/cs_bg_light_1785591174516.png';
+import mgtBg from '../../assets/mgt_bg_light_1785591184949.png';
+import elecBg from '../../assets/elec_bg_light_1785591194813.png';
+import mechBg from '../../assets/mech_bg_light_1785591204279.png';
 import './MentorshipPremium.css';
 import './Pathways.css';
 

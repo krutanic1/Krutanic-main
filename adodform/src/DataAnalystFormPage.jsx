@@ -492,7 +492,7 @@ const DataAnalystFormPage = () => {
         </div>
       </section>
 
-      <StatsBar />
+      {/* <StatsBar /> */}
       <div className="da-shared-overrides">
         <ReviewsSection isDataAnalyst={true} />
       </div>

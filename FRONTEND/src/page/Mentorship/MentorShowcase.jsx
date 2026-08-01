@@ -101,10 +101,16 @@ const MentorShowcase = () => {
               key={index} 
               data-aos="fade-up" 
               data-aos-delay={index * 50} 
-              className="group relative rounded-xl bg-[#1c1c1c] border border-[#2a2a2a] overflow-hidden hover:border-[#d4af37]/50 transition-all duration-300 hover:-translate-y-1 shadow-[0_4px_20px_rgba(0,0,0,0.5)] flex flex-col justify-between min-h-[220px]"
+              className="group relative rounded-xl border border-[#2a2a2a] overflow-hidden hover:border-[#d4af37]/50 transition-all duration-300 hover:-translate-y-1 shadow-[0_4px_20px_rgba(0,0,0,0.5)] flex flex-col justify-between min-h-[220px]"
             >
+              {/* Premium Background Image */}
+              <div className="absolute inset-0 z-0">
+                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=600" alt="Background" className="w-full h-full object-cover opacity-40 mix-blend-overlay group-hover:scale-105 transition-transform duration-700" />
+                <div className="absolute inset-0 bg-gradient-to-br from-[#1c1c1c]/90 to-[#0a0a0a]/95"></div>
+              </div>
+
               {/* Subtle hover glow */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-[#d4af37]/5 to-transparent pointer-events-none z-0"></div>
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-[#d4af37]/10 to-transparent pointer-events-none z-0"></div>
 
               <div className="p-5 flex justify-between items-start relative z-10">
                 {/* Left Side: Info */}

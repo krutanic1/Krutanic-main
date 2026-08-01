@@ -383,7 +383,7 @@ export const ToolsCovered = () => {
   ];
   return (
     <section className="das-section das-tools-bento-section">
-      <div className="das-container">
+      {/* <div className="das-container">
         <div className="das-section-header">
           <span className="das-label">Tools & Platforms</span>
           <h2 className="das-section-title">40+ Enterprise Tools Across the Full Data Stack</h2>
@@ -416,7 +416,7 @@ export const ToolsCovered = () => {
         <div className="das-bento-footer">
           <p>Learn the same stack used across analytics, BI, cloud, and reporting teams.</p>
         </div>
-      </div>
+      </div> */}
     </section>
   );
 };
