@@ -138,6 +138,7 @@
 }
 
 .pm-timeline-node {
+  flex-shrink: 0;
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -153,6 +154,7 @@
 }
 
 .pm-timeline-glow {
+  flex-shrink: 0;
   position: absolute;
   width: 24px;
   height: 24px;
