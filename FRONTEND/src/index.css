@@ -25,7 +25,7 @@ body {
   font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
   background: var(--surface-soft);
   color: #0f172a;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 h1,
@@ -1669,7 +1669,7 @@ h1 {
   font-family: var(--km-font-body);
   color: var(--km-text);
   background: var(--km-bg);
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 .km-pricing-cta-wrap {

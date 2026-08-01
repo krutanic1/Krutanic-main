@@ -17,6 +17,7 @@ const programGroups = [
     icon: <FaLaptopCode />,
     bgImage: csBg,
     accent: "#2563eb",
+    bgLight: "#eff6ff",
     accentSoft: "rgba(37, 99, 235, 0.1)",
     accentBorder: "rgba(37, 99, 235, 0.25)",
     items: [
@@ -39,6 +40,7 @@ const programGroups = [
     icon: <FaChartBar />,
     bgImage: mgtBg,
     accent: "#4f46e5",
+    bgLight: "#eef2ff",
     accentSoft: "rgba(79, 70, 229, 0.1)",
     accentBorder: "rgba(79, 70, 229, 0.25)",
     items: [
@@ -55,9 +57,10 @@ const programGroups = [
     subtitle: "Hardware & Systems",
     icon: <FaMicrochip />,
     bgImage: elecBg,
-    accent: "#ea580c",
-    accentSoft: "rgba(234, 88, 12, 0.1)",
-    accentBorder: "rgba(234, 88, 12, 0.25)",
+    accent: "#0891b2",
+    bgLight: "#ecfeff",
+    accentSoft: "rgba(8, 145, 178, 0.1)",
+    accentBorder: "rgba(8, 145, 178, 0.25)",
     items: [
       { id: "emb", title: "Embedded Systems", description: "Design and program embedded microcontrollers for real-world applications.", bullets: ["Microcontroller Programming", "RTOS", "Hardware Interfacing"], tools: ["C/C++", "Keil", "Arduino"], roles: ["Embedded Engineer"], link: "/mentorship/embedded-systems", rating: "4.7/5", duration: "2-3 Months" },
       { id: "vlsi", title: "VLSI Design", description: "Master Very Large Scale Integration design and chip architecture.", bullets: ["Digital Logic Design", "Verilog/VHDL", "Physical Design"], tools: ["Cadence", "Synopsys"], roles: ["VLSI Engineer"], link: "/mentorship/vlsi-design", rating: "4.8/5", duration: "2-3 Months" },
@@ -71,6 +74,7 @@ const programGroups = [
     icon: <FaCogs />,
     bgImage: mechBg,
     accent: "#0d9488",
+    bgLight: "#f0fdfa",
     accentSoft: "rgba(13, 148, 136, 0.1)",
     accentBorder: "rgba(13, 148, 136, 0.25)",
     items: [
@@ -170,11 +174,11 @@ const DesktopSpecializations = ({ activeGroup, activeCourse, handleGroupChange, 
           <div
             className="pm-course-panel"
             style={{
-              backgroundColor: activeGroup.accent,
-              backgroundImage: `linear-gradient(135deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%), url(${activeGroup.bgImage})`,
+              backgroundColor: activeGroup.bgLight || '#f8fafc',
+              backgroundImage: `linear-gradient(135deg, ${activeGroup.bgLight}D9 0%, ${activeGroup.bgLight}F2 100%), url(${activeGroup.bgImage})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
-              backgroundBlendMode: 'normal, overlay'
+              backgroundBlendMode: 'normal'
             }}
           >
             <div className="pm-course-panel-inner">
@@ -204,7 +208,7 @@ const DesktopSpecializations = ({ activeGroup, activeCourse, handleGroupChange, 
                   <p className="pm-section-label">WHAT YOU'LL MASTER</p>
                   <ul className="pm-course-bullets">
                     {activeCourse.bullets?.map((item, i) => (
-                      <li key={i}><FaCheckCircle className="pm-check-icon-white" /> {item}</li>
+                      <li key={i}><FaCheckCircle style={{ color: activeGroup.accent }} /> {item}</li>
                     ))}
                   </ul>
                 </div>
@@ -232,7 +236,7 @@ const DesktopSpecializations = ({ activeGroup, activeCourse, handleGroupChange, 
                 <button
                   className="pm-panel-btn-primary"
                   onClick={() => navigate(activeCourse.link)}
-                  style={{ color: activeGroup.accent }}
+                  style={{ backgroundColor: activeGroup.accent, color: '#ffffff' }}
                 >
                   View Detailed Syllabus <FaArrowRight />
                 </button>
@@ -340,9 +344,11 @@ const MobileSpecializations = ({ navigate }) => {
         <div
           className="msp-card"
           style={{
-            backgroundImage: `linear-gradient(160deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.78) 100%), url(${activeGroup.bgImage})`,
+            backgroundColor: activeGroup.bgLight || '#f1f5f9',
+            backgroundImage: `linear-gradient(160deg, ${activeGroup.bgLight}D9 0%, ${activeGroup.bgLight}F2 100%), url(${activeGroup.bgImage})`,
             backgroundSize: 'cover',
-            backgroundPosition: 'center'
+            backgroundPosition: 'center',
+            backgroundBlendMode: 'normal'
           }}
         >
           {/* Card Header */}
@@ -352,11 +358,11 @@ const MobileSpecializations = ({ navigate }) => {
 
             {/* Badges Row */}
             <div className="msp-badge-row">
-              <span className="msp-badge" style={{ background: 'rgba(251,191,36,0.2)', borderColor: 'rgba(251,191,36,0.4)', color: '#fbbf24' }}>
+              <span className="msp-badge" style={{ background: 'rgba(251,191,36,0.1)', borderColor: 'rgba(251,191,36,0.3)', color: '#d97706' }}>
                 <FaStar style={{ fontSize: '0.7rem' }} />
                 {activeCourse.rating}
               </span>
-              <span className="msp-badge" style={{ background: 'rgba(255,255,255,0.12)', borderColor: 'rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.9)' }}>
+              <span className="msp-badge" style={{ background: 'rgba(0,0,0,0.04)', borderColor: 'rgba(0,0,0,0.08)', color: '#475569' }}>
                 <FaClock style={{ fontSize: '0.7rem' }} />
                 {activeCourse.duration}
               </span>
@@ -372,7 +378,7 @@ const MobileSpecializations = ({ navigate }) => {
             <ul className="msp-bullet-list">
               {activeCourse.bullets?.map((item, i) => (
                 <li key={i}>
-                  <FaCheckCircle className="msp-check-icon" style={{ color: accent }} />
+                  <FaCheckCircle className="msp-check-icon" style={{ color: activeGroup.accent }} />
                   <span>{item}</span>
                 </li>
               ))}
@@ -408,7 +414,7 @@ const MobileSpecializations = ({ navigate }) => {
             <button
               className="msp-cta-btn"
               onClick={() => navigate(activeCourse.link)}
-              style={{ background: accent }}
+              style={{ backgroundColor: activeGroup.accent, color: '#ffffff' }}
             >
               View Detailed Syllabus
               <FaArrowRight className="msp-cta-arrow" />

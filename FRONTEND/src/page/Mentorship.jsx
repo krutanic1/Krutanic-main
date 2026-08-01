@@ -11,7 +11,7 @@ import PopularCoursesSection from './Mentorship/PopularCoursesSection';
 import CareerTracksSection from './Mentorship/CareerTracksSection';
 import CredentialSection from './Mentorship/CredentialSection';
 import MentorShowcase from './Mentorship/MentorShowcase';
-import EnrollmentSteps from './Mentorship/EnrollmentSteps';
+
 import FAQSection from './Mentorship/FAQSection';
 import FinalCTASection from './Mentorship/FinalCTASection';
 import MentorshipForm from './MentorshipForm';
@@ -51,13 +51,13 @@ const Mentorship = () => {
       {/* Main Page Layout */}
       <main>
         <MentorshipHero onOpenForm={togglePopup} />
-        <PartnerLogos />
         <SpecializationsSection />
+        <PartnerLogos />
         <PopularCoursesSection />
         <CareerTracksSection />
         <CredentialSection />
         <MentorShowcase />
-        <EnrollmentSteps />
+
         <FAQSection />
         <FinalCTASection onOpenForm={togglePopup} />
       </main>

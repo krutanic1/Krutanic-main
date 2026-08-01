@@ -188,7 +188,7 @@
 
 /* Right Panel */
 .pm-course-panel {
-  color: #ffffff;
+  color: #0f172a;
   transition: background 0.4s ease;
   position: relative;
   overflow: hidden;
@@ -230,7 +230,7 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.7);
+  color: #64748b;
   margin-bottom: 0.75rem;
 }
 
@@ -251,22 +251,23 @@
 }
 
 .pm-meta-badge {
-  background: rgba(255,255,255,0.15);
+  background: rgba(0,0,0,0.03);
   backdrop-filter: blur(8px);
   padding: 0.5rem 1rem;
   border-radius: 8px; /* Boxier, cleaner */
   font-size: 0.85rem;
   font-weight: 700;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(0,0,0,0.08);
   text-align: center;
   white-space: nowrap;
+  color: #334155;
 }
 
 .pm-course-desc {
   margin-top: 1rem;
   font-size: 1.1rem;
   line-height: 1.6;
-  color: rgba(255,255,255,0.9);
+  color: #475569;
   max-width: 600px;
 }
 
@@ -283,7 +284,7 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.6);
+  color: #64748b;
   margin-bottom: 1rem;
 }
 
@@ -312,26 +313,32 @@
   margin-top: 0.15rem;
 }
 
-.pm-tools-container {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-.pm-tools-box, .pm-roles-box {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.pm-tools-box span, .pm-roles-box span {
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(8px);
-  padding: 0.4rem 0.8rem;
-  border-radius: 6px;
+.pm-tools-box span {
+  padding: 0.5rem 1rem;
+  background: rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 600;
-  border: 1px solid rgba(255,255,255,0.1);
+  color: #334155;
+  white-space: nowrap;
+}
+
+.pm-roles-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.pm-roles-box span {
+  padding: 0.5rem 1rem;
+  background: rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
 }
 
 .pm-course-panel-footer {
@@ -787,7 +794,7 @@
 .msp-card {
   border-radius: 24px;
   overflow: hidden;
-  color: #ffffff;
+  color: #0f172a;
   padding: 28px 24px 24px;
   display: flex;
   flex-direction: column;
@@ -824,7 +831,7 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.65);
+  color: #64748b;
   margin-bottom: 8px;
 }
 
@@ -835,7 +842,7 @@
   line-height: 1.15;
   letter-spacing: -0.02em;
   margin: 0 0 14px;
-  color: #ffffff;
+  color: #0f172a;
 }
 
 /* ─── Badges ──────────────────────────────────────────────── */
@@ -863,7 +870,7 @@
 .msp-card-desc {
   font-size: 0.95rem;
   line-height: 1.65;
-  color: rgba(255,255,255,0.85);
+  color: #475569;
   margin: 0 0 22px;
 }
 
@@ -877,7 +884,7 @@
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.5);
+  color: #64748b;
   margin-bottom: 10px;
 }
 
@@ -898,7 +905,7 @@
   font-size: 0.93rem;
   font-weight: 500;
   line-height: 1.45;
-  color: rgba(255,255,255,0.92);
+  color: #334155;
 }
 
 .msp-check-icon {
@@ -918,12 +925,13 @@
   display: inline-block;
   padding: 5px 12px;
   border-radius: 6px;
-  border: 1px solid;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: rgba(0,0,0,0.04);
   font-size: 0.8rem;
   font-weight: 600;
   backdrop-filter: blur(6px);
   line-height: 1.4;
-  color: rgba(255,255,255,0.92);
+  color: #334155;
 }
 
 .msp-pill-accent {
@@ -934,7 +942,7 @@
 .msp-card-footer {
   margin-top: 6px;
   padding-top: 20px;
-  border-top: 1px solid rgba(255,255,255,0.15);
+  border-top: 1px solid rgba(0,0,0,0.1);
 }
 
 .msp-cta-btn {
