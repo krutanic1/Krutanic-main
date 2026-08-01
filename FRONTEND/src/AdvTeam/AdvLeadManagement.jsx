@@ -501,7 +501,10 @@ const AdvLeadManagement = () => {
                             onChange={(e) => { setSelectedMonth(e.target.value); setCurrentPage(1); }}
                             style={{ border: 'none', outline: 'none', background: 'transparent', fontWeight: '600', cursor: 'pointer' }}
                         >
-                            {months.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
+                            {months.map((m, i) => {
+                                if (parseInt(selectedYear) === new Date().getFullYear() && i > new Date().getMonth()) return null;
+                                return <option key={i} value={i + 1}>{m}</option>;
+                            })}
                         </select>
                         <select 
                             value={selectedYear} 

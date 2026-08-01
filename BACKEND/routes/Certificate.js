@@ -44,6 +44,14 @@ router.post("/applycertificate", async (req, res) => {
         }
 
         const startDateObj = new Date(startdateStr);
+        
+        // 50-day limit check
+        const fiftyDaysInMs = 50 * 24 * 60 * 60 * 1000;
+        const currentDate = new Date();
+        if (currentDate.getTime() - startDateObj.getTime() < fiftyDaysInMs) {
+            return res.status(400).json({ error: "You can only apply for your certificate 50 days after your internship start date." });
+        }
+
         const endDateObj = new Date(startDateObj);
         endDateObj.setMonth(endDateObj.getMonth() + 2);
         const enddateStr = endDateObj.toISOString();
