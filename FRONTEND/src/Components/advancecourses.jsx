@@ -4,271 +4,234 @@ import mernBrochure from "../../krutanic/Mern Stack Web Development Advanced Pro
 import dataScienceBrochure from "../../krutanic/DataScienceAdvancedProgram.pdf";
 import dataAnalyticsBrochure from "../../krutanic/dataanalytices new advnace Brouchuer.pdf";
 import digitalMarketingBrochure from "../../krutanic/Digital Marketing Advanced Program.pdf";
-import investmentBankingBrochure from "../../krutanic/Investment Banking Advanced Program.pdf";
 import productManagementBrochure from "../../krutanic/Product management Advanced program.pdf";
 import promptEngineeringBrochure from "../../krutanic/Prompt engineering for generative AI Advanced Program.pdf";
 import DownloadBrochureButton from "../page/AdvanceCourse/Components/DownloadBrochureButton";
-
-// import ds from '../assets/Advanced Course Images/Data science/DS 3.jpg'
-// import dm from '../assets/Advanced Course Images/Digital Markting/DM 1.jpg'
-// import ib from '../assets/Advanced Course Images/Investment banking/IB 6.jpg'
-// import mern from '../assets/Advanced Course Images/Mern Stack Development/MSD 1.jpg'
-// import pm from '../assets/Advanced Course Images/Product management/PM 4.jpg'
-// import pfm from '../assets/Advanced Course Images/Performance marketing/PM 3.jpg'
+import premiumBg from "./premium_tech_bg.png";
 
 const AdvanceCounses = () => {
-  const courses = [
-    {
-      institute: "KRUTANIC School Of Technology",
-      title: "Data Science",
-      description: "Analyze complex datasets and build practical machine learning solutions for business use-cases.",
-      icon: <i className="fa fa-database" aria-hidden="true"></i>,
-      badge: "New Course",
-      badgeClass: "bg-[#1d5fae] text-white",
-      support: "Live Project Mentoring",
-      credential: "Certification",
-      duration: "6 Months",
-      batch: "10th Aug",
-      brochure: dataScienceBrochure,
-    },
-    {
-      institute: "KRUTANIC School Of Technology",
-      title: "Data Analytics",
-      description: "Master Excel, SQL, Python, and Power BI to drive business decisions with data.",
-      icon: <i className="fa fa-bar-chart" aria-hidden="true"></i>,
-      badge: "In Demand",
-      badgeClass: "bg-[#086f70] text-white",
-      support: "Industrial Project Case Studies",
-      credential: "Professional Certificate",
-      duration: "6 Months",
-      batch: "10th Aug",
-      brochure: dataAnalyticsBrochure,
-    },
-    {
-      institute: "KRUTANIC School Of Technology",
-      title: "Digital Marketing",
-      description: "Master performance marketing, social media strategy, and data-driven growth campaigns.",
-      icon: <i className="fa fa-bullhorn" aria-hidden="true"></i>,
-      badge: "Popular",
-      badgeClass: "bg-[#0b6b8a] text-white",
-      support: "Placement & Portfolio Support",
-      credential: "Advanced Certificate",
-      duration: "6 Months",
-      batch: "Upcoming",
-      brochure: digitalMarketingBrochure,
-    },
+  // Flagship Course Data
+  const flagshipCourse = {
+    title: "Data Science Advanced Program",
+    description: "Master machine learning, statistical modeling, and data engineering. Build a portfolio of complex, real-world data solutions to accelerate your transition into senior data roles.",
+    tags: ["Live Mentoring", "100% Placement Assistance"],
+    stats: [
+      { label: "Duration", value: "6 Months", icon: "fa-clock-o" },
+      { label: "Cohort", value: "10th Aug", icon: "fa-calendar-check-o" },
+      { label: "Format", value: "Live Classes", icon: "fa-video-camera" }
+    ],
+    brochure: dataScienceBrochure,
+    icon: <i className="fa fa-database" aria-hidden="true"></i>,
+  };
 
+  // Supporting Courses Data
+  const supportingCourses = [
     {
-      institute: "KRUTANIC Product School",
-      title: "Product Management",
-      description: "Plan and launch products with user-first strategy, agile execution, and growth metrics.",
-      icon: <i className="fa fa-cube" aria-hidden="true"></i>,
-      badge: "Career Switch",
-      badgeClass: "bg-[#7c3aed] text-white",
-      support: "Mentor Feedback",
-      credential: "Executive Program",
-      duration: "6 Months",
-      brochure: productManagementBrochure,
-    },
-    {
-      institute: "KRUTANIC AI School",
-      title: "Prompt Engineering AI",
-      description: "Design reliable prompts and AI workflows for productivity, automation, and business applications.",
-      icon: <i className="fa fa-android" aria-hidden="true"></i>,
-      badge: "Future Skills",
-      badgeClass: "bg-[#dc2626] text-white",
-      support: "AI Career Guidance",
-      credential: "Certification",
-      duration: "6 Months",
-      brochure: promptEngineeringBrochure,
-    },
-    {
-      institute: "KRUTANIC School Of Technology",
       title: "MERN Stack Development",
-      description: "Build production-ready web apps with MongoDB, Express.js, React, and Node.js.",
-      icon: <i className="fa fa-code" aria-hidden="true"></i>,
-      badge: "Bestseller",
-      badgeClass: "bg-[#6b0f44] text-white",
-      support: "360 Degree Career Support",
-      credential: "Executive Diploma",
+      description: "Build scalable web apps from frontend to backend.",
+      category: "Engineering",
       duration: "6 Months",
       brochure: mernBrochure,
-    },
-  ];
-
-  // const sections = [
-  //   {
-  //     title: "Expert-led instruction from industry professionals",
-  //     content: "Learn from the best! Our courses are taught by experienced professionals who bring real-world insights and advanced expertise to every lesson."
-  //   },
-  //   {
-  //     title: "Hands-on projects and real-world applications",
-  //     content: "Get the practical experience you need to succeed. Our courses focus on hands-on projects and real-life scenarios, giving you the opportunity to apply what you’ve learned in meaningful ways."
-  //   },
-  //   {
-  //     title: "Flexible learning schedules to fit your lifestyle",
-  //     content: "Life is busy! Our flexible online and in-person options allow you to learn at your own pace, fitting your studies around your work, family, and other commitments."
-  //   },
-  //   {
-  //     title: "Cutting-edge curriculum updated regularly",
-  //     content: "Stay ahead of the curve. Our curriculum is continually updated to reflect the latest industry trends, tools, and techniques, ensuring that you’re always learning the most relevant skills."
-  //   },
-  //   {
-  //     title: "Comprehensive support and mentoring",
-  //     content: "You’re never alone in your learning journey. We offer personalized support, mentorship, and access to a vibrant community of fellow learners to guide you every step of the way."
-  //   },
-  //   {
-  //     title: "Networking opportunities with professionals and peers",
-  //     content: "Connect with a wide network of industry professionals, alumni, and fellow students. Our courses provide numerous opportunities for networking, helping you expand your career prospects."
-  //   },
-  //   {
-  //     title: "Certification and career advancement",
-  //     content: "Enhance your resume with a recognized certification upon completion of your course. Our graduates often experience accelerated career growth, promotions, and new job opportunities in their fields."
-  //   },
-  //   {
-  //     title: "Global learning community",
-  //     content: "Join a diverse, global group of learners from all corners of the world. Share ideas, collaborate, and expand your perspectives with fellow students from a variety of backgrounds and industries."
-  //   },
-  //   {
-  //     title: "Tailored learning paths for every skill level",
-  //     content: "Whether you're a beginner or looking to level up your expertise, we offer courses for all levels. Our tailored learning paths ensure that you get the most out of your educational experience, no matter your starting point."
-  //   }
-  // ];
-
-  const Difference = [
-    {
-      title: "AI-Driven Resume Building",
-      description: "Craft personalized, ATS-friendly resumes optimized by advanced AI tools.",
-      icon: <i className="fa fa-file-text-o" aria-hidden="true"></i>,
+      icon: "fa-code",
+      link: "/MernStack"
     },
     {
-      title: "Project-Based Learning",
-      description: "Master complex concepts through real-world, industry-relevant projects.",
-      icon: <i className="fa fa-laptop" aria-hidden="true"></i>,
+      title: "Data Analytics",
+      description: "Drive strategic decisions using Python and PowerBI.",
+      category: "Data & BI",
+      duration: "6 Months",
+      brochure: dataAnalyticsBrochure,
+      icon: "fa-bar-chart",
+      link: "/DataAnalytics"
     },
     {
-      title: "Dedicated Career Counseling",
-      description: "Receive personalized mentorship to navigate your career trajectory.",
-      icon: <i className="fa fa-briefcase" aria-hidden="true"></i>,
+      title: "Product Management",
+      description: "Lead product lifecycles and agile execution strategies.",
+      category: "Management",
+      duration: "6 Months",
+      brochure: productManagementBrochure,
+      icon: "fa-cube",
+      link: "/ProductManagement"
     },
     {
-      title: "AI-Powered Mock Interviews",
-      description: "Refine your interview skills with advanced AI simulation technologies.",
-      icon: <i className="fa fa-comments-o" aria-hidden="true"></i>,
+      title: "Prompt Engineering AI",
+      description: "Design LLM workflows for business automation.",
+      category: "Artificial Intelligence",
+      duration: "6 Months",
+      brochure: promptEngineeringBrochure,
+      icon: "fa-android",
+      link: "/PromptEngineering"
     },
     {
-      title: "Direct Referral Support",
-      description: "Gain exclusive access to job referrals through our partner network.",
-      icon: <i className="fa fa-users" aria-hidden="true"></i>,
-    },
-    {
-      title: "Global Alumni Network",
-      description: "Connect and collaborate with professionals and leaders worldwide.",
-      icon: <i className="fa fa-globe" aria-hidden="true"></i>,
-    },
+      title: "Digital Marketing",
+      description: "Master performance marketing and growth hacking.",
+      category: "Marketing",
+      duration: "6 Months",
+      brochure: digitalMarketingBrochure,
+      icon: "fa-bullhorn",
+      link: "/DigitalMarket"
+    }
   ];
 
   return (
-    <section className="space-y-12">
-      <div className="rounded-[28px] border border-[#ead9d9] bg-[#f3f3f5] p-4 md:p-7">
-
-        <div className="mb-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#111827]">Trending Courses</p>
-          <h1 data-aos="zoom-in" className="mt-2 text-3xl font-bold leading-tight text-[#030712] md:text-5xl">
-            Explore our <span className="text-[#d97706]">advanced programs</span>
-          </h1>
+    <section 
+      className="relative w-full py-20 lg:py-32 font-inter border-y border-gray-100 overflow-hidden bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: `url(${premiumBg})`, backgroundColor: "#faf9f6" }}
+    >
+      {/* Soft overlay to ensure content remains highly legible over the abstract background */}
+      <div className="absolute inset-0 bg-white/40 pointer-events-none backdrop-blur-[1px]" />
+      
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
+        
+        {/* Header Area */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+          <div className="max-w-2xl" data-aos="fade-right">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="h-[1px] w-8 bg-orange-500" />
+              <span className="text-gray-500 text-xs font-bold tracking-[0.2em] uppercase">Premium Pathways</span>
+            </div>
+            <h2 className="text-4xl lg:text-[46px] font-extrabold text-gray-900 leading-[1.15] tracking-tight">
+              Master the skills that <span className="text-orange-500">drive the future</span>
+            </h2>
+            <p className="mt-6 text-lg text-gray-600 leading-relaxed">
+              Curated advanced programs designed by industry leaders. Shift your career trajectory with hands-on projects, personalized mentorship, and globally recognized certifications.
+            </p>
+          </div>
+          <div className="hidden md:block" data-aos="fade-left">
+            <Link to="/advance" className="inline-flex items-center justify-center gap-2 rounded-xl bg-white border border-gray-200 px-7 py-4 text-sm font-bold text-gray-900 hover:border-gray-900 hover:bg-gray-50 transition-all shadow-sm">
+              Explore All Programs
+              <i className="fa fa-arrow-right" aria-hidden="true"></i>
+            </Link>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {courses.map((course, index) => (
-            <div
-              key={index}
-              className="group flex h-full flex-col rounded-3xl border border-[#e5e7eb] bg-white p-5 shadow-[0_8px_20px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_30px_rgba(15,23,42,0.12)]"
-            >
-              <div className="mb-4">
-                <div className="flex min-h-[142px] w-full items-center justify-center rounded-2xl bg-[#fff5ee] text-[88px] text-[#f15b29]">
-                  {course.icon}
-                </div>
+        {/* Layout Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
+          
+          {/* Left: Flagship Course */}
+          <div className="lg:col-span-7 group relative flex flex-col justify-between rounded-xl bg-white p-8 sm:p-12 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] transition-all duration-500 overflow-hidden" data-aos="fade-up">
+            <div className="absolute top-0 right-0 w-72 h-72 bg-orange-50 rounded-bl-[100px] opacity-60 transform translate-x-12 -translate-y-12 group-hover:scale-110 transition-transform duration-700 pointer-events-none" />
+            
+            <div className="relative z-10">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-50 border border-orange-100 mb-8">
+                <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+                <span className="text-[11px] font-bold tracking-[0.1em] uppercase text-orange-700">
+                  Flagship Program
+                </span>
+              </div>
+              
+              <div className="w-16 h-16 rounded-lg bg-gray-900 text-white flex items-center justify-center text-3xl mb-8 shadow-xl shadow-gray-900/10">
+                {flagshipCourse.icon}
               </div>
 
-              <h2 className="mt-1 text-[34px] leading-[1.12] font-bold text-[#111827]">
-                {course.title}
-              </h2>
+              <h3 className="text-3xl sm:text-[38px] font-extrabold text-gray-900 mb-5 leading-[1.1]">
+                {flagshipCourse.title}
+              </h3>
+              
+              <p className="text-[17px] text-gray-600 mb-8 leading-relaxed max-w-lg">
+                {flagshipCourse.description}
+              </p>
 
-              <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#4b5563]">{course.description}</p>
+              <div className="flex flex-wrap gap-3 mb-12">
+                {flagshipCourse.tags.map((tag, idx) => (
+                  <span key={idx} className="px-4 py-2 rounded-md bg-gray-50 border border-gray-100 text-[13px] font-semibold text-gray-700">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
 
-              <span className="mt-3 inline-flex w-fit rounded-lg bg-[#eef6ff] px-3 py-1 text-xs font-semibold text-[#0d58a6]">
-                {course.support}
-              </span>
-              <div className="mt-4 space-y-2 text-sm text-[#111827]">
-                <p className="flex items-center gap-2 text-orange-600 font-bold">
-                  <i className="fa fa-clock-o" aria-hidden="true"></i>
-                  <span>Cohort: {course.batch || "Upcoming"}</span>
-                </p>
-                <p className="flex items-center gap-2">
-                  <i className="fa fa-id-card-o" aria-hidden="true"></i>
-                  <span>{course.credential}</span>
-                </p>
-                <p className="flex items-center gap-2">
-                  <i className="fa fa-calendar-o" aria-hidden="true"></i>
-                  <span>{course.duration}</span>
-                </p>
+            <div className="relative z-10 w-full mt-auto">
+              <div className="grid grid-cols-3 gap-4 py-6 border-y border-gray-100 mb-8">
+                {flagshipCourse.stats.map((stat, idx) => (
+                  <div key={idx} className="flex flex-col">
+                    <div className="text-gray-400 mb-2 text-lg"><i className={`fa ${stat.icon}`}></i></div>
+                    <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">{stat.label}</div>
+                    <div className="text-[15px] font-bold text-gray-900">{stat.value}</div>
+                  </div>
+                ))}
               </div>
 
-              <div className="mt-5 grid grid-cols-2 gap-3">
-                <Link
-                  to="/advance"
-                  className="inline-flex items-center justify-center rounded-xl border border-[#111827] px-3 py-2.5 text-base font-semibold text-[#111827] transition hover:bg-[#111827] hover:text-white"
-                >
-                  View Program
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link to="/DataScience" className="flex-1 inline-flex items-center justify-center bg-orange-500 text-white px-6 py-4 rounded-md font-bold text-sm hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/25">
+                  View Program Details
                 </Link>
                 <DownloadBrochureButton
-                  courseValue={course.title}
-                  brochureLink={course.brochure}
-                  label="Syllabus"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#f15b29] px-3 py-2.5 text-base font-semibold text-white transition hover:bg-[#d94f21]"
+                  courseValue={flagshipCourse.title}
+                  brochureLink={flagshipCourse.brochure}
+                  label="Download Syllabus"
+                  className="flex-1 inline-flex items-center justify-center bg-white text-gray-900 border border-gray-200 px-6 py-4 rounded-md font-bold text-sm hover:bg-gray-50 hover:border-gray-300 transition-colors"
                 />
               </div>
             </div>
-          ))}
+          </div>
+
+          {/* Right: Supporting Courses Stack */}
+          <div className="lg:col-span-5 flex flex-col justify-between gap-4">
+            {supportingCourses.map((course, idx) => (
+              <div key={idx} className="group relative flex items-center p-5 sm:p-6 rounded-lg bg-white border border-gray-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:border-gray-200 transition-all duration-300 h-full" data-aos="fade-up" data-aos-delay={idx * 100}>
+                <div className="w-14 h-14 rounded-md bg-gray-50 flex items-center justify-center text-gray-400 text-xl group-hover:bg-orange-50 group-hover:text-orange-500 transition-colors flex-shrink-0 mr-5">
+                  <i className={`fa ${course.icon}`}></i>
+                </div>
+                
+                <div className="flex-1 min-w-0 pr-4">
+                  <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
+                    {course.category} • {course.duration}
+                  </div>
+                  <h4 className="text-[16px] font-bold text-gray-900 mb-1 truncate group-hover:text-orange-600 transition-colors">
+                    {course.title}
+                  </h4>
+                  <p className="text-[13px] text-gray-500 line-clamp-1">
+                    {course.description}
+                  </p>
+                </div>
+
+                <Link to={course.link} className="w-10 h-10 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 group-hover:bg-gray-900 group-hover:border-gray-900 group-hover:text-white transition-all flex-shrink-0" aria-label={`Explore ${course.title}`}>
+                  <i className="fa fa-arrow-right text-sm"></i>
+                </Link>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="mt-7 text-center">
-          <Link to="/advance" className="inline-flex items-center gap-2 rounded-full bg-[#f15b29] px-5 py-2.5 font-semibold text-white shadow-[0_10px_24px_rgba(241,91,41,0.25)] transition hover:bg-[#d94f21]">
-            View All Advanced Courses
+        {/* Trust Strip */}
+        <div className="w-full bg-white border border-gray-200 rounded-xl p-8 sm:p-10 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-sm relative overflow-hidden" data-aos="fade-up">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-orange-50 opacity-50 rounded-full filter blur-3xl pointer-events-none" />
+          
+          <div className="flex items-center gap-5 relative z-10 w-full lg:w-auto">
+            <div className="w-14 h-14 rounded-full bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-500 flex-shrink-0">
+              <i className="fa fa-shield text-2xl"></i>
+            </div>
+            <div>
+              <h4 className="text-gray-900 font-bold text-[19px] mb-1">Industry Vetted Curriculum</h4>
+              <p className="text-gray-500 text-sm">Learn the exact tools used by top tech companies</p>
+            </div>
+          </div>
+          
+          <div className="flex flex-wrap items-center justify-start lg:justify-end gap-8 sm:gap-12 relative z-10 w-full lg:w-auto border-t lg:border-t-0 lg:border-l border-gray-100 pt-8 lg:pt-0 lg:pl-12">
+            <div className="flex flex-col">
+              <div className="text-gray-900 font-black text-3xl mb-1">500+</div>
+              <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Hiring Partners</div>
+            </div>
+            <div className="flex flex-col">
+              <div className="text-gray-900 font-black text-3xl mb-1">30%</div>
+              <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Avg Salary Hike</div>
+            </div>
+            <div className="flex flex-col">
+              <div className="text-gray-900 font-black text-3xl mb-1">1:1</div>
+              <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Career Mentorship</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile CTA */}
+        <div className="mt-10 text-center md:hidden" data-aos="fade-up">
+          <Link to="/advance" className="inline-flex items-center justify-center gap-2 rounded-md bg-orange-500 px-8 py-4 w-full sm:w-auto text-sm font-bold text-white shadow-lg shadow-orange-500/25">
+            Explore All Programs
             <i className="fa fa-arrow-right" aria-hidden="true"></i>
           </Link>
         </div>
-      </div>
 
-      <div className="mt-16 px-4 md:px-0">
-        <div className="mb-10 text-center">
-          <h2 className="text-3xl font-bold leading-tight text-[#030712] md:text-4xl">
-            Why Choose Our <span className="text-[#f15b29]">Advanced Courses</span>?
-          </h2>
-          <p className="mt-4 text-base text-[#4b5563]">
-            Elevate your career with our industry-leading curriculum and comprehensive support network.
-          </p>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Difference.map((feature, index) => (
-            <div
-              key={index}
-              className="group flex flex-col items-start rounded-2xl border border-[#e5e7eb] bg-white p-8 transition-all duration-300 hover:-translate-y-1 hover:border-[#f15b29] hover:shadow-[0_12px_24px_rgba(241,91,41,0.08)]"
-            >
-              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-[#fff5ee] text-2xl text-[#f15b29] transition-colors group-hover:bg-[#f15b29] group-hover:text-white">
-                {feature.icon}
-              </div>
-              <h3 className="mb-3 text-xl font-bold text-[#111827]">
-                {feature.title}
-              </h3>
-              <p className="text-sm leading-relaxed text-[#4b5563]">
-                {feature.description}
-              </p>
-            </div>
-          ))}
-        </div>
       </div>
     </section>
   );

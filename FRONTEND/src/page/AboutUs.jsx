@@ -43,64 +43,88 @@ const AboutUs = () => {
     <div id="au-page">
 
       {/* ─── HERO ─── */}
-      <section className="au-hero">
-        <div className="au-hero-orb" />
-
-        <div className="au-hero-inner">
-          <div data-aos="fade-right">
-            <div className="au-hero-badge">
-              <span className="au-hero-badge-dot" />
-              <span className="au-hero-badge-text">Est. 2024 · About Krutanic</span>
-            </div>
-
-            <h1 className="au-hero-h1">
-              The Algorithmic Path<br />
-              to a <span className="au-gradient-text">Brighter Future</span>
-            </h1>
-
-            <p className="au-hero-desc">
-              Krutanic is dedicated to empowering your career with industry-leading tech courses,
-              expert mentors, and hands-on real-world training — so you're ready for the job market
-              from day one.
-            </p>
-
-            <div className="au-hero-actions">
-              <Link to="/mentorship" className="au-cta-primary">
-                Explore Programs <i className="fa fa-arrow-right" />
-              </Link>
-              <Link to="/contactus" className="au-cta-ghost">Contact Us</Link>
-            </div>
-
-            <div className="au-hero-trust">
-              <span className="au-trust-pill"><i className="fa fa-star" /> 4.9 Rated</span>
-              <span className="au-trust-pill"><i className="fa fa-shield" /> Certified Programs</span>
-              <span className="au-trust-pill"><i className="fa fa-users" /> 10K+ Alumni</span>
-            </div>
-          </div>
-
-          <div className="au-hero-visual" data-aos="fade-left" data-aos-delay="120">
-            <div className="au-logo-card">
-              <div className="au-logo-card-main">
-                <div className="au-logo-card-img-wrap">
-                  <img src={logo} alt="Krutanic" className="au-logo-card-img" />
-                </div>
-                <div className="au-logo-card-tagline">A Ladder for a Brighter Future</div>
+      <section className="relative w-full bg-white py-20 lg:py-28 overflow-hidden font-inter border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+            
+            {/* Left Column */}
+            <div className="flex flex-col items-start space-y-6" data-aos="fade-right">
+              <span className="text-[12px] font-bold tracking-[0.2em] uppercase text-gray-500">
+                About Us
+              </span>
+              
+              <h1 className="text-4xl lg:text-5xl font-extrabold text-gray-900 leading-[1.15] tracking-tight">
+                Empowering students and professionals to become <span className="text-blue-600">job-ready.</span>
+              </h1>
+              
+              <p className="text-lg text-gray-600 leading-relaxed max-w-lg">
+                We bridge the gap between academic theory and industry demands. Gain the skills, mentorship, and real-world experience you need to launch and accelerate your tech career.
+              </p>
+              
+              <div className="pt-4">
+                <Link to="/mentorship" className="inline-flex items-center justify-center bg-gray-900 text-white px-8 py-4 rounded-lg font-semibold text-sm hover:bg-gray-800 transition-colors shadow-sm">
+                  Explore Programs
+                  <i className="fa fa-arrow-right ml-2" />
+                </Link>
               </div>
-              <div className="au-chip au-chip--top-right">
-                <div className="au-chip-icon"><i className="fa fa-star" /></div>
+              
+              {/* Proof Stats */}
+              <div className="flex items-center gap-10 pt-8 mt-4 border-t border-gray-100 w-full">
                 <div>
-                  <span className="au-chip-val">95%</span>
-                  <span className="au-chip-lbl">Placement Rate</span>
+                  <div className="text-2xl font-extrabold text-gray-900">500+</div>
+                  <div className="text-sm text-gray-500 font-medium mt-1">Hiring Partners</div>
                 </div>
-              </div>
-              <div className="au-chip au-chip--bottom-left">
-                <div className="au-chip-icon"><i className="fa fa-users" /></div>
                 <div>
-                  <span className="au-chip-val">10,000+</span>
-                  <span className="au-chip-lbl">Students Trained</span>
+                  <div className="text-2xl font-extrabold text-gray-900">10,000+</div>
+                  <div className="text-sm text-gray-500 font-medium mt-1">Students Trained</div>
                 </div>
               </div>
             </div>
+
+            {/* Right Column (Benefits) */}
+            <div className="flex flex-col space-y-4" data-aos="fade-left" data-aos-delay="100">
+              
+              {/* Benefit 1 */}
+              <div className="flex gap-5 p-6 bg-white border border-gray-100 rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.06)] transition-shadow">
+                <div className="mt-1 flex-shrink-0 text-gray-900">
+                  <i className="fa fa-graduation-cap text-xl" />
+                </div>
+                <div>
+                  <h3 className="text-[17px] font-bold text-gray-900 mb-1.5">Industry-Leading Curriculum</h3>
+                  <p className="text-[14px] text-gray-600 leading-relaxed">
+                    Learn from specialized curriculums designed directly by architects and leaders in modern tech.
+                  </p>
+                </div>
+              </div>
+
+              {/* Benefit 2 */}
+              <div className="flex gap-5 p-6 bg-white border border-gray-100 rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.06)] transition-shadow">
+                <div className="mt-1 flex-shrink-0 text-gray-900">
+                  <i className="fa fa-laptop text-xl" />
+                </div>
+                <div>
+                  <h3 className="text-[17px] font-bold text-gray-900 mb-1.5">Hands-On Experience</h3>
+                  <p className="text-[14px] text-gray-600 leading-relaxed">
+                    Deploy real-world projects in our integrated cloud sandboxes with instant feedback loops.
+                  </p>
+                </div>
+              </div>
+
+              {/* Benefit 3 */}
+              <div className="flex gap-5 p-6 bg-white border border-gray-100 rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.06)] transition-shadow">
+                <div className="mt-1 flex-shrink-0 text-gray-900">
+                  <i className="fa fa-line-chart text-xl" />
+                </div>
+                <div>
+                  <h3 className="text-[17px] font-bold text-gray-900 mb-1.5">Personalized Placement</h3>
+                  <p className="text-[14px] text-gray-600 leading-relaxed">
+                    Get end-to-end placement guidance and portfolio optimization tailored to your career trajectory.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+
           </div>
         </div>
       </section>

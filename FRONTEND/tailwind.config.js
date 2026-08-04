@@ -16,9 +16,16 @@ export default {
         "border-dark": "#4a3b36",
         "text-main": "#1c110d",
         "text-light": "#f3eae7",
+        codenest: {
+          green: '#5ed29c',
+          bg: '#070b0a'
+        }
       },
       fontFamily: {
-        "display": ["Lexend", "sans-serif"]
+        "display": ["Lexend", "sans-serif"],
+        inter: ['Inter', 'sans-serif'],
+        jakarta: ['"Plus Jakarta Sans"', 'sans-serif'],
+        instrument: ['"Instrument Serif"', 'serif'],
       },
       animation: {
         marquee: 'marquee 10s linear infinite',
