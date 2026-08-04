@@ -326,7 +326,7 @@ const MentorshipForm = ({ isPopup, onClose, inlineMode = false }) => {
                     <div className="feature-icon"><FaBriefcase /></div>
                     <div className="feature-text">
                       <h4>Career Support</h4>
-                      <p>Internship and placement help</p>
+                      <p>Internship and placement</p>
                     </div>
                   </div>
                 </div>

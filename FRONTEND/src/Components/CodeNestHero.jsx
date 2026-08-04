@@ -1,9 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Hls from 'hls.js';
 import { ArrowRight } from 'lucide-react';
+import MentorshipForm from '../page/MentorshipForm';
 
 const Hero = () => {
   const videoRef = useRef(null);
+  const navigate = useNavigate();
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -30,6 +34,8 @@ const Hero = () => {
 
   return (
     <div className="relative min-h-screen bg-codenest-bg overflow-hidden font-inter text-white selection:bg-codenest-green selection:text-codenest-bg">
+      {showForm && <MentorshipForm isPopup={true} onClose={() => setShowForm(false)} />}
+      
       {/* Background Video */}
       <div className="absolute inset-0 z-0">
         <video
@@ -102,11 +108,17 @@ const Hero = () => {
 
             {/* CTAs */}
             <div className="flex flex-wrap items-center justify-center gap-6">
-              <button className="group flex items-center justify-center gap-3 bg-codenest-green text-codenest-bg px-10 h-[58px] rounded-full font-extrabold uppercase tracking-widest text-[14px] hover:bg-white transition-colors duration-300">
+              <button 
+                onClick={() => navigate('/Mentorship')}
+                className="group flex items-center justify-center gap-3 bg-codenest-green text-codenest-bg px-10 h-[58px] rounded-full font-extrabold uppercase tracking-widest text-[14px] hover:bg-white transition-colors duration-300"
+              >
                 Explore Courses
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
               </button>
-              <button className="flex items-center justify-center gap-3 bg-white/5 text-white px-10 h-[58px] rounded-full font-extrabold uppercase tracking-widest text-[14px] border border-white/10 hover:bg-white/10 transition-colors duration-300">
+              <button 
+                onClick={() => setShowForm(true)}
+                className="flex items-center justify-center gap-3 bg-white/5 text-white px-10 h-[58px] rounded-full font-extrabold uppercase tracking-widest text-[14px] border border-white/10 hover:bg-white/10 transition-colors duration-300"
+              >
                 Book Free Counseling
               </button>
             </div>
