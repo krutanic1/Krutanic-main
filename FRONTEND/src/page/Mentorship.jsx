@@ -32,7 +32,16 @@ const Mentorship = () => {
       setShowPopup(true);
     }, 5000);
 
-    return () => clearTimeout(timer);
+    const handleInteraction = () => {
+      clearTimeout(timer);
+    };
+
+    window.addEventListener("mentorshipFormInteraction", handleInteraction);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("mentorshipFormInteraction", handleInteraction);
+    };
   }, []);
 
   const togglePopup = () => setShowPopup(!showPopup);

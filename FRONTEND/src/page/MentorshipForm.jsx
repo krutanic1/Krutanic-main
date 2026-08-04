@@ -90,8 +90,6 @@ const YEAR_OPTIONS = [
   { label: "2nd Year", value: "2nd year" },
   { label: "3rd Year", value: "3rd year" },
   { label: "4th Year", value: "4th year" },
-  { label: "Graduated", value: "Graduated" },
-  { label: "Passed Out", value: "Passed Out" },
 ];
 
 const DOMAIN_OPTIONS = [
@@ -228,7 +226,11 @@ const MentorshipForm = ({ isPopup, onClose, inlineMode = false, setShowForm }) =
 
   /* ══ FORM JSX (inlined — no inner component) ══ */
   const formJSX = (
-    <form onSubmit={handleFormSubmit} noValidate className="space-y-4">
+    <form 
+      onSubmit={handleFormSubmit} 
+      className="space-y-4"
+      onFocus={() => window.dispatchEvent(new Event("mentorshipFormInteraction"))}
+    >
 
       {/* Name + WhatsApp */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
