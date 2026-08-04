@@ -33,26 +33,67 @@ router.get("/advancequeries", verifyAnyAuth, async (req, res) => {
 });
 
 router.post("/advance/register", async (req, res) => {
-  const { name, email, phone, currentRole, experience, goal, goalOther, domain, domainOther, interestedDomain, reason, passedOutYear } = req.body;
-  // console.log(req.body);
+  const {
+    name,
+    email,
+    phone,
+    currentRole,
+    experience,
+    goal,
+    goalOther,
+    domain,
+    domainOther,
+    interestedDomain,
+    reason,
+    passedOutYear,
+  } = req.body;
+
+  // -- Basic required field check --
+  if (!name || !email || !phone || !currentRole || !experience || !goal) {
+    return res.status(400).json({
+      error: "Please fill all required fields (name, email, phone, role, experience, goal).",
+    });
+  }
+
+  // -- Phone: must be 10 digits --
+  const phoneClean = String(phone).replace(/\D/g, "");
+  if (phoneClean.length < 10) {
+    return res.status(400).json({ error: "Please enter a valid 10-digit phone number." });
+  }
+
+  // -- Normalise experience: both "Fresher" and "0 year" are valid, store as "Fresher" --
+  const normalisedExperience =
+    experience === "0 year" ? "Fresher" : experience;
+
   try {
     const newRegistration = new Advance({
-      name,
-      email,
-      phone,
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      phone: phoneClean,
       currentRole,
-      experience,
+      experience: normalisedExperience,
       goal,
-      goalOther: goal === "Other" ? goalOther : undefined,
-      domain,
-      domainOther: domain === "Other" ? domainOther : undefined,
-      interestedDomain: interestedDomain,
-      passedOutYear: passedOutYear || undefined,
-      reason: reason
+      goalOther: goal === "Other" ? (goalOther || "") : "",
+      // `domain` here is the user's current industry domain (optional from popup form)
+      domain: domain || "",
+      domainOther: domain === "Other" ? (domainOther || "") : "",
+      interestedDomain: interestedDomain || "",
+      passedOutYear: passedOutYear || "",
+      reason: reason || "",
     });
-    res.status(201).json({ message: "Registration successful!" });
+
+    await newRegistration.save();
+
+    res.status(201).json({ message: "Application submitted successfully!" });
   } catch (error) {
-    console.error(error);
+    console.error("Advance register error:", error);
+
+    // Return Mongoose validation errors clearly to the client
+    if (error.name === "ValidationError") {
+      const messages = Object.values(error.errors).map((e) => e.message);
+      return res.status(400).json({ error: messages.join(". ") });
+    }
+
     res.status(500).json({ error: "Server error. Please try again later." });
   }
 });

@@ -8,12 +8,7 @@ const verifyAnyAuth = require("../middleware/verifyAnyAuth");
 router.post("/mentorship/register", async (req, res) => {
   const { name, email, collegeEmail, phone, collegeName, domain, passingyear, reason } = req.body;
   try {
-    const existingUser = await Mentorship.findOne({ email });
-    if (existingUser) {
-      return res
-        .status(200)
-        .json({ message: "You have already registered with this email." });
-    }
+
     const newRegistration = new Mentorship({
       name,
       email,
