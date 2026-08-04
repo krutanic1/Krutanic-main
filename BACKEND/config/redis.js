@@ -10,7 +10,7 @@ const token = process.env.REDIS_TOKEN;
 if (!url || !token) {
   console.error("❌ Upstash Redis credentials missing in .env!");
 }
-
+//ugfhapfhf
 const redis = new Redis({
   url: url,
   token: token
