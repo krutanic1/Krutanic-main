@@ -181,8 +181,8 @@ const MentorshipForm = ({ isPopup, onClose, inlineMode = false, setShowForm }) =
       } else {
         toast.error("Invalid OTP. Try again.");
       }
-    } catch {
-      toast.error("Verification failed. Check OTP and retry.");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Verification failed. Check OTP and retry.");
     } finally {
       setVerifyLoading(false);
     }
