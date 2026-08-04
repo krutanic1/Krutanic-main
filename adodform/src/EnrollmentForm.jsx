@@ -193,9 +193,9 @@ const EnrollmentForm = () => {
     setIsSubmitting(true);
 
     // ==========================================
-    // GOOGLE APPS SCRIPT WEB APP URL (Replace this with your actual URL)
+    // BACKEND PROXY URL (Secured with Rate Limiting)
     // ==========================================
-    const googleWebAppUrl = "https://script.google.com/macros/s/AKfycbyfly2CXZyI_mqGiLrOIyErIcMFtRkECU68WryLt2tWkMmjdlDJHmriJP4Gk4RLSC7YWg/exec";
+    const proxyUrl = `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/submit-enrollment`;
 
     try {
       const params = new URLSearchParams();
@@ -213,9 +213,8 @@ const EnrollmentForm = () => {
       params.append('whyLooking', formData.whyLooking);
       params.append('preferredLanguage', formData.preferredLanguage);
 
-      await fetch(googleWebAppUrl, { 
+      await fetch(proxyUrl, { 
         method: 'POST', 
-        // mode: 'no-cors', // Not needed for Google Apps Script if setup correctly
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: params.toString() 
       });

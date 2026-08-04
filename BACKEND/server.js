@@ -252,6 +252,10 @@ app.use("/api", AptitudeQuestionRoutes);
 // Vercel Cron Route
 app.use("/", CronRoutes);
 
+// Google Forms Proxy
+const googleFormsProxy = require("./routes/googleFormsProxy");
+app.use("/api", googleFormsProxy);
+
 // ✅ FIX #4: Error handling middleware (must be after routes)
 const axios = require('axios');
 // Global Proxy Route for Downloads (Moved here for reliability)

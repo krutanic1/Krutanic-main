@@ -171,7 +171,7 @@ const DataAnalystFormPage = () => {
 
     setIsSubmitting(true);
 
-    const googleWebAppUrl = "https://script.google.com/macros/s/AKfycbwb5YK4-lHdJwxRtQDESibo-uyhnXvJU56sn03ztTJYzuEK0c0aUcVJePNy1-k3T3c3Dg/exec";
+    const proxyUrl = `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/submit-data-analytics`;
 
     try {
       const params = new URLSearchParams();
@@ -191,7 +191,7 @@ const DataAnalystFormPage = () => {
       params.append('fundingPlan', formData.fundingPlan);
       params.append('nextStep', formData.nextStep);
 
-      const response = await fetch(googleWebAppUrl, { 
+      const response = await fetch(proxyUrl, { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: params.toString() 
