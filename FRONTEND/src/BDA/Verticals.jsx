@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import API from "../API";
 import BDAHeader from "./BDAHeader";
-import VerticalEnrollmentsTable from "../components/VerticalEnrollmentsTable";
+import VerticalEnrollmentsTable from "../Components/VerticalEnrollmentsTable";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 const Verticals = () => {
