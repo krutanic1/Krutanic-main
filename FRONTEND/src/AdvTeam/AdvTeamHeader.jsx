@@ -13,9 +13,7 @@ const AdvTeamHeader = () => {
   const advTeamName = localStorage.getItem("advTeamName");
   const advTeamId = localStorage.getItem("advTeamId");
   const [advTeamData, setAdvTeamData] = useState(null);
-  const [notifications, setNotifications] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [showNotificationDropdown, setShowNotificationDropdown] = useState(true);
+
   const [activeReminder, setActiveReminder] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [dailyStats, setDailyStats] = useState({ 
@@ -89,38 +87,9 @@ const AdvTeamHeader = () => {
     }
   };
 
-  const fetchNotifications = async () => {
-    if (!advTeamId) return;
-    try {
-      const res = await axios.get(`${API}/api/adv-leads/get-my-notifications`, { params: { userId: advTeamId } });
-      if (res.data.success) {
-        setNotifications(res.data.notifications);
-        setUnreadCount(res.data.notifications.length);
-        
-        // Find the most recent demo reminder
-        const demoReminder = res.data.notifications.find(n => n.type === "demo_reminder");
-        if (demoReminder) {
-          setActiveReminder(demoReminder);
-        }
-      }
-    } catch (err) {
-      console.error("Failed to fetch notifications");
-    }
-  };
-
-  const markNotificationRead = async (id) => {
+  const clearReminder = async (id) => {
     if (String(id).startsWith("15m_")) {
       setActiveReminder(null);
-      return;
-    }
-
-    try {
-      await axios.post(`${API}/api/adv-leads/mark-notification-read`, { notificationId: id });
-      setNotifications(prev => prev.filter(n => n._id !== id));
-      setUnreadCount(prev => Math.max(0, prev - 1));
-      if (activeReminder?._id === id) setActiveReminder(null);
-    } catch (err) {
-      console.error("Failed to mark notification read");
     }
   };
 
@@ -177,11 +146,9 @@ const AdvTeamHeader = () => {
 
   useEffect(() => {
     fetchAdvTeamData();
-    fetchNotifications();
     fetchDailyStats();
     fetchDueReminders();
     const interval = setInterval(() => {
-      fetchNotifications();
       fetchDailyStats();
       fetchDueReminders();
     }, 30000); // Poll every 30s
@@ -343,93 +310,7 @@ const AdvTeamHeader = () => {
         )}
 
         <div className="nav-actions" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginRight: '20px' }}>
-          <div style={{ position: 'relative' }} ref={dropdownRef}>
-            <button 
-              onClick={() => setShowNotificationDropdown(!showNotificationDropdown)}
-              style={{ 
-                background: 'none', border: 'none', cursor: 'pointer', position: 'relative',
-                padding: '8px', borderRadius: '50%', backgroundColor: '#f3f4f6', transition: 'all 0.2s'
-              }}
-              onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#e5e7eb'}
-              onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
-            >
-              <i className="fa fa-bell" style={{ fontSize: '20px', color: '#374151' }}></i>
-              {unreadCount > 0 && (
-                <span style={{
-                  position: 'absolute', top: '-2px', right: '-2px',
-                  backgroundColor: '#f15b29', color: 'white', borderRadius: '50%',
-                  width: '18px', height: '18px', fontSize: '11px', fontWeight: 'bold',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  border: '2px solid white'
-                }}>
-                  {unreadCount}
-                </span>
-              )}
-            </button>
 
-            {showNotificationDropdown && (
-              <div style={{
-                position: 'absolute', top: '45px', right: '0', width: '320px',
-                backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)',
-                zIndex: 1000, border: '1px solid #e5e7eb', overflow: 'hidden',
-                animation: 'slideDown 0.2s ease-out'
-              }}>
-                <div style={{ padding: '16px', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <h4 style={{ margin: 0, fontSize: '16px', fontWeight: '700', color: '#111827' }}>Notifications</h4>
-                  <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>{unreadCount} Unread</span>
-                  <button 
-                    onClick={() => setShowNotificationDropdown(false)}
-                    style={{
-                      background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', color: '#6b7280',
-                      padding: '4px 8px', borderRadius: '50%', transition: 'all 0.2s',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center'
-                    }}
-                    onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
-                    onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                  >
-                    &times;
-                  </button>
-                </div>
-                <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                  {notifications.length > 0 ? (
-                    notifications.map((n) => (
-                      <div 
-                        key={n._id}
-                        onClick={() => markNotificationRead(n._id)}
-                        style={{ 
-                          padding: '14px 16px', borderBottom: '1px solid #f9fafb', cursor: 'pointer',
-                          transition: 'background 0.2s'
-                        }}
-                        onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
-                        onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                      >
-                        <div style={{ display: 'flex', gap: '12px' }}>
-                          <div style={{ 
-                            width: '40px', height: '40px', borderRadius: '50%', 
-                            backgroundColor: n.type === 'lead_assigned' ? '#ecfdf5' : '#fff7ed',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-                          }}>
-                            <i className={`fa ${n.type === 'lead_assigned' ? 'fa-user-plus' : 'fa-info-circle'}`} 
-                               style={{ color: n.type === 'lead_assigned' ? '#059669' : '#f15b29', fontSize: '16px' }}></i>
-                          </div>
-                          <div>
-                            <p style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: '600', color: '#111827' }}>{n.title}</p>
-                            <p style={{ margin: 0, fontSize: '13px', color: '#6b7280', lineHeight: '1.4' }}>{n.message}</p>
-                            <p style={{ margin: '6px 0 0 0', fontSize: '11px', color: '#9ca3af' }}>{new Date(n.createdAt).toLocaleString()}</p>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div style={{ padding: '40px 20px', textAlign: 'center' }}>
-                      <i className="fa fa-bell-slash" style={{ fontSize: '24px', color: '#d1d5db', marginBottom: '12px' }}></i>
-                      <p style={{ margin: 0, fontSize: '14px', color: '#9ca3af' }}>No new notifications</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
           <div ref={mobileMenuRef}>
             {/* <span onClick={toggleVisibility}>☰</span> */}
           </div>

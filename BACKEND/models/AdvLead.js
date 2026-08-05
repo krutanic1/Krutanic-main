@@ -113,6 +113,8 @@ AdvLeadSchema.set("toObject", {
     }
 });
 
+AdvLeadSchema.index({ owner_id: 1, next_followup_at: 1 });
+AdvLeadSchema.index({ current_owner_id: 1, next_followup_at: 1 });
 
 // --- Mongoose Hooks for Auto-Task Creation (Permanent Fix) ---
 async function handleSpecialistAssignment(lead, AdvTask) {

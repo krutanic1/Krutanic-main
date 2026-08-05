@@ -11,14 +11,26 @@ const AdvCareerAssessments = ({ isAdmin }) => {
     const [rowSelections, setRowSelections] = useState({});
     const [assigningId, setAssigningId] = useState(null);
 
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
+
     const userDesignation = isAdmin ? "admin" : (localStorage.getItem("designation") || "ADV Leader");
     const advUserId = isAdmin ? localStorage.getItem("adminToken") : (localStorage.getItem("advTeamId") || localStorage.getItem("id"));
 
     useEffect(() => {
         const fetchAssessments = async () => {
+            setLoading(true);
             try {
-                const res = await axios.get(`${API}/careerassessment?userId=${advUserId}&role=${userDesignation}`);
-                setAssessments(res.data);
+                const res = await axios.get(`${API}/careerassessment?userId=${advUserId}&role=${userDesignation}&page=${page}&limit=30`);
+                if (res.data.data) {
+                    setAssessments(res.data.data);
+                    setTotalPages(res.data.totalPages);
+                    setTotalItems(res.data.totalItems);
+                } else {
+                    // Fallback in case old response format is returned temporarily
+                    setAssessments(res.data);
+                }
             } catch (err) {
                 console.error("Failed to fetch assessments");
                 toast.error("Failed to fetch assessments");
@@ -38,7 +50,7 @@ const AdvCareerAssessments = ({ isAdmin }) => {
                 })
                 .catch(err => console.error("Failed to fetch team members"));
         }
-    }, []);
+    }, [page]);
 
     const handleAssign = async (assessment) => {
         const memberId = rowSelections[assessment._id];
@@ -192,6 +204,28 @@ const AdvCareerAssessments = ({ isAdmin }) => {
                             )}
                         </tbody>
                     </table>
+                </div>
+            )}
+
+            {!loading && totalPages > 1 && (
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '20px', gap: '15px' }}>
+                    <button 
+                        onClick={() => setPage(p => Math.max(1, p - 1))}
+                        disabled={page === 1}
+                        style={{ padding: '8px 16px', border: '1px solid #d9d9d9', background: page === 1 ? '#f5f5f5' : '#fff', color: page === 1 ? '#b8b8b8' : '#333', borderRadius: '6px', cursor: page === 1 ? 'not-allowed' : 'pointer', fontWeight: '500' }}
+                    >
+                        Previous
+                    </button>
+                    <span style={{ fontSize: '14px', color: '#666' }}>
+                        Page <strong style={{ color: '#333' }}>{page}</strong> of <strong style={{ color: '#333' }}>{totalPages}</strong>
+                    </span>
+                    <button 
+                        onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                        disabled={page === totalPages}
+                        style={{ padding: '8px 16px', border: '1px solid #d9d9d9', background: page === totalPages ? '#f5f5f5' : '#fff', color: page === totalPages ? '#b8b8b8' : '#333', borderRadius: '6px', cursor: page === totalPages ? 'not-allowed' : 'pointer', fontWeight: '500' }}
+                    >
+                        Next
+                    </button>
                 </div>
             )}
 

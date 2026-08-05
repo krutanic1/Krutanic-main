@@ -137,6 +137,9 @@ const BDAHeader = () => {
               <Link to="/AssignTarget">
               <i className="fa fa-bullseye"></i> Assign Target
               </Link>
+              <Link to="/Verticals">
+                <i className="fa fa-sitemap"></i> Verticals
+              </Link>
               <Link to="/TeamAnalysis">
               <i className="fa fa-bar-chart"></i> Team Analysis
               </Link>

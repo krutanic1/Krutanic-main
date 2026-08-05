@@ -101,6 +101,9 @@ const AdminHeader = () => {
             <Link to="/AdminTeamAnalysis">
               <i className="fa fa-bar-chart mr-2"></i>Team Analysis
             </Link>
+            <Link to="/AdminVerticals">
+              <i className="fa fa-sitemap mr-2"></i>Mentorship Verticals
+            </Link>
             <Link to="/CreateBDA">
               <i className="fa fa-users mr-2"></i>Create Team A/c
             </Link>
@@ -193,6 +196,9 @@ const AdminHeader = () => {
             </Link>
             <Link to="/AdminMedTarget">
               <i className="fa fa-bullseye mr-2" style={{color: '#818cf8'}}></i>Med Target Assign
+            </Link>
+            <Link to="/AdminMedVerticals">
+              <i className="fa fa-sitemap mr-2" style={{color: '#818cf8'}}></i>Med Verticals
             </Link>
             <Link to="/AdminMedRevenue">
               <i className="fa fa-line-chart mr-2" style={{color: '#818cf8'}}></i>Med Revenue

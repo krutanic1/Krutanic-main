@@ -10,64 +10,78 @@ const SalesIntelligenceController = {
             const todayStart = new Date();
             todayStart.setHours(0, 0, 0, 0);
 
-            // Fetch Total Leads
-            const totalLeads = await AdvLead.countDocuments();
-            
-            // Fetch Today's Leads
-            const todaysLeads = await AdvLead.countDocuments({ created_at: { $gte: todayStart } });
+            const sevenDaysAgo = new Date();
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-            // Fetch Booked Students
-            const bookedStudents = await AdvEnroll.countDocuments();
-
-            // Conversion %
-            const conversionRate = totalLeads > 0 ? ((bookedStudents / totalLeads) * 100).toFixed(2) : 0;
-
-            // Revenue Data
-            const revenueStats = await AdvEnroll.aggregate([
+            // Lead data facet
+            const leadAgg = await AdvLead.aggregate([
                 {
-                    $group: {
-                        _id: null,
-                        totalRevenue: { $sum: '$paidAmount' },
-                        pendingRevenue: { $sum: '$remainingAmount' }
+                    $facet: {
+                        totalLeads: [{ $count: "count" }],
+                        todaysLeads: [
+                            { $match: { created_at: { $gte: todayStart } } },
+                            { $count: "count" }
+                        ],
+                        activeCounselors: [
+                            { $group: { _id: "$owner_id" } }
+                        ],
+                        leadsTrend: [
+                            { $match: { created_at: { $gte: sevenDaysAgo } } },
+                            {
+                                $group: {
+                                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$created_at" } },
+                                    count: { $sum: 1 }
+                                }
+                            },
+                            { $sort: { _id: 1 } }
+                        ]
                     }
                 }
             ]);
 
-            const totalRevenue = revenueStats[0]?.totalRevenue || 0;
-            const pendingRevenue = revenueStats[0]?.pendingRevenue || 0;
+            const totalLeads = leadAgg[0].totalLeads[0]?.count || 0;
+            const todaysLeads = leadAgg[0].todaysLeads[0]?.count || 0;
+            const activeCounselors = leadAgg[0].activeCounselors.length || 0;
+            const leadsTrend = leadAgg[0].leadsTrend || [];
 
-            // Active Counselors (based on unique owners in AdvLead)
-            const activeCounselorsList = await AdvLead.distinct('owner_id');
-            const activeCounselors = activeCounselorsList.length;
+            // Enroll data facet
+            const enrollAgg = await AdvEnroll.aggregate([
+                {
+                    $facet: {
+                        bookedStudents: [{ $count: "count" }],
+                        revenueStats: [
+                            {
+                                $group: {
+                                    _id: null,
+                                    totalRevenue: { $sum: '$paidAmount' },
+                                    pendingRevenue: { $sum: '$remainingAmount' }
+                                }
+                            }
+                        ],
+                        revenueTrend: [
+                            { $match: { createdAt: { $gte: sevenDaysAgo } } },
+                            {
+                                $group: {
+                                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                                    revenue: { $sum: '$paidAmount' }
+                                }
+                            },
+                            { $sort: { _id: 1 } }
+                        ]
+                    }
+                }
+            ]);
 
-            // Calls Today
+            const bookedStudents = enrollAgg[0].bookedStudents[0]?.count || 0;
+            const totalRevenue = enrollAgg[0].revenueStats[0]?.totalRevenue || 0;
+            const pendingRevenue = enrollAgg[0].revenueStats[0]?.pendingRevenue || 0;
+            const revenueTrend = enrollAgg[0].revenueTrend || [];
+
+            // Conversion %
+            const conversionRate = totalLeads > 0 ? ((bookedStudents / totalLeads) * 100).toFixed(2) : 0;
+
+            // Calls Today (separate collection)
             const callsToday = await AdvCallActivity.countDocuments({ createdAt: { $gte: todayStart } });
-
-            // Trend Data (last 7 days leads & admissions & revenue)
-            const sevenDaysAgo = new Date();
-            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-            const leadsTrend = await AdvLead.aggregate([
-                { $match: { created_at: { $gte: sevenDaysAgo } } },
-                {
-                    $group: {
-                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$created_at" } },
-                        count: { $sum: 1 }
-                    }
-                },
-                { $sort: { _id: 1 } }
-            ]);
-
-            const revenueTrend = await AdvEnroll.aggregate([
-                { $match: { createdAt: { $gte: sevenDaysAgo } } },
-                {
-                    $group: {
-                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-                        revenue: { $sum: '$paidAmount' }
-                    }
-                },
-                { $sort: { _id: 1 } }
-            ]);
 
             res.json({
                 totalLeads,
@@ -90,39 +104,44 @@ const SalesIntelligenceController = {
 
     getLeadAnalytics: async (req, res) => {
         try {
-            // Source Breakdown
-            const sources = await AdvLead.aggregate([
+            const analyticsAgg = await AdvLead.aggregate([
                 {
-                    $group: {
-                        _id: { $ifNull: ["$source", "Organic"] },
-                        count: { $sum: 1 }
+                    $facet: {
+                        sources: [
+                            {
+                                $group: {
+                                    _id: { $ifNull: ["$source", "Organic"] },
+                                    count: { $sum: 1 }
+                                }
+                            },
+                            { $sort: { count: -1 } }
+                        ],
+                        domains: [
+                            {
+                                $group: {
+                                    _id: { $ifNull: ["$opted_domain", "Other"] },
+                                    count: { $sum: 1 }
+                                }
+                            },
+                            { $sort: { count: -1 } },
+                            { $limit: 10 }
+                        ],
+                        stages: [
+                            {
+                                $group: {
+                                    _id: { $ifNull: ["$stage", "Unknown"] },
+                                    count: { $sum: 1 }
+                                }
+                            },
+                            { $sort: { count: -1 } }
+                        ]
                     }
-                },
-                { $sort: { count: -1 } }
+                }
             ]);
 
-            // Domain Breakdown
-            const domains = await AdvLead.aggregate([
-                {
-                    $group: {
-                        _id: { $ifNull: ["$opted_domain", "Other"] },
-                        count: { $sum: 1 }
-                    }
-                },
-                { $sort: { count: -1 } },
-                { $limit: 10 }
-            ]);
-
-            // Stage Breakdown
-            const stages = await AdvLead.aggregate([
-                {
-                    $group: {
-                        _id: { $ifNull: ["$stage", "Unknown"] },
-                        count: { $sum: 1 }
-                    }
-                },
-                { $sort: { count: -1 } }
-            ]);
+            const sources = analyticsAgg[0].sources || [];
+            const domains = analyticsAgg[0].domains || [];
+            const stages = analyticsAgg[0].stages || [];
 
             res.json({ sources, domains, stages });
         } catch (error) {
@@ -133,24 +152,50 @@ const SalesIntelligenceController = {
 
     getSalesFunnel: async (req, res) => {
         try {
-            const totalLeads = await AdvLead.countDocuments();
-            const assigned = await AdvLead.countDocuments({ current_owner_id: { $exists: true } });
-            
-            // Contacted = Attempting Contact + In Conversation + Demo Conducted + Closed Won + Closed Lost
-            const contacted = await AdvLead.countDocuments({
-                stage: { $in: ["Attempting Contact", "In Conversation", "Demo Conducted", "Closed Won", "Closed Lost"] }
-            });
-            
-            const interested = await AdvLead.countDocuments({
-                stage: { $in: ["In Conversation", "Demo Conducted", "Closed Won"] }
-            });
+            const leadAgg = await AdvLead.aggregate([
+                {
+                    $facet: {
+                        totalLeads: [{ $count: "count" }],
+                        assigned: [
+                            { $match: { current_owner_id: { $exists: true } } },
+                            { $count: "count" }
+                        ],
+                        contacted: [
+                            { $match: { stage: { $in: ["Attempting Contact", "In Conversation", "Demo Conducted", "Closed Won", "Closed Lost"] } } },
+                            { $count: "count" }
+                        ],
+                        interested: [
+                            { $match: { stage: { $in: ["In Conversation", "Demo Conducted", "Closed Won"] } } },
+                            { $count: "count" }
+                        ],
+                        demoScheduled: [
+                            { $match: { stage: { $in: ["Demo Conducted", "Closed Won"] } } },
+                            { $count: "count" }
+                        ]
+                    }
+                }
+            ]);
 
-            const demoScheduled = await AdvLead.countDocuments({
-                stage: { $in: ["Demo Conducted", "Closed Won"] }
-            });
+            const totalLeads = leadAgg[0].totalLeads[0]?.count || 0;
+            const assigned = leadAgg[0].assigned[0]?.count || 0;
+            const contacted = leadAgg[0].contacted[0]?.count || 0;
+            const interested = leadAgg[0].interested[0]?.count || 0;
+            const demoScheduled = leadAgg[0].demoScheduled[0]?.count || 0;
 
-            const booked = await AdvEnroll.countDocuments();
-            const paidFull = await AdvEnroll.countDocuments({ remainingAmount: { $lte: 0 } });
+            const enrollAgg = await AdvEnroll.aggregate([
+                {
+                    $facet: {
+                        booked: [{ $count: "count" }],
+                        paidFull: [
+                            { $match: { remainingAmount: { $lte: 0 } } },
+                            { $count: "count" }
+                        ]
+                    }
+                }
+            ]);
+
+            const booked = enrollAgg[0].booked[0]?.count || 0;
+            const paidFull = enrollAgg[0].paidFull[0]?.count || 0;
 
             res.json({
                 totalLeads,

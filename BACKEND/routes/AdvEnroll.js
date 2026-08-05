@@ -779,22 +779,30 @@ router.get("/advgetmonthlyrevenue", verifyAnyAuth, async (req, res) => {
           sgfl: { $ifNull: ["$sgflCount", 0] },
           cgfl: { $ifNull: ["$cgflCount", 0] }
         }
+      },
+      {
+        $facet: {
+          metadata: [
+            { $count: "totalItems" }
+          ],
+          grandTotalData: [
+            { $group: { _id: null, grandTotal: { $sum: "$total" } } }
+          ],
+          paginatedResults: [
+            { $skip: skip },
+            { $limit: limit }
+          ]
+        }
       }
     ];
 
     // execute aggregation
-    const allMonthlyStats = await AdvEnroll.aggregate(pipeline);
+    const result = await AdvEnroll.aggregate(pipeline);
 
-    // 2. Pagination Logic (in memory since aggregation result needs slicing)
-    // Note: optimization for huge datasets would require $facet in aggregation, 
-    // but for monthly stats, the array size is small (number of months in operation).
-    const totalItems = allMonthlyStats.length;
+    const totalItems = result[0]?.metadata[0]?.totalItems || 0;
+    const grandTotal = result[0]?.grandTotalData[0]?.grandTotal || 0;
+    const paginatedData = result[0]?.paginatedResults || [];
     const totalPages = Math.ceil(totalItems / limit);
-    const paginatedData = allMonthlyStats.slice(skip, skip + limit);
-
-    // 3. Calculate Grand Total Revenue (All Time)
-    // We can sum up the results from the aggregation directly
-    const grandTotal = allMonthlyStats.reduce((acc, curr) => acc + (curr.total || 0), 0);
 
     res.status(200).json({
       data: paginatedData,

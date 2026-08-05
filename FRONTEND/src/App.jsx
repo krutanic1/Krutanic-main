@@ -93,6 +93,8 @@ import AdvDefault from "./Admin/AdvDefault";
 import HalfPayment from "./Admin/HalfPayment";
 import Target from "./Admin/Target";
 import AdminMedTarget from "./Admin/AdminMedTarget";
+import AdminMedVerticals from "./Admin/AdminMedVerticals";
+import AdminVerticals from "./Admin/AdminVerticals";
 import AlumniData from "./Admin/AlumniData";
 import InactiveBda from "./Admin/InactiveBda";
 import ReferAndEarnResponse from "./Admin/ReferAndEarnResponse";
@@ -141,6 +143,7 @@ import Reference from "./BDA/Reference";
 import CompanyLeads from "./BDA/CompanyLeads";
 import AddTeam from "./BDA/AddTeam";
 import AssignTarget from "./BDA/AssignTarget";
+import Verticals from "./BDA/Verticals";
 import TeamAnalysis from "./BDA/TeamAnalysis";
 
 // User Student
@@ -231,6 +234,7 @@ import MedTeamOnBoarding from "./MedTeam/MedTeamOnBoarding";
 import MedTeamRevenueSheet from "./MedTeam/MedTeamRevenueSheet";
 import MedTeamDetail from "./MedTeam/MedTeamDetail";
 import MedTeamAssignTarget from "./MedTeam/AssignTarget";
+import MedTeamVerticals from "./MedTeam/MedTeamVerticals";
 import MedLeaderboard from "./MedTeam/MedLeaderboard";
 
 // MarketingLogind
@@ -517,14 +521,14 @@ const AppContent = () => {
     ReactPixel.pageView();
   }, [location]);
 
-  const adminheaderPaths = ["/adminfeedback", "/admindashboard", "/adminmentorshipprojects", "/admininterviewquestions", "/adminaptitudequestions", "/addcourse", "/addmedcourse", "/addadvcourse", "/addmodule", "/addmedmodule", "/addadvmodule", "/pendingapplication", "/acceptedapplication", "/bookedlist", "/halfpayment", "/defaultlist", "/fullpaidlist", "/createoperation", "/createadvoperation", "/createbda", "/createmedteam", "/createadvteam", "/createmanager", "/mentorqueries", "/advancequeries", "/revenuesheet", "/advrevenuesheet", "/createplacementcoordinator", "/onboardingdetails", "/advonboardingdetails", "/medonboardingdetails", "/advbooked", "/advfullpaid", "/advdefault", "/allteamdetail", "/advteamdetail", "/masterclasses", "/addevent", "/eventregistration", "/target", "/alumnidata", "/inactivebda", "/referandearnresponse", "/createmarketingteam", "/createinterviewer", "/createhr", "/createinterview", "/adminprojectpage", "/advprojectpage", "/advexercisepage", "/advleadmanagement", "/adminanalytics", "/advadmindashboard", "/admin/agents", "/admin/teams", "/admin/leadassignments", "/admin/agentactivity", "/admin/reports", "/bulkimport", "/admin/attendance", "/advusermanagement", "/admin/livemonitor", "/admin/calllogs", "/advformleads", "/admin/leads-count", "/admin/medpro-leads", "/admin/career-assessments", "/admin/adv-filter", "/adminmedrevenue", "/adminmedleaderboard", "/adminmedtarget", "/adminteamanalysis", "/admin/sales-intelligence"];
+  const adminheaderPaths = ["/adminfeedback", "/admindashboard", "/adminmentorshipprojects", "/admininterviewquestions", "/adminaptitudequestions", "/addcourse", "/addmedcourse", "/addadvcourse", "/addmodule", "/addmedmodule", "/addadvmodule", "/pendingapplication", "/acceptedapplication", "/bookedlist", "/halfpayment", "/defaultlist", "/fullpaidlist", "/createoperation", "/createadvoperation", "/createbda", "/createmedteam", "/createadvteam", "/createmanager", "/mentorqueries", "/advancequeries", "/revenuesheet", "/advrevenuesheet", "/createplacementcoordinator", "/onboardingdetails", "/advonboardingdetails", "/medonboardingdetails", "/advbooked", "/advfullpaid", "/advdefault", "/allteamdetail", "/advteamdetail", "/masterclasses", "/addevent", "/eventregistration", "/target", "/alumnidata", "/inactivebda", "/referandearnresponse", "/createmarketingteam", "/createinterviewer", "/createhr", "/createinterview", "/adminprojectpage", "/advprojectpage", "/advexercisepage", "/advleadmanagement", "/adminanalytics", "/advadmindashboard", "/admin/agents", "/admin/teams", "/admin/leadassignments", "/admin/agentactivity", "/admin/reports", "/bulkimport", "/admin/attendance", "/advusermanagement", "/admin/livemonitor", "/admin/calllogs", "/advformleads", "/admin/leads-count", "/admin/medpro-leads", "/admin/career-assessments", "/admin/adv-filter", "/adminmedrevenue", "/adminmedleaderboard", "/adminmedtarget", "/adminmedverticals", "/adminverticals", "/adminteamanalysis", "/admin/sales-intelligence"];
 
   const operationheaderPaths = ["/operationdashboard", "/fullpayment", "/bookedpayment", "/defaultpayment", "/operationrevenuesheet"];
   const advoperationheaderPaths = ["/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet"];
   const marketingheaderPaths = ["/marketing/home", "/marketing/previous", "/marketing/addexecutive"];
-  const bdaheaderPaths = ["/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/leaderboard", "/teamanalysis"];
+  const bdaheaderPaths = ["/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/verticals", "/leaderboard", "/teamanalysis"];
   const advteamheaderPaths = ["/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/advteam/leaderboard", "/advteam/leads-count", "/advteam/career-assessments", "/advteam/filter", "/advteam/followups", "/advteam/tasks"];
-  const medteamheaderPaths = ["/medteam/home", "/medteam/onboarding", "/medteam/adduser", "/medteam/revenue", "/medteam/teamdetail", "/medteam/assigntarget", "/medteam/leaderboard"];
+  const medteamheaderPaths = ["/medteam/home", "/medteam/onboarding", "/medteam/adduser", "/medteam/revenue", "/medteam/teamdetail", "/medteam/assigntarget", "/medteam/verticals", "/medteam/leaderboard"];
   const hrheaderPaths = ["/hrdashboard"];
   const lmsFooterPaths = ["/jobboard"];
   const noFooterPaths = ["/operationdashboard", "/bookedpayment", "/fullpayment", "/defaultpayment", "/operationrevenuesheet", "/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet", "/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/advteam/leaderboard", "/advteam/filter", "/advteam/followups", "/advteam/tasks", "/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/leaderboard", "/teamanalysis", "/setting", "/medteam/home", "/medteam/onboarding", "/medteam/adduser", "/medteam/revenue", "/medteam/teamdetail", "/medteam/assigntarget", "/medteam/leaderboard", "/admin/adv-filter", "/paytest"];
@@ -658,7 +662,9 @@ const AppContent = () => {
         <Route path="/AddEvent" element={isAuthenticatedAdmin() ? (<AddEvent />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/EventRegistration" element={isAuthenticatedAdmin() ? (<EventRegistration />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/Target" element={isAuthenticatedAdmin() ? (<Target />) : (<Navigate to="/AdminLogin" />)} />
-        <Route path="/AdminMedTarget" element={isAuthenticatedAdmin() ? (<AdminMedTarget />) : (<Navigate to="/AdminLogin" />)} />
+        <Route path="/AdminMedTarget" element={isAuthenticatedAdmin() ? <AdminMedTarget /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/AdminMedVerticals" element={isAuthenticatedAdmin() ? <AdminMedVerticals /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/AdminVerticals" element={isAuthenticatedAdmin() ? <AdminVerticals /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AlumniData" element={isAuthenticatedAdmin() ? (<AlumniData />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/InactiveBda" element={isAuthenticatedAdmin() ? (<InactiveBda />) : (<Navigate to="/AdminLogin" />)} />
         <Route path="/ReferAndEarnResponse" element={isAuthenticatedAdmin() ? (<ReferAndEarnResponse />) : (<Navigate to="/AdminLogin" />)} />
@@ -759,6 +765,7 @@ const AppContent = () => {
         <Route path="/CompanyLeads" element={isAuthenticatedBda() ? <CompanyLeads /> : <Navigate to="/TeamLogin" />} />
         <Route path="/AddTeam" element={isAuthenticatedBda() ? <AddTeam /> : <Navigate to="/TeamLogin" />} />
         <Route path="/AssignTarget" element={isAuthenticatedBda() ? <AssignTarget /> : <Navigate to="/TeamLogin" />} />
+        <Route path="/Verticals" element={isAuthenticatedBda() ? <Verticals /> : <Navigate to="/TeamLogin" />} />
         <Route path="/LeaderBoard" element={isAuthenticatedBda() ? <LeaderBoard /> : <Navigate to="/TeamLogin" />} />
         <Route path="/TeamAnalysis" element={isAuthenticatedBda() ? <TeamAnalysis /> : <Navigate to="/TeamLogin" />} />
         
@@ -795,6 +802,7 @@ const AppContent = () => {
         <Route path="/medteam/onboarding" element={isAuthenticatedMedTeam() ? <MedTeamOnBoarding /> : <Navigate to="/medloginteam" />} />
         <Route path="/medteam/revenue" element={isAuthenticatedMedTeam() ? <MedTeamRevenueSheet /> : <Navigate to="/medloginteam" />} />
         <Route path="/medteam/assigntarget" element={isAuthenticatedMedTeam() ? <MedTeamAssignTarget /> : <Navigate to="/medloginteam" />} />
+        <Route path="/medteam/verticals" element={isAuthenticatedMedTeam() ? <MedTeamVerticals /> : <Navigate to="/medloginteam" />} />
         <Route path="/medteam/leaderboard" element={isAuthenticatedMedTeam() ? <MedLeaderboard /> : <Navigate to="/medloginteam" />} />
         {/* Med Team Panel End */}
 

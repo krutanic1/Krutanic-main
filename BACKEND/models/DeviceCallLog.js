@@ -61,7 +61,6 @@ const DeviceCallLogSchema = new mongoose.Schema({
 
 // Indexes for faster querying
 DeviceCallLogSchema.index({ userId: 1 });
-DeviceCallLogSchema.index({ deviceCallId: 1 });
 DeviceCallLogSchema.index({ phoneNumber: 1 });
 DeviceCallLogSchema.index({ startedAt: -1 });
 

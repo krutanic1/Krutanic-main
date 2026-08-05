@@ -214,7 +214,7 @@ router.post("/careerassessment", async (req, res) => {
 // GET: Fetch career assessments (for AdvTeam dashboard) with role-based filtering
 router.get("/careerassessment", async (req, res) => {
   try {
-    const { userId, role } = req.query;
+    const { userId, role, page = 1, limit = 30 } = req.query;
     let query = {};
 
     if (role && userId) {
@@ -235,8 +235,22 @@ router.get("/careerassessment", async (req, res) => {
         // Admin or undefined role sees everything
     }
 
-    const assessments = await CareerAssessment.find(query).sort({ createdAt: -1 });
-    res.status(200).json(assessments);
+    const pageNumber = parseInt(page, 10) || 1;
+    const limitNumber = parseInt(limit, 10) || 30;
+    const skip = (pageNumber - 1) * limitNumber;
+
+    const totalItems = await CareerAssessment.countDocuments(query);
+    const assessments = await CareerAssessment.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNumber);
+
+    res.status(200).json({
+        data: assessments,
+        currentPage: pageNumber,
+        totalPages: Math.ceil(totalItems / limitNumber),
+        totalItems
+    });
   } catch (error) {
     console.error("Error fetching career assessments:", error);
     res.status(500).json({ error: "Failed to fetch assessments" });

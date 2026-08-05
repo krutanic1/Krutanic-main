@@ -220,12 +220,22 @@ exports.getAdminUsers = async (req, res) => {
     
     const totalUsers = await AtdUser.countDocuments(userFilter);
 
-    // For each user, get attendance count for the selected month
-    const memberData = await Promise.all(users.map(async (u) => {
-      const records = await Attendance.find({
-        userId: u._id,
-        date: { $regex: new RegExp(`^${datePrefix}`) }
-      }).select("timestamp date isHalfDayOverride");
+    // For each user, get attendance count for the selected month (Optimized: single query)
+    const userIds = users.map(u => u._id);
+    const allRecords = await Attendance.find({
+      userId: { $in: userIds },
+      date: { $regex: new RegExp(`^${datePrefix}`) }
+    }).select("userId timestamp date isHalfDayOverride");
+
+    const recordsByUser = {};
+    allRecords.forEach(r => {
+      const uId = r.userId.toString();
+      if (!recordsByUser[uId]) recordsByUser[uId] = [];
+      recordsByUser[uId].push(r);
+    });
+
+    const memberData = users.map(u => {
+      const records = recordsByUser[u._id.toString()] || [];
 
       let lateCount = 0;
       let halfDayCount = 0;
@@ -279,7 +289,7 @@ exports.getAdminUsers = async (req, res) => {
         halfDayCount: halfDayCount,
         detailedRecords: isAll ? detailedRecords : undefined
       };
-    }));
+    });
 
     res.json({
       data: memberData,

@@ -62,6 +62,8 @@ const studentRequestRoutes = require("./routes/studentRequestRoutes");
 const medCourseRoutes = require("./routes/medCourseRoutes");
 const medStudentEnrollRoutes = require("./routes/MedStudentEnroll");
 const companyDirectoryRoutes = require("./routes/companyDirectory");
+const medVerticalRoutes = require("./routes/medVerticalRoutes");
+const verticalRoutes = require("./routes/verticalRoutes");
 
 const app = express();
 
@@ -154,7 +156,6 @@ const AdvLeadRoutes = require("./routes/AdvLead");
 const AdvUserRoutes = require("./routes/AdvUser");
 const AdvTeamRoutes = require("./routes/AdvTeam");
 const AdvReportRoutes = require("./routes/AdvReport");
-const AdvNotificationRoutes = require("./routes/AdvNotification");
 const AdvAdminRoutes = require("./routes/AdvAdmin");
 const AdvTaskRoutes = require("./routes/AdvTask");
 
@@ -162,7 +163,6 @@ app.use("/api/adv-leads", AdvLeadRoutes);
 app.use("/api/adv-users", AdvUserRoutes);
 app.use("/api/adv-teams", AdvTeamRoutes);
 app.use("/api/adv-reports", AdvReportRoutes);
-app.use("/api/adv-notifications", AdvNotificationRoutes);
 app.use("/api/adv-tasks", AdvTaskRoutes);
 
 const SalesIntelligenceRoutes = require("./routes/SalesIntelligenceRoutes");
@@ -183,6 +183,8 @@ app.use("/api/medpro", medproRoutes);
 app.use("/", medCourseRoutes);
 app.use("/", medStudentEnrollRoutes);
 app.use("/api/company-directory", companyDirectoryRoutes);
+app.use("/api/med-vertical", medVerticalRoutes);
+app.use("/api/vertical", verticalRoutes);
 
 // CREATEJOBS
 app.use("/", CreateJob);

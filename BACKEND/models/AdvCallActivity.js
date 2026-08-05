@@ -47,7 +47,7 @@ AdvCallActivitySchema.index({ callOutcome: 1 });
 AdvCallActivitySchema.index({ leadId: 1, callOutcome: 1, createdAt: -1 });
 AdvCallActivitySchema.index({ specialistId: 1, createdAt: -1 });
 AdvCallActivitySchema.index({ callOutcome: 1, createdAt: -1 });
-
+AdvCallActivitySchema.index({ specialistId: 1, followUpDate: 1 });
 
 // --- Mongoose Hooks for Auto-Task Creation from Call Logs (Permanent Fix) ---
 AdvCallActivitySchema.post("save", async function(doc) {

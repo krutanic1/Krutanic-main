@@ -254,7 +254,6 @@ router.get('/api/cron/check-demos', async (req, res) => {
 
     try {
         const AdvCallActivity = require('../models/AdvCallActivity');
-        const AdvNotification = require('../models/AdvNotification');
         const now = new Date();
         const windowEnd = new Date(now.getTime() + 6 * 60 * 1000); // Check within 6 mins
 
@@ -265,20 +264,6 @@ router.get('/api/cron/check-demos', async (req, res) => {
 
         let sentCount = 0;
         for (const demo of upcomingDemos) {
-            const leadName = demo.leadId?.full_name || "a lead";
-            const notificationParams = {
-                title: "Upcoming Demo Alert ⏰",
-                message: `You have a scheduled demo with ${leadName} in 5 minutes!`,
-                type: "demo_reminder"
-            };
-
-            if (demo.specialistId) {
-                await new AdvNotification({ ...notificationParams, userId: demo.specialistId }).save();
-            }
-            if (demo.leaderId) {
-                await new AdvNotification({ ...notificationParams, userId: demo.leaderId }).save();
-            }
-
             demo.reminderSent = true;
             await demo.save();
             sentCount++;

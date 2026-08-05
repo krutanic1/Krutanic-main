@@ -16,7 +16,6 @@ const AdvTeamStructure = require("../models/AdvTeamStructure");
 const rateLimit = require("express-rate-limit");
 const AdvUser = require("../models/AdvUser");
 const AdvTask = require("../models/AdvTask");
-const AdvNotification = require("../models/AdvNotification");
 const AdvTeamMember = require("../models/CreateAdvTeam");
 const AdvFormLead = require("../models/AdvFormLead");
 const RemoteDialQueue = require("../models/RemoteDialQueue");
@@ -324,12 +323,6 @@ async function processAndSaveLead(leadPayload) {
 
     // --- 4. Trigger Notification ---
     if (assignedSpecialistId) {
-        await new AdvNotification({
-            userId: assignedSpecialistId,
-            title: "New Lead Assigned",
-            message: `Lead ${full_name || "New Lead"} has been assigned to you.`,
-            type: "lead_assigned"
-        }).save();
     }
     return newLead;
 }
@@ -784,12 +777,6 @@ router.post("/bulk-assign-to-manager", async (req, res) => {
         );
 
         // 🔔 Trigger Notification
-        await new AdvNotification({
-            userId: managerId,
-            title: "Bulk Leads Assigned",
-            message: `${freshLeads.length} new leads have been assigned to you by Admin.`,
-            type: "lead_assigned"
-        }).save();
 
         try {
             await sendLeadAssignmentEmail({
@@ -867,12 +854,6 @@ router.post("/admin-bulk-assign", async (req, res) => {
         }
 
         // 🔔 Trigger Notification
-        await new AdvNotification({
-            userId: assigneeId,
-            title: "New Leads Assigned",
-            message: `Admin has assigned ${freshLeads.length} leads to you.`,
-            type: "lead_assigned"
-        }).save();
 
 
         try {
@@ -920,12 +901,6 @@ router.post("/bulk-assign-to-leader", async (req, res) => {
         );
 
         // 🔔 Trigger Notification
-        await new AdvNotification({
-            userId: leaderId,
-            title: "Leads Received",
-            message: `Manager has transferred ${myLeads.length} leads to you.`,
-            type: "lead_assigned"
-        }).save();
 
         try {
             await sendLeadAssignmentEmail({
@@ -1010,12 +985,6 @@ router.post("/bulk-assign-to-specialist", async (req, res) => {
         }
 
         // 🔔 Trigger Notification
-        await new AdvNotification({
-            userId: specialistId,
-            title: "New Task: Lead Assignment",
-            message: `Leader has assigned ${myLeads.length} leads for follow-up.`,
-            type: "lead_assigned"
-        }).save();
 
         try {
             await sendLeadAssignmentEmail({
@@ -1191,12 +1160,6 @@ router.post("/manual-bulk-assign", async (req, res) => {
         }
 
         // 🔔 Trigger Notification
-        await new AdvNotification({
-            userId: assigneeId,
-            title: "Manual Assignment",
-            message: `${leadIds.length} leads have been manually assigned to you.`,
-            type: "lead_assigned"
-        }).save();
 
         try {
             await sendLeadAssignmentEmail({
@@ -2264,8 +2227,13 @@ router.get("/due-reminders", async (req, res) => {
 
         const dueLeads = await AdvLead.find({
             $or: [{ owner_id: specialistId }, { current_owner_id: specialistId }],
-            next_followup_at: { $gte: twoHoursAgo, $lte: in15Mins }
-        }).select("_id full_name phone_number next_followup_at").lean();
+            next_followup_at: { $gte: twoHoursAgo, $lte: in15Mins },
+            status: { $nin: ["converted", "closed", "Irrelevant Lead"] }
+        })
+        .select("_id full_name phone_number next_followup_at")
+        .sort({ next_followup_at: 1 })
+        .limit(5)
+        .lean();
 
         res.status(200).json({ dueReminders: dueLeads });
     } catch (error) {
@@ -2431,12 +2399,6 @@ router.post("/leader-bulk-assign-specialist", async (req, res) => {
         }
 
         // 🔔 Trigger Notification
-        await new AdvNotification({
-            userId: specialistId,
-            title: "Team Lead Assignment",
-            message: `${myLeads.length} leads assigned to you by ${leader?.fullname || "Leader"}.`,
-            type: "lead_assigned"
-        }).save();
 
         try {
             await sendLeadAssignmentEmail({
@@ -2456,43 +2418,6 @@ router.post("/leader-bulk-assign-specialist", async (req, res) => {
         });
     } catch (error) {
         res.status(400).json({ message: error.message });
-    }
-});
-
-// GET: Fetch unread notifications for a user
-router.get("/get-my-notifications", async (req, res) => {
-    const { userId } = req.query;
-    if (!userId) return res.status(400).json({ message: "userId is required" });
-
-    try {
-        const notifications = await AdvNotification.find({ userId, isRead: false }).sort({ createdAt: -1 });
-        res.status(200).json({ success: true, notifications });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-});
-
-// GET: Fetch unread notification count
-router.get("/get-notification-count", async (req, res) => {
-    const { userId } = req.query;
-    if (!userId) return res.status(400).json({ message: "userId is required" });
-
-    try {
-        const count = await AdvNotification.countDocuments({ userId, isRead: false });
-        res.status(200).json({ success: true, count });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-});
-
-// POST: Mark notification as read
-router.post("/mark-notification-read", async (req, res) => {
-    const { notificationId } = req.body;
-    try {
-        await AdvNotification.findByIdAndUpdate(notificationId, { $set: { isRead: true } });
-        res.status(200).json({ success: true });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
     }
 });
 

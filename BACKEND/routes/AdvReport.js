@@ -55,6 +55,13 @@ router.get("/specialist-stats/:id", async (req, res) => {
     }
 });
 
+// --- Leaderboard Cache ---
+let leaderboardCache = {
+    data: null,
+    lastFetched: 0,
+    cachedDateString: ""
+};
+
 // GET: Daily Targets (Today's count and talk time vs Targets)
 router.get("/daily-targets/:id", async (req, res) => {
     const specialistId = req.params.id;
@@ -105,25 +112,41 @@ router.get("/daily-targets/:id", async (req, res) => {
             return acc + (duration > 1500 ? 1500 : duration);
         }, 0);
 
-        // Global Leaderboard for the day (across all specialists)
-        const teamStats = await AdvCallActivity.aggregate([
-            {
-                $match: {
-                    actionType: "call",
-                    createdAt: { $gte: filterDate, $lt: nextDate }
-                }
-            },
-            {
-                $group: {
-                    _id: "$specialistName",
-                    callCount: { $sum: 1 },
-                    talkTime: { $sum: { $cond: [{ $and: [{ $ne: ["$recordingUrl", null] }, { $ne: ["$recordingUrl", ""] }] }, { $cond: [{ $gt: ["$duration", 1500] }, 1500, "$duration"] }, 0] } }
-                }
-            }
-        ]);
+        // Global Leaderboard for the day (across all specialists) - CACHED
+        const nowMs = Date.now();
+        const dateString = filterDate.toISOString();
+        let leadingCaller = null;
+        let leadingSpeaker = null;
 
-        const leadingCaller = teamStats.length > 0 ? teamStats.reduce((prev, curr) => (prev.callCount > curr.callCount ? prev : curr)) : null;
-        const leadingSpeaker = teamStats.length > 0 ? teamStats.reduce((prev, curr) => (prev.talkTime > curr.talkTime ? prev : curr)) : null;
+        if (leaderboardCache.data && (nowMs - leaderboardCache.lastFetched < 60000) && leaderboardCache.cachedDateString === dateString) {
+            leadingCaller = leaderboardCache.data.leadingCaller;
+            leadingSpeaker = leaderboardCache.data.leadingSpeaker;
+        } else {
+            const teamStats = await AdvCallActivity.aggregate([
+                {
+                    $match: {
+                        actionType: "call",
+                        createdAt: { $gte: filterDate, $lt: nextDate }
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$specialistName",
+                        callCount: { $sum: 1 },
+                        talkTime: { $sum: { $cond: [{ $and: [{ $ne: ["$recordingUrl", null] }, { $ne: ["$recordingUrl", ""] }] }, { $cond: [{ $gt: ["$duration", 1500] }, 1500, "$duration"] }, 0] } }
+                    }
+                }
+            ]);
+
+            leadingCaller = teamStats.length > 0 ? teamStats.reduce((prev, curr) => (prev.callCount > curr.callCount ? prev : curr)) : null;
+            leadingSpeaker = teamStats.length > 0 ? teamStats.reduce((prev, curr) => (prev.talkTime > curr.talkTime ? prev : curr)) : null;
+
+            leaderboardCache = {
+                data: { leadingCaller, leadingSpeaker },
+                lastFetched: nowMs,
+                cachedDateString: dateString
+            };
+        }
 
         res.status(200).json({
             callCount: todayCallCount,
