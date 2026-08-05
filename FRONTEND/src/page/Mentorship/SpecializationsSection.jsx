@@ -175,7 +175,7 @@ const DesktopSpecializations = ({ activeGroup, activeCourse, handleGroupChange, 
             className="pm-course-panel"
             style={{
               backgroundColor: activeGroup.bgLight || '#f8fafc',
-              backgroundImage: `linear-gradient(135deg, ${activeGroup.bgLight}D9 0%, ${activeGroup.bgLight}F2 100%), url(${activeGroup.bgImage})`,
+              backgroundImage: `url(${activeGroup.bgImage})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               backgroundBlendMode: 'normal'
@@ -345,7 +345,7 @@ const MobileSpecializations = ({ navigate }) => {
           className="msp-card"
           style={{
             backgroundColor: activeGroup.bgLight || '#f1f5f9',
-            backgroundImage: `linear-gradient(160deg, ${activeGroup.bgLight}D9 0%, ${activeGroup.bgLight}F2 100%), url(${activeGroup.bgImage})`,
+            backgroundImage: `url(${activeGroup.bgImage})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundBlendMode: 'normal'
