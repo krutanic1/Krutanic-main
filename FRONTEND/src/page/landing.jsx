@@ -121,7 +121,7 @@ const HomePage = () => {
   return (
     <div id="landingpage" className="landing-neo">
       {/* section hero */}
-      <div className="hero">
+      <div className="w-full">
         {/* <ShuffleHero /> */}
         <CodeNestHero />
       </div>

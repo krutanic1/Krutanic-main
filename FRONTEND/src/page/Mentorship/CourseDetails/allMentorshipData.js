@@ -1096,6 +1096,50 @@ export const allMentorshipData = {
       bio: 'Learn from elite data professionals who have transformed complex datasets into actionable business strategies for Fortune 500 companies.',
     },
     mentorImage: null,
+    
+    whyTitle: 'Why DevOps Foundations?',
+    whyPoints: [
+    "Master the core principles of DevOps Foundations and stand out in the tech industry.",
+    "High demand across startups, enterprises, and freelancing platforms.",
+    "Gain practical, hands-on experience that translates directly to real-world tasks.",
+    "Opens doors to various lucrative roles and career advancement opportunities.",
+    "Offers continuous learning with evolving tools and modern frameworks.",
+    "Build a strong foundation for future leadership or specialized positions."
+],
+    trainingProgram: [
+      {
+        phase: 'Month 1',
+        title: 'Training and Internship Program',
+        items: [
+          'Live sessions with industrial experts having experience above 10 years.',
+          'Recordings of all live sessions available with 1 year access.',
+          'Industry-related curriculum designed by working professionals.'
+        ]
+      },
+      {
+        phase: 'Month 2',
+        title: 'Training and Internship Program',
+        items: [
+          'Two real-time industrial projects: one minor project and one major project.',
+          'All mentors are assigned as project leads and guide interns.',
+          'Additional projects for personal development when required.'
+        ]
+      }
+    ],
+    moduleOverview: [
+    "Introduction to DevOps Foundations",
+    "Core Fundamentals and Concepts",
+    "Advanced Tools and Frameworks",
+    "Practical Implementation and Case Studies",
+    "Industry Best Practices",
+    "Performance Optimization",
+    "Real-world Troubleshooting",
+    "Advanced Architecture and Strategy",
+    "Integration with Modern Ecosystems",
+    "Security and Compliance Basics",
+    "Scaling and Production Deployments",
+    "Capstone Project and Interview Preparation"
+],
     outcomes: [
       { title: 'Core Fundamentals', desc: 'Master statistical analysis, data modeling, and business problem-solving frameworks.', icon: FaCheckCircle },
       { title: 'Advanced Techniques', desc: 'Learn predictive analytics, A/B testing, and advanced SQL data extraction methodologies.', icon: FaRocket },
@@ -1163,6 +1207,50 @@ export const allMentorshipData = {
       bio: 'Learn from industry veterans with extensive backgrounds in investment banking, corporate finance, and portfolio management at top global firms.',
     },
     mentorImage: null,
+    
+    whyTitle: 'Why Core Fundamentals?',
+    whyPoints: [
+    "Master the core principles of Core Fundamentals and stand out in the tech industry.",
+    "High demand across startups, enterprises, and freelancing platforms.",
+    "Gain practical, hands-on experience that translates directly to real-world tasks.",
+    "Opens doors to various lucrative roles and career advancement opportunities.",
+    "Offers continuous learning with evolving tools and modern frameworks.",
+    "Build a strong foundation for future leadership or specialized positions."
+],
+    trainingProgram: [
+      {
+        phase: 'Month 1',
+        title: 'Training and Internship Program',
+        items: [
+          'Live sessions with industrial experts having experience above 10 years.',
+          'Recordings of all live sessions available with 1 year access.',
+          'Industry-related curriculum designed by working professionals.'
+        ]
+      },
+      {
+        phase: 'Month 2',
+        title: 'Training and Internship Program',
+        items: [
+          'Two real-time industrial projects: one minor project and one major project.',
+          'All mentors are assigned as project leads and guide interns.',
+          'Additional projects for personal development when required.'
+        ]
+      }
+    ],
+    moduleOverview: [
+    "Introduction to Core Fundamentals",
+    "Core Fundamentals and Concepts",
+    "Advanced Tools and Frameworks",
+    "Practical Implementation and Case Studies",
+    "Industry Best Practices",
+    "Performance Optimization",
+    "Real-world Troubleshooting",
+    "Advanced Architecture and Strategy",
+    "Integration with Modern Ecosystems",
+    "Security and Compliance Basics",
+    "Scaling and Production Deployments",
+    "Capstone Project and Interview Preparation"
+],
     outcomes: [
       { title: 'Core Fundamentals', desc: 'Master corporate finance, financial modeling, and investment valuation frameworks.', icon: FaCheckCircle },
       { title: 'Advanced Techniques', desc: 'Learn advanced M&A analysis, risk assessment, and quantitative finance methods.', icon: FaRocket },
@@ -1233,6 +1321,50 @@ export const allMentorshipData = {
       bio: 'Learn from seasoned HR Directors and Talent Acquisition specialists with decades of experience managing global workforces and fostering company culture.',
     },
     mentorImage: null,
+    
+    whyTitle: 'Why Core Fundamentals?',
+    whyPoints: [
+    "Master the core principles of Core Fundamentals and stand out in the tech industry.",
+    "High demand across startups, enterprises, and freelancing platforms.",
+    "Gain practical, hands-on experience that translates directly to real-world tasks.",
+    "Opens doors to various lucrative roles and career advancement opportunities.",
+    "Offers continuous learning with evolving tools and modern frameworks.",
+    "Build a strong foundation for future leadership or specialized positions."
+],
+    trainingProgram: [
+      {
+        phase: 'Month 1',
+        title: 'Training and Internship Program',
+        items: [
+          'Live sessions with industrial experts having experience above 10 years.',
+          'Recordings of all live sessions available with 1 year access.',
+          'Industry-related curriculum designed by working professionals.'
+        ]
+      },
+      {
+        phase: 'Month 2',
+        title: 'Training and Internship Program',
+        items: [
+          'Two real-time industrial projects: one minor project and one major project.',
+          'All mentors are assigned as project leads and guide interns.',
+          'Additional projects for personal development when required.'
+        ]
+      }
+    ],
+    moduleOverview: [
+    "Introduction to Core Fundamentals",
+    "Core Fundamentals and Concepts",
+    "Advanced Tools and Frameworks",
+    "Practical Implementation and Case Studies",
+    "Industry Best Practices",
+    "Performance Optimization",
+    "Real-world Troubleshooting",
+    "Advanced Architecture and Strategy",
+    "Integration with Modern Ecosystems",
+    "Security and Compliance Basics",
+    "Scaling and Production Deployments",
+    "Capstone Project and Interview Preparation"
+],
     outcomes: [
       { title: 'Core Fundamentals', desc: 'Master recruitment, employee relations, and talent management frameworks.', icon: FaCheckCircle },
       { title: 'Advanced Techniques', desc: 'Learn HR analytics, compensation structuring, and labor compliance laws.', icon: FaRocket },
@@ -1300,6 +1432,50 @@ export const allMentorshipData = {
       bio: 'Learn from top-tier marketing professionals who have scaled multi-million dollar campaigns and driven massive brand growth globally.',
     },
     mentorImage: null,
+    
+    whyTitle: 'Why Core Fundamentals?',
+    whyPoints: [
+    "Master the core principles of Core Fundamentals and stand out in the tech industry.",
+    "High demand across startups, enterprises, and freelancing platforms.",
+    "Gain practical, hands-on experience that translates directly to real-world tasks.",
+    "Opens doors to various lucrative roles and career advancement opportunities.",
+    "Offers continuous learning with evolving tools and modern frameworks.",
+    "Build a strong foundation for future leadership or specialized positions."
+],
+    trainingProgram: [
+      {
+        phase: 'Month 1',
+        title: 'Training and Internship Program',
+        items: [
+          'Live sessions with industrial experts having experience above 10 years.',
+          'Recordings of all live sessions available with 1 year access.',
+          'Industry-related curriculum designed by working professionals.'
+        ]
+      },
+      {
+        phase: 'Month 2',
+        title: 'Training and Internship Program',
+        items: [
+          'Two real-time industrial projects: one minor project and one major project.',
+          'All mentors are assigned as project leads and guide interns.',
+          'Additional projects for personal development when required.'
+        ]
+      }
+    ],
+    moduleOverview: [
+    "Introduction to Core Fundamentals",
+    "Core Fundamentals and Concepts",
+    "Advanced Tools and Frameworks",
+    "Practical Implementation and Case Studies",
+    "Industry Best Practices",
+    "Performance Optimization",
+    "Real-world Troubleshooting",
+    "Advanced Architecture and Strategy",
+    "Integration with Modern Ecosystems",
+    "Security and Compliance Basics",
+    "Scaling and Production Deployments",
+    "Capstone Project and Interview Preparation"
+],
     outcomes: [
       { title: 'Core Fundamentals', desc: 'Master SEO, SEM, and the foundation of social media marketing strategies.', icon: FaCheckCircle },
       { title: 'Performance Marketing', desc: 'Learn to run profitable campaigns across Google Ads, Meta Ads, and LinkedIn.', icon: FaRocket },
@@ -1367,6 +1543,50 @@ export const allMentorshipData = {
       bio: 'Learn from seasoned finance professionals who provide deep insights into trading strategies, risk management, and market analysis to help you achieve your financial goals.',
     },
     mentorImage: null,
+    
+    whyTitle: 'Why Core Fundamentals?',
+    whyPoints: [
+    "Master the core principles of Core Fundamentals and stand out in the tech industry.",
+    "High demand across startups, enterprises, and freelancing platforms.",
+    "Gain practical, hands-on experience that translates directly to real-world tasks.",
+    "Opens doors to various lucrative roles and career advancement opportunities.",
+    "Offers continuous learning with evolving tools and modern frameworks.",
+    "Build a strong foundation for future leadership or specialized positions."
+],
+    trainingProgram: [
+      {
+        phase: 'Month 1',
+        title: 'Training and Internship Program',
+        items: [
+          'Live sessions with industrial experts having experience above 10 years.',
+          'Recordings of all live sessions available with 1 year access.',
+          'Industry-related curriculum designed by working professionals.'
+        ]
+      },
+      {
+        phase: 'Month 2',
+        title: 'Training and Internship Program',
+        items: [
+          'Two real-time industrial projects: one minor project and one major project.',
+          'All mentors are assigned as project leads and guide interns.',
+          'Additional projects for personal development when required.'
+        ]
+      }
+    ],
+    moduleOverview: [
+    "Introduction to Core Fundamentals",
+    "Core Fundamentals and Concepts",
+    "Advanced Tools and Frameworks",
+    "Practical Implementation and Case Studies",
+    "Industry Best Practices",
+    "Performance Optimization",
+    "Real-world Troubleshooting",
+    "Advanced Architecture and Strategy",
+    "Integration with Modern Ecosystems",
+    "Security and Compliance Basics",
+    "Scaling and Production Deployments",
+    "Capstone Project and Interview Preparation"
+],
     outcomes: [
       { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of Stock Marketing.', icon: FaCheckCircle },
       { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
@@ -1434,6 +1654,50 @@ export const allMentorshipData = {
       bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
     },
     mentorImage: null,
+    
+    whyTitle: 'Why Core Fundamentals?',
+    whyPoints: [
+    "Master the core principles of Core Fundamentals and stand out in the tech industry.",
+    "High demand across startups, enterprises, and freelancing platforms.",
+    "Gain practical, hands-on experience that translates directly to real-world tasks.",
+    "Opens doors to various lucrative roles and career advancement opportunities.",
+    "Offers continuous learning with evolving tools and modern frameworks.",
+    "Build a strong foundation for future leadership or specialized positions."
+],
+    trainingProgram: [
+      {
+        phase: 'Month 1',
+        title: 'Training and Internship Program',
+        items: [
+          'Live sessions with industrial experts having experience above 10 years.',
+          'Recordings of all live sessions available with 1 year access.',
+          'Industry-related curriculum designed by working professionals.'
+        ]
+      },
+      {
+        phase: 'Month 2',
+        title: 'Training and Internship Program',
+        items: [
+          'Two real-time industrial projects: one minor project and one major project.',
+          'All mentors are assigned as project leads and guide interns.',
+          'Additional projects for personal development when required.'
+        ]
+      }
+    ],
+    moduleOverview: [
+    "Introduction to Core Fundamentals",
+    "Core Fundamentals and Concepts",
+    "Advanced Tools and Frameworks",
+    "Practical Implementation and Case Studies",
+    "Industry Best Practices",
+    "Performance Optimization",
+    "Real-world Troubleshooting",
+    "Advanced Architecture and Strategy",
+    "Integration with Modern Ecosystems",
+    "Security and Compliance Basics",
+    "Scaling and Production Deployments",
+    "Capstone Project and Interview Preparation"
+],
     outcomes: [
       { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of Graphics Design.', icon: FaCheckCircle },
       { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
@@ -1501,6 +1765,50 @@ export const allMentorshipData = {
       bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
     },
     mentorImage: rahulImg,
+    
+    whyTitle: 'Why Core Fundamentals?',
+    whyPoints: [
+    "Master the core principles of Core Fundamentals and stand out in the tech industry.",
+    "High demand across startups, enterprises, and freelancing platforms.",
+    "Gain practical, hands-on experience that translates directly to real-world tasks.",
+    "Opens doors to various lucrative roles and career advancement opportunities.",
+    "Offers continuous learning with evolving tools and modern frameworks.",
+    "Build a strong foundation for future leadership or specialized positions."
+],
+    trainingProgram: [
+      {
+        phase: 'Month 1',
+        title: 'Training and Internship Program',
+        items: [
+          'Live sessions with industrial experts having experience above 10 years.',
+          'Recordings of all live sessions available with 1 year access.',
+          'Industry-related curriculum designed by working professionals.'
+        ]
+      },
+      {
+        phase: 'Month 2',
+        title: 'Training and Internship Program',
+        items: [
+          'Two real-time industrial projects: one minor project and one major project.',
+          'All mentors are assigned as project leads and guide interns.',
+          'Additional projects for personal development when required.'
+        ]
+      }
+    ],
+    moduleOverview: [
+    "Introduction to Core Fundamentals",
+    "Core Fundamentals and Concepts",
+    "Advanced Tools and Frameworks",
+    "Practical Implementation and Case Studies",
+    "Industry Best Practices",
+    "Performance Optimization",
+    "Real-world Troubleshooting",
+    "Advanced Architecture and Strategy",
+    "Integration with Modern Ecosystems",
+    "Security and Compliance Basics",
+    "Scaling and Production Deployments",
+    "Capstone Project and Interview Preparation"
+],
     outcomes: [
       { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of Embedded System.', icon: FaCheckCircle },
       { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
@@ -1568,6 +1876,50 @@ export const allMentorshipData = {
       bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
     },
     mentorImage: null,
+    
+    whyTitle: 'Why Core Fundamentals?',
+    whyPoints: [
+    "Master the core principles of Core Fundamentals and stand out in the tech industry.",
+    "High demand across startups, enterprises, and freelancing platforms.",
+    "Gain practical, hands-on experience that translates directly to real-world tasks.",
+    "Opens doors to various lucrative roles and career advancement opportunities.",
+    "Offers continuous learning with evolving tools and modern frameworks.",
+    "Build a strong foundation for future leadership or specialized positions."
+],
+    trainingProgram: [
+      {
+        phase: 'Month 1',
+        title: 'Training and Internship Program',
+        items: [
+          'Live sessions with industrial experts having experience above 10 years.',
+          'Recordings of all live sessions available with 1 year access.',
+          'Industry-related curriculum designed by working professionals.'
+        ]
+      },
+      {
+        phase: 'Month 2',
+        title: 'Training and Internship Program',
+        items: [
+          'Two real-time industrial projects: one minor project and one major project.',
+          'All mentors are assigned as project leads and guide interns.',
+          'Additional projects for personal development when required.'
+        ]
+      }
+    ],
+    moduleOverview: [
+    "Introduction to Core Fundamentals",
+    "Core Fundamentals and Concepts",
+    "Advanced Tools and Frameworks",
+    "Practical Implementation and Case Studies",
+    "Industry Best Practices",
+    "Performance Optimization",
+    "Real-world Troubleshooting",
+    "Advanced Architecture and Strategy",
+    "Integration with Modern Ecosystems",
+    "Security and Compliance Basics",
+    "Scaling and Production Deployments",
+    "Capstone Project and Interview Preparation"
+],
     outcomes: [
       { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of Cloud Computing.', icon: FaCheckCircle },
       { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
@@ -1635,6 +1987,50 @@ export const allMentorshipData = {
       bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
     },
     mentorImage: null,
+    
+    whyTitle: 'Why Core Fundamentals?',
+    whyPoints: [
+    "Master the core principles of Core Fundamentals and stand out in the tech industry.",
+    "High demand across startups, enterprises, and freelancing platforms.",
+    "Gain practical, hands-on experience that translates directly to real-world tasks.",
+    "Opens doors to various lucrative roles and career advancement opportunities.",
+    "Offers continuous learning with evolving tools and modern frameworks.",
+    "Build a strong foundation for future leadership or specialized positions."
+],
+    trainingProgram: [
+      {
+        phase: 'Month 1',
+        title: 'Training and Internship Program',
+        items: [
+          'Live sessions with industrial experts having experience above 10 years.',
+          'Recordings of all live sessions available with 1 year access.',
+          'Industry-related curriculum designed by working professionals.'
+        ]
+      },
+      {
+        phase: 'Month 2',
+        title: 'Training and Internship Program',
+        items: [
+          'Two real-time industrial projects: one minor project and one major project.',
+          'All mentors are assigned as project leads and guide interns.',
+          'Additional projects for personal development when required.'
+        ]
+      }
+    ],
+    moduleOverview: [
+    "Introduction to Core Fundamentals",
+    "Core Fundamentals and Concepts",
+    "Advanced Tools and Frameworks",
+    "Practical Implementation and Case Studies",
+    "Industry Best Practices",
+    "Performance Optimization",
+    "Real-world Troubleshooting",
+    "Advanced Architecture and Strategy",
+    "Integration with Modern Ecosystems",
+    "Security and Compliance Basics",
+    "Scaling and Production Deployments",
+    "Capstone Project and Interview Preparation"
+],
     outcomes: [
       { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of IOT & Robotics.', icon: FaCheckCircle },
       { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
@@ -1702,6 +2098,50 @@ export const allMentorshipData = {
       bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
     },
     mentorImage: null,
+    
+    whyTitle: 'Why Core Fundamentals?',
+    whyPoints: [
+    "Master the core principles of Core Fundamentals and stand out in the tech industry.",
+    "High demand across startups, enterprises, and freelancing platforms.",
+    "Gain practical, hands-on experience that translates directly to real-world tasks.",
+    "Opens doors to various lucrative roles and career advancement opportunities.",
+    "Offers continuous learning with evolving tools and modern frameworks.",
+    "Build a strong foundation for future leadership or specialized positions."
+],
+    trainingProgram: [
+      {
+        phase: 'Month 1',
+        title: 'Training and Internship Program',
+        items: [
+          'Live sessions with industrial experts having experience above 10 years.',
+          'Recordings of all live sessions available with 1 year access.',
+          'Industry-related curriculum designed by working professionals.'
+        ]
+      },
+      {
+        phase: 'Month 2',
+        title: 'Training and Internship Program',
+        items: [
+          'Two real-time industrial projects: one minor project and one major project.',
+          'All mentors are assigned as project leads and guide interns.',
+          'Additional projects for personal development when required.'
+        ]
+      }
+    ],
+    moduleOverview: [
+    "Introduction to Core Fundamentals",
+    "Core Fundamentals and Concepts",
+    "Advanced Tools and Frameworks",
+    "Practical Implementation and Case Studies",
+    "Industry Best Practices",
+    "Performance Optimization",
+    "Real-world Troubleshooting",
+    "Advanced Architecture and Strategy",
+    "Integration with Modern Ecosystems",
+    "Security and Compliance Basics",
+    "Scaling and Production Deployments",
+    "Capstone Project and Interview Preparation"
+],
     outcomes: [
       { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of VLSI Design.', icon: FaCheckCircle },
       { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },
@@ -1769,6 +2209,50 @@ export const allMentorshipData = {
       bio: 'Industry expert with over 10 years of experience building and deploying robust solutions for top tech companies.',
     },
     mentorImage: null,
+    
+    whyTitle: 'Why Core Fundamentals?',
+    whyPoints: [
+    "Master the core principles of Core Fundamentals and stand out in the tech industry.",
+    "High demand across startups, enterprises, and freelancing platforms.",
+    "Gain practical, hands-on experience that translates directly to real-world tasks.",
+    "Opens doors to various lucrative roles and career advancement opportunities.",
+    "Offers continuous learning with evolving tools and modern frameworks.",
+    "Build a strong foundation for future leadership or specialized positions."
+],
+    trainingProgram: [
+      {
+        phase: 'Month 1',
+        title: 'Training and Internship Program',
+        items: [
+          'Live sessions with industrial experts having experience above 10 years.',
+          'Recordings of all live sessions available with 1 year access.',
+          'Industry-related curriculum designed by working professionals.'
+        ]
+      },
+      {
+        phase: 'Month 2',
+        title: 'Training and Internship Program',
+        items: [
+          'Two real-time industrial projects: one minor project and one major project.',
+          'All mentors are assigned as project leads and guide interns.',
+          'Additional projects for personal development when required.'
+        ]
+      }
+    ],
+    moduleOverview: [
+    "Introduction to Core Fundamentals",
+    "Core Fundamentals and Concepts",
+    "Advanced Tools and Frameworks",
+    "Practical Implementation and Case Studies",
+    "Industry Best Practices",
+    "Performance Optimization",
+    "Real-world Troubleshooting",
+    "Advanced Architecture and Strategy",
+    "Integration with Modern Ecosystems",
+    "Security and Compliance Basics",
+    "Scaling and Production Deployments",
+    "Capstone Project and Interview Preparation"
+],
     outcomes: [
       { title: 'Core Fundamentals', desc: 'Master the foundational principles and core concepts of Auto Cad.', icon: FaCheckCircle },
       { title: 'Advanced Techniques', desc: 'Learn industry-standard tools and advanced methodologies.', icon: FaRocket },

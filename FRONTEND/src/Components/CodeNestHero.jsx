@@ -31,9 +31,9 @@ const Hero = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-codenest-bg overflow-hidden font-inter text-white selection:bg-codenest-green selection:text-codenest-bg">
+    <div className="relative w-screen min-h-screen bg-[#042016] overflow-hidden font-inter text-white selection:bg-codenest-green selection:text-[#042016] left-[50%] right-[50%] -ml-[50vw] -mr-[50vw]">
       {/* Background Video */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 w-full h-full">
         <video
           ref={videoRef}
           className="absolute inset-0 w-full h-full object-cover opacity-60"
@@ -42,8 +42,8 @@ const Hero = () => {
           playsInline
         />
         {/* Gradients */}
-        <div className="absolute inset-0 bg-gradient-to-r from-codenest-bg via-codenest-bg/80 to-transparent z-10" />
-        <div className="absolute inset-0 bg-gradient-to-t from-codenest-bg via-transparent to-transparent z-10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#042016] via-[#042016]/80 to-transparent z-10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#042016] via-transparent to-transparent z-10" />
       </div>
 
       {/* Grid System (Visible on Desktop) */}

@@ -190,6 +190,106 @@ export const fullStackData = {
       name: "Sunil Kumar",
       text: "My learning experience at Krutanic was outstanding and strongly focused on practical outcomes.",
       detail: "Great support from mentors and operations team throughout the training journey."
+    },
+    {
+      name: "Priya Sharma",
+      text: "The MERN stack curriculum was perfectly structured. We built an e-commerce platform from scratch, which gave me immense confidence in my abilities.",
+      detail: "Placed at Infosys as a Software Engineer."
+    },
+    {
+      name: "Rohan Gupta",
+      text: "The mentors are incredibly knowledgeable and always available. The live sessions felt just like an offline classroom but with the comfort of home.",
+      detail: "Now working as a Freelance Full Stack Developer."
+    },
+    {
+      name: "Anjali Verma",
+      text: "I loved the focus on real-world projects. Learning React and Node.js through hands-on application was much better than just watching tutorials.",
+      detail: "Placed at TCS after completing the internship."
+    },
+    {
+      name: "Vikram Singh",
+      text: "Krutanic’s doubt support is unparalleled. Whenever I got stuck with a complex MongoDB query, the support team helped me within minutes.",
+      detail: "Backend Developer specializing in Node.js."
+    },
+    {
+      name: "Neha Desai",
+      text: "The internship phase was the highlight for me. Getting to work on an actual industry project made my resume stand out to recruiters.",
+      detail: "Placed at Wipro with a great package."
+    },
+    {
+      name: "Arjun Reddy",
+      text: "Transitioning from a non-CS background was tough, but the mentors broke down complex JavaScript concepts into easily digestible lessons.",
+      detail: "Successfully transitioned to a Junior SDE role."
+    },
+    {
+      name: "Sneha Patel",
+      text: "The mock interviews and resume building sessions provided at the end of the course were exactly what I needed to land my first tech job.",
+      detail: "Frontend Developer at a fast-growing startup."
+    },
+    {
+      name: "Karan Malhotra",
+      text: "I gained deep insights into building scalable REST APIs. The architecture patterns taught here are exactly what top tech companies use.",
+      detail: "System Analyst and Backend Enthusiast."
+    },
+    {
+      name: "Divya Krishnan",
+      text: "What I appreciate most is the modern tech stack. We didn't learn outdated tech; everything was up to date with the latest industry standards.",
+      detail: "Placed at Tech Mahindra."
+    },
+    {
+      name: "Rahul Mehta",
+      text: "The community of learners is amazing. Collaborating on the major project with my peers taught me a lot about Git and agile development.",
+      detail: "Full Stack Developer looking to build scalable apps."
+    },
+    {
+      name: "Pooja Joshi",
+      text: "The personalized feedback on my code submissions helped me write cleaner, more efficient code. My mentor genuinely cared about my progress.",
+      detail: "SDE-1 at Capgemini."
+    },
+    {
+      name: "Amit Kumar",
+      text: "From UI/UX basics to database optimization, this course covers everything. It truly transforms you into a complete full-stack developer.",
+      detail: "Web Developer running my own agency."
+    },
+    {
+      name: "Kavita Rao",
+      text: "I highly recommend Krutanic to anyone serious about coding. The rigour of the program ensures you are industry-ready from day one.",
+      detail: "Placed at Cognizant."
+    },
+    {
+      name: "Sandeep Yadav",
+      text: "The best investment I've made in my career. The projects I built during this course are now the highlight of my professional portfolio.",
+      detail: "Freelance Developer serving international clients."
+    },
+    {
+      name: "Meera Nair",
+      text: "Learning how to integrate third-party APIs and handle authentication securely was my favorite part. The practical approach is brilliant.",
+      detail: "React Developer at a Fintech firm."
+    },
+    {
+      name: "Gaurav Chawla",
+      text: "The instructors explain the 'why' behind the code, not just the 'how'. This deeper understanding made debugging so much easier for me.",
+      detail: "Software Engineer focusing on Web Technologies."
+    },
+    {
+      name: "Isha Kapoor",
+      text: "The course pace was perfect. It started with the basics and smoothly ramped up to advanced topics like Redux and JWT authentication.",
+      detail: "Placed at HCL Technologies."
+    },
+    {
+      name: "Manoj Tiwari",
+      text: "I was struggling to learn on my own, but the structured curriculum and strict deadlines kept me accountable and focused.",
+      detail: "Full Stack Intern securing a pre-placement offer."
+    },
+    {
+      name: "Ritu Agarwal",
+      text: "Getting certified by Krutanic added significant value to my LinkedIn profile. Recruiters actually reached out to me after I updated it.",
+      detail: "SDE at an EdTech Startup."
+    },
+    {
+      name: "Aditya Sen",
+      text: "Excellent program with top-notch mentors. The 24/7 support means you never waste time being stuck on a silly bug.",
+      detail: "Backend Engineer in a Product company."
     }
   ],
   certifications: [
