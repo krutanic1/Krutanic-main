@@ -101,6 +101,8 @@ newStudentEnrollSchema.index({ counselor: 1 });  // ✅ NEW: For BDA queries (/d
 newStudentEnrollSchema.index({ domainId: 1 });   // ✅ NEW: For course lookups/aggregations
 newStudentEnrollSchema.index({ status: 1, createdAt: -1 }); // Composite index for filtered queries
 
+newStudentEnrollSchema.index({ operationName: 1, createdAt: -1 });
+
 // ✅ NEW: Compound index for revenue aggregation queries (improves /getmonthlyrevenue performance)
 newStudentEnrollSchema.index({ createdAt: -1, lead: 1, status: 1 });
 

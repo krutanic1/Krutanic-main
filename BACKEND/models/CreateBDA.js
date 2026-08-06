@@ -14,5 +14,7 @@ const CreateBDA = new mongoose.Schema({
   target: [{ currentMonth: { type: String }, targetValue: { type: String }, payments: { type: String }, }],
 });
 
+CreateBDA.index({ status: 1 });
+
 const BDA = mongoose.model("BDA", CreateBDA);
 module.exports = BDA;
