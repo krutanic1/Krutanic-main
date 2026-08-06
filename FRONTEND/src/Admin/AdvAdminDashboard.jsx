@@ -47,6 +47,7 @@ const AdvAdminDashboard = () => {
     };
 
     const fetchLiveStats = async () => {
+        if (document.hidden) return; // Don't poll if tab is in the background
         try {
             const res = await axios.get(`${API}/api/admin/live-system-stats`);
             setLiveStats(res.data);

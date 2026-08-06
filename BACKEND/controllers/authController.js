@@ -236,6 +236,7 @@ exports.getAdminUsers = async (req, res) => {
 
     const memberData = users.map(u => {
       const records = recordsByUser[u._id.toString()] || [];
+      const lateThresholdMins = u.role === "BOE" ? (11 * 60 + 35) : (11 * 60 + 5);
 
       let lateCount = 0;
       let halfDayCount = 0;
@@ -257,7 +258,7 @@ exports.getAdminUsers = async (req, res) => {
         } else if (totalMinutes > 14 * 60) {
           halfDayCount++;
           status = "Half Day";
-        } else if (totalMinutes > 11 * 60 + 5) {
+        } else if (totalMinutes > lateThresholdMins) {
           lateCount++;
           status = "Late";
         } else {
@@ -321,6 +322,11 @@ exports.getAdminUserHistory = async (req, res) => {
     }
 
     const total = await Attendance.countDocuments(filter);
+    
+    // Fetch user to determine role
+    const user = await AtdUser.findById(userId).select("role");
+    const lateThresholdMins = user?.role === "BOE" ? (11 * 60 + 35) : (11 * 60 + 5);
+
     const rawData = await Attendance.find(filter)
       .sort({ timestamp: -1 })
       .skip(skip)
@@ -337,7 +343,7 @@ exports.getAdminUserHistory = async (req, res) => {
       let isHalfDay = totalMinutes > 14 * 60;
       if (r.isHalfDayOverride) isHalfDay = true;
       
-      const isLate = !isHalfDay && totalMinutes > 11 * 60 + 5;
+      const isLate = !isHalfDay && totalMinutes > lateThresholdMins;
       return { ...r.toObject(), isLate, isHalfDay };
     });
 

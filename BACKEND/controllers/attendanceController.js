@@ -159,6 +159,10 @@ exports.getHistory = async (req, res) => {
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
     
+    // Fetch user to get their role
+    const user = await AtdUser.findById(req.user._id).select("role");
+    const lateThresholdMins = user?.role === "BOE" ? (11 * 60 + 35) : (11 * 60 + 5);
+    
     const globalTotal = await Attendance.countDocuments({ userId: req.user._id });
     // Calculate counts in JS
     let lateCount = 0;
@@ -178,16 +182,11 @@ exports.getHistory = async (req, res) => {
       const hours = istTime.getUTCHours();
       const mins = istTime.getUTCMinutes();
       
-      // Thresholds:
-      // On Time: <= 11:05 AM
-      // Late: > 11:05 AM AND <= 2:00 PM (14:00)
-      // Half Day: > 2:00 PM (14:00)
-      
       const totalMinutes = hours * 60 + mins;
       
       if (totalMinutes > 14 * 60) {
         halfDayCount++;
-      } else if (totalMinutes > 11 * 60 + 5) {
+      } else if (totalMinutes > lateThresholdMins) {
         lateCount++;
       } else {
         onTimeCount++;
@@ -212,7 +211,7 @@ exports.getHistory = async (req, res) => {
       let isHalfDay = totalMinutes > 14 * 60;
       if (h.isHalfDayOverride) isHalfDay = true;
 
-      const isLate = !isHalfDay && totalMinutes > 11 * 60 + 5;
+      const isLate = !isHalfDay && totalMinutes > lateThresholdMins;
       
       return { ...h.toObject(), isLate, isHalfDay };
     });
