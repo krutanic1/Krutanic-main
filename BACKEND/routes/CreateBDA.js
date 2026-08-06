@@ -71,6 +71,22 @@ router.get("/getbda", verifyAnyAuth, async (req, res) => {
         'static'
       );
 
+      // ✅ NEW: Filter for Manager/Leader if not an admin
+      if (!req.admin && req.user && req.user.id) {
+        const requester = await CreateBDA.findById(req.user.id).select('designation team teams');
+        if (requester && (requester.designation === "MANAGER" || requester.designation === "LEADER")) {
+          const allowedTeams = requester.teams || [];
+          if (requester.team) {
+            // Split by comma to support managers assigned to multiple teams via the string field
+            const splitTeams = requester.team.split(',').map(t => t.trim());
+            splitTeams.forEach(t => {
+              if (t && !allowedTeams.includes(t)) allowedTeams.push(t);
+            });
+          }
+          bda = bda.filter(member => allowedTeams.includes(member.team));
+        }
+      }
+
       // Add HTTP cache header for browser caching
       res.set('Cache-Control', 'public, max-age=120');
     }

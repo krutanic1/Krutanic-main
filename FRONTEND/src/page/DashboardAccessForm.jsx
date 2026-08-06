@@ -231,8 +231,41 @@ const DashboardAccessForm = () => {
   const [isEmailVerified, setIsEmailVerified] = useState(false);
 
   const handleSubmit = async (event) => {
-    setIsSubmitting(true);
     event.preventDefault();
+    
+    const price = Number(programPrice);
+    const paid = Number(paidAmount);
+
+    if (program === "Self-Guided [2 Months – Training & Internship]") {
+      if (price <= 4000 && paid < price) {
+        toast.error("Full payment is required to submit the form.");
+        return;
+      }
+      if (price >= 5000 && paid < 1000) {
+        toast.error("Minimum payment of 1000 is required to submit the form.");
+        return;
+      }
+    } else if (program === "Instructor-Led [2 Months – Training & Internship]") {
+      if (price <= 5000 && paid < price) {
+        toast.error("Full payment is required to submit the form.");
+        return;
+      }
+      if (price >= 6000 && paid < 1000) {
+        toast.error("Minimum payment of 1000 is required to submit the form.");
+        return;
+      }
+    } else if (program === "Career Advancement [3 Months – Training, Internship & Placement Assistance]") {
+      if (price <= 8000 && paid < price) {
+        toast.error("Full payment is required to submit the form.");
+        return;
+      }
+      if (price > 8000 && paid < 1000) {
+        toast.error("Minimum payment of 1000 is required to submit the form.");
+        return;
+      }
+    }
+
+    setIsSubmitting(true);
 
     const formData = {
       fullname: fullname,
@@ -402,22 +435,37 @@ const DashboardAccessForm = () => {
   }, [monthOpted, monthsToShow]);
 
   useEffect(() => {
-    if (
-      Number(programPrice) <= 5999 &&
-      program === "Instructor-Led [2 Months – Training & Internship]"
-    ) {
-      setProgram("");
-    }
-  }, [programPrice, program]);
+    if (!program) return;
+    
+    const price = Number(programPrice) || 0;
+    const paid = Number(paidAmount) || 0;
 
-  useEffect(() => {
-    if (
-      Number(programPrice) <= 8499 &&
-      program === "Career Advancement [3 Months – Training, Internship & Placement Assistance]"
-    ) {
-      setProgram("");
+    if (program === "Self-Guided [2 Months – Training & Internship]") {
+      if (price <= 4000 && paid < price) {
+        toast.error("Full payment is required for this price.");
+        setProgram("");
+      } else if (price >= 5000 && paid < 1000) {
+        toast.error("Minimum payment of 1000 is required.");
+        setProgram("");
+      }
+    } else if (program === "Instructor-Led [2 Months – Training & Internship]") {
+      if (price <= 5000 && paid < price) {
+        toast.error("Full payment is required for this price.");
+        setProgram("");
+      } else if (price >= 6000 && paid < 1000) {
+        toast.error("Minimum payment of 1000 is required.");
+        setProgram("");
+      }
+    } else if (program === "Career Advancement [3 Months – Training, Internship & Placement Assistance]") {
+      if (price <= 8000 && paid < price) {
+        toast.error("Full payment is required for this price.");
+        setProgram("");
+      } else if (price > 8000 && paid < 1000) {
+        toast.error("Minimum payment of 1000 is required.");
+        setProgram("");
+      }
     }
-  }, [programPrice, program]);
+  }, [program, programPrice, paidAmount]);
 
   return (
     <div id="onboardingform">
@@ -603,6 +651,7 @@ const DashboardAccessForm = () => {
             <select
               value={domain}
               onChange={(e) => setDomain(e.target.value)}
+              disabled={!program}
               required
             >
               <option value="" selected disabled>
@@ -616,6 +665,7 @@ const DashboardAccessForm = () => {
             <select
               value={monthOpted}
               onChange={(e) => setMonthOpted(e.target.value)}
+              disabled={!program}
               required
             >
               <option value="" selected disabled>
@@ -633,6 +683,7 @@ const DashboardAccessForm = () => {
             <select
               value={modeofpayment}
               onChange={(e) => setModeOfPayment(e.target.value)}
+              disabled={!program}
               required
             >
               <option value="" selected disabled>
@@ -650,6 +701,7 @@ const DashboardAccessForm = () => {
                 type="text"
                 value={transactionId}
                 onChange={(e) => setTransactionId(e.target.value)}
+                disabled={!program}
                 required
               />
               <label htmlFor="Transaction ID">Transaction ID</label>
@@ -727,8 +779,8 @@ const DashboardAccessForm = () => {
                     required
                     min={minDate}
                     max={maxDate}
-                    disabled={existingEnrollment === null}
-                    style={existingEnrollment === null ? { background: "#f0f0f0", cursor: "not-allowed", opacity: 0.5 } : {}}
+                    disabled={existingEnrollment === null || !program}
+                    style={(existingEnrollment === null || !program) ? { background: "#f0f0f0", cursor: "not-allowed", opacity: 0.5 } : {}}
                   />
                   <label htmlFor="clearPaymentMonth">Due date for clear payment ?</label>
                 </div>
@@ -737,8 +789,8 @@ const DashboardAccessForm = () => {
                   value={internshipstartsmonth}
                   onChange={(e) => setInternshipStartsMonth(e.target.value)}
                   required
-                  disabled={existingEnrollment === null}
-                  style={existingEnrollment === null ? { background: "#f0f0f0", cursor: "not-allowed", opacity: 0.5 } : {}}
+                  disabled={existingEnrollment === null || !program}
+                  style={(existingEnrollment === null || !program) ? { background: "#f0f0f0", cursor: "not-allowed", opacity: 0.5 } : {}}
                 >
                   <option value="" selected disabled>
                     Internship starts month
@@ -754,8 +806,8 @@ const DashboardAccessForm = () => {
                   value={internshipendsmonth}
                   onChange={(e) => setInternshipEndsMonth(e.target.value)}
                   required
-                  disabled={existingEnrollment === null || !internshipstartsmonth}
-                  style={existingEnrollment === null ? { background: "#f0f0f0", cursor: "not-allowed", opacity: 0.5 } : {}}
+                  disabled={existingEnrollment === null || !internshipstartsmonth || !program}
+                  style={(existingEnrollment === null || !program) ? { background: "#f0f0f0", cursor: "not-allowed", opacity: 0.5 } : {}}
                 >
                   <option value="" disabled>
                     Internship ends month
@@ -781,6 +833,7 @@ const DashboardAccessForm = () => {
               placeholder="Name and Contact Number"
               cols={60}
               rows={3}
+              disabled={!program}
               required
               className="resize-none"
             ></textarea>
@@ -789,6 +842,7 @@ const DashboardAccessForm = () => {
           <select
             value={languages.length > 0 ? languages[0] : ""}
             onChange={(e) => setLanguages([e.target.value])}
+            disabled={!program}
             required
           >
             <option value="" disabled>
@@ -803,7 +857,7 @@ const DashboardAccessForm = () => {
 
           <input
             className="cursor-pointer"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !program}
             type="submit"
             value="Submit"
           />
