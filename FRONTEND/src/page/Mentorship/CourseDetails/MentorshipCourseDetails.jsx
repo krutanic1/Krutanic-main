@@ -227,7 +227,7 @@ const MentorshipCourseDetails = () => {
 
                   {/* Chalk Title */}
                   <div className="relative z-10 text-center mb-16 w-full">
-                    <h2 className="text-4xl md:text-[3.5rem] text-[#F8F9FA] opacity-90 pb-4 border-b border-white/20 inline-block px-12" style={{ fontFamily: "'Dancing Script', cursive", textShadow: "0px 0px 4px rgba(255,255,255,0.4)" }}>
+                    <h2 className="text-4xl md:text-[3.5rem] text-[#F8F9FA] opacity-90 pb-4 border-b border-white/20 inline-block px-12" style={{ textShadow: "0px 0px 4px rgba(255,255,255,0.4)" }}>
                       {data.whyTitle || "Why Choose This Program?"}
                     </h2>
                   </div>
