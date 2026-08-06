@@ -93,8 +93,7 @@ const newStudentEnrollSchema = new Schema(
 
 // ✅ FIX #2: Add Database Indexes for faster queries
 // Note: email index already created by unique: true in schema
-newStudentEnrollSchema.index({ status: 1 });
-newStudentEnrollSchema.index({ createdAt: -1 });  // Revenue page date filtering
+
 newStudentEnrollSchema.index({ operationId: 1 });
 newStudentEnrollSchema.index({ executiveId: 1 });
 newStudentEnrollSchema.index({ domain: 1 });

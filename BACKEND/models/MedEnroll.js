@@ -79,6 +79,7 @@ const medEnrollSchema = new Schema(
     internshipendsmonth: { type: String },
     yearOfStudy: { type: String },
     executiveId: { type: String },
+
     executive: { type: String },
     languages: [{ type: String }],
     watchedSessions: [{ type: String }],
@@ -92,8 +93,7 @@ const medEnrollSchema = new Schema(
 
 // ✅ FIX #2: Add Database Indexes for faster queries
 // Note: email index already created by unique: true in schema
-medEnrollSchema.index({ status: 1 });
-medEnrollSchema.index({ createdAt: -1 });  // Revenue page date filtering
+
 medEnrollSchema.index({ operationId: 1 });
 medEnrollSchema.index({ executiveId: 1 });
 medEnrollSchema.index({ domain: 1 });
