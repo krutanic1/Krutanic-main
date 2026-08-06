@@ -104,6 +104,7 @@ const AdvanceDashboardAccess = () => {
   const [companyName, setCompanyName] = useState("");
   const [role, setRole] = useState("");
   const [batchTiming, setBatchTiming] = useState("");
+  const [programGoal, setProgramGoal] = useState("");
 
   const LANGUAGE_OPTIONS = ["English", "Hindi", "Kannada", "Telugu", "Tamil", "Malayalam", "Bengali"];
 
@@ -181,6 +182,7 @@ const AdvanceDashboardAccess = () => {
     setCompanyName("");
     setRole("");
     setBatchTiming("");
+    setProgramGoal("");
     navigate("/advancedashboardaccess");
   };
 
@@ -240,7 +242,8 @@ const AdvanceDashboardAccess = () => {
       companyName: companyName,
       role: role,
       program: domain.trim(),
-      batchTiming: batchTiming
+      batchTiming: batchTiming,
+      programGoal: programGoal
     };
 
     if (isEmailVerified) {
@@ -687,6 +690,42 @@ const AdvanceDashboardAccess = () => {
               </option>
             </select> */}
 
+          </div>
+
+          <div className="mt-6">
+            <label className="text-gray-700 font-medium mb-2 block text-lg">What are you looking for?</label>
+            <div className="flex flex-col gap-3 p-4 bg-gray-50 border border-gray-200 rounded-[10px]">
+              <label className="flex items-start gap-3" style={{ cursor: "pointer" }}>
+                <input
+                  type="radio"
+                  name="programGoal"
+                  value="15 Interview Calls Only – I only want access to up to 15 guaranteed interview opportunities."
+                  checked={programGoal === "15 Interview Calls Only – I only want access to up to 15 guaranteed interview opportunities."}
+                  onChange={(e) => setProgramGoal(e.target.value)}
+                  className="mt-1 w-4 h-4 text-[#F15B29] focus:ring-[#F15B29]"
+                  style={{ cursor: "pointer" }}
+                  required
+                />
+                <span className="text-sm text-gray-700 font-medium leading-relaxed">
+                  15 Interview Calls Only – I only want access to up to 15 guaranteed interview opportunities.
+                </span>
+              </label>
+              <label className="flex items-start gap-3" style={{ cursor: "pointer" }}>
+                <input
+                  type="radio"
+                  name="programGoal"
+                  value="Complete Career Program – I want the full training, internship, interview & placement acceleration program."
+                  checked={programGoal === "Complete Career Program – I want the full training, internship, interview & placement acceleration program."}
+                  onChange={(e) => setProgramGoal(e.target.value)}
+                  className="mt-1 w-4 h-4 text-[#F15B29] focus:ring-[#F15B29]"
+                  style={{ cursor: "pointer" }}
+                  required
+                />
+                <span className="text-sm text-gray-700 font-medium leading-relaxed">
+                  Complete Career Program – I want the full training, internship, interview & placement acceleration program.
+                </span>
+              </label>
+            </div>
           </div>
 
           <div className="mt-6">

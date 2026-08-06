@@ -26,6 +26,7 @@ const AdvBooked = () => {
   const [lead, setLead] = useState("");
   const [operationName, setOperationName] = useState("");
   const [operationId, setOperationId] = useState("");
+  const [programGoal, setProgramGoal] = useState("");
 
   const [course, setCourse] = useState([]);
   const [bda, setBda] = useState([]);
@@ -112,6 +113,7 @@ const AdvBooked = () => {
     setLead(editStudent.executive || editStudent.lead || "");
     setOperationName(editStudent.operationName || "");
     setOperationId(editStudent.operationId || "");
+    setProgramGoal(editStudent.programGoal || "");
     setiscourseFormVisible(true);
   };
 
@@ -132,6 +134,7 @@ const AdvBooked = () => {
       lead,
       operationName,
       operationId,
+      programGoal,
     };
 
     try {
@@ -164,6 +167,7 @@ const AdvBooked = () => {
     setLead("");
     setOperationName("");
     setOperationId("");
+    setProgramGoal("");
   };
 
   const handleDialogOpen = (item) => {
@@ -256,6 +260,12 @@ const AdvBooked = () => {
             <label className="block text-sm">Clear Payment Due Date</label>
             <input value={clearPaymentMonth} onChange={(e) => setClearPaymentMonth(e.target.value)} type="date" />
 
+            <select value={programGoal} onChange={(e) => setProgramGoal(e.target.value)}>
+              <option value="" disabled>Select Program Goal</option>
+              <option value="15 Interview Calls Only – I only want access to up to 15 guaranteed interview opportunities.">15 Interview Calls</option>
+              <option value="Complete Career Program – I want the full training, internship, interview & placement acceleration program.">Complete Career Program</option>
+            </select>
+
             <input className="cursor-pointer" type="submit" value="Save Changes" />
           </form>
         </div>
@@ -299,6 +309,7 @@ const AdvBooked = () => {
                 <th>WhatsApp No</th>
                 <th>Email</th>
                 <th>Domain</th>
+                <th>Program Goal</th>
                 <th>Month Opted</th>
                 <th>Program Price</th>
                 <th>Paid Amount</th>
@@ -320,7 +331,7 @@ const AdvBooked = () => {
                 }).map((date) => (
                   <React.Fragment key={date}>
                     <tr>
-                      <td colSpan="15" style={{ fontWeight: "bold", backgroundColor: "#e3f2fd" }}>
+                      <td colSpan="16" style={{ fontWeight: "bold", backgroundColor: "#e3f2fd" }}>
                         {date}
                       </td>
                     </tr>
@@ -331,6 +342,7 @@ const AdvBooked = () => {
                         <td>{item.whatsAppNumber || "N/A"}</td>
                         <td>{item.email || "N/A"}</td>
                         <td>{item.domain || "N/A"}</td>
+                        <td className="truncate max-w-xs" title={item.programGoal}>{item.programGoal || "N/A"}</td>
                         <td className="capitalize">{item.monthOpted || "N/A"}</td>
                         <td className="text-green-600 font-bold">₹{item.programPrice || 0}</td>
                         <td>{item.paidAmount || 0}</td>
@@ -380,7 +392,7 @@ const AdvBooked = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="15">No booked enrollments found</td>
+                  <td colSpan="16">No booked enrollments found</td>
                 </tr>
               )}
             </tbody>
@@ -395,6 +407,7 @@ const AdvBooked = () => {
                 <p><strong>Phone:</strong> {dialogData.phone}</p>
                 <p><strong>WhatsApp:</strong> {dialogData.whatsAppNumber}</p>
                 <p><strong>Domain:</strong> {dialogData.domain}</p>
+                <p><strong>Program Goal:</strong> {dialogData.programGoal || "N/A"}</p>
                 <p><strong>Program Price:</strong> ₹{dialogData.programPrice}</p>
                 <p><strong>Paid Amount:</strong> ₹{dialogData.paidAmount}</p>
                 <p className="text-red-600 font-bold"><strong>Pending:</strong> ₹{dialogData.programPrice - dialogData.paidAmount}</p>

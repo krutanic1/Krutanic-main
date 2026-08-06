@@ -196,6 +196,7 @@ const AdvOnBoardingDetails = () => {
                 <th>WhatsApp No</th>
                 <th>Email</th>
                 <th>Domain</th>
+                <th>Program Goal</th>
                 <th>Month Opted</th>
                 <th>Program Price</th>
                 <th>Paid Amount</th>
@@ -218,7 +219,7 @@ const AdvOnBoardingDetails = () => {
                 }).map((date) => (
                   <React.Fragment key={date}>
                     <tr>
-                      <td colSpan="16" style={{ fontWeight: "bold" }}>
+                      <td colSpan="17" style={{ fontWeight: "bold" }}>
                         {date}
                       </td>
                     </tr>
@@ -229,6 +230,7 @@ const AdvOnBoardingDetails = () => {
                         <td>{item.whatsAppNumber || item.phone || "N/A"}</td>
                         <td>{item.email || "N/A"}</td>
                         <td>{item.domain || "N/A"}</td>
+                        <td className="truncate max-w-xs" title={item.programGoal}>{item.programGoal || "N/A"}</td>
                         <td>{item.monthOpted || "N/A"}</td>
                         <td className="text-green-600 font-bold">₹{item.programPrice || 0}</td>
                         <td>₹{item.paidAmount || 0}</td>
@@ -297,7 +299,7 @@ const AdvOnBoardingDetails = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="16">No data found</td>
+                  <td colSpan="17">No data found</td>
                 </tr>
               )}
             </tbody>
@@ -318,6 +320,9 @@ const AdvOnBoardingDetails = () => {
                 </p>
                 <p>
                   <strong>Domain:</strong> {dialogData.domain || "N/A"}
+                </p>
+                <p>
+                  <strong>Program Goal:</strong> {dialogData.programGoal || "N/A"}
                 </p>
                 <p>
                   <strong>Program Price:</strong> ₹{dialogData.programPrice || 0}

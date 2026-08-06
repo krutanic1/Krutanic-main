@@ -85,6 +85,7 @@ const advEnrollSchema = new Schema(
     selectedProject: { type: String, default: null },
     projectProgress: { type: Map, of: Object, default: {} },
     batchTiming: { type: String },
+    programGoal: { type: String },
   },
   {
     timestamps: true,
