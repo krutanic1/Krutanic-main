@@ -640,7 +640,7 @@ const DashboardAccessForm = () => {
                 Mode of Program
               </option>
               <option value="Self-Guided [2 Months – Training & Internship]">Self-Guided [2 Months – Training & Internship]</option>
-              {Number(programPrice) > 5999 && (
+              {Number(programPrice) > 4999 && (
                 <option value="Instructor-Led [2 Months – Training & Internship]">Instructor-Led [2 Months – Training & Internship]</option>
               )}
               {Number(programPrice) > 8499 && (
