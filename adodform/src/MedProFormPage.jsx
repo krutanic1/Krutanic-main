@@ -276,16 +276,25 @@ const MedProFormPage = () => {
 
     setIsSubmitting(true);
 
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbzOJAPGeCFFolZIPRXfIo614Gj1TTKyUlxa2w0xgH_WQzjzdGFtwyR3kIRHY9jR8bzPKw/exec";
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbxhXxyWD6Wqy1bPF5kmgdauNZesCssV2ndSuJKcv4mKsldfSt-q0Qn11pxg9Blplfbm/exec";
 
     try {
-      // Using mode 'no-cors' to prevent Google Apps Script CORS blocking in the browser
-      // We send it as text/plain so we can pass a JSON string without triggering a preflight request
+      const params = new URLSearchParams();
+      params.append('name', formData.name);
+      params.append('personalEmailId', formData.personalEmailId);
+      params.append('contactNumber', formData.contactNumber);
+      params.append('degreeBranch', formData.degreeBranch);
+      params.append('yearOfGraduation', formData.yearOfGraduation);
+      params.append('interestedDomain', formData.selectedDomain);
+      params.append('careerGoal', formData.careerGoal);
+      params.append('primaryHurdle', formData.primaryHurdle);
+      params.append('formSource', 'medpro');
+
       await fetch(scriptUrl, { 
         method: 'POST', 
         mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify(formData) 
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params.toString()
       });
 
       setIsSubmitting(false); 

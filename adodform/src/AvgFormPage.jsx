@@ -432,7 +432,7 @@ const AvgFormPage = () => {
 
     setIsSubmitting(true);
 
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbyvmPb2Zb_9SnBQiU1MDEf0iUckjKGLDUWanmDQFGYvDybmlHOguUQv6mXk-w-vyJOr/exec";
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbxhXxyWD6Wqy1bPF5kmgdauNZesCssV2ndSuJKcv4mKsldfSt-q0Qn11pxg9Blplfbm/exec";
 
     try {
       const params = new URLSearchParams();
@@ -444,6 +444,7 @@ const AvgFormPage = () => {
       params.append('interestedDomain', formData.selectedDomain);
       params.append('careerGoal', formData.careerGoal);
       params.append('primaryHurdle', formData.primaryHurdle);
+      params.append('formSource', 'avg');
 
       await fetch(scriptUrl, {
         method: 'POST',

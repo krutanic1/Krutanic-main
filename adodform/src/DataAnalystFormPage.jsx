@@ -171,7 +171,7 @@ const DataAnalystFormPage = () => {
 
     setIsSubmitting(true);
 
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbwb5YK4-lHdJwxRtQDESibo-uyhnXvJU56sn03ztTJYzuEK0c0aUcVJePNy1-k3T3c3Dg/exec";
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbxhXxyWD6Wqy1bPF5kmgdauNZesCssV2ndSuJKcv4mKsldfSt-q0Qn11pxg9Blplfbm/exec";
 
     try {
       const params = new URLSearchParams();
@@ -190,6 +190,7 @@ const DataAnalystFormPage = () => {
       params.append('programRouting', formData.programRouting);
       params.append('fundingPlan', formData.fundingPlan);
       params.append('nextStep', formData.nextStep);
+      params.append('formSource', 'dataanalytics');
 
       await fetch(scriptUrl, { 
         method: 'POST',
