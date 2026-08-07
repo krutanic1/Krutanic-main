@@ -432,7 +432,7 @@ const AvgFormPage = () => {
 
     setIsSubmitting(true);
 
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbwGpP_ldvVgbUjqCbo2PmdzTziJaaWzJXr8R6_9_Q8Hpv9Vv1HdaGFUbb379-Q7U9f_/exec";
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbyvmPb2Zb_9SnBQiU1MDEf0iUckjKGLDUWanmDQFGYvDybmlHOguUQv6mXk-w-vyJOr/exec";
 
     try {
       const params = new URLSearchParams();
