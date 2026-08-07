@@ -9,15 +9,15 @@ import RudraImg from './assets/mentors/rudra.jpg';
 import CardRoadmap from './assets/card_roadmap.png';
 import CardPortfolio from './assets/card_portfolio.png';
 import CardSuccess from './assets/card_success.png';
-import ProjectAIDashboard from './assets/project_ai_dashboard.png';
-import ProjectSaaS from './assets/project_saas_payment.png';
-import ProjectAnalytics from './assets/project_analytics_dashboard.png';
-import ProjectCyber from './assets/project_cyber_security.png';
-import ProjectAndroid from './assets/project_android_app.png';
+import ProjectVLSI from './assets/warr_project_vlsi.png';
+import ProjectAutoCAD from './assets/warr_project_autocad.png';
+import ProjectFinance from './assets/warr_project_finance.png';
 import ProjectUIUX from './assets/project_uiux_design.png';
+import ProjectAIDashboard from './assets/project_ai_dashboard.png';
 import ProjectCloud from './assets/project_cloud_infra.png';
-import ProjectDevOps from './assets/project_devops_pipeline.png';
+import ProjectSaaS from './assets/project_saas_payment.png';
 import ProjectML from './assets/project_ml_model.png';
+import ProjectCyber from './assets/project_cyber_security.png';
 
 /* --- SVG Icons --- */
 const CheckIcon = ({ size = 18 }) => (
@@ -56,82 +56,82 @@ const BriefcaseIcon = ({ size = 18 }) => (
 
 /* --- The 10 Tech Domains --- */
 const DOMAINS_LIST = [
-  { id: 1, name: 'Data Science', code: 'DS' },
-  { id: 2, name: 'Data Analytics', code: 'DA' },
-  { id: 3, name: 'AI (Artificial Intel)', code: 'AI' },
-  { id: 4, name: 'Machine Learning', code: 'ML' },
-  { id: 5, name: 'Full Stack Dev (FSD)', code: 'FSD' },
-  { id: 6, name: 'Cyber Security', code: 'CS' },
-  { id: 7, name: 'Android App Dev', code: 'AD' },
-  { id: 8, name: 'UI / UX Design', code: 'UX' },
-  { id: 9, name: 'Cloud Computing', code: 'CC' },
-  { id: 10, name: 'DevOps', code: 'DO' }
+  { id: 1, name: 'VLSI', code: 'VLSI' },
+  { id: 2, name: 'Embedded Systems', code: 'ES' },
+  { id: 3, name: 'IoT & Robotics', code: 'IOT' },
+  { id: 4, name: 'AutoCAD', code: 'ACAD' },
+  { id: 5, name: 'Digital Marketing', code: 'DM' },
+  { id: 6, name: 'Stock Marketing', code: 'SM' },
+  { id: 7, name: 'Finance', code: 'FIN' },
+  { id: 8, name: 'Human Resource', code: 'HR' },
+  { id: 9, name: 'Business Analytics', code: 'BA' },
+  { id: 10, name: 'Graphic Design', code: 'GD' }
 ];
 
 /* --- Projects Data --- */
 const PROJECTS = [
   {
-    title: 'AI Resume Screening Dashboard',
-    tools: 'Python · NLP · React',
-    desc: 'Build a full-stack dashboard that parses resumes and scores them against JDs.',
-    portfolio: 'Live deployment, GitHub repo, System architecture doc',
-    img: ProjectAIDashboard
+    title: 'VLSI Chip Design & Layout Schematic',
+    tools: 'Verilog · Cadence · Layout Editor',
+    desc: 'Design and verify a complete IC layout schematic focusing on minimal power consumption and delay.',
+    portfolio: 'Schematic diagrams, Layout reports, Verification logs',
+    img: ProjectVLSI
   },
   {
-    title: 'SaaS Application with Payments',
-    tools: 'MERN Stack · Stripe API',
-    desc: 'A complete multi-tenant SaaS app with authentication and payment gateways.',
-    portfolio: 'Deployed web app, REST API docs, GitHub repo',
-    img: ProjectSaaS
+    title: 'AutoCAD Architectural Blueprint',
+    tools: 'AutoCAD 2D/3D · Civil 3D',
+    desc: 'Draft a full-scale commercial building floor plan with precise measurements and 3D modeling.',
+    portfolio: 'DWG files, Rendered models, Structural analysis',
+    img: ProjectAutoCAD
   },
   {
-    title: 'Sales Analytics Dashboard',
-    tools: 'SQL · Power BI · Excel',
-    desc: 'Analyze customer purchase patterns and build interactive sales dashboards.',
-    portfolio: 'Interactive dashboard link, SQL query scripts, Data report',
-    img: ProjectAnalytics
+    title: 'Financial Risk & Investment Portfolio',
+    tools: 'Excel · Python (Pandas) · PowerBI',
+    desc: 'Analyze market volatility and construct a diversified investment portfolio with ROI projections.',
+    portfolio: 'Risk analysis report, Interactive dashboard, Strategy doc',
+    img: ProjectFinance
   },
   {
-    title: 'Cyber Threat Detection System',
-    tools: 'Python · Wireshark · Splunk',
-    desc: 'Monitor and detect network intrusions using real packet analysis and alerting.',
-    portfolio: 'Threat report, Detection scripts, GitHub repo',
-    img: ProjectCyber
-  },
-  {
-    title: 'Android Expense Tracker App',
-    tools: 'Kotlin · Firebase · Jetpack',
-    desc: 'A fully functional Android app for tracking personal expenses with cloud sync.',
-    portfolio: 'Play Store link, APK, GitHub repo',
-    img: ProjectAndroid
-  },
-  {
-    title: 'UI/UX Design System',
-    tools: 'Figma · Adobe XD · Zeplin',
-    desc: 'Design a complete product design system with reusable components and prototypes.',
-    portfolio: 'Figma prototype link, Component library, Case study',
+    title: 'Complete Brand Identity Kit',
+    tools: 'Adobe Illustrator · Photoshop',
+    desc: 'Create a comprehensive corporate branding package including logos, typography, and marketing assets.',
+    portfolio: 'Brand guidelines PDF, Mockups, High-res assets',
     img: ProjectUIUX
   },
   {
-    title: 'Cloud Infrastructure on AWS',
-    tools: 'AWS · Terraform · VPC',
-    desc: 'Deploy a production-grade multi-tier architecture using EC2, RDS, S3, and ALB.',
-    portfolio: 'Architecture diagram, IaC scripts, Live URL',
+    title: 'Employee Retention Analytics Dashboard',
+    tools: 'Tableau · Excel · HRIS Data',
+    desc: 'Process organizational data to identify attrition patterns and present actionable HR retention strategies.',
+    portfolio: 'Analytics dashboard, Strategy presentation',
+    img: ProjectAIDashboard
+  },
+  {
+    title: 'Smart Home Automation Architecture',
+    tools: 'Arduino · Raspberry Pi · C++',
+    desc: 'Design an IoT network where multiple sensors communicate to control lighting and security.',
+    portfolio: 'Circuit diagrams, Controller code, Demo video',
     img: ProjectCloud
   },
   {
-    title: 'DevOps CI/CD Pipeline',
-    tools: 'Docker · Jenkins · Kubernetes',
-    desc: 'Automate build, test and deployment pipelines with containerised microservices.',
-    portfolio: 'Pipeline config, Docker images, GitHub Actions repo',
-    img: ProjectDevOps
+    title: 'Digital Marketing Campaign ROI Model',
+    tools: 'Google Analytics · Meta Ads Manager',
+    desc: 'Run simulated ad campaigns across channels and optimize for cost-per-acquisition (CPA).',
+    portfolio: 'Campaign strategy, Performance metrics, Conversion reports',
+    img: ProjectSaaS
   },
   {
-    title: 'ML Sentiment Analysis Engine',
-    tools: 'Python · TensorFlow · Flask',
-    desc: 'Train and deploy a sentiment classifier with a REST API and live demo interface.',
-    portfolio: 'API endpoint, Model card, Jupyter notebook',
+    title: 'Enterprise Sales Forecasting Model',
+    tools: 'Excel · SQL · Tableau',
+    desc: 'Analyze historical sales data to build a predictive model for Q4 revenue across territories.',
+    portfolio: 'Forecasting workbook, Query scripts, Exec summary',
     img: ProjectML
+  },
+  {
+    title: 'Microcontroller Interface Design',
+    tools: 'C · ARM Cortex-M · Keil',
+    desc: 'Program a microcontroller to interface with external hardware peripherals and process real-time inputs.',
+    portfolio: 'Source code, Hardware schematics, Debug logs',
+    img: ProjectCyber
   }
 ];
 
@@ -139,17 +139,19 @@ const PROJECTS = [
 const MENTORS = [
   {
     name: 'Ankit Rao',
-    role: 'Senior Software Engineer',
-    domain: 'Full Stack & Cloud Mentor',
-    quote: 'I help students turn incomplete college projects into deployable products.',
-    img: SubhraImg 
+    role: 'Senior Hardware Engineer',
+    domain: 'VLSI & Embedded Mentor',
+    quote: 'I help students turn theoretical knowledge into industry-grade hardware projects and chip layouts.',
+    img: null,
+    initials: 'AR'
   },
   {
     name: 'Priya Sharma',
-    role: 'Data Scientist',
-    domain: 'Data Science & Analytics Mentor',
-    quote: 'Stop watching tutorials. Start building predictive models that solve real business problems.',
-    img: RudraImg
+    role: 'Lead Business Analyst',
+    domain: 'Analytics & Finance Mentor',
+    quote: 'Stop just memorizing formulas. Start building financial models and dashboards that solve real corporate problems.',
+    img: null,
+    initials: 'PS'
   }
 ];
 
@@ -157,8 +159,8 @@ const MENTORS = [
 const TIMELINE = [
   { stage: 'Week 0', title: 'Diagnostic & Domain Selection', desc: 'Identify your current skill level and choose the right domain.' },
   { stage: 'Weeks 1–3', title: 'Core Skill Foundations', desc: 'Guided practice and fundamental concepts with live mentor sessions.' },
-  { stage: 'Weeks 4–7', title: 'Portfolio Project Building', desc: 'Build your flagship project with regular code reviews.' },
-  { stage: 'Weeks 8–10', title: 'Deployment & Polish', desc: 'Mentor reviews, application deployment, and GitHub optimization.' },
+  { stage: 'Weeks 4–7', title: 'Portfolio Project Building', desc: 'Build your flagship project with regular mentor reviews.' },
+  { stage: 'Weeks 8–10', title: 'Refinement & Polish', desc: 'Mentor reviews, project finalization, and portfolio optimization.' },
   { stage: 'Final Phase', title: 'Placement Readiness', desc: 'Resume building, mock interviews, and job search strategy.' }
 ];
 
@@ -167,163 +169,72 @@ const REVIEWS = [
   {
     name: 'Harsha',
     college: '2026 graduate, Bengaluru',
-    domain: 'Full Stack Dev',
-    quote: 'I stopped randomly learning tutorials and shipped a deployable MERN application with payments, admin controls, and deployment.',
+    domain: 'VLSI',
+    quote: 'I stopped randomly reading theory and actually designed a verified IC layout schematic. The hands-on project was a game changer for interviews.',
     initials: 'H'
   },
   {
     name: 'Aisha Khan',
     college: '2025 graduate, Delhi',
-    domain: 'Data Science',
-    quote: 'The mentor feedback on my predictive model was eye-opening. It gave me the confidence to apply for actual roles.',
+    domain: 'Business Analytics',
+    quote: 'The mentor feedback on my sales forecasting model was eye-opening. It gave me the confidence to apply for actual corporate roles.',
     initials: 'AK'
   },
   {
     name: 'Rahul Desai',
     college: '2024 graduate, Pune',
-    domain: 'Cloud Computing',
-    quote: 'Instead of just reading about AWS, I actually deployed a scalable architecture. That is what got me shortlists.',
+    domain: 'Digital Marketing',
+    quote: 'Instead of just learning concepts, I actually planned and optimized a simulated ad campaign. That is what got me shortlists.',
     initials: 'RD'
   },
   {
     name: 'Pavan B V',
     college: '2025 graduate, Bengaluru',
-    domain: 'Data & Technology',
-    quote: 'Guidance and supervision soon blossomed in my learning journey. Thank you for providing such a valuable opportunity. The knowledge gained was instrumental in making me understand the domain better.',
+    domain: 'Finance',
+    quote: 'Guidance and supervision soon blossomed in my learning journey. Building a risk analysis portfolio was instrumental in making me understand the domain better.',
     initials: 'PV'
   },
   {
     name: 'Dabhade',
     college: 'Graduate, Pune',
-    domain: 'Psychology & Tech',
-    quote: 'It is truly psychological theories and practical skills combined. The mentor is enabling me with ideas helpful in unconventional theories and practical skills. The focus on learning and structure to real world scenarios was understanding.',
+    domain: 'Human Resource',
+    quote: 'It is truly HR theories and practical data combined. The mentor is enabling me with ideas helpful in talent retention analytics and real-world scenarios.',
     initials: 'D'
   },
   {
     name: 'Parthi Kumar',
     college: '2025 graduate',
-    domain: 'Machine Learning',
-    quote: 'I am grateful for Centino for this wonderful opportunity. During this internship program I gained valuable knowledge and hands-on experience in various aspects of cybersecurity. One of the highlights was working on an individual video project where I had the opportunity to deal with a pipeline and identify vulnerabilities.',
+    domain: 'IoT & Robotics',
+    quote: 'I am grateful for this wonderful opportunity. During this mentorship program I gained valuable knowledge and hands-on experience in building a smart home architecture.',
     initials: 'PK'
   },
   {
     name: 'Prabash Tankala',
     college: 'Graduate, Hyderabad',
-    domain: 'Full Stack Dev',
-    quote: 'This experience allowed me to enhance my technical skills. I recently completed a rewarding internship at Centino where I had the opportunity to delve deeply into the field of Machine Learning over a period of two months.',
+    domain: 'Embedded Systems',
+    quote: 'This experience allowed me to enhance my core skills. I had the opportunity to delve deeply into microcontroller interfacing over a period of two months.',
     initials: 'PT'
   },
   {
     name: 'Auchi Makheja',
     college: '2026 graduate, Delhi',
-    domain: 'Data Science',
-    quote: 'I got to learn how to build a strong networking and create posts for the team. In the Mentorship period we formed three tasks of getting mastered of different fields giving enrollment in the various seminars for different courses and internship programs.',
+    domain: 'Graphic Design',
+    quote: 'I got to learn how to build a strong brand identity kit. The mentorship helped me master industry-standard design tools and workflows.',
     initials: 'AM'
   },
   {
     name: 'Ian Yaseen',
     college: '2025 graduate, Chennai',
-    domain: 'Data & Software Engineering',
-    quote: 'Boom rewarding. The program provided me with invaluable skills and insights that I am eager to apply in my professional endeavors.',
+    domain: 'Stock Marketing',
+    quote: 'Boom rewarding. The program provided me with invaluable trading insights and risk management strategies that I am eager to apply professionally.',
     initials: 'IY'
   },
   {
     name: 'Sneha Reddy',
     college: '2025 graduate, Hyderabad',
-    domain: 'Cyber Security',
-    quote: 'The ethical hacking labs and threat analysis guidance were top notch. Practical hands-on experience with real security tools gave my resume the edge it needed.',
+    domain: 'AutoCAD',
+    quote: 'The architectural drafting labs and 3D modeling guidance were top notch. Practical hands-on experience with real structural plans gave my resume the edge it needed.',
     initials: 'SR'
-  },
-  {
-    name: 'Vikram Mehta',
-    college: '2024 graduate, Mumbai',
-    domain: 'DevOps',
-    quote: 'Mastered Docker, Kubernetes, and Terraform with continuous mentor support. The CI/CD pipeline project I built is now a major talking point in every interview.',
-    initials: 'VM'
-  },
-  {
-    name: 'Ananya Gupta',
-    college: '2026 graduate, Kolkata',
-    domain: 'AI & ML',
-    quote: 'Generative AI and LLM project modules helped me build something I could actually show in interviews. The domain guidance was genuinely transformational.',
-    initials: 'AG'
-  },
-  {
-    name: 'Rohan Verma',
-    college: '2025 graduate, Jaipur',
-    domain: 'Full Stack Dev',
-    quote: 'Building full-stack MERN apps with live corporate codebases set my resume apart. The structured roadmap made it clear what to build and why.',
-    initials: 'RV'
-  },
-  {
-    name: 'Kavya Nair',
-    college: '2026 graduate, Kochi',
-    domain: 'UI / UX Design',
-    quote: 'The mentor reviewed my Figma prototypes in detail and helped me understand design systems from a product perspective, not just aesthetics.',
-    initials: 'KN'
-  },
-  {
-    name: 'Arjun Krishnamurthy',
-    college: '2025 graduate, Chennai',
-    domain: 'Cloud Computing',
-    quote: 'I went from being confused about certifications to having a working AWS architecture deployed and documented. This is what internship should look like.',
-    initials: 'AKR'
-  },
-  {
-    name: 'Priya Mukherjee',
-    college: '2024 graduate, Kolkata',
-    domain: 'Data Analytics',
-    quote: 'The Power BI project with real datasets was exactly what I needed. My portfolio went from empty to impressive in 8 weeks.',
-    initials: 'PM'
-  },
-  {
-    name: 'Siddharth Joshi',
-    college: '2026 graduate, Ahmedabad',
-    domain: 'Android App Dev',
-    quote: 'Built and published my first Kotlin app on the Play Store during the program. Having a live app link in my resume changed everything.',
-    initials: 'SJ'
-  },
-  {
-    name: 'Megha Singh',
-    college: '2025 graduate, Lucknow',
-    domain: 'Data Science',
-    quote: 'The structured approach to learning Python and building predictive models gave me confidence that no online course ever did. The mentor reviews were honest and detailed.',
-    initials: 'MS'
-  },
-  {
-    name: 'Tanmay Kulkarni',
-    college: '2024 graduate, Nagpur',
-    domain: 'DevOps',
-    quote: 'I had zero DevOps knowledge when I joined. By the end I had a working Jenkins pipeline, Docker containers, and a monitored deployment. Incredible structured guidance.',
-    initials: 'TK'
-  },
-  {
-    name: 'Divya Sharma',
-    college: '2026 graduate, Bhopal',
-    domain: 'AI',
-    quote: 'The LLM integration project was hands down the best thing on my GitHub. Multiple interviewers specifically asked about it. Worth every session.',
-    initials: 'DS'
-  },
-  {
-    name: 'Nikhil Rao',
-    college: '2025 graduate, Vizag',
-    domain: 'Cyber Security',
-    quote: 'Learned penetration testing concepts in a structured lab environment. The certification badge from the program added real credibility to my profile.',
-    initials: 'NR'
-  },
-  {
-    name: 'Pooja Iyer',
-    college: '2024 graduate, Coimbatore',
-    domain: 'Full Stack Dev',
-    quote: 'The project architecture guidance was invaluable. I now understand how to structure a production-grade application, not just write code that works.',
-    initials: 'PI'
-  },
-  {
-    name: 'Aarav Sharma',
-    college: '2025 graduate, Delhi',
-    domain: 'Machine Learning',
-    quote: 'The hands-on ML project and dedicated mentorship helped me transition from theory to actual deployable models. Got placed within a month of completing the program.',
-    initials: 'AS'
   }
 ];
 
@@ -331,15 +242,15 @@ const REVIEWS = [
 const FAQS = [
   {
     q: 'How does the Adobe Authorized Training Partner certification benefit me?',
-    a: 'As an Official Adobe Authorized Training Partner, our program delivers industry-aligned curriculum and recognized certification badges that recruiters at top tech firms prioritize.'
+    a: 'As an Official Adobe Authorized Training Partner, our program delivers industry-aligned curriculum and recognized certification badges that recruiters at top corporate firms prioritize.'
   },
   {
     q: 'Can I switch or explore multiple of the 10 domains during mentorship?',
-    a: 'Yes! While you select a primary domain for intensive training, our career counselors help align foundational modules across connected domains so you build a versatile tech profile.'
+    a: 'Yes! While you select a primary domain for intensive training, our career counselors help align foundational modules across connected domains so you build a versatile professional profile.'
   },
   {
     q: 'What type of mentorship and project support is provided?',
-    a: 'You get 1:1 dedicated sessions with active industry tech leads, weekly live hands-on labs, portfolio code reviews, and guaranteed interview preparation.'
+    a: 'You get 1:1 dedicated sessions with active industry experts, weekly live hands-on labs, portfolio reviews, and guaranteed interview preparation.'
   },
   {
     q: 'Is there placement assistance provided?',
@@ -347,7 +258,7 @@ const FAQS = [
   }
 ];
 
-const AvgFormPage = () => {
+const WarrFormPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -495,10 +406,10 @@ const AvgFormPage = () => {
               <span>Adobe Certified Training Partner • Live 1:1 Career Mentorship</span>
             </div>
             <h1 className="avg-hero-title">
-              Turn your engineering skills into a portfolio recruiters can <span className="highlight">actually evaluate.</span>
+              Turn your core skills into a portfolio recruiters can <span className="highlight">actually evaluate.</span>
             </h1>
             <p className="avg-hero-desc">
-              Choose the right tech domain, build real projects with mentor feedback, and prepare for internships and placements with a structured career roadmap.
+              Choose the right specialization, build real projects with mentor feedback, and prepare for top-tier placements with a structured career roadmap.
             </p>
 
             <div className="avg-hero-features-list">
@@ -761,7 +672,7 @@ const AvgFormPage = () => {
           <div className="avg-section-header text-center">
             <h2 className="avg-section-title">Is this right for you?</h2>
             <p className="avg-section-sub">
-              Engineering students face common challenges. We built this program to solve them.
+              Students and graduates face common career challenges. We built this program to solve them.
             </p>
           </div>
           
@@ -784,9 +695,9 @@ const AvgFormPage = () => {
               </div>
               <div className="pain-card-content">
                 <h4>Corporate-Level Training</h4>
-                <p>Learn the exact frameworks and workflows used by top product companies. Build applications that meet rigorous enterprise quality standards.</p>
+                <p>Learn the exact frameworks and workflows used by top product companies. Build portfolios that meet rigorous enterprise quality standards.</p>
                 <div className="pain-solution">
-                  <span className="pain-solution-badge">Step 2</span> Train like a Corporate Engineer
+                  <span className="pain-solution-badge">Step 2</span> Train like a Corporate Professional
                 </div>
               </div>
             </div>
@@ -853,7 +764,11 @@ const AvgFormPage = () => {
           <div className="avg-mentors-grid">
             {MENTORS.map((mentor, idx) => (
               <div className="avg-mentor-card" key={idx}>
-                <img src={mentor.img} alt={mentor.name} className="mentor-img" />
+                {mentor.img ? (
+                  <img src={mentor.img} alt={mentor.name} className="mentor-img" />
+                ) : (
+                  <div className="mentor-img-placeholder">{mentor.initials}</div>
+                )}
                 <div className="mentor-info">
                   <h4 className="mentor-name">{mentor.name}</h4>
                   <p className="mentor-role">{mentor.role}</p>
@@ -955,4 +870,4 @@ const AvgFormPage = () => {
   );
 };
 
-export default AvgFormPage;
+export default WarrFormPage;

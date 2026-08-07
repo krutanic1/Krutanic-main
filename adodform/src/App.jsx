@@ -4,6 +4,7 @@ import Home from './Home';
 import MedProFormPage from './MedProFormPage';
 import DataAnalystFormPage from './DataAnalystFormPage';
 import AvgFormPage from './AvgFormPage';
+import WarrFormPage from './WarrFormPage';
 
 const App = () => {
   return (
@@ -13,6 +14,7 @@ const App = () => {
         <Route path="/form" element={<MedProFormPage />} />
         <Route path="/DataAnalytics" element={<DataAnalystFormPage />} />
         <Route path="/avg" element={<AvgFormPage />} />
+        <Route path="/warr" element={<WarrFormPage />} />
       </Routes>
     </Router>
   );

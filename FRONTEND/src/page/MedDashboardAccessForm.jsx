@@ -623,6 +623,7 @@ const MedDashboardAccessForm = () => {
               <option value="Graphics Design">Graphics Design</option>
               <option value="Embedded System">Embedded System</option>
               <option value="Cloud Computing">Cloud Computing</option>
+              <option value="Finance">Finance</option>
              
             </select>
 

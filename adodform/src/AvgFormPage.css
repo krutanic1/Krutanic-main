@@ -575,39 +575,66 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .avg-pain-card {
-  background: var(--bg-surface);
+  position: relative;
+  background-image: linear-gradient(rgba(15, 23, 42, 0.4), rgba(15, 23, 42, 0.6)), url('./assets/pain_card_bg.png');
+  background-size: cover;
+  background-position: center;
   border: 1px solid var(--border-light);
-  border-radius: 12px;
-  padding: 32px 24px;
+  border-radius: 8px;
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
 }
 
-.pain-card-img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 24px;
-  border: 1px solid var(--border-light);
+.pain-card-icon {
+  width: 48px;
+  height: 48px;
+  color: var(--primary-accent);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 20px;
+}
+
+.pain-card-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .avg-pain-card h4 {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: 600;
   margin-bottom: 12px;
+  color: #fff;
+  font-family: var(--font-display);
 }
 
 .avg-pain-card p {
   font-size: 0.95rem;
   color: var(--text-muted);
-  margin-bottom: 24px;
+  margin-bottom: 32px;
+  line-height: 1.6;
 }
 
 .pain-solution {
-  font-size: 0.9rem;
-  color: var(--primary-accent);
-  background: rgba(56, 189, 248, 0.1);
-  padding: 12px;
-  border-radius: 6px;
+  margin-top: auto;
+  font-size: 0.95rem;
+  color: #e2e8f0;
+  border-top: 1px solid var(--border-light);
+  padding-top: 20px;
+  line-height: 1.5;
+}
+
+.pain-solution-badge {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
 }
 
 
@@ -729,6 +756,21 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid var(--border-light);
+}
+
+.mentor-img-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: var(--primary-accent);
+  color: var(--bg-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  flex-shrink: 0;
 }
 
 .mentor-info {
