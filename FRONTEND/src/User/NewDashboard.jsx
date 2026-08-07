@@ -63,6 +63,28 @@ const NewDashboard = () => {
   }, 500);
 
   const handleSubmit = async (data) => {
+    if (data.monthOpted) {
+      const monthMap = { jan:1, january:1, feb:2, february:2, mar:3, march:3, apr:4, april:4, may:5, jun:6, june:6, jul:7, july:7, aug:8, august:8, sep:9, sept:9, september:9, oct:10, october:10, nov:11, november:11, dec:12, december:12 };
+      const normalizedMonth = String(data.monthOpted).trim().toLowerCase();
+      const monthToken = normalizedMonth.split(/[^a-z0-9]+/)[0];
+      const monthNumber = monthMap[monthToken] || (monthToken ? monthMap[monthToken.slice(0, 3)] : null);
+      
+      if (monthNumber) {
+        const yearMatch = normalizedMonth.match(/\b(\d{4})\b/);
+        const year = yearMatch ? parseInt(yearMatch[1], 10) : new Date(data.createdAt || Date.now()).getFullYear();
+        
+        const startDateObj = new Date(`${year}-${String(monthNumber).padStart(2, "0")}-05`);
+        const endDateObj = new Date(startDateObj);
+        endDateObj.setMonth(endDateObj.getMonth() + 2);
+        
+        if (new Date() < endDateObj) {
+          const displayDate = endDateObj.toLocaleDateString("en-GB", { day: '2-digit', month: '2-digit', year: 'numeric' });
+          alert(`You can apply for the certificate only on or after ${displayDate}`);
+          return;
+        }
+      }
+    }
+
     if (!window.confirm("Are you sure your internship is complete? If not, please cancel. If it's complete, click 'ok' to proceed.")) {
       return;
     }
@@ -88,7 +110,7 @@ const NewDashboard = () => {
       fethCertificate();
     } catch (error) {
       console.error("Error adding certificate:", error.response?.data?.error || "Server error");
-      toast.error("Failed to apply, or you have already applied.");
+      toast.error(error.response?.data?.error || "Failed to apply, or you have already applied.");
     }
   };
 

@@ -38,7 +38,7 @@ router.post("/applycertificate", async (req, res) => {
                     const yearSource = yearFromMonthValue || enrollDoc.internshipstartsyear || enrollDoc.clearPaymentMonth || enrollDoc.createdAt;
                     const parsedYear = yearSource ? new Date(yearSource).getFullYear() : new Date().getFullYear();
                     const year = Number.isNaN(parsedYear) ? new Date().getFullYear() : parsedYear;
-                    startdateStr = `${year}-${String(monthNumber).padStart(2, "0")}-01`;
+                    startdateStr = `${year}-${String(monthNumber).padStart(2, "0")}-05`;
                 }
             }
         }
@@ -49,6 +49,11 @@ router.post("/applycertificate", async (req, res) => {
         const endDateObj = new Date(startDateObj);
         endDateObj.setMonth(endDateObj.getMonth() + 2);
         const enddateStr = endDateObj.toISOString();
+
+        if (new Date() < endDateObj) {
+            const displayDate = endDateObj.toLocaleDateString("en-GB", { day: '2-digit', month: '2-digit', year: 'numeric' });
+            return res.status(400).json({ error: `You can apply for the certificate only on or after ${displayDate}` });
+        }
 
         // Unique enrolment ID: KR- + 5 random digits
         const uniqueId = `KR-${Math.floor(10000 + Math.random() * 90000)}`;
