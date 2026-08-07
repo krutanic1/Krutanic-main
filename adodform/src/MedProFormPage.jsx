@@ -283,11 +283,16 @@ const MedProFormPage = () => {
       params.append('name', formData.name);
       params.append('personalEmailId', formData.personalEmailId);
       params.append('contactNumber', formData.contactNumber);
-      params.append('degreeBranch', formData.degreeBranch);
-      params.append('yearOfGraduation', formData.yearOfGraduation);
-      params.append('interestedDomain', formData.selectedDomain);
-      params.append('careerGoal', formData.careerGoal);
-      params.append('primaryHurdle', formData.primaryHurdle);
+      params.append('whatsappNumber', formData.whatsappNumber);
+      params.append('collegeName', formData.collegeName);
+      params.append('branchName', formData.branchName);
+      params.append('studentsCollegeEmailId', formData.studentsCollegeEmailId);
+      params.append('yearOfStudying', formData.yearOfStudying);
+      params.append('placementCellEmailId', formData.placementCellEmailId);
+      params.append('crNameNumber', formData.crNameNumber);
+      params.append('interestedDomain', formData.interestedDomain);
+      params.append('whyLooking', formData.whyLooking);
+      params.append('preferredLanguage', formData.preferredLanguage);
       params.append('formSource', 'medpro');
 
       await fetch(scriptUrl, { 

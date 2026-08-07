@@ -58,9 +58,9 @@ const BriefcaseIcon = ({ size = 18 }) => (
 const DOMAINS_LIST = [
   { id: 1, name: 'Data Science', code: 'DS' },
   { id: 2, name: 'Data Analytics', code: 'DA' },
-  { id: 3, name: 'AI (Artificial Intel)', code: 'AI' },
+  { id: 3, name: 'Artificial intelligence', code: 'AI' },
   { id: 4, name: 'Machine Learning', code: 'ML' },
-  { id: 5, name: 'Full Stack Dev (FSD)', code: 'FSD' },
+  { id: 5, name: 'Full stack web development', code: 'FSD' },
   { id: 6, name: 'Cyber Security', code: 'CS' },
   { id: 7, name: 'Android App Dev', code: 'AD' },
   { id: 8, name: 'UI / UX Design', code: 'UX' },
@@ -355,15 +355,19 @@ const AvgFormPage = () => {
   const [activeFaq, setActiveFaq] = useState(null);
 
   const [formData, setFormData] = useState({
-    name: '',
-    personalEmailId: '',
+    fullName: '',
+    personalEmail: '',
     contactNumber: '',
-    collegeLocation: '',
-    degreeBranch: '',
-    yearOfGraduation: '',
-    selectedDomain: '',
-    careerGoal: '',
-    primaryHurdle: ''
+    whatsappNumber: '',
+    collegeName: '',
+    branchName: '',
+    collegeEmail: '',
+    yearOfStudying: '',
+    placementCellEmail: '',
+    crNameAndNumber: '',
+    interestedDomain: '',
+    primaryObjective: '',
+    preferredLanguage: ''
   });
 
   const handleInputChange = (e) => {
@@ -375,9 +379,9 @@ const AvgFormPage = () => {
   };
 
   const selectDomain = (domainName) => {
-    setFormData(prev => ({ ...prev, selectedDomain: domainName }));
-    if (errors.selectedDomain) {
-      setErrors(prev => ({ ...prev, selectedDomain: '' }));
+    setFormData(prev => ({ ...prev, interestedDomain: domainName }));
+    if (errors.interestedDomain) {
+      setErrors(prev => ({ ...prev, interestedDomain: '' }));
     }
   };
 
@@ -392,26 +396,29 @@ const AvgFormPage = () => {
   const validateStep1 = () => {
     let errs = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.name.trim()) errs.name = 'Full Name is required';
-    if (!formData.personalEmailId.trim() || !emailRegex.test(formData.personalEmailId)) errs.personalEmailId = 'Valid email is required';
+    if (!formData.fullName.trim()) errs.fullName = 'Full Name is required';
+    if (!formData.personalEmail.trim() || !emailRegex.test(formData.personalEmail)) errs.personalEmail = 'Valid email is required';
     if (!formData.contactNumber.trim() || formData.contactNumber.replace(/\D/g, '').length < 7) errs.contactNumber = 'Valid contact number is required';
+    if (!formData.whatsappNumber.trim() || formData.whatsappNumber.replace(/\D/g, '').length < 7) errs.whatsappNumber = 'Valid WhatsApp number is required';
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
 
   const validateStep2 = () => {
     let errs = {};
-    if (!formData.degreeBranch.trim()) errs.degreeBranch = 'Degree / Background is required';
-    if (!formData.yearOfGraduation) errs.yearOfGraduation = 'Graduation Year is required';
-    if (!formData.selectedDomain) errs.selectedDomain = 'Please select a domain';
+    if (!formData.collegeName.trim()) errs.collegeName = 'College Name is required';
+    if (!formData.branchName.trim()) errs.branchName = 'Branch Name is required';
+    if (!formData.collegeEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.collegeEmail)) errs.collegeEmail = 'Valid college email is required';
+    if (!formData.yearOfStudying.trim()) errs.yearOfStudying = 'Year of Studying is required';
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
 
   const validateStep3 = () => {
     let errs = {};
-    if (!formData.careerGoal) errs.careerGoal = 'Please select your career goal';
-    if (!formData.primaryHurdle) errs.primaryHurdle = 'Please select your primary obstacle';
+    if (!formData.interestedDomain) errs.interestedDomain = 'Please select a domain';
+    if (!formData.primaryObjective.trim()) errs.primaryObjective = 'Primary Objective is required';
+    if (!formData.preferredLanguage.trim()) errs.preferredLanguage = 'Preferred Language is required';
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -436,14 +443,19 @@ const AvgFormPage = () => {
 
     try {
       const params = new URLSearchParams();
-      params.append('name', formData.name);
-      params.append('personalEmailId', formData.personalEmailId);
+      params.append('fullName', formData.fullName);
+      params.append('personalEmail', formData.personalEmail);
       params.append('contactNumber', formData.contactNumber);
-      params.append('degreeBranch', formData.degreeBranch);
-      params.append('yearOfGraduation', formData.yearOfGraduation);
-      params.append('interestedDomain', formData.selectedDomain);
-      params.append('careerGoal', formData.careerGoal);
-      params.append('primaryHurdle', formData.primaryHurdle);
+      params.append('whatsappNumber', formData.whatsappNumber);
+      params.append('collegeName', formData.collegeName);
+      params.append('branchName', formData.branchName);
+      params.append('collegeEmail', formData.collegeEmail);
+      params.append('yearOfStudying', formData.yearOfStudying);
+      params.append('placementCellEmail', formData.placementCellEmail);
+      params.append('crNameAndNumber', formData.crNameAndNumber);
+      params.append('interestedDomain', formData.interestedDomain);
+      params.append('primaryObjective', formData.primaryObjective);
+      params.append('preferredLanguage', formData.preferredLanguage);
       params.append('formSource', 'avg');
 
       await fetch(scriptUrl, {
@@ -542,147 +554,106 @@ const AvgFormPage = () => {
                 </div>
 
                 <form onSubmit={handleSubmit}>
-                  {/* Step 1: Basic Info */}
+                  {/* Step 1: Personal Details */}
                   {currentStep === 1 && (
                     <div className="avg-step-content">
                       <div className="avg-form-group">
-                        <label>Full Name</label>
-                        <input
-                          type="text"
-                          name="name"
-                          placeholder="e.g. Rahul Verma"
-                          className="avg-form-input"
-                          value={formData.name}
-                          onChange={handleInputChange}
-                        />
-                        {errors.name && <div className="avg-error-text">{errors.name}</div>}
+                        <label>Full Name *</label>
+                        <input type="text" name="fullName" placeholder="Enter your full name" className="avg-form-input" value={formData.fullName} onChange={handleInputChange} />
+                        {errors.fullName && <div className="avg-error-text">{errors.fullName}</div>}
                       </div>
-
                       <div className="avg-form-group">
-                        <label>Email Address</label>
-                        <input
-                          type="email"
-                          name="personalEmailId"
-                          placeholder="rahul@example.com"
-                          className="avg-form-input"
-                          value={formData.personalEmailId}
-                          onChange={handleInputChange}
-                        />
-                        {errors.personalEmailId && <div className="avg-error-text">{errors.personalEmailId}</div>}
+                        <label>Personal Email *</label>
+                        <input type="email" name="personalEmail" placeholder="john@example.com" className="avg-form-input" value={formData.personalEmail} onChange={handleInputChange} />
+                        {errors.personalEmail && <div className="avg-error-text">{errors.personalEmail}</div>}
                       </div>
-
                       <div className="avg-form-group">
-                        <label>WhatsApp Number</label>
-                        <input
-                          type="tel"
-                          name="contactNumber"
-                          placeholder="+91 98765 43210"
-                          className="avg-form-input"
-                          value={formData.contactNumber}
-                          onChange={handleInputChange}
-                        />
+                        <label>Contact Number *</label>
+                        <input type="tel" name="contactNumber" placeholder="+91" className="avg-form-input" value={formData.contactNumber} onChange={handleInputChange} />
                         {errors.contactNumber && <div className="avg-error-text">{errors.contactNumber}</div>}
+                      </div>
+                      <div className="avg-form-group">
+                        <label>WhatsApp Number *</label>
+                        <input type="tel" name="whatsappNumber" placeholder="+91" className="avg-form-input" value={formData.whatsappNumber} onChange={handleInputChange} />
+                        {errors.whatsappNumber && <div className="avg-error-text">{errors.whatsappNumber}</div>}
                       </div>
                     </div>
                   )}
 
-                  {/* Step 2: Domain & Qualification */}
+                  {/* Step 2: Academic Details */}
                   {currentStep === 2 && (
                     <div className="avg-step-content">
                       <div className="avg-form-group">
-                        <label>Which domain are you most interested in?</label>
+                        <label>College Name *</label>
+                        <input type="text" name="collegeName" placeholder="Your University/College" className="avg-form-input" value={formData.collegeName} onChange={handleInputChange} />
+                        {errors.collegeName && <div className="avg-error-text">{errors.collegeName}</div>}
+                      </div>
+                      <div className="avg-form-group">
+                        <label>Branch Name *</label>
+                        <input type="text" name="branchName" placeholder="e.g. Computer Science" className="avg-form-input" value={formData.branchName} onChange={handleInputChange} />
+                        {errors.branchName && <div className="avg-error-text">{errors.branchName}</div>}
+                      </div>
+                      <div className="avg-form-group">
+                        <label>College Email ID *</label>
+                        <input type="email" name="collegeEmail" placeholder="student@college.edu" className="avg-form-input" value={formData.collegeEmail} onChange={handleInputChange} />
+                        {errors.collegeEmail && <div className="avg-error-text">{errors.collegeEmail}</div>}
+                      </div>
+                      <div className="avg-form-group">
+                        <label>Year Of Studying *</label>
+                        <select name="yearOfStudying" className="avg-form-select" value={formData.yearOfStudying} onChange={handleInputChange}>
+                          <option value="">Select Year</option>
+                          <option value="1st Year">1st Year</option>
+                          <option value="2nd Year">2nd Year</option>
+                          <option value="3rd Year">3rd Year</option>
+                          <option value="4th Year">4th Year</option>
+                          <option value="Graduates">Graduates</option>
+                        </select>
+                        {errors.yearOfStudying && <div className="avg-error-text">{errors.yearOfStudying}</div>}
+                      </div>
+                      <div className="avg-form-group">
+                        <label>Placement Cell Email (Optional)</label>
+                        <input type="email" name="placementCellEmail" placeholder="tpo@college.edu" className="avg-form-input" value={formData.placementCellEmail} onChange={handleInputChange} />
+                      </div>
+                      <div className="avg-form-group">
+                        <label>CR's Name & Number (Optional)</label>
+                        <input type="text" name="crNameAndNumber" placeholder="Name - Phone" className="avg-form-input" value={formData.crNameAndNumber} onChange={handleInputChange} />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Step 3: Program Goals */}
+                  {currentStep === 3 && (
+                    <div className="avg-step-content">
+                      <div className="avg-form-group">
+                        <label>Interested Domain *</label>
                         <div className="avg-domain-select-grid">
                           {DOMAINS_LIST.map((d) => (
                             <div
                               key={d.id}
-                              className={`avg-domain-radio-card ${formData.selectedDomain === d.name ? 'selected' : ''}`}
+                              className={`avg-domain-radio-card ${formData.interestedDomain === d.name ? 'selected' : ''}`}
                               onClick={() => selectDomain(d.name)}
                             >
                               <span className="avg-domain-radio-name">{d.name}</span>
                             </div>
                           ))}
                         </div>
-                        {errors.selectedDomain && <div className="avg-error-text">{errors.selectedDomain}</div>}
+                        {errors.interestedDomain && <div className="avg-error-text">{errors.interestedDomain}</div>}
                       </div>
-
                       <div className="avg-form-group" style={{ marginTop: '16px' }}>
-                        <label>Current Degree / Branch</label>
-                        <input
-                          type="text"
-                          name="degreeBranch"
-                          placeholder="e.g. B.Tech CS, BCA, Working Prof"
-                          className="avg-form-input"
-                          value={formData.degreeBranch}
-                          onChange={handleInputChange}
-                        />
-                        {errors.degreeBranch && <div className="avg-error-text">{errors.degreeBranch}</div>}
-                      </div>
-
-                      <div className="avg-form-group">
-                        <label>Year of Graduation</label>
-                        <select
-                          name="yearOfGraduation"
-                          className="avg-form-select"
-                          value={formData.yearOfGraduation}
-                          onChange={handleInputChange}
-                        >
-                          <option value="">Select Year</option>
-                          <option value="2027">2027</option>
-                          <option value="2026">2026</option>
-                          <option value="2025">2025</option>
-                          <option value="2024">2024</option>
-                          <option value="2023 or earlier">2023 or earlier</option>
+                        <label>Primary Objective *</label>
+                        <select name="primaryObjective" className="avg-form-select" value={formData.primaryObjective} onChange={handleInputChange}>
+                          <option value="">Why are you joining?</option>
+                          <option value="Skill Development & Industry Exposure">Skill Development & Industry Exposure</option>
+                          <option value="Career Growth Opportunity">Career Growth Opportunity</option>
+                          <option value="Learning from Industry Leaders">Learning from Industry Leaders</option>
+                          <option value="To Gain Exposure to Emerging Technologies">To Gain Exposure to Emerging Technologies</option>
                         </select>
-                        {errors.yearOfGraduation && <div className="avg-error-text">{errors.yearOfGraduation}</div>}
+                        {errors.primaryObjective && <div className="avg-error-text">{errors.primaryObjective}</div>}
                       </div>
-                    </div>
-                  )}
-
-                  {/* Step 3: Goals */}
-                  {currentStep === 3 && (
-                    <div className="avg-step-content">
                       <div className="avg-form-group">
-                        <label>What is your primary goal?</label>
-                        <div className="avg-radio-group">
-                          {[
-                            'Prepare for campus placements',
-                            'Switch to a better tech role',
-                            'Build a stronger portfolio',
-                            'Just exploring options'
-                          ].map((goal) => (
-                            <div
-                              key={goal}
-                              className={`avg-radio-pill ${formData.careerGoal === goal ? 'selected' : ''}`}
-                              onClick={() => setFormData(prev => ({ ...prev, careerGoal: goal }))}
-                            >
-                              <span>{goal}</span>
-                              {formData.careerGoal === goal && <CheckIcon size={16} />}
-                            </div>
-                          ))}
-                        </div>
-                        {errors.careerGoal && <div className="avg-error-text">{errors.careerGoal}</div>}
-                      </div>
-
-                      <div className="avg-form-group">
-                        <label>What is holding you back?</label>
-                        <div className="avg-radio-group">
-                          {[
-                            'Lack of real-world projects',
-                            'Not sure which domain to pick',
-                            'Resume not getting shortlisted',
-                            'Need mentor guidance'
-                          ].map((hurdle) => (
-                            <div
-                              key={hurdle}
-                              className={`avg-radio-pill ${formData.primaryHurdle === hurdle ? 'selected' : ''}`}
-                              onClick={() => setFormData(prev => ({ ...prev, primaryHurdle: hurdle }))}
-                            >
-                              <span>{hurdle}</span>
-                              {formData.primaryHurdle === hurdle && <CheckIcon size={16} />}
-                            </div>
-                          ))}
-                        </div>
-                        {errors.primaryHurdle && <div className="avg-error-text">{errors.primaryHurdle}</div>}
+                        <label>Preferred Language *</label>
+                        <input type="text" name="preferredLanguage" placeholder="e.g. English, Hindi" className="avg-form-input" value={formData.preferredLanguage} onChange={handleInputChange} />
+                        {errors.preferredLanguage && <div className="avg-error-text">{errors.preferredLanguage}</div>}
                       </div>
                     </div>
                   )}
@@ -693,10 +664,10 @@ const AvgFormPage = () => {
                       <div className="avg-summary-box">
                         <h4>Confirm your details:</h4>
                         <p>
-                          <strong>Name:</strong> {formData.name}<br />
-                          <strong>Email:</strong> {formData.personalEmailId}<br />
+                          <strong>Name:</strong> {formData.fullName}<br />
+                          <strong>Email:</strong> {formData.personalEmail}<br />
                           <strong>Phone:</strong> {formData.contactNumber}<br />
-                          <strong>Domain:</strong> <span className="highlight-text">{formData.selectedDomain}</span>
+                          <strong>Domain:</strong> <span className="highlight-text">{formData.interestedDomain}</span>
                         </p>
                       </div>
                     </div>
@@ -733,7 +704,7 @@ const AvgFormPage = () => {
                 </div>
                 <h3>Roadmap Request Received</h3>
                 <p>
-                  Thank you <strong>{formData.name}</strong>. Your request for <span className="highlight-text">{formData.selectedDomain}</span> has been registered.
+                  Thank you <strong>{formData.fullName}</strong>. Your request for <span className="highlight-text">{formData.interestedDomain}</span> has been registered.
                 </p>
                 <p className="avg-success-sub">Our career advisor will message you on WhatsApp shortly.</p>
               </div>
