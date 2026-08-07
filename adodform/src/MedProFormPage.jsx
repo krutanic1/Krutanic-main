@@ -276,14 +276,15 @@ const MedProFormPage = () => {
 
     setIsSubmitting(true);
 
-    const proxyUrl = `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/submit-medpro`;
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbzOJAPGeCFFolZIPRXfIo614Gj1TTKyUlxa2w0xgH_WQzjzdGFtwyR3kIRHY9jR8bzPKw/exec";
 
     try {
       // Using mode 'no-cors' to prevent Google Apps Script CORS blocking in the browser
       // We send it as text/plain so we can pass a JSON string without triggering a preflight request
-      await fetch(proxyUrl, { 
+      await fetch(scriptUrl, { 
         method: 'POST', 
-        headers: { 'Content-Type': 'application/json' },
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(formData) 
       });
 

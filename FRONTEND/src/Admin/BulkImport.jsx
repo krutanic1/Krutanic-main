@@ -112,8 +112,22 @@ const BulkImport = () => {
                             Successfully imported: <strong style={{ color: 'green' }}>{importStats.successCount}</strong>
                         </p>
                         <p style={{ margin: '4px 0' }}>
-                            Skipped (duplicates/errors): <strong style={{ color: 'red' }}>{importStats.failCount}</strong>
+                            Skipped (duplicates/errors): <strong style={{ color: 'red' }}>{importStats.duplicateCount + importStats.errorCount}</strong>
                         </p>
+                        
+                        {importStats.errorDetails && importStats.errorDetails.length > 0 && (
+                            <div style={{ marginTop: '15px', background: '#fff1f0', border: '1px solid #ffa39e', padding: '15px', borderRadius: '6px' }}>
+                                <h4 style={{ margin: '0 0 10px', color: '#cf1322' }}>⚠️ Error Details ({importStats.errorDetails.length}):</h4>
+                                <ul style={{ paddingLeft: '20px', margin: 0, fontSize: '13px', color: '#cf1322', maxHeight: '200px', overflowY: 'auto' }}>
+                                    {importStats.errorDetails.map((err, idx) => (
+                                        <li key={idx} style={{ marginBottom: '8px' }}>
+                                            <strong>Reason:</strong> {err.reason} <br />
+                                            <span style={{ color: '#5c0011', fontSize: '12px' }}><strong>Row Data:</strong> {JSON.stringify(err.row)}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

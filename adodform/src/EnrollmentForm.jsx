@@ -192,10 +192,7 @@ const EnrollmentForm = () => {
 
     setIsSubmitting(true);
 
-    // ==========================================
-    // BACKEND PROXY URL (Secured with Rate Limiting)
-    // ==========================================
-    const proxyUrl = `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/submit-enrollment`;
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbyfly2CXZyI_mqGiLrOIyErIcMFtRkECU68WryLt2tWkMmjdlDJHmriJP4Gk4RLSC7YWg/exec";
 
     try {
       const params = new URLSearchParams();
@@ -213,8 +210,9 @@ const EnrollmentForm = () => {
       params.append('whyLooking', formData.whyLooking);
       params.append('preferredLanguage', formData.preferredLanguage);
 
-      await fetch(proxyUrl, { 
-        method: 'POST', 
+      await fetch(scriptUrl, { 
+        method: 'POST',
+        mode: 'no-cors',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: params.toString() 
       });

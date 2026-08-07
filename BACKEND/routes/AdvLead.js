@@ -1694,6 +1694,7 @@ router.post("/bulk-import", upload.single("file"), async (req, res) => {
             let successCount = 0;
             let duplicateCount = 0;
             let errorCount = 0;
+            let errorDetails = [];
             let totalRows = rawLeads.length;
 
             console.log(`Starting process of ${totalRows} leads...`);
@@ -1738,6 +1739,7 @@ router.post("/bulk-import", upload.single("file"), async (req, res) => {
                     if (!leadData.phone_number && !leadData.full_name) {
                         console.log("Skipping row: missing both phone and name", row);
                         errorCount++;
+                        errorDetails.push({ row, reason: "Missing both phone and name" });
                         continue; 
                     }
 
@@ -1794,6 +1796,7 @@ router.post("/bulk-import", upload.single("file"), async (req, res) => {
                 } catch (rowErr) {
                     console.error("Row processing error:", rowErr.message, "Row data:", row);
                     errorCount++;
+                    errorDetails.push({ row, reason: rowErr.message });
                 }
             }
 
@@ -1806,7 +1809,8 @@ router.post("/bulk-import", upload.single("file"), async (req, res) => {
                 totalRows,
                 successCount, 
                 duplicateCount, 
-                errorCount 
+                errorCount,
+                errorDetails
             });
         } catch (error) {
             console.error("Process leads error:", error);

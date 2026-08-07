@@ -171,7 +171,7 @@ const DataAnalystFormPage = () => {
 
     setIsSubmitting(true);
 
-    const proxyUrl = `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/submit-data-analytics`;
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbwb5YK4-lHdJwxRtQDESibo-uyhnXvJU56sn03ztTJYzuEK0c0aUcVJePNy1-k3T3c3Dg/exec";
 
     try {
       const params = new URLSearchParams();
@@ -191,23 +191,16 @@ const DataAnalystFormPage = () => {
       params.append('fundingPlan', formData.fundingPlan);
       params.append('nextStep', formData.nextStep);
 
-      const response = await fetch(proxyUrl, { 
-        method: 'POST', 
+      await fetch(scriptUrl, { 
+        method: 'POST',
+        mode: 'no-cors',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: params.toString() 
       });
 
-      const data = await response.json();
-
       setIsSubmitting(false); 
-      
-      if (data.result === 'success') {
-        setSubmitted(true);
-        toast.success("Application successfully submitted!");
-      } else {
-        console.error("Form submission error from script:", data.error);
-        toast.error("Script Error: " + data.error);
-      }
+      setSubmitted(true);
+      toast.success("Application successfully submitted!");
     } catch (err) {
       console.error("Form submission error:", err);
       setIsSubmitting(false); 
