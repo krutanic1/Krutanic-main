@@ -286,13 +286,14 @@ const MedProFormPage = () => {
       params.append('whatsappNumber', formData.whatsappNumber);
       params.append('collegeName', formData.collegeName);
       params.append('branchName', formData.branchName);
-      params.append('studentsCollegeEmailId', formData.studentsCollegeEmailId);
-      params.append('yearOfStudying', formData.yearOfStudying);
-      params.append('placementCellEmailId', formData.placementCellEmailId);
-      params.append('crNameNumber', formData.crNameNumber);
-      params.append('interestedDomain', formData.interestedDomain);
-      params.append('whyLooking', formData.whyLooking);
-      params.append('preferredLanguage', formData.preferredLanguage);
+      // Map data to the correct Google Apps Script keys so they land in the right columns
+      params.append('studentsCollegeEmailId', formData.yearOfStudying); // maps to Column H (Year Of Studying)
+      params.append('yearOfStudying', formData.interestedDomain); // maps to Column I (Interested Domain)
+      params.append('placementCellEmailId', formData.preferredLanguage); // maps to Column J (Preferred Language)
+      params.append('crNameNumber', formData.studentsCollegeEmailId); // maps to Column K (College Email ID)
+      params.append('interestedDomain', formData.placementCellEmailId); // maps to Column L (Placement Cell Email)
+      params.append('whyLooking', formData.whyLooking); // maps to Column M (Primary Objective)
+      params.append('preferredLanguage', formData.crNameNumber); // maps to Column N (CR's Name & Number)
       params.append('formSource', 'medpro');
 
       await fetch(scriptUrl, { 

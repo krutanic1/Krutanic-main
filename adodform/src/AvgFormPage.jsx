@@ -449,13 +449,14 @@ const AvgFormPage = () => {
       params.append('whatsappNumber', formData.whatsappNumber);
       params.append('collegeName', formData.collegeName);
       params.append('branchName', formData.branchName);
-      params.append('collegeEmail', formData.collegeEmail);
-      params.append('yearOfStudying', formData.yearOfStudying);
-      params.append('placementCellEmail', formData.placementCellEmail);
-      params.append('crNameAndNumber', formData.crNameAndNumber);
-      params.append('interestedDomain', formData.interestedDomain);
-      params.append('primaryObjective', formData.primaryObjective);
-      params.append('preferredLanguage', formData.preferredLanguage);
+      // Map data to the correct Google Apps Script keys so they land in the right columns
+      params.append('collegeEmail', formData.yearOfStudying); // maps to Column H (Year Of Studying)
+      params.append('yearOfStudying', formData.interestedDomain); // maps to Column I (Interested Domain)
+      params.append('placementCellEmail', formData.preferredLanguage); // maps to Column J (Preferred Language)
+      params.append('crNameAndNumber', formData.collegeEmail); // maps to Column K (College Email ID)
+      params.append('interestedDomain', formData.placementCellEmail); // maps to Column L (Placement Cell Email)
+      params.append('primaryObjective', formData.primaryObjective); // maps to Column M (Primary Objective)
+      params.append('preferredLanguage', formData.crNameAndNumber); // maps to Column N (CR's Name & Number)
       params.append('formSource', 'avg');
 
       await fetch(scriptUrl, {
