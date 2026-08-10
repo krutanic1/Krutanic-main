@@ -3,7 +3,7 @@ import axios from "axios";
 import API from "../API";
 
 const LeaderBoard = () => {
-  const [allData, setAllData] = useState([]);
+  const [allData, setAllData] = useState({});
   const [selectedTeam, setSelectedTeam] = useState("");
 
   const today = new Date();
@@ -35,10 +35,10 @@ const LeaderBoard = () => {
 
   const fetchAllData = async () => {
     try {
-      const response = await axios.get(`${API}/bda-with-enrolls`);
+      const response = await axios.get(`${API}/leaderboard-agg`);
       setAllData(response.data);
     } catch (error) {
-      console.error("There was an error fetching all Data:", error);
+      console.error("There was an error fetching leaderboard data:", error);
     }
   };
 
@@ -46,45 +46,31 @@ const LeaderBoard = () => {
     fetchAllData();
   }, []);
 
-  const filteredData = selectedTeam
-    ? allData.filter((bda) => bda.team === selectedTeam)
-    : allData;
-
   const getTop3BDAsByGrossRevenue = (month) => {
-    const bdaRevenueList = filteredData.map((bda) => {
-      const enrollmentsThisMonth = bda.enrollments.filter((enroll) => {
-        const enrollMonth = formatMonth(new Date(enroll.createdAt));
-        return enrollMonth === month && (enroll.programPrice || 0) > 0;
-      });
-
-      const grossRevenue = enrollmentsThisMonth.reduce(
-        (sum, enroll) => sum + (enroll.programPrice || 0),
-        0
-      );
-
-      const paymentCount = enrollmentsThisMonth.length;
-
-      return {
-        fullname: bda.fullname,
-        team: bda.team,
-        grossRevenue,
-        paymentCount,
-      };
-    });
-
-    return bdaRevenueList
-      .sort((a, b) => b.grossRevenue - a.grossRevenue)
-      .slice(0, 5);
+    const monthData = allData[month];
+    if (!monthData) return [];
+    
+    let bdas = monthData.allBDAs || [];
+    if (selectedTeam) {
+      bdas = bdas.filter(bda => bda.team === selectedTeam);
+    }
+    
+    return bdas.slice(0, 5);
   };
 
   const getTotalPaymentsForMonth = (month) => {
-    return filteredData.reduce((count, bda) => {
-      const monthPayments = bda.enrollments.filter((enroll) => {
-        const enrollMonth = formatMonth(new Date(enroll.createdAt));
-        return enrollMonth === month && (enroll.programPrice || 0) > 0;
-      });
-      return count + monthPayments.length;
-    }, 0);
+    const monthData = allData[month];
+    if (!monthData) return 0;
+    
+    // If a team is selected, we should ideally sum only that team's payments,
+    // otherwise show the overall month's payments. 
+    // To match previous logic, we should sum it dynamically if filtered:
+    if (selectedTeam) {
+      return monthData.allBDAs
+        .filter(bda => bda.team === selectedTeam)
+        .reduce((sum, bda) => sum + (bda.paymentCount || 0), 0);
+    }
+    return monthData.totalPayments || 0;
   };
 
   return (

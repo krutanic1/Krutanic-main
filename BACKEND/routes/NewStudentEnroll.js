@@ -959,6 +959,146 @@ router.get("/getmonthlyleads", verifyAnyAuth, async (req, res) => {
   }
 });
 
+// GET request to get aggregated stats for a BDA
+router.get("/getbdadashboardstats", verifyAnyAuth, async (req, res) => {
+  const { counselor } = req.query;
+  try {
+    if (!counselor) return res.status(400).json({ error: "counselor is required" });
+
+    const matchStage = {
+      $match: {
+        counselor: { $regex: new RegExp(`^${counselor}$`, "i") }
+      }
+    };
+
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
+    sixMonthsAgo.setDate(1);
+    sixMonthsAgo.setHours(0, 0, 0, 0);
+
+    const aggregation = await NewEnrollStudent.aggregate([
+      matchStage,
+      {
+        $facet: {
+          totals: [
+            {
+              $group: {
+                _id: null,
+                totalBooked: { $sum: { $ifNull: ["$programPrice", 0] } },
+                totalCredited: { $sum: { $ifNull: ["$paidAmount", 0] } },
+                bookedCount: { $sum: { $cond: [{ $eq: ["$status", "booked"] }, 1, 0] } },
+                fullPaidCount: { $sum: { $cond: [{ $eq: ["$status", "fullPaid"] }, 1, 0] } },
+                defaultCount: { $sum: { $cond: [{ $eq: ["$status", "default"] }, 1, 0] } }
+              }
+            }
+          ],
+          monthly: [
+            {
+              $match: {
+                createdAt: { $gte: sixMonthsAgo }
+              }
+            },
+            {
+              $group: {
+                _id: { year: { $year: "$createdAt" }, month: { $month: "$createdAt" } },
+                booked: { $sum: { $ifNull: ["$programPrice", 0] } },
+                credited: { $sum: { $ifNull: ["$paidAmount", 0] } },
+                count: { $sum: 1 }
+              }
+            },
+            {
+              $sort: { "_id.year": -1, "_id.month": -1 }
+            }
+          ],
+          revenueChart: [
+            {
+              $group: {
+                _id: { year: { $year: "$createdAt" }, month: { $month: "$createdAt" } },
+                revenue: {
+                  $sum: {
+                    $switch: {
+                      branches: [
+                        { case: { $or: [{ $eq: ["$status", "booked"] }, { $eq: ["$status", "default"] }] }, then: { $ifNull: ["$paidAmount", 0] } },
+                        { case: { $eq: ["$status", "fullPaid"] }, then: { $ifNull: ["$programPrice", 0] } }
+                      ],
+                      default: 0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              $sort: { "_id.year": 1, "_id.month": 1 }
+            }
+          ],
+          targetAchieved: [
+            {
+              $match: {
+                $or: [
+                  { status: "fullPaid" },
+                  // Half_Cleared condition requires checking the last element of the remark array.
+                  // For simplicity we can check if "Half_Cleared" is in the remark array, 
+                  // but specifically we should check if it's the last one, or just assume if it's there.
+                  { $expr: { $eq: [{ $arrayElemAt: ["$remark", -1] }, "Half_Cleared"] } }
+                ]
+              }
+            },
+            {
+              $group: {
+                _id: { year: { $year: "$createdAt" }, month: { $month: "$createdAt" } },
+                achieved: { $sum: { $ifNull: ["$paidAmount", 0] } },
+                actualPayments: { $sum: 1 }
+              }
+            }
+          ]
+        }
+      }
+    ]);
+
+    const result = aggregation[0];
+    const totals = result.totals[0] || {
+      totalBooked: 0, totalCredited: 0, bookedCount: 0, fullPaidCount: 0, defaultCount: 0
+    };
+
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const monthlyFormatted = result.monthly.map(m => {
+      const monthName = monthNames[m._id.month - 1];
+      const year = m._id.year;
+      return {
+        month: `${monthName} ${year}`,
+        booked: m.booked,
+        credited: m.credited,
+        pending: m.booked - m.credited,
+        count: m.count
+      };
+    });
+
+    const revenueChart = result.revenueChart.map(m => {
+      const monthName = monthNames[m._id.month - 1];
+      const year = m._id.year;
+      return {
+        month: `${monthName} ${year}`,
+        revenue: m.revenue
+      };
+    });
+
+    const targetAchieved = result.targetAchieved.map(m => {
+      const isoMonth = `${m._id.year}-${String(m._id.month).padStart(2, '0')}`;
+      return {
+        isoMonth,
+        achieved: m.achieved,
+        actualPayments: m.actualPayments
+      };
+    });
+
+    res.json({ totals, monthly: monthlyFormatted, revenueChart, targetAchieved });
+
+  } catch (error) {
+    console.error("Error in /getbdadashboardstats:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 // GET request to retrieve all new student enroll
 router.get("/getnewstudentenroll", verifyAnyAuth, async (req, res) => {
   const { studentenrollid, month, year, startDate, endDate, all, page, limit, status, search, counselor, operationName } = req.query;
@@ -1460,6 +1600,285 @@ router.get("/bda-with-enrolls", async (req, res) => {
     res
       .status(500)
       .json({ error: "Internal Server Error", message: error.message });
+  }
+});
+
+router.get("/leaderboard-agg", async (req, res) => {
+  try {
+    const aggregation = await NewEnrollStudent.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: new Date("2025-08-01") },
+          programPrice: { $gt: 0 }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            counselor: { $toLower: { $ifNull: ["$counselor", ""] } },
+            month: { $month: "$createdAt" },
+            year: { $year: "$createdAt" }
+          },
+          grossRevenue: { $sum: { $ifNull: ["$programPrice", 0] } },
+          paymentCount: { $sum: 1 },
+          originalName: { $first: "$counselor" }
+        }
+      },
+      {
+        $lookup: {
+          from: "bdas",
+          let: { counselorName: "$_id.counselor" },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: [{ $toLower: "$fullname" }, "$$counselorName"] }
+              }
+            },
+            { $project: { team: 1 } }
+          ],
+          as: "bdaInfo"
+        }
+      },
+      {
+        $unwind: { path: "$bdaInfo", preserveNullAndEmptyArrays: true }
+      },
+      {
+        $sort: { grossRevenue: -1 }
+      },
+      {
+        $group: {
+          _id: { year: "$_id.year", month: "$_id.month" },
+          totalPayments: { $sum: "$paymentCount" },
+          allBDAs: {
+            $push: {
+              fullname: "$originalName",
+              team: { $ifNull: ["$bdaInfo.team", ""] },
+              grossRevenue: "$grossRevenue",
+              paymentCount: "$paymentCount"
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          year: "$_id.year",
+          month: "$_id.month",
+          isoMonth: {
+            $concat: [
+              { $toString: "$_id.year" },
+              "-",
+              { $cond: [{ $lt: ["$_id.month", 10] }, { $concat: ["0", { $toString: "$_id.month" }] }, { $toString: "$_id.month" }] }
+            ]
+          },
+          totalPayments: 1,
+          allBDAs: 1
+        }
+      },
+      {
+        $sort: { year: -1, month: -1 }
+      }
+    ]);
+
+    // Convert array to dictionary keyed by isoMonth for O(1) access on the frontend
+    const resultDict = {};
+    aggregation.forEach(item => {
+      resultDict[item.isoMonth] = {
+        totalPayments: item.totalPayments,
+        allBDAs: item.allBDAs
+      };
+    });
+
+    res.status(200).json(resultDict);
+  } catch (error) {
+    console.error("Error in /leaderboard-agg:", error);
+    res.status(500).json({ error: "Internal Server Error", message: error.message });
+  }
+});
+
+router.get("/mentorship-default-agg", async (req, res) => {
+  const { month, year } = req.query;
+  try {
+    let matchStage = {};
+
+    if (month && year) {
+      const monthMap = {
+        "january": 0, "february": 1, "march": 2, "april": 3, "may": 4, "june": 5,
+        "july": 6, "august": 7, "september": 8, "october": 9, "november": 10, "december": 11
+      };
+      const cleanMonth = (month || "").trim().toLowerCase();
+      const monthIndex = monthMap[cleanMonth];
+
+      if (monthIndex !== undefined) {
+        const y = parseInt(year);
+        const start = new Date(y, monthIndex, 1);
+        const end = new Date(y, monthIndex + 1, 0, 23, 59, 59, 999);
+        matchStage.createdAt = {
+          $gte: start,
+          $lte: end
+        };
+      } else {
+        return res.status(400).json({ message: "Invalid month name" });
+      }
+    } else {
+      // Default to current month
+      const now = new Date();
+      const start = new Date(now.getFullYear(), now.getMonth(), 1);
+      const end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+      matchStage.createdAt = { $gte: start, $lte: end };
+    }
+
+    const aggregation = await NewEnrollStudent.aggregate([
+      { $match: matchStage },
+      {
+        $project: {
+          createdAt: 1,
+          counselor: { $ifNull: ["$counselor", "Unknown"] },
+          programPrice: { $ifNull: ["$programPrice", 0] },
+          paidAmount: { $ifNull: ["$paidAmount", 0] }
+        }
+      },
+      {
+        $lookup: {
+          from: "bdas",
+          let: { counselorName: { $toLower: "$counselor" } },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: [{ $toLower: "$fullname" }, "$$counselorName"] }
+              }
+            },
+            { $project: { team: 1 } }
+          ],
+          as: "bdaInfo"
+        }
+      },
+      {
+        $unwind: { path: "$bdaInfo", preserveNullAndEmptyArrays: true }
+      },
+      {
+        $addFields: {
+          team: { $ifNull: ["$bdaInfo.team", "Unknown"] },
+          dateStr: { $dateToString: { format: "%d/%m/%Y", date: "$createdAt" } }
+        }
+      },
+      {
+        $facet: {
+          bdaStats: [
+            {
+              $group: {
+                _id: "$counselor",
+                booked: { $sum: "$programPrice" },
+                credited: { $sum: "$paidAmount" },
+                count: { $sum: 1 }
+              }
+            },
+            {
+              $project: {
+                name: "$_id",
+                booked: 1,
+                credited: 1,
+                count: 1,
+                pending: { $subtract: ["$booked", "$credited"] },
+                ratio: {
+                  $cond: [
+                    { $eq: ["$booked", 0] },
+                    0,
+                    { $multiply: [{ $divide: [{ $subtract: ["$booked", "$credited"] }, "$booked"] }, 100] }
+                  ]
+                }
+              }
+            },
+            { $sort: { ratio: -1 } }
+          ],
+          teamStats: [
+            {
+              $group: {
+                _id: "$team",
+                booked: { $sum: "$programPrice" },
+                credited: { $sum: "$paidAmount" },
+                count: { $sum: 1 }
+              }
+            },
+            {
+              $project: {
+                name: "$_id",
+                booked: 1,
+                credited: 1,
+                count: 1,
+                pending: { $subtract: ["$booked", "$credited"] },
+                ratio: {
+                  $cond: [
+                    { $eq: ["$booked", 0] },
+                    0,
+                    { $multiply: [{ $divide: [{ $subtract: ["$booked", "$credited"] }, "$booked"] }, 100] }
+                  ]
+                }
+              }
+            },
+            { $sort: { ratio: -1 } }
+          ],
+          dailyStats: [
+            {
+              $group: {
+                _id: "$dateStr",
+                date: { $first: "$createdAt" },
+                booked: { $sum: "$programPrice" },
+                credited: { $sum: "$paidAmount" },
+                count: { $sum: 1 }
+              }
+            },
+            {
+              $project: {
+                day: "$_id",
+                date: 1,
+                booked: 1,
+                credited: 1,
+                count: 1,
+                pending: { $subtract: ["$booked", "$credited"] },
+                ratio: {
+                  $cond: [
+                    { $eq: ["$booked", 0] },
+                    0,
+                    { $multiply: [{ $divide: [{ $subtract: ["$booked", "$credited"] }, "$booked"] }, 100] }
+                  ]
+                }
+              }
+            },
+            { $sort: { date: 1 } }
+          ],
+          totals: [
+            {
+              $group: {
+                _id: null,
+                totalBooked: { $sum: "$programPrice" },
+                totalCredited: { $sum: "$paidAmount" }
+              }
+            }
+          ]
+        }
+      }
+    ]);
+
+    const result = aggregation[0] || { bdaStats: [], teamStats: [], dailyStats: [], totals: [{ totalBooked: 0, totalCredited: 0 }] };
+    
+    ['bdaStats', 'teamStats', 'dailyStats'].forEach(key => {
+      if(result[key]) {
+        result[key].forEach(item => {
+           item.ratio = Math.max(0, item.ratio).toFixed(1);
+        });
+      }
+    });
+
+    res.status(200).json({
+      bdaStats: result.bdaStats || [],
+      teamStats: result.teamStats || [],
+      dailyStats: result.dailyStats || [],
+      totals: result.totals[0] || { totalBooked: 0, totalCredited: 0 }
+    });
+  } catch (error) {
+    console.error("Error in /mentorship-default-agg:", error);
+    res.status(500).json({ error: "Internal Server Error", message: error.message });
   }
 });
 

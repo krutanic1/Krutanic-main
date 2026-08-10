@@ -148,6 +148,9 @@ const AdminHeader = () => {
             <Link to="/RevenueSheet">
               <i className="fa fa-line-chart mr-2"></i>Revenue Sheet
             </Link>
+            <Link to="/MentorshipDefaultRatio">
+              <i className="fa fa-percent mr-2"></i>Default Ratio
+            </Link>
 
             <Link to="/CreateInterview">
               <i className="fa fa-calendar-plus-o mr-2"></i>Create Mock Interview
