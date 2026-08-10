@@ -12,6 +12,11 @@ import sachinImg from "../../../assets/mentors/sachin.jpg";
 import certInternship from '../../../assets/certificates/c/internship.jpg';
 import certTraining from '../../../assets/certificates/c/training.jpg';
 import timelineBg from '../../../assets/timeline_bg.png';
+import modulesBg from '../../../assets/modules_bg.png';
+import learnBg from '../../../assets/learn_bg.png';
+import syllabusBg from '../../../assets/syllabus_bg.png';
+import projectsBg from '../../../assets/projects_bg.png';
+import experienceBg from '../../../assets/experience_bg.png';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Slider from "react-slick";
@@ -35,7 +40,7 @@ const Countdown = ({ targetOffsetMinutes = 30 }) => {
 
 const learningCategories = [
   {
-    title: "Solo Sprint",
+    title: "Self-Guided",
     subtitle: "Learn at your own pace",
     price: "₹6,999",
     theme: "blue",
@@ -52,13 +57,13 @@ const learningCategories = [
     links: ["Slot Booking Link"]
   },
   {
-    title: "Live Edge",
+    title: "Instructor-Led",
     subtitle: "Get real time assistance",
     price: "₹9,999",
     theme: "purple",
     icon: FaChalkboardTeacher,
     features: [
-      "All benefits of Solo Sprint",
+      "All benefits of Self-Guided",
       "Live Sessions",
       "Doubt Clearing Session",
       "Mentor Guidance",
@@ -67,13 +72,13 @@ const learningCategories = [
     links: ["Slot Booking Link", "Full Registration Link"]
   },
   {
-    title: "Career Edge",
+    title: "Career Advancement",
     subtitle: "Get Job ready",
     price: "₹15,999",
     theme: "green",
     icon: FaBriefcase,
     features: [
-      "All benefits of Solo Sprint + Live Edge",
+      "All benefits of Self-Guided + Instructor-Led",
       "Placement Assistance",
       "Mock Interviews",
       "Access to Our Hiring Partners",
@@ -259,7 +264,7 @@ const MentorshipCourseDetails = () => {
         <section className="py-24 bg-white relative overflow-hidden">
           {/* Subtle geometric background image */}
           <div 
-            className="absolute top-0 left-0 w-full h-full opacity-[0.25] pointer-events-none z-0" 
+            className="absolute top-0 left-0 w-full h-full opacity-100 pointer-events-none z-0" 
             style={{ backgroundImage: `url(${timelineBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}
           ></div>
           
@@ -358,8 +363,13 @@ const MentorshipCourseDetails = () => {
       )}
 
       {data.moduleOverview?.length > 0 && (
-        <section className="py-24 bg-[#F8FAFC]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-24 bg-[#F8FAFC] relative overflow-hidden">
+          {/* Subtle background image */}
+          <div 
+            className="absolute inset-0 w-full h-full opacity-100 pointer-events-none z-0" 
+            style={{ backgroundImage: `url(${modulesBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}
+          ></div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-extrabold text-[#0F172A] mb-4">Modules <span className="text-blue-600">Overview</span></h2>
               <p className="text-slate-500 text-lg max-w-2xl mx-auto">Master these essential technologies and tools to become a complete professional in this domain.</p>
@@ -389,9 +399,14 @@ const MentorshipCourseDetails = () => {
       {/* Premium Dark Outcomes Section */}
       {data.outcomes?.length > 0 && (
         <section className="relative py-28 bg-[#0B0F19] overflow-hidden">
+          {/* Background image */}
+          <div 
+            className="absolute inset-0 w-full h-full opacity-40 pointer-events-none z-0" 
+            style={{ backgroundImage: `url(${learnBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}
+          ></div>
           {/* Abstract Ambient Glows */}
-          <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none -translate-y-1/2"></div>
-          <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-cyan-600/10 rounded-full blur-[100px] pointer-events-none translate-y-1/2"></div>
+          <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none -translate-y-1/2 z-0"></div>
+          <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-cyan-600/10 rounded-full blur-[100px] pointer-events-none translate-y-1/2 z-0"></div>
           
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-20">
@@ -488,8 +503,13 @@ const MentorshipCourseDetails = () => {
       )}
 
       {/* Syllabus Section */}
-      <section className="py-20 bg-[#F4F7FB]">
-        <div className="max-w-5xl mx-auto px-4">
+      <section className="py-20 bg-[#F4F7FB] relative overflow-hidden">
+        {/* Background image */}
+        <div 
+          className="absolute inset-0 w-full h-full opacity-60 pointer-events-none z-0" 
+          style={{ backgroundImage: `url(${syllabusBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}
+        ></div>
+        <div className="max-w-5xl mx-auto px-4 relative z-10">
           <h2 className="text-center text-3xl md:text-4xl font-bold text-black mb-12 font-sans tracking-tight">
             Syllabus
           </h2>
@@ -527,8 +547,13 @@ const MentorshipCourseDetails = () => {
       </section>
 
       {/* Projects Showcase */}
-      <section className="cd-section cd-projects">
-        <div className="cd-section__inner">
+      <section className="cd-section cd-projects relative overflow-hidden">
+        {/* Background image */}
+        <div 
+          className="absolute inset-0 w-full h-full opacity-60 pointer-events-none z-0" 
+          style={{ backgroundImage: `url(${projectsBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}
+        ></div>
+        <div className="cd-section__inner relative z-10">
           <div className="cd-section__header">
             <h2 className="cd-section__title">Real-world <span>Projects</span></h2>
             <p className="cd-section__sub">Build a portfolio that gets you hired. High-impact projects with real outcomes.</p>
@@ -644,6 +669,11 @@ const MentorshipCourseDetails = () => {
 
       {/* Light Glassmorphism Experience & Mentor Section */}
       <section className="relative py-24 overflow-hidden bg-[#F8FAFC]">
+        {/* Background image */}
+        <div 
+          className="absolute inset-0 w-full h-full opacity-60 pointer-events-none z-0" 
+          style={{ backgroundImage: `url(${experienceBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}
+        ></div>
         {/* Soft Pastel Mesh Gradients for Light Glassmorphism */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
           <div className="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] bg-blue-400/20 rounded-full blur-[100px] mix-blend-multiply"></div>

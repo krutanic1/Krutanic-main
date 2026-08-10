@@ -480,12 +480,12 @@ export const allMentorshipData = {
     aboutDescription: 'Krutanic is at the forefront of transforming education through cutting-edge technology. Our comprehensive platform empowers learners with personalized learning experiences, collaborative tools, and real-time analytics. With adaptive assessments and interactive content creation, we enhance student engagement and achievement. Join us in revolutionizing education for the digital age, driving positive outcomes and preparing learners for success in tomorrow\'s world.',
     whyTitle: 'Why Data Science?',
     whyPoints: [
-      'Data analysts turn raw data into actionable insights, helping businesses make smarter decisions.',
-      'Their ability to identify patterns and trends improves operational efficiency and strategy.',
-      'High demand across industries like finance, healthcare, marketing, and e-commerce fuels strong career growth.',
-      'Data analytics skills are practical and versatile — from Excel and SQL to Python and Power BI.',
-      'Analysts often collaborate with stakeholders, enhancing their communication and business acumen.',
-      'It serves as a stepping stone to advanced roles like data scientist, BI analyst, and machine learning engineer.'
+      'Data Scientists build intelligent systems that drive automated decision-making.',
+      'Master advanced machine learning algorithms and predictive modeling.',
+      'High demand across tech, finance, healthcare, and e-commerce for ML models.',
+      'Deep dive into Python, Pandas, Scikit-Learn, TensorFlow, and NLP.',
+      'Create AI-driven solutions that transform raw data into predictive assets.',
+      'Essential for roles like Data Scientist, Machine Learning Engineer, and AI Researcher.'
     ],
     trainingProgram: [
       {
@@ -508,18 +508,18 @@ export const allMentorshipData = {
       }
     ],
     moduleOverview: [
-      'Introduction to Data Analytics',
-      'Excel for Data Analysis',
-      'SQL for Data Extraction',
-      'Data Cleaning and Preprocessing',
+      'Introduction to Data Science & Python',
+      'Advanced Statistics & Probability',
+      'Data Wrangling with Pandas & NumPy',
       'Exploratory Data Analysis (EDA)',
-      'Statistics for Data Analytics',
-      'Dashboarding and Reporting',
-      'Case Studies & Industry Applications',
-      'Python for Data Analytics',
-      'Data Visualization with Power BI/Tableau',
-      'Business Analytics Concepts',
-      'Capstone Project & Interview Preparation'
+      'Machine Learning: Supervised Learning',
+      'Machine Learning: Unsupervised Learning',
+      'Model Evaluation & Tuning',
+      'Deep Learning & Neural Networks',
+      'Natural Language Processing (NLP)',
+      'Computer Vision Basics',
+      'Deployment & MLOps',
+      'Capstone Project & Interview Prep'
     ],
     mentor: {
       name: 'Subra Prakash',
@@ -529,51 +529,51 @@ export const allMentorshipData = {
     },
     mentorImage: subhraImg,
     outcomes: [
-      { title: 'Data Storytelling', desc: 'Transform raw data into actionable insights and clear recommendations for business stakeholders.', icon: FaChartLine },
-      { title: 'Excel, SQL & Python', desc: 'Work fluently with spreadsheets, SQL queries, and Python-based data workflows.', icon: FaCode },
-      { title: 'Visualization & BI', desc: 'Build dashboards and reports using Power BI, Tableau, and exploratory data analysis techniques.', icon: FaBriefcase },
-      { title: 'Career Readiness', desc: 'Prepare for analyst roles with capstone projects, interview prep, and portfolio support.', icon: FaUserGraduate },
+      { title: 'Predictive Modeling', desc: 'Build robust machine learning models to forecast trends and automate decisions.', icon: FaChartLine },
+      { title: 'Advanced Python', desc: 'Write efficient Python code for data processing, analysis, and ML pipelines.', icon: FaCode },
+      { title: 'Deep Learning', desc: 'Train neural networks using TensorFlow/Keras for complex data tasks.', icon: FaBriefcase },
+      { title: 'Career Readiness', desc: 'Prepare for Data Scientist roles with capstone projects and interview prep.', icon: FaUserGraduate },
     ],
     tools: [
-      { name: 'Microsoft Excel' },
-      { name: 'SQL (MySQL/PostgreSQL)' },
-      { name: 'Python (Pandas & NumPy)' },
-      { name: 'Jupyter Notebook' },
-      { name: 'Google Sheets / Looker Studio' },
-      { name: 'Power BI / Tableau' }
+      { name: 'Python' },
+      { name: 'Scikit-Learn' },
+      { name: 'TensorFlow / Keras' },
+      { name: 'Pandas & NumPy' },
+      { name: 'Matplotlib & Seaborn' },
+      { name: 'Jupyter Notebook' }
     ],
     curriculum: [
-      { module: 'Module 1', title: 'Introduction to Data Analytics', topics: ['Understand the role of a data analyst', 'Overview of data types and sources', 'Analytics process and life cycle', 'Real-world use cases across industries'] },
-      { module: 'Module 2', title: 'Excel for Data Analysis', topics: ['Data sorting, filtering, and formatting', 'Formulas, functions, and pivot tables', 'Charts and graphs for visualization', 'Lookup functions (VLOOKUP, INDEX-MATCH)'] },
-      { module: 'Module 3', title: 'SQL for Data Extraction', topics: ['Basic to advanced SQL queries', 'Filtering, joining, grouping, and aggregating data', 'Subqueries and nested queries', 'Creating and managing relational databases'] },
-      { module: 'Module 4', title: 'Data Cleaning and Preprocessing', topics: ['Handling missing and duplicate values', 'Data type conversions', 'Outlier detection and treatment', 'Normalization and standardization'] },
-      { module: 'Module 5', title: 'Exploratory Data Analysis (EDA)', topics: ['Analyzing distributions and patterns', 'Correlation and feature relationships', 'Univariate and bivariate analysis', 'Visualizing trends and summaries'] },
-      { module: 'Module 6', title: 'Statistics for Data Analytics', topics: ['Descriptive statistics: mean, median, mode', 'Probability distributions', 'Hypothesis testing and p-values', 'Statistical significance and confidence intervals'] },
-      { module: 'Module 7', title: 'Dashboarding and Reporting', topics: ['Creating dashboards and reports', 'Charts: bar, line, pie, maps, and more', 'Filtering and slicers for interactivity', 'Sharing reports and publishing dashboards'] },
-      { module: 'Module 8', title: 'Case Studies & Industry Applications', topics: ['Domain-wise analytics: healthcare, e-commerce, finance', 'Solving business problems with data', 'End-to-end project simulations', 'Interpreting analytics results for stakeholders'] },
-      { module: 'Module 9', title: 'Python for Data Analytics', topics: ['Python basics: variables, loops, functions', 'Using Pandas and NumPy for data manipulation', 'Reading and writing datasets (CSV, Excel)', 'Data wrangling and transformation'] },
-      { module: 'Module 10', title: 'Data Visualization with Power BI/Tableau', topics: ['Creating dashboards and reports', 'Charts: bar, line, pie, maps, and more', 'Filtering and slicers for interactivity', 'Sharing reports and publishing dashboards'] },
-      { module: 'Module 11', title: 'Business Analytics Concepts', topics: ['KPI identification and tracking', 'A/B testing and experimentation', 'Forecasting and trend analysis', 'Use cases in sales, marketing, finance, and HR'] },
-      { module: 'Module 12', title: 'Capstone Project & Interview Preparation', topics: ['Execute a real-world data analytics project', 'Prepare portfolio-ready visualizations and reports', 'Practice interview questions and analytics case rounds', 'Placement assistance mock interview preparation'] }
+      { module: 'Module 1', title: 'Introduction to Data Science & Python', topics: ['Python basics and advanced structures', 'Data Science lifecycle', 'Working with Jupyter Notebooks'] },
+      { module: 'Module 2', title: 'Advanced Statistics & Probability', topics: ['Probability distributions', 'Hypothesis testing', 'A/B testing and confidence intervals'] },
+      { module: 'Module 3', title: 'Data Wrangling with Pandas & NumPy', topics: ['Data manipulation', 'Handling missing data', 'Feature engineering and selection'] },
+      { module: 'Module 4', title: 'Exploratory Data Analysis (EDA)', topics: ['Data visualization using Matplotlib & Seaborn', 'Identifying patterns and outliers', 'Correlation analysis'] },
+      { module: 'Module 5', title: 'Machine Learning: Supervised Learning', topics: ['Linear & Logistic Regression', 'Decision Trees & Random Forests', 'Support Vector Machines (SVM)'] },
+      { module: 'Module 6', title: 'Machine Learning: Unsupervised Learning', topics: ['K-Means Clustering', 'Hierarchical Clustering', 'Principal Component Analysis (PCA)'] },
+      { module: 'Module 7', title: 'Model Evaluation & Tuning', topics: ['Cross-validation', 'Hyperparameter tuning', 'ROC-AUC and performance metrics'] },
+      { module: 'Module 8', title: 'Deep Learning & Neural Networks', topics: ['Introduction to Artificial Neural Networks', 'Building models with TensorFlow/Keras', 'Optimization and backpropagation'] },
+      { module: 'Module 9', title: 'Natural Language Processing (NLP)', topics: ['Text preprocessing', 'TF-IDF and Word Embeddings', 'Sentiment analysis'] },
+      { module: 'Module 10', title: 'Computer Vision Basics', topics: ['Image processing', 'Convolutional Neural Networks (CNNs)', 'Object detection basics'] },
+      { module: 'Module 11', title: 'Deployment & MLOps', topics: ['Model deployment with Flask/FastAPI', 'Docker containerization', 'Cloud deployment basics'] },
+      { module: 'Module 12', title: 'Capstone Project & Interview Prep', topics: ['Execute an end-to-end Data Science project', 'Portfolio building', 'Mock interviews and technical rounds'] }
     ],
     projects: [
       {
         title: 'Minor Industrial Project',
-        desc: 'A guided project where you clean, analyze, and visualize a real business dataset under mentor supervision.',
-        tech: ['Excel', 'SQL', 'Power BI'],
-        impact: 'Strong understanding of end-to-end data analytics project workflow in a mentor-led setup.'
+        desc: 'Build a predictive model to forecast sales or customer churn using Scikit-Learn.',
+        tech: ['Python', 'Scikit-Learn', 'Pandas'],
+        impact: 'Gain hands-on experience in training, testing, and evaluating supervised machine learning models.'
       },
       {
         title: 'Major Industrial Project',
-        desc: 'A production-style analytics project with dashboards, reporting, and actionable stakeholder insights.',
-        tech: ['Python', 'SQL', 'Tableau', 'Power BI'],
-        impact: 'Portfolio-ready major project showcasing ownership, scalability, and delivery readiness.'
+        desc: 'Train and deploy a deep learning model for image classification or NLP sentiment analysis.',
+        tech: ['TensorFlow', 'Keras', 'Python'],
+        impact: 'Portfolio-ready deep learning project showcasing ability to handle complex unstructured data.'
       },
       {
         title: 'Capstone Project',
-        desc: 'A comprehensive data analytics platform with advanced dashboarding, predictive analytics, and business intelligence features integrated into a cohesive solution.',
-        tech: ['Python', 'Advanced SQL', 'Tableau/Power BI'],
-        impact: 'Demonstrates expertise in end-to-end data pipelines, advanced analytics, and stakeholder-ready insights delivery.'
+        desc: 'An end-to-end AI pipeline integrating data ingestion, model training, and a web API deployment for real-time predictions.',
+        tech: ['Python', 'FastAPI', 'Docker'],
+        impact: 'Demonstrates expertise in full-stack data science from data engineering to model deployment.'
       }
     ],
     milestones: [
