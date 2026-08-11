@@ -236,7 +236,7 @@ exports.getAdminUsers = async (req, res) => {
 
     const memberData = users.map(u => {
       const records = recordsByUser[u._id.toString()] || [];
-      const lateThresholdMins = u.role === "BOE" ? (11 * 60 + 35) : (11 * 60 + 5);
+      const lateThresholdMins = u.role === "BOE" ? (11 * 60 + 30) : (11 * 60 + 5);
 
       let lateCount = 0;
       let halfDayCount = 0;
@@ -325,7 +325,7 @@ exports.getAdminUserHistory = async (req, res) => {
     
     // Fetch user to determine role
     const user = await AtdUser.findById(userId).select("role");
-    const lateThresholdMins = user?.role === "BOE" ? (11 * 60 + 35) : (11 * 60 + 5);
+    const lateThresholdMins = user?.role === "BOE" ? (11 * 60 + 30) : (11 * 60 + 5);
 
     const rawData = await Attendance.find(filter)
       .sort({ timestamp: -1 })

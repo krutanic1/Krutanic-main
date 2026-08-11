@@ -124,8 +124,8 @@ const generateAttendanceReportEmail = (user, monthName, year, stats) => {
 
             <p style="font-size: 13px; color: #64748b; margin-top: 20px;">
                 <strong>Note:</strong> Attendance is calculated based on the following rules (IST):<br/>
-                • Before ${user.role === "BOE" ? "11:35" : "11:05"} AM: Full Present<br/>
-                • ${user.role === "BOE" ? "11:35" : "11:05"} AM - 02:00 PM: Late Login<br/>
+                • Before ${user.role === "BOE" ? "11:30" : "11:05"} AM: Full Present<br/>
+                • ${user.role === "BOE" ? "11:30" : "11:05"} AM - 02:00 PM: Late Login<br/>
                 • After 02:00 PM: Half Day
             </p>
         </div>
@@ -165,7 +165,7 @@ const generateLateWarningEmail = (user, lateCount) => {
         <p>This is an automated notification regarding your attendance for today.</p>
         
         <div class="warning-box">
-            Our records show that you logged in after ${user.role === "BOE" ? "11:35" : "11:05"} AM today.
+            Our records show that you logged in after ${user.role === "BOE" ? "11:30" : "11:05"} AM today.
         </div>
 
         <p>Currently, you have accumulated <span class="highlight">${lateCount} late logins</span> in this month.</p>
@@ -174,7 +174,7 @@ const generateLateWarningEmail = (user, lateCount) => {
             IMPORTANT: 3 late logins in a month will lead to a 1-day Loss of Pay (LOP).
         </p>
 
-        <p>Please ensure you check in before ${user.role === "BOE" ? "11:35" : "11:05"} AM to avoid any salary deductions.</p>
+        <p>Please ensure you check in before ${user.role === "BOE" ? "11:30" : "11:05"} AM to avoid any salary deductions.</p>
         
         <div class="footer">
             <p><strong>Krutanic Attendance System</strong></p>
@@ -252,7 +252,7 @@ const sendMonthlyAttendanceReports = async (targetUserId = null, targetMonth = n
           const dateStr = istTime.getUTCDate() + ' ' + istTime.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' });
           const timeStr = istTime.getUTCHours().toString().padStart(2, '0') + ':' + istTime.getUTCMinutes().toString().padStart(2, '0');
 
-          const lateThresholdMins = user.role === "BOE" ? (11 * 60 + 35) : (11 * 60 + 5);
+          const lateThresholdMins = user.role === "BOE" ? (11 * 60 + 30) : (11 * 60 + 5);
 
           if (totalMinutes > 14 * 60) {
             stats.half++;
@@ -319,7 +319,7 @@ const checkDailyLateLogins = async () => {
       const user = await AtdUser.findById(record.userId);
       if (!user || !user.email) continue;
       
-      const lateThresholdMins = user.role === "BOE" ? (11 * 60 + 35) : (11 * 60 + 5);
+      const lateThresholdMins = user.role === "BOE" ? (11 * 60 + 30) : (11 * 60 + 5);
 
       // If logged in after the late threshold
       if (totalMinutes > lateThresholdMins) {

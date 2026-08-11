@@ -161,7 +161,7 @@ exports.getHistory = async (req, res) => {
     
     // Fetch user to get their role
     const user = await AtdUser.findById(req.user._id).select("role");
-    const lateThresholdMins = user?.role === "BOE" ? (11 * 60 + 35) : (11 * 60 + 5);
+    const lateThresholdMins = user?.role === "BOE" ? (11 * 60 + 30) : (11 * 60 + 5);
     
     const globalTotal = await Attendance.countDocuments({ userId: req.user._id });
     // Calculate counts in JS
