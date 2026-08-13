@@ -186,9 +186,9 @@ const PremiumRing = ({ pct, size = 130 }) => {
 /* ─── main ─────────────────────────────────────────────────────── */
 const MentorshipDefaultRatio = () => {
   const [selectedMonth, setSelectedMonth] = useState(todayYM());
-  const [stats, setStats] = useState({ bdaStats: [], teamStats: [], dailyStats: [], totals: { totalBooked: 0, totalCredited: 0 } });
+  const [stats, setStats] = useState({ bdaStats: [], teamStats: [], dailyStats: [], verticalStats: [], totals: { totalBooked: 0, totalCredited: 0 } });
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("team"); // bda, team, daily
+  const [activeTab, setActiveTab] = useState("team"); // bda, team, daily, vertical
 
   useEffect(() => {
     const fetch = async () => {
@@ -230,6 +230,9 @@ const MentorshipDefaultRatio = () => {
   } else if (activeTab === "daily") {
     tableData = stats.dailyStats || [];
     nameLabel = "Date";
+  } else if (activeTab === "vertical") {
+    tableData = stats.verticalStats || [];
+    nameLabel = "Vertical (Domain)";
   }
 
   return (
@@ -324,6 +327,12 @@ const MentorshipDefaultRatio = () => {
             onClick={() => setActiveTab("bda")}
           >
             <Users size={16} /> BDA Wise
+          </button>
+          <button 
+            className={`mdr-btn ${activeTab === "vertical" ? "mdr-tab-active" : "mdr-tab-inactive"}`} 
+            onClick={() => setActiveTab("vertical")}
+          >
+            <Layers size={16} /> Vertical Wise
           </button>
           <button 
             className={`mdr-btn ${activeTab === "daily" ? "mdr-tab-active" : "mdr-tab-inactive"}`} 

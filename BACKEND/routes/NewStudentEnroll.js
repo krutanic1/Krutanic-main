@@ -1734,6 +1734,7 @@ router.get("/mentorship-default-agg", async (req, res) => {
         $project: {
           createdAt: 1,
           counselor: { $ifNull: ["$counselor", "Unknown"] },
+          domain: { $ifNull: ["$domain", "Unknown"] },
           programPrice: { $ifNull: ["$programPrice", 0] },
           paidAmount: { $ifNull: ["$paidAmount", 0] }
         }
@@ -1847,6 +1848,33 @@ router.get("/mentorship-default-agg", async (req, res) => {
             },
             { $sort: { date: 1 } }
           ],
+          verticalStats: [
+            {
+              $group: {
+                _id: "$domain",
+                booked: { $sum: "$programPrice" },
+                credited: { $sum: "$paidAmount" },
+                count: { $sum: 1 }
+              }
+            },
+            {
+              $project: {
+                name: "$_id",
+                booked: 1,
+                credited: 1,
+                count: 1,
+                pending: { $subtract: ["$booked", "$credited"] },
+                ratio: {
+                  $cond: [
+                    { $eq: ["$booked", 0] },
+                    0,
+                    { $multiply: [{ $divide: [{ $subtract: ["$booked", "$credited"] }, "$booked"] }, 100] }
+                  ]
+                }
+              }
+            },
+            { $sort: { ratio: -1 } }
+          ],
           totals: [
             {
               $group: {
@@ -1860,9 +1888,9 @@ router.get("/mentorship-default-agg", async (req, res) => {
       }
     ]);
 
-    const result = aggregation[0] || { bdaStats: [], teamStats: [], dailyStats: [], totals: [{ totalBooked: 0, totalCredited: 0 }] };
+    const result = aggregation[0] || { bdaStats: [], teamStats: [], dailyStats: [], verticalStats: [], totals: [{ totalBooked: 0, totalCredited: 0 }] };
     
-    ['bdaStats', 'teamStats', 'dailyStats'].forEach(key => {
+    ['bdaStats', 'teamStats', 'dailyStats', 'verticalStats'].forEach(key => {
       if(result[key]) {
         result[key].forEach(item => {
            item.ratio = Math.max(0, item.ratio).toFixed(1);
@@ -1874,6 +1902,7 @@ router.get("/mentorship-default-agg", async (req, res) => {
       bdaStats: result.bdaStats || [],
       teamStats: result.teamStats || [],
       dailyStats: result.dailyStats || [],
+      verticalStats: result.verticalStats || [],
       totals: result.totals[0] || { totalBooked: 0, totalCredited: 0 }
     });
   } catch (error) {

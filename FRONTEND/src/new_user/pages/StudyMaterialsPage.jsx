@@ -26,7 +26,7 @@ const StudyMaterialsPage = () => {
                     }}
                 >
                     
-                    //date and time fix
+                   
                     <span className="material-symbols-outlined" style={{ fontSize: '48px', color: '#ff6b00', marginBottom: '15px' }}>
                         auto_stories
                     </span>
