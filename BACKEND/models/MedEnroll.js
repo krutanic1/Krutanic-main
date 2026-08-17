@@ -85,6 +85,13 @@ const medEnrollSchema = new Schema(
     watchedSessions: [{ type: String }],
     selectedProject: { type: String, default: null },
     projectProgress: { type: Map, of: Object, default: {} },
+    amountRequests: [{
+      amount: { type: Number },
+      status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' },
+      requestedBy: { type: String },
+      dateRequested: { type: Date, default: Date.now },
+      dateResolved: { type: Date }
+    }],
   },
   {
     timestamps: true,

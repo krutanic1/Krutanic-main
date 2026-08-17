@@ -213,6 +213,9 @@ const AdminHeader = () => {
             <Link to="/MedOnboardingDetails">
               <i className="fa fa-info-circle mr-2" style={{ color: "#2196f3" }}></i>Med OnBoarding Details
             </Link>
+            <Link to="/adminmedapprovals">
+              <i className="fa fa-check-square-o mr-2" style={{ color: "#f59e0b" }}></i>Med Pending Approvals
+            </Link>
             <Link to="/admin/medpro-leads">
               <i className="fa fa-medkit mr-2" style={{color: '#818cf8'}}></i>MedPro Leads
             </Link>

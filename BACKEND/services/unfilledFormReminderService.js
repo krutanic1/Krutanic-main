@@ -94,6 +94,11 @@ const checkUnfilledForms = async () => {
 };
 
 const initializeUnfilledFormReminders = () => {
+    if (process.env.NODE_ENV === "development") {
+        console.log("⚠️ Skipping Unfilled Form Reminder Service in development");
+        return;
+    }
+
     console.log("✅ Running Unfilled Form Reminder Service (Once on startup)");
     checkUnfilledForms();
     

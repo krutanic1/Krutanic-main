@@ -1227,5 +1227,141 @@ router.get("/getmeddailyrevenue", async (req, res) => {
 //advnace revenue
 
 
+// --- Amount Request Approvals for MedTeam ---
+router.post("/request-amount-update/:id", verifyAnyAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { amount, requestedBy } = req.body;
+    
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ message: "Invalid amount" });
+    }
+
+    const lead = await MedEnroll.findById(id);
+    if (!lead) return res.status(404).json({ message: "Lead not found" });
+
+    // Check if there is already a pending request
+    const hasPending = lead.amountRequests?.some(r => r.status === 'Pending');
+    if (hasPending) {
+      return res.status(400).json({ message: "There is already a pending request for this lead." });
+    }
+
+    const remaining = (lead.programPrice || 0) - (lead.paidAmount || 0);
+    if (amount > remaining) {
+      return res.status(400).json({ message: `Amount cannot exceed remaining balance of ${remaining}` });
+    }
+
+    lead.amountRequests.push({
+      amount: Number(amount),
+      status: 'Pending',
+      requestedBy: requestedBy || 'Unknown'
+    });
+
+    await lead.save();
+    res.status(200).json({ message: "Amount update requested successfully", lead });
+  } catch (error) {
+    console.error("Error requesting amount update:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.get("/get-amount-requests", verifyAnyAuth, async (req, res) => {
+  try {
+    const statusFilter = req.query.status; // Optional filter
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+    const skip = (page - 1) * limit;
+
+    let matchQuery = { amountRequests: { $exists: true, $not: { $size: 0 } } };
+    if (statusFilter) {
+      matchQuery['amountRequests.status'] = statusFilter;
+    }
+
+    const totalLeads = await MedEnroll.countDocuments(matchQuery);
+    const leads = await MedEnroll.find(matchQuery)
+      .sort({ updatedAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    res.status(200).json({
+      leads,
+      currentPage: page,
+      totalPages: Math.ceil(totalLeads / limit),
+      totalLeads
+    });
+  } catch (error) {
+    console.error("Error fetching amount requests:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.post("/resolve-amount-update/:leadId/:requestId", verifyAnyAuth, async (req, res) => {
+  try {
+    const { leadId, requestId } = req.params;
+    const { action } = req.body; // 'Approved' or 'Rejected'
+
+    if (!['Approved', 'Rejected'].includes(action)) {
+      return res.status(400).json({ message: "Invalid action" });
+    }
+
+    const lead = await MedEnroll.findById(leadId);
+    if (!lead) return res.status(404).json({ message: "Lead not found" });
+
+    const request = lead.amountRequests.id(requestId);
+    if (!request) return res.status(404).json({ message: "Request not found" });
+    
+    if (request.status !== 'Pending') {
+      return res.status(400).json({ message: "Request is already resolved" });
+    }
+
+    if (action === 'Approved') {
+      const remaining = (lead.programPrice || 0) - (lead.paidAmount || 0);
+      if (request.amount > remaining) {
+        return res.status(400).json({ message: "Amount exceeds remaining balance. Cannot approve." });
+      }
+
+      lead.paidAmount = (lead.paidAmount || 0) + request.amount;
+      if (lead.paidAmount >= lead.programPrice) {
+        lead.status = "fullPaid";
+      }
+      request.status = 'Approved';
+    } else {
+      request.status = 'Rejected';
+    }
+
+    request.dateResolved = new Date();
+    await lead.save();
+
+    res.status(200).json({ message: `Request ${action} successfully`, lead });
+  } catch (error) {
+    console.error("Error resolving amount update:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+router.post("/edit-med-enroll/:id", verifyAnyAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+    
+    const updatedLead = await MedEnroll.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true }
+    );
+    
+    if (!updatedLead) {
+      return res.status(404).json({ message: "Lead not found" });
+    }
+    
+    res.status(200).json({ message: "Lead updated successfully", lead: updatedLead });
+  } catch (error) {
+    console.error("Error editing med enroll:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
 module.exports = router;
 

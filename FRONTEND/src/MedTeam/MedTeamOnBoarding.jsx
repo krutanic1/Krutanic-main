@@ -190,6 +190,40 @@ const OnBoarding = () => {
   const [minDate, setMinDate] = useState("");
   const [maxDate, setMaxDate] = useState("");
 
+  // --- Amount Status Modal State ---
+  const [statusModalVisible, setStatusModalVisible] = useState(false);
+  const [statusData, setStatusData] = useState(null);
+  const [requestAmount, setRequestAmount] = useState("");
+  const medTeamName = localStorage.getItem("medTeamName");
+
+  const openStatusModal = (item) => {
+    setStatusData(item);
+    setStatusModalVisible(true);
+    setRequestAmount("");
+  };
+
+  const closeStatusModal = () => {
+    setStatusModalVisible(false);
+    setStatusData(null);
+  };
+
+  const handleAmountRequest = async (e) => {
+    e.preventDefault();
+    if (!requestAmount || requestAmount <= 0) return toast.error("Invalid amount");
+    
+    try {
+      await axios.post(`${API}/request-amount-update/${statusData._id}`, {
+        amount: requestAmount,
+        requestedBy: medTeamName
+      });
+      toast.success("Amount update requested successfully");
+      closeStatusModal();
+      fetchNewStudent();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Error requesting amount");
+    }
+  };
+
   useEffect(() => {
     const today = new Date();
     const minDate = today.toISOString().split('T')[0];
@@ -345,6 +379,7 @@ const OnBoarding = () => {
                   <th>Paid Amount </th>
                   <th>Pending </th>
                   <th>Transaction Id</th>
+                  <th>Amount Status</th>
                   <th>Status</th>
                   <th>Automation Tracking</th>
                   <th>More Details</th>
@@ -368,6 +403,14 @@ const OnBoarding = () => {
                           <td>{item.paidAmount}</td>
                           <td>{item.programPrice - item.paidAmount}</td>
                           <td className="capitalize">{item.transactionId}</td>
+                          <td>
+                            <button
+                              onClick={() => openStatusModal(item)}
+                              className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors text-xs"
+                            >
+                              Check Status
+                            </button>
+                          </td>
                           <td>
                             <button
                               className="button"
@@ -453,6 +496,92 @@ const OnBoarding = () => {
             {dialogVisible && (
               <div
                 onClick={handleDialogClose}
+                style={{
+                  position: "fixed",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  backgroundColor: "rgba(0, 0, 0, 0.5)",
+                  zIndex: 999,
+                }}
+              ></div>
+            )}
+
+            {statusModalVisible && statusData && (
+              <div className="fixed flex flex-col rounded-md top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 shadow-xl z-[1000] w-[90%] max-w-lg max-h-[80vh] overflow-y-auto">
+                <h2 className="text-xl font-bold mb-4">Amount Approval Status</h2>
+                
+                <div className="mb-4">
+                  <p><strong>Total Price:</strong> ₹{statusData.programPrice || 0}</p>
+                  <p><strong>Paid Amount:</strong> ₹{statusData.paidAmount || 0}</p>
+                  <p><strong>Pending Amount:</strong> ₹{(statusData.programPrice || 0) - (statusData.paidAmount || 0)}</p>
+                </div>
+
+                <h3 className="font-semibold mb-2">Request History</h3>
+                <div className="border border-gray-200 rounded-md p-2 mb-4 max-h-40 overflow-y-auto bg-gray-50">
+                  {statusData.amountRequests && statusData.amountRequests.length > 0 ? (
+                    <ul className="space-y-2">
+                      {statusData.amountRequests.map((req, idx) => (
+                        <li key={idx} className="p-2 border rounded bg-white shadow-sm flex justify-between items-center text-sm">
+                          <div>
+                            <span className="font-bold">₹{req.amount}</span> - {new Date(req.dateRequested).toLocaleDateString()}
+                          </div>
+                          <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                            req.status === 'Approved' ? 'bg-green-100 text-green-800' :
+                            req.status === 'Rejected' ? 'bg-red-100 text-red-800' :
+                            'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {req.status}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-gray-500 text-center py-2">No requests yet.</p>
+                  )}
+                </div>
+
+                {(!statusData.amountRequests || !statusData.amountRequests.some(r => r.status === 'Pending')) && 
+                 (statusData.programPrice || 0) - (statusData.paidAmount || 0) > 0 ? (
+                  <form onSubmit={handleAmountRequest} className="mt-4">
+                    <h3 className="font-semibold mb-2">Request New Amount</h3>
+                    <div className="flex gap-2">
+                      <input 
+                        type="number" 
+                        value={requestAmount}
+                        onChange={(e) => setRequestAmount(e.target.value)}
+                        placeholder="Enter amount"
+                        className="border border-gray-300 rounded px-3 py-1 flex-grow"
+                        required
+                        max={(statusData.programPrice || 0) - (statusData.paidAmount || 0)}
+                      />
+                      <button type="submit" className="bg-black text-white px-4 py-1 rounded hover:bg-gray-800">
+                        Submit
+                      </button>
+                    </div>
+                  </form>
+                ) : (statusData.amountRequests && statusData.amountRequests.some(r => r.status === 'Pending')) ? (
+                  <p className="text-sm text-yellow-600 bg-yellow-50 p-2 rounded mt-2 border border-yellow-200 text-center">
+                    You have a pending request. Please wait for Admin approval.
+                  </p>
+                ) : (
+                  <p className="text-sm text-green-600 bg-green-50 p-2 rounded mt-2 border border-green-200 text-center font-semibold">
+                    Amount is fully paid!
+                  </p>
+                )}
+
+                <button 
+                  className="mt-6 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-100 transition-colors w-full"
+                  onClick={closeStatusModal}
+                >
+                  Close
+                </button>
+              </div>
+            )}
+            {statusModalVisible && (
+              <div
+                onClick={closeStatusModal}
                 style={{
                   position: "fixed",
                   top: 0,

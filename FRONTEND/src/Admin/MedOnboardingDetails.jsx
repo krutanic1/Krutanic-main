@@ -10,6 +10,40 @@ const MedOnboardingDetails = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
+  // Edit Modal State
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editData, setEditData] = useState(null);
+
+  const handleEditOpen = (item) => {
+    setEditData({ ...item });
+    setEditModalVisible(true);
+  };
+
+  const handleEditClose = () => {
+    setEditModalVisible(false);
+    setEditData(null);
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(`${API}/edit-med-enroll/${editData._id}`, editData);
+      if (response.status === 200) {
+        toast.success("Details updated successfully");
+        fetchNewStudent();
+        handleEditClose();
+      }
+    } catch (error) {
+      console.error("Error updating details:", error);
+      toast.error("Failed to update details");
+    }
+  };
+
   const fetchNewStudent = async () => {
     setLoading(true);
     try {
@@ -296,10 +330,18 @@ const MedOnboardingDetails = () => {
                           </button>
                         </td>
                         <td>
-                          <i
-                            className="fa fa-info-circle text-2xl cursor-pointer"
-                            onClick={() => handleDialogOpen(item)}
-                          ></i>
+                          <div className="flex gap-3">
+                            <i
+                              className="fa fa-info-circle text-2xl cursor-pointer text-blue-600 hover:text-blue-800"
+                              onClick={() => handleDialogOpen(item)}
+                              title="More Details"
+                            ></i>
+                            <i
+                              className="fa fa-pencil text-2xl cursor-pointer text-green-600 hover:text-green-800"
+                              onClick={() => handleEditOpen(item)}
+                              title="Edit Details"
+                            ></i>
+                          </div>
                         </td>
                         <td>
                           {
@@ -360,6 +402,73 @@ const MedOnboardingDetails = () => {
           {dialogVisible && (
             <div
               onClick={handleDialogClose}
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                zIndex: 999,
+              }}
+            ></div>
+          )}
+
+          {/* --- Edit Modal --- */}
+          {editModalVisible && editData && (
+            <div className="fixed flex flex-col rounded-md top-1/2 left-1/2 shadow-black shadow-sm transform -translate-x-1/2 -translate-y-1/2 bg-white p-[20px] z-[1000] max-h-[90vh] overflow-y-auto w-[90%] max-w-lg">
+              <h2 className="text-xl font-bold mb-4">Edit MedEnroll Details</h2>
+              <form onSubmit={handleEditSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Full Name</label>
+                  <input type="text" name="fullname" value={editData.fullname || ""} onChange={handleEditChange} className="w-full border rounded px-3 py-2" required />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Email</label>
+                  <input type="email" name="email" value={editData.email || ""} onChange={handleEditChange} className="w-full border rounded px-3 py-2" required />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Phone</label>
+                  <input type="text" name="phone" value={editData.phone || ""} onChange={handleEditChange} className="w-full border rounded px-3 py-2" required />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Domain</label>
+                  <input type="text" name="domain" value={editData.domain || ""} onChange={handleEditChange} className="w-full border rounded px-3 py-2" required />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Program Price</label>
+                    <input type="number" name="programPrice" value={editData.programPrice || 0} onChange={handleEditChange} className="w-full border rounded px-3 py-2" required />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Paid Amount</label>
+                    <input type="number" name="paidAmount" value={editData.paidAmount || 0} onChange={handleEditChange} className="w-full border rounded px-3 py-2" required />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Month Opted</label>
+                    <input type="text" name="monthOpted" value={editData.monthOpted || ""} onChange={handleEditChange} className="w-full border rounded px-3 py-2" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Clear Payment Month</label>
+                    <input type="date" name="clearPaymentMonth" value={editData.clearPaymentMonth || ""} onChange={handleEditChange} className="w-full border rounded px-3 py-2" />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Transaction ID</label>
+                  <input type="text" name="transactionId" value={editData.transactionId || ""} onChange={handleEditChange} className="w-full border rounded px-3 py-2" />
+                </div>
+                <div className="flex gap-2 justify-end mt-4">
+                  <button type="button" onClick={handleEditClose} className="px-4 py-2 border rounded bg-gray-100 hover:bg-gray-200">Cancel</button>
+                  <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Save Changes</button>
+                </div>
+              </form>
+            </div>
+          )}
+          {editModalVisible && (
+            <div
+              onClick={handleEditClose}
               style={{
                 position: "fixed",
                 top: 0,

@@ -88,6 +88,7 @@ import EventRegistration from "./Admin/EventRegistration";
 import OnBoardingDetails from "./Admin/OnBoardingDetails";
 import AdvOnBoardingDetails from "./Admin/AdvOnBoardingDetails";
 import MedOnboardingDetails from "./Admin/MedOnboardingDetails";
+import AdminMedApprovals from "./Admin/AdminMedApprovals";
 import AdvBooked from "./Admin/AdvBooked";
 import AdvFullPaid from "./Admin/AdvFullPaid";
 import AdvDefault from "./Admin/AdvDefault";
@@ -522,7 +523,7 @@ const AppContent = () => {
     ReactPixel.pageView();
   }, [location]);
 
-  const adminheaderPaths = ["/adminfeedback", "/admindashboard", "/adminmentorshipprojects", "/mentorshipdefaultratio", "/admininterviewquestions", "/adminaptitudequestions", "/addcourse", "/addmedcourse", "/addadvcourse", "/addmodule", "/addmedmodule", "/addadvmodule", "/pendingapplication", "/acceptedapplication", "/bookedlist", "/halfpayment", "/defaultlist", "/fullpaidlist", "/createoperation", "/createadvoperation", "/createbda", "/createmedteam", "/createadvteam", "/createmanager", "/mentorqueries", "/advancequeries", "/revenuesheet", "/advrevenuesheet", "/createplacementcoordinator", "/onboardingdetails", "/advonboardingdetails", "/medonboardingdetails", "/advbooked", "/advfullpaid", "/advdefault", "/allteamdetail", "/advteamdetail", "/masterclasses", "/addevent", "/eventregistration", "/target", "/alumnidata", "/inactivebda", "/referandearnresponse", "/createmarketingteam", "/createinterviewer", "/createhr", "/createinterview", "/adminprojectpage", "/advprojectpage", "/advexercisepage", "/advleadmanagement", "/adminanalytics", "/advadmindashboard", "/admin/agents", "/admin/teams", "/admin/leadassignments", "/admin/agentactivity", "/admin/reports", "/bulkimport", "/admin/attendance", "/advusermanagement", "/admin/livemonitor", "/admin/calllogs", "/advformleads", "/admin/leads-count", "/admin/medpro-leads", "/admin/career-assessments", "/admin/adv-filter", "/adminmedrevenue", "/adminmedleaderboard", "/adminmedtarget", "/adminmedverticals", "/adminverticals", "/adminteamanalysis", "/admin/sales-intelligence"];
+  const adminheaderPaths = ["/adminfeedback", "/admindashboard", "/adminmentorshipprojects", "/mentorshipdefaultratio", "/admininterviewquestions", "/adminaptitudequestions", "/addcourse", "/addmedcourse", "/addadvcourse", "/addmodule", "/addmedmodule", "/addadvmodule", "/pendingapplication", "/acceptedapplication", "/bookedlist", "/halfpayment", "/defaultlist", "/fullpaidlist", "/createoperation", "/createadvoperation", "/createbda", "/createmedteam", "/createadvteam", "/createmanager", "/mentorqueries", "/advancequeries", "/revenuesheet", "/advrevenuesheet", "/createplacementcoordinator", "/onboardingdetails", "/advonboardingdetails", "/medonboardingdetails", "/adminmedapprovals", "/advbooked", "/advfullpaid", "/advdefault", "/allteamdetail", "/advteamdetail", "/masterclasses", "/addevent", "/eventregistration", "/target", "/alumnidata", "/inactivebda", "/referandearnresponse", "/createmarketingteam", "/createinterviewer", "/createhr", "/createinterview", "/adminprojectpage", "/advprojectpage", "/advexercisepage", "/advleadmanagement", "/adminanalytics", "/advadmindashboard", "/admin/agents", "/admin/teams", "/admin/leadassignments", "/admin/agentactivity", "/admin/reports", "/bulkimport", "/admin/attendance", "/advusermanagement", "/admin/livemonitor", "/admin/calllogs", "/advformleads", "/admin/leads-count", "/admin/medpro-leads", "/admin/career-assessments", "/admin/adv-filter", "/adminmedrevenue", "/adminmedleaderboard", "/adminmedtarget", "/adminmedverticals", "/adminverticals", "/adminteamanalysis", "/admin/sales-intelligence"];
 
   const operationheaderPaths = ["/operationdashboard", "/fullpayment", "/bookedpayment", "/defaultpayment", "/operationrevenuesheet"];
   const advoperationheaderPaths = ["/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet"];
@@ -649,6 +650,7 @@ const AppContent = () => {
         <Route path="/OnBoardingDetails" element={isAuthenticatedAdmin() ? <OnBoardingDetails /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AdvOnBoardingDetails" element={isAuthenticatedAdmin() ? <AdvOnBoardingDetails /> : <Navigate to="/AdminLogin" />} />
         <Route path="/MedOnboardingDetails" element={isAuthenticatedAdmin() ? <MedOnboardingDetails /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/adminmedapprovals" element={isAuthenticatedAdmin() ? <AdminMedApprovals /> : <Navigate to="/AdminLogin" />} />
 
         <Route path="/AdvBooked" element={isAuthenticatedAdmin() ? <AdvBooked /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AdvFullPaid" element={isAuthenticatedAdmin() ? <AdvFullPaid /> : <Navigate to="/AdminLogin" />} />
