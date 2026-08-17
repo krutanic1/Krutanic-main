@@ -7,7 +7,7 @@ const AssignTarget = () => {
   const medTeamId = localStorage.getItem("medTeamId");
   const [medTeamData, setMedTeamData] = useState(null);
   const [allData, setAllData] = useState([]);
-  const [selectedTeam, setSelectedTeam] = useState("");
+  const [selectedTeams, setSelectedTeams] = useState([]);
   const [targets, setTargets] = useState({});
   const [getteamName, setGetTeamName] = useState([]);
   const today = new Date();
@@ -22,7 +22,7 @@ const AssignTarget = () => {
       try {
         const response = await axios.get(`${API}/getmedteam`, { params: { medTeamId } });
         setMedTeamData(response.data);
-        setSelectedTeam(response.data.team);
+        setSelectedTeams(response.data.teams?.length ? response.data.teams : [response.data.team].filter(Boolean));
       } catch (err) {
         console.log("Failed to fetch medteam data");
       }
@@ -120,24 +120,29 @@ const AssignTarget = () => {
     fetchTeamname();
   }, []);
 
-  const filteredData = allData.filter((member) => member.team === selectedTeam);
-  const selectedTeamTarget = getteamName
-  .filter((team) => team.teamname === selectedTeam)
-  .map((team) => {
-    const lastTarget =
-      team.target && team.target.length > 0
-        ? team.target[team.target.length - 1]
-        : null;
+ // const filteredData = allData.filter((member) => member.team === selectedTeam);
 
-    return lastTarget?.currentMonth === currentMonth ? lastTarget : null;
-  })[0];
+  const filteredData = allData.filter((member) =>
+    selectedTeams.includes(member.team)
+  );
+
+  const selectedTeamTarget = selectedTeams.length === 1 
+    ? getteamName
+        .filter((team) => team.teamname === selectedTeams[0])
+        .map((team) => {
+          const lastTarget = team.target && team.target.length > 0
+            ? team.target[team.target.length - 1]
+            : null;
+          return lastTarget?.currentMonth === currentMonth ? lastTarget : null;
+        })[0]
+    : null;
 
   return (
     <div id="AdminAddCourse">
          <Toaster position="top-center" reverseOrder={false} />
       <div className="coursetable">
         <div className="mb-2">
-          <h2 className="flex items-center gap-2">{selectedTeam}</h2>
+          <h2 className="flex items-center gap-2">{selectedTeams.join(", ")}</h2>
           <div> {selectedTeamTarget ? (
       <p className="text-lg font-bold">
       Target: ₹ {selectedTeamTarget.targetValue}/- &nbsp;&nbsp; CurrentMonth: {selectedTeamTarget.currentMonth}
@@ -146,9 +151,21 @@ const AssignTarget = () => {
       <p>No target assigned</p>
     )}</div>
           {medTeamData && medTeamData.designation?.toUpperCase().includes("MANAGER") && (
-            <select value={selectedTeam} onChange={(e) => setSelectedTeam(e.target.value)}>
-              {medTeamData && medTeamData.team && <option value={medTeamData.team}>Your Team</option>}
-              {getteamName.map((team, index) => {return(<option key={index} value={team.teamname}>{team.teamname}</option>)})}
+            <select 
+              value={selectedTeams.length > 1 ? "ALL" : selectedTeams[0] || ""} 
+              onChange={(e) => {
+                if (e.target.value === "ALL") {
+                  setSelectedTeams(medTeamData.teams?.length ? medTeamData.teams : [medTeamData.team].filter(Boolean));
+                } else {
+                  setSelectedTeams([e.target.value]);
+                }
+              }}
+            >
+              {(medTeamData.teams?.length > 1) && <option value="ALL">All My Teams</option>}
+              {medTeamData && medTeamData.team && <option value={medTeamData.team}>{medTeamData.team || "Your Team"}</option>}
+              {medTeamData && medTeamData.teams && medTeamData.teams.map((team, index) => {
+                return (team !== medTeamData.team) ? (<option key={index} value={team}>{team}</option>) : null;
+              })}
             </select>
           )}
         </div>

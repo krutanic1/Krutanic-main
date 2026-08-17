@@ -42,6 +42,7 @@ router.get("/getmedteam", verifyAnyAuth, async (req, res) => {
       }
     } else {
       medteam = await CreateMedTeam.aggregate([
+          { $match: { status: "Active" } },
           { $sort: { _id: -1 } },
           {
             $project: {
