@@ -276,7 +276,7 @@ const EventDetails = () => {
 
                                 {/* WhatsApp Support Button */}
                                 <a
-                                    href={`https://wa.me/8317410068?text=I%20am%20here%20from%20events%20page%20-%20${encodeURIComponent(event.title)}`}
+                                    href={`https://wa.me/7795680178?text=I%20am%20here%20from%20events%20page%20-%20${encodeURIComponent(event.title)}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="mt-4 flex items-center justify-center space-x-2 w-full px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-all font-medium border border-green-200"

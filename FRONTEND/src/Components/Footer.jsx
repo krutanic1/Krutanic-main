@@ -39,8 +39,8 @@ const Footer = () => {
             </p>
             {/* Social Links */}
             <div className="flex items-center gap-3">
-              <a href="#" className="w-10 h-10 rounded bg-[#111] border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"><FaLinkedinIn size={14}/></a>
-              <a href="#" className="w-10 h-10 rounded bg-[#111] border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"><FaInstagram size={15}/></a>
+              <a href="https://www.linkedin.com/company/krutanic" className="w-10 h-10 rounded bg-[#111] border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"><FaLinkedinIn size={14}/></a>
+              <a href="https://www.instagram.com/krutanic" className="w-10 h-10 rounded bg-[#111] border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"><FaInstagram size={15}/></a>
               <a href="#" className="w-10 h-10 rounded bg-[#111] border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"><FaTwitter size={14}/></a>
             </div>
           </div>

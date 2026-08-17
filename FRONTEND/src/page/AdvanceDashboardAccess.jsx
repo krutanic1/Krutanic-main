@@ -11,7 +11,7 @@ const Dialog = ({ isOpen, onClose, fullname, errorMessage, email, counselor, dom
 
   // Create WhatsApp message with user details
   const whatsappMessage = `Hello,\n I am ${fullname}.\n Email: ${email}.\n Domain: ${domain}.\n Opted Month: ${monthOpted}.\n Kindly confirm my details`;
-  const whatsappLink = `https://wa.me/918317410068?text=${encodeURIComponent(whatsappMessage)}`;
+  const whatsappLink = `https://wa.me/917795680178?text=${encodeURIComponent(whatsappMessage)}`;
 
   return (
     <div style={styles.modal}>
@@ -37,7 +37,7 @@ const Dialog = ({ isOpen, onClose, fullname, errorMessage, email, counselor, dom
             </p>
             <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-500 rounded">
               <p className="text-sm text-gray-700">
-                <strong>Note:</strong> Please contact your assigned operations executive <br />Bhumika HK <br /> 8317410068<br /> bhumika@krutanic.org
+                <strong>Note:</strong> Please contact your assigned operations executive <br />Bhumika HK <br /> 7795680178<br /> bhumika@krutanic.org
               </p>
               <a
                 href={whatsappLink}
@@ -197,7 +197,7 @@ const AdvanceDashboardAccess = () => {
     const count = parseInt(numberOfInstallments, 10);
     const dates = [];
     let current = new Date();
-    
+
     for (let i = 0; i < count; i++) {
       current.setDate(current.getDate() + 20);
       dates.push(current.toISOString().split("T")[0]);
@@ -214,9 +214,9 @@ const AdvanceDashboardAccess = () => {
     if (paymentPlan === "Installments" && calculatedDates.length > 0) {
       finalClearPaymentMonth = calculatedDates.join(", ");
     }
-    
-    const finalPaymentPlan = paymentPlan === "Installments" 
-      ? `Pay in ${numberOfInstallments} Installments` 
+
+    const finalPaymentPlan = paymentPlan === "Installments"
+      ? `Pay in ${numberOfInstallments} Installments`
       : paymentPlan;
 
     const formData = {
@@ -295,7 +295,7 @@ const AdvanceDashboardAccess = () => {
     if (emailRegex.test(enteredEmail)) {
       try {
         const response = await axios.post(`${API}/verify-transaction-email`, { email: enteredEmail });
-        
+
         if (response.data.success) {
           setCounselor(response.data.counselor || "");
           setLead(response.data.lead || "");
@@ -423,7 +423,7 @@ const AdvanceDashboardAccess = () => {
               <input
                 type="text"
                 value={counselor}
-                onChange={() => {}}
+                onChange={() => { }}
                 style={{ pointerEvents: 'none', backgroundColor: '#f9f9f9' }}
                 tabIndex={-1}
                 title="Counselor name is auto-filled and cannot be edited"
@@ -523,7 +523,7 @@ const AdvanceDashboardAccess = () => {
               <option value="Pay in Full (One-time payment)">Pay in Full (One-time payment)</option>
               <option value="Installments">Installments</option>
               <option value="No Cost EMI">No Cost EMI</option>
-            </select> 
+            </select>
 
             {paymentPlan === "Installments" && (
               <select
@@ -600,75 +600,74 @@ const AdvanceDashboardAccess = () => {
 
 
 
-              <div className="input-field">
-                <div
-                  onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
-                  className="w-full p-[10px] border border-[#CCCCCC] rounded-[10px] bg-white cursor-pointer flex justify-between items-center transition-all duration-200"
-                  style={{ minHeight: '44px', backgroundColor: '#ffffff' }}
-                >
-                  <span className={`text-sm ${languages.length > 0 ? "text-gray-800" : "text-transparent"}`}>
-                    {languages.length > 0 ? languages.join(", ") : "."}
-                  </span>
-                  <svg className={`w-4 h-4 text-[#8d8d8d] transition-transform duration-200 ${isLangDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-                <label
-                  style={{
-                    position: 'absolute',
-                    left: '15px',
-                    pointerEvents: 'none',
-                    transition: 'all 0.3s ease',
-                    backgroundColor: '#ffffff',
-                    padding: '0 5px',
-                    zIndex: 2,
-                    ...(languages.length > 0 || isLangDropdownOpen 
-                      ? { top: '-10px', transform: 'translateY(0) scale(0.85)', color: '#F15B29', fontWeight: 'bold' }
-                      : { top: '50%', transform: 'translateY(-50%)', color: '#8d8d8d' }
-                    )
-                  }}
-                >
-                  Languages Known
-                </label>
-                {isLangDropdownOpen && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-40"
-                      onClick={() => setIsLangDropdownOpen(false)}
-                    ></div>
-                    <div 
-                      className="absolute z-50 w-full mt-1 border border-[#CCCCCC] rounded-[10px] shadow-xl max-h-60 overflow-y-auto lang-dropdown-list"
-                    >
-                      {LANGUAGE_OPTIONS.map((lang) => (
-                        <div
-                          key={lang}
-                          onClick={() => {
-                            setLanguages((prev) =>
-                              prev.includes(lang)
-                                ? prev.filter((l) => l !== lang)
-                                : [...prev, lang]
-                            );
-                          }}
-                          className="flex items-center p-3 cursor-pointer border-b border-gray-50 last:border-b-0 lang-dropdown-item"
-                        >
-                          <div className={`w-5 h-5 rounded border flex items-center justify-center mr-3 transition-colors duration-200 ${
-                            languages.includes(lang) ? "bg-[#F15B29] border-[#F15B29]" : "bg-white border-gray-300"
-                          }`}>
-                            {languages.includes(lang) && (
-                              <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                              </svg>
-                            )}
-                          </div>
-                          <span className={`text-sm lang-dropdown-text ${languages.includes(lang) ? "selected" : ""}`}>
-                            {lang}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </>
-                )}
+            <div className="input-field">
+              <div
+                onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
+                className="w-full p-[10px] border border-[#CCCCCC] rounded-[10px] bg-white cursor-pointer flex justify-between items-center transition-all duration-200"
+                style={{ minHeight: '44px', backgroundColor: '#ffffff' }}
+              >
+                <span className={`text-sm ${languages.length > 0 ? "text-gray-800" : "text-transparent"}`}>
+                  {languages.length > 0 ? languages.join(", ") : "."}
+                </span>
+                <svg className={`w-4 h-4 text-[#8d8d8d] transition-transform duration-200 ${isLangDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                </svg>
               </div>
+              <label
+                style={{
+                  position: 'absolute',
+                  left: '15px',
+                  pointerEvents: 'none',
+                  transition: 'all 0.3s ease',
+                  backgroundColor: '#ffffff',
+                  padding: '0 5px',
+                  zIndex: 2,
+                  ...(languages.length > 0 || isLangDropdownOpen
+                    ? { top: '-10px', transform: 'translateY(0) scale(0.85)', color: '#F15B29', fontWeight: 'bold' }
+                    : { top: '50%', transform: 'translateY(-50%)', color: '#8d8d8d' }
+                  )
+                }}
+              >
+                Languages Known
+              </label>
+              {isLangDropdownOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setIsLangDropdownOpen(false)}
+                  ></div>
+                  <div
+                    className="absolute z-50 w-full mt-1 border border-[#CCCCCC] rounded-[10px] shadow-xl max-h-60 overflow-y-auto lang-dropdown-list"
+                  >
+                    {LANGUAGE_OPTIONS.map((lang) => (
+                      <div
+                        key={lang}
+                        onClick={() => {
+                          setLanguages((prev) =>
+                            prev.includes(lang)
+                              ? prev.filter((l) => l !== lang)
+                              : [...prev, lang]
+                          );
+                        }}
+                        className="flex items-center p-3 cursor-pointer border-b border-gray-50 last:border-b-0 lang-dropdown-item"
+                      >
+                        <div className={`w-5 h-5 rounded border flex items-center justify-center mr-3 transition-colors duration-200 ${languages.includes(lang) ? "bg-[#F15B29] border-[#F15B29]" : "bg-white border-gray-300"
+                          }`}>
+                          {languages.includes(lang) && (
+                            <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </div>
+                        <span className={`text-sm lang-dropdown-text ${languages.includes(lang) ? "selected" : ""}`}>
+                          {lang}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
 
 
 

@@ -672,7 +672,7 @@ Important: Please make sure you're prepared and join on time!
 
 Need Help?
 Email: events@krutanic.com
-Phone/WhatsApp: +91 8317410068
+Phone/WhatsApp: +91 7795680178
 Website: www.krutanic.com
 
 Thank you for being a part of Krutanic's learning community!

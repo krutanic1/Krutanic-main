@@ -10,7 +10,7 @@ const Dialog = ({ isOpen, onClose, fullname, errorMessage, email, counselor, dom
 
   // Create WhatsApp message with user details
   const whatsappMessage = `Hello,\n I am ${fullname}.\n Email: ${email}.\n Domain: ${domain}.\n Opted Month: ${monthOpted}.\n Kindly confirm my details`;
-  const whatsappLink = `https://wa.me/918317410068?text=${encodeURIComponent(whatsappMessage)}`;
+  const whatsappLink = `https://wa.me/917795680178?text=${encodeURIComponent(whatsappMessage)}`;
 
   return (
     <div style={styles.modal}>
@@ -36,7 +36,7 @@ const Dialog = ({ isOpen, onClose, fullname, errorMessage, email, counselor, dom
             </p>
             <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-500 rounded">
               <p className="text-sm text-gray-700">
-                <strong>Note:</strong> Please contact your assigned operations executive <br />Bhumika HK <br /> 8317410068<br /> bhumika@krutanic.org
+                <strong>Note:</strong> Please contact your assigned operations executive <br />Bhumika HK <br /> 7795680178<br /> bhumika@krutanic.org
               </p>
               <a
                 href={whatsappLink}
@@ -540,7 +540,7 @@ const MedDashboardAccessForm = () => {
               <input
                 type="text"
                 value={counselor}
-                onChange={() => {}}
+                onChange={() => { }}
                 style={{ pointerEvents: 'none', backgroundColor: '#f9f9f9' }}
                 tabIndex={-1}
                 title="Counselor name is auto-filled and cannot be edited"
@@ -624,7 +624,7 @@ const MedDashboardAccessForm = () => {
               <option value="Embedded System">Embedded System</option>
               <option value="Cloud Computing">Cloud Computing</option>
               <option value="Finance">Finance</option>
-             
+
             </select>
 
             <select
