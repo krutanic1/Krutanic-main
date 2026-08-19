@@ -277,6 +277,20 @@ import ForgotPassword from "./page/ForgotPassword.jsx";
 import Exercise from "./User/Excercise.jsx";
 import SkillEvaluationTest from "./page/SkillEvaluationTest.jsx";
 
+// ─── Practice Module ─────────────────────────────────────────────────────────
+import { PracticeAuthProvider } from "./practice/context/PracticeAuthContext";
+const PracticeLoginPage = lazy(() => import("./practice/pages/PracticeLoginPage"));
+const PracticeLanding = lazy(() => import("./practice/pages/PracticeLanding"));
+const PracticePathPage = lazy(() => import("./practice/pages/PracticePathPage"));
+const PracticeSubtopicPage = lazy(() => import("./practice/pages/PracticeSubtopicPage"));
+const QuestionPage = lazy(() => import("./practice/pages/QuestionPage"));
+const PracticeAdminDashboard = lazy(() => import("./practice/admin/PracticeAdminDashboard"));
+const PathForm = lazy(() => import("./practice/admin/PathForm"));
+const QuestionForm = lazy(() => import("./practice/admin/QuestionForm"));
+const QuestionsList = lazy(() => import("./practice/admin/QuestionsList"));
+const TopicsManager = lazy(() => import("./practice/admin/TopicsManager"));
+// ─────────────────────────────────────────────────────────────────────────────
+
 const queryClient = new QueryClient();
 
 // 🛡️ 1. GLOBAL AUTH STORE & STORAGE PROXY (Zero-Latency Tab Isolation)
@@ -400,7 +414,9 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <AppContent />
+        <PracticeAuthProvider>
+          <AppContent />
+        </PracticeAuthProvider>
       </BrowserRouter>
     </QueryClientProvider>
   );
@@ -535,13 +551,13 @@ const AppContent = () => {
   const lmsFooterPaths = ["/jobboard"];
   const noFooterPaths = ["/operationdashboard", "/bookedpayment", "/fullpayment", "/defaultpayment", "/operationrevenuesheet", "/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet", "/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/advteam/leaderboard", "/advteam/filter", "/advteam/followups", "/advteam/tasks", "/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/leaderboard", "/teamanalysis", "/setting", "/medteam/home", "/medteam/onboarding", "/medteam/adduser", "/medteam/revenue", "/medteam/teamdetail", "/medteam/assigntarget", "/medteam/leaderboard", "/admin/adv-filter", "/paytest"];
   const placementcoodinatorHeaderPaths = ["/pcdashboard", "/jobpost"];
-  const headerPaths = ["/", "/login", "/loginwithotp", "/forgotpassword", "/contactus", "/aboutus", "/career", "/collabration", "/advancecourses", "/terms", "/privacy", "/refundpolicy", "/feestructure", "/advance", "/advance-apply", "/mentorship", "/datascience", "/dataanalytics", "/digitalmarket", "/mernstack", "/investmentbanking", "/productmanagement", "/automationtesting", "/promptengineering", "/generativeai", "/forensic-psychology", "/clinical-psychology", "/corporate-law", "/medpro-packs", "/psychology", "/operationlogin", "/advoperationlogin", "/teamlogin", "/adminlogin", "/managerlogin", "/loginadmin", "/pclogin", "/advteamlogin", "/medloginteam", "/dashboardaccessform", "/meddashboardaccessform", "/advancedashboardaccess", "/masterclass", "/alumni", "/verify", "/referandearn", "/marketing/login", "/interviewer-login", "/interviewerlogin", "/hrlogin", "/advanceform", "/career-assessment"];
+  const headerPaths = ["/", "/login", "/loginwithotp", "/forgotpassword", "/contactus", "/aboutus", "/career", "/collabration", "/advancecourses", "/terms", "/privacy", "/refundpolicy", "/feestructure", "/advance", "/advance-apply", "/mentorship", "/datascience", "/dataanalytics", "/digitalmarket", "/mernstack", "/investmentbanking", "/productmanagement", "/automationtesting", "/promptengineering", "/generativeai", "/forensic-psychology", "/clinical-psychology", "/corporate-law", "/medpro-packs", "/psychology", "/operationlogin", "/advoperationlogin", "/teamlogin", "/adminlogin", "/managerlogin", "/loginadmin", "/pclogin", "/advteamlogin", "/medloginteam", "/dashboardaccessform", "/meddashboardaccessform", "/advancedashboardaccess", "/masterclass", "/alumni", "/verify", "/referandearn", "/marketing/login", "/interviewer-login", "/interviewerlogin", "/hrlogin", "/advanceform", "/career-assessment", "/practice/login"];
 
   return (
     <div>
       <SmoothScroll />
       <ScrollToTop />
-      {adminheaderPaths.includes(location.pathname.toLowerCase()) && isAuthenticatedAdmin() ? (
+      {(adminheaderPaths.includes(location.pathname.toLowerCase()) || location.pathname.toLowerCase().startsWith('/admin/practice')) && isAuthenticatedAdmin() ? (
         <AdminHeader />
       ) : operationheaderPaths.includes(location.pathname.toLowerCase()) && isAuthenticatedOperation() ? (
         <OperationHeader />
@@ -559,7 +575,7 @@ const AppContent = () => {
         <PCHeader />
       ) : hrheaderPaths.includes(location.pathname.toLowerCase()) && isAuthenticatedHR() ? (
         <HRHeader />
-      ) : (headerPaths.includes(location.pathname.toLowerCase()) || location.pathname.toLowerCase().startsWith('/mentorship/') || location.pathname.toLowerCase().startsWith('/masterclass/')) ? (
+      ) : (headerPaths.includes(location.pathname.toLowerCase()) || location.pathname.toLowerCase().startsWith('/mentorship/') || location.pathname.toLowerCase().startsWith('/masterclass/') || location.pathname.toLowerCase().startsWith('/practice')) ? (
         <Header />
       ) : null}
 
@@ -867,6 +883,21 @@ const AppContent = () => {
         {/* Advanced dashboard video player — standalone, no old sidebar */}
         <Route path="/advancedashboard/learning" element={<AdvanceLearningPage />} />
 
+        {/* ─── Practice Module Routes ──────────────────────────────────── */}
+        <Route path="/practice/login" element={<React.Suspense fallback={null}><PracticeLoginPage /></React.Suspense>} />
+        <Route path="/practice" element={<React.Suspense fallback={null}><PracticeLanding /></React.Suspense>} />
+        <Route path="/practice/:pathSlug" element={<React.Suspense fallback={null}><PracticePathPage /></React.Suspense>} />
+        <Route path="/practice/:pathSlug/:topicSlug/:subtopicSlug" element={<React.Suspense fallback={null}><PracticeSubtopicPage /></React.Suspense>} />
+        <Route path="/practice/:pathSlug/:topicSlug/:subtopicSlug/:questionSlug" element={<React.Suspense fallback={null}><QuestionPage /></React.Suspense>} />
+        {/* Practice Admin Routes */}
+        <Route path="/admin/practice" element={<React.Suspense fallback={null}><PracticeAdminDashboard /></React.Suspense>} />
+        <Route path="/admin/practice/topics" element={<React.Suspense fallback={null}><TopicsManager /></React.Suspense>} />
+        <Route path="/admin/practice/paths/new" element={<React.Suspense fallback={null}><PathForm /></React.Suspense>} />
+        <Route path="/admin/practice/paths/:id/edit" element={<React.Suspense fallback={null}><PathForm /></React.Suspense>} />
+        <Route path="/admin/practice/questions" element={<React.Suspense fallback={null}><QuestionsList /></React.Suspense>} />
+        <Route path="/admin/practice/questions/new" element={<React.Suspense fallback={null}><QuestionForm /></React.Suspense>} />
+        <Route path="/admin/practice/questions/:id/edit" element={<React.Suspense fallback={null}><QuestionForm /></React.Suspense>} />
+        {/* ────────────────────────────────────────────────────────────── */}
       </Routes>
 
       {/* Global Footers - Exclude authenticated dashboards and login pages; only show on public paths */}

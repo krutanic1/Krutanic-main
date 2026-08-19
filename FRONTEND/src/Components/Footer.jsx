@@ -23,12 +23,12 @@ const Footer = () => {
 
   return (
     <footer className="bg-[#0A0A0A] text-white pt-20 pb-10 px-6 sm:px-12 font-sans relative overflow-hidden shadow-2xl border-t border-white/5">
-      
+
       <div className="max-w-7xl mx-auto align-top">
-        
+
         {/* Main Footer Content */}
         <div className="grid grid-cols-2 md:grid-cols-12 gap-10 md:gap-8 border-b border-white/10 pb-12 relative z-10 w-full mb-8">
-          
+
           {/* Brand Col */}
           <div className="col-span-2 md:col-span-4 pr-0 md:pr-12">
             <div className="mb-6 bg-white w-fit px-4 py-2.5 rounded text-white shadow-sm border border-white/10">
@@ -39,9 +39,9 @@ const Footer = () => {
             </p>
             {/* Social Links */}
             <div className="flex items-center gap-3">
-              <a href="https://www.linkedin.com/company/krutanic" className="w-10 h-10 rounded bg-[#111] border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"><FaLinkedinIn size={14}/></a>
-              <a href="https://www.instagram.com/krutanic" className="w-10 h-10 rounded bg-[#111] border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"><FaInstagram size={15}/></a>
-              <a href="#" className="w-10 h-10 rounded bg-[#111] border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"><FaTwitter size={14}/></a>
+              <a href="https://www.linkedin.com/company/krutanic" className="w-10 h-10 rounded bg-[#111] border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"><FaLinkedinIn size={14} /></a>
+              <a href="https://www.instagram.com/krutanic" className="w-10 h-10 rounded bg-[#111] border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"><FaInstagram size={15} /></a>
+              <a href="#" className="w-10 h-10 rounded bg-[#111] border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"><FaTwitter size={14} /></a>
             </div>
           </div>
 
@@ -75,27 +75,27 @@ const Footer = () => {
 
           {/* Contact Col */}
           <div className="col-span-2 md:col-span-3 lg:ml-auto">
-             <h2 className="text-white font-semibold text-xs mb-5 uppercase tracking-widest text-[#F15B29]">Contact</h2>
-             <ul className="space-y-4">
-                <li>
-                  <a href="mailto:support@krutanic.com" className="flex items-start gap-3 group text-gray-400 hover:text-white transition-colors text-sm font-medium">
-                    <FaEnvelope className="mt-1 shrink-0" />
-                    <span>support@krutanic.com</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="tel:+917829104024" className="flex items-start gap-3 group text-gray-400 hover:text-white transition-colors text-sm font-medium">
-                    <FaPhoneAlt className="mt-1 shrink-0" />
-                    <span>+91 7829104024</span>
-                  </a>
-                </li>
-                <li className="flex items-start gap-3 text-gray-400 text-sm font-medium">
-                  <FaMapMarkerAlt className="mt-1 shrink-0" />
-                  <span className="leading-relaxed">Bengaluru, KA, India</span>
-                </li>
-             </ul>
+            <h2 className="text-white font-semibold text-xs mb-5 uppercase tracking-widest text-[#F15B29]">Contact</h2>
+            <ul className="space-y-4">
+              <li>
+                <a href="mailto:support@krutanic.com" className="flex items-start gap-3 group text-gray-400 hover:text-white transition-colors text-sm font-medium">
+                  <FaEnvelope className="mt-1 shrink-0" />
+                  <span>support@krutanic.com</span>
+                </a>
+              </li>
+              <li>
+                <a href="tel:+919972231105" className="flex items-start gap-3 group text-gray-400 hover:text-white transition-colors text-sm font-medium">
+                  <FaPhoneAlt className="mt-1 shrink-0" />
+                  <span>+91 9972231105</span>
+                </a>
+              </li>
+              <li className="flex items-start gap-3 text-gray-400 text-sm font-medium">
+                <FaMapMarkerAlt className="mt-1 shrink-0" />
+                <span className="leading-relaxed">Bengaluru, KA, India</span>
+              </li>
+            </ul>
           </div>
-          
+
         </div>
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-gray-500 font-semibold tracking-wide">

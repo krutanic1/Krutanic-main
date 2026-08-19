@@ -55,6 +55,7 @@ const topNav = [
   { label: "All Programs", to: "/Mentorship", categories: programsCategories },
   { label: "Advanced Program", to: "/Advance" },
   { label: "MedPro Packs", to: "/medpro-packs" },
+  // { label: "Practice", to: "/practice" },
   { label: "Alumni", to: "/Alumni" }
 ];
 

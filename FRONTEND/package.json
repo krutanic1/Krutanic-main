@@ -33,6 +33,7 @@
     "dotenv": "^16.4.7",
     "face-api.js": "^0.22.2",
     "file-saver": "^2.0.5",
+    "firebase": "^12.17.1",
     "font-awesome": "^4.7.0",
     "framer-motion": "^11.16.0",
     "gsap": "^3.12.5",

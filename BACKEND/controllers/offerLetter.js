@@ -64,8 +64,8 @@ const createOfferLetterPDF = async (pdfword1, pdfword2) => {
     maxWidth: 495,
     lineHeight: 14,
   });
-  page1.drawText("Bangalore, Karnataka |7829104024 | support@krutanic.com", {
-    x: (a4Width - timesRomanFont.widthOfTextAtSize("Bangalore, Karnataka |7829104024 | support@krutanic.com", 12)) / 2, // Center text
+  page1.drawText("Bangalore, Karnataka |9972231105 | support@krutanic.com", {
+    x: (a4Width - timesRomanFont.widthOfTextAtSize("Bangalore, Karnataka |9972231105 | support@krutanic.com", 12)) / 2, // Center text
     y: 200,
     size: 12,
     font: timesRomanFont,
@@ -89,8 +89,8 @@ const createOfferLetterPDF = async (pdfword1, pdfword2) => {
     maxWidth: 495,
     lineHeight: 14,
   });
-  page2.drawText("Bangalore, Karnataka |7829104024 | support@krutanic.com", {
-    x: (a4Width - timesRomanFont.widthOfTextAtSize("Bangalore, Karnataka |7829104024 | support@krutanic.com", 12)) / 2, // Center text
+  page2.drawText("Bangalore, Karnataka |9972231105 | support@krutanic.com", {
+    x: (a4Width - timesRomanFont.widthOfTextAtSize("Bangalore, Karnataka |9972231105 | support@krutanic.com", 12)) / 2, // Center text
     y: 200,
     size: 12,
     font: timesRomanFont,
@@ -226,8 +226,8 @@ Our commitment is to provide you with industry-relevant learning, practical impl
     detailY -= 17;
   }
 
-  page1.drawText("Bangalore, Karnataka | +91 7829104024 | support@krutanic.com", {
-    x: (a4Width - regularFont.widthOfTextAtSize("Bangalore, Karnataka | +91 7829104024 | support@krutanic.com", 9.5)) / 2,
+  page1.drawText("Bangalore, Karnataka | +91 9972231105 | support@krutanic.com", {
+    x: (a4Width - regularFont.widthOfTextAtSize("Bangalore, Karnataka | +91 9972231105 | support@krutanic.com", 9.5)) / 2,
     y: 80,
     size: 9.5,
     font: regularFont,
@@ -326,8 +326,8 @@ Our commitment is to provide you with industry-relevant learning, practical impl
     lineHeight: 14.5,
   });
 
-  page2.drawText("Bangalore, Karnataka | +91 7829104024 | support@krutanic.com", {
-    x: (a4Width - regularFont.widthOfTextAtSize("Bangalore, Karnataka | +91 7829104024 | support@krutanic.com", 9.5)) / 2,
+  page2.drawText("Bangalore, Karnataka | +91 9972231105 | support@krutanic.com", {
+    x: (a4Width - regularFont.widthOfTextAtSize("Bangalore, Karnataka | +91 9972231105 | support@krutanic.com", 9.5)) / 2,
     y: 80,
     size: 9.5,
     font: regularFont,
@@ -399,8 +399,8 @@ Our commitment is to provide you with industry-relevant learning, practical impl
   y3 -= 25;
   page3.drawText("Date: _____________________________________", { x: 55, y: y3, size: 9.5, font: regularFont, color: rgb(0.2, 0.2, 0.2) });
 
-  page3.drawText("Bangalore, Karnataka | +91 7829104024 | support@krutanic.com", {
-    x: (a4Width - regularFont.widthOfTextAtSize("Bangalore, Karnataka | +91 7829104024 | support@krutanic.com", 9.5)) / 2,
+  page3.drawText("Bangalore, Karnataka | +91 9972231105 | support@krutanic.com", {
+    x: (a4Width - regularFont.widthOfTextAtSize("Bangalore, Karnataka | +91 9972231105 | support@krutanic.com", 9.5)) / 2,
     y: 80,
     size: 9.5,
     font: regularFont,
@@ -411,11 +411,11 @@ Our commitment is to provide you with industry-relevant learning, practical impl
   return pdfBytes;
 };
 
-const createNewAdvanceOfferLetterPDF = async ({ 
-  fullname, date, programName, 
-  originalProgramFee, finalPayableFee, enrollmentAmountReceived, remainingBalance, 
-  emiDuration, monthlyEmi, firstInstallmentAmount, firstInstallmentDate, 
-  secondInstallmentAmount, secondInstallmentDate 
+const createNewAdvanceOfferLetterPDF = async ({
+  fullname, date, programName,
+  originalProgramFee, finalPayableFee, enrollmentAmountReceived, remainingBalance,
+  emiDuration, monthlyEmi, firstInstallmentAmount, firstInstallmentDate,
+  secondInstallmentAmount, secondInstallmentDate
 }) => {
   const pdfDoc = await PDFDocument.create();
 
@@ -428,7 +428,7 @@ const createNewAdvanceOfferLetterPDF = async ({
   try {
     const imageBytes2 = fs.readFileSync(imagePath2);
     jpgImage2 = await pdfDoc.embedJpg(imageBytes2);
-  } catch(e) {
+  } catch (e) {
     jpgImage2 = jpgImage;
   }
 
@@ -454,109 +454,109 @@ const createNewAdvanceOfferLetterPDF = async ({
   // PAGE 1
   const page1 = pdfDoc.addPage([a4Width, a4Height]);
   page1.drawImage(jpgImage, { x: 0, y: 0, width: a4Width, height: a4Height });
-  
+
   const programNameStr = programName || "Professional Program";
 
   let y = 710;
-  page1.drawText("OFFICIAL OFFER OF ENROLLMENT", { x: 50, y, size: 20, font: boldFont, color: rgb(0,0,0) });
+  page1.drawText("OFFICIAL OFFER OF ENROLLMENT", { x: 50, y, size: 20, font: boldFont, color: rgb(0, 0, 0) });
   y -= 45;
-  page1.drawText(programNameStr, { x: 50, y, size: 13, font: boldFont, color: rgb(0,0,0) });
+  page1.drawText(programNameStr, { x: 50, y, size: 13, font: boldFont, color: rgb(0, 0, 0) });
   y -= 30;
-  page1.drawText(`Date: [${date || ""}]`, { x: 50, y, size: 13, font: boldFont, color: rgb(0,0,0) });
-  
+  page1.drawText(`Date: [${date || ""}]`, { x: 50, y, size: 13, font: boldFont, color: rgb(0, 0, 0) });
+
   y -= 60;
-  page1.drawText(`Dear ${fullname || ""},`, { x: 50, y, size: 13, font: boldFont, color: rgb(0,0,0) });
-  
+  page1.drawText(`Dear ${fullname || ""},`, { x: 50, y, size: 13, font: boldFont, color: rgb(0, 0, 0) });
+
   y -= 55;
   const p1_text1 = `Congratulations! You Have Been Selected for the ${programNameStr} Professional Program`;
-  page1.drawText(p1_text1, { x: 50, y, size: 12.5, font: regularFont, color: rgb(0,0,0), maxWidth: 495, lineHeight: 26 });
-  
+  page1.drawText(p1_text1, { x: 50, y, size: 12.5, font: regularFont, color: rgb(0, 0, 0), maxWidth: 495, lineHeight: 26 });
+
   y -= 85;
   const p1_text2 = `Following a comprehensive evaluation of your profile, career aspirations, and professional growth potential, we are delighted to extend an official offer of enrollment into the Krutanic ${programNameStr}.`;
-  page1.drawText(p1_text2, { x: 50, y, size: 12.5, font: regularFont, color: rgb(0,0,0), maxWidth: 495, lineHeight: 26 });
+  page1.drawText(p1_text2, { x: 50, y, size: 12.5, font: regularFont, color: rgb(0, 0, 0), maxWidth: 495, lineHeight: 26 });
 
   y -= 105;
   const p1_text3 = `Your selection reflects our confidence in your ability to successfully transition into one of the most in-demand and high-growth domains in today's data-driven economy.`;
-  page1.drawText(p1_text3, { x: 50, y, size: 12.5, font: regularFont, color: rgb(0,0,0), maxWidth: 495, lineHeight: 26 });
+  page1.drawText(p1_text3, { x: 50, y, size: 12.5, font: regularFont, color: rgb(0, 0, 0), maxWidth: 495, lineHeight: 26 });
 
   y -= 95;
   const p1_text4 = `This industry-focused program has been carefully designed to equip you with practical expertise in Data Analytics, Business Intelligence, SQL, Python, Power BI, Tableau, Machine Learning, and Generative AI through live mentor-led sessions, real-world projects, hands-on assignments, and comprehensive career support.`;
-  page1.drawText(p1_text4, { x: 50, y, size: 12.5, font: regularFont, color: rgb(0,0,0), maxWidth: 495, lineHeight: 26 });
+  page1.drawText(p1_text4, { x: 50, y, size: 12.5, font: regularFont, color: rgb(0, 0, 0), maxWidth: 495, lineHeight: 26 });
 
   // Footer removed from Page 1
 
   // PAGE 2
   const page2 = pdfDoc.addPage([a4Width, a4Height]);
   page2.drawImage(jpgImage, { x: 0, y: 0, width: a4Width, height: a4Height });
-  
+
   let y2 = 720;
-  page2.drawText("Program Investment Summary", { x: 50, y: y2, size: 18, font: boldFont, color: rgb(0,0,0) });
+  page2.drawText("Program Investment Summary", { x: 50, y: y2, size: 18, font: boldFont, color: rgb(0, 0, 0) });
   y2 -= 35;
-  page2.drawText("Particulars", { x: 50, y: y2, size: 13, font: boldFont, color: rgb(0,0,0) });
-  page2.drawText("Amount", { x: 300, y: y2, size: 13, font: boldFont, color: rgb(0,0,0) });
+  page2.drawText("Particulars", { x: 50, y: y2, size: 13, font: boldFont, color: rgb(0, 0, 0) });
+  page2.drawText("Amount", { x: 300, y: y2, size: 13, font: boldFont, color: rgb(0, 0, 0) });
   y2 -= 25;
-  page2.drawText("Original Program Fee", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
-  page2.drawText(`INR ${originalProgramFee}/-`, { x: 300, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page2.drawText("Original Program Fee", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
+  page2.drawText(`INR ${originalProgramFee}/-`, { x: 300, y: y2, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y2 -= 25;
-  page2.drawText("Final Payable Fee", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
-  page2.drawText(`INR ${finalPayableFee}/-`, { x: 300, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page2.drawText("Final Payable Fee", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
+  page2.drawText(`INR ${finalPayableFee}/-`, { x: 300, y: y2, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
 
   y2 -= 40;
-  page2.drawText("Payment Status", { x: 50, y: y2, size: 18, font: boldFont, color: rgb(0,0,0) });
+  page2.drawText("Payment Status", { x: 50, y: y2, size: 18, font: boldFont, color: rgb(0, 0, 0) });
   y2 -= 35;
-  page2.drawText("Particulars", { x: 50, y: y2, size: 13, font: boldFont, color: rgb(0,0,0) });
-  page2.drawText("Amount", { x: 300, y: y2, size: 13, font: boldFont, color: rgb(0,0,0) });
+  page2.drawText("Particulars", { x: 50, y: y2, size: 13, font: boldFont, color: rgb(0, 0, 0) });
+  page2.drawText("Amount", { x: 300, y: y2, size: 13, font: boldFont, color: rgb(0, 0, 0) });
   y2 -= 25;
-  page2.drawText("Enrollment Amount Received", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
-  page2.drawText(`INR ${enrollmentAmountReceived}/-`, { x: 300, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page2.drawText("Enrollment Amount Received", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
+  page2.drawText(`INR ${enrollmentAmountReceived}/-`, { x: 300, y: y2, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y2 -= 25;
-  page2.drawText("Remaining Balance", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
-  page2.drawText(`INR ${remainingBalance}/-`, { x: 300, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page2.drawText("Remaining Balance", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
+  page2.drawText(`INR ${remainingBalance}/-`, { x: 300, y: y2, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
 
   y2 -= 40;
-  page2.drawText("Flexible EMI Facility", { x: 50, y: y2, size: 18, font: boldFont, color: rgb(0,0,0) });
+  page2.drawText("Flexible EMI Facility", { x: 50, y: y2, size: 18, font: boldFont, color: rgb(0, 0, 0) });
   y2 -= 25;
-  page2.drawText("To support your learning journey, the remaining balance may be paid through a", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page2.drawText("To support your learning journey, the remaining balance may be paid through a", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y2 -= 20;
-  page2.drawText("structured EMI plan.", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page2.drawText("structured EMI plan.", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
 
   y2 -= 40;
-  page2.drawText(`${emiDuration} Installments`, { x: 50, y: y2, size: 18, font: boldFont, color: rgb(0,0,0) });
+  page2.drawText(`${emiDuration} Installments`, { x: 50, y: y2, size: 18, font: boldFont, color: rgb(0, 0, 0) });
   y2 -= 35;
-  page2.drawText("EMI Duration", { x: 50, y: y2, size: 13, font: boldFont, color: rgb(0,0,0) });
-  page2.drawText("Monthly EMI", { x: 300, y: y2, size: 13, font: boldFont, color: rgb(0,0,0) });
+  page2.drawText("EMI Duration", { x: 50, y: y2, size: 13, font: boldFont, color: rgb(0, 0, 0) });
+  page2.drawText("Monthly EMI", { x: 300, y: y2, size: 13, font: boldFont, color: rgb(0, 0, 0) });
   y2 -= 25;
-  page2.drawText(emiDuration, { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
-  page2.drawText(`INR ${monthlyEmi}/- approx. per month`, { x: 300, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page2.drawText(emiDuration, { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
+  page2.drawText(`INR ${monthlyEmi}/- approx. per month`, { x: 300, y: y2, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
 
   y2 -= 40;
   const safeEmiDuration = emiDuration || "";
   const isOneInstallment = !secondInstallmentAmount || secondInstallmentAmount === "0" || secondInstallmentAmount === "";
-  
+
   if (isOneInstallment) {
-    page2.drawText(`Note: The total fee Should be paid in 1 installment as per the`, { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+    page2.drawText(`Note: The total fee Should be paid in 1 installment as per the`, { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   } else {
-    page2.drawText(`Note: The total fee Should be paid in ${safeEmiDuration.toLowerCase()} installments as per the`, { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+    page2.drawText(`Note: The total fee Should be paid in ${safeEmiDuration.toLowerCase()} installments as per the`, { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   }
-  
+
   y2 -= 20;
-  page2.drawText(`schedule below:`, { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page2.drawText(`schedule below:`, { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y2 -= 25;
-  page2.drawText(`• 1st Installment: INR ${firstInstallmentAmount} on ${firstInstallmentDate}`, { x: 50, y: y2, size: 12.5, font: boldFont, color: rgb(0,0,0) });
-  
+  page2.drawText(`• 1st Installment: INR ${firstInstallmentAmount} on ${firstInstallmentDate}`, { x: 50, y: y2, size: 12.5, font: boldFont, color: rgb(0, 0, 0) });
+
   if (!isOneInstallment) {
     y2 -= 25;
-    page2.drawText(`• 2nd Installment: INR ${secondInstallmentAmount} on ${secondInstallmentDate}`, { x: 50, y: y2, size: 12.5, font: boldFont, color: rgb(0,0,0) });
+    page2.drawText(`• 2nd Installment: INR ${secondInstallmentAmount} on ${secondInstallmentDate}`, { x: 50, y: y2, size: 12.5, font: boldFont, color: rgb(0, 0, 0) });
   }
-  
+
   y2 -= 25;
-  page2.drawText("Kindly ensure that each installment is paid on or before the due date to", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page2.drawText("Kindly ensure that each installment is paid on or before the due date to", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y2 -= 20;
-  page2.drawText("avoid any delay in the payment schedule.", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page2.drawText("avoid any delay in the payment schedule.", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y2 -= 25;
-  page2.drawText("All payments must be completed through the official Krutanic Learning", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page2.drawText("All payments must be completed through the official Krutanic Learning", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y2 -= 20;
-  page2.drawText("Management System (LMS) as per the agreed schedule.", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page2.drawText("Management System (LMS) as per the agreed schedule.", { x: 50, y: y2, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
 
   if (stampImage) {
     const stampDims = stampImage.scale(0.32);
@@ -573,16 +573,16 @@ const createNewAdvanceOfferLetterPDF = async ({
   // PAGE 3
   const page3 = pdfDoc.addPage([a4Width, a4Height]);
   page3.drawImage(jpgImage, { x: 0, y: 0, width: a4Width, height: a4Height });
-  
+
   let y3 = 720;
-  page3.drawText("What You Will Gain", { x: 50, y: y3, size: 18, font: boldFont, color: rgb(0,0,0) });
+  page3.drawText("What You Will Gain", { x: 50, y: y3, size: 18, font: boldFont, color: rgb(0, 0, 0) });
   y3 -= 30;
-  page3.drawText("This program has been meticulously designed to bridge the gap between academic", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page3.drawText("This program has been meticulously designed to bridge the gap between academic", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y3 -= 20;
-  page3.drawText("learning and real-world industry expectations.", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0,0,0) });
-  
+  page3.drawText("learning and real-world industry expectations.", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
+
   y3 -= 50;
-  page3.drawText("Professional Learning Experience", { x: 50, y: y3, size: 18, font: boldFont, color: rgb(0,0,0) });
+  page3.drawText("Professional Learning Experience", { x: 50, y: y3, size: 18, font: boldFont, color: rgb(0, 0, 0) });
   y3 -= 30;
   const p3_bullets = [
     "Live Instructor-Led Interactive Sessions",
@@ -597,31 +597,31 @@ const createNewAdvanceOfferLetterPDF = async ({
     "Mock Interviews & Career Coaching"
   ];
   p3_bullets.forEach(bullet => {
-    page3.drawText(`• ${bullet}`, { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+    page3.drawText(`• ${bullet}`, { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
     y3 -= 25;
   });
 
   y3 -= 30;
-  page3.drawText("Career Advancement Commitment", { x: 50, y: y3, size: 18, font: boldFont, color: rgb(0,0,0) });
+  page3.drawText("Career Advancement Commitment", { x: 50, y: y3, size: 18, font: boldFont, color: rgb(0, 0, 0) });
   y3 -= 30;
-  page3.drawText("At Krutanic, our commitment extends beyond training. Our objective is to help", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page3.drawText("At Krutanic, our commitment extends beyond training. Our objective is to help", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y3 -= 20;
-  page3.drawText("learners become industry-ready professionals capable of competing in today's", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page3.drawText("learners become industry-ready professionals capable of competing in today's", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y3 -= 20;
-  page3.drawText("evolving job market.", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page3.drawText("evolving job market.", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y3 -= 45;
-  page3.drawText("Eligible learners who successfully complete the program, maintain the required", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page3.drawText("Eligible learners who successfully complete the program, maintain the required", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y3 -= 20;
-  page3.drawText("attendance, complete all assignments and projects, and actively participate in", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page3.drawText("attendance, complete all assignments and projects, and actively participate in", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y3 -= 20;
-  page3.drawText("career preparation activities will receive:", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page3.drawText("career preparation activities will receive:", { x: 50, y: y3, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
 
   // Footer removed from Page 3
 
   // PAGE 4
   const page4 = pdfDoc.addPage([a4Width, a4Height]);
   page4.drawImage(jpgImage, { x: 0, y: 0, width: a4Width, height: a4Height });
-  
+
   let y4 = 730;
   const p4_bullets = [
     "Dedicated Career Mentorship",
@@ -632,109 +632,109 @@ const createNewAdvanceOfferLetterPDF = async ({
     "Industry Opportunity Updates",
   ];
   p4_bullets.forEach((bullet) => {
-    page4.drawText(`• ${bullet}`, { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+    page4.drawText(`• ${bullet}`, { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
     y4 -= 25;
   });
-  
-  page4.drawText("• Guaranteed Access to Up to 15 Interview Opportunities Through Our Employer", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+
+  page4.drawText("• Guaranteed Access to Up to 15 Interview Opportunities Through Our Employer", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y4 -= 20;
-  page4.drawText("  and Hiring Partner Ecosystem", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page4.drawText("  and Hiring Partner Ecosystem", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y4 -= 50;
 
-  page4.drawText("*We are committed to your career success. Upon successful completion of the", { x: 50, y: y4, size: 12.5, font: boldFont, color: rgb(0,0,0) });
+  page4.drawText("*We are committed to your career success. Upon successful completion of the", { x: 50, y: y4, size: 12.5, font: boldFont, color: rgb(0, 0, 0) });
   y4 -= 20;
-  page4.drawText("program, maintaining the required attendance, completing all assignments,", { x: 50, y: y4, size: 12.5, font: boldFont, color: rgb(0,0,0) });
+  page4.drawText("program, maintaining the required attendance, completing all assignments,", { x: 50, y: y4, size: 12.5, font: boldFont, color: rgb(0, 0, 0) });
   y4 -= 20;
-  page4.drawText("projects, and assessments, and fulfilling all academic requirements, you will", { x: 50, y: y4, size: 12.5, font: boldFont, color: rgb(0,0,0) });
+  page4.drawText("projects, and assessments, and fulfilling all academic requirements, you will", { x: 50, y: y4, size: 12.5, font: boldFont, color: rgb(0, 0, 0) });
   y4 -= 20;
-  page4.drawText("receive guaranteed access to up to 15 interview opportunities through our", { x: 50, y: y4, size: 12.5, font: boldFont, color: rgb(0,0,0) });
+  page4.drawText("receive guaranteed access to up to 15 interview opportunities through our", { x: 50, y: y4, size: 12.5, font: boldFont, color: rgb(0, 0, 0) });
   y4 -= 20;
-  page4.drawText("employer and hiring partner ecosystem.*", { x: 50, y: y4, size: 12.5, font: boldFont, color: rgb(0,0,0) });
+  page4.drawText("employer and hiring partner ecosystem.*", { x: 50, y: y4, size: 12.5, font: boldFont, color: rgb(0, 0, 0) });
 
   y4 -= 70;
-  page4.drawText("Learner Expectations", { x: 50, y: y4, size: 18, font: boldFont, color: rgb(0,0,0) });
+  page4.drawText("Learner Expectations", { x: 50, y: y4, size: 18, font: boldFont, color: rgb(0, 0, 0) });
   y4 -= 30;
-  page4.drawText("To maximize learning outcomes and maintain program quality standards,", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page4.drawText("To maximize learning outcomes and maintain program quality standards,", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y4 -= 20;
-  page4.drawText("participants are expected to:", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page4.drawText("participants are expected to:", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y4 -= 30;
-  
-  page4.drawText("• Maintain a minimum of 95% attendance", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+
+  page4.drawText("• Maintain a minimum of 95% attendance", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y4 -= 25;
-  page4.drawText("• Complete 100% of assignments, projects, and assessments", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page4.drawText("• Complete 100% of assignments, projects, and assessments", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y4 -= 25;
-  page4.drawText("• Actively participate in live sessions, mentoring activities, and career preparation", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page4.drawText("• Actively participate in live sessions, mentoring activities, and career preparation", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y4 -= 20;
-  page4.drawText("  initiatives", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page4.drawText("  initiatives", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y4 -= 25;
-  page4.drawText("• Demonstrate professional conduct throughout the program", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page4.drawText("• Demonstrate professional conduct throughout the program", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y4 -= 25;
-  page4.drawText("• Adhere to all academic and operational policies communicated by Krutanic", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page4.drawText("• Adhere to all academic and operational policies communicated by Krutanic", { x: 50, y: y4, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
 
   // Footer removed from Page 4
 
   // PAGE 5
   const page5 = pdfDoc.addPage([a4Width, a4Height]);
   page5.drawImage(jpgImage2, { x: 0, y: 0, width: a4Width, height: a4Height });
-  
+
   let y5 = 730;
-  page5.drawText("Important Terms & Conditions", { x: 50, y: y5, size: 18, font: boldFont, color: rgb(0,0,0) });
+  page5.drawText("Important Terms & Conditions", { x: 50, y: y5, size: 18, font: boldFont, color: rgb(0, 0, 0) });
   y5 -= 35;
-  
-  page5.drawText("• Enrollment is confirmed upon successful completion of admission formalities", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+
+  page5.drawText("• Enrollment is confirmed upon successful completion of admission formalities", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y5 -= 20;
-  page5.drawText("  and payment requirements.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page5.drawText("  and payment requirements.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y5 -= 25;
-  
-  page5.drawText("• Program fees paid are non-refundable under any circumstances.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+
+  page5.drawText("• Program fees paid are non-refundable under any circumstances.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y5 -= 25;
-  
-  page5.drawText("• Scholarship benefits are applicable only for the current intake and cannot be", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+
+  page5.drawText("• Scholarship benefits are applicable only for the current intake and cannot be", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y5 -= 20;
-  page5.drawText("  transferred to future batches.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page5.drawText("  transferred to future batches.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y5 -= 25;
-  
-  page5.drawText("• Access credentials, onboarding details, class schedules, and learning resources", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+
+  page5.drawText("• Access credentials, onboarding details, class schedules, and learning resources", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y5 -= 20;
-  page5.drawText("  will be shared prior to the commencement of classes.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page5.drawText("  will be shared prior to the commencement of classes.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y5 -= 25;
-  
-  page5.drawText("• All official communication regarding classes, assignments, assessments,", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+
+  page5.drawText("• All official communication regarding classes, assignments, assessments,", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y5 -= 20;
-  page5.drawText("  placement support, and program updates will be shared through authorized", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page5.drawText("  placement support, and program updates will be shared through authorized", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y5 -= 20;
-  page5.drawText("  Krutanic communication channels.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
-  
+  page5.drawText("  Krutanic communication channels.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
+
   y5 -= 50;
-  page5.drawText("Welcome to Krutanic", { x: 50, y: y5, size: 20, font: boldFont, color: rgb(0,0,0) });
+  page5.drawText("Welcome to Krutanic", { x: 50, y: y5, size: 20, font: boldFont, color: rgb(0, 0, 0) });
   y5 -= 30;
-  page5.drawText("You are now part of a community of ambitious professionals committed to", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page5.drawText("You are now part of a community of ambitious professionals committed to", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y5 -= 20;
-  page5.drawText("continuous learning, career transformation, and long-term professional success.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page5.drawText("continuous learning, career transformation, and long-term professional success.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y5 -= 40;
-  page5.drawText("The most successful professionals are not those who wait for opportunities they are", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page5.drawText("The most successful professionals are not those who wait for opportunities they are", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y5 -= 20;
-  page5.drawText("the ones who prepare for them.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page5.drawText("the ones who prepare for them.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y5 -= 40;
-  page5.drawText("We are excited to be a part of your transformation journey and look forward to", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page5.drawText("We are excited to be a part of your transformation journey and look forward to", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y5 -= 20;
-  page5.drawText("helping you achieve your career aspirations.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
-  
+  page5.drawText("helping you achieve your career aspirations.", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
+
   y5 -= 45;
   const centeredText = "Welcome to the next phase of your growth.";
-  page5.drawText(centeredText, { 
-    x: (a4Width - boldFont.widthOfTextAtSize(centeredText, 14)) / 2, 
-    y: y5, size: 14, font: boldFont, color: rgb(0,0,0) 
+  page5.drawText(centeredText, {
+    x: (a4Width - boldFont.widthOfTextAtSize(centeredText, 14)) / 2,
+    y: y5, size: 14, font: boldFont, color: rgb(0, 0, 0)
   });
-  
+
   y5 -= 45;
-  page5.drawText("Warm Regards,", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
-  
+  page5.drawText("Warm Regards,", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
+
   y5 -= 35;
-  page5.drawText("Admissions & Enrollment Team", { x: 50, y: y5, size: 12.5, font: boldFont, color: rgb(0,0,0) });
+  page5.drawText("Admissions & Enrollment Team", { x: 50, y: y5, size: 12.5, font: boldFont, color: rgb(0, 0, 0) });
   y5 -= 15;
-  page5.drawText("Krutanic", { x: 50, y: y5, size: 12.5, font: boldFont, color: rgb(0,0,0) });
-  
+  page5.drawText("Krutanic", { x: 50, y: y5, size: 12.5, font: boldFont, color: rgb(0, 0, 0) });
+
   if (stampImage) {
     const stampDims = stampImage.scale(0.32);
     page5.drawImage(stampImage, {
@@ -747,11 +747,11 @@ const createNewAdvanceOfferLetterPDF = async ({
     // page5.drawText("Shrikant Rathod", { x: 380, y: y5 + 15, size: 12.5, font: boldFont, color: rgb(0,0,0) });
     // page5.drawText("Executive Director", { x: 380, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
   }
-  
+
   y5 -= 45;
-  page5.drawText("• Bangalore, Karnataka", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page5.drawText("• Bangalore, Karnataka", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
   y5 -= 18;
-  page5.drawText("• Support@krutanic.com", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0,0,0) });
+  page5.drawText("• Support@krutanic.com", { x: 50, y: y5, size: 12.5, font: regularFont, color: rgb(0, 0, 0) });
 
   const pdfBytes = await pdfDoc.save();
   return pdfBytes;
@@ -991,7 +991,7 @@ DATE:
                 <p style="margin: 4px 0 0 0; font-size: 15px; font-weight: bold; color: #F15B29;">Team Krutanic</p>
                 <p style="margin: 4px 0 0 0; font-size: 13px; color: #777777;">
                   Bangalore, Karnataka<br>
-                  📞 +91 7829104024 &bull; 📧 <a href="mailto:support@krutanic.com" style="color: #F15B29; text-decoration: none;">support@krutanic.com</a>
+                  📞 +91 9972231105 &bull; 📧 <a href="mailto:support@krutanic.com" style="color: #F15B29; text-decoration: none;">support@krutanic.com</a>
                 </p>
               </div>
             </div>
@@ -1041,34 +1041,34 @@ DATE:
   });
 };
 
-const sendNewOfferLetter = async ({ 
-  email, fullname, domain, 
-  originalProgramFee, finalPayableFee, enrollmentAmountReceived, remainingBalance, 
-  emiDuration, monthlyEmi, firstInstallmentAmount, firstInstallmentDate, 
-  secondInstallmentAmount, secondInstallmentDate 
+const sendNewOfferLetter = async ({
+  email, fullname, domain,
+  originalProgramFee, finalPayableFee, enrollmentAmountReceived, remainingBalance,
+  emiDuration, monthlyEmi, firstInstallmentAmount, firstInstallmentDate,
+  secondInstallmentAmount, secondInstallmentDate
 }) => {
   const safeFullname = fullname || "";
   const safeDomain = domain || "";
   const salutationName = safeFullname.replace(/\s*candidate\b/gi, "").trim();
   const programName = safeDomain.toLowerCase().includes("program") ? safeDomain : `${safeDomain} Professional Program`;
   const date = new Date().toLocaleDateString("en-GB", { year: "numeric", month: "long", day: "numeric" });
-  
+
   let subject = `Enrollment & Admission Confirmation - ${safeFullname}`;
 
-  let pdfBuffer = await createNewAdvanceOfferLetterPDF({ 
-    fullname: salutationName, 
-    date, 
-    programName, 
-    originalProgramFee, 
-    finalPayableFee, 
-    enrollmentAmountReceived, 
-    remainingBalance, 
-    emiDuration, 
-    monthlyEmi, 
-    firstInstallmentAmount, 
-    firstInstallmentDate, 
-    secondInstallmentAmount, 
-    secondInstallmentDate 
+  let pdfBuffer = await createNewAdvanceOfferLetterPDF({
+    fullname: salutationName,
+    date,
+    programName,
+    originalProgramFee,
+    finalPayableFee,
+    enrollmentAmountReceived,
+    remainingBalance,
+    emiDuration,
+    monthlyEmi,
+    firstInstallmentAmount,
+    firstInstallmentDate,
+    secondInstallmentAmount,
+    secondInstallmentDate
   });
 
   let body = `
@@ -1160,7 +1160,7 @@ const sendNewOfferLetter = async ({
                 <p style="margin: 4px 0 0 0; font-size: 15px; font-weight: bold; color: #F15B29;">Team Krutanic</p>
                 <p style="margin: 4px 0 0 0; font-size: 13px; color: #777777;">
                   Bangalore, Karnataka<br>
-                  📞 +91 7829104024 &bull; 📧 <a href="mailto:support@krutanic.com" style="color: #F15B29; text-decoration: none;">support@krutanic.com</a>
+                  📞 +91 9972231105 &bull; 📧 <a href="mailto:support@krutanic.com" style="color: #F15B29; text-decoration: none;">support@krutanic.com</a>
                 </p>
               </div>
             </div>

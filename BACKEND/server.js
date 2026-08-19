@@ -258,6 +258,15 @@ app.use("/", CronRoutes);
 const googleFormsProxy = require("./routes/googleFormsProxy");
 app.use("/api", googleFormsProxy);
 
+// ─── Practice Module ────────────────────────────────────────────────────────
+const practiceAuthRoutes = require("./routes/practiceAuthRoutes");
+const practiceRoutes = require("./routes/practiceRoutes");
+const practiceAdminRoutes = require("./routes/practiceAdminRoutes");
+app.use("/api", practiceAuthRoutes);
+app.use("/api", practiceRoutes);
+app.use("/api", practiceAdminRoutes);
+// ───────────────────────────────────────────────────────────────────────────
+
 // ✅ FIX #4: Error handling middleware (must be after routes)
 const axios = require('axios');
 // Global Proxy Route for Downloads (Moved here for reliability)
