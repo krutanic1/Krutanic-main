@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import SEO from "../../Components/SEO";
 import { 
   CheckCircle2, 
   ChevronDown, 
@@ -152,6 +153,7 @@ const DataAnalytics = () => {
 
   return (
     <div className="da-page">
+      <SEO path="/DataAnalytics" />
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap');
 

@@ -104,7 +104,7 @@ app.use(cors({
 
 // Middleware to parse JSON with raw body capture for webhook verification
 const captureRawBody = (req, res, buf) => {
-  if (req.originalUrl && req.originalUrl.includes('/meta-webhook')) {
+  if (req.originalUrl && req.originalUrl.includes('/meta-webhook')) {ff
     req.rawBody = buf;
   }
 };

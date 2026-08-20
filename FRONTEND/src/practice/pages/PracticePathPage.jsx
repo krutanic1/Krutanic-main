@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { usePracticeAuth } from '../context/PracticeAuthContext';
-import LevelBadge from '../components/LevelBadge';
 import { CardSkeleton } from '../components/Skeleton';
 import { 
-  ChevronRight, ChevronDown, BookOpen, Target, 
-  CheckCircle2, PlayCircle, Trophy, Layers, Clock, Lock
+  ChevronDown, BookOpen, Clock, Users, Play, Trophy, ChevronRight, CheckCircle2, Lock, Star, Flag, Zap
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import certificateBg from '../../assets/card_bg.png'; // Fallback if needed
+import heroBg from '../../assets/path_hero_bg.jpg';
 
 const PracticePathPage = () => {
   const { pathSlug } = useParams();
@@ -17,7 +17,7 @@ const PracticePathPage = () => {
   const [pathData, setPathData] = useState(null);
   const [progress, setProgress] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [expandedTopics, setExpandedTopics] = useState(new Set()); // For accordion/timeline
+  const [expandedTopics, setExpandedTopics] = useState(new Set());
 
   const fetchPath = useCallback(async () => {
     try {
@@ -28,7 +28,6 @@ const PracticePathPage = () => {
       setPathData(pathRes.data);
       setProgress(progressRes.data);
       
-      // Auto-expand first topic
       if (pathRes.data.topics?.length > 0) {
         setExpandedTopics(new Set([pathRes.data.topics[0]._id]));
       }
@@ -47,25 +46,23 @@ const PracticePathPage = () => {
   const toggleTopic = (topicId) => {
     setExpandedTopics(prev => {
       const newSet = new Set(prev);
-      if (newSet.has(topicId)) {
-        newSet.delete(topicId);
-      } else {
-        newSet.add(topicId);
-      }
+      if (newSet.has(topicId)) newSet.delete(topicId);
+      else newSet.add(topicId);
       return newSet;
     });
   };
 
   if (loading) {
     return (
-      <div className="max-w-[1200px] mx-auto px-4 py-12">
-        <div className="h-64 bg-slate-200 dark:bg-slate-800 rounded-3xl animate-pulse mb-8" />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-4">
-            <CardSkeleton count={3} />
-          </div>
-          <div className="space-y-4">
-            <div className="h-80 bg-slate-200 dark:bg-slate-800 rounded-3xl animate-pulse" />
+      <div className="min-h-screen bg-[#1c1d22] p-8">
+        <div className="max-w-[1200px] mx-auto space-y-6">
+          <div className="h-64 bg-[#25262c] rounded-2xl animate-pulse" />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-4">
+              <div className="h-24 bg-[#25262c] rounded-xl animate-pulse" />
+              <div className="h-24 bg-[#25262c] rounded-xl animate-pulse" />
+            </div>
+            <div className="h-80 bg-[#25262c] rounded-xl animate-pulse" />
           </div>
         </div>
       </div>
@@ -75,287 +72,233 @@ const PracticePathPage = () => {
   if (!pathData) return null;
 
   const { path, topics } = pathData;
-  const color = path.gradientFrom || path.themeColor || '#6366f1';
-  
   const totalSolved = progress?.solved || 0;
   const totalQuestions = progress?.totalProblems || path.totalProblems || 0;
   const percentage = totalQuestions > 0 ? Math.round((totalSolved / totalQuestions) * 100) : 0;
-  const isCompleted = percentage === 100;
-
+  
+  // Base color logic for gradients (fallback to CodeChef blue style)
+  const baseColorClass = 'from-[#1e58c8] to-[#14429e]'; 
   const firstSubtopic = topics?.[0]?.subtopics?.[0];
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0f172a] font-sans selection:bg-indigo-500/30 pb-20">
-      
-      {/* Breadcrumb Header */}
-      <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-[61px] z-40">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
-          <nav className="flex items-center gap-2 text-sm font-medium" aria-label="Breadcrumb">
-            <Link to="/practice" className="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
-              Practice
-            </Link>
-            <ChevronRight size={14} className="text-slate-300 dark:text-slate-700" />
-            <span className="text-slate-900 dark:text-white font-bold truncate max-w-[200px]">{path.title}</span>
-          </nav>
-        </div>
-      </div>
-
-      {/* Hero Section */}
-      <div className="relative overflow-hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
-        {/* Subtle background glow */}
-        <div 
-          className="absolute top-0 right-0 w-[800px] h-[600px] opacity-[0.03] dark:opacity-[0.07] rounded-full blur-[100px] pointer-events-none transform translate-x-1/3 -translate-y-1/3"
-          style={{ backgroundColor: color }}
-        />
+    <div className="min-h-screen bg-[#191919] font-sans text-slate-200 selection:bg-blue-500/30 pb-20">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20 relative z-10">
-          <div className="max-w-3xl">
-            <div className="flex items-center gap-3 mb-6">
-              <div 
-                className="w-12 h-12 rounded-2xl flex items-center justify-center border shadow-sm"
-                style={{ backgroundColor: `${color}15`, borderColor: `${color}30`, color }}
-              >
-                <Layers size={24} />
+        {/* Hero Card */}
+        <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-r ${baseColorClass} p-8 mb-8 shadow-2xl border border-white/10`}>
+          {/* Subtle Grid Overlay */}
+          <div 
+            className="absolute inset-0 opacity-20 mix-blend-overlay bg-center bg-cover"
+            style={{ backgroundImage: `url(${heroBg})` }}
+          ></div>
+          
+          <div className="relative z-10">
+            {/* Top Right Badges */}
+            <div className="absolute top-0 right-0 flex gap-3 hidden sm:flex">
+              <div className="bg-white text-blue-600 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm">
+                <Trophy size={12} /> Certification Available
               </div>
-              <LevelBadge level={path.level} />
+              <div className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-sm">
+                <Star size={12} className="fill-yellow-500 text-yellow-500" /> 4.8 (12k+)
+              </div>
             </div>
-            
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white mb-6 tracking-tight leading-[1.1]">
-              {path.title}
-            </h1>
-            
-            <p className="text-lg sm:text-xl text-slate-500 dark:text-slate-400 font-medium leading-relaxed mb-8 max-w-2xl break-words overflow-hidden">
-              {path.description}
-            </p>
 
-            <div className="flex flex-wrap items-center gap-6">
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700">
-                  <BookOpen size={18} className="text-slate-600 dark:text-slate-400" />
+            {/* Icon and Title */}
+            <div className="flex items-start gap-5 mb-6">
+              <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/20 shadow-inner flex-shrink-0">
+                <BookOpen size={32} className="text-white" />
+              </div>
+              <div className="mt-1 flex-1 overflow-hidden">
+                <h1 className="text-3xl font-black text-white mb-2 tracking-tight truncate">Practice {path.title}</h1>
+                <p className="text-blue-100 text-sm max-w-2xl leading-relaxed font-medium break-words line-clamp-3">
+                  {path.description || `Solve ${path.title} Practice problems online with the Practice ${path.title} path on Krutanic. Answer MCQs exercises and write code for over ${path.totalProblems} coding challenges.`}
+                </p>
+              </div>
+            </div>
+
+            {/* Stats Row */}
+            <div className="flex flex-wrap items-center gap-6 text-sm font-semibold text-blue-100 mb-10">
+              <div className="flex items-center gap-2"><BookOpen size={16} /> {topics.length} Lessons</div>
+              <div className="flex items-center gap-2"><Clock size={16} /> {path.estimatedDuration || '15 Hours'}</div>
+              <div className="flex items-center gap-2"><CheckCircle2 size={16} /> {path.totalProblems} Problems</div>
+              <div className="flex items-center gap-2"><Users size={16} /> 6000+ Learners</div>
+              <div className="flex items-center gap-2"><Zap size={16} /> {path.level} Level</div>
+            </div>
+
+            {/* Progress & Start Button */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-t border-white/10 pt-6">
+              <div className="flex-1 max-w-xl">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-white font-bold text-sm">Your Progress:</span>
+                  <span className={`${percentage === 100 ? 'text-emerald-400' : 'text-emerald-400'} font-bold text-sm flex items-center gap-1`}>
+                    {percentage}% Completed
+                  </span>
+                </div>
+                <div className="h-1.5 w-full bg-black/20 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-emerald-400 rounded-full transition-all duration-1000 relative"
+                    style={{ width: `${percentage}%` }}
+                  >
+                     <div className="absolute inset-0 bg-white/30 animate-[shimmer_2s_infinite] -translate-x-full" style={{ backgroundImage: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent)' }} />
+                  </div>
+                </div>
+              </div>
+              
+              {isAuthenticated ? (
+                firstSubtopic ? (
+                  <Link
+                    to={`/practice/${pathSlug}/${topics[0].slug}/${firstSubtopic.slug}`}
+                    className="shrink-0 bg-blue-500 hover:bg-blue-400 text-white px-8 py-3 rounded-xl font-bold transition-colors shadow-lg hover:shadow-blue-500/25 flex items-center gap-2"
+                  >
+                    {totalSolved > 0 ? 'Continue Learning' : 'Start Learning'}
+                  </Link>
+                ) : null
+              ) : (
+                <Link
+                  to="/practice/login"
+                  className="shrink-0 bg-white text-blue-900 px-8 py-3 rounded-xl font-bold transition-colors hover:bg-slate-100 shadow-lg flex items-center gap-2"
+                >
+                  <Lock size={18} /> Sign in to Start
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Main Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          {/* Left Column: Curriculum List */}
+          <div className="lg:col-span-8 space-y-4">
+            {topics.map((topic, index) => {
+              const isExpanded = expandedTopics.has(topic._id);
+              
+              return (
+                <div key={topic._id} className="bg-[#24252a] rounded-xl border border-white/5 overflow-hidden transition-all shadow-sm">
+                  
+                  {/* Topic Header */}
+                  <button 
+                    onClick={() => toggleTopic(topic._id)}
+                    className="w-full flex items-center justify-between p-5 hover:bg-[#2a2b31] transition-colors text-left group"
+                  >
+                    <div className="flex items-center gap-5">
+                      <div className="w-10 h-10 rounded-full bg-[#191919] flex items-center justify-center font-bold text-slate-300 text-lg shadow-inner border border-white/5">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-white text-lg group-hover:text-blue-400 transition-colors">
+                          {topic.title}
+                        </h3>
+                        <p className="text-slate-400 text-sm mt-1 font-medium">
+                          Practice problems using {path.title} related to {topic.title.toLowerCase()}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-slate-500 p-2 group-hover:text-slate-300 transition-colors">
+                      <ChevronDown size={20} className={`transform transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
+                    </div>
+                  </button>
+
+                  {/* Subtopics List */}
+                  {isExpanded && (
+                    <div className="bg-[#1e1e24] border-t border-white/5">
+                      {topic.subtopics?.length > 0 ? (
+                        <>
+                          <div className="grid grid-cols-12 gap-4 px-6 py-3 border-b border-white/5 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                            <div className="col-span-8">Problem Name</div>
+                            <div className="col-span-2 text-center">Status</div>
+                            <div className="col-span-2 text-center">Difficulty</div>
+                          </div>
+                          <div className="divide-y divide-white/5">
+                            {topic.subtopics.map((sub) => (
+                              <Link 
+                                to={`/practice/${pathSlug}/${topic.slug}/${sub.slug}`}
+                                key={sub._id} 
+                                className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-[#25262c] transition-colors group"
+                              >
+                                <div className="col-span-8">
+                                  <span className="text-sm font-semibold text-blue-400 group-hover:text-blue-300 transition-colors line-clamp-1">
+                                    {sub.title}
+                                  </span>
+                                </div>
+                                <div className="col-span-2 flex justify-center">
+                                  {/* Mock Status Circle */}
+                                  <div className="w-4 h-4 rounded-full bg-white/10 border border-white/20"></div>
+                                </div>
+                                <div className="col-span-2 flex justify-center">
+                                  <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20">
+                                    Easy
+                                  </span>
+                                </div>
+                              </Link>
+                            ))}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="p-6 text-center text-slate-500 text-sm font-medium">
+                          No practice sets available yet.
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Right Column: Sidebar */}
+          <div className="lg:col-span-4 space-y-6">
+            
+            {/* Certificate Card */}
+            <div className="bg-[#24252a] rounded-xl border border-white/5 p-6 shadow-sm">
+              <div className="bg-white rounded-lg p-6 mb-5 shadow-inner border border-slate-200 flex flex-col items-center justify-center text-center">
+                <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mb-3">
+                  <Trophy className="text-amber-600" size={24} />
+                </div>
+                <h4 className="text-slate-900 font-bold text-sm mb-4">Certificate on Completion</h4>
+                <div className="flex items-center justify-between w-full opacity-40">
+                  <div className="h-6 w-16 bg-slate-200 rounded script-font"></div>
+                  <div className="space-y-1">
+                    <div className="h-1.5 w-12 bg-slate-200 rounded"></div>
+                    <div className="h-1.5 w-12 bg-slate-200 rounded"></div>
+                  </div>
+                  <div className="h-6 w-16 bg-slate-200 rounded script-font"></div>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2 mb-3">
+                <h4 className="text-white font-bold text-sm">Certification available</h4>
+                <span className="bg-orange-500/20 text-orange-400 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded">Included in premium</span>
+              </div>
+              <p className="text-slate-400 text-xs leading-relaxed font-medium">
+                On Completing all the lessons in this course, you'll get a course completion certificate
+              </p>
+            </div>
+
+            {/* Prerequisite Card */}
+            <div className="bg-[#24252a] rounded-xl border border-white/5 p-6 shadow-sm">
+              <div className="flex items-center gap-2 mb-4 text-slate-300 font-bold text-sm">
+                <Lock size={16} /> Prerequisite course
+              </div>
+              <p className="text-slate-400 text-xs leading-relaxed font-medium mb-6">
+                We recommend you complete this course first before you jump into Practice {path.title}, this will help you understand this even better.
+              </p>
+              
+              <div className="bg-[#1e1e24] border border-white/5 rounded-lg p-4 flex gap-4 hover:bg-[#2a2b31] transition-colors cursor-pointer group">
+                <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center shrink-0 border border-blue-500/30">
+                  <BookOpen size={20} className="text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-slate-900 dark:text-white">{path.totalProblems}</p>
-                  <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Problems</p>
-                </div>
-              </div>
-              
-              {path.estimatedDuration && (
-                <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700">
-                    <Clock size={18} className="text-slate-600 dark:text-slate-400" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-slate-900 dark:text-white">{path.estimatedDuration}</p>
-                    <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Duration</p>
+                  <h5 className="text-white font-bold text-sm group-hover:text-blue-400 transition-colors">Learn {path.title}</h5>
+                  <div className="flex items-center gap-2 mt-1 text-xs text-slate-500 font-medium">
+                    <span className="flex items-center gap-1 text-yellow-500"><Star size={10} className="fill-yellow-500"/> 4.7 (31.2k+)</span>
+                    <span>Beginner</span>
                   </div>
                 </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
-          
-          {/* Main Curriculum Column */}
-          <div className="lg:col-span-8">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
-                Curriculum
-                <span className="text-sm font-bold bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-full">
-                  {topics.length} Topics
-                </span>
-              </h2>
-              
-              <button 
-                onClick={() => setExpandedTopics(new Set(expandedTopics.size === topics.length ? [] : topics.map(t => t._id)))}
-                className="text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 px-3 py-1.5 rounded-lg transition-colors"
-              >
-                {expandedTopics.size === topics.length ? 'Collapse All' : 'Expand All'}
-              </button>
-            </div>
-
-            <div className="relative">
-              {/* Vertical timeline line */}
-              <div className="absolute left-6 top-4 bottom-8 w-px bg-slate-200 dark:bg-slate-800 hidden sm:block" />
-              
-              <div className="space-y-6">
-                {topics.map((topic, topicIdx) => {
-                  const isExpanded = expandedTopics.has(topic._id);
-                  const subCount = topic.subtopics?.length || 0;
-                  const qCount = topic.subtopics?.reduce((sum, sub) => sum + (sub.questionCount || 0), 0) || 0;
-                  
-                  return (
-                    <div key={topic._id} className="relative z-10">
-                      <div className="flex items-start gap-4 sm:gap-6">
-                        
-                        {/* Timeline Node */}
-                        <div 
-                          className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 flex items-center justify-center font-black text-lg text-slate-400 hidden sm:flex shrink-0 transition-colors shadow-sm"
-                          style={isExpanded ? { borderColor: color, color } : {}}
-                        >
-                          {topicIdx + 1}
-                        </div>
-
-                        {/* Topic Card */}
-                        <div className="flex-1 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/80 dark:border-slate-700/80 shadow-[0_4px_20px_rgb(0,0,0,0.02)] overflow-hidden transition-all duration-300">
-                          
-                          {/* Header Toggle */}
-                          <button
-                            onClick={() => toggleTopic(topic._id)}
-                            className="w-full flex items-center justify-between p-6 sm:p-7 text-left hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors"
-                          >
-                            <div className="pr-4">
-                              <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-1.5">
-                                {topic.title}
-                              </h3>
-                              {topic.description && (
-                                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium line-clamp-2 break-all">
-                                  {topic.description}
-                                </p>
-                              )}
-                              
-                              <div className="flex items-center gap-3 mt-4 text-xs font-bold text-slate-400">
-                                <span className="flex items-center gap-1"><Layers size={14}/> {subCount} Subtopics</span>
-                                <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
-                                <span className="flex items-center gap-1"><BookOpen size={14}/> {qCount} Questions</span>
-                              </div>
-                            </div>
-                            
-                            <div 
-                              className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${isExpanded ? 'bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-white rotate-180' : 'bg-slate-50 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700'}`}
-                            >
-                              <ChevronDown size={20} />
-                            </div>
-                          </button>
-
-                          {/* Subtopics Expanded Content */}
-                          {isExpanded && (
-                            <div className="border-t border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/20">
-                              {topic.subtopics?.length > 0 ? (
-                                <div className="divide-y divide-slate-100 dark:divide-slate-700/50">
-                                  {topic.subtopics.map((sub) => (
-                                    <div key={sub._id} className="p-6 sm:p-7 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-white dark:hover:bg-slate-800 transition-colors">
-                                      <div className="flex-1">
-                                        <h4 className="text-base font-bold text-slate-800 dark:text-slate-200 mb-1 flex items-center gap-2">
-                                          {sub.title}
-                                        </h4>
-                                        {sub.description && (
-                                          <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 break-all">
-                                            {sub.description}
-                                          </p>
-                                        )}
-                                      </div>
-                                      
-                                      <Link
-                                        to={`/practice/${pathSlug}/${topic.slug}/${sub.slug}`}
-                                        className="shrink-0 flex items-center justify-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-bold hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 dark:hover:bg-indigo-500/20 dark:hover:text-indigo-400 transition-all group"
-                                      >
-                                        View Set
-                                        <span className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-lg text-xs font-black group-hover:bg-indigo-100 dark:group-hover:bg-indigo-500/30 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
-                                          {sub.questionCount || 0} Qs
-                                        </span>
-                                      </Link>
-                                    </div>
-                                  ))}
-                                </div>
-                              ) : (
-                                <div className="p-8 text-center text-slate-400 font-medium">
-                                  No subtopics available in this module yet.
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {topics.length === 0 && (
-                <div className="bg-white dark:bg-slate-800 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-3xl p-12 text-center">
-                  <div className="w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <BookOpen size={32} className="text-slate-400" />
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">Syllabus Coming Soon</h3>
-                  <p className="text-slate-500 dark:text-slate-400">The curriculum for this path is currently being crafted.</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Sticky Progress Sidebar */}
-          <div className="lg:col-span-4">
-            <div className="sticky top-24">
-              
-              {/* Your Journey Card */}
-              <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/80 dark:border-slate-700/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] p-6 sm:p-8 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-full blur-3xl" />
-                
-                <h3 className="text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-6">
-                  Your Journey
-                </h3>
-
-                {isAuthenticated ? (
-                  <>
-                    <div className="flex items-end justify-between mb-3">
-                      <div>
-                        <span className="text-4xl font-black text-slate-900 dark:text-white">{percentage}</span>
-                        <span className="text-xl font-bold text-slate-400">%</span>
-                      </div>
-                      <div className="text-right text-sm font-bold text-slate-500">
-                        <span style={{ color }}>{totalSolved}</span> / {totalQuestions} Solved
-                      </div>
-                    </div>
-                    
-                    <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden mb-8">
-                      <div 
-                        className="h-full rounded-full transition-all duration-1000 relative"
-                        style={{ width: `${percentage}%`, backgroundColor: color }}
-                      >
-                        <div className="absolute inset-0 bg-white/20 w-full h-full animate-[shimmer_2s_infinite] -translate-x-full" style={{ backgroundImage: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)' }} />
-                      </div>
-                    </div>
-
-                    {isCompleted ? (
-                      <div className="w-full flex items-center justify-center gap-2 py-4 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl font-bold border border-emerald-200 dark:border-emerald-500/20">
-                        <Trophy size={18} />
-                        Path Mastered!
-                      </div>
-                    ) : firstSubtopic ? (
-                      <Link
-                        to={`/practice/${pathSlug}/${topics[0].slug}/${firstSubtopic.slug}`}
-                        className="w-full flex items-center justify-center gap-2 py-4 rounded-xl text-white font-bold transition-all hover:shadow-lg hover:-translate-y-0.5 group"
-                        style={{ backgroundColor: color }}
-                      >
-                        <PlayCircle size={18} />
-                        {totalSolved > 0 ? 'Continue Practicing' : 'Start Practicing'}
-                        <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                      </Link>
-                    ) : null}
-                  </>
-                ) : (
-                  <div className="text-center py-4">
-                    <div className="w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Lock size={24} className="text-slate-400" />
-                    </div>
-                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-6">
-                      Sign in to track your progress, earn achievements, and save your solutions.
-                    </p>
-                    <Link
-                      to="/practice/login"
-                      className="w-full flex items-center justify-center gap-2 py-4 rounded-xl text-white bg-slate-900 dark:bg-white dark:text-slate-900 font-bold transition-all hover:shadow-lg hover:-translate-y-0.5"
-                    >
-                      Sign in to Start
-                    </Link>
-                  </div>
-                )}
               </div>
             </div>
-          </div>
 
+          </div>
         </div>
       </div>
     </div>

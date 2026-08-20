@@ -5,7 +5,7 @@ import MCQOption from '../components/MCQOption';
 import DifficultyBadge from '../components/DifficultyBadge';
 import { QuestionPageSkeleton } from '../components/Skeleton';
 import {
-  ChevronRight, ChevronLeft, ChevronUp, Menu, X,
+  ChevronRight, ChevronLeft, ChevronUp, ChevronDown, Menu, X,
   Code2, CheckCircle2, XCircle, Lightbulb, BookOpen, Trophy
 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -124,237 +124,139 @@ const QuestionPage = () => {
     : <span className="text-xs px-2 py-0.5 rounded-md bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 font-semibold">Coding</span>;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      {/* Breadcrumb / Nav Bar */}
-      <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-[61px] z-30">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-          <nav className="flex items-center gap-1.5 text-xs flex-wrap" aria-label="Breadcrumb">
-            <Link to="/practice" className="text-slate-400 hover:text-slate-600 transition-colors">Practice</Link>
-            <ChevronRight size={11} className="text-slate-300" />
-            <Link to={`/practice/${pathSlug}`} className="text-slate-400 hover:text-slate-600 transition-colors truncate max-w-[70px]">
-              {question.practicePath?.title}
-            </Link>
-            <ChevronRight size={11} className="text-slate-300" />
-            <Link to={`/practice/${pathSlug}/${topicSlug}/${subtopicSlug}`} className="text-slate-400 hover:text-slate-600 transition-colors truncate max-w-[80px]">
-              {question.subtopic?.title}
-            </Link>
-            <ChevronRight size={11} className="text-slate-300" />
-            <span className="text-blue-600 dark:text-blue-400 font-semibold truncate max-w-[100px]">{question.title}</span>
-          </nav>
-
-          {/* Progress pill */}
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-slate-400 hidden sm:block">
-              {navigation.currentIndex} / {navigation.total}
-            </span>
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-              aria-label="Open navigation"
-            >
-              <Menu size={16} className="text-slate-600 dark:text-slate-300" />
-            </button>
+    <div className="flex h-[calc(100vh-61px)] bg-[#1c1d22] text-slate-300 font-sans overflow-hidden">
+      {/* LEFT PANE - Statement */}
+      <div className="w-1/2 flex flex-col border-r border-white/10">
+        {/* Tabs */}
+        <div className="flex border-b border-white/10 px-4 pt-2">
+          <button className="px-6 py-2 border-b-2 border-blue-500 text-sm font-semibold text-white">Statement</button>
+          <button className="px-6 py-2 text-sm font-medium text-slate-400 hover:text-slate-200">AI Help</button>
+        </div>
+        
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-8">
+          <h2 className="text-xl font-bold text-white mb-4 leading-snug">{question.title}</h2>
+          
+          <div className="text-sm text-slate-300 leading-relaxed mb-6 whitespace-pre-wrap break-words">
+            {question.statement}
           </div>
+
+          {question.codeSnippet && (
+            <div className="mb-6 rounded-lg overflow-hidden border border-white/10 bg-[#16171a]">
+              <pre className="p-4 text-sm font-mono text-emerald-400 overflow-x-auto">
+                <code>{question.codeSnippet}</code>
+              </pre>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Mobile Sidebar */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
-          <div className="absolute right-0 top-0 bottom-0 w-72 bg-white dark:bg-slate-800 shadow-xl p-4 overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-slate-800 dark:text-white text-sm">Questions</h3>
-              <button onClick={() => setSidebarOpen(false)} className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">
-                <X size={16} />
-              </button>
-            </div>
-            <p className="text-xs text-slate-400 mb-3">{navigation.currentIndex} of {navigation.total}</p>
-            <div className="space-y-1">
-              <Link
-                to={`/practice/${pathSlug}/${topicSlug}/${subtopicSlug}`}
-                className="block text-xs text-blue-600 dark:text-blue-400 hover:underline mb-3"
-                onClick={() => setSidebarOpen(false)}
+      {/* RIGHT PANE - Options & Actions */}
+      <div className="w-1/2 flex flex-col bg-[#1c1d22]">
+        <div className="flex-1 overflow-y-auto p-8">
+          {question.type === 'mcq' && (
+            <>
+              <h3 className="text-base font-medium text-slate-200 mb-6">Select one of the following options:</h3>
+              <div className="space-y-4" role="radiogroup" aria-label="Answer options">
+                {(result?.options || question.options)?.map((option, idx) => {
+                  const isSelected = selectedIndex === idx;
+                  const showCorrect = isSubmitted && option.isCorrect;
+                  const showWrong = isSubmitted && isSelected && !option.isCorrect;
+
+                  let boxStyle = "border-white/10 hover:border-white/30 hover:bg-white/5";
+                  let circleStyle = "border-slate-500";
+                  
+                  if (isSelected) {
+                    boxStyle = "border-blue-500 bg-blue-500/10";
+                    circleStyle = "border-blue-500 bg-blue-500";
+                  }
+                  
+                  if (showCorrect) {
+                    boxStyle = "border-emerald-500 bg-emerald-500/10";
+                    circleStyle = "border-emerald-500 bg-emerald-500";
+                  } else if (showWrong) {
+                    boxStyle = "border-red-500 bg-red-500/10";
+                    circleStyle = "border-red-500 bg-red-500";
+                  }
+
+                  return (
+                    <button
+                      key={option._id || idx}
+                      disabled={submitting || isSubmitted}
+                      onClick={() => setSelectedIndex(idx)}
+                      className={`w-full text-left p-4 rounded-lg border ${boxStyle} transition-all flex items-start gap-4 disabled:cursor-default`}
+                    >
+                      <div className={`w-4 h-4 rounded-full border flex-shrink-0 mt-0.5 ${circleStyle}`}>
+                        {isSelected && <div className="w-full h-full bg-white rounded-full scale-[0.4]" />}
+                      </div>
+                      <span className="text-sm text-slate-300 flex-1 leading-snug">
+                        {option.text}
+                      </span>
+                      {showCorrect && <CheckCircle2 size={18} className="text-emerald-500" />}
+                      {showWrong && <XCircle size={18} className="text-red-500" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          )}
+
+          {/* Explanation block if submitted */}
+          {isSubmitted && (
+            <div className="mt-8 rounded-lg border border-white/10 bg-[#25262c] overflow-hidden">
+              <button 
+                onClick={() => setShowExplanation(!showExplanation)}
+                className="w-full flex items-center justify-between p-4 text-sm font-medium text-slate-300 hover:text-white transition-colors"
               >
-                ← View all questions
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
-        {/* Question Card */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-          {/* Question Header */}
-          <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-700">
-            <div className="flex flex-wrap items-center gap-2 mb-3">
-              {typeBadge}
-              <DifficultyBadge difficulty={question.difficulty} />
-              {/* Progress indicator */}
-              <span className="ml-auto text-xs text-slate-400 font-mono">
-                {navigation.currentIndex} / {navigation.total}
-              </span>
-            </div>
-            <h1 className="text-lg font-bold text-slate-800 dark:text-white leading-snug">
-              {question.title}
-            </h1>
-          </div>
-
-          {/* Question Body */}
-          <div className="px-6 py-5">
-            {/* Statement */}
-            <div className="mb-5">
-              <p className="text-slate-700 dark:text-slate-200 text-sm leading-relaxed whitespace-pre-line break-words break-all">
-                {question.statement}
-              </p>
-            </div>
-
-            {/* Code Snippet */}
-            {question.codeSnippet && (
-              <div className="mb-5 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
-                <div className="flex items-center justify-between px-4 py-2 bg-slate-800 dark:bg-slate-900 border-b border-slate-700">
-                  <div className="flex items-center gap-2">
-                    <Code2 size={14} className="text-slate-400" />
-                    <span className="text-xs text-slate-400 font-mono">{question.codeLanguage || 'python'}</span>
-                  </div>
-                  <div className="flex gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-yellow-500" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
-                  </div>
-                </div>
-                <pre className="bg-slate-900 px-5 py-4 text-sm text-emerald-400 font-mono overflow-x-auto leading-relaxed">
-                  <code>{question.codeSnippet}</code>
-                </pre>
-              </div>
-            )}
-
-            {/* MCQ Options */}
-            {question.type === 'mcq' && (
-              <div className="space-y-3" role="radiogroup" aria-label="Answer options">
-                {(result?.options || question.options)?.map((option, idx) => (
-                  <MCQOption
-                    key={option._id || idx}
-                    option={option}
-                    index={idx}
-                    selectedIndex={selectedIndex}
-                    isSubmitted={isSubmitted}
-                    onSelect={setSelectedIndex}
-                    disabled={submitting}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Submit / See Answer */}
-            <div className="mt-6 flex flex-wrap items-center gap-3">
-              {!isSubmitted ? (
-                isAuthenticated ? (
-                  <button
-                    onClick={handleSubmit}
-                    disabled={selectedIndex === null || submitting}
-                    className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-xl text-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                  >
-                    {submitting ? (
-                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    ) : null}
-                    Submit Answer
-                  </button>
-                ) : (
-                  <Link
-                    to="/practice/login"
-                    className="flex items-center gap-2 px-6 py-2.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold rounded-xl text-sm transition-colors"
-                  >
-                    Sign in to Submit
-                  </Link>
-                )
-              ) : (
                 <div className="flex items-center gap-2">
-                  {result?.isCorrect ? (
-                    <span className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-semibold text-sm">
-                      <CheckCircle2 size={18} />
-                      Correct!
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-2 text-red-500 dark:text-red-400 font-semibold text-sm">
-                      <XCircle size={18} />
-                      Incorrect
-                    </span>
-                  )}
-                  <button
-                    onClick={() => setShowExplanation(!showExplanation)}
-                    className="flex items-center gap-1.5 px-4 py-2 bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800 font-semibold rounded-xl text-xs transition-colors"
-                  >
-                    <Lightbulb size={13} />
-                    {showExplanation ? 'Hide' : 'See'} Explanation
-                  </button>
+                  <Lightbulb size={16} className={result?.isCorrect ? 'text-emerald-400' : 'text-amber-400'} />
+                  See Answer
+                </div>
+                {showExplanation ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              </button>
+              
+              {showExplanation && (
+                <div className="p-4 border-t border-white/10 text-sm text-slate-300 bg-[#1e1f24]">
+                  {result?.explanation || question.explanation || "No explanation provided."}
                 </div>
               )}
             </div>
+          )}
+        </div>
 
-            {/* Explanation */}
-            {isSubmitted && showExplanation && (result?.explanation || question.explanation) && (
-              <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-xl">
-                <div className="flex items-center gap-2 mb-2">
-                  <Lightbulb size={15} className="text-amber-600 dark:text-amber-400" />
-                  <span className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">Explanation</span>
-                </div>
-                <p className="text-sm text-amber-900 dark:text-amber-200 leading-relaxed">
-                  {result?.explanation || question.explanation}
-                </p>
-              </div>
-            )}
+        {/* Footer Actions */}
+        <div className="border-t border-white/10 p-4 flex justify-between items-center bg-[#1c1d22]">
+          <div className="text-xs font-mono text-slate-500">
+             {navigation.currentIndex} / {navigation.total}
           </div>
-
-          {/* Navigation Footer */}
-          <div className="px-6 py-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
-            <button
-              onClick={() => navigation.prev && navigateToQuestion(navigation.prev)}
-              disabled={!navigation.prev}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-              aria-label="Previous question"
-            >
-              <ChevronLeft size={15} />
-              Previous
-            </button>
-
-            <Link
-              to={`/practice/${pathSlug}/${topicSlug}/${subtopicSlug}`}
-              className="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-1"
-            >
-              <BookOpen size={13} />
-              <span className="hidden sm:inline">All questions</span>
-            </Link>
-
-            {navigation.next ? (
+          <div className="flex gap-4">
+            {!isSubmitted ? (
               <button
-                onClick={() => navigateToQuestion(navigation.next)}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                aria-label="Next question"
+                onClick={handleSubmit}
+                disabled={selectedIndex === null || submitting}
+                className="px-8 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded transition-colors text-sm"
               >
-                Next
-                <ChevronRight size={15} />
+                {submitting ? 'Submitting...' : 'Submit'}
               </button>
             ) : (
-              <Link
-                to={`/practice/${pathSlug}/${topicSlug}/${subtopicSlug}`}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
-              >
-                Finish & View Score
-                <Trophy size={15} />
-              </Link>
+              navigation.next ? (
+                <button
+                  onClick={() => navigateToQuestion(navigation.next)}
+                  className="px-8 py-2 bg-white text-black font-medium rounded hover:bg-slate-200 transition-colors text-sm"
+                >
+                  Next
+                </button>
+              ) : (
+                <Link
+                  to={`/practice/${pathSlug}`}
+                  className="px-8 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded transition-colors text-sm"
+                >
+                  Finish
+                </Link>
+              )
             )}
           </div>
         </div>
-
-        {/* Keyboard hint */}
-        {!isSubmitted && (
-          <p className="text-center text-xs text-slate-400 dark:text-slate-600 mt-4">
-            Tip: Press <kbd className="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 rounded text-xs">1</kbd>–
-            <kbd className="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 rounded text-xs">4</kbd> to select, then <kbd className="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 rounded text-xs">Enter</kbd> to submit.
-          </p>
-        )}
       </div>
     </div>
   );

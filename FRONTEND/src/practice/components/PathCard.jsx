@@ -1,150 +1,126 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Code2, Database, Hash, Cpu, Globe, ArrowRight, Clock, BookOpen, CheckCircle2 } from 'lucide-react';
+import { Code2, Database, Hash, Cpu, Globe, ArrowRight, BookOpen, CheckCircle2 } from 'lucide-react';
 import LevelBadge from './LevelBadge';
-import ProgressBar from './ProgressBar';
+import cardBg from '../../assets/card_bg.png';
+import bannerBg from '../../assets/futuristic_tech_bg.png';
 
-// Icon map by path slug or keywords
 const getPathIcon = (slug, color) => {
-  if (slug?.includes('python')) return <Code2 size={24} style={{ color }} />;
-  if (slug?.includes('java') && !slug?.includes('javascript')) return <Cpu size={24} style={{ color }} />;
-  if (slug?.includes('javascript') || slug?.includes('js')) return <Globe size={24} style={{ color }} />;
-  if (slug?.includes('sql') || slug?.includes('data')) return <Database size={24} style={{ color }} />;
-  if (slug?.includes('cpp') || slug?.includes('c-plus')) return <Hash size={24} style={{ color }} />;
-  return <BookOpen size={24} style={{ color }} />;
+  if (slug?.includes('python')) return <Code2 size={24} className="text-white" />;
+  if (slug?.includes('java') && !slug?.includes('javascript')) return <Cpu size={24} className="text-white" />;
+  if (slug?.includes('javascript') || slug?.includes('js')) return <Globe size={24} className="text-white" />;
+  if (slug?.includes('sql') || slug?.includes('data')) return <Database size={24} className="text-white" />;
+  if (slug?.includes('cpp') || slug?.includes('c-plus')) return <Hash size={24} className="text-white" />;
+  return <BookOpen size={24} className="text-white" />;
 };
 
-const PathCard = ({ path, progress, index = 0 }) => {
-  const { _id, title, slug, description, level, totalProblems, estimatedDuration, themeColor, gradientFrom, gradientTo } = path;
+const PathCard = ({ path, progress, index }) => {
+  const { title, slug, description, level, totalProblems, themeColor, gradientFrom } = path;
 
-  const color = gradientFrom || themeColor || '#6366f1';
+  // Enhance the color mapping to ensure vibrant gradients
+  const colorMap = {
+    '#4F46E5': 'from-indigo-500 to-purple-500',
+    '#0EA5E9': 'from-sky-400 to-blue-600',
+    '#10B981': 'from-emerald-400 to-teal-500',
+    '#F59E0B': 'from-amber-400 to-orange-500',
+    '#EF4444': 'from-rose-400 to-red-500',
+  };
+  
+  const baseColor = gradientFrom || themeColor || '#4F46E5';
+  const gradientClass = colorMap[baseColor] || 'from-indigo-500 to-purple-500';
+
   const solved = progress?.solved || 0;
   const percentage = progress?.percentage || 0;
   const isCompleted = percentage === 100;
+  const isInProgress = percentage > 0 && percentage < 100;
 
-  // Bento Box Sizing Pattern
-  const bentoPatterns = [
-    'md:col-span-2 md:row-span-2', // 0: Large Square
-    'md:col-span-1 md:row-span-1', // 1: Small
-    'md:col-span-1 md:row-span-1', // 2: Small
-    'md:col-span-2 md:row-span-1', // 3: Wide
-    'md:col-span-1 md:row-span-2', // 4: Tall
-    'md:col-span-1 md:row-span-1', // 5: Small
-    'md:col-span-2 md:row-span-1', // 6: Wide
-    'md:col-span-1 md:row-span-1', // 7: Small
-  ];
-  
-  const bentoClass = bentoPatterns[index % bentoPatterns.length];
-  const isLarge = bentoClass.includes('col-span-2') && bentoClass.includes('row-span-2');
-  const isWide = bentoClass.includes('col-span-2') && !bentoClass.includes('row-span-2');
-  const isTall = !bentoClass.includes('col-span-2') && bentoClass.includes('row-span-2');
+  // Staggered animation delay
+  const delay = index ? `${index * 100}ms` : '0ms';
 
   return (
-    <article className={`group relative bg-white/70 dark:bg-slate-900/40 backdrop-blur-2xl rounded-[32px] border border-slate-200/50 dark:border-slate-700/50 shadow-sm hover:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.4)] overflow-hidden transition-all duration-500 hover:-translate-y-2 flex flex-col h-full z-10 ${bentoClass}`}>
+    <article 
+      className="group relative rounded-3xl p-[1px] flex flex-col overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] h-full animate-fade-in-up"
+      style={{ animationDelay: delay, animationFillMode: 'both' }}
+    >
+      {/* Animated Gradient Border Layer */}
+      <div className={`absolute inset-0 bg-gradient-to-br ${gradientClass} opacity-30 group-hover:opacity-100 transition-opacity duration-500`}></div>
       
-      {/* Animated glowing border effect on hover */}
-      <div className="absolute -inset-[2px] bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-[34px] -z-10" style={{ backgroundImage: `linear-gradient(135deg, ${gradientFrom || color}, ${gradientTo || color}, transparent, ${color})` }}></div>
-      <div className="absolute inset-0 bg-white/90 dark:bg-slate-900/90 rounded-[32px] -z-10 backdrop-blur-xl"></div>
-      
-      {/* Abstract background blobs for Bento aesthetic */}
-      <div className={`absolute -right-20 -top-20 opacity-20 dark:opacity-10 blur-3xl rounded-full transition-transform duration-1000 group-hover:scale-150 ${isLarge ? 'w-96 h-96' : 'w-48 h-48'}`} style={{ backgroundColor: color }}></div>
-      {isLarge && <div className="absolute -left-20 -bottom-20 w-80 h-80 opacity-10 dark:opacity-5 blur-3xl rounded-full transition-transform duration-1000 group-hover:scale-150" style={{ backgroundColor: gradientTo || color }}></div>}
+      {/* Main Card Body */}
+      <div className="relative bg-[#181920]/95 backdrop-blur-xl rounded-[23px] flex-1 flex flex-col overflow-hidden z-10 h-full">
+        
+        {/* Subtle overall card background image */}
+        <div 
+          className="absolute inset-0 opacity-10 mix-blend-screen pointer-events-none group-hover:opacity-20 transition-opacity duration-500"
+          style={{ backgroundImage: `url(${cardBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+        />
 
-      <div className={`p-6 flex-1 flex flex-col relative z-20 ${isLarge ? 'sm:p-10' : 'sm:p-7'}`}>
-        {/* Header: Icon & Badges */}
-        <div className={`flex items-start justify-between mb-6 gap-4 ${isWide && !isLarge ? 'flex-row items-center' : ''}`}>
+        {/* Top Banner Area with Image */}
+        <div className="h-32 w-full relative overflow-hidden">
+          {/* Banner Image */}
           <div 
-            className={`${isLarge ? 'w-20 h-20' : 'w-14 h-14'} rounded-2xl flex items-center justify-center shadow-inner transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6 relative`}
-            style={{ 
-              background: `linear-gradient(135deg, ${color}20, ${color}05)`,
-              border: `1px solid ${color}40`
-            }}
-          >
-            {getPathIcon(slug, color)}
-            <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-md -z-10" style={{ backgroundColor: color }}></div>
-          </div>
+            className="absolute inset-0 opacity-50 group-hover:scale-110 transition-transform duration-700 ease-out"
+            style={{ backgroundImage: `url(${bannerBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+          />
+          {/* Vibrant Color Overlay */}
+          <div className={`absolute inset-0 bg-gradient-to-r ${gradientClass} mix-blend-overlay opacity-80`}></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#181920]/95 to-transparent"></div>
           
-          <div className={`flex flex-col gap-2 ${isWide && !isLarge ? 'items-end' : 'items-end'}`}>
+          <div className="absolute top-4 right-4 z-10">
             <LevelBadge level={level} />
-            {isLarge && (
-              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm px-2.5 py-1.5 rounded-lg tracking-widest border border-slate-200/50 dark:border-slate-700/50">
-                <BookOpen size={12} className="text-slate-400" />
-                {totalProblems} Questions
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Title & Description */}
-        <div className={`${isWide && !isLarge ? 'grid grid-cols-2 gap-6 flex-1' : 'flex-1 flex flex-col'}`}>
-          <div>
-            <h3 className={`font-black text-slate-900 dark:text-white leading-tight mb-3 transition-colors duration-300 ${isLarge ? 'text-4xl' : 'text-2xl'}`} style={{ '--hover-color': color }}>
-              <span className="group-hover:text-[var(--hover-color)] transition-colors">{title}</span>
-            </h3>
-            
-            <p className={`text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed mb-8 break-words break-all ${isLarge ? 'text-base line-clamp-3' : 'line-clamp-2'}`}>
-              {description}
-            </p>
-          </div>
+        {/* Content Area */}
+        <div className="pt-10 p-6 flex-1 flex flex-col relative z-10">
+          <h3 className="font-black text-2xl text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 mb-2 group-hover:from-white group-hover:to-white transition-all line-clamp-1 break-all">
+            {title}
+          </h3>
+          
+          <p className="text-sm text-slate-400 mb-8 line-clamp-2 leading-relaxed flex-1 break-all">
+            {description}
+          </p>
 
-          {/* Footer Area: Progress or CTA info */}
-          <div className="mt-auto flex flex-col justify-end">
-            {solved > 0 ? (
-              <div className="mb-6">
-                <div className="flex items-center justify-between text-xs font-black text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wider">
-                  <span>Progress</span>
-                  <span style={{ color }}>{percentage}%</span>
-                </div>
-                <div className="w-full bg-slate-100 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden shadow-inner relative">
-                  <div 
-                    className="h-full rounded-full transition-all duration-1000 ease-out relative overflow-hidden"
-                    style={{ width: `${percentage}%`, background: `linear-gradient(90deg, ${gradientFrom || color}, ${gradientTo || color})` }}
-                  >
-                    <div className="absolute inset-0 bg-white/30 animate-[shimmer_2s_infinite]" style={{ transform: 'skewX(-20deg)' }}></div>
-                  </div>
+          {/* Footer Area */}
+          <div className="mt-auto space-y-5">
+            {/* Progress Bar Area */}
+            <div className="bg-[#0f1115]/50 rounded-xl p-4 border border-white/5">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-xs font-bold text-slate-400">Progress</span>
+                <span className={`text-xs font-black ${isCompleted ? 'text-emerald-400' : 'text-slate-300'}`}>
+                  {percentage}%
+                </span>
+              </div>
+              
+              <div className="h-2 w-full bg-[#1e1f26] rounded-full overflow-hidden shadow-inner relative">
+                <div 
+                  className={`absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out ${isCompleted ? 'bg-gradient-to-r from-emerald-500 to-green-400 shadow-[0_0_10px_rgba(52,211,153,0.5)]' : `bg-gradient-to-r ${gradientClass}`}`}
+                  style={{ width: `${percentage}%` }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full animate-[shimmer_2s_infinite]"></div>
                 </div>
               </div>
-            ) : (
-              <div className="flex items-center gap-4 text-xs font-bold text-slate-500 dark:text-slate-400 mb-6 uppercase tracking-wider">
-                {!isLarge && (
-                  <span className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">
-                    <BookOpen size={12} /> {totalProblems} Qs
-                  </span>
-                )}
-                {estimatedDuration && (
-                  <span className="flex items-center gap-1.5">
-                    <Clock size={14} className="text-slate-400" />
-                    {estimatedDuration}
-                  </span>
-                )}
+              
+              <div className="flex items-center justify-between mt-3 text-xs font-semibold text-slate-500">
+                <div className="flex items-center gap-1.5">
+                  <BookOpen size={14} className="text-slate-400" /> 
+                  {solved} / {totalProblems} Solved
+                </div>
+                {isCompleted && <span className="flex items-center gap-1 text-emerald-400"><CheckCircle2 size={12} /> Done</span>}
               </div>
-            )}
+            </div>
 
             {/* Action Button */}
             <Link
               to={`/practice/${slug}`}
-              className={`w-full flex items-center justify-center gap-2 rounded-xl text-sm font-bold transition-all duration-300 ${isLarge ? 'py-4 text-base' : 'py-3.5'} ${
-                isCompleted 
-                  ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20' 
-                  : 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md group-hover:shadow-xl group-hover:-translate-y-1'
-              }`}
+              className="relative flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-bold text-white overflow-hidden group/btn"
             >
-              {isCompleted ? (
-                <>
-                  <CheckCircle2 size={isLarge ? 20 : 18} />
-                  Completed
-                </>
-              ) : solved > 0 ? (
-                <>
-                  Continue
-                  <ArrowRight size={isLarge ? 18 : 16} className="group-hover:translate-x-1.5 transition-transform" />
-                </>
-              ) : (
-                <>
-                  Start
-                  <ArrowRight size={isLarge ? 18 : 16} className="group-hover:translate-x-1.5 transition-transform" />
-                </>
-              )}
+              <div className="absolute inset-0 bg-[#2a2d36] border border-white/10 rounded-xl transition-colors duration-300 group-hover/btn:bg-[#343741]"></div>
+              <div className={`absolute inset-0 bg-gradient-to-r ${gradientClass} opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300`}></div>
+              
+              <span className="relative z-10 flex items-center gap-2">
+                {isCompleted ? 'Review Path' : isInProgress ? 'Continue Path' : 'Start Path'}
+                <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
+              </span>
             </Link>
           </div>
         </div>
