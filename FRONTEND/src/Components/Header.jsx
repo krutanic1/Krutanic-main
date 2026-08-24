@@ -162,13 +162,13 @@ const Header = () => {
             >
               Skill Evaluation Test
             </Link>
-            <Link
+            {/* <Link
               to="/MasterClass"
               className="ml-1 xl:ml-2 rounded-2xl bg-gradient-to-r from-[#ff8a00] to-[#ff3d00] px-3 xl:px-5 py-1.5 xl:py-2 text-xs xl:text-sm font-semibold uppercase text-white shadow-[0_8px_20px_rgba(255,107,45,0.28)] whitespace-nowrap flex items-center gap-1.5 transition-transform hover:scale-105"
             >
               <Rocket size={16} className="text-white" />
               Masterclass
-            </Link>
+            </Link> */}
             <Link to="/login" className="ml-1 xl:ml-2 rounded-2xl bg-[#ff6b2d] px-3 xl:px-5 py-1.5 xl:py-2 text-xs xl:text-sm font-semibold uppercase text-white shadow-[0_8px_20px_rgba(255,107,45,0.28)] whitespace-nowrap">
               Login
             </Link>
@@ -210,10 +210,10 @@ const Header = () => {
                 >
                   Skill Evaluation Test
                 </Link>
-                <Link to="/MasterClass" className="rounded-xl bg-gradient-to-r from-[#ff8a00] to-[#ff3d00] px-3 py-2 text-center text-sm font-semibold uppercase text-white flex items-center justify-center gap-2 shadow-md">
+                {/* <Link to="/MasterClass" className="rounded-xl bg-gradient-to-r from-[#ff8a00] to-[#ff3d00] px-3 py-2 text-center text-sm font-semibold uppercase text-white flex items-center justify-center gap-2 shadow-md">
                   <Rocket size={16} className="text-white" />
                   Masterclass
-                </Link>
+                </Link> */}
                 <Link to="/login" className="rounded-xl bg-[#ff6b2d] px-3 py-2 text-center text-sm font-semibold uppercase text-white">
                   Login
                 </Link>
