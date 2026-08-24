@@ -98,7 +98,9 @@ const QuestionPage = () => {
         setSelectedIndex(null);
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to submit answer.');
+      if (err.response?.status !== 401) {
+        toast.error(err.response?.data?.message || 'Failed to submit answer.');
+      }
     } finally {
       setSubmitting(false);
     }

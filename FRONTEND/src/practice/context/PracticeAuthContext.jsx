@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import axios from 'axios';
-import toast from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 
 const PracticeAuthContext = createContext(null);
 
@@ -89,14 +89,16 @@ export const PracticeAuthProvider = ({ children }) => {
     }
   }, []);
 
-  const logout = useCallback(() => {
+  const logout = useCallback((showToast = true) => {
     setPracticeToken(null);
     setPracticeUser(null);
     localStorage.removeItem(PRACTICE_TOKEN_KEY);
     localStorage.removeItem(PRACTICE_USER_KEY);
-    toast.success('Logged out from Practice Module');
+    if (showToast !== false) {
+      toast.success('Logged out from Practice Module');
+    }
   }, []);
-
+//dcgsdgiusdv
   const checkAuthStatus = useCallback(async () => {
     if (!practiceToken) return;
     try {
@@ -115,27 +117,42 @@ export const PracticeAuthProvider = ({ children }) => {
     checkAuthStatus();
   }, [checkAuthStatus]);
 
-  const practiceApi = axios.create({
-    baseURL: API_BASE,
-    withCredentials: true,
-  });
+  const tokenRef = useRef(practiceToken);
+  useEffect(() => {
+    tokenRef.current = practiceToken;
+  }, [practiceToken]);
 
-  practiceApi.interceptors.request.use((config) => {
-    if (practiceToken) {
-      config.headers.Authorization = `Bearer ${practiceToken}`;
-    }
-    return config;
-  });
+  const practiceApi = useMemo(() => {
+    const api = axios.create({
+      baseURL: API_BASE,
+      withCredentials: true,
+    });
 
-  practiceApi.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      if (error.response?.status === 401) {
-        logout();
+    api.interceptors.request.use((config) => {
+      if (tokenRef.current) {
+        config.headers.Authorization = `Bearer ${tokenRef.current}`;
       }
-      return Promise.reject(error);
-    }
-  );
+      return config;
+    });
+
+    api.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 401) {
+          logout(false); // Logout silently
+          const msg = error.response.data?.message || 'Session expired. Please log in again.';
+          toast.error(msg, { id: 'auth-error' });
+          // Clear message so caller doesn't show duplicate toast
+          if (error.response && error.response.data) {
+            error.response.data.message = '';
+          }
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return api;
+  }, [logout]);
 
   // Check for LMS admin token
   const hasLmsAdminToken = !!localStorage.getItem('adminToken');
@@ -154,6 +171,7 @@ export const PracticeAuthProvider = ({ children }) => {
 
   return (
     <PracticeAuthContext.Provider value={value}>
+      <Toaster position="top-center" reverseOrder={false} />
       {children}
     </PracticeAuthContext.Provider>
   );
