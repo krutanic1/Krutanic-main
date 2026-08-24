@@ -73,6 +73,8 @@ const getPath = async (req, res) => {
       .sort({ order: 1 })
       .lean();
 
+    const userId = req.practiceUser?.id;
+
     // Question counts per subtopic
     const subtopicIds = subtopics.map((s) => s._id);
     const qCounts = await PracticeQuestion.aggregate([
@@ -84,14 +86,49 @@ const getPath = async (req, res) => {
       qCountMap[q._id.toString()] = q.count;
     });
 
+    // Subtopic progress
+    const subtopicProgressMap = {};
+    if (userId) {
+      const progressCounts = await UserQuestionProgress.aggregate([
+        { 
+          $match: { 
+            user: new mongoose.Types.ObjectId(userId),
+            practicePath: path._id
+          }
+        },
+        {
+          $group: {
+            _id: '$subtopic',
+            solvedCount: { $sum: { $cond: [{ $eq: ['$status', 'solved'] }, 1, 0] } },
+            attemptedCount: { $sum: { $cond: [{ $eq: ['$status', 'attempted'] }, 1, 0] } }
+          }
+        }
+      ]);
+      progressCounts.forEach(p => {
+        subtopicProgressMap[p._id.toString()] = p;
+      });
+    }
+
     // Build tree
     const subtopicsByTopic = {};
     subtopics.forEach((s) => {
       const key = s.topic.toString();
+      const stId = s._id.toString();
+      const totalQ = qCountMap[stId] || 0;
+      const prog = subtopicProgressMap[stId] || { solvedCount: 0, attemptedCount: 0 };
+      
+      let status = 'not_started';
+      if (totalQ > 0 && prog.solvedCount === totalQ) {
+        status = 'completed';
+      } else if (prog.solvedCount > 0 || prog.attemptedCount > 0) {
+        status = 'in_progress';
+      }
+
       if (!subtopicsByTopic[key]) subtopicsByTopic[key] = [];
       subtopicsByTopic[key].push({
         ...s,
-        questionCount: qCountMap[s._id.toString()] || 0,
+        questionCount: totalQ,
+        status,
       });
     });
 

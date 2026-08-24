@@ -17,7 +17,7 @@ const optionalPracticeAuth = require('../middleware/optionalPracticeAuth');
 router.get('/practice', listPaths);
 
 // GET /api/practice/:pathSlug — path detail with topics/subtopics
-router.get('/practice/:pathSlug', getPath);
+router.get('/practice/:pathSlug', optionalPracticeAuth, getPath);
 
 // GET /api/practice/:pathSlug/progress — user progress for a path
 router.get('/practice/:pathSlug/progress', practiceAuth, getPathProgress);

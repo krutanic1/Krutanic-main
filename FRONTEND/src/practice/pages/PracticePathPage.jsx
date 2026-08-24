@@ -221,9 +221,14 @@ const PracticePathPage = () => {
                                     {sub.title}
                                   </span>
                                 </div>
-                                <div className="col-span-2 flex justify-center">
-                                  {/* Mock Status Circle */}
-                                  <div className="w-4 h-4 rounded-full bg-white/10 border border-white/20"></div>
+                                <div className="col-span-2 flex justify-center items-center">
+                                  {sub.status === 'completed' ? (
+                                    <CheckCircle2 size={18} className="text-emerald-500" />
+                                  ) : sub.status === 'in_progress' ? (
+                                    <div className="w-4 h-4 rounded-full border-2 border-blue-500 border-t-transparent animate-spin"></div>
+                                  ) : (
+                                    <div className="w-4 h-4 rounded-full bg-white/10 border border-white/20"></div>
+                                  )}
                                 </div>
                                 <div className="col-span-2 flex justify-center">
                                   <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20">
