@@ -55,7 +55,7 @@ const topNav = [
   { label: "All Programs", to: "/Mentorship", categories: programsCategories },
   { label: "Advanced Program", to: "/Advance" },
   { label: "MedPro Packs", to: "/medpro-packs" },
-   { label: "Practice", to: "/practice" },
+  { label: "Practice", to: "/practice", isNew: true },
   { label: "Alumni", to: "/Alumni" }
 ];
 
@@ -145,9 +145,14 @@ const Header = () => {
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={`rounded-lg px-2 xl:px-3 py-2 text-xs xl:text-sm font-semibold uppercase tracking-[0.02em] transition-colors hover:bg-[#f2f4ff] whitespace-nowrap ${location.pathname.toLowerCase() === item.to.toLowerCase() ? "text-[#f15b29] text-shine" : "text-[#1f2937]"}`}
+                  className={`relative rounded-lg px-2 xl:px-3 py-2 text-xs xl:text-sm font-semibold uppercase tracking-[0.02em] transition-colors hover:bg-[#f2f4ff] whitespace-nowrap flex items-center ${location.pathname.toLowerCase() === item.to.toLowerCase() ? "text-[#f15b29] text-shine" : "text-[#1f2937]"}`}
                 >
                   {item.label}
+                  {item.isNew && (
+                    <span className="ml-1.5 border border-[#ff6b2d] text-[#ff6b2d] bg-[#ff6b2d]/10 text-[8px] font-extrabold px-1.5 py-[2px] rounded-full uppercase tracking-widest leading-none">
+                      NEW
+                    </span>
+                  )}
                 </Link>
               );
             })}
@@ -187,9 +192,14 @@ const Header = () => {
                   <Link
                     key={item.to}
                     to={item.to}
-                    className={`rounded-lg px-3 py-2 text-sm font-medium uppercase ${location.pathname.toLowerCase() === item.to.toLowerCase() ? "text-[#f15b29] text-shine" : "text-[#1f2937]"} hover:bg-[#f5f7ff]`}
+                    className={`relative rounded-lg px-3 py-2 text-sm font-medium uppercase inline-flex items-center w-fit ${location.pathname.toLowerCase() === item.to.toLowerCase() ? "text-[#f15b29] text-shine" : "text-[#1f2937]"} hover:bg-[#f5f7ff]`}
                   >
                     {item.label}
+                    {item.isNew && (
+                      <span className="ml-1.5 border border-[#ff6b2d] text-[#ff6b2d] bg-[#ff6b2d]/10 text-[8px] font-extrabold px-1.5 py-[2px] rounded-full uppercase tracking-widest leading-none">
+                        NEW
+                      </span>
+                    )}
                   </Link>
                 );
               })}
