@@ -445,7 +445,6 @@ const EnrollmentForm = () => {
               <span>💬 Join Official Student WhatsApp Group</span>
             </a> */}
           </div>
-          /sldugo.awih
         ) : (
           /* APPLICATION FORM CONTAINER */
           <form id="mainForm" onSubmit={handleSubmit}>
