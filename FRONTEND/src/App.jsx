@@ -276,6 +276,8 @@ import ProfilePage from "./new_user/pages/ProfilePage";
 import ForgotPassword from "./page/ForgotPassword.jsx";
 import Exercise from "./User/Excercise.jsx";
 import SkillEvaluationTest from "./page/SkillEvaluationTest.jsx";
+import BlogList from "./page/blogs/BlogList";
+import BlogDetail from "./page/blogs/BlogDetail";
 
 // ─── Practice Module ─────────────────────────────────────────────────────────
 import { PracticeAuthProvider } from "./practice/context/PracticeAuthContext";
@@ -630,6 +632,8 @@ const AppContent = () => {
         <Route path="/Verify" element={<Verified />} />
         <Route path="/ReferAndEarn" element={<ReferAndEarn />} />
         <Route path="/attendance" element={<Attendance />} />
+        <Route path="/blog" element={<BlogList />} />
+        <Route path="/blog/:slug" element={<BlogDetail />} />
 
         {/* Admin Panel Start */}
         <Route path="/AdminLogin" element={<AdminLogIn />} />
