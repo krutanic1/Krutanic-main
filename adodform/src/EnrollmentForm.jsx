@@ -84,18 +84,21 @@ const CustomDropdown = ({ id, value, onChange, options, placeholder, groups }) =
 
 const EnrollmentForm = () => {
   const [formData, setFormData] = useState({
-    fullName: '',
-    phone: '',
-    whatsapp: '',
-    collegeEmail: '',
-    personalEmail: '',
+    name: '',
+    contactNumber: '',
+    whatsappNumber: '',
+    studentsCollegeEmailId: '',
+    personalEmailId: '',
     state: '',
     otherCountry: '',
     collegeName: '',
-    branch: '',
-    year: '',
-    domain: '',
-    languages: [],
+    branchName: '',
+    yearOfStudying: '',
+    interestedDomain: '',
+    preferredLanguage: [],
+    placementCellEmailId: '',
+    crNameNumber: '',
+    whyLooking: '',
     feeAck: false
   });
   const [submitted, setSubmitted] = useState(false);
@@ -107,15 +110,15 @@ const EnrollmentForm = () => {
   const handleInputChange = (e) => {
     const { id, value, type, checked } = e.target;
 
-    // special handling for domain (name="domain" but we use id or value)
-    if (e.target.name === 'domain') {
-      setFormData({ ...formData, domain: value });
+    // special handling for domain
+    if (e.target.name === 'interestedDomain') {
+      setFormData({ ...formData, interestedDomain: value });
     } else if (type === 'checkbox') {
-      if (e.target.name === 'language') {
+      if (e.target.name === 'preferredLanguage') {
         const newLangs = checked
-          ? [...formData.languages, value]
-          : formData.languages.filter(l => l !== value);
-        setFormData({ ...formData, languages: newLangs });
+          ? [...formData.preferredLanguage, value]
+          : formData.preferredLanguage.filter(l => l !== value);
+        setFormData({ ...formData, preferredLanguage: newLangs });
       } else {
         setFormData({ ...formData, [id]: checked });
       }
@@ -203,22 +206,38 @@ const EnrollmentForm = () => {
 
   const langs = ['English', 'Hindi', 'Malayalam', 'Kannada', 'Tamil', 'Telugu', 'Marathi', 'Bengali', 'Gujarati', 'Odia', 'Punjabi'];
 
+  const reasonOptions = [
+    { label: 'Career Growth Opportunity', value: 'Career Growth Opportunity' },
+    { label: 'Skill Development & Industry Exposure', value: 'Skill Development & Industry Exposure' },
+    { label: 'Learning from Industry Leaders', value: 'Learning from Industry Leaders' },
+    { label: 'To Gain Exposure to Emerging Technologies', value: 'To Gain Exposure to Emerging Technologies' }
+  ];
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
 
     // basic validation
-    if (!formData.fullName || !formData.phone || !formData.collegeEmail || !formData.personalEmail || !formData.state || !formData.collegeName || !formData.branch || !formData.year || !formData.domain || formData.languages.length === 0 || !formData.feeAck) {
+    if (!formData.name || !formData.personalEmailId || !formData.contactNumber || !formData.whatsappNumber || !formData.collegeName || !formData.branchName || !formData.yearOfStudying || !formData.interestedDomain || formData.preferredLanguage.length === 0 || !formData.studentsCollegeEmailId || !formData.whyLooking || !formData.feeAck) {
       setErrorMsg('Please complete all required fields and accept the declaration.');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      await fetch('https://script.google.com/macros/s/AKfycbwRn8dZDxM5Mvj4F2xVbyIQsYqNLGhlaSQQGZGYciWmJOwz1TeJNlnLu0tgFY0ArTV1/exec', {
+      const formBody = new FormData();
+      for (const key in formData) {
+        if (key === 'preferredLanguage') {
+          formBody.append(key, formData[key].join(', '));
+        } else {
+          formBody.append(key, formData[key]);
+        }
+      }
+
+      await fetch('https://script.google.com/macros/s/AKfycbyfly2CXZyI_mqGiLrOIyErIcMFtRkECU68WryLt2tWkMmjdlDJHmriJP4Gk4RLSC7YWg/exec', {
         method: 'POST',
         mode: 'no-cors', // Bypasses the strict Google Apps Script CORS redirect blocking
-        body: JSON.stringify(formData)
+        body: formBody
       });
       
       // With no-cors, the response is opaque and we can't read the JSON result.
@@ -412,7 +431,7 @@ const EnrollmentForm = () => {
             <div className="success-icon-wrapper">🎉</div>
             <h2 className="success-main-title">Application Submitted!</h2>
             <p className="success-sub-text">
-              Thank you, <strong id="sName" style={{ color: '#6366f1' }}>{formData.fullName || 'Applicant'}</strong>!<br />
+              Thank you, <strong id="sName" style={{ color: '#6366f1' }}>{formData.name || 'Applicant'}</strong>!<br />
               Your application has been logged into the SETIP 2026 admissions database.
             </p>
             <div className="ref-pill">Ref ID: <span id="applicationRef">SETIP-2026-PENDING</span></div>
@@ -426,6 +445,7 @@ const EnrollmentForm = () => {
               <span>💬 Join Official Student WhatsApp Group</span>
             </a> */}
           </div>
+          /sldugo.awih
         ) : (
           /* APPLICATION FORM CONTAINER */
           <form id="mainForm" onSubmit={handleSubmit}>
@@ -462,40 +482,21 @@ const EnrollmentForm = () => {
             <div className="form-glass-card" id="apply">
               <div className="card-title-bar">Step 1 — Personal Details</div>
               <div className="form-layout-grid">
-                <div className="field-group">
-                  <label htmlFor="fullName">Full Name <span className="required">*</span></label>
-                  <input type="text" id="fullName" className="form-input" placeholder="As per college records" value={formData.fullName} onChange={handleInputChange} />
-                </div>
-                <div className="field-group">
-                  <label htmlFor="phone">Phone Number <span className="required">*</span></label>
-                  <input type="tel" id="phone" className="form-input" placeholder="+91 00000 00000" value={formData.phone} onChange={handleInputChange} />
-                </div>
-                <div className="field-group">
-                  <label htmlFor="whatsapp">WhatsApp Number <span className="required">*</span></label>
-                  <input type="tel" id="whatsapp" className="form-input" placeholder="Active WhatsApp number" value={formData.whatsapp} onChange={handleInputChange} />
-                </div>
-                <div className="field-group">
-                  <label htmlFor="collegeEmail">College Email <span className="required">*</span></label>
-                  <input type="email" id="collegeEmail" className="form-input" placeholder="yourname@college.edu" value={formData.collegeEmail} onChange={handleInputChange} />
+                <div className="field-group span-2">
+                  <label htmlFor="name">Full Name <span className="required">*</span></label>
+                  <input type="text" id="name" className="form-input" placeholder="As per college records" value={formData.name} onChange={handleInputChange} />
                 </div>
                 <div className="field-group span-2">
-                  <label htmlFor="personalEmail">Personal Email <span className="required">*</span></label>
-                  <input type="email" id="personalEmail" className="form-input" placeholder="yourname@gmail.com" value={formData.personalEmail} onChange={handleInputChange} />
+                  <label htmlFor="personalEmailId">Personal Email <span className="required">*</span></label>
+                  <input type="email" id="personalEmailId" className="form-input" placeholder="yourname@gmail.com" value={formData.personalEmailId} onChange={handleInputChange} />
                 </div>
-                <div className="field-group span-2">
-                  <label htmlFor="state">State / Region <span className="required">*</span></label>
-                  <CustomDropdown
-                    id="state"
-                    value={formData.state}
-                    onChange={handleInputChange}
-                    placeholder="— Select your state / region —"
-                    groups={stateGroups}
-                  />
-                  {formData.state === 'Other' && (
-                    <div className="country-other-box show">
-                      <input type="text" id="otherCountry" className="form-input" placeholder="Enter your country name" value={formData.otherCountry} onChange={handleInputChange} />
-                    </div>
-                  )}
+                <div className="field-group">
+                  <label htmlFor="contactNumber">Contact Number <span className="required">*</span></label>
+                  <input type="tel" id="contactNumber" className="form-input" placeholder="+91 00000 00000" value={formData.contactNumber} onChange={handleInputChange} />
+                </div>
+                <div className="field-group">
+                  <label htmlFor="whatsappNumber">WhatsApp Number <span className="required">*</span></label>
+                  <input type="tel" id="whatsappNumber" className="form-input" placeholder="Active WhatsApp number" value={formData.whatsappNumber} onChange={handleInputChange} />
                 </div>
               </div>
             </div>
@@ -509,14 +510,14 @@ const EnrollmentForm = () => {
                   <input type="text" id="collegeName" className="form-input" placeholder="Full official name of your institution" value={formData.collegeName} onChange={handleInputChange} />
                 </div>
                 <div className="field-group">
-                  <label htmlFor="branch">Branch / Stream <span className="required">*</span></label>
-                  <input type="text" id="branch" className="form-input" placeholder="e.g. Computer Science, BBA, BCA, MBA" value={formData.branch} onChange={handleInputChange} />
+                  <label htmlFor="branchName">Branch / Stream <span className="required">*</span></label>
+                  <input type="text" id="branchName" className="form-input" placeholder="e.g. Computer Science, BBA, BCA, MBA" value={formData.branchName} onChange={handleInputChange} />
                 </div>
                 <div className="field-group">
-                  <label htmlFor="year">Year of Study <span className="required">*</span></label>
+                  <label htmlFor="yearOfStudying">Year of Study <span className="required">*</span></label>
                   <CustomDropdown
-                    id="year"
-                    value={formData.year}
+                    id="yearOfStudying"
+                    value={formData.yearOfStudying}
                     onChange={handleInputChange}
                     placeholder="— Select current year —"
                     options={yearOptions}
@@ -525,59 +526,82 @@ const EnrollmentForm = () => {
               </div>
             </div>
 
-            {/* STEP 3: DOMAINS & LANGUAGES */}
+            {/* STEP 3: DOMAINS & PREFERENCES */}
             <div className="form-glass-card">
-              <div className="card-title-bar">Step 3 — Upskill Domains &amp; Languages</div>
+              <div className="card-title-bar">Step 3 — Preferences &amp; Additional Info</div>
+              <div className="form-layout-grid">
 
-              {/* Domain Selection */}
-              <div className="field-group span-2" style={{ marginBottom: '24px' }}>
-                <label>Domain to Upskill &amp; Intern in <span className="required">*</span></label>
-                <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '10px' }}>Select 1 primary domain for your program cohort</p>
+                {/* Domain Selection */}
+                <div className="field-group span-2" style={{ marginBottom: '10px' }}>
+                  <label>Interested Domain <span className="required">*</span></label>
+                  <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '10px' }}>Select 1 primary domain</p>
 
-                {/* Domain Category Filter */}
-                <div className="domain-tags">
-                  <button type="button" className={`tag-btn ${domainFilter === 'all' ? 'active' : ''}`} onClick={() => setDomainFilter('all')}>
-                    All ({domains.length})
-                  </button>
-                  <button type="button" className={`tag-btn ${domainFilter === 'tech' ? 'active' : ''}`} onClick={() => setDomainFilter('tech')}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-                    Software &amp; AI
-                  </button>
-                  <button type="button" className={`tag-btn ${domainFilter === 'design' ? 'active' : ''}`} onClick={() => setDomainFilter('design')}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
-                    Design
-                  </button>
-                  <button type="button" className={`tag-btn ${domainFilter === 'mgmt' ? 'active' : ''}`} onClick={() => setDomainFilter('mgmt')}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-                    Business
-                  </button>
-                  <button type="button" className={`tag-btn ${domainFilter === 'core' ? 'active' : ''}`} onClick={() => setDomainFilter('core')}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                    Core Eng
-                  </button>
+                  <div className="domain-tags">
+                    <button type="button" className={`tag-btn ${domainFilter === 'all' ? 'active' : ''}`} onClick={() => setDomainFilter('all')}>
+                      All ({domains.length})
+                    </button>
+                    <button type="button" className={`tag-btn ${domainFilter === 'tech' ? 'active' : ''}`} onClick={() => setDomainFilter('tech')}>
+                      Software &amp; AI
+                    </button>
+                    <button type="button" className={`tag-btn ${domainFilter === 'design' ? 'active' : ''}`} onClick={() => setDomainFilter('design')}>
+                      Design
+                    </button>
+                    <button type="button" className={`tag-btn ${domainFilter === 'mgmt' ? 'active' : ''}`} onClick={() => setDomainFilter('mgmt')}>
+                      Business
+                    </button>
+                    <button type="button" className={`tag-btn ${domainFilter === 'core' ? 'active' : ''}`} onClick={() => setDomainFilter('core')}>
+                      Core Eng
+                    </button>
+                  </div>
+
+                  <div className="scrollable-tiles">
+                    {domains.filter(d => domainFilter === 'all' || d.cat === domainFilter).map(d => (
+                      <label key={d.label} className="tile-option">
+                        <input type="radio" name="interestedDomain" value={d.label} checked={formData.interestedDomain === d.label} onChange={handleInputChange} />
+                        <span>{d.label}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
 
-                <div className="scrollable-tiles">
-                  {domains.filter(d => domainFilter === 'all' || d.cat === domainFilter).map(d => (
-                    <label key={d.label} className="tile-option">
-                      <input type="radio" name="domain" value={d.label} checked={formData.domain === d.label} onChange={handleInputChange} />
-                      <span>{d.label}</span>
-                    </label>
-                  ))}
+                {/* Language Selection */}
+                <div className="field-group span-2">
+                  <label>Preferred Language(s) <span className="required">*</span></label>
+                  <div className="scrollable-tiles" style={{ maxHeight: 'none' }}>
+                    {langs.map(l => (
+                      <label key={l} className="tile-option">
+                        <input type="checkbox" name="preferredLanguage" value={l} checked={formData.preferredLanguage.includes(l)} onChange={handleInputChange} />
+                        <span>{l}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
-              </div>
+                
+                {/* Additional Info */}
+                <div className="field-group">
+                  <label htmlFor="placementCellEmailId">Placement Cell / TPO Email</label>
+                  <input type="email" id="placementCellEmailId" className="form-input" placeholder="tpo@college.edu" value={formData.placementCellEmailId} onChange={handleInputChange} />
+                </div>
+                <div className="field-group">
+                  <label htmlFor="crNameNumber">Class Representative (Name & Number)</label>
+                  <input type="text" id="crNameNumber" className="form-input" placeholder="Name - Number" value={formData.crNameNumber} onChange={handleInputChange} />
+                </div>
+                
+                <div className="field-group span-2">
+                  <label htmlFor="studentsCollegeEmailId">Students College Email ID <span className="required">*</span></label>
+                  <input type="email" id="studentsCollegeEmailId" className="form-input" placeholder="yourname@college.edu" value={formData.studentsCollegeEmailId} onChange={handleInputChange} />
+                </div>
 
-              {/* Language Selection */}
-              <div className="field-group span-2">
-                <label>Preferred Language(s) of Instruction <span className="required">*</span></label>
-                <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '10px' }}>Select at least one preferred language</p>
-                <div className="scrollable-tiles" style={{ maxHeight: 'none' }}>
-                  {langs.map(l => (
-                    <label key={l} className="tile-option">
-                      <input type="checkbox" name="language" value={l} checked={formData.languages.includes(l)} onChange={handleInputChange} />
-                      <span>{l}</span>
-                    </label>
-                  ))}
+                {/* Why Looking */}
+                <div className="field-group span-2">
+                  <label htmlFor="whyLooking">Why are you looking for this Program? <span className="required">*</span></label>
+                  <CustomDropdown
+                    id="whyLooking"
+                    value={formData.whyLooking}
+                    onChange={handleInputChange}
+                    placeholder="— Select your primary reason —"
+                    options={reasonOptions}
+                  />
                 </div>
               </div>
             </div>
