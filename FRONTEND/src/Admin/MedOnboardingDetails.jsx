@@ -9,6 +9,15 @@ const MedOnboardingDetails = () => {
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  const currentMonth = new Date().toLocaleString("en-US", { month: "long" });
+  const currentYear = new Date().getFullYear().toString();
+
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+  const [selectedYear, setSelectedYear] = useState(currentYear);
 
   // Edit Modal State
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -47,7 +56,11 @@ const MedOnboardingDetails = () => {
   const fetchNewStudent = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API}/get-med-enroll?all=true&unassigned=true`);
+      let url = `${API}/get-med-enroll?all=true&unassigned=true`;
+      if (selectedMonth) url += `&month=${selectedMonth}`;
+      if (selectedYear) url += `&year=${selectedYear}`;
+      
+      const response = await axios.get(url);
       const studentsData = response.data;
       setNewStudent(studentsData);
       setFilteredStudents(studentsData);
@@ -60,7 +73,7 @@ const MedOnboardingDetails = () => {
 
   useEffect(() => {
     fetchNewStudent();
-  }, []);
+  }, [selectedMonth, selectedYear]);
 
   const handleStatusChange = async (studentId, action) => {
     try {
@@ -225,6 +238,29 @@ const MedOnboardingDetails = () => {
                 onChange={handleSearchChange}
                 className="border border-black px-2 py-1 rounded-lg"
               />
+              <select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="border border-black px-2 py-1 rounded-lg ml-2"
+              >
+                <option value="">All Months</option>
+                {months.map((m) => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+                className="border border-black px-2 py-1 rounded-lg ml-2"
+              >
+                <option value="">All Years</option>
+                {[...Array(5)].map((_, i) => {
+                  const year = parseInt(currentYear) - i;
+                  return (
+                    <option key={year} value={year}>{year}</option>
+                  );
+                })}
+              </select>
             </section>
           </div>
 
@@ -351,7 +387,7 @@ const MedOnboardingDetails = () => {
                                   Select Operation
                                 </option>
                                 {operation.map((item) => (
-                                  <option value={item.fullname}>{item.fullname}</option>
+                                  <option key={item._id} value={item.fullname}>{item.fullname}</option>
                                 ))}
                               </select>
                             )
