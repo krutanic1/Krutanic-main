@@ -1,449 +1,649 @@
-import React, { useState, useEffect, useRef } from 'react';
-import ReactDOM from 'react-dom';
-import toast from 'react-hot-toast';
+import React, { useState } from 'react';
 import './EnrollmentForm.css';
 
-const CustomSelect = ({ label, name, value, options, onChange, placeholder, required, error }) => {
+import bg1 from '../course-bgs/da_bg.png';
+import bg2 from '../course-bgs/dm_bg.png';
+import bg3 from '../course-bgs/ds_bg.png';
+import bg4 from '../course-bgs/mern_bg.png';
+import bg5 from '../course-bgs/pe_bg.png';
+import bg6 from '../course-bgs/pm_bg.png';
+
+const CustomDropdown = ({ id, value, onChange, options, placeholder, groups }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [dropdownStyle, setDropdownStyle] = useState({});
-  const triggerRef = useRef(null);
-  const dropdownRef = useRef(null);
+  const dropdownRef = React.useRef(null);
 
-  const openDropdown = () => {
-    if (triggerRef.current) {
-      const rect = triggerRef.current.getBoundingClientRect();
-      const spaceBelow = window.innerHeight - rect.bottom;
-      const dropdownHeight = Math.min(options.length * 50, 250);
-      const openUpward = spaceBelow < dropdownHeight && rect.top > dropdownHeight;
-
-      setDropdownStyle({
-        position: 'fixed',
-        top: openUpward ? rect.top - dropdownHeight - 6 : rect.bottom + 6,
-        left: rect.left,
-        width: rect.width,
-        zIndex: 999999,
-      });
-    }
-    setIsOpen(true);
-  };
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const update = () => {
-      if (triggerRef.current) {
-        const rect = triggerRef.current.getBoundingClientRect();
-        const spaceBelow = window.innerHeight - rect.bottom;
-        const dropdownHeight = Math.min(options.length * 50, 250);
-        const openUpward = spaceBelow < dropdownHeight && rect.top > dropdownHeight;
-        setDropdownStyle(prev => ({
-          ...prev,
-          top: openUpward ? rect.top - dropdownHeight - 6 : rect.bottom + 6,
-          left: rect.left,
-          width: rect.width,
-        }));
-      }
-    };
-    window.addEventListener('scroll', update, true);
-    window.addEventListener('resize', update);
-    return () => {
-      window.removeEventListener('scroll', update, true);
-      window.removeEventListener('resize', update);
-    };
-  }, [isOpen, options.length]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleClickOutside = (e) => {
-      if (
-        triggerRef.current && !triggerRef.current.contains(e.target) &&
-        dropdownRef.current && !dropdownRef.current.contains(e.target)
-      ) {
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen]);
+  }, []);
 
-  const dropdown = isOpen ? ReactDOM.createPortal(
-    <div
-      ref={dropdownRef}
-      className="adv-custom-select-dropdown"
-      style={dropdownStyle}
-    >
-      {options.map((opt) => (
-        <div
-          key={opt}
-          onMouseDown={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onChange({ target: { name, value: opt } });
-            setIsOpen(false);
-          }}
-          className={`adv-select-option ${value === opt ? 'selected' : ''}`}
-        >
-          {opt}
-        </div>
-      ))}
-    </div>,
-    document.body
-  ) : null;
+  const handleSelect = (val) => {
+    onChange({ target: { id, value: val } });
+    setIsOpen(false);
+  };
+
+  // Find label for current value
+  let displayValue = value;
+  if (value) {
+    if (groups) {
+      for (const group of groups) {
+        const opt = group.options.find(o => o.value === value);
+        if (opt) displayValue = opt.label;
+      }
+    } else if (options) {
+      const opt = options.find(o => o.value === value);
+      if (opt) displayValue = opt.label;
+    }
+  }
 
   return (
-    <div className={`adv-input-group ${error ? 'has-error' : ''}`}>
-      <label>{label} {required && <span className="adv-required">*</span>}</label>
+    <div className="custom-dropdown" ref={dropdownRef}>
       <div
-        className={`adv-custom-select ${isOpen ? 'open' : ''} ${error ? 'error-border' : ''}`}
-        ref={triggerRef}
-        onClick={() => isOpen ? setIsOpen(false) : openDropdown()}
+        className={`form-input custom-dropdown-toggle ${isOpen ? 'open' : ''} ${!value ? 'placeholder' : ''}`}
+        onClick={() => setIsOpen(!isOpen)}
       >
-        <div className="adv-select-trigger">
-          <span className={value ? 'adv-value-selected' : 'adv-placeholder'}>{value || placeholder}</span>
-          <span className={`adv-select-arrow ${isOpen ? 'up' : ''}`}></span>
-        </div>
+        <span>{displayValue || placeholder}</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="chevron">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
       </div>
-      {error && <span className="adv-error-text">{error}</span>}
-      {dropdown}
+      {isOpen && (
+        <div className="custom-dropdown-menu">
+          {groups ? groups.map((group, i) => (
+            <div key={i} className="dropdown-group">
+              <div className="dropdown-group-label">{group.label}</div>
+              {group.options.map(opt => (
+                <div
+                  key={opt.value}
+                  className={`dropdown-item ${value === opt.value ? 'selected' : ''}`}
+                  onClick={() => handleSelect(opt.value)}
+                >
+                  {opt.label}
+                </div>
+              ))}
+            </div>
+          )) : options.map(opt => (
+            <div
+              key={opt.value}
+              className={`dropdown-item ${value === opt.value ? 'selected' : ''}`}
+              onClick={() => handleSelect(opt.value)}
+            >
+              {opt.label}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
 
 const EnrollmentForm = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [errors, setErrors] = useState({});
-
   const [formData, setFormData] = useState({
-    name: '',
-    studentsCollegeEmailId: '',
-    personalEmailId: '',
-    contactNumber: '',
-    whatsappNumber: '',
+    fullName: '',
+    phone: '',
+    whatsapp: '',
+    collegeEmail: '',
+    personalEmail: '',
+    state: '',
+    otherCountry: '',
     collegeName: '',
-    branchName: '',
-    yearOfStudying: '',
-    interestedDomain: '',
-    placementCellEmailId: '',
-    crNameNumber: '',
-    whyLooking: '',
-    preferredLanguage: '',
-    isConfirmed: false
+    branch: '',
+    year: '',
+    domain: '',
+    languages: [],
+    feeAck: false
   });
+  const [submitted, setSubmitted] = useState(false);
+  const [domainFilter, setDomainFilter] = useState('all');
+  const [progress, setProgress] = useState(25);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (e) => {
-    let { name, value, type, checked } = e.target;
-    
-    if (name === 'contactNumber' || name === 'whatsappNumber') {
-      value = value.replace(/\s/g, '');
-    }
-    
-    setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
-    // Clear error when user types
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
-    }
-  };
-//jsgfkuhsdli
-  const validateForm = () => {
-    let stepErrors = {};
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    //hfgdgf uagf f
-    // Personal Details
-    if (!formData.name.trim()) stepErrors.name = 'Name is required';
-    if (!formData.personalEmailId.trim() || !emailRegex.test(formData.personalEmailId)) stepErrors.personalEmailId = 'Valid personal email is required';
-    if (!formData.contactNumber.trim() || formData.contactNumber.replace(/\D/g, '').length < 7) stepErrors.contactNumber = 'Valid contact number is required';
-    if (!formData.whatsappNumber.trim() || formData.whatsappNumber.replace(/\D/g, '').length < 7) stepErrors.whatsappNumber = 'Valid WhatsApp number is required';
-    
-    // Academic Details
-    if (!formData.studentsCollegeEmailId.trim() || !emailRegex.test(formData.studentsCollegeEmailId)) stepErrors.studentsCollegeEmailId = 'Valid college email is required';
-    if (!formData.collegeName.trim()) stepErrors.collegeName = 'College name is required';
-    if (!formData.branchName.trim()) stepErrors.branchName = 'Branch name is required';
-    if (!formData.yearOfStudying) stepErrors.yearOfStudying = 'Year of studying is required';
-    if (formData.placementCellEmailId && !emailRegex.test(formData.placementCellEmailId)) stepErrors.placementCellEmailId = 'Must be a valid email';
-    
-    // Goals & Preferences
-    if (!formData.interestedDomain) stepErrors.interestedDomain = 'Please select a domain';
-    if (!formData.whyLooking) stepErrors.whyLooking = 'Please select a reason';
-    if (!formData.preferredLanguage.trim()) stepErrors.preferredLanguage = 'Preferred language is required';
-    if (!formData.isConfirmed) stepErrors.isConfirmed = 'You must confirm the details';
+    const { id, value, type, checked } = e.target;
 
-    setErrors(stepErrors);
-    return Object.keys(stepErrors).length === 0;
+    // special handling for domain (name="domain" but we use id or value)
+    if (e.target.name === 'domain') {
+      setFormData({ ...formData, domain: value });
+    } else if (type === 'checkbox') {
+      if (e.target.name === 'language') {
+        const newLangs = checked
+          ? [...formData.languages, value]
+          : formData.languages.filter(l => l !== value);
+        setFormData({ ...formData, languages: newLangs });
+      } else {
+        setFormData({ ...formData, [id]: checked });
+      }
+    } else {
+      setFormData({ ...formData, [id]: value });
+    }
   };
+
+  const domains = [
+    { cat: 'tech', label: 'Android App Development' },
+    { cat: 'tech', label: 'Full Stack Web Development' },
+    { cat: 'tech', label: 'Data Science' },
+    { cat: 'tech', label: 'Data Analytics' },
+    { cat: 'tech', label: 'Machine Learning' },
+    { cat: 'tech', label: 'Artificial Intelligence' },
+    { cat: 'core', label: 'Cyber Security' },
+    { cat: 'core', label: 'IoT / Robotics' },
+    { cat: 'tech', label: 'Cloud Computing' },
+    { cat: 'design', label: 'Graphic Design' },
+    { cat: 'core', label: 'AutoCAD' },
+    { cat: 'design', label: 'UI/UX Design' },
+    { cat: 'core', label: 'Embedded Systems' },
+    { cat: 'mgmt', label: 'Digital Marketing' },
+    { cat: 'mgmt', label: 'Finance' },
+    { cat: 'mgmt', label: 'Stock Market' },
+    { cat: 'mgmt', label: 'Human Resource' },
+    { cat: 'mgmt', label: 'Business Analytics' },
+    { cat: 'tech', label: 'DevOps' },
+    { cat: 'core', label: 'VLSI' },
+    { cat: 'mgmt', label: 'Forensic Psychology' },
+    { cat: 'mgmt', label: 'Clinical Psychology' },
+    { cat: 'mgmt', label: 'Corporate Law' },
+  ];
+
+  const stateGroups = [
+    {
+      label: 'India',
+      options: [
+        { label: 'Andhra Pradesh', value: 'Andhra Pradesh' },
+        { label: 'Arunachal Pradesh', value: 'Arunachal Pradesh' },
+        { label: 'Assam', value: 'Assam' },
+        { label: 'Bihar', value: 'Bihar' },
+        { label: 'Chhattisgarh', value: 'Chhattisgarh' },
+        { label: 'Goa', value: 'Goa' },
+        { label: 'Gujarat', value: 'Gujarat' },
+        { label: 'Haryana', value: 'Haryana' },
+        { label: 'Himachal Pradesh', value: 'Himachal Pradesh' },
+        { label: 'Jharkhand', value: 'Jharkhand' },
+        { label: 'Karnataka', value: 'Karnataka' },
+        { label: 'Kerala', value: 'Kerala' },
+        { label: 'Madhya Pradesh', value: 'Madhya Pradesh' },
+        { label: 'Maharashtra', value: 'Maharashtra' },
+        { label: 'Manipur', value: 'Manipur' },
+        { label: 'Meghalaya', value: 'Meghalaya' },
+        { label: 'Mizoram', value: 'Mizoram' },
+        { label: 'Nagaland', value: 'Nagaland' },
+        { label: 'Odisha', value: 'Odisha' },
+        { label: 'Punjab', value: 'Punjab' },
+        { label: 'Rajasthan', value: 'Rajasthan' },
+        { label: 'Sikkim', value: 'Sikkim' },
+        { label: 'Tamil Nadu', value: 'Tamil Nadu' },
+        { label: 'Telangana', value: 'Telangana' },
+        { label: 'Tripura', value: 'Tripura' },
+        { label: 'Uttar Pradesh', value: 'Uttar Pradesh' },
+        { label: 'Uttarakhand', value: 'Uttarakhand' },
+        { label: 'West Bengal', value: 'West Bengal' }
+      ]
+    },
+    {
+      label: 'International',
+      options: [
+        { label: 'Other Country', value: 'Other' }
+      ]
+    }
+  ];
+
+  const yearOptions = [
+    { label: '1st Year', value: '1st Year' },
+    { label: '2nd Year', value: '2nd Year' },
+    { label: '3rd Year', value: '3rd Year' },
+    { label: '4th Year', value: '4th Year' },
+    { label: 'Final Semester', value: 'Final Semester' },
+    { label: 'Graduated / Alumni', value: 'Graduated / Alumni' }
+  ];
+
+  const langs = ['English', 'Hindi', 'Malayalam', 'Kannada', 'Tamil', 'Telugu', 'Marathi', 'Bengali', 'Gujarati', 'Odia', 'Punjabi'];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isSubmitting) return;
-    
-    if (!validateForm()) {
-      toast.error('Please provide all required information to proceed.');
-      // Scroll to the first error roughly
-      const firstErrorElement = document.querySelector('.has-error, .has-error-checkbox');
-      if (firstErrorElement) {
-        firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-      return;
-    }
+    setErrorMsg('');
 
-    const userConfirmed = window.confirm("Reminder: A nominal fee applies for the Adobe Certified Program 2026. Do you want to proceed with your application?");
-    if (!userConfirmed) {
+    // basic validation
+    if (!formData.fullName || !formData.phone || !formData.collegeEmail || !formData.personalEmail || !formData.state || !formData.collegeName || !formData.branch || !formData.year || !formData.domain || formData.languages.length === 0 || !formData.feeAck) {
+      setErrorMsg('Please complete all required fields and accept the declaration.');
       return;
     }
 
     setIsSubmitting(true);
-
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbyfly2CXZyI_mqGiLrOIyErIcMFtRkECU68WryLt2tWkMmjdlDJHmriJP4Gk4RLSC7YWg/exec";
-
     try {
-      const params = new URLSearchParams();
-      params.append('name', formData.name);
-      params.append('personalEmailId', formData.personalEmailId);
-      params.append('contactNumber', formData.contactNumber);
-      params.append('whatsappNumber', formData.whatsappNumber);
-      params.append('collegeName', formData.collegeName);
-      params.append('branchName', formData.branchName);
-      // Correct direct field mappings matching Google Sheet columns
-      params.append('yearOfStudying', formData.yearOfStudying);           // Column H: Year Of Studying
-      params.append('interestedDomain', formData.interestedDomain);       // Column I: Interested Domain
-      params.append('preferredLanguage', formData.preferredLanguage);     // Column J: Preferred Language
-      params.append('placementCellEmailId', formData.placementCellEmailId || ''); // Column K: Placement Cell Email Id
-      params.append('crNameNumber', formData.crNameNumber || '');          // Column L: CR's Name & Number
-      params.append('studentsCollegeEmailId', formData.studentsCollegeEmailId); // Column M: Students College Email Id
-      params.append('whyLooking', formData.whyLooking);                   // Column N: Why are you looking for this Program?
-
-      await fetch(scriptUrl, { 
+      await fetch('https://script.google.com/macros/s/AKfycbwRn8dZDxM5Mvj4F2xVbyIQsYqNLGhlaSQQGZGYciWmJOwz1TeJNlnLu0tgFY0ArTV1/exec', {
         method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: params.toString() 
+        mode: 'no-cors', // Bypasses the strict Google Apps Script CORS redirect blocking
+        body: JSON.stringify(formData)
       });
-
-      setIsSubmitting(false); 
+      
+      // With no-cors, the response is opaque and we can't read the JSON result.
+      // If the fetch resolves without throwing a network error, we proceed.
       setSubmitted(true);
-      toast.success("Application successfully submitted!");
+      setProgress(100);
     } catch (err) {
-      console.error("Form submission error:", err);
-      setIsSubmitting(false); 
-      toast.error("Something went wrong, please try again.");
+      setErrorMsg('Network error occurred. Please check your connection.');
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  if (submitted) {
-    return (
-      <section className="adv-form-section" id="enrollment-form">
-        <div className="adv-success-box premium-card">
-          <div className="adv-success-icon bounce-in">🎉</div>
-          <h3 className="gradient-text" style={{ fontSize: '1.5rem', marginBottom: '15px' }}>Congratulations! Your registration has been submitted successfully.</h3>
-          <p>Our <strong>Training & Placement Team</strong> will contact you within the <strong>next 24 hours</strong> to guide you through the next steps.</p>
-          <div style={{ backgroundColor: 'rgba(255, 193, 7, 0.1)', borderLeft: '4px solid #ffc107', padding: '15px', borderRadius: '8px', margin: '20px 0', textAlign: 'left' }}>
-            <p style={{ margin: 0 }}><strong>⚠️ Important:</strong> This is a <strong>paid career program</strong> with a basic program fee. Complete details will be shared during your counselling session.</p>
-          </div>
-          <p>Thank you for choosing <strong>Krutanic</strong>. We look forward to helping you achieve your career goals!</p>
-          <button className="adv-btn-outline mt-6" onClick={() => window.location.reload()}>Submit Another</button>
-        </div>
-      </section>
-    );
-  }
-
   return (
-    <section className="adv-form-section" id="enrollment-form">
-      <div className="adv-container">
-        <div className="adv-form-wrapper modern-glass">
-          
-          {/* Sidebar */}
-          <div className="adv-form-sidebar dynamic-bg">
-            <div className="sidebar-content" style={{ position: 'sticky', top: '100px' }}>
-              <h3 className="sidebar-title">Adobe Certified Training and Internship Program</h3>
-              <p className="sidebar-desc">Please fill out the form carefully to register for the upcoming program.</p>
-              <div className="adv-form-sidebar-perks">
-                <div className="adv-perk glass-perk">100% Placement Assistance</div>
-                <div className="adv-perk glass-perk">1:1 Industry Mentorship</div>
-                <div className="adv-perk glass-perk">Corporate Internship</div>
-                <div className="adv-perk glass-perk">Unlimited AI Mock Interviews</div>
+    <div className="adobe-clone-body">
+      <div className="ambient-grid"></div>
+      <div className="ambient-orb orb-1"></div>
+      <div className="ambient-orb orb-2"></div>
+      <canvas id="confettiCanvas"></canvas>
+
+      {/* STICKY ENTERPRISE NAVBAR */}
+      <nav className="navbar">
+        <div className="nav-inner">
+          <a href="#apply" className="brand-logo">
+            <div className="brand-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" /></svg>
+            </div>
+            <span className="brand-text">SETIP 2026</span>
+          </a>
+          <a href="#apply" className="nav-cta">
+            <span>Apply Now</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+          </a>
+        </div>
+      </nav>
+
+      <div className="container">
+        {/* HEADER & HERO SECTION */}
+        <header className="header">
+          <div className="status-badge">
+            <span className="pulse-indicator"></span>
+            <span className="badge-caption">2026 Cohort • Industry Co-Certified</span>
+          </div>
+
+          <h1 className="hero-title">
+            Skill Enhancement Training &amp;<br />
+            <span className="gradient-text">Internship Program (SETIP)</span>
+          </h1>
+
+          <p className="hero-description">
+            A 3-month structured program bridging academia with live enterprise workflows. Gain hands-on mastery in
+            high-demand technical and management domains, learn directly from MNC mentors, and earn placement
+            co-certification.
+          </p>
+
+          {/* METRIC CARDS */}
+          <div className="metrics-grid">
+            <div className="metric-card">
+              <div className="metric-val">3</div>
+              <div className="metric-lbl">Months</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-val">50+</div>
+              <div className="metric-lbl">MNC Partners</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-val">3</div>
+              <div className="metric-lbl">Certificates</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-val">20+</div>
+              <div className="metric-lbl">Domains</div>
+            </div>
+          </div>
+
+          {/* URGENCY ALERT */}
+          <div className="urgency-alert">
+            <div className="alert-dot"></div>
+            <div className="alert-text">
+              🔥 <strong>Applications Open for 2026 Cohort:</strong> Limited seats available. Evaluated on a rolling basis.
+            </div>
+          </div>
+        </header>
+
+        {/* ROADMAP SECTION */}
+        <section className="roadmap-card">
+          <div className="section-header">
+            <span>⚡ Program Roadmap</span>
+          </div>
+          <div className="roadmap-grid">
+            <div className="roadmap-step">
+              <span className="step-tag">Phase 01</span>
+              <h3 className="step-heading">Skill Training</h3>
+              <p className="step-detail">Intensive live training on industry-standard tools, frameworks, and modern tools.</p>
+            </div>
+            <div className="roadmap-step">
+              <span className="step-tag">Phase 02</span>
+              <h3 className="step-heading">Live Internship</h3>
+              <p className="step-detail">Work on production-grade client projects guided by senior MNC mentors.</p>
+            </div>
+            <div className="roadmap-step">
+              <span className="step-tag">Phase 03</span>
+              <h3 className="step-heading">Placement Support</h3>
+              <p className="step-detail">Resume engineering, 1-on-1 mock interviews, and direct hiring partner referrals.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* WHAT YOU GET SHOWCASE */}
+        <div className="section-header" style={{ marginLeft: '4px' }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--primary-glow)' }}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
+          <span>Deliverables &amp; Benefits</span>
+        </div>
+        <div className="advantages-grid">
+          <div className="advantage-card" style={{ backgroundImage: `linear-gradient(180deg, rgba(13, 17, 33, 0.8) 0%, rgba(13, 17, 33, 0.95) 100%), url(${bg1})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div className="advantage-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" /></svg>
+            </div>
+            <h4 className="advantage-heading">Co-Logo Certificate</h4>
+            <p className="advantage-desc">Global branding credentials issued alongside industry leaders.</p>
+          </div>
+          <div className="advantage-card" style={{ backgroundImage: `linear-gradient(180deg, rgba(13, 17, 33, 0.8) 0%, rgba(13, 17, 33, 0.95) 100%), url(${bg2})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div className="advantage-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+            </div>
+            <h4 className="advantage-heading">Completion Certificate</h4>
+            <p className="advantage-desc">Verified credentials recognized by 50+ hiring partner networks.</p>
+          </div>
+          <div className="advantage-card" style={{ backgroundImage: `linear-gradient(180deg, rgba(13, 17, 33, 0.8) 0%, rgba(13, 17, 33, 0.95) 100%), url(${bg3})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div className="advantage-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
+            </div>
+            <h4 className="advantage-heading">Recommendation Letter</h4>
+            <p className="advantage-desc">Performance-based official LoR written by domain mentors.</p>
+          </div>
+          <div className="advantage-card" style={{ backgroundImage: `linear-gradient(180deg, rgba(13, 17, 33, 0.8) 0%, rgba(13, 17, 33, 0.95) 100%), url(${bg4})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div className="advantage-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+            </div>
+            <h4 className="advantage-heading">1-on-1 Mentorship</h4>
+            <p className="advantage-desc">Dedicated guidance from senior engineers and domain experts.</p>
+          </div>
+          <div className="advantage-card" style={{ backgroundImage: `linear-gradient(180deg, rgba(13, 17, 33, 0.8) 0%, rgba(13, 17, 33, 0.95) 100%), url(${bg5})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div className="advantage-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></svg>
+            </div>
+            <h4 className="advantage-heading">MNC Placement Drive</h4>
+            <p className="advantage-desc">Resume building, portfolio polish, and direct interview opportunities.</p>
+          </div>
+          <div className="advantage-card" style={{ backgroundImage: `linear-gradient(180deg, rgba(13, 17, 33, 0.8) 0%, rgba(13, 17, 33, 0.95) 100%), url(${bg6})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div className="advantage-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>
+            </div>
+            <h4 className="advantage-heading">Enterprise Tools</h4>
+            <p className="advantage-desc">Practical experience with real workplace tools and environments.</p>
+          </div>
+        </div>
+
+        {/* ELIGIBILITY & HELPLINE PANEL */}
+        <div className="contact-grid">
+          <div className="info-panel green">
+            <div className="panel-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><polyline points="9 12 11 14 15 10" /></svg>
+            </div>
+            <div className="panel-content">
+              <div className="panel-tag">Eligibility Criteria</div>
+              <div className="panel-text">
+                Open to students from Technology, Business, Design, Legal, Psychology &amp; Science streams (All academic
+                years &amp; recent graduates welcome).
               </div>
             </div>
           </div>
-          
-          {/* Main Form Area */}
-          <div className="adv-form-content">
-            <form onSubmit={handleSubmit} className="premium-form">
-                
-                {/* SECTION 1: Personal Details */}
-                <div className="form-section-container">
-                  <div className="section-header">
-                    <h4>Personal Details</h4>
-                    <div className="section-divider"></div>
-                  </div>
-      
-                  <div className={`adv-input-group ${errors.name ? 'has-error' : ''}`}>
-                    <label>Full Name <span className="adv-required">*</span></label>
-                    <input type="text" name="name" value={formData.name} onChange={handleInputChange} placeholder="Enter your full name" />
-                    {errors.name && <span className="adv-error-text">{errors.name}</span>}
-                  </div>
-                  <div className="adv-input-row">
-                    <div className={`adv-input-group ${errors.personalEmailId ? 'has-error' : ''}`}>
-                      <label>Personal Email <span className="adv-required">*</span></label>
-                      <input type="email" name="personalEmailId" value={formData.personalEmailId} onChange={handleInputChange} placeholder="john@example.com" />
-                      {errors.personalEmailId && <span className="adv-error-text">{errors.personalEmailId}</span>}
-                    </div>
-                  </div>
-                  <div className="adv-input-row">
-                    <div className={`adv-input-group ${errors.contactNumber ? 'has-error' : ''}`}>
-                      <label>Contact Number <span className="adv-required">*</span></label>
-                      <input type="tel" name="contactNumber" value={formData.contactNumber} onChange={handleInputChange} placeholder="+91" />
-                      {errors.contactNumber && <span className="adv-error-text">{errors.contactNumber}</span>}
-                    </div>
-                    <div className={`adv-input-group ${errors.whatsappNumber ? 'has-error' : ''}`}>
-                      <label>WhatsApp Number <span className="adv-required">*</span></label>
-                      <input type="tel" name="whatsappNumber" value={formData.whatsappNumber} onChange={handleInputChange} placeholder="+91" />
-                      {errors.whatsappNumber && <span className="adv-error-text">{errors.whatsappNumber}</span>}
-                    </div>
-                  </div>
+          <div className="info-panel purple">
+            <div className="panel-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
+            </div>
+            <div className="panel-content">
+              <div className="panel-tag">Placements Helpline</div>
+              <div className="panel-text">
+                <strong style={{ color: '#f8fafc' }}>Dr. Mandeep Singh</strong> — Placements Controller<br />
+                Phone: <a href="tel:+918105954318" style={{ color: '#a855f7', textDecoration: 'none', fontWeight: '600' }}>+91 8105954318</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* SUCCESS SCREEN */}
+        {submitted ? (
+          <div className="success-card show" id="successScreen">
+            <div className="success-icon-wrapper">🎉</div>
+            <h2 className="success-main-title">Application Submitted!</h2>
+            <p className="success-sub-text">
+              Thank you, <strong id="sName" style={{ color: '#6366f1' }}>{formData.fullName || 'Applicant'}</strong>!<br />
+              Your application has been logged into the SETIP 2026 admissions database.
+            </p>
+            <div className="ref-pill">Ref ID: <span id="applicationRef">SETIP-2026-PENDING</span></div>
+            <div className="next-steps-panel">
+              ✓ Onboarding counsellor assigned to your profile<br />
+              ✓ WhatsApp notification &amp; schedule confirmation within 24 hours<br />
+              ✓ Full curriculum syllabus sent to your email<br />
+              ✓ Industry mentor assigned prior to Month 1 orientation
+            </div>
+            {/* <a className="whatsapp-join-btn" href="https://chat.whatsapp.com/Kp5WpklBT5n1EGL37wn97X" target="_blank" rel="noopener noreferrer">
+              <span>💬 Join Official Student WhatsApp Group</span>
+            </a> */}
+          </div>
+        ) : (
+          /* APPLICATION FORM CONTAINER */
+          <form id="mainForm" onSubmit={handleSubmit}>
+            {/* STEP TRACKER & PROGRESS BAR */}
+            <div className="form-tracker-card">
+              <div className="progress-header">
+                <span className="progress-title">Application Progress</span>
+                <span className="progress-percentage">{progress}% Completed</span>
+              </div>
+              <div className="progress-track">
+                <div className="progress-bar-fill" style={{ width: `${progress}%` }}></div>
+              </div>
+              <div className="step-steps">
+                <div className={`step-node ${progress >= 25 ? 'active' : ''}`}>
+                  <span className="node-num">1</span>
+                  <span className="node-label">Personal Profile</span>
                 </div>
-
-                {/* SECTION 2: Academic Details */}
-                <div className="form-section-container mt-6">
-                  <div className="section-header">
-                    <h4>Academic Details</h4>
-                    <div className="section-divider"></div>
-                  </div>
-
-                  <div className="adv-input-row">
-                    <div className={`adv-input-group ${errors.collegeName ? 'has-error' : ''}`}>
-                      <label>College Name <span className="adv-required">*</span></label>
-                      <input type="text" name="collegeName" value={formData.collegeName} onChange={handleInputChange} placeholder="Your University/College" />
-                      {errors.collegeName && <span className="adv-error-text">{errors.collegeName}</span>}
-                    </div>
-                    <div className={`adv-input-group ${errors.branchName ? 'has-error' : ''}`}>
-                      <label>Branch Name <span className="adv-required">*</span></label>
-                      <input type="text" name="branchName" value={formData.branchName} onChange={handleInputChange} placeholder="e.g. Computer Science" />
-                      {errors.branchName && <span className="adv-error-text">{errors.branchName}</span>}
-                    </div>
-                  </div>
-                  <div className="adv-input-row">
-                    <div className={`adv-input-group ${errors.studentsCollegeEmailId ? 'has-error' : ''}`}>
-                      <label>College Email ID <span className="adv-required">*</span></label>
-                      <input type="email" name="studentsCollegeEmailId" value={formData.studentsCollegeEmailId} onChange={handleInputChange} placeholder="student@college.edu" />
-                      {errors.studentsCollegeEmailId && <span className="adv-error-text">{errors.studentsCollegeEmailId}</span>}
-                    </div>
-                  </div>
-                  
-                  <CustomSelect 
-                    label="Year Of Studying" 
-                    required={true}
-                    name="yearOfStudying" 
-                    value={formData.yearOfStudying} 
-                    onChange={handleInputChange} 
-                    placeholder="Select current year"
-                    error={errors.yearOfStudying}
-                    options={["1st Year", "2nd Year", "3rd Year", "4th Year", "Graduated"]}
-                  />
-
-                  <div className="adv-input-row mt-4">
-                    <div className={`adv-input-group ${errors.placementCellEmailId ? 'has-error' : ''}`}>
-                      <label>Placement Cell Email (Optional)</label>
-                      <input type="email" name="placementCellEmailId" value={formData.placementCellEmailId} onChange={handleInputChange} placeholder="tpo@college.edu" />
-                      {errors.placementCellEmailId && <span className="adv-error-text">{errors.placementCellEmailId}</span>}
-                    </div>
-                    <div className="adv-input-group">
-                      <label>CR's Name & Number (Optional)</label>
-                      <input type="text" name="crNameNumber" value={formData.crNameNumber} onChange={handleInputChange} placeholder="Name - Phone" />
-                    </div>
-                  </div>
+                <div className={`step-node ${progress >= 50 ? 'active' : ''}`}>
+                  <span className="node-num">2</span>
+                  <span className="node-label">Education</span>
                 </div>
-
-                {/* SECTION 3: Goals */}
-                <div className="form-section-container mt-6">
-                  <div className="section-header">
-                    <h4>Program Goals</h4>
-                    <div className="section-divider"></div>
-                  </div>
-                  
-                  <CustomSelect 
-                    label="Interested Domain" 
-                    required={true}
-                    name="interestedDomain" 
-                    value={formData.interestedDomain} 
-                    onChange={handleInputChange} 
-                    placeholder="Select target domain"
-                    error={errors.interestedDomain}
-                    options={[
-                      "Android App Development", "Full Stack Development", "Data Science", 
-                      "Data Analytics", "Machine Learning", "Artificial Intelligence", 
-                      "Cyber Security", "Internet of Things/ Robotics", "Cloud Computing", 
-                      "DevOps", "Graphic designer", "UI/UX Design", "AutoCad", 
-                      "Embedded Systems", "Digital Marketing", "Finance", "Human Resource", 
-                      "VLSI Design", "Business Analytics", "Forensic Psychology", 
-                      "Clinical Psychology", "Corporate Law", "Psychology"
-                    ]}
-                  />
-
-                  <CustomSelect 
-                    label="Primary Objective" 
-                    required={true}
-                    name="whyLooking" 
-                    value={formData.whyLooking} 
-                    onChange={handleInputChange} 
-                    placeholder="Why are you joining?"
-                    error={errors.whyLooking}
-                    options={[
-                      "Skill Development & Industry Exposure",
-                      "Career Growth Opportunity",
-                      "Learning from Industry Leaders",
-                      "To Gain Exposure to Emerging Technologies"
-                    ]}
-                  />
-
-                  <div className={`adv-input-group ${errors.preferredLanguage ? 'has-error' : ''}`}>
-                    <label>Preferred Language <span className="adv-required">*</span></label>
-                    <input type="text" name="preferredLanguage" value={formData.preferredLanguage} onChange={handleInputChange} placeholder="e.g. English, Hindi" />
-                    {errors.preferredLanguage && <span className="adv-error-text">{errors.preferredLanguage}</span>}
-                  </div>
-
-                  <div 
-                    className={`adv-checkbox-group ${errors.isConfirmed ? 'has-error-checkbox' : ''}`}
-                    style={{
-                      backgroundColor: 'rgba(139, 92, 246, 0.08)',
-                      border: '1px solid rgba(139, 92, 246, 0.3)',
-                      padding: '16px',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 20px rgba(139, 92, 246, 0.15)'
-                    }}
-                  >
-                    <label className="checkbox-container">
-                      <input 
-                        type="checkbox" 
-                        name="isConfirmed" 
-                        checked={formData.isConfirmed} 
-                        onChange={handleInputChange} 
-                      />
-                      <span className="checkmark"></span>
-                      <span className="checkbox-text">
-                        I confirm that all details provided are accurate and acknowledge that a <strong style={{color: '#fff'}}>nominal fee applies</strong> for the Adobe Certified Program 2026.
-                      </span>
-                    </label>
-                    {errors.isConfirmed && <span className="adv-error-text mt-1 d-block">{errors.isConfirmed}</span>}
-                  </div>
+                <div className={`step-node ${progress >= 75 ? 'active' : ''}`}>
+                  <span className="node-num">3</span>
+                  <span className="node-label">Preferences</span>
                 </div>
+                <div className={`step-node ${progress >= 100 ? 'active' : ''}`}>
+                  <span className="node-num">4</span>
+                  <span className="node-label">Submit</span>
+                </div>
+              </div>
+            </div>
 
-                {/* Form Navigation Controls */}
-                <div className="adv-form-actions-v3" style={{ justifyContent: 'center' }}>
-                  <button type="submit" className="adv-btn-primary submit-btn" disabled={isSubmitting} style={{ width: '100%', maxWidth: '400px', justifyContent: 'center', marginTop: '20px' }}>
-                    {isSubmitting ? (
-                      <>
-                        <span className="loading-spinner"></span> Submitting...
-                      </>
-                    ) : (
-                      'Submit Application'
-                    )}
+            {/* STEP 1: PERSONAL DETAILS */}
+            <div className="form-glass-card" id="apply">
+              <div className="card-title-bar">Step 1 — Personal Details</div>
+              <div className="form-layout-grid">
+                <div className="field-group">
+                  <label htmlFor="fullName">Full Name <span className="required">*</span></label>
+                  <input type="text" id="fullName" className="form-input" placeholder="As per college records" value={formData.fullName} onChange={handleInputChange} />
+                </div>
+                <div className="field-group">
+                  <label htmlFor="phone">Phone Number <span className="required">*</span></label>
+                  <input type="tel" id="phone" className="form-input" placeholder="+91 00000 00000" value={formData.phone} onChange={handleInputChange} />
+                </div>
+                <div className="field-group">
+                  <label htmlFor="whatsapp">WhatsApp Number <span className="required">*</span></label>
+                  <input type="tel" id="whatsapp" className="form-input" placeholder="Active WhatsApp number" value={formData.whatsapp} onChange={handleInputChange} />
+                </div>
+                <div className="field-group">
+                  <label htmlFor="collegeEmail">College Email <span className="required">*</span></label>
+                  <input type="email" id="collegeEmail" className="form-input" placeholder="yourname@college.edu" value={formData.collegeEmail} onChange={handleInputChange} />
+                </div>
+                <div className="field-group span-2">
+                  <label htmlFor="personalEmail">Personal Email <span className="required">*</span></label>
+                  <input type="email" id="personalEmail" className="form-input" placeholder="yourname@gmail.com" value={formData.personalEmail} onChange={handleInputChange} />
+                </div>
+                <div className="field-group span-2">
+                  <label htmlFor="state">State / Region <span className="required">*</span></label>
+                  <CustomDropdown
+                    id="state"
+                    value={formData.state}
+                    onChange={handleInputChange}
+                    placeholder="— Select your state / region —"
+                    groups={stateGroups}
+                  />
+                  {formData.state === 'Other' && (
+                    <div className="country-other-box show">
+                      <input type="text" id="otherCountry" className="form-input" placeholder="Enter your country name" value={formData.otherCountry} onChange={handleInputChange} />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* STEP 2: ACADEMIC BACKGROUND */}
+            <div className="form-glass-card">
+              <div className="card-title-bar">Step 2 — Academic Background</div>
+              <div className="form-layout-grid">
+                <div className="field-group span-2">
+                  <label htmlFor="collegeName">College / University Name <span className="required">*</span></label>
+                  <input type="text" id="collegeName" className="form-input" placeholder="Full official name of your institution" value={formData.collegeName} onChange={handleInputChange} />
+                </div>
+                <div className="field-group">
+                  <label htmlFor="branch">Branch / Stream <span className="required">*</span></label>
+                  <input type="text" id="branch" className="form-input" placeholder="e.g. Computer Science, BBA, BCA, MBA" value={formData.branch} onChange={handleInputChange} />
+                </div>
+                <div className="field-group">
+                  <label htmlFor="year">Year of Study <span className="required">*</span></label>
+                  <CustomDropdown
+                    id="year"
+                    value={formData.year}
+                    onChange={handleInputChange}
+                    placeholder="— Select current year —"
+                    options={yearOptions}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* STEP 3: DOMAINS & LANGUAGES */}
+            <div className="form-glass-card">
+              <div className="card-title-bar">Step 3 — Upskill Domains &amp; Languages</div>
+
+              {/* Domain Selection */}
+              <div className="field-group span-2" style={{ marginBottom: '24px' }}>
+                <label>Domain to Upskill &amp; Intern in <span className="required">*</span></label>
+                <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '10px' }}>Select 1 primary domain for your program cohort</p>
+
+                {/* Domain Category Filter */}
+                <div className="domain-tags">
+                  <button type="button" className={`tag-btn ${domainFilter === 'all' ? 'active' : ''}`} onClick={() => setDomainFilter('all')}>
+                    All ({domains.length})
+                  </button>
+                  <button type="button" className={`tag-btn ${domainFilter === 'tech' ? 'active' : ''}`} onClick={() => setDomainFilter('tech')}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                    Software &amp; AI
+                  </button>
+                  <button type="button" className={`tag-btn ${domainFilter === 'design' ? 'active' : ''}`} onClick={() => setDomainFilter('design')}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+                    Design
+                  </button>
+                  <button type="button" className={`tag-btn ${domainFilter === 'mgmt' ? 'active' : ''}`} onClick={() => setDomainFilter('mgmt')}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                    Business
+                  </button>
+                  <button type="button" className={`tag-btn ${domainFilter === 'core' ? 'active' : ''}`} onClick={() => setDomainFilter('core')}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    Core Eng
                   </button>
                 </div>
 
-            </form>
-          </div>
-        </div>
+                <div className="scrollable-tiles">
+                  {domains.filter(d => domainFilter === 'all' || d.cat === domainFilter).map(d => (
+                    <label key={d.label} className="tile-option">
+                      <input type="radio" name="domain" value={d.label} checked={formData.domain === d.label} onChange={handleInputChange} />
+                      <span>{d.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Language Selection */}
+              <div className="field-group span-2">
+                <label>Preferred Language(s) of Instruction <span className="required">*</span></label>
+                <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '10px' }}>Select at least one preferred language</p>
+                <div className="scrollable-tiles" style={{ maxHeight: 'none' }}>
+                  {langs.map(l => (
+                    <label key={l} className="tile-option">
+                      <input type="checkbox" name="language" value={l} checked={formData.languages.includes(l)} onChange={handleInputChange} />
+                      <span>{l}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* STEP 4: SUBMIT & ACKNOWLEDGEMENT */}
+            <div className="form-glass-card">
+              <div className="card-title-bar">Step 4 — Final Confirmation</div>
+
+              <label className="declaration-box">
+                <input type="checkbox" id="feeAck" checked={formData.feeAck} onChange={handleInputChange} className="hidden-checkbox" />
+                <div className="custom-checkbox">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div className="declaration-text">
+                  <strong>Declaration &amp; Acknowledgement:</strong> I confirm all provided details are true and accurate. I understand that SETIP 2026 includes a nominal program seat fee covering 3-month live mentorship, tools, and MNC placement co-certification.
+                </div>
+              </label>
+
+              <button type="submit" className="submit-action-btn" id="submitBtn" disabled={isSubmitting}>
+                <span className="btn-glow"></span>
+                <span className="btn-content">
+                  {isSubmitting ? 'Submitting...' : 'Submit Application & Reserve Seat'}
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </span>
+              </button>
+
+              {errorMsg && (
+                <div className="error-notification show">{errorMsg}</div>
+              )}
+
+              <div className="security-notice">
+                <div className="security-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                  SSL Encrypted
+                </div>
+                <span className="dot">•</span>
+                <div className="security-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                  Official Admissions
+                </div>
+                <span className="dot">•</span>
+                <div className="security-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                  Response via WhatsApp
+                </div>
+              </div>
+            </div>
+          </form>
+        )}
       </div>
-    </section>
+
+      {/* FOOTER */}
+      <footer className="footer">
+        <p>
+          &copy; 2026 <strong style={{ color: 'var(--primary-glow)' }}>Skill Enhancement Training &amp; Internship Program
+            (SETIP)</strong><br />
+          Official Student Helpline: <a href="tel:+918105954318">+91 8105954318</a> &bull; Admissions Office
+        </p>
+      </footer>
+
+      {/* FLOATING HELPLINE BADGE */}
+      {/* <a href="https://chat.whatsapp.com/Kp5WpklBT5n1EGL37wn97X" target="_blank" rel="noopener noreferrer" className="floating-helpline">
+        <span style={{ fontSize: '15px' }}>💬</span>
+        <span>Helpline</span>
+      </a> */}
+    </div>
   );
 };
 
