@@ -2,7 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Footer from '../../Components/Footer';
 import Header from '../../Components/Header';
-import img1 from "../../../dist/posters/WhatsApp Image 2026-08-26 at 5.23.31 PM.jpeg";
+
+const img1 = "/posters/WhatsApp Image 2026-08-26 at 5.23.31 PM.jpeg";
 
 const blogs = [
   {
