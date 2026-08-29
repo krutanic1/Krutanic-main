@@ -6,8 +6,8 @@ const practiceAuthMiddleware = require('./practiceAuth');
  * Stack this after practiceAuthMiddleware, or use it standalone (it calls practiceAuth internally).
  */
 const practiceAdminAuth = (req, res, next) => {
-  // 1. Allow LMS Admins via adminToken cookie
-  const adminToken = req.cookies.adminToken;
+  // 1. Allow LMS Admins via adminToken cookie or header
+  const adminToken = req.cookies.adminToken || req.headers['x-admin-token'];
   if (adminToken) {
     try {
       const jwt = require('jsonwebtoken');

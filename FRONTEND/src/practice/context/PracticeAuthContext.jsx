@@ -132,6 +132,10 @@ export const PracticeAuthProvider = ({ children }) => {
       if (tokenRef.current) {
         config.headers.Authorization = `Bearer ${tokenRef.current}`;
       }
+      const adminToken = localStorage.getItem('adminToken');
+      if (adminToken) {
+        config.headers['x-admin-token'] = adminToken;
+      }
       return config;
     });
 
