@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Footer from '../../Components/Footer';
 import Header from '../../Components/Header';
 
-const img1 = "/posters/WhatsApp Image 2026-08-26 at 5.23.31 PM.jpeg";
+const img1 = "/posters/post.jpeg";
 
 const blogs = [
   {
@@ -45,7 +45,7 @@ const BlogList = () => {
               <div key={blog.id} className="bg-white rounded-2xl shadow-sm hover:shadow-xl overflow-hidden transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 flex flex-col">
                 <div className="relative h-56 overflow-hidden">
                   <img src={blog.image} alt={blog.title} className="w-full h-full object-cover transition-transform duration-500 hover:scale-110" />
-                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-[#F15B29] uppercase tracking-wider">Business Intelligence</div>
+                  {/* <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-[#F15B29] uppercase tracking-wider">Business Intelligence</div> */}
                 </div>
                 <div className="p-8 flex flex-col flex-grow">
                   <h2 className="text-2xl font-bold text-gray-900 mb-3 leading-tight hover:text-[#F15B29] transition-colors">{blog.title}</h2>
