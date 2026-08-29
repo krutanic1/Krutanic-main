@@ -399,6 +399,9 @@ router.get("/get-outcome-counts", async (req, res) => {
         } else if (strictlyOwned === "true") {
             // Strictly owned leads only — no fresh pool access for any role
             baseQuery = { $or: [{ owner_id: userId }, { current_owner_id: userId }] };
+            if (roleNorm.includes("manager")) {
+                baseQuery.$or.push({ status: "fresh" });
+            }
         } else if (roleNorm.includes("manager")) {
             // Managers see only leads explicitly assigned to their team — NOT the global fresh pool
             const teams = await AdvTeamStructure.find({ manager_id: userId });
@@ -410,7 +413,8 @@ router.get("/get-outcome-counts", async (req, res) => {
                     { team_id: { $in: teamIds } },
                     { team_name: { $in: teamNames } },
                     { owner_id: userId },
-                    { current_owner_id: userId }
+                    { current_owner_id: userId },
+                    { status: "fresh" }
                 ]
             };
         } else if (roleNorm.includes("leader")) {
@@ -1215,6 +1219,9 @@ router.get("/get-adv-leads", async (req, res) => {
                     { current_owner_id: userId }
                 ]
             };
+            if (roleNorm.includes("manager")) {
+                baseQuery.$or.push({ status: "fresh" });
+            }
         } else if (roleNorm.includes("manager")) {
             // Managers see only leads explicitly assigned to their team — NOT the global fresh pool
             const teams = await AdvTeamStructure.find({ manager_id: userId });
@@ -1226,7 +1233,8 @@ router.get("/get-adv-leads", async (req, res) => {
                     { team_id: { $in: teamIds } },
                     { team_name: { $in: teamNames } },
                     { owner_id: userId },
-                    { current_owner_id: userId }
+                    { current_owner_id: userId },
+                    { status: "fresh" }
                 ]
             };
         } else if (roleNorm.includes("leader")) {
