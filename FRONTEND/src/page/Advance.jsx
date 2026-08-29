@@ -252,7 +252,7 @@ const Advance = () => {
               key={p.id}
               className={`adv-hero-v2-mini-card ${activeHeroIdx === i ? "active" : ""}`}
               style={{ "--accent": p.accentColor }}
-              onClick={() => setActiveHeroIdx(i)}
+              onClick={() => navigate(p.link)}
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 + i * 0.1 }}
@@ -264,18 +264,26 @@ const Advance = () => {
                 <div className="adv-mini-v2-title">{p.name}</div>
                 <div className="adv-mini-v2-sub">{p.dur} · {p.cat}</div>
               </div>
-              <span style={{ 
-                marginLeft: "auto", 
-                fontSize: "0.75rem", 
-                fontWeight: 800, 
-                textTransform: "uppercase", 
-                padding: "0.25rem 0.6rem", 
-                borderRadius: "4px", 
-                background: p.accentColor, 
-                color: "#000" 
-              }}>
+              <button 
+                onClick={(e) => { e.stopPropagation(); navigate(p.link); }}
+                style={{ 
+                  marginLeft: "auto", 
+                  fontSize: "0.75rem", 
+                  fontWeight: 800, 
+                  textTransform: "uppercase", 
+                  padding: "0.35rem 0.8rem", 
+                  borderRadius: "4px", 
+                  background: p.accentColor, 
+                  color: "#000",
+                  border: "none",
+                  cursor: "pointer",
+                  transition: "transform 0.2s ease, filter 0.2s ease"
+                }}
+                onMouseOver={(e) => { e.currentTarget.style.transform = "scale(1.05)"; e.currentTarget.style.filter = "brightness(1.1)"; }}
+                onMouseOut={(e) => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.filter = "brightness(1)"; }}
+              >
                 TRENDING
-              </span>
+              </button>
             </motion.div>
           ))}
 

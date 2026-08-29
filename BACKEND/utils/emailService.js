@@ -893,6 +893,7 @@ const sendSkillEvaluationAdminNotification = async (assessmentDetails) => {
                         <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Email</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${assessmentDetails.email}</td></tr>
                         <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Mobile Number</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${assessmentDetails.mobileNumber}</td></tr>
                         <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>City</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${assessmentDetails.city}</td></tr>
+                        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Payment Status</strong></td><td style="padding: 8px; border: 1px solid #ddd; color: green;"><strong>Successful</strong></td></tr>
                         <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Booked Slot</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${assessmentDetails.bookedDate} at ${assessmentDetails.bookedTimeSlot}</td></tr>
                         <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Assigned Executive</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${assessmentDetails.assignedExecutiveName || 'Unassigned / Not found in CRM'}</td></tr>
                     </table>
@@ -902,6 +903,33 @@ const sendSkillEvaluationAdminNotification = async (assessmentDetails) => {
         await transporter.sendMail(mailOptions);
     } catch (error) {
         console.error("Error sending admin notification email:", error);
+    }
+};
+
+const sendSkillEvaluationPaymentFailedNotification = async (assessmentDetails, reason) => {
+    try {
+        const mailOptions = {
+            from: senderEmail,
+            to: "fedrick_sarone@krutanic.org",
+            cc: "tarunsai.kola@krutanic.org",
+            subject: "Payment Failed: Skill Evaluation Test",
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e74c3c; border-radius: 10px;">
+                    <h2 style="color: #c0392b;">Skill Evaluation Test - Payment Failed</h2>
+                    <p style="color: #34495e;">A candidate attempted to pay for a skill evaluation slot, but the payment verification failed.</p>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Name</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${assessmentDetails.fullName}</td></tr>
+                        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Email</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${assessmentDetails.email}</td></tr>
+                        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Mobile Number</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${assessmentDetails.mobileNumber}</td></tr>
+                        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Payment Status</strong></td><td style="padding: 8px; border: 1px solid #ddd; color: red;"><strong>Failed / Unverified</strong></td></tr>
+                        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Reason</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${reason}</td></tr>
+                    </table>
+                </div>
+            `,
+        };
+        await transporter.sendMail(mailOptions);
+    } catch (error) {
+        console.error("Error sending payment failed notification:", error);
     }
 };
 
@@ -979,6 +1007,7 @@ module.exports = {
     sendMasterclassTodayReminder,
     sendSkillEvaluationWelcomeEmail,
     sendSkillEvaluationAdminNotification,
+    sendSkillEvaluationPaymentFailedNotification,
     sendSkillEvaluationExecutiveNotification,
     sendSkillEvaluationAssignmentNotification,
     sendPreskillevalution

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Footer from '../../Components/Footer';
 import Header from '../../Components/Header';
+import img1 from "../../../dist/posters/WhatsApp Image 2026-08-26 at 5.23.31 PM.jpeg";
 
 const blogs = [
   {
@@ -9,7 +10,7 @@ const blogs = [
     title: "Data Analytics for Small Business Owners: Complete 2026 Guide",
     slug: "data-analytics-for-small-business-owners",
     description: "Learn how data analytics and business intelligence can transform your small business operations, from tracking KPIs to forecasting growth and making smarter, data-driven decisions.",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop",
+    image: img1,
     author: "Chirantan Dutta Banik",
     date: "August 26, 2026"
   }

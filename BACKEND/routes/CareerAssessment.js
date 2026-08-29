@@ -9,6 +9,7 @@ const AdvTeam = require("../models/CreateAdvTeam");
 const { 
   sendSkillEvaluationWelcomeEmail, 
   sendSkillEvaluationAdminNotification, 
+  sendSkillEvaluationPaymentFailedNotification,
   sendSkillEvaluationExecutiveNotification,
   sendSkillEvaluationAssignmentNotification,
   sendPreskillevalution
@@ -75,15 +76,18 @@ router.post("/careerassessment", async (req, res) => {
           const payment = await razorpayInstance.payments.fetch(paymentId);
           
           if (payment.status !== 'captured' && payment.status !== 'authorized') {
+              sendSkillEvaluationPaymentFailedNotification(req.body, "Payment was not successful on Razorpay's end.");
               return res.status(400).json({ error: "Payment was not successful on Razorpay's end." });
           }
 
           if (Number(payment.amount) < 10100) { // ₹101 in paise, allow higher if convenience fee is added
               console.error(`Amount mismatch: Received ${payment.amount}`);
+              sendSkillEvaluationPaymentFailedNotification(req.body, `Payment amount mismatch. Expected at least ₹101, but got ₹${payment.amount/100}.`);
               return res.status(400).json({ error: `Payment amount mismatch. Expected at least ₹101, but got ₹${payment.amount/100}.` });
           }
         } catch (rzpErr) {
           console.error("Razorpay Fetch Error:", rzpErr);
+          sendSkillEvaluationPaymentFailedNotification(req.body, "Invalid or fake Payment ID provided.");
           return res.status(400).json({ error: "Invalid or fake Payment ID provided." });
         }
     }
