@@ -86,9 +86,9 @@ const MedDashboardAccessForm = () => {
   const [email, setEmail] = useState("");
   const [alternativeEmail, setAlternativeEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [program, setProgram] = useState([]);
-  const [counselor, setCounselor] = useState([]);
-  const [domain, setDomain] = useState([]);
+  const [program, setProgram] = useState("");
+  const [counselor, setCounselor] = useState("");
+  const [domain, setDomain] = useState("");
   const [programPrice, setProgramPrice] = useState("");
   const [paidAmount, setPaidAmount] = useState("");
   const [monthOpted, setMonthOpted] = useState("");
@@ -587,7 +587,7 @@ const MedDashboardAccessForm = () => {
               onChange={(e) => setProgram(e.target.value)}
               required
             >
-              <option value="" selected disabled>
+              <option value="" disabled>
                 {" "}
                 Mode of Program
               </option>
@@ -605,7 +605,7 @@ const MedDashboardAccessForm = () => {
               onChange={(e) => setDomain(e.target.value)}
               required
             >
-              <option value="" selected disabled>
+              <option value="" disabled>
                 Select Opted Domain
               </option>
               {course.map((item, index) => (
@@ -632,7 +632,7 @@ const MedDashboardAccessForm = () => {
               onChange={(e) => setMonthOpted(e.target.value)}
               required
             >
-              <option value="" selected disabled>
+              <option value="" disabled>
                 Select Opted Month
               </option>
               {monthsToShow.map((month, index) => (
@@ -647,7 +647,7 @@ const MedDashboardAccessForm = () => {
               onChange={(e) => setModeOfPayment(e.target.value)}
               required
             >
-              <option value="" selected disabled>
+              <option value="" disabled>
                 {" "}
                 Mode of Payment
               </option>
@@ -752,7 +752,7 @@ const MedDashboardAccessForm = () => {
                   disabled={existingEnrollment === null}
                   style={existingEnrollment === null ? { background: "#f0f0f0", cursor: "not-allowed", opacity: 0.5 } : {}}
                 >
-                  <option value="" selected disabled>
+                  <option value="" disabled>
                     Internship starts month
                   </option>
                   {internshipStartsMonthsToShow.map((month, index) => (
