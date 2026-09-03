@@ -618,9 +618,9 @@ const MedDashboardAccessForm = () => {
               <option value="Cyber Security">Cyber Security</option>
               <option value="Data Science">Data Science</option>
               <option value="Data Analytics">Data Analytics</option>
-              <option value="UI/UX Design">UI/UX Design</option>
+              <option value="UI & UX Design">UI/UX Design</option>
               <option value="DevOps">DevOps</option>
-              <option value="Graphics Design">Graphics Design</option>
+              <option value="Graphic Designing">Graphics Design</option>
               <option value="Embedded System">Embedded System</option>
               <option value="Cloud Computing">Cloud Computing</option>
               <option value="Finance">Finance</option>

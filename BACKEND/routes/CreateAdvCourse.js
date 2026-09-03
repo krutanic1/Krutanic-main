@@ -33,10 +33,10 @@ router.get("/getadvcourses", async (req, res) => {
       // Don't cache individual course lookups (different every time)
       courses = await CreateAdvCourse.findById(courseId);
     } else {
-      // ✅ CACHE: Courses list (titles only, 5 min TTL)
+      // ✅ CACHE: Courses list (titles, description, session, show, 5 min TTL)
       courses = await cachedQuery(
         'advcourses:titles',
-        () => CreateAdvCourse.find({}, '_id title show').sort({ _id: -1 }).lean(),
+        () => CreateAdvCourse.find({}, '_id title description show session').sort({ _id: -1 }).lean(),
         300,  // 5 minutes TTL
         'static'
       );
@@ -99,34 +99,13 @@ router.put("/updateadvcourse/:id", verifyAdminCookie, async (req, res) => {
       req.body,
       { new: true }
     );
+    
+    // ✅ Invalidate courses cache when course sessions are updated
+    invalidateCache('advcourses:titles', 'static');
+    
     res.json(updatedCourse);
   } catch (error) {
     res.status(500).json({ message: "Error updating course", error });
-  }
-});
-
-//put request to add a lecture video in the modules
-router.put("/updateadvcourse/:courseId", verifyAdminCookie, async (req, res) => {
-  try {
-    const { courseId } = req.params;
-    const updatedCourse = req.body;
-
-    const course = await CreateAdvCourse.findByIdAndUpdate(
-      courseId,
-      updatedCourse,
-      {
-        new: true,
-      }
-    );
-
-    if (!course) {
-      return res.status(404).send("Course not found");
-    }
-
-    res.status(200).send(course);
-  } catch (error) {
-    console.error("Error updating course:", error);
-    res.status(500).send("Server error");
   }
 });
 

@@ -43,7 +43,12 @@ router.post("/med-new-enroll", async (req, res) => {
       yearOfStudy,
       languages
     } = req.body;
-    const course = await MedCourse.findOne({ title: domain });
+    const CreateCourse = require("../models/CreateCourse");
+    const MedCourse = require("../models/MedCourse");
+    let course = await MedCourse.findOne({ title: domain });
+    if (!course) {
+      course = await CreateCourse.findOne({ title: domain });
+    }
 
     const bdaUser = await CreateBDA.findOne({ fullname: counselor });
     const medTeamUser = await CreateMedTeam.findOne({ fullname: counselor });
@@ -771,11 +776,17 @@ router.put("/editmedstudentdetails/:_id", verifyAnyAuth, async (req, res) => {
     let domainId = null;
     if (domain) {
       // Fetch the domainId based on the domain name
-      const foundDomain = await MedCourse.findOne({ title: domain }); // assuming domain field is 'name'
+      const CreateCourse = require("../models/CreateCourse");
+      const MedCourse = require("../models/MedCourse");
+      let foundDomain = await MedCourse.findOne({ title: domain });
+      if (!foundDomain) {
+        foundDomain = await CreateCourse.findOne({ title: domain });
+      }
+
       if (foundDomain) {
         domainId = foundDomain._id;
       } else {
-        return res.status(404).json({ message: "Domain not found" });
+        return res.status(404).json({ message: "Domain not found in medcourses or createcourses" });
       }
     }
 
@@ -875,9 +886,11 @@ router.get("/med-enrollments", async (req, res) => {
     const updatedEnrollments = await Promise.all(
       enrollments.map(async (enrollment) => {
         if (enrollment.domainId) {
-          const course = await MedCourse.findById(
-            enrollment.domainId
-          ).lean();
+          let course = await MedCourse.findById(enrollment.domainId).lean();
+          if (!course) {
+            const CreateCourse = require("../models/CreateCourse");
+            course = await CreateCourse.findById(enrollment.domainId).lean();
+          }
 
           // Optimization: Calculate Progress on Backend to avoid heavy payload
           let totalSessionsCount = 0;
@@ -925,7 +938,11 @@ router.get("/med-enrollments/:id/sessions", async (req, res) => {
     if (!enrollment || !enrollment.domainId) {
       return res.status(404).json({ message: "Enrollment or domain not found" });
     }
-    const course = await MedCourse.findById(enrollment.domainId).lean();
+    let course = await MedCourse.findById(enrollment.domainId).lean();
+    if (!course) {
+      const CreateCourse = require("../models/CreateCourse");
+      course = await CreateCourse.findById(enrollment.domainId).lean();
+    }
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
     }

@@ -1412,9 +1412,11 @@ router.get("/enrollments", async (req, res) => {
     const updatedEnrollments = await Promise.all(
       enrollments.map(async (enrollment) => {
         if (enrollment.domainId) {
-          const course = await CreateCourse.findById(
-            enrollment.domainId
-          ).lean();
+          let course = await CreateCourse.findById(enrollment.domainId).lean();
+          if (!course) {
+            const MedCourse = require("../models/MedCourse");
+            course = await MedCourse.findById(enrollment.domainId).lean();
+          }
 
           // Optimization: Calculate Progress on Backend to avoid heavy payload
           let totalSessionsCount = 0;
@@ -1466,7 +1468,11 @@ router.get("/enrollments/:id/sessions", async (req, res) => {
     if (!enrollment || !enrollment.domainId) {
       return res.status(404).json({ message: "Enrollment or domain not found" });
     }
-    const course = await CreateCourse.findById(enrollment.domainId).lean();
+    let course = await CreateCourse.findById(enrollment.domainId).lean();
+    if (!course) {
+      const MedCourse = require("../models/MedCourse");
+      course = await MedCourse.findById(enrollment.domainId).lean();
+    }
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
     }
