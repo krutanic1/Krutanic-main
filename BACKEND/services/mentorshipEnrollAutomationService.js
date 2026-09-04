@@ -1,11 +1,11 @@
 const cron = require('node-cron');
 const mongoose = require('mongoose');
-const MedEnroll = require('../models/MedEnroll');
+const NewStudentEnroll = require('../models/NewStudentEnroll');
 const User = require('../models/User');
 const { sendOfferLetter } = require('../controllers/offerLetter');
 const { sendEmail } = require('../controllers/emailController');
 
-const runMedEnrollAutomation = async (studentId = null) => {
+const runMentorshipEnrollAutomation = async (studentId = null) => {
     try {
       let query = {};
 
@@ -28,9 +28,9 @@ const runMedEnrollAutomation = async (studentId = null) => {
         };
       }
 
-      const eligibleRecords = await MedEnroll.find(query);
+      const eligibleRecords = await NewStudentEnroll.find(query);
 
-      console.log(`Found ${eligibleRecords.length} MedEnroll records needing automation.`);
+      console.log(`Found ${eligibleRecords.length} Mentorship (NewStudentEnroll) records needing automation.`);
 
       for (const record of eligibleRecords) {
         // 1. Send Offer Letter
@@ -78,7 +78,7 @@ const runMedEnrollAutomation = async (studentId = null) => {
               domain: record.domain || "Mentorship Program",
               duration,
               location,
-              isMentorship: false // Use advance template
+              isMentorship: true // Set to true for mentorship
             });
 
             record.offerlettersended = true;
@@ -203,14 +203,14 @@ const runMedEnrollAutomation = async (studentId = null) => {
         }
       }
     } catch (error) {
-      console.error("❌ Error in MedEnroll Automation Job:", error);
+      console.error("❌ Error in MentorshipEnroll Automation Job:", error);
     }
 };
 
-const initializeMedEnrollAutomation = async () => {
-  console.log("✅ Running MedEnroll Automation Service (Once on startup)");
-  console.log("🔄 Running MedEnroll Automation Job...");
-  await runMedEnrollAutomation();
+const initializeMentorshipEnrollAutomation = async () => {
+  console.log("✅ Running Mentorship Automation Service (Once on startup)");
+  console.log("🔄 Running Mentorship Automation Job...");
+  await runMentorshipEnrollAutomation();
 };
 
-module.exports = { initializeMedEnrollAutomation, runMedEnrollAutomation };  
+module.exports = { initializeMentorshipEnrollAutomation, runMentorshipEnrollAutomation };

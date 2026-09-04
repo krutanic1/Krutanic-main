@@ -372,11 +372,16 @@ const BookedAmount = () => {
       setPaidAmount(student.paidAmount || "");
       setRemainingAmount(student.remainingAmount || 0);
       setMonthOpted(student.monthOpted || "");
-      setClearPaymentMonth(
-        student.clearPaymentMonth
-          ? new Date(student.clearPaymentMonth).toISOString().split("T")[0]
-          : ""
-      );
+      let parsedClearDate = "";
+      if (student.clearPaymentMonth) {
+        const d = new Date(student.clearPaymentMonth);
+        if (!isNaN(d.getTime())) {
+          parsedClearDate = d.toISOString().split("T")[0];
+        } else {
+          parsedClearDate = student.clearPaymentMonth;
+        }
+      }
+      setClearPaymentMonth(parsedClearDate);
       setModeofpayment(student.modeofpayment || "");
       setCollegeName(student.collegeName || "");
       setBranch(student.branch || "");

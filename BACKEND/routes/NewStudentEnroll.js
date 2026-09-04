@@ -10,6 +10,7 @@ const CreateOperation = require("../models/CreateOperation");
 const mongoose = require("mongoose");
 const authMiddleware = require("../middleware/UserAuth");
 const verifyAnyAuth = require("../middleware/verifyAnyAuth");
+const { runMentorshipEnrollAutomation } = require("../services/mentorshipEnrollAutomationService");
 
 router.post("/newstudentenroll", async (req, res) => {
   try {
@@ -185,6 +186,14 @@ router.post("/newstudentenroll", async (req, res) => {
 
     await newStudent.save();
     console.log('Student saved successfully');
+    
+    // Automatically trigger enrollment automation so user doesn't wait for cron
+    try {
+      await runMentorshipEnrollAutomation(newStudent._id);
+    } catch (autoErr) {
+      console.error("Error running auto-enrollment:", autoErr);
+    }
+
     res.status(201).json({ message: "Registration successful!" });
 
     // Submit to Google Sheets in background (non-blocking)
@@ -194,6 +203,18 @@ router.post("/newstudentenroll", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error. Please try again later." });
+  }
+});
+
+// Manual trigger for Mentorship automation
+router.post("/manual-mentorship-automation/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    await runMentorshipEnrollAutomation(id);
+    res.status(200).json({ success: true, message: "Automation processed for student." });
+  } catch (error) {
+    console.error("Error running manual automation:", error);
+    res.status(500).json({ success: false, error: "Failed to run manual automation" });
   }
 });
 

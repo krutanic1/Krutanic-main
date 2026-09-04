@@ -77,7 +77,7 @@ const columnsData = [
         title: "Data Science Advanced Program",
         desc: "Master Machine Learning, AI ethics, and large-scale neural architectures.",
         link: "/DataScience",
-        batch: "10th Aug"
+        batch: "10th Sep"
       },
       {
         type: "icon",
@@ -85,7 +85,7 @@ const columnsData = [
         title: "Data Analytics Advanced Program",
         desc: "Master Excel, SQL, Python, and Power BI to drive business decisions with data.",
         link: "/DataAnalytics",
-        batch: "10th Aug"
+        batch: "10th Sep"
       }
     ]
   },
@@ -230,17 +230,17 @@ const AdvanceCourses = () => {
         </div>
 
         {/* 5. Apply CTA Banner - Cinematic High-Impact Version */}
-        <div 
+        <div
           className="my-16 md:my-24 rounded-[32px] md:rounded-[48px] p-10 md:p-20 shadow-2xl relative overflow-hidden text-center max-w-6xl mx-auto border border-white/10 group"
-          style={{ 
-            backgroundImage: `url('/cta_bg.png')`, 
-            backgroundSize: 'cover', 
-            backgroundPosition: 'center' 
+          style={{
+            backgroundImage: `url('/cta_bg.png')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
           }}
         >
           {/* Dark Overlay for contrast */}
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px] transition-all duration-500 group-hover:bg-slate-900/40"></div>
-          
+
           <div className="relative z-10 max-w-3xl mx-auto">
             <h2 className="text-3xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-tight drop-shadow-md">
               Ready to Transform Your Career?
@@ -387,14 +387,14 @@ const AdvanceCourses = () => {
 
           <div className="relative max-w-2xl mx-auto h-[320px] md:h-[280px]">
             {mediaHighlights.map((news, idx) => (
-              <a 
+              <a
                 key={idx}
                 href={news.link}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`absolute inset-0 group bg-white rounded-[40px] p-10 border border-slate-100 shadow-[0_20px_60px_rgba(0,0,0,0.05)] hover:shadow-[0_40px_80px_rgba(255,107,45,0.15)] transition-all duration-700 ease-in-out flex flex-col h-full
-                  ${idx === currentMediaIndex 
-                    ? 'opacity-100 scale-100 translate-y-0 z-20' 
+                  ${idx === currentMediaIndex
+                    ? 'opacity-100 scale-100 translate-y-0 z-20'
                     : 'opacity-0 scale-95 translate-y-8 z-10 pointer-events-none'
                   }
                 `}
@@ -407,11 +407,11 @@ const AdvanceCourses = () => {
                     <FaNewspaper size={20} />
                   </div>
                 </div>
-                
+
                 <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-8 leading-tight flex-1 group-hover:text-orange-600 transition-colors">
                   "{news.title}"
                 </h3>
-                
+
                 <div className="flex items-center justify-between pt-8 border-t border-slate-50">
                   <span className="text-slate-400 text-[12px] font-bold uppercase tracking-widest">{news.date}</span>
                   <div className="flex items-center gap-2 text-orange-600 font-extrabold text-sm uppercase tracking-wider">
@@ -428,9 +428,8 @@ const AdvanceCourses = () => {
               <button
                 key={idx}
                 onClick={() => setCurrentMediaIndex(idx)}
-                className={`h-2 transition-all duration-500 rounded-full ${
-                  idx === currentMediaIndex ? 'w-12 bg-orange-600' : 'w-2 bg-slate-200'
-                }`}
+                className={`h-2 transition-all duration-500 rounded-full ${idx === currentMediaIndex ? 'w-12 bg-orange-600' : 'w-2 bg-slate-200'
+                  }`}
               />
             ))}
           </div>
@@ -447,8 +446,8 @@ const AdvanceCourses = () => {
 
         <p className="text-[10px] md:text-sm font-black tracking-wider flex items-center justify-center gap-2 relative z-10 drop-shadow-sm uppercase">
           <span>Feel free to reach out to us at <a href="tel:9380736449" className="hover:text-white/80 transition-colors bg-white/10 px-2 py-0.5 rounded-lg border border-white/20">9380736449</a> or simply</span>
-          <button 
-            onClick={() => setShowApplyForm(true)} 
+          <button
+            onClick={() => setShowApplyForm(true)}
             className="group flex items-center gap-1.5 bg-white text-[#f15b29] px-4 py-1 rounded-full text-[9px] md:text-xs font-black shadow-lg hover:scale-105 transition-all duration-300 active:scale-95"
           >
             Request a Callback

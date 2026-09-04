@@ -17,7 +17,7 @@ const AdvanceCounses = () => {
     tags: ["Live Mentoring", "100% Placement Assistance"],
     stats: [
       { label: "Duration", value: "6 Months", icon: "fa-clock-o" },
-      { label: "Cohort", value: "10th Aug", icon: "fa-calendar-check-o" },
+      { label: "Cohort", value: "10th Sep", icon: "fa-calendar-check-o" },
       { label: "Format", value: "Live Classes", icon: "fa-video-camera" }
     ],
     brochure: dataScienceBrochure,
@@ -74,15 +74,15 @@ const AdvanceCounses = () => {
   ];
 
   return (
-    <section 
+    <section
       className="relative w-full py-20 lg:py-32 font-inter border-y border-gray-100 overflow-hidden bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: `url(${premiumBg})`, backgroundColor: "#faf9f6" }}
     >
       {/* Soft overlay to ensure content remains highly legible over the abstract background */}
       <div className="absolute inset-0 bg-white/40 pointer-events-none backdrop-blur-[1px]" />
-      
+
       <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
-        
+
         {/* Header Area */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
           <div className="max-w-2xl" data-aos="fade-right">
@@ -107,11 +107,11 @@ const AdvanceCounses = () => {
 
         {/* Layout Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
-          
+
           {/* Left: Flagship Course */}
           <div className="lg:col-span-7 group relative flex flex-col justify-between rounded-xl bg-white p-8 sm:p-12 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] transition-all duration-500 overflow-hidden" data-aos="fade-up">
             <div className="absolute top-0 right-0 w-72 h-72 bg-orange-50 rounded-bl-[100px] opacity-60 transform translate-x-12 -translate-y-12 group-hover:scale-110 transition-transform duration-700 pointer-events-none" />
-            
+
             <div className="relative z-10">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-50 border border-orange-100 mb-8">
                 <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
@@ -119,7 +119,7 @@ const AdvanceCounses = () => {
                   Flagship Program
                 </span>
               </div>
-              
+
               <div className="w-16 h-16 rounded-lg bg-gray-900 text-white flex items-center justify-center text-3xl mb-8 shadow-xl shadow-gray-900/10">
                 {flagshipCourse.icon}
               </div>
@@ -127,7 +127,7 @@ const AdvanceCounses = () => {
               <h3 className="text-3xl sm:text-[38px] font-extrabold text-gray-900 mb-5 leading-[1.1]">
                 {flagshipCourse.title}
               </h3>
-              
+
               <p className="text-[17px] text-gray-600 mb-8 leading-relaxed max-w-lg">
                 {flagshipCourse.description}
               </p>
@@ -173,7 +173,7 @@ const AdvanceCounses = () => {
                 <div className="w-14 h-14 rounded-md bg-gray-50 flex items-center justify-center text-gray-400 text-xl group-hover:bg-orange-50 group-hover:text-orange-500 transition-colors flex-shrink-0 mr-5">
                   <i className={`fa ${course.icon}`}></i>
                 </div>
-                
+
                 <div className="flex-1 min-w-0 pr-4">
                   <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
                     {course.category} • {course.duration}
@@ -197,7 +197,7 @@ const AdvanceCounses = () => {
         {/* Trust Strip */}
         <div className="w-full bg-white border border-gray-200 rounded-xl p-8 sm:p-10 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-sm relative overflow-hidden" data-aos="fade-up">
           <div className="absolute top-0 right-0 w-64 h-64 bg-orange-50 opacity-50 rounded-full filter blur-3xl pointer-events-none" />
-          
+
           <div className="flex items-center gap-5 relative z-10 w-full lg:w-auto">
             <div className="w-14 h-14 rounded-full bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-500 flex-shrink-0">
               <i className="fa fa-shield text-2xl"></i>
@@ -207,7 +207,7 @@ const AdvanceCounses = () => {
               <p className="text-gray-500 text-sm">Learn the exact tools used by top tech companies</p>
             </div>
           </div>
-          
+
           <div className="flex flex-wrap items-center justify-start lg:justify-end gap-8 sm:gap-12 relative z-10 w-full lg:w-auto border-t lg:border-t-0 lg:border-l border-gray-100 pt-8 lg:pt-0 lg:pl-12">
             <div className="flex flex-col">
               <div className="text-gray-900 font-black text-3xl mb-1">500+</div>

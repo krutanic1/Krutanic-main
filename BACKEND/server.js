@@ -348,6 +348,7 @@ if (!process.env.VERCEL) {
     const { initializeAttendanceReportScheduler } = require("./services/attendanceReportService");
     const { initializeMasterclassReminderScheduler } = require("./services/masterclassReminderService");
     const { initializeMedEnrollAutomation } = require("./services/medEnrollAutomationService");
+    const { initializeMentorshipEnrollAutomation } = require("./services/mentorshipEnrollAutomationService");
     const { initializeTaskCron } = require("./services/taskCronService");
     const { initializeUnfilledFormReminders } = require("./services/unfilledFormReminderService");
     
@@ -355,6 +356,7 @@ if (!process.env.VERCEL) {
     initializeAttendanceReportScheduler();
     initializeMasterclassReminderScheduler();
     initializeMedEnrollAutomation();
+    initializeMentorshipEnrollAutomation();
     initializeTaskCron();
     initializeUnfilledFormReminders();
 

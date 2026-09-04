@@ -14,6 +14,7 @@ const AdvBookedPayment = () => {
     setFullname("");
     setEmail("");
     setPhone("");
+    setWhatsAppNumber("");
     setProgram("");
     setCounselor("");
     setDomain("");
@@ -194,18 +195,19 @@ const AdvBookedPayment = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = {
-      fullname: fullname,
-      email: email.trim(),
-      phone: phone,
-      program: program,
-      counselor: counselor.trim(),
-      domain: domain.trim(),
-      programPrice: programPrice,
-      paidAmount: paidAmount,
-      monthOpted: monthOpted,
-      clearPaymentMonth: clearPaymentMonth,
-      operationName: operationData.fullname,
-      operationId: operationData._id,
+      fullname: fullname || "",
+      email: email ? email.trim() : "",
+      phone: phone || "",
+      whatsAppNumber: whatsAppNumber || "",
+      program: program || "",
+      counselor: counselor ? counselor.trim() : "",
+      domain: domain ? domain.trim() : "",
+      programPrice: programPrice || "",
+      paidAmount: paidAmount || "",
+      monthOpted: monthOpted || "",
+      clearPaymentMonth: clearPaymentMonth || "",
+      operationName: operationData ? operationData.fullname : localStorage.getItem("advOperationName"),
+      operationId: operationData ? operationData._id : localStorage.getItem("advOperationId"),
     };
     try {
       let response;
@@ -289,19 +291,21 @@ const AdvBookedPayment = () => {
     const isConfirmed = window.confirm("Are you sure you want to edit this?");
     if (isConfirmed) {
       const editStudent = advEnrolls.find((item) => item._id === studentId);
-      setFullname(editStudent.fullname);
-      setEmail(editStudent.email);
-      setPhone(editStudent.phone);
-      setWhatsAppNumber(editStudent.whatsAppNumber);
-      setProgram(editStudent.program);
-      setCounselor(editStudent.counselor);
-      setDomain(editStudent.domain);
-      setProgramPrice(editStudent.programPrice);
-      setPaidAmount(editStudent.paidAmount);
-      setMonthOpted(editStudent.monthOpted);
-      setClearPaymentMonth(editStudent.clearPaymentMonth);
-      setEditingStudentId(studentId);
-      setiscourseFormVisible(true);
+      if (editStudent) {
+        setFullname(editStudent.fullname || "");
+        setEmail(editStudent.email || "");
+        setPhone(editStudent.phone || "");
+        setWhatsAppNumber(editStudent.whatsAppNumber || "");
+        setProgram(editStudent.program || "");
+        setCounselor(editStudent.counselor || "");
+        setDomain(editStudent.domain || "");
+        setProgramPrice(editStudent.programPrice || "");
+        setPaidAmount(editStudent.paidAmount || "");
+        setMonthOpted(editStudent.monthOpted || "");
+        setClearPaymentMonth(editStudent.clearPaymentMonth || "");
+        setEditingStudentId(studentId);
+        setiscourseFormVisible(true);
+      }
     }
   };
 
@@ -897,7 +901,7 @@ const AdvBookedPayment = () => {
         </div>
       )}
       {iscourseFormVisible && (
-        <div className="form">
+        <div className="form" style={{ zIndex: 1000 }}>
           <form onSubmit={handleSubmit} className="space-y-5">
             <span onClick={resetForm}>✖</span>
             <h2>
