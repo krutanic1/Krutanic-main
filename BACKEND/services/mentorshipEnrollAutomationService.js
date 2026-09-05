@@ -27,7 +27,7 @@ const runMentorshipEnrollAutomation = async (studentId = null) => {
           ]
         };
       }
-
+//jdbkhsldkflds
       const eligibleRecords = await NewStudentEnroll.find(query);
 
       console.log(`Found ${eligibleRecords.length} Mentorship (NewStudentEnroll) records needing automation.`);
