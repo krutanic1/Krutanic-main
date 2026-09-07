@@ -384,6 +384,42 @@ router.all('/api/cron/medenroll-automation', async (req, res) => {
     }
 });
 
+// MentorshipEnroll Automation Cron Endpoint (Triggered by Vercel Cron)
+router.all('/api/cron/mentorshipenroll-automation', async (req, res) => {
+    const timestamp = new Date().toISOString();
+    const istTime = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+    console.log(`⏰ [${istTime} IST] Running Vercel Cron: MentorshipEnroll Automation`);
+
+    try {
+        const authHeader = req.headers.authorization;
+        const vercelCronHeader = req.headers['x-vercel-cron'];
+        const expectedAuth = `Bearer ${process.env.CRON_SECRET}`;
+
+        const isVercelCron = vercelCronHeader === '1';
+        const hasValidSecret = process.env.CRON_SECRET && authHeader === expectedAuth;
+
+        if (!isVercelCron && !hasValidSecret) {
+            console.error('❌ Unauthorized cron request - MentorshipEnroll Automation');
+            return res.status(401).json({ error: 'Unauthorized', timestamp, istTime });
+        }
+
+        const { runMentorshipEnrollAutomation } = require('../services/mentorshipEnrollAutomationService');
+        await runMentorshipEnrollAutomation();
+
+        res.status(200).json({
+            success: true,
+            message: `MentorshipEnroll automation triggered successfully`,
+            timestamp,
+            istTime
+        });
+
+    } catch (error) {
+        console.error('❌ Error in MentorshipEnroll Automation Cron Route:', error);
+        res.status(500).json({ error: 'Internal Server Error', details: error.message, timestamp, istTime });
+    }
+});
+
 // Unfilled Form Reminder Cron Endpoint (Triggered by Vercel Cron)
 router.all('/api/cron/unfilled-form-reminders', async (req, res) => {
     const timestamp = new Date().toISOString();

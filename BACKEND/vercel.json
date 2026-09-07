@@ -22,6 +22,10 @@
       "schedule": "*/30 * * * *"
     },
     {
+      "path": "/api/cron/mentorshipenroll-automation",
+      "schedule": "*/30 * * * *"
+    },
+    {
       "path": "/api/cron/auto-assign",
       "schedule": "30 17 * * *"
     },
