@@ -22,13 +22,13 @@ const register = async (req, res) => {
       return res.status(400).json({ message: 'User with this email already exists.' });
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    // const salt = await bcrypt.genSalt(10);
+    // const hashedPassword = await bcrypt.hash(password, salt);
 
     const user = await PracticeUser.create({
       name,
       email,
-      password: hashedPassword,
+      password,
       practiceRole: 'user',
       lastLoginAt: new Date(),
     });
@@ -76,7 +76,7 @@ const login = async (req, res) => {
        return res.status(401).json({ message: 'Please login with Google.' });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await user.password === password;
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid credentials.' });
     }
