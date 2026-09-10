@@ -96,7 +96,7 @@ const Certificate = () => {
                                     <td>{certificate.company}</td>
 
                                     <td>
-                                        <a href={`https://res.cloudinary.com/do5gatqvs/image/upload/co_rgb:000000,l_text:times%20new%20roman_65_bold_normal_left:${encodeURIComponent(certificate.name)}/fl_layer_apply,y_20/co_rgb:000000,l_text:times%20new%20roman_25_bold_normal_left:${encodeURIComponent(certificate.domain + " " + "on" + " " + new Date(certificate.startdate).toLocaleString('en-GB', { month: 'long', year: 'numeric' }))}/fl_layer_apply,y_225/training_certificate_demo_vknkst`} target="_blank" rel="noopener noreferrer">Training</a>
+                                        <a href={`https://res.cloudinary.com/do5gatqvs/image/upload/co_rgb:000000,l_text:times%20new%20roman_65_bold_normal_left:${encodeURIComponent(certificate.name)}/fl_layer_apply,y_20/co_rgb:000000,l_text:times%20new%20roman_25_bold_normal_left:${encodeURIComponent(certificate.domain + " " + "on" + " " + new Date(certificate.startdate).toLocaleString('en-GB', { month: 'long', year: 'numeric' }))}/fl_layer_apply,y_225/v1789027562/1_hqbflx.jpg`} target="_blank" rel="noopener noreferrer">Training</a>
                                     </td>
                                     <td>
                                         <a href={certificate.url} target="_blank" rel="noopener noreferrer">certificate</a>

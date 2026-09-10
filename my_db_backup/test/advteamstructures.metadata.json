@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"team_name":{"$numberInt":"1"}},"name":"team_name_1","background":true,"unique":true}],"uuid":"03c56d079e684d039376e51d41ae4e97","collectionName":"advteamstructures","type":"collection"}

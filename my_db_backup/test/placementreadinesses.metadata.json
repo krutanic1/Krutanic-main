@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"userId":{"$numberInt":"1"}},"name":"userId_1","background":true,"unique":true}],"uuid":"d9a919883a44469b94052d1f808b2b6d","collectionName":"placementreadinesses","type":"collection"}

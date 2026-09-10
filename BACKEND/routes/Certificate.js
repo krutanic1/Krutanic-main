@@ -89,7 +89,7 @@ router.post("/applycertificate", async (req, res) => {
         });
         
         // Cloudinary URL for adobe
-        const certificateurl = `https://res.cloudinary.com/do5gatqvs/image/upload/co_rgb:000000,l_text:times%20new%20roman_65_bold_normal_left:${encodeURIComponent(formattedName)}/fl_layer_apply,y_-50/co_rgb:000000,l_text:times%20new%20roman_30_bold_normal_left:${encodeURIComponent(certificatedate)}/fl_layer_apply,y_-220/co_rgb:000000,l_text:times%20new%20roman_33_bold_normal_left:${encodeURIComponent(domain)}/fl_layer_apply,g_west,x_712,y_193/co_rgb:000000,l_text:times%20new%20roman_18_normal_left:${encodeURIComponent(uniqueId)}/fl_layer_apply,g_south_west,x_465,y_28/co_rgb:000000,l_text:times%20new%20roman_18_normal_left:${encodeURIComponent(newCertificate._id.toString())}/fl_layer_apply,g_south_west,x_900,y_28/adobe_ovkftr`;
+        const certificateurl = `https://res.cloudinary.com/do5gatqvs/image/upload/co_rgb:000000,l_text:times%20new%20roman_65_bold_normal_left:${encodeURIComponent(formattedName)}/fl_layer_apply,y_-50/co_rgb:000000,l_text:times%20new%20roman_30_bold_normal_left:${encodeURIComponent(certificatedate)}/fl_layer_apply,y_-220/co_rgb:000000,l_text:times%20new%20roman_33_bold_normal_left:${encodeURIComponent(domain)}/fl_layer_apply,g_west,x_712,y_193/co_rgb:000000,l_text:times%20new%20roman_18_normal_left:${encodeURIComponent(uniqueId)}/fl_layer_apply,g_south_west,x_465,y_28/co_rgb:000000,l_text:times%20new%20roman_18_normal_left:${encodeURIComponent(newCertificate._id.toString())}/fl_layer_apply,g_south_west,x_900,y_28/v1789027562/2_u0dilc.jpg`;
 
         let finalUrl = certificateurl;
 

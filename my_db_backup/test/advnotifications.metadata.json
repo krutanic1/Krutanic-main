@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"isRead":{"$numberInt":"1"},"userId":{"$numberInt":"1"},"createdAt":{"$numberInt":"-1"}},"name":"isRead_1_userId_1_createdAt_-1"}],"uuid":"a1a99a7e8c0e4dcb8c5853497c94e7b2","collectionName":"advnotifications","type":"collection"}

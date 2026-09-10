@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"certificateId":{"$numberInt":"1"}},"name":"certificateId_1","background":true,"unique":true}],"uuid":"b48dba7ed74b4d58a5a0723ed6e5de5c","collectionName":"microcerts","type":"collection"}

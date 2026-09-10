@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"5cd55e244056453a86f1325699dc4aa0","collectionName":"mentorships","type":"collection"}
