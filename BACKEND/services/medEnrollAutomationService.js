@@ -11,8 +11,7 @@ const runMedEnrollAutomation = async (studentId = null) => {
 
       if (studentId) {
         query = { 
-          _id: studentId,
-          operationId: { $ne: null }
+          _id: studentId
         };
       } else {
         const startOfMonth = new Date();
@@ -22,7 +21,6 @@ const runMedEnrollAutomation = async (studentId = null) => {
         query = {
           createdAt: { $gte: startOfMonth },
           status: { $in: ["booked", "fullPaid"] },
-          operationId: { $ne: null },
           $or: [
             { offerlettersended: { $ne: true } },
             { userCreated: { $ne: true } },

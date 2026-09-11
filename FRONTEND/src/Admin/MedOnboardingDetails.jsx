@@ -56,10 +56,10 @@ const MedOnboardingDetails = () => {
   const fetchNewStudent = async () => {
     setLoading(true);
     try {
-      let url = `${API}/get-med-enroll?all=true&unassigned=true`;
+      let url = `${API}/get-med-enroll?all=true`;
       if (selectedMonth) url += `&month=${selectedMonth}`;
       if (selectedYear) url += `&year=${selectedYear}`;
-      
+
       const response = await axios.get(url);
       const studentsData = response.data;
       setNewStudent(studentsData);
@@ -106,7 +106,7 @@ const MedOnboardingDetails = () => {
       const loadingToast = toast.loading('Processing automation...');
       const response = await axios.post(`${API}/manual-medenroll-automation/${id}`);
       toast.dismiss(loadingToast);
-      
+
       if (response.data.success) {
         toast.success("Automation processed successfully!");
         fetchNewStudent();
@@ -157,44 +157,7 @@ const MedOnboardingDetails = () => {
     setDialogData(null);
   };
 
-  const [operation, setOperation] = useState(null);
-  const fetchOperation = async () => {
-    try {
-      const response = await axios.get(`${API}/getoperation`);
-      setOperation(response.data.filter(op => op.status === "Active" || !op.status));
-    } catch (error) {
-      console.error("There was an error fetching operation:", error);
-    }
-  };
 
-  useEffect(() => {
-    fetchOperation();
-  }, []);
-
-  const [selectedOperation, setSelectedOperation] = useState(null);
-  const handleOperationChange = async (e, rowId) => {
-    const selectedOption = operation.find(item => item.fullname === e.target.value);
-    setSelectedOperation(selectedOption);
-    if (selectedOption) {
-      const { fullname, _id } = selectedOption;
-      try {
-        const response = await axios.post(`${API}/update-med-operation/${rowId}`, {
-          operationName: fullname,
-          operationId: _id,
-        });
-        if (response.status === 200) {
-          toast.success('Operation saved to the database');
-        } else {
-          toast.error('Failed to save the operation');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        toast.error('An error occurred while saving the operation');
-      } finally {
-        fetchNewStudent();
-      }
-    }
-  };
 
   const convertToIST = (utcDate) => {
     const date = new Date(utcDate);
@@ -286,7 +249,6 @@ const MedOnboardingDetails = () => {
                 <th>Automation Tracking</th>
                 <th>Manual Trigger</th>
                 <th>More Details</th>
-                <th>Asign Operation</th>
                 <th>Time</th>
               </tr>
             </thead>
@@ -350,14 +312,14 @@ const MedOnboardingDetails = () => {
                         </td>
                         <td>
                           <div className="flex flex-col text-xs text-left w-max">
-                            <span>Offer: {item.offerlettersended ? "✅" : "âŒ"}</span>
-                            <span>User: {item.userCreated ? "✅" : "âŒ"}</span>
-                            <span>Login: {item.mailSended ? "✅" : "âŒ"}</span>
-                            <span>Onboarding: {item.onboardingSended ? "✅" : "âŒ"}</span>
+                            <span>Offer: {item.offerlettersended ? "✅" : " "}</span>
+                            <span>User: {item.userCreated ? "✅" : " "}</span>
+                            <span>Login: {item.mailSended ? "✅" : " "}</span>
+                            <span>Onboarding: {item.onboardingSended ? "✅" : " "}</span>
                           </div>
                         </td>
                         <td>
-                          <button 
+                          <button
                             onClick={() => handleManualTrigger(item._id)}
                             disabled={item.offerlettersended && item.userCreated && item.mailSended && item.onboardingSended}
                             className="bg-blue-600 text-white px-2 py-1 rounded text-xs disabled:opacity-50 hover:bg-blue-700 transition-colors"
@@ -378,20 +340,6 @@ const MedOnboardingDetails = () => {
                               title="Edit Details"
                             ></i>
                           </div>
-                        </td>
-                        <td>
-                          {
-                            operation && operation.length > 0 && (
-                              <select className="border rounded-full border-black " onChange={(e) => handleOperationChange(e, item._id)} defaultValue="Select Operation">
-                                <option value="Select Operation" disabled>
-                                  Select Operation
-                                </option>
-                                {operation.map((item) => (
-                                  <option key={item._id} value={item.fullname}>{item.fullname}</option>
-                                ))}
-                              </select>
-                            )
-                          }
                         </td>
                         <td>
                           {convertToIST(item.createdAt)}
