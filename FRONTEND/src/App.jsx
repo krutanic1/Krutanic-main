@@ -60,6 +60,8 @@ import AddAdvCourse from "./Admin/AddAdvCourse";
 import AddModule from "./Admin/AddModule";
 import MentorshipProjectMgmt from "./Admin/MentorshipProjectMgmt";
 import MentorshipDefaultRatio from "./Admin/MentorshipDefaultRatio";
+import AdminSalaryFormulas from "./Admin/AdminSalaryFormulas";
+import SalaryCalculator from "./Admin/SalaryCalculator";
 import AddMedModule from "./Admin/AddMedModule";
 import AddAdvModule from "./Admin/AddAdvModule";
 import AdminProjectPage from "./Admin/AdminProjectPage";
@@ -133,6 +135,7 @@ import AdvOperationRevenueSheets from "./AdvOperation/OperationRevenueSheets";
 // BDA Team
 import TeamLogin from "./BDA/TeamLogin";
 import Home from "./BDA/Home";
+import BdaSalaryCalculator from "./BDA/BdaSalaryCalculator";
 import Booked from "./BDA/Booked";
 import BDAHeader from "./BDA/BDAHeader";
 import Default from "./BDA/Default";
@@ -541,12 +544,12 @@ const AppContent = () => {
     ReactPixel.pageView();
   }, [location]);
 
-  const adminheaderPaths = ["/adminfeedback", "/admindashboard", "/adminmentorshipprojects", "/mentorshipdefaultratio", "/admininterviewquestions", "/adminaptitudequestions", "/addcourse", "/addmedcourse", "/addadvcourse", "/addmodule", "/addmedmodule", "/addadvmodule", "/pendingapplication", "/acceptedapplication", "/bookedlist", "/halfpayment", "/defaultlist", "/fullpaidlist", "/createoperation", "/createadvoperation", "/createbda", "/createmedteam", "/createadvteam", "/createmanager", "/mentorqueries", "/advancequeries", "/revenuesheet", "/advrevenuesheet", "/createplacementcoordinator", "/onboardingdetails", "/advonboardingdetails", "/medonboardingdetails", "/adminmedapprovals", "/advbooked", "/advfullpaid", "/advdefault", "/allteamdetail", "/advteamdetail", "/masterclasses", "/addevent", "/eventregistration", "/target", "/alumnidata", "/inactivebda", "/referandearnresponse", "/createmarketingteam", "/createinterviewer", "/createhr", "/createinterview", "/adminprojectpage", "/advprojectpage", "/advexercisepage", "/advleadmanagement", "/adminanalytics", "/advadmindashboard", "/admin/agents", "/admin/teams", "/admin/leadassignments", "/admin/agentactivity", "/admin/reports", "/bulkimport", "/admin/attendance", "/advusermanagement", "/admin/livemonitor", "/admin/calllogs", "/advformleads", "/admin/leads-count", "/admin/medpro-leads", "/admin/career-assessments", "/admin/adv-filter", "/adminmedrevenue", "/adminmedleaderboard", "/adminmedtarget", "/adminmedverticals", "/adminverticals", "/adminteamanalysis", "/admin/sales-intelligence"];
+  const adminheaderPaths = ["/adminfeedback", "/admindashboard", "/adminmentorshipprojects", "/mentorshipdefaultratio", "/admininterviewquestions", "/adminaptitudequestions", "/addcourse", "/addmedcourse", "/addadvcourse", "/addmodule", "/addmedmodule", "/addadvmodule", "/pendingapplication", "/acceptedapplication", "/bookedlist", "/halfpayment", "/defaultlist", "/fullpaidlist", "/createoperation", "/createadvoperation", "/createbda", "/createmedteam", "/createadvteam", "/createmanager", "/mentorqueries", "/advancequeries", "/revenuesheet", "/advrevenuesheet", "/createplacementcoordinator", "/onboardingdetails", "/advonboardingdetails", "/medonboardingdetails", "/adminmedapprovals", "/advbooked", "/advfullpaid", "/advdefault", "/allteamdetail", "/advteamdetail", "/masterclasses", "/addevent", "/eventregistration", "/target", "/alumnidata", "/inactivebda", "/referandearnresponse", "/createmarketingteam", "/createinterviewer", "/createhr", "/createinterview", "/adminprojectpage", "/advprojectpage", "/advexercisepage", "/advleadmanagement", "/adminanalytics", "/advadmindashboard", "/admin/agents", "/admin/teams", "/admin/leadassignments", "/admin/agentactivity", "/admin/reports", "/bulkimport", "/admin/attendance", "/advusermanagement", "/admin/livemonitor", "/admin/calllogs", "/advformleads", "/admin/leads-count", "/admin/medpro-leads", "/admin/career-assessments", "/admin/adv-filter", "/adminmedrevenue", "/adminmedleaderboard", "/adminmedtarget", "/adminmedverticals", "/adminverticals", "/adminteamanalysis", "/admin/sales-intelligence", "/salarycalculator", "/adminsalaryformulas"];
 
   const operationheaderPaths = ["/operationdashboard", "/fullpayment", "/bookedpayment", "/defaultpayment", "/operationrevenuesheet"];
   const advoperationheaderPaths = ["/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet"];
   const marketingheaderPaths = ["/marketing/home", "/marketing/previous", "/marketing/addexecutive"];
-  const bdaheaderPaths = ["/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/verticals", "/leaderboard", "/teamanalysis"];
+  const bdaheaderPaths = ["/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/verticals", "/leaderboard", "/teamanalysis", "/bdasalarycalculator"];
   const advteamheaderPaths = ["/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/advteam/leaderboard", "/advteam/leads-count", "/advteam/career-assessments", "/advteam/filter", "/advteam/followups", "/advteam/tasks"];
   const medteamheaderPaths = ["/medteam/home", "/medteam/onboarding", "/medteam/adduser", "/medteam/revenue", "/medteam/teamdetail", "/medteam/assigntarget", "/medteam/verticals", "/medteam/leaderboard"];
   const hrheaderPaths = ["/hrdashboard"];
@@ -645,6 +648,8 @@ const AppContent = () => {
         <Route path="/AddModule" element={isAuthenticatedAdmin() ? <AddModule /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AdminMentorshipProjects" element={isAuthenticatedAdmin() ? <MentorshipProjectMgmt /> : <Navigate to="/AdminLogin" />} />
         <Route path="/MentorshipDefaultRatio" element={isAuthenticatedAdmin() ? <MentorshipDefaultRatio /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/AdminSalaryFormulas" element={isAuthenticatedAdmin() ? <AdminSalaryFormulas /> : <Navigate to="/AdminLogin" />} />
+        <Route path="/SalaryCalculator" element={isAuthenticatedAdmin() ? <SalaryCalculator /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AddMedModule" element={isAuthenticatedAdmin() ? <AddMedModule /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AddAdvModule" element={isAuthenticatedAdmin() ? <AddAdvModule /> : <Navigate to="/AdminLogin" />} />
         <Route path="/AdminProjectPage" element={isAuthenticatedAdmin() ? <AdminProjectPage /> : <Navigate to="/AdminLogin" />} />
@@ -789,7 +794,8 @@ const AppContent = () => {
         <Route path="/CompanyLeads" element={isAuthenticatedBda() ? <CompanyLeads /> : <Navigate to="/TeamLogin" />} />
         <Route path="/AddTeam" element={isAuthenticatedBda() ? <AddTeam /> : <Navigate to="/TeamLogin" />} />
         <Route path="/AssignTarget" element={isAuthenticatedBda() ? <AssignTarget /> : <Navigate to="/TeamLogin" />} />
-        <Route path="/Verticals" element={isAuthenticatedBda() ? <Verticals /> : <Navigate to="/TeamLogin" />} />
+        <Route path="/Verticals" element={isAuthenticatedBda() ? <Verticals /> : <Navigate to="/Login" />} />
+        <Route path="/BdaSalaryCalculator" element={isAuthenticatedBda() ? <BdaSalaryCalculator /> : <Navigate to="/Login" />} />
         <Route path="/LeaderBoard" element={isAuthenticatedBda() ? <LeaderBoard /> : <Navigate to="/TeamLogin" />} />
         <Route path="/TeamAnalysis" element={isAuthenticatedBda() ? <TeamAnalysis /> : <Navigate to="/TeamLogin" />} />
         

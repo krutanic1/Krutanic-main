@@ -251,6 +251,9 @@ app.use("/api", InterviewQuestionRoutes);
 const AptitudeQuestionRoutes = require("./routes/AptitudeQuestionRoutes");
 app.use("/api", AptitudeQuestionRoutes);
 
+const SalaryFormulaRoutes = require("./routes/SalaryFormulaRoutes");
+app.use("/api", SalaryFormulaRoutes);
+
 // Vercel Cron Route
 app.use("/", CronRoutes);
 

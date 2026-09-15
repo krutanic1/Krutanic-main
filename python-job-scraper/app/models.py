@@ -7,7 +7,7 @@ class JobSearchRequest(BaseModel):
     keyword: str = Field(..., min_length=1, description="Job role or keyword")
     platforms: List[str] = Field(default=["linkedin", "indeed"], description="Platforms to scrape")
     location: Optional[str] = Field(None, description="Location filter (optional)")
-    experience: Optional[str] = Field(None, description="Experience level: entry, mid, senior")
+    experience: Optional[str] = Field(None, description="Experience level: fresher, entry, mid, senior")
     company: Optional[str] = Field(None, description="Company name filter")
     remote_status: Optional[str] = Field(None, description="remote/hybrid/onsite", alias="remoteStatus")
     results_per_site: int = Field(default=20, ge=1, le=100, description="Results per platform", alias="resultsPerSite")

@@ -61,32 +61,76 @@ def normalize_job_data(
                 return None
         
         # Apply experience filter (heuristic-based)
-        if experience_filter and description:
-            desc_lower = description.lower()
+        # ALWAYS check title first — even if description is missing
+        if experience_filter:
             title_lower = job_title.lower()
-            
-            if experience_filter == "entry":
-                # Look for entry-level indicators
-                if not any(keyword in desc_lower or keyword in title_lower 
-                          for keyword in ["entry", "junior", "associate", "0-2 years", "0-1 year", "graduate", "fresher"]):
-                    # If senior indicators present, filter out
-                    if any(keyword in desc_lower or keyword in title_lower 
-                          for keyword in ["senior", "lead", "principal", "staff", "5+ years", "7+ years"]):
+            desc_lower = description.lower() if description else ""
+
+            # Senior/lead keywords that should NEVER appear in fresher/entry results
+            SENIOR_TITLE_KEYWORDS = [
+                "senior", "sr.", "lead", "principal", "staff", "architect",
+                "manager", "director", "head of", "vp ", "vice president", "chief"
+            ]
+
+            if experience_filter == "fresher":
+                # Step 1: Reject if title itself contains senior indicators
+                if any(kw in title_lower for kw in SENIOR_TITLE_KEYWORDS):
+                    return None
+                # Step 2: If we have a description, apply deeper checks
+                if desc_lower:
+                    has_fresher_indicator = any(
+                        kw in desc_lower or kw in title_lower
+                        for kw in ["fresher", "0 years", "0-1 year", "0-2 years",
+                                   "no experience", "no prior experience",
+                                   "entry level", "entry-level", "junior",
+                                   "graduate", "recent graduate", "fresh graduate",
+                                   "trainee", "intern", "apprentice"]
+                    )
+                    has_exp_requirement = any(
+                        kw in desc_lower or kw in title_lower
+                        for kw in ["1+ year", "2+ years", "3+ years", "4+ years", "5+ years",
+                                   "6+ years", "7+ years", "8+ years", "10+ years",
+                                   "1 year experience", "2 years experience",
+                                   "3 years experience", "4 years experience",
+                                   "1-2 years", "2-3 years", "3-5 years", "4-6 years",
+                                   "minimum 1 year", "minimum 2 year", "minimum 3",
+                                   "at least 1 year", "at least 2 year", "at least 3"]
+                    )
+                    if has_exp_requirement or not has_fresher_indicator:
                         return None
-            
+
+            elif experience_filter == "entry":
+                # Step 1: Reject senior titles
+                if any(kw in title_lower for kw in SENIOR_TITLE_KEYWORDS):
+                    return None
+                # Step 2: Reject if description has 3+ years indicators
+                if desc_lower:
+                    if any(kw in desc_lower or kw in title_lower
+                           for kw in ["3+ years", "4+ years", "5+ years", "6+ years",
+                                      "7+ years", "8+ years", "10+ years",
+                                      "3-5 years", "4-6 years", "5-7 years",
+                                      "3 years", "4 years", "5 years",
+                                      "minimum 3", "minimum 4", "minimum 5",
+                                      "at least 3", "at least 4", "at least 5"]):
+                        return None
+
             elif experience_filter == "mid":
-                # Look for mid-level indicators
-                if any(keyword in desc_lower or keyword in title_lower 
-                      for keyword in ["senior", "lead", "principal", "7+ years", "10+ years"]):
-                    return None
-                if any(keyword in desc_lower or keyword in title_lower 
-                      for keyword in ["entry", "junior", "fresher", "graduate"]):
-                    return None
-            
+                if desc_lower:
+                    if any(kw in desc_lower or kw in title_lower
+                           for kw in ["senior", "lead", "principal", "7+ years", "10+ years"]):
+                        return None
+                    if any(kw in desc_lower or kw in title_lower
+                           for kw in ["entry", "junior", "fresher", "graduate"]):
+                        return None
+
             elif experience_filter == "senior":
-                # Must have senior indicators
-                if not any(keyword in desc_lower or keyword in title_lower 
-                          for keyword in ["senior", "lead", "principal", "staff", "architect", "5+ years", "7+ years", "expert"]):
+                # Must have senior indicators in title OR description
+                has_senior = any(kw in title_lower for kw in SENIOR_TITLE_KEYWORDS)
+                if not has_senior and desc_lower:
+                    has_senior = any(kw in desc_lower
+                                     for kw in ["senior", "lead", "principal", "staff",
+                                                "architect", "5+ years", "7+ years", "expert"])
+                if not has_senior:
                     return None
         
         # Extract employment type

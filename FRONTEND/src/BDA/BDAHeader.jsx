@@ -130,7 +130,10 @@ const BDAHeader = () => {
             <i className="fa fa-trophy"></i> LeaderBoard
           </Link>
           <Link to="/CompanyLeads">
-            <i className="fa fa-tags"></i> Company Leads
+            <i className="fa fa-building-o mr-2"></i>Company Leads
+          </Link>
+          <Link to="/BdaSalaryCalculator">
+            <i className="fa fa-calculator mr-2"></i>Salary Calculator
           </Link>
           {["LEADER", "MANAGER"].includes(bdaData?.designation) && (
             <>

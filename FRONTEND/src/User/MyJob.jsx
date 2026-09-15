@@ -154,10 +154,11 @@ const MyJob = () => {
                 onChange={handleInputChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
               >
-                <option value="">Default</option>
-                <option value="entry">0-2 years</option>
-                <option value="mid">3-6 years</option>
-                <option value="senior">7+ years</option>
+                <option value="">Default (All)</option>
+                <option value="fresher">Fresher (0 years)</option>
+                <option value="entry">Entry Level (0-2 years)</option>
+                <option value="mid">Mid-level (3-6 years)</option>
+                <option value="senior">Senior (7+ years)</option>
               </select>
             </div>
 
@@ -356,8 +357,8 @@ const MyJob = () => {
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
                       className={`w-10 h-10 rounded-lg font-medium transition-all ${currentPage === pageNum
-                          ? "bg-primary text-white shadow-md"
-                          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                        ? "bg-primary text-white shadow-md"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                         }`}
                     >
                       {pageNum}
