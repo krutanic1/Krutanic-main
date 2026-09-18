@@ -33,7 +33,6 @@ const QuestionForm = () => {
   });
 
   useEffect(() => {
-    if (!isAdmin) { navigate('/practice'); return; }
     // Load paths
     practiceApi.get('/admin/practice-paths').then(r => setPaths(r.data.paths || [])).catch(() => {});
     // If edit, load question
@@ -60,7 +59,7 @@ const QuestionForm = () => {
         })
         .catch(() => toast.error('Failed to load question.'));
     }
-  }, [id, isEdit, isAdmin, navigate, practiceApi]);
+  }, [id, isEdit, practiceApi]);
 
   const handlePathChange = async (e) => {
     const pathId = e.target.value;

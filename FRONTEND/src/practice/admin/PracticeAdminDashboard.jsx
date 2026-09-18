@@ -25,16 +25,8 @@ const PracticeAdminDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!isAdmin) {
-      if (!practiceApi.defaults.headers.Authorization) {
-        toast.error('Please log in as an Admin first.');
-        navigate('/practice/login', { state: { from: { pathname: '/admin/practice' } } });
-      } else {
-        toast.error('Admin access required.');
-        navigate('/practice');
-      }
-    }
-  }, [isAdmin, navigate, practiceApi]);
+    // Relying on App.jsx route guard for authentication
+  }, []);
 
   const fetchData = useCallback(async () => {
     try {
@@ -76,7 +68,6 @@ const PracticeAdminDashboard = () => {
     }
   };
 
-  if (!isAdmin) return null;
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 admin-content-wrap !p-0">

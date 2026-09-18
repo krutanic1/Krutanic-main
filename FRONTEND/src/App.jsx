@@ -900,13 +900,13 @@ const AppContent = () => {
         <Route path="/practice/:pathSlug/:topicSlug/:subtopicSlug" element={<React.Suspense fallback={null}><PracticeSubtopicPage /></React.Suspense>} />
         <Route path="/practice/:pathSlug/:topicSlug/:subtopicSlug/:questionSlug" element={<React.Suspense fallback={null}><QuestionPage /></React.Suspense>} />
         {/* Practice Admin Routes */}
-        <Route path="/admin/practice" element={<React.Suspense fallback={null}><PracticeAdminDashboard /></React.Suspense>} />
-        <Route path="/admin/practice/topics" element={<React.Suspense fallback={null}><TopicsManager /></React.Suspense>} />
-        <Route path="/admin/practice/paths/new" element={<React.Suspense fallback={null}><PathForm /></React.Suspense>} />
-        <Route path="/admin/practice/paths/:id/edit" element={<React.Suspense fallback={null}><PathForm /></React.Suspense>} />
-        <Route path="/admin/practice/questions" element={<React.Suspense fallback={null}><QuestionsList /></React.Suspense>} />
-        <Route path="/admin/practice/questions/new" element={<React.Suspense fallback={null}><QuestionForm /></React.Suspense>} />
-        <Route path="/admin/practice/questions/:id/edit" element={<React.Suspense fallback={null}><QuestionForm /></React.Suspense>} />
+        <Route path="/admin/practice" element={isAuthenticatedAdmin() ? <React.Suspense fallback={null}><PracticeAdminDashboard /></React.Suspense> : <Navigate to="/AdminLogin" />} />
+        <Route path="/admin/practice/topics" element={isAuthenticatedAdmin() ? <React.Suspense fallback={null}><TopicsManager /></React.Suspense> : <Navigate to="/AdminLogin" />} />
+        <Route path="/admin/practice/paths/new" element={isAuthenticatedAdmin() ? <React.Suspense fallback={null}><PathForm /></React.Suspense> : <Navigate to="/AdminLogin" />} />
+        <Route path="/admin/practice/paths/:id/edit" element={isAuthenticatedAdmin() ? <React.Suspense fallback={null}><PathForm /></React.Suspense> : <Navigate to="/AdminLogin" />} />
+        <Route path="/admin/practice/questions" element={isAuthenticatedAdmin() ? <React.Suspense fallback={null}><QuestionsList /></React.Suspense> : <Navigate to="/AdminLogin" />} />
+        <Route path="/admin/practice/questions/new" element={isAuthenticatedAdmin() ? <React.Suspense fallback={null}><QuestionForm /></React.Suspense> : <Navigate to="/AdminLogin" />} />
+        <Route path="/admin/practice/questions/:id/edit" element={isAuthenticatedAdmin() ? <React.Suspense fallback={null}><QuestionForm /></React.Suspense> : <Navigate to="/AdminLogin" />} />
         {/* ────────────────────────────────────────────────────────────── */}
       </Routes>
 

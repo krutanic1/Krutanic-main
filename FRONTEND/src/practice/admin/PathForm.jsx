@@ -38,7 +38,6 @@ const PathForm = () => {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!isAdmin) { navigate('/practice'); return; }
     if (isEdit) {
       setLoading(true);
       practiceApi.get('/admin/practice-paths')
@@ -50,7 +49,7 @@ const PathForm = () => {
         .catch(() => toast.error('Failed to load path.'))
         .finally(() => setLoading(false));
     }
-  }, [id, isEdit, isAdmin, navigate, practiceApi]);
+  }, [id, isEdit, practiceApi]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;

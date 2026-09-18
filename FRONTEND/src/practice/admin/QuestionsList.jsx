@@ -24,9 +24,8 @@ const QuestionsList = () => {
   });
 
   useEffect(() => {
-    if (!isAdmin) navigate('/practice');
     practiceApi.get('/admin/practice-paths').then(r => setPaths(r.data.paths || [])).catch(() => {});
-  }, [isAdmin, navigate, practiceApi]);
+  }, [practiceApi]);
 
   const fetchQuestions = useCallback(async () => {
     try {

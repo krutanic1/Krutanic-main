@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 dotenv.config();
 
-const mongoURI = process.env.DB_NAME || "mongodb+srv://krutanic:Kp6h7s4rJxzzb29j@krutanic.10kcydn.mongodb.net/test?retryWrites=true&w=majority&appName=krutanic";
+const mongoURI = process.env.DB_NAME ;
 
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(async () => {

@@ -22,12 +22,8 @@ const TopicsManager = () => {
   const [newSubtopicTitle, setNewSubtopicTitle] = useState('');
 
   useEffect(() => {
-    if (!isAdmin) {
-      navigate('/practice');
-      return;
-    }
     fetchPaths();
-  }, [isAdmin, navigate, practiceApi]);
+  }, [practiceApi]);
 
   const fetchPaths = async () => {
     try {
