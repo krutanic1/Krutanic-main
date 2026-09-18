@@ -101,6 +101,7 @@ const OperationHeader = () => {
           <Link to="/FullPayment">Full Payment</Link>
           <Link to="/DefaultPayment">Default Payment</Link>
           <Link to="/OperationRevenueSheet">Revenue Sheet</Link>
+          <Link to="/OperationMentorshipDefaultRatio">Default Ratio</Link>
           <button onClick={handleLogout} ><i className="fa fa-sign-out"></i> Logout</button>
         </div>
       )}
