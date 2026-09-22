@@ -186,6 +186,9 @@ const AdminHeader = () => {
             <Link to="/AllTeamDetail">
               <i className="fa fa-users mr-2"></i>Team Detail
             </Link>
+            <Link to="/AdminNotes">
+              <i className="fa fa-book mr-2"></i>Notes Hub (Add Notes)
+            </Link>
             <Link to="/AdminFeedback">
               <i className="fa fa-comments mr-2"></i>Student Feedback
             </Link>
@@ -301,6 +304,9 @@ const AdminHeader = () => {
             </Link>
             <Link to="/AdminAptitudeQuestions">
               <i className="fa fa-question-circle mr-2"></i>Aptitude Questions
+            </Link>
+            <Link to="/AdminNotes">
+              <i className="fa fa-book mr-2"></i>Notes Hub (Add Notes)
             </Link>
             <Link to="/AdvLeadManagement">
               <i className="fa fa-users mr-2"></i>ADV Lead Management

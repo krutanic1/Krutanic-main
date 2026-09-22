@@ -196,7 +196,9 @@ const BdaSalaryCalculator = () => {
     let salaryStatus = "not_eligible";
 
     if (achievedPct < minPct) {
-      earnedBasePay = T > 0 ? (R / T) * B : 0;
+      // Formula: (Revenue Achieved / Minimum Revenue) × Base Pay
+      const minRevForCalc = (minPct / 100) * T;
+      earnedBasePay = minRevForCalc > 0 ? Math.min((R / minRevForCalc) * B, B) : 0;
       earnedIncentives = 0;
       salaryStatus = "not_eligible";
     } else {
@@ -381,7 +383,9 @@ const BdaSalaryCalculator = () => {
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em" }}>{fmt(result.earnedBasePay)}</div>
                 <div style={{ fontSize: 12, color: result.salaryStatus === "not_eligible" ? "#94a3b8" : "#10b981", fontWeight: 600 }}>
-                  {result.salaryStatus === "not_eligible" ? `Proportional: ${result.achievedPct}% of ${fmt(result.B)}` : "✓ Full base pay unlocked"}
+                  {result.salaryStatus === "not_eligible"
+                    ? `${fmt(result.R)} ÷ ${fmt(result.minRevenue)} × ${fmt(result.B)}`
+                    : "✓ Full base pay unlocked"}
                 </div>
               </div>
 
@@ -454,7 +458,7 @@ const BdaSalaryCalculator = () => {
                 </div>
                 <div className="sc-formula-item">
                   <span style={{ color: "#64748b", fontWeight: 500 }}>If achieved &lt; {result.minPct}%</span>
-                  <span style={{ color: "#ef4444", fontWeight: 700, fontSize: 13 }}>Proportional Base Pay</span>
+                  <span style={{ color: "#ef4444", fontWeight: 700, fontSize: 13 }}>Base × (Revenue ÷ Min Revenue)</span>
                 </div>
                 <div className="sc-formula-item">
                   <span style={{ color: "#64748b", fontWeight: 500 }}>If achieved ≥ {result.minPct}%</span>

@@ -18,15 +18,11 @@ const InterviewQuestionsPage = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await axios.get(`${API}/api/getinterviewquestions`);
-        
-        // Filter questions using strict courseTitle matching
-        const filteredQuestions = response.data.filter(q => {
-          if (!enrolledCourseTitle || !q.courseTitle) return false;
-          return q.courseTitle.trim() === enrolledCourseTitle.trim();
-        });
-
-        setQuestions(filteredQuestions);
+        // Send courseTitle as query param so backend filters at DB level
+        const response = await axios.get(
+          `${API}/api/getinterviewquestions?courseTitle=${encodeURIComponent(enrolledCourseTitle)}`
+        );
+        setQuestions(response.data);
       } catch (error) {
         console.error("Error fetching interview questions:", error);
       } finally {

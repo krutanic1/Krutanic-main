@@ -209,8 +209,10 @@ const SalaryCalculator = () => {
     let salaryStatus = "not_eligible";
 
     if (achievedPct < minPct) {
-      // Below minimum: proportional base pay only
-      earnedBasePay = (R / T) * B;
+      // Below minimum: proportional base pay relative to minimum revenue
+      // Formula: (Revenue Achieved / Minimum Revenue) × Base Pay
+      const minRevForCalc = (minPct / 100) * T;
+      earnedBasePay = Math.min((R / minRevForCalc) * B, B);
       earnedIncentives = 0;
       salaryStatus = "not_eligible";
     } else {
@@ -370,7 +372,7 @@ const SalaryCalculator = () => {
               </div>
               <div className="sc-formula-item">
                 <span style={{ color: "#64748b", fontWeight: 500 }}>If achieved &lt; {minPercent || "min"}%</span>
-                <span style={{ color: "#ef4444", fontWeight: 700, fontSize: 13 }}>Base × (Revenue / Target)</span>
+                <span style={{ color: "#ef4444", fontWeight: 700, fontSize: 13 }}>Base × (Revenue / Min Revenue)</span>
               </div>
               <div className="sc-formula-item">
                 <span style={{ color: "#64748b", fontWeight: 500 }}>If achieved ≥ {minPercent || "min"}%</span>
@@ -488,7 +490,7 @@ const SalaryCalculator = () => {
               </div>
               <div style={{ fontSize: 12, color: result.salaryStatus === "not_eligible" ? "#94a3b8" : "#10b981", fontWeight: 600 }}>
                 {result.salaryStatus === "not_eligible"
-                  ? `Proportional: ${result.achievedPct}% of ${fmt(result.B)}`
+                  ? `${fmt(result.R)} ÷ ${fmt(result.minRevenue)} × ${fmt(result.B)}`
                   : "✓ Full base pay unlocked"}
               </div>
             </div>

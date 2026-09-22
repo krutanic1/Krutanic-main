@@ -270,6 +270,11 @@ app.use("/api", practiceRoutes);
 app.use("/api", practiceAdminRoutes);
 // ───────────────────────────────────────────────────────────────────────────
 
+// ─── Notes Hub ──────────────────────────────────────────────────────────────
+const notesRoutes = require("./routes/notesRoutes");
+app.use("/api/notes", notesRoutes);
+// ───────────────────────────────────────────────────────────────────────────
+
 // ✅ FIX #4: Error handling middleware (must be after routes)
 const axios = require('axios');
 // Global Proxy Route for Downloads (Moved here for reliability)

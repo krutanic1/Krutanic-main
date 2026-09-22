@@ -11,6 +11,7 @@ const Footer = () => {
     { label: "Programs", to: "/Advance" },
     { label: "Mentorship", to: "/Mentorship" },
     { label: "Masterclass", to: "/MasterClass" },
+    { label: "Notes", to: "/notes" },
   ];
 
   const supportLinks = [

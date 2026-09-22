@@ -282,6 +282,8 @@ import Exercise from "./User/Excercise.jsx";
 import SkillEvaluationTest from "./page/SkillEvaluationTest.jsx";
 import BlogList from "./page/blogs/BlogList";
 import BlogDetail from "./page/blogs/BlogDetail";
+const NotesPage = lazy(() => import("./page/NotesPage"));
+import AdminNotesPage from "./Admin/AdminNotesPage";
 
 // ─── Practice Module ─────────────────────────────────────────────────────────
 import { PracticeAuthProvider } from "./practice/context/PracticeAuthContext";
@@ -545,7 +547,7 @@ const AppContent = () => {
     ReactPixel.pageView();
   }, [location]);
 
-  const adminheaderPaths = ["/adminfeedback", "/admindashboard", "/adminmentorshipprojects", "/mentorshipdefaultratio", "/admininterviewquestions", "/adminaptitudequestions", "/addcourse", "/addmedcourse", "/addadvcourse", "/addmodule", "/addmedmodule", "/addadvmodule", "/pendingapplication", "/acceptedapplication", "/bookedlist", "/halfpayment", "/defaultlist", "/fullpaidlist", "/createoperation", "/createadvoperation", "/createbda", "/createmedteam", "/createadvteam", "/createmanager", "/mentorqueries", "/advancequeries", "/revenuesheet", "/advrevenuesheet", "/createplacementcoordinator", "/onboardingdetails", "/advonboardingdetails", "/medonboardingdetails", "/adminmedapprovals", "/advbooked", "/advfullpaid", "/advdefault", "/allteamdetail", "/advteamdetail", "/masterclasses", "/addevent", "/eventregistration", "/target", "/alumnidata", "/inactivebda", "/referandearnresponse", "/createmarketingteam", "/createinterviewer", "/createhr", "/createinterview", "/adminprojectpage", "/advprojectpage", "/advexercisepage", "/advleadmanagement", "/adminanalytics", "/advadmindashboard", "/admin/agents", "/admin/teams", "/admin/leadassignments", "/admin/agentactivity", "/admin/reports", "/bulkimport", "/admin/attendance", "/advusermanagement", "/admin/livemonitor", "/admin/calllogs", "/advformleads", "/admin/leads-count", "/admin/medpro-leads", "/admin/career-assessments", "/admin/adv-filter", "/adminmedrevenue", "/adminmedleaderboard", "/adminmedtarget", "/adminmedverticals", "/adminverticals", "/adminteamanalysis", "/admin/sales-intelligence", "/salarycalculator", "/adminsalaryformulas"];
+  const adminheaderPaths = ["/adminfeedback", "/admindashboard", "/adminmentorshipprojects", "/mentorshipdefaultratio", "/admininterviewquestions", "/adminaptitudequestions", "/addcourse", "/addmedcourse", "/addadvcourse", "/addmodule", "/addmedmodule", "/addadvmodule", "/pendingapplication", "/acceptedapplication", "/bookedlist", "/halfpayment", "/defaultlist", "/fullpaidlist", "/createoperation", "/createadvoperation", "/createbda", "/createmedteam", "/createadvteam", "/createmanager", "/mentorqueries", "/advancequeries", "/revenuesheet", "/advrevenuesheet", "/createplacementcoordinator", "/onboardingdetails", "/advonboardingdetails", "/medonboardingdetails", "/adminmedapprovals", "/advbooked", "/advfullpaid", "/advdefault", "/allteamdetail", "/advteamdetail", "/masterclasses", "/addevent", "/eventregistration", "/target", "/alumnidata", "/inactivebda", "/referandearnresponse", "/createmarketingteam", "/createinterviewer", "/createhr", "/createinterview", "/adminprojectpage", "/advprojectpage", "/advexercisepage", "/advleadmanagement", "/adminanalytics", "/advadmindashboard", "/admin/agents", "/admin/teams", "/admin/leadassignments", "/admin/agentactivity", "/admin/reports", "/bulkimport", "/admin/attendance", "/advusermanagement", "/admin/livemonitor", "/admin/calllogs", "/advformleads", "/admin/leads-count", "/admin/medpro-leads", "/admin/career-assessments", "/admin/adv-filter", "/adminmedrevenue", "/adminmedleaderboard", "/adminmedtarget", "/adminmedverticals", "/adminverticals", "/adminteamanalysis", "/admin/sales-intelligence", "/salarycalculator", "/adminsalaryformulas", "/adminnotes"];
 
   const operationheaderPaths = ["/operationdashboard", "/fullpayment", "/bookedpayment", "/defaultpayment", "/operationrevenuesheet", "/operationmentorshipdefaultratio"];
   const advoperationheaderPaths = ["/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet"];
@@ -557,7 +559,7 @@ const AppContent = () => {
   const lmsFooterPaths = ["/jobboard"];
   const noFooterPaths = ["/operationdashboard", "/bookedpayment", "/fullpayment", "/defaultpayment", "/operationrevenuesheet", "/operationmentorshipdefaultratio", "/advoperationdashboard", "/advfullpayment", "/advbookedpayment", "/advdefaultpayment", "/advoperationrevenuesheet", "/advteam/home", "/advteam/onboarding", "/advteam/revenue", "/advteam/booked", "/advteam/fullpaid", "/advteam/default", "/advteam/record", "/advteam/lead-management", "/advteam/team-login", "/advteam/adduser", "/advteam/my-leads", "/advteam/leads-book", "/advteam/leaderboard", "/advteam/filter", "/advteam/followups", "/advteam/tasks", "/home", "/fullpaid", "/default", "/booked", "/onboarding", "/adduser", "/teamdetail", "/bdarevenuesheet", "/reference", "/companyleads", "/addteam", "/assigntarget", "/leaderboard", "/teamanalysis", "/setting", "/medteam/home", "/medteam/onboarding", "/medteam/adduser", "/medteam/revenue", "/medteam/teamdetail", "/medteam/assigntarget", "/medteam/leaderboard", "/admin/adv-filter", "/paytest"];
   const placementcoodinatorHeaderPaths = ["/pcdashboard", "/jobpost"];
-  const headerPaths = ["/", "/login", "/loginwithotp", "/forgotpassword", "/contactus", "/aboutus", "/career", "/collabration", "/advancecourses", "/terms", "/privacy", "/refundpolicy", "/feestructure", "/advance", "/advance-apply", "/mentorship", "/datascience", "/dataanalytics", "/digitalmarket", "/mernstack", "/investmentbanking", "/productmanagement", "/automationtesting", "/promptengineering", "/generativeai", "/forensic-psychology", "/clinical-psychology", "/corporate-law", "/medpro-packs", "/psychology", "/operationlogin", "/advoperationlogin", "/teamlogin", "/adminlogin", "/managerlogin", "/loginadmin", "/pclogin", "/advteamlogin", "/medloginteam", "/dashboardaccessform", "/meddashboardaccessform", "/advancedashboardaccess", "/masterclass", "/alumni", "/verify", "/referandearn", "/marketing/login", "/interviewer-login", "/interviewerlogin", "/hrlogin", "/advanceform", "/career-assessment", "/practice/login"];
+  const headerPaths = ["/", "/login", "/loginwithotp", "/forgotpassword", "/contactus", "/aboutus", "/career", "/collabration", "/advancecourses", "/terms", "/privacy", "/refundpolicy", "/feestructure", "/advance", "/advance-apply", "/mentorship", "/datascience", "/dataanalytics", "/digitalmarket", "/mernstack", "/investmentbanking", "/productmanagement", "/automationtesting", "/promptengineering", "/generativeai", "/forensic-psychology", "/clinical-psychology", "/corporate-law", "/medpro-packs", "/psychology", "/operationlogin", "/advoperationlogin", "/teamlogin", "/adminlogin", "/managerlogin", "/loginadmin", "/pclogin", "/advteamlogin", "/medloginteam", "/dashboardaccessform", "/meddashboardaccessform", "/advancedashboardaccess", "/masterclass", "/alumni", "/verify", "/referandearn", "/marketing/login", "/interviewer-login", "/interviewerlogin", "/hrlogin", "/advanceform", "/career-assessment", "/practice/login", "/notes"];
 
   return (
     <div>
@@ -638,6 +640,12 @@ const AppContent = () => {
         <Route path="/attendance" element={<Attendance />} />
         <Route path="/blog" element={<BlogList />} />
         <Route path="/blog/:slug" element={<BlogDetail />} />
+        {/* Notes Hub — public */}
+        <Route path="/notes" element={
+          <React.Suspense fallback={<div style={{ minHeight: '100vh', background: '#0f0c29' }} />}>
+            <NotesPage />
+          </React.Suspense>
+        } />
 
         {/* Admin Panel Start */}
         <Route path="/AdminLogin" element={<AdminLogIn />} />
@@ -750,6 +758,8 @@ const AppContent = () => {
 
 
         <Route path="/admin/sales-intelligence" element={isAuthenticatedAdmin() ? (<SalesIntelligence />) : (<Navigate to="/AdminLogin" />)} />
+        {/* Notes Hub Admin */}
+        <Route path="/AdminNotes" element={isAuthenticatedAdmin() ? <AdminNotesPage /> : <Navigate to="/AdminLogin" />} />
         {/* Admin Panel End */}
 
         {/* Operation Panel Start */}

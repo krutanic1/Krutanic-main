@@ -2,10 +2,13 @@ const express = require("express");
 const router = express.Router();
 const InterviewQuestion = require("../models/InterviewQuestion");
 
-// Get all interview questions
+// Get interview questions — filtered by courseTitle if provided (used by student dashboard)
+// If no courseTitle query param, returns all (used by admin)
 router.get("/getinterviewquestions", async (req, res) => {
     try {
-        const questions = await InterviewQuestion.find({});
+        const { courseTitle } = req.query;
+        const filter = courseTitle ? { courseTitle: courseTitle.trim() } : {};
+        const questions = await InterviewQuestion.find(filter);
         res.status(200).json(questions);
     } catch (error) {
         console.error("Error fetching interview questions:", error);
