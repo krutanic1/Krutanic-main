@@ -233,38 +233,6 @@ const DashboardAccessForm = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const price = Number(programPrice);
-    const paid = Number(paidAmount);
-
-    if (program === "Self-Guided [2 Months – Training & Internship]") {
-      if (price <= 4000 && paid < price) {
-        toast.error("Full payment is required to submit the form.");
-        return;
-      }
-      if (price >= 5000 && paid < 1000) {
-        toast.error("Minimum payment of 1000 is required to submit the form.");
-        return;
-      }
-    } else if (program === "Instructor-Led [2 Months – Training & Internship]") {
-      if (price <= 5000 && paid < price) {
-        toast.error("Full payment is required to submit the form.");
-        return;
-      }
-      if (price >= 6000 && paid < 1000) {
-        toast.error("Minimum payment of 1000 is required to submit the form.");
-        return;
-      }
-    } else if (program === "Career Advancement [3 Months – Training, Internship & Placement Assistance]") {
-      if (price <= 8000 && paid < price) {
-        toast.error("Full payment is required to submit the form.");
-        return;
-      }
-      if (price > 8000 && paid < 1000) {
-        toast.error("Minimum payment of 1000 is required to submit the form.");
-        return;
-      }
-    }
-
     setIsSubmitting(true);
 
     const formData = {
@@ -433,39 +401,6 @@ const DashboardAccessForm = () => {
     setMinDate(minDate);
     setMaxDate(maxDate);
   }, [monthOpted, monthsToShow]);
-
-  useEffect(() => {
-    if (!program) return;
-
-    const price = Number(programPrice) || 0;
-    const paid = Number(paidAmount) || 0;
-
-    if (program === "Self-Guided [2 Months – Training & Internship]") {
-      if (price <= 4000 && paid < price) {
-        toast.error("Full payment is required for this price.");
-        setProgram("");
-      } else if (price >= 5000 && paid < 1000) {
-        toast.error("Minimum payment of 1000 is required.");
-        setProgram("");
-      }
-    } else if (program === "Instructor-Led [2 Months – Training & Internship]") {
-      if (price <= 5000 && paid < price) {
-        toast.error("Full payment is required for this price.");
-        setProgram("");
-      } else if (price >= 6000 && paid < 1000) {
-        toast.error("Minimum payment of 1000 is required.");
-        setProgram("");
-      }
-    } else if (program === "Career Advancement [3 Months – Training, Internship & Placement Assistance]") {
-      if (price <= 8000 && paid < price) {
-        toast.error("Full payment is required for this price.");
-        setProgram("");
-      } else if (price > 8000 && paid < 1000) {
-        toast.error("Minimum payment of 1000 is required.");
-        setProgram("");
-      }
-    }
-  }, [program, programPrice, paidAmount]);
 
   return (
     <div id="onboardingform">
